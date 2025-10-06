@@ -16,6 +16,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+     /* Paths alias */
+    "baseUrl": "src",
+    "paths": {
+      "@gradex/*": ["assets/*"]
+    },
+    
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

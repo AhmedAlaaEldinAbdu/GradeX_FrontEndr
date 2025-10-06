@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function UserManagementPopup() {
+export default function StudentManagement() {
   return (
     <div>
         

@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+   * {
+      font-family: "Cairo", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+   }
+
+   html,
+   body,
+   #root {
+      @apply h-full;
+   }
+
+   body {
+      @apply bg-gray-50;
+   }
+}
+
+@layer components {
+   /* Custom scrollbar styles */
+   .scrollbar-thin::-webkit-scrollbar {
+      @apply w-2;
+   }
+
+   .scrollbar-thin::-webkit-scrollbar-track {
+      @apply bg-gray-100;
+   }
+
+   .scrollbar-thin::-webkit-scrollbar-thumb {
+      @apply bg-gray-300 rounded-full;
+   }
+
+   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      @apply bg-gray-400;
+   }
+}
