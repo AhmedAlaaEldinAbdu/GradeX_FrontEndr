@@ -3,9 +3,9 @@ import Card from "../../../shared/components/Card";
 import EmptyState from "../../../shared/components/EmptyState";
 import Table from "../../../shared/components/Table";
 import { useTranslation } from "react-i18next";
-import StudentIcon from "@gradex/assets/images/icons/Student.svg";
-import TrashIcon from "@gradex/assets/images/icons/Trash.svg";
-import EditIcon from "@gradex/assets/images/icons/Edit.svg";
+import StudentIcon from "@gradex/assets/icons/Student.svg";
+import TrashIcon from "@gradex/assets/icons/Trash.svg";
+import EditIcon from "@gradex/assets/icons/Edit.svg";
 
 interface Student {
   id: number;
