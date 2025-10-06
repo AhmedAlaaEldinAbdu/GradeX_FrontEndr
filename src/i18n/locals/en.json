@@ -10,6 +10,7 @@
       "attendance": "Attendance",
       "fees": "Fees",
       "examManagement": "Exam Management",
+      "busManagement": "Bus Management",
       "notifications": "Notifications"
    },
    "header": {
