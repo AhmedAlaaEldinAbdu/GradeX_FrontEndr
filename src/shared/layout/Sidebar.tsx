@@ -1,0 +1,328 @@
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+
+import BookIcon from "@gradex/assets/icons/Book.svg";
+import BusIcon from "@gradex/assets/icons/Bus.svg";
+import CalendarIcon from "@gradex/assets/icons/Calendar.svg";
+import EducationIcon from "@gradex/assets/icons/Education.svg";
+import HomeIcon from "@gradex/assets/icons/Home.svg";
+import NotificationIcon from "@gradex/assets/icons/Notification.svg";
+import PeopleRegularIcon from "@gradex/assets/icons/PeopleRegular.svg";
+import PeopleSolidIcon from "@gradex/assets/icons/PeopleSolid.svg";
+import TicketsIcon from "@gradex/assets/icons/Tickets.svg";
+import ReportIcon from "@gradex/assets/icons/Report.svg";
+import ReportsIcon from "@gradex/assets/icons/Reports.svg";
+import SettingsIcon from "@gradex/assets/icons/Settings.svg";
+import StudentsIcon from "@gradex/assets/icons/Students.svg";
+import WalletIcon from "@gradex/assets/icons/Wallet.svg";
+import ChevronDown from "@gradex/assets/icons/ChevronDown.svg";
+import ChevronUp from "@gradex/assets/icons/ChevronUp.svg";
+
+interface MenuItem {
+   key: string;
+   icon: React.ReactNode;
+   path?: string;
+   subItems?: { key: string; path: string; icon?: React.ReactNode }[];
+}
+
+const Sidebar: React.FC = () => {
+   const { t } = useTranslation();
+   const location = useLocation();
+   const navigate = useNavigate();
+   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+   const menuItems: MenuItem[] = [
+      {
+         key: "home",
+         icon: <img src={HomeIcon} className="w-5 h-5" alt="Home" />,
+         path: "/",
+      },
+      {
+         key: "educationalStages",
+         icon: <img src={EducationIcon} className="w-5 h-5" alt="Education" />,
+         subItems: [{ key: "educationalStages", path: "/educational-stages" }],
+      },
+      {
+         key: "books",
+         icon: <img src={BookIcon} className="w-5 h-5" alt="Books" />,
+         path: "/books",
+      },
+      {
+         key: "teachingStaff",
+         icon: (
+            <img
+               src={PeopleRegularIcon}
+               className="w-5 h-5"
+               alt="Teaching Staff"
+            />
+         ),
+         subItems: [{ key: "teachingStaff", path: "/teaching-staff" }],
+      },
+      {
+         key: "academicCalendar",
+         icon: <img src={CalendarIcon} className="w-5 h-5" alt="Calendar" />,
+         path: "/academic-calendar",
+      },
+      {
+         key: "studentManagement",
+         icon: <img src={StudentsIcon} className="w-5 h-5" alt="Students" />,
+         subItems: [
+            {
+               key: "students",
+               path: "/students",
+               icon: (
+                  <img
+                     src={PeopleSolidIcon}
+                     className="w-5 h-5"
+                     alt="Students List"
+                  />
+               ),
+            },
+            {
+               key: "attendanceRequests",
+               path: "/attendance-requests",
+               icon: (
+                  <img src={ReportIcon} className="w-5 h-5" alt="Requests" />
+               ),
+            },
+         ],
+      },
+      {
+         key: "attendance",
+         icon: <img src={TicketsIcon} className="w-5 h-5" alt="Attendance" />,
+         path: "/attendance",
+      },
+      {
+         key: "fees",
+         icon: <img src={WalletIcon} className="w-5 h-5" alt="Fees" />,
+         path: "/fees",
+      },
+      {
+         key: "busManagement",
+         icon: <img src={BusIcon} className="w-5 h-5" alt="Bus Management" />,
+         path: "/bus-management",
+      },
+      {
+         key: "notifications",
+         icon: (
+            <img
+               src={NotificationIcon}
+               className="w-5 h-5"
+               alt="Notifications"
+            />
+         ),
+         path: "/notifications",
+      },
+      {
+         key: "reports",
+         icon: <img src={ReportsIcon} className="w-5 h-5" alt="Reports" />,
+         path: "/reports",
+      },
+      {
+         key: "settings",
+         icon: <img src={SettingsIcon} className="w-5 h-5" alt="Settings" />,
+         path: "/settings",
+      },
+   ];
+
+   const toggleExpand = (key: string, firstSubItemPath?: string) => {
+      const isCurrentlyExpanded = expandedItems.includes(key);
+
+      if (isCurrentlyExpanded) {
+         // Collapse the menu
+         setExpandedItems((prev) => prev.filter((item) => item !== key));
+      } else {
+         // Expand this menu and close all others (accordion behavior)
+         setExpandedItems([key]);
+         // Navigate to first sub-item if it exists
+         if (firstSubItemPath) {
+            navigate(firstSubItemPath);
+         }
+      }
+   };
+
+   const renderMenuItem = (item: MenuItem) => {
+      const isExpanded = expandedItems.includes(item.key);
+      const hasSubItems = item.subItems && item.subItems.length > 0;
+
+      // Check if any submenu item is active
+      const isAnySubItemActive =
+         hasSubItems &&
+         item.subItems?.some((subItem) => location.pathname === subItem.path);
+
+      if (hasSubItems) {
+         const firstSubItemPath = item.subItems?.[0]?.path;
+
+         // Determine which icon to show based on active/expanded state
+         let displayIcon = item.icon;
+         if (item.key === "studentManagement") {
+            displayIcon =
+               isAnySubItemActive || isExpanded ? (
+                  <img src={StudentsIcon} className="w-5 h-5" alt="Students" />
+               ) : (
+                  <img src={StudentsIcon} className="w-5 h-5" alt="Students" />
+               );
+         }
+
+         return (
+            <div
+               key={item.key}
+               className={`mb-1 ${isExpanded ? "bg-green-50 rounded-lg" : ""}`}
+               style={
+                  isExpanded ? { borderRadius: "20px 0 0 20px" } : undefined
+               }
+            >
+               <button
+                  onClick={() => toggleExpand(item.key, firstSubItemPath)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors duration-200 ${
+                     isAnySubItemActive
+                        ? "bg-green-700 text-white font-semibold"
+                        : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                  style={{ borderRadius: "20px 0 0 20px" }}
+               >
+                  <div className="flex items-center gap-3">
+                     <span
+                        className={
+                           isAnySubItemActive ? "text-white" : "text-gray-700"
+                        }
+                        style={
+                           isAnySubItemActive
+                              ? {
+                                   filter:
+                                      "brightness(0) saturate(100%) invert(1)",
+                                }
+                              : undefined
+                        }
+                     >
+                        {displayIcon}
+                     </span>
+                     <span className="text-sm font-semibold">
+                        {t(`sidebar.${item.key}`)}
+                     </span>
+                  </div>
+                  <span
+                     className={
+                        isAnySubItemActive ? "text-white" : "text-gray-700"
+                     }
+                  >
+                     {isExpanded ? (
+                        <img
+                           src={ChevronUp}
+                           className="w-5 h-5"
+                           alt="Collapse"
+                           style={{
+                              filter: "brightness(0) saturate(100%) invert(1)",
+                           }}
+                        />
+                     ) : (
+                        <img
+                           src={ChevronDown}
+                           className="w-5 h-5"
+                           alt="Expand"
+                           style={
+                              isAnySubItemActive
+                                 ? {
+                                      filter:
+                                         "brightness(0) saturate(100%) invert(1)",
+                                   }
+                                 : undefined
+                           }
+                        />
+                     )}
+                  </span>
+               </button>
+               {isExpanded && (
+                  <div className="space-y-0">
+                     {item.subItems?.map((subItem) => {
+                        const isSubItemActive =
+                           location.pathname === subItem.path;
+                        return (
+                           <NavLink
+                              key={subItem.path}
+                              to={subItem.path}
+                              className={({ isActive }) =>
+                                 `flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-200 ${
+                                    isActive
+                                       ? "bg-green-100 text-green-800 font-semibold"
+                                       : "text-green-700 hover:bg-green-75"
+                                 }`
+                              }
+                           >
+                              {subItem.icon && (
+                                 <span
+                                    className={
+                                       isSubItemActive
+                                          ? "text-green-800"
+                                          : "text-green-700"
+                                    }
+                                 >
+                                    {subItem.icon}
+                                 </span>
+                              )}
+                              <span>{t(`sidebar.${subItem.key}`)}</span>
+                           </NavLink>
+                        );
+                     })}
+                  </div>
+               )}
+            </div>
+         );
+      }
+
+      return (
+         <NavLink
+            key={item.key}
+            to={item.path!}
+            onClick={() => setExpandedItems([])}
+            className={({ isActive }) =>
+               `flex items-center gap-3 px-4 py-3 mb-1 rounded-lg transition-colors duration-200 ${
+                  isActive
+                     ? "bg-green-700 text-white font-medium"
+                     : "text-gray-700 hover:bg-gray-50 hover:text-green-700"
+               }`
+            }
+            style={{ borderRadius: "20px 0 0 20px" }}
+         >
+            {({ isActive }) => (
+               <>
+                  <span
+                     style={
+                        isActive
+                           ? {
+                                filter:
+                                   "brightness(0) saturate(100%) invert(1)",
+                             }
+                           : undefined
+                     }
+                  >
+                     {item.icon}
+                  </span>
+                  <span className="text-sm font-medium">
+                     {t(`sidebar.${item.key}`)}
+                  </span>
+               </>
+            )}
+         </NavLink>
+      );
+   };
+
+   return (
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-lg">
+         {/* Sidebar Header */}
+         <div className="p-6 border-gray-200">
+            <h1 className="text-2xl font-bold text-gray-800 text-center">
+               Logo
+            </h1>
+         </div>
+
+         {/* Navigation Menu */}
+         <nav className="flex-1 overflow-y-auto pl-4 scrollbar-thin">
+            {menuItems.map(renderMenuItem)}
+         </nav>
+      </aside>
+   );
+};
+
+export default Sidebar;
