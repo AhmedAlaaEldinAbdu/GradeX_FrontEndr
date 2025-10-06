@@ -1,5 +1,5 @@
-import React from "react";
-import Button from "./Button";
+import React from 'react';
+import Button from './Button';
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -21,28 +21,22 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   onAction,
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center py-10 px-4">
-      <div className="text-gray-300 mb-6">
+    <div className="flex flex-col items-center justify-center px-4 py-10">
+      <div className="mb-6 text-gray-300">
         {imgSrc ? (
           <div>
             <img
               src={imgSrc as string}
               alt="Empty State"
-              className={`max-w-xs mx-auto ${
-                blend ? "mix-blend-luminosity" : ""
-              }`}
+              className={`mx-auto max-w-xs ${blend ? 'mix-blend-luminosity' : ''}`}
             />
           </div>
         ) : (
           icon
         )}
       </div>
-      <h3 className="text-xl font-semibold text-gray-800 mb-2">{title}</h3>
-      <p
-        className={`text-gray-600 text-center max-w-md ${
-          onAction ? "mb-6" : ""
-        }`}
-      >
+      <h3 className="mb-2 text-xl font-semibold text-gray-800">{title}</h3>
+      <p className={`max-w-md text-center text-gray-600 ${onAction ? 'mb-6' : ''}`}>
         {description}
       </p>
       {actionLabel && onAction && (

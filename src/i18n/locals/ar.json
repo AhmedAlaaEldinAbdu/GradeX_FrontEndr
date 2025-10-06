@@ -1,100 +1,100 @@
 {
-   "sidebar": {
-      "home": "الرئيسية",
-      "educationalStages": "المراحل التعليمية",
-      "classes": "الصفوف الدراسية",
-      "subjects": "المواد الدراسية",
-      "books": "الكتب الدراسية",
-      "teachingStaff": "الكادر التعليمي",
-      "academicCalendar": "التقويم الأكاديمي",
-      "studentManagement": "إدارة الطلاب",
-      "students": "الطلاب",
-      "attendanceRequests": "طلبات التقديم",
-      "attendance": "الحضور والإنصراف",
-      "fees": "الرسوم الدراسية",
-      "examManagement": "إدارة الامتحانات",
-      "busManagement": "إدارة الباصات",
-      "notifications": "الإشعارات",
-      "reports": "التقارير",
-      "settings": "الإعدادات"
-   },
-   "header": {
-      "search": "ابحث بسهولة عما تريد",
-      "logout": "تسجيل خروج"
-   },
-   "common": {
-      "add": "إضافة",
-      "edit": "تعديل",
-      "delete": "حذف",
-      "save": "حفظ",
-      "cancel": "إلغاء",
-      "search": "بحث",
-      "actions": "الإجراءات",
-      "noData": "لا توجد بيانات",
-      "loading": "جاري التحميل..."
-   },
-   "actions": {
-      "actions": "الإجراءات",
-      "add": "إضافة",
-      "edit": "تعديل",
-      "delete": "حذف",
-      "cancel": "إلغاء",
-      "save": "حفظ",
-      "to": "إلى",
-      "from": "من",
-      "entries": "إدخالات",
-      "previous": "سابق",
-      "next": "التالي",
-      "saveChanges": "حفظ التغييرات",
-      "view": "عرض",
-      "confirmDelete": "هل أنت متأكد من الحذف؟",
-      "successAdd": "تمت الإضافة بنجاح",
-      "successEdit": "تم التعديل بنجاح",
-      "successDelete": "تم الحذف بنجاح"
-   },
-   "studentManagement": {
-      "title": "إدارة الطلاب",
-      "students": "الطلاب",
-      "addStudentButton": "إضافة طالب",
-      "noStudentsMessage": "لم يتم إضافة أي طالب حتى الآن. يمكنك البدء بإضافة الطلاب لتنظيم الإدارة بشكل أفضل.",
-      "searchByStudentName": "ابحث عن اسم الطالب",
-      "educationalStage": "المرحلة التعليمية",
-      "classes": "الصفوف الدراسية",
-      "createdBy": "تم بواسطة",
-      "date": "التاريخ",
-      "studentName": "اسم الطالب"
-   },
-   "studentForm": {
-      "firstName": "الاسم الأول",
-      "enterFirstName": "أدخل الاسم الأول",
-      "fatherName": "اسم الأب",
-      "enterFatherName": "أدخل اسم الأب",
-      "grandfatherName": "اسم الجد",
-      "enterGrandfatherName": "أدخل اسم الجد",
-      "familyName": "اسم العائلة",
-      "enterFamilyName": "أدخل اسم العائلة",
-      "country": "الدولة",
-      "selectCountry": "اختر الدولة",
-      "dateOfBirth": "تاريخ الميلاد",
-      "selectDateOfBirth": "اختر تاريخ الميلاد",
-      "educationalStage": "المرحلة التعليمية",
-      "selectEducationalStage": "اختر المرحلة التعليمية",
-      "class": "الصف الدراسي",
-      "selectClass": "اختر الصف الدراسي"
-   },
-   "studentMessages": {
-      "studentMovementAdded": "تم إضافة حركة الطالب بنجاح",
-      "studentMovementDeleted": "تم حذف حركة الطالب بنجاح",
-      "confirmDeleteStudentMovement": "هل أنت متأكد من حذف حركة الطالب ؟",
-      "studentUpdated": "تم تعديل الطالب بنجاح"
-   },
-   "breadcrumb": {
-      "home": "الرئيسية",
-      "classes": "الصفوف الدراسية"
-   },
-   "classes": {
-      "title": "الصفوف الدراسية",
-      "addClassButton": "إضافة صف دراسي",
-      "noClassesMessage": "لم يتم إضافة اي صف حتى الآن يمكنك البدء بإضافة الصفوف الدراسية بطريقة سهلة وتلقائية بشكل أفضل"
-   }
+  "sidebar": {
+    "home": "الرئيسية",
+    "educationalStages": "المراحل التعليمية",
+    "classes": "الصفوف الدراسية",
+    "subjects": "المواد الدراسية",
+    "books": "الكتب الدراسية",
+    "teachingStaff": "الكادر التعليمي",
+    "academicCalendar": "التقويم الأكاديمي",
+    "studentManagement": "إدارة الطلاب",
+    "students": "الطلاب",
+    "attendanceRequests": "طلبات التقديم",
+    "attendance": "الحضور والإنصراف",
+    "fees": "الرسوم الدراسية",
+    "examManagement": "إدارة الامتحانات",
+    "busManagement": "إدارة الباصات",
+    "notifications": "الإشعارات",
+    "reports": "التقارير",
+    "settings": "الإعدادات"
+  },
+  "header": {
+    "search": "ابحث بسهولة عما تريد",
+    "logout": "تسجيل خروج"
+  },
+  "common": {
+    "add": "إضافة",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "search": "بحث",
+    "actions": "الإجراءات",
+    "noData": "لا توجد بيانات",
+    "loading": "جاري التحميل..."
+  },
+  "actions": {
+    "actions": "الإجراءات",
+    "add": "إضافة",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "to": "إلى",
+    "from": "من",
+    "entries": "إدخالات",
+    "previous": "سابق",
+    "next": "التالي",
+    "saveChanges": "حفظ التغييرات",
+    "view": "عرض",
+    "confirmDelete": "هل أنت متأكد من الحذف؟",
+    "successAdd": "تمت الإضافة بنجاح",
+    "successEdit": "تم التعديل بنجاح",
+    "successDelete": "تم الحذف بنجاح"
+  },
+  "studentManagement": {
+    "title": "إدارة الطلاب",
+    "students": "الطلاب",
+    "addStudentButton": "إضافة طالب",
+    "noStudentsMessage": "لم يتم إضافة أي طالب حتى الآن. يمكنك البدء بإضافة الطلاب لتنظيم الإدارة بشكل أفضل.",
+    "searchByStudentName": "ابحث عن اسم الطالب",
+    "educationalStage": "المرحلة التعليمية",
+    "classes": "الصفوف الدراسية",
+    "createdBy": "تم بواسطة",
+    "date": "التاريخ",
+    "studentName": "اسم الطالب"
+  },
+  "studentForm": {
+    "firstName": "الاسم الأول",
+    "enterFirstName": "أدخل الاسم الأول",
+    "fatherName": "اسم الأب",
+    "enterFatherName": "أدخل اسم الأب",
+    "grandfatherName": "اسم الجد",
+    "enterGrandfatherName": "أدخل اسم الجد",
+    "familyName": "اسم العائلة",
+    "enterFamilyName": "أدخل اسم العائلة",
+    "country": "الدولة",
+    "selectCountry": "اختر الدولة",
+    "dateOfBirth": "تاريخ الميلاد",
+    "selectDateOfBirth": "اختر تاريخ الميلاد",
+    "educationalStage": "المرحلة التعليمية",
+    "selectEducationalStage": "اختر المرحلة التعليمية",
+    "class": "الصف الدراسي",
+    "selectClass": "اختر الصف الدراسي"
+  },
+  "studentMessages": {
+    "studentMovementAdded": "تم إضافة حركة الطالب بنجاح",
+    "studentMovementDeleted": "تم حذف حركة الطالب بنجاح",
+    "confirmDeleteStudentMovement": "هل أنت متأكد من حذف حركة الطالب ؟",
+    "studentUpdated": "تم تعديل الطالب بنجاح"
+  },
+  "breadcrumb": {
+    "home": "الرئيسية",
+    "classes": "الصفوف الدراسية"
+  },
+  "classes": {
+    "title": "الصفوف الدراسية",
+    "addClassButton": "إضافة صف دراسي",
+    "noClassesMessage": "لم يتم إضافة اي صف حتى الآن يمكنك البدء بإضافة الصفوف الدراسية بطريقة سهلة وتلقائية بشكل أفضل"
+  }
 }

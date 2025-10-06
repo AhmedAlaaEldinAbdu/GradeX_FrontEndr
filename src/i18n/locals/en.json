@@ -1,95 +1,95 @@
 {
-   "sidebar": {
-      "educationalStages": "Educational Stages",
-      "classes": "Classes",
-      "subjects": "Subjects",
-      "books": "Books",
-      "teachingStaff": "Teaching Staff",
-      "academicCalendar": "Academic Calendar",
-      "studentManagement": "Student Management",
-      "attendance": "Attendance",
-      "fees": "Fees",
-      "examManagement": "Exam Management",
-      "busManagement": "Bus Management",
-      "notifications": "Notifications"
-   },
-   "header": {
-      "search": "Search easily for what you want",
-      "logout": "Logout"
-   },
-   "common": {
-      "add": "Add",
-      "edit": "Edit",
-      "delete": "Delete",
-      "save": "Save",
-      "cancel": "Cancel",
-      "search": "Search",
-      "actions": "Actions",
-      "noData": "No data available",
-      "loading": "Loading..."
-   },
-   "actions": {
-      "actions": "Actions",
-      "to": "To",
-      "from": "From",
-      "entries": "Entries",
-      "previous": "Previous",
-      "next": "Next",
-      "add": "Add",
-      "edit": "Edit",
-      "delete": "Delete",
-      "cancel": "Cancel",
-      "save": "Save",
-      "saveChanges": "Save Changes",
-      "view": "View",
-      "confirmDelete": "Are you sure you want to delete?",
-      "successAdd": "Added successfully",
-      "successEdit": "Edited successfully",
-      "successDelete": "Deleted successfully"
-   },
-   "studentManagement": {
-      "title": "Student Management",
-      "students": "Students",
-      "addStudentButton": "Add Student",
-      "noStudentsMessage": "No students have been added yet. You can start by adding students to organize and manage more effectively.",
-      "searchByStudentName": "Search by student name",
-      "educationalStage": "Educational Stage",
-      "classes": "Classes",
-      "createdBy": "Created By",
-      "date": "Date",
-      "studentName": "Student Name"
-   },
-   "studentForm": {
-      "firstName": "First Name",
-      "enterFirstName": "Enter first name",
-      "fatherName": "Father’s Name",
-      "enterFatherName": "Enter father’s name",
-      "grandfatherName": "Grandfather’s Name",
-      "enterGrandfatherName": "Enter grandfather’s name",
-      "familyName": "Family Name",
-      "enterFamilyName": "Enter family name",
-      "country": "Country",
-      "selectCountry": "Select country",
-      "dateOfBirth": "Date of Birth",
-      "selectDateOfBirth": "Select date of birth",
-      "educationalStage": "Educational Stage",
-      "selectEducationalStage": "Select educational stage",
-      "class": "Class",
-      "selectClass": "Select class"
-   },
-   "studentMessages": {
-      "studentMovementAdded": "Student movement has been added successfully",
-      "studentMovementDeleted": "Student movement has been deleted successfully",
-      "confirmDeleteStudentMovement": "Are you sure you want to delete the student movement?",
-      "studentUpdated": "Student has been updated successfully"
-   },
-   "breadcrumb": {
-      "home": "Home",
-      "classes": "Classes"
-   },
-   "classes": {
-      "title": "Classes",
-      "addClassButton": "Add Class",
-      "noClassesMessage": "No classes have been added yet. You can start adding classes easily and automatically in a better way"
-   }
+  "sidebar": {
+    "educationalStages": "Educational Stages",
+    "classes": "Classes",
+    "subjects": "Subjects",
+    "books": "Books",
+    "teachingStaff": "Teaching Staff",
+    "academicCalendar": "Academic Calendar",
+    "studentManagement": "Student Management",
+    "attendance": "Attendance",
+    "fees": "Fees",
+    "examManagement": "Exam Management",
+    "busManagement": "Bus Management",
+    "notifications": "Notifications"
+  },
+  "header": {
+    "search": "Search easily for what you want",
+    "logout": "Logout"
+  },
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "actions": "Actions",
+    "noData": "No data available",
+    "loading": "Loading..."
+  },
+  "actions": {
+    "actions": "Actions",
+    "to": "To",
+    "from": "From",
+    "entries": "Entries",
+    "previous": "Previous",
+    "next": "Next",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "view": "View",
+    "confirmDelete": "Are you sure you want to delete?",
+    "successAdd": "Added successfully",
+    "successEdit": "Edited successfully",
+    "successDelete": "Deleted successfully"
+  },
+  "studentManagement": {
+    "title": "Student Management",
+    "students": "Students",
+    "addStudentButton": "Add Student",
+    "noStudentsMessage": "No students have been added yet. You can start by adding students to organize and manage more effectively.",
+    "searchByStudentName": "Search by student name",
+    "educationalStage": "Educational Stage",
+    "classes": "Classes",
+    "createdBy": "Created By",
+    "date": "Date",
+    "studentName": "Student Name"
+  },
+  "studentForm": {
+    "firstName": "First Name",
+    "enterFirstName": "Enter first name",
+    "fatherName": "Father’s Name",
+    "enterFatherName": "Enter father’s name",
+    "grandfatherName": "Grandfather’s Name",
+    "enterGrandfatherName": "Enter grandfather’s name",
+    "familyName": "Family Name",
+    "enterFamilyName": "Enter family name",
+    "country": "Country",
+    "selectCountry": "Select country",
+    "dateOfBirth": "Date of Birth",
+    "selectDateOfBirth": "Select date of birth",
+    "educationalStage": "Educational Stage",
+    "selectEducationalStage": "Select educational stage",
+    "class": "Class",
+    "selectClass": "Select class"
+  },
+  "studentMessages": {
+    "studentMovementAdded": "Student movement has been added successfully",
+    "studentMovementDeleted": "Student movement has been deleted successfully",
+    "confirmDeleteStudentMovement": "Are you sure you want to delete the student movement?",
+    "studentUpdated": "Student has been updated successfully"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "classes": "Classes"
+  },
+  "classes": {
+    "title": "Classes",
+    "addClassButton": "Add Class",
+    "noClassesMessage": "No classes have been added yet. You can start adding classes easily and automatically in a better way"
+  }
 }

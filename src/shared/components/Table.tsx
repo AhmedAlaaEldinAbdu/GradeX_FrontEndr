@@ -1,5 +1,5 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Column<T> {
   header: string;
@@ -20,15 +20,15 @@ function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
   return (
     <div className="w-full overflow-x-auto">
       <table
-        className="min-w-full border border-gray-300 text-sm text-right border-collapse"
+        className="min-w-full border-collapse border border-gray-300 text-right text-sm"
         dir="rtl"
       >
         <thead>
-          <tr className="bg-gray-100 border-b border-gray-200">
+          <tr className="border-b border-gray-200 bg-gray-100">
             {columns.map((column, index) => (
               <th
                 key={index}
-                className={`px-4 py-4 border border-gray-300 text-center text-sm font-semibold ${column.headerClassName} text-gray-700`}
+                className={`border border-gray-300 px-4 py-4 text-center text-sm font-semibold ${column.headerClassName} text-gray-700`}
               >
                 {t(column.header)}
               </th>
@@ -39,17 +39,17 @@ function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
           {data.map((row, rowIndex) => (
             <tr
               key={keyExtractor(row, rowIndex)}
-              className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+              className="border-b border-gray-200 transition-colors hover:bg-gray-50"
             >
               {columns.map((column, colIndex) => (
                 <td
                   key={colIndex}
-                  className={`px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center ${
-                    column.className || ""
+                  className={`border border-gray-300 px-4 py-2 text-center text-sm text-gray-700 ${
+                    column.className || ''
                   }`}
                 >
                   <div className="flex items-center justify-center">
-                    {typeof column.accessor === "function"
+                    {typeof column.accessor === 'function'
                       ? column.accessor(row)
                       : String(row[column.accessor])}
                   </div>
@@ -59,9 +59,7 @@ function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
           ))}
         </tbody>
       </table>
-      {data.length === 0 && (
-        <div className="text-center py-8 text-gray-500">لا توجد بيانات</div>
-      )}
+      {data.length === 0 && <div className="py-8 text-center text-gray-500">لا توجد بيانات</div>}
     </div>
   );
 }

@@ -1,7 +1,5 @@
-import React from 'react'
+import React from 'react';
 
 export default function ControlPanel() {
-  return (
-    <div>ControlPanel</div>
-  )
+  return <div>ControlPanel</div>;
 }

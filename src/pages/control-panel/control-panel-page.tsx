@@ -1,6 +1,6 @@
-import React from "react";
-import ControlPanel from "./components/ControlPanel";
-import ControlPanelPopup from "./popups/ControlPanelPopup";
+import React from 'react';
+import ControlPanel from './components/ControlPanel';
+import ControlPanelPopup from './popups/ControlPanelPopup';
 
 const ControlPanelPage = () => {
   return (
