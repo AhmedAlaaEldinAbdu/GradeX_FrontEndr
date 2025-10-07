@@ -19,7 +19,7 @@
      /* Paths alias */
     "baseUrl": "src",
     "paths": {
-      "@gradex/*": ["assets/*"]
+      "@gradex/*": ["*"]
     },
     
     /* Linting */

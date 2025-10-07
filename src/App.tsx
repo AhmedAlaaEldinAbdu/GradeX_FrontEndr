@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { MainLayout } from './shared/layout/layout';
 import StudentManagementPage from './pages/student-management/student-management-page';
 import './i18n';
+import SchoolsPage from './pages/super-admin-dashboard/schools/schools-page';
 
 function App() {
   return (
@@ -18,6 +19,16 @@ function App() {
             </MainLayout>
           }
         />
+        {/* Super Admin */}
+        <Route
+          path="/schools"
+          element={
+            <MainLayout>
+              <SchoolsPage />
+            </MainLayout>
+          }
+        />
+        {/* School */}
         {/* /student-management/* */}
         {/* /student-management/students */}
         {/* /student-management/attendance-requests */}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Card from '../../../shared/components/Card';
-import EmptyState from '../../../shared/components/EmptyState';
-import Table from '../../../shared/components/Table';
+import Card from '@gradex/shared/components/Card';
+import EmptyState from '@gradex/shared/components/EmptyState';
+import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';

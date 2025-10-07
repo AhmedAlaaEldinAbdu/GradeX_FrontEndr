@@ -1,6 +1,6 @@
 import React from 'react';
-import { Breadcrumb } from '../../shared/layout/layout';
-import { Button } from '../../shared/components/components';
+import { Breadcrumb } from '@gradex/shared/layout/layout';
+import { Button } from '@gradex/shared/components/components';
 import StudentManagement from './components/StudentManagement';
 import { useTranslation } from 'react-i18next';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaHome } from 'react-icons/fa';
+// import { FaHome } from 'react-icons/fa';
 
 interface BreadcrumbItem {
   label: string;
@@ -15,7 +15,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
   return (
     <nav className="mb-6 flex items-center gap-2 text-sm text-gray-600" dir="rtl">
       <Link to="/" className="flex items-center gap-1 transition-colors hover:text-green-600">
-        <FaHome className="text-lg" />
+        {/* <FaHome className="text-lg" /> */}
         <span>الرئيسية</span>
       </Link>
       {items.map((item, index) => (
