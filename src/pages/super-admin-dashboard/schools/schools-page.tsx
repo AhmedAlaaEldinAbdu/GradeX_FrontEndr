@@ -16,7 +16,10 @@ const SchoolsPage: React.FC = () => {
       /> */}
 
       {/* Page Header */}
-      <PageHeader title='schools.title' actions={[{label: "schools.addSchool", to: '/Schools/add-School'}]} />
+      <PageHeader
+        title="schools.title"
+        actions={[{ label: 'schools.addSchool', to: '/Schools/add-School' }]}
+      />
 
       {/* Main Content */}
       <StudentManagement />

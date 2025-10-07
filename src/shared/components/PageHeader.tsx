@@ -1,14 +1,14 @@
-import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
-import Button from "./Button";
-import { useTranslation } from "react-i18next";
+import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import Button from './Button';
+import { useTranslation } from 'react-i18next';
 
 type ActionType = {
   label: string;
   onClick?: () => void;
   to?: string;
-  variant?: "primary" | "outline" | "danger" | "secondary";
-  size?: "sm" | "md" | "lg";
+  variant?: 'primary' | 'outline' | 'danger' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
   icon?: ReactNode;
   fullWidth?: boolean;
 };
@@ -19,8 +19,8 @@ type PageHeaderProps = {
 };
 
 const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
-    const { t } = useTranslation();
-    
+  const { t } = useTranslation();
+
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <h1 className="text-2xl font-bold text-gray-800">{t(`${title}`)}</h1>

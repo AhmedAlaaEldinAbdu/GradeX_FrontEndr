@@ -1,5 +1,5 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PaginationProps {
   currentPage: number;
@@ -31,14 +31,14 @@ const Pagination: React.FC<PaginationProps> = ({
     const lastPage = totalPages;
 
     if (currentPage <= 2) {
-      pages.push(1, 2, "...", totalPages - 1, totalPages);
+      pages.push(1, 2, '...', totalPages - 1, totalPages);
       return pages;
     }
     if (currentPage >= totalPages - 1) {
-      pages.push(1, 2, "...", totalPages - 1, totalPages);
+      pages.push(1, 2, '...', totalPages - 1, totalPages);
       return pages;
     }
-    pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+    pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
     return pages;
   };
 
@@ -47,13 +47,13 @@ const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 pt-4 text-sm">
       <div className="text-gray-600">
-        <span>{t("actions.view")} </span>
+        <span>{t('actions.view')} </span>
         <span className="font-semibold">{currentPage}</span>
-        <span className="mx-1">{t("actions.to")}</span>
+        <span className="mx-1">{t('actions.to')}</span>
         <span className="font-semibold">{to}</span>
-        <span className="mx-1">{t("actions.from")}</span>
+        <span className="mx-1">{t('actions.from')}</span>
         <span className="font-semibold">{from}</span>
-        <span className="mx-1">{t("actions.entries")}</span>
+        <span className="mx-1">{t('actions.entries')}</span>
       </div>
 
       {/* Right side (pagination buttons) */}
@@ -63,49 +63,43 @@ const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={`rounded px-3 py-1 transition-colors ${
-            currentPage === 1
-              ? "text-gray-400 cursor-not-allowed"
-              : "hover:bg-gray-50"
+            currentPage === 1 ? 'cursor-not-allowed text-gray-400' : 'hover:bg-gray-50'
           }`}
         >
-          {t("actions.previous")}
+          {t('actions.previous')}
         </button>
 
         {/* Page Numbers */}
-        {pages && pages?.map((page, index) =>
-          page === "..." ? (
-            <span
-              key={`dots-${index}`}
-              className="px-2 text-gray-500 select-none"
-            >
-              {page}
-            </span>
-          ) : (
-            <button
-              key={page}
-              onClick={() => onPageChange(page as number)}
-              className={`rounded px-3 py-1 transition-colors border ${
-                currentPage === page
-                  ? "bg-green-600 text-white border-green-600"
-                  : "border-gray-300 hover:bg-gray-50"
-              }`}
-            >
-              {page}
-            </button>
-          )
-        )}
+        {pages &&
+          pages?.map((page, index) =>
+            page === '...' ? (
+              <span key={`dots-${index}`} className="select-none px-2 text-gray-500">
+                {page}
+              </span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => onPageChange(page as number)}
+                className={`rounded border px-3 py-1 transition-colors ${
+                  currentPage === page
+                    ? 'border-green-600 bg-green-600 text-white'
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {page}
+              </button>
+            )
+          )}
 
         {/* Next */}
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={`rounded px-3 py-1 transition-colors ${
-            currentPage === totalPages
-              ? "text-gray-400 cursor-not-allowed"
-              : "hover:bg-gray-50"
+            currentPage === totalPages ? 'cursor-not-allowed text-gray-400' : 'hover:bg-gray-50'
           }`}
         >
-          {t("actions.next")}
+          {t('actions.next')}
         </button>
       </div>
     </div>
