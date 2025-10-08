@@ -26,6 +26,8 @@
     "officialHolidays": "Official Holidays",
     "marketing": "Marketing",
     "employeesAdministration": "Employees & Administration",
+    "rolesPermissions": "Roles & Permissions",
+    "systemUsers": "System Users",
     "messages": "Messages"
   },
   "header": {
