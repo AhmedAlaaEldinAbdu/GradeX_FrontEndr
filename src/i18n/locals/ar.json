@@ -1,12 +1,15 @@
 {
   "sidebar": {
     "home": "الرئيسية",
+    "schools": "المدارس",
     "educationalStages": "المراحل التعليمية",
     "classes": "الصفوف الدراسية",
     "subjects": "المواد الدراسية",
     "books": "الكتب الدراسية",
     "teachingStaff": "الكادر التعليمي",
     "academicCalendar": "التقويم الأكاديمي",
+    "userManagement": "إدارة المستخدمين",
+    "users": "المستخدمين",
     "studentManagement": "إدارة الطلاب",
     "students": "الطلاب",
     "attendanceRequests": "طلبات التقديم",
@@ -16,7 +19,14 @@
     "busManagement": "إدارة الباصات",
     "notifications": "الإشعارات",
     "reports": "التقارير",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "analytics": "التحليلات",
+    "tickets": "التذاكر",
+    "academicSystem": "النظام الأكاديمي",
+    "officialHolidays": "الاجازات الرسمية",
+    "marketing": "التسويق",
+    "employeesAdministration": "الموظفين والإدارة",
+    "messages": "الرسائل"
   },
   "header": {
     "search": "ابحث بسهولة عما تريد",
