@@ -21,6 +21,7 @@ import WalletIcon from '@gradex/assets/icons/Wallet.svg';
 import ChevronDown from '@gradex/assets/icons/ChevronDown.svg';
 import ChevronUp from '@gradex/assets/icons/ChevronUp.svg';
 import SchoolIcon from '@gradex/assets/icons/School.svg';
+import ContactIcon from '@gradex/assets/icons/Contact.svg';
 
 interface SidebarProps {
   dashboardType: UserRoleType;
@@ -65,12 +66,17 @@ const getSuperAdminMenuItems = (): MenuItem[] => [
   },
   {
     key: 'employeesAdministration',
-    icon: <img src={CalendarIcon} className="h-5 w-5" alt="Employees & Administration" />,
+    icon: <img src={ContactIcon} className="h-5 w-5" alt="Employees & Administration" />,
     subItems: [
       {
-        key: 'users',
-        path: '/users',
-        icon: <img src={PeopleSolidIcon} className="h-5 w-5" alt="Users List" />,
+        key: 'rolesPermissions',
+        path: '/roles-permissions',
+        icon: <img src={ContactIcon} className="h-5 w-5" alt="Roles & Permissions" />,
+      },
+      {
+        key: 'systemUsers',
+        path: '/system-users',
+        icon: <img src={ContactIcon} className="h-5 w-5" alt="System Users" />,
       },
     ],
   },
