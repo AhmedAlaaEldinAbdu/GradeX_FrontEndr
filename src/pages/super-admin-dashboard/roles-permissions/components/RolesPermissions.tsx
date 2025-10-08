@@ -1,0 +1,111 @@
+import { useState } from 'react';
+import Card from '@gradex/shared/components/Card';
+import EmptyState from '@gradex/shared/components/EmptyState';
+import Table from '@gradex/shared/components/Table';
+import { useTranslation } from 'react-i18next';
+import Pagination from '@gradex/shared/components/Pagination';
+import EmployeesIcon from '@gradex/assets/icons/Employees.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import EditIcon from '@gradex/assets/icons/Edit.svg';
+
+interface Role {
+  id: number;
+  roleName: string;
+  description: string;
+}
+
+export default function RolesPermissions() {
+  const { t } = useTranslation();
+  const [hasRoles, setHasRoles] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const roles: Role[] = [
+    { id: 1, roleName: 'مشرف عام', description: 'الوصف' },
+    { id: 2, roleName: 'مشرف عام', description: 'الوصف' },
+    { id: 3, roleName: 'مشرف عام', description: 'الوصف' },
+    { id: 4, roleName: 'مشرف عام', description: 'الوصف' },
+    { id: 5, roleName: 'مشرف عام', description: 'الوصف' },
+    { id: 6, roleName: 'مشرف عام', description: 'الوصف' },
+  ];
+
+  const columns = [
+    { header: '#', accessor: (row: Role) => row.id },
+    {
+      header: 'rolesManagement.roleName',
+      accessor: (row: Role) => row.roleName,
+      headerClassName: 'min-w-[10px]',
+    },
+    {
+      header: 'rolesManagement.description',
+      accessor: (row: Role) => row.description,
+      headerClassName: 'min-w-[200px]',
+    },
+    {
+      header: 'common.actions',
+      accessor: () => (
+        <div className="flex items-center gap-2">
+          <button className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100">
+            <img src={EditIcon} alt="Edit" />
+          </button>
+          <button className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100">
+            <img src={TrashIcon} alt="Edit" />
+          </button>
+        </div>
+      ),
+      headerClassName: 'min-w-[100px]',
+    },
+  ];
+
+  return (
+    <Card>
+      {!hasRoles ? (
+        <EmptyState
+          imgSrc={EmployeesIcon}
+          description={t('rolesManagement.noRolesMessage')}
+          blend={true}
+        />
+      ) : (
+        <div>
+          <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <div className="relative w-full sm:w-[300px]">
+              <input
+                type="text"
+                placeholder={t('rolesManagement.SearchEmployeeName')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="h-[40px] w-full rounded-lg border border-gray-300 pl-4 pr-10 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400"
+              >
+                <path
+                  d="M11 1.25C5.61522 1.25 1.25 5.61522 1.25 11C1.25 16.3848 5.61522 20.75 11 20.75C13.4226 20.75 15.6366 19.8638 17.3418 18.4014L21.4697 22.5303C21.7626 22.8232 22.2374 22.8232 22.5303 22.5303C22.8232 22.2374 22.8232 21.7626 22.5303 21.4697L18.4023 17.3408C19.8643 15.6358 20.75 13.4221 20.75 11C20.75 5.61522 16.3848 1.25 11 1.25ZM11 2.75C15.5563 2.75 19.25 6.44365 19.25 11C19.25 15.5563 15.5563 19.25 11 19.25C6.44365 19.25 2.75 15.5563 2.75 11C2.75 6.44365 6.44365 2.75 11 2.75Z"
+                  fill="#878F8F"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <Table columns={columns} data={roles} keyExtractor={(row) => row.id} />
+          </div>
+
+          {/* Pagination */}
+          <Pagination
+            currentPage={1}
+            totalPages={2}
+            to={6}
+            from={1}
+            onPageChange={() => console.log('change page')}
+          />
+        </div>
+      )}
+    </Card>
+  );
+}
