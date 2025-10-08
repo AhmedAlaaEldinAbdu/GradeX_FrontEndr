@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { UserRole, type UserRoleType } from '@gradex/constants';
 
+// Import icons
+import HomeIcon from '@gradex/assets/icons/Home.svg';
 import BookIcon from '@gradex/assets/icons/Book.svg';
 import BusIcon from '@gradex/assets/icons/Bus.svg';
 import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
 import EducationIcon from '@gradex/assets/icons/Education.svg';
-import HomeIcon from '@gradex/assets/icons/Home.svg';
 import NotificationIcon from '@gradex/assets/icons/Notification.svg';
 import PeopleRegularIcon from '@gradex/assets/icons/PeopleRegular.svg';
 import PeopleSolidIcon from '@gradex/assets/icons/PeopleSolid.svg';
@@ -18,6 +20,12 @@ import StudentsIcon from '@gradex/assets/icons/Students.svg';
 import WalletIcon from '@gradex/assets/icons/Wallet.svg';
 import ChevronDown from '@gradex/assets/icons/ChevronDown.svg';
 import ChevronUp from '@gradex/assets/icons/ChevronUp.svg';
+import SchoolIcon from '@gradex/assets/icons/School.svg';
+
+interface SidebarProps {
+  dashboardType: UserRoleType;
+  customMenuItems?: MenuItem[];
+}
 
 interface MenuItem {
   key: string;
@@ -26,96 +34,187 @@ interface MenuItem {
   subItems?: { key: string; path: string; icon?: React.ReactNode }[];
 }
 
-const Sidebar: React.FC = () => {
+/**
+ * Get menu items for Super Admin Dashboard
+ */
+const getSuperAdminMenuItems = (): MenuItem[] => [
+  {
+    key: 'home',
+    icon: <img src={HomeIcon} className="h-5 w-5" alt="Home" />,
+    path: '/dashboard',
+  },
+  {
+    key: 'academicSystem',
+    icon: <img src={EducationIcon} className="h-5 w-5" alt="Academic System" />,
+    path: '/academic-system',
+  },
+  {
+    key: 'schools',
+    icon: <img src={SchoolIcon} className="h-5 w-5" alt="Schools" />,
+    path: '/schools',
+  },
+  {
+    key: 'officialHolidays',
+    icon: <img src={BookIcon} className="h-5 w-5" alt="Official Holidays" />,
+    path: '/official-holidays',
+  },
+  {
+    key: 'marketing',
+    icon: <img src={PeopleRegularIcon} className="h-5 w-5" alt="Marketing" />,
+    path: '/marketing',
+  },
+  {
+    key: 'employeesAdministration',
+    icon: <img src={CalendarIcon} className="h-5 w-5" alt="Employees & Administration" />,
+    subItems: [
+      {
+        key: 'users',
+        path: '/users',
+        icon: <img src={PeopleSolidIcon} className="h-5 w-5" alt="Users List" />,
+      },
+    ],
+  },
+  {
+    key: 'reports',
+    icon: <img src={ReportsIcon} className="h-5 w-5" alt="Reports" />,
+    path: '/reports',
+  },
+  {
+    key: 'tickets',
+    icon: <img src={TicketsIcon} className="h-5 w-5" alt="Tickets" />,
+    path: '/tickets',
+  },
+  {
+    key: 'notifications',
+    icon: <img src={NotificationIcon} className="h-5 w-5" alt="Notifications" />,
+    path: '/notifications',
+  },
+  {
+    key: 'messages',
+    icon: <img src={SettingsIcon} className="h-5 w-5" alt="Messages" />,
+    path: '/messages',
+  },
+  {
+    key: 'settings',
+    icon: <img src={SettingsIcon} className="h-5 w-5" alt="Settings" />,
+    path: '/settings',
+  },
+];
+
+/**
+ * Get menu items for School Admin Dashboard
+ */
+const getSchoolAdminMenuItems = (): MenuItem[] => [
+  {
+    key: 'home',
+    icon: <img src={HomeIcon} className="h-5 w-5" alt="Home" />,
+    path: '/dashboard',
+  },
+  {
+    key: 'educationalStages',
+    icon: <img src={EducationIcon} className="h-5 w-5" alt="Education" />,
+    subItems: [{ key: 'educationalStages', path: '/educational-stages' }],
+  },
+  {
+    key: 'books',
+    icon: <img src={BookIcon} className="h-5 w-5" alt="Books" />,
+    path: '/books',
+  },
+  {
+    key: 'teachingStaff',
+    icon: <img src={PeopleRegularIcon} className="h-5 w-5" alt="Teaching Staff" />,
+    subItems: [{ key: 'teachingStaff', path: '/teaching-staff' }],
+  },
+  {
+    key: 'academicCalendar',
+    icon: <img src={CalendarIcon} className="h-5 w-5" alt="Calendar" />,
+    path: '/academic-calendar',
+  },
+  {
+    key: 'studentManagement',
+    icon: <img src={StudentsIcon} className="h-5 w-5" alt="Students" />,
+    subItems: [
+      {
+        key: 'students',
+        path: '/students',
+        icon: <img src={PeopleSolidIcon} className="h-5 w-5" alt="Students List" />,
+      },
+      {
+        key: 'attendanceRequests',
+        path: '/attendance-requests',
+        icon: <img src={ReportIcon} className="h-5 w-5" alt="Requests" />,
+      },
+    ],
+  },
+  {
+    key: 'attendance',
+    icon: <img src={TicketsIcon} className="h-5 w-5" alt="Attendance" />,
+    path: '/attendance',
+  },
+  {
+    key: 'fees',
+    icon: <img src={WalletIcon} className="h-5 w-5" alt="Fees" />,
+    path: '/fees',
+  },
+  {
+    key: 'busManagement',
+    icon: <img src={BusIcon} className="h-5 w-5" alt="Bus Management" />,
+    path: '/bus-management',
+  },
+  {
+    key: 'notifications',
+    icon: <img src={NotificationIcon} className="h-5 w-5" alt="Notifications" />,
+    path: '/notifications',
+  },
+  {
+    key: 'reports',
+    icon: <img src={ReportsIcon} className="h-5 w-5" alt="Reports" />,
+    path: '/reports',
+  },
+  {
+    key: 'settings',
+    icon: <img src={SettingsIcon} className="h-5 w-5" alt="Settings" />,
+    path: '/settings',
+  },
+];
+
+/**
+ * Get menu items based on dashboard type
+ */
+const getMenuItemsForDashboard = (dashboardType: UserRoleType): MenuItem[] => {
+  switch (dashboardType) {
+    case UserRole.SUPER_ADMIN:
+      return getSuperAdminMenuItems();
+    case UserRole.SCHOOL_ADMIN:
+      return getSchoolAdminMenuItems();
+    // Add more dashboard types as needed
+    default:
+      return getSchoolAdminMenuItems(); // Default to school admin
+  }
+};
+
+/**
+ *  Sidebar Component
+ *
+ * Renders different menu items based on the dashboard type
+ * This allows the same sidebar component to work for all dashboard types
+ */
+const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-  const menuItems: MenuItem[] = [
-    {
-      key: 'home',
-      icon: <img src={HomeIcon} className="h-5 w-5" alt="Home" />,
-      path: '/',
-    },
-    {
-      key: 'educationalStages',
-      icon: <img src={EducationIcon} className="h-5 w-5" alt="Education" />,
-      subItems: [{ key: 'educationalStages', path: '/educational-stages' }],
-    },
-    {
-      key: 'books',
-      icon: <img src={BookIcon} className="h-5 w-5" alt="Books" />,
-      path: '/books',
-    },
-    {
-      key: 'teachingStaff',
-      icon: <img src={PeopleRegularIcon} className="h-5 w-5" alt="Teaching Staff" />,
-      subItems: [{ key: 'teachingStaff', path: '/teaching-staff' }],
-    },
-    {
-      key: 'academicCalendar',
-      icon: <img src={CalendarIcon} className="h-5 w-5" alt="Calendar" />,
-      path: '/academic-calendar',
-    },
-    {
-      key: 'studentManagement',
-      icon: <img src={StudentsIcon} className="h-5 w-5" alt="Students" />,
-      subItems: [
-        {
-          key: 'students',
-          path: '/students',
-          icon: <img src={PeopleSolidIcon} className="h-5 w-5" alt="Students List" />,
-        },
-        {
-          key: 'attendanceRequests',
-          path: '/attendance-requests',
-          icon: <img src={ReportIcon} className="h-5 w-5" alt="Requests" />,
-        },
-      ],
-    },
-    {
-      key: 'attendance',
-      icon: <img src={TicketsIcon} className="h-5 w-5" alt="Attendance" />,
-      path: '/attendance',
-    },
-    {
-      key: 'fees',
-      icon: <img src={WalletIcon} className="h-5 w-5" alt="Fees" />,
-      path: '/fees',
-    },
-    {
-      key: 'busManagement',
-      icon: <img src={BusIcon} className="h-5 w-5" alt="Bus Management" />,
-      path: '/bus-management',
-    },
-    {
-      key: 'notifications',
-      icon: <img src={NotificationIcon} className="h-5 w-5" alt="Notifications" />,
-      path: '/notifications',
-    },
-    {
-      key: 'reports',
-      icon: <img src={ReportsIcon} className="h-5 w-5" alt="Reports" />,
-      path: '/reports',
-    },
-    {
-      key: 'settings',
-      icon: <img src={SettingsIcon} className="h-5 w-5" alt="Settings" />,
-      path: '/settings',
-    },
-  ];
+  // Get menu items based on dashboard type or use custom items
+  const menuItems = customMenuItems || getMenuItemsForDashboard(dashboardType);
 
   const toggleExpand = (key: string, firstSubItemPath?: string) => {
     const isCurrentlyExpanded = expandedItems.includes(key);
 
     if (isCurrentlyExpanded) {
-      // Collapse the menu
       setExpandedItems((prev) => prev.filter((item) => item !== key));
     } else {
-      // Expand this menu and close all others (accordion behavior)
       setExpandedItems([key]);
-      // Navigate to first sub-item if it exists
       if (firstSubItemPath) {
         navigate(firstSubItemPath);
       }
@@ -126,23 +225,11 @@ const Sidebar: React.FC = () => {
     const isExpanded = expandedItems.includes(item.key);
     const hasSubItems = item.subItems && item.subItems.length > 0;
 
-    // Check if any submenu item is active
     const isAnySubItemActive =
       hasSubItems && item.subItems?.some((subItem) => location.pathname === subItem.path);
 
     if (hasSubItems) {
       const firstSubItemPath = item.subItems?.[0]?.path;
-
-      // Determine which icon to show based on active/expanded state
-      let displayIcon = item.icon;
-      if (item.key === 'studentManagement') {
-        displayIcon =
-          isAnySubItemActive || isExpanded ? (
-            <img src={StudentsIcon} className="h-5 w-5" alt="Students" />
-          ) : (
-            <img src={StudentsIcon} className="h-5 w-5" alt="Students" />
-          );
-      }
 
       return (
         <div
@@ -170,7 +257,7 @@ const Sidebar: React.FC = () => {
                     : undefined
                 }
               >
-                {displayIcon}
+                {item.icon}
               </span>
               <span className="text-sm font-semibold">{t(`sidebar.${item.key}`)}</span>
             </div>
