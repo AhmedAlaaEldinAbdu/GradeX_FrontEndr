@@ -26,6 +26,8 @@
     "officialHolidays": "الاجازات الرسمية",
     "marketing": "التسويق",
     "employeesAdministration": "الموظفين والإدارة",
+    "rolesPermissions": "الأدوار والصلاحيات",
+    "systemUsers": "مستخدمي النظام",
     "messages": "الرسائل"
   },
   "header": {
