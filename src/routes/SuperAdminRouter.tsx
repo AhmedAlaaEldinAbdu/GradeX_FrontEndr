@@ -59,6 +59,32 @@ const SuperAdminRouter: React.FC = () => {
         }
       />
       <Route
+        path="/roles-permissions"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الأدوار والصلاحيات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/system-users"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">مستخدمي النظام</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/teaching-staff"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
@@ -117,32 +143,6 @@ const SuperAdminRouter: React.FC = () => {
             <MainLayout>
               <div className="py-16 text-center">
                 <h2 className="text-2xl font-bold text-gray-800">الحضور والغياب</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/fees"
-        element={
-          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
-            <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الرسوم المالية</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/bus-management"
-        element={
-          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
-            <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">إدارة الحافلات</h2>
                 <p className="mt-4 text-gray-600">قريباً...</p>
               </div>
             </MainLayout>
