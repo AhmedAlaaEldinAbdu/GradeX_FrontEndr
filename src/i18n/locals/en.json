@@ -1,17 +1,32 @@
 {
   "sidebar": {
+    "home": "Home",
+    "schools": "Schools",
     "educationalStages": "Educational Stages",
     "classes": "Classes",
     "subjects": "Subjects",
     "books": "Books",
     "teachingStaff": "Teaching Staff",
     "academicCalendar": "Academic Calendar",
+    "userManagement": "User Management",
+    "users": "Users",
     "studentManagement": "Student Management",
+    "students": "Students",
+    "attendanceRequests": "Attendance Requests",
     "attendance": "Attendance",
     "fees": "Fees",
     "examManagement": "Exam Management",
     "busManagement": "Bus Management",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "reports": "Reports",
+    "settings": "Settings",
+    "analytics": "Analytics",
+    "tickets": "Tickets",
+    "academicSystem": "Academic System",
+    "officialHolidays": "Official Holidays",
+    "marketing": "Marketing",
+    "employeesAdministration": "Employees & Administration",
+    "messages": "Messages"
   },
   "header": {
     "search": "Search easily for what you want",
