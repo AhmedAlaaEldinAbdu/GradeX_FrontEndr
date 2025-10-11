@@ -60,6 +60,7 @@
     "saveChanges": "حفظ التغييرات",
     "view": "عرض",
     "accept": "قبول",
+    "ok": "موافق",
     "reject": "رفض",
     "clearFilter": "مسح الفلتر",
     "confirmDelete": "هل أنت متأكد من الحذف؟",

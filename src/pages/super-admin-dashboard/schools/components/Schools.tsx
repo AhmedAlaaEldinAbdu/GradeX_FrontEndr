@@ -26,6 +26,7 @@ export default function Schools() {
   const { t } = useTranslation();
   const [hasSchools, setHasSchools] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [academicSystem, setAcademicSystem] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -179,8 +180,8 @@ export default function Schools() {
             </div>
 
             <select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
+              value={academicSystem}
+              onChange={(e) => setAcademicSystem(e.target.value)}
               className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">{t('schools.academicSystem')}</option>

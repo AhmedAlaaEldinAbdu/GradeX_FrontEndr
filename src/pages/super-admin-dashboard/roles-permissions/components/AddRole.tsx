@@ -48,7 +48,7 @@ export default function AddRole() {
   const [description, setDescription] = useState('');
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handlePermissionChange = (id: string) => {
     setSelectedPermissions((prev) =>
@@ -106,7 +106,8 @@ export default function AddRole() {
 
       <div className="mb-6">
         <label className="mb-2 block text-start font-medium text-gray-700">
-          {t('rolesManagement.description')} ({t('rolesManagement.optional')})
+          {t('rolesManagement.description')}
+          <span className="text-gray-500"> ({t('rolesManagement.optional')}) </span>
         </label>
         <textarea
           placeholder={t('rolesManagement.enterRoleDescription')}
@@ -131,7 +132,7 @@ export default function AddRole() {
               onChange={handleSelectAll}
               className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
             />
-            <label htmlFor="selectAll" className="cursor-pointer text-green-700">
+            <label htmlFor="selectAll" className="cursor-pointer font-semibold text-green-700">
               {t('rolesManagement.selectAll')}
             </label>
           </div>

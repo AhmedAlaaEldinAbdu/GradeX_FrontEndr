@@ -60,6 +60,7 @@
     "saveChanges": "Save Changes",
     "view": "View",
     "accept": "Accept",
+    "ok": "Ok",
     "reject": "Reject",
     "clearFilter": "Clear Filter",
     "confirmDelete": "Are you sure you want to delete?",

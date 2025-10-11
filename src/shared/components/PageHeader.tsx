@@ -10,6 +10,8 @@ type ActionType = {
   variant?: 'primary' | 'outline' | 'danger' | 'secondary';
   size?: 'sm' | 'md' | 'lg';
   icon?: ReactNode;
+  imgSrc?: string;
+  imgClassName?: string;
   fullWidth?: boolean;
 };
 
@@ -34,6 +36,8 @@ const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
                   variant={action.variant}
                   size={action.size}
                   icon={action.icon}
+                  imgSrc={action.imgSrc}
+                  imgClassName={action.imgClassName}
                   fullWidth={action.fullWidth}
                 >
                   {t(`${action.label}`)}
@@ -46,6 +50,8 @@ const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
                 variant={action.variant}
                 size={action.size}
                 icon={action.icon}
+                imgSrc={action.imgSrc}
+                imgClassName={action.imgClassName}
                 fullWidth={action.fullWidth}
               >
                 {t(`${action.label}`)}

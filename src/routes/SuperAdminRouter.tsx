@@ -7,6 +7,10 @@ import MainLayout from '@gradex/shared/layout/MainLayout';
 import SchoolsPage from '@gradex/pages/super-admin-dashboard/schools/schools-page';
 import RolesPermissionsPage from '@gradex/pages/super-admin-dashboard/roles-permissions/roles-permissions-page';
 import AddRolePage from '@gradex/pages/super-admin-dashboard/roles-permissions/add-role-page';
+import EditRolePage from '@gradex/pages/super-admin-dashboard/roles-permissions/edit-role-page';
+import SystemUsersPage from '@gradex/pages/super-admin-dashboard/system-users/system-users-page';
+import AddUserPage from '@gradex/pages/super-admin-dashboard/system-users/add-user-page';
+import EditUserPage from '@gradex/pages/super-admin-dashboard/system-users/edit-user-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -60,7 +64,7 @@ const SuperAdminRouter: React.FC = () => {
           </ProtectedRoute>
         }
       />
-
+      {/* roles-permissions */}
       <Route
         path="/super-admin/employees-administration/roles-permissions"
         element={
@@ -82,16 +86,46 @@ const SuperAdminRouter: React.FC = () => {
         }
       />
       <Route
-        path="/super-admin/employees-administration/system-users"
+        path="/super-admin/employees-administration/roles-permissions/edit-role/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
-              <RolesPermissionsPage />
+              <EditRolePage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
-
+      {/* system-users */}
+      <Route
+        path="/super-admin/employees-administration/system-users"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <SystemUsersPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/super-admin/employees-administration/system-users/add-user"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <AddUserPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/super-admin/employees-administration/system-users/edit-user/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <EditUserPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/teaching-staff"
         element={

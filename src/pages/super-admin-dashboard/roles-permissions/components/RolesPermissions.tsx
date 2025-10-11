@@ -7,6 +7,11 @@ import Pagination from '@gradex/shared/components/Pagination';
 import EmployeesIcon from '@gradex/assets/icons/Employees.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
+import { Link } from 'react-router-dom';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import DeletePopup from '@gradex/shared/components/DeletePopup';
+import PopupMessage from '@gradex/shared/components/PopupMessage';
 
 interface Role {
   id: number;
@@ -18,6 +23,14 @@ export default function RolesPermissions() {
   const { t } = useTranslation();
   const [hasRoles, setHasRoles] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [showPopupMessage, setShowPopupMessage] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+
+  const handleDeleteConfirm = () => {
+    setShowDelete(false);
+    setShowPopupMessage(true);
+  };
 
   const roles: Role[] = [
     { id: 1, roleName: 'مشرف عام', description: 'الوصف' },
@@ -33,7 +46,7 @@ export default function RolesPermissions() {
     {
       header: 'rolesManagement.roleName',
       accessor: (row: Role) => row.roleName,
-      headerClassName: 'min-w-[10px]',
+      headerClassName: 'min-w-[100px]',
     },
     {
       header: 'rolesManagement.description',
@@ -42,13 +55,19 @@ export default function RolesPermissions() {
     },
     {
       header: 'common.actions',
-      accessor: () => (
+      accessor: (row: Role) => (
         <div className="flex items-center gap-2">
-          <button className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100">
+          <Link
+            to={`edit-role/${row.id}`}
+            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
+          >
             <img src={EditIcon} alt="Edit" />
-          </button>
-          <button className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100">
-            <img src={TrashIcon} alt="Edit" />
+          </Link>
+          <button
+            onClick={() => setShowDelete(true)}
+            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+          >
+            <img src={TrashIcon} alt="Trash" />
           </button>
         </div>
       ),
@@ -104,6 +123,25 @@ export default function RolesPermissions() {
             from={1}
             onPageChange={() => console.log('change page')}
           />
+
+          {/* Popups */}
+          {showDelete && (
+            <DeletePopup
+              message="rolesManagement.confirmDeleteRole"
+              onConfirm={handleDeleteConfirm}
+              onCancel={() => setShowDelete(false)}
+              iconSrc={BigTrashIcon}
+            />
+          )}
+          {showPopupMessage && (
+            <PopupMessage
+              type="success"
+              message="rolesManagement.userDeleted"
+              iconSrc={BigSuccessIcon}
+              autoClose={true}
+              onClose={() => setShowPopupMessage(false)}
+            />
+          )}
         </div>
       )}
     </Card>

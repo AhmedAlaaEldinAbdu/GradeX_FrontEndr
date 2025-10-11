@@ -4,17 +4,21 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   icon?: React.ReactNode;
+  imgSrc?: string;
   children: React.ReactNode;
   fullWidth?: boolean;
+  imgClassName?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',
   icon,
+  imgSrc,
   children,
   fullWidth = false,
   className = '',
+  imgClassName = '',
   ...props
 }) => {
   const baseStyles =
@@ -43,6 +47,7 @@ const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {icon && <span>{icon}</span>}
+      {imgSrc && <img src={imgSrc} alt="Btn Icon" className={`${imgClassName}`} />}
       <span>{children}</span>
     </button>
   );
