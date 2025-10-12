@@ -1,11 +1,8 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import StudentManagement from './components/Schools';
 import PageHeader from '@gradex/shared/components/PageHeader';
 
 const SchoolsPage: React.FC = () => {
-  const { t } = useTranslation();
-
   return (
     <div dir="rtl">
       {/* Breadcrumb */}
@@ -18,7 +15,7 @@ const SchoolsPage: React.FC = () => {
       {/* Page Header */}
       <PageHeader
         title="schools.title"
-        actions={[{ label: 'schools.addSchool', to: '/Schools/add-School' }]}
+        actions={[{ label: 'schools.addSchool', to: '/schools/add-school' }]}
       />
 
       {/* Main Content */}
