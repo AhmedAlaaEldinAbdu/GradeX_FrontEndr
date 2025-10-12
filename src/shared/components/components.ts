@@ -9,3 +9,6 @@ export { default as Select } from './Select';
 export { default as Checkbox } from './Checkbox';
 export { default as TextArea } from './TextArea';
 export { default as Badge } from './Badge';
+export { default as FileUpload } from './FileUpload';
+export { default as CustomCheckbox } from './CustomCheckbox';
+export { default as FormField } from './FormField';
