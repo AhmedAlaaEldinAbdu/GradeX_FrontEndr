@@ -43,7 +43,9 @@
     "search": "Search",
     "actions": "Actions",
     "noData": "No data available",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "yes": "Yes",
+    "no": "No"
   },
   "actions": {
     "actions": "Actions",
@@ -124,6 +126,9 @@
     "status": "Status",
     "sendEditRequest": "Send Edit Request",
     "copyAddLink": "Copy Add Link",
+    "copyAdditionLink": "Copy Addition Link",
+    "enterSchoolName": "Enter school name",
+    "chooseAcademicSystem": "Choose Academic Systems",
     "basicInfo": "Basic Information",
     "contactInfo": "Contact Information",
     "address": "Address",

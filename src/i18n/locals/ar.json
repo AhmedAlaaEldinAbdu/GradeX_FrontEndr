@@ -43,7 +43,9 @@
     "search": "بحث",
     "actions": "الإجراءات",
     "noData": "لا توجد بيانات",
-    "loading": "جاري التحميل..."
+    "loading": "جاري التحميل...",
+    "yes": "نعم",
+    "no": "لا"
   },
   "actions": {
     "actions": "الإجراءات",
@@ -126,6 +128,9 @@
     "status": "الحالة",
     "sendEditRequest": "إرسال طلب تعديل",
     "copyAddLink": "نسخ رابط الإضافة",
+    "copyAdditionLink": "نسخ رابط الإضافة",
+    "enterSchoolName": "اكتب اسم المدرسة",
+    "chooseAcademicSystem": "اختر النظم التعليمية",
     "basicInfo": "البيانات الأساسية",
     "contactInfo": "بيانات التواصل",
     "address": "العنوان",
