@@ -20,8 +20,8 @@ import StudentsIcon from '@gradex/assets/icons/Students.svg';
 import WalletIcon from '@gradex/assets/icons/Wallet.svg';
 import ChevronDown from '@gradex/assets/icons/ChevronDown.svg';
 import ChevronUp from '@gradex/assets/icons/ChevronUp.svg';
-import SchoolIcon from '@gradex/assets/icons/School.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
+import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
 
 interface SidebarProps {
   dashboardType: UserRoleType;
@@ -51,7 +51,7 @@ const getSuperAdminMenuItems = (): MenuItem[] => [
   },
   {
     key: 'schools',
-    icon: <img src={SchoolIcon} className="h-5 w-5" alt="Schools" />,
+    icon: <img src={SchoolRegularIcon} className="h-5 w-5" alt="Schools" />,
     path: '/schools',
   },
   {
