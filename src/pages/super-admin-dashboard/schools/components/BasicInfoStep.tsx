@@ -15,6 +15,7 @@ interface BasicInfoStepProps {
     foundationDate: string;
     aboutSchool: string;
     hasCurrentSystem: boolean;
+    currentSystem: string;
     country: string;
     applicationFeatures: {
       attendanceAndDeparture: boolean;
@@ -143,6 +144,18 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           </div>
         </div>
       </FormField>
+
+      {formData.hasCurrentSystem ? (
+        <FormField label={t('schools.currentSystem')} required>
+          <TextArea
+            name="currentSystem"
+            value={formData.currentSystem}
+            onChange={onInputChange}
+            placeholder={t('schools.writeCurrentSystem')}
+            rows={4}
+          />
+        </FormField>
+      ) : null}
 
       <FileUpload
         label={t('schools.licenses')}
