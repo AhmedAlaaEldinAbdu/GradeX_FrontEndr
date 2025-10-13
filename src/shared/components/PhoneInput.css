@@ -3,10 +3,12 @@
 .phone-input-wrapper {
   position: relative;
   width: 100%;
+  overflow: visible !important;
 }
 
 /* Main container */
 .phone-input-wrapper .react-international-phone-input-container {
+  position: relative;
   display: flex;
   flex-direction: row-reverse; /* RTL: country selector on the left, input on the right */
   width: 100%;
@@ -14,7 +16,7 @@
   border: 1px solid #d1d5db;
   background-color: #ffffff;
   transition: all 0.15s ease-in-out;
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 .phone-input-wrapper .react-international-phone-input-container:focus-within {
@@ -33,6 +35,11 @@
   box-shadow: 0 0 0 2px #ef4444;
 }
 
+/* Country selector wrapper */
+.phone-input-wrapper .react-international-phone-country-selector {
+  position: static !important;
+}
+
 /* Country selector button */
 .phone-country-selector {
   display: flex;
@@ -41,7 +48,7 @@
   padding: 0.5rem 0.75rem;
   border: none !important;
   border-left: 1px solid #e5e7eb !important;
-  border-radius: 0 !important;
+  border-radius: 0.5rem 0 0 0.5rem !important; /* Rounded corners on the left side */
   background-color: #f9fafb;
   cursor: pointer;
   transition: background-color 0.15s ease-in-out;
@@ -67,7 +74,7 @@
   width: 100%;
   padding: 0.5rem 1rem;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 0.5rem 0.5rem 0 !important; /* Rounded corners on the right side */
   background-color: transparent !important;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -86,8 +93,12 @@
   border: none !important;
 }
 
-/* Dropdown */
-.react-international-phone-country-selector-dropdown {
+/* Dropdown - Position relative to the wrapper */
+.phone-input-wrapper .react-international-phone-country-selector-dropdown {
+  position: absolute !important;
+  top: calc(100% + 0.25rem) !important;
+  left: 0 !important;
+  right: auto !important;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
   box-shadow:
@@ -96,6 +107,8 @@
   background-color: #ffffff;
   max-height: 200px;
   overflow-y: auto;
+  z-index: 9999 !important;
+  min-width: 280px;
 }
 
 .react-international-phone-country-selector-dropdown__list-item {
