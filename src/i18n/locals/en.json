@@ -189,7 +189,7 @@
     "enterFacilityDescription": "Enter facility description",
     "facilityImages": "Images",
     "schoolUpdated": "School has been updated successfully",
-    "uploadMedia": "Click here to add image or file (GIF, SVG, JPG, PNG)"
+    "uploadMedia": "Click here to add image or file"
   },
   "status": {
     "status": "Status",
