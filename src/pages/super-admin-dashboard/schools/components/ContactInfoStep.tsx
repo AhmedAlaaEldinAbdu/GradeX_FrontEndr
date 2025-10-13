@@ -32,7 +32,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({
   return (
     <div className="space-y-6 p-4">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label={t('schools.email')}>
+        <FormField label={t('schools.email')} required>
           <Input
             name="email"
             value={formData.email}
@@ -41,7 +41,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({
             type="email"
           />
         </FormField>
-        <FormField label={t('schools.website')}>
+        <FormField label={t('schools.website')} optional>
           <Input
             name="website"
             value={formData.website}
