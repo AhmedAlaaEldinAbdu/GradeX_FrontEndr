@@ -28,6 +28,7 @@ const EditSchoolPage: React.FC = () => {
           foundationDate: '2020-01-15',
           aboutSchool: 'مدرسة رائدة في التعليم الحديث',
           hasCurrentSystem: true,
+          currentSystem: 'نظام إلكتروني متكامل',
           country: 'SA',
           applicationFeatures: {
             attendanceAndDeparture: true,
