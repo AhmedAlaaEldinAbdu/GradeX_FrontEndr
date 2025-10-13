@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import FormField from '@gradex/shared/components/FormField';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
@@ -33,6 +34,8 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   imageFileName,
   certificateFileName,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-8 p-4">
       {/* Facilities Section */}
@@ -93,7 +96,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
         onChange={onImageUpload}
         onDelete={onImageDelete}
         fileName={imageFileName}
-        uploadText="اضغط هنا للإضافة صورة أو فيديو أو ملف GIF أو SVG, JPG, PNG"
+        uploadText={t('schools.uploadMedia')}
       />
 
       {/* Certificates Upload Section */}
@@ -103,7 +106,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
         onChange={onCertificateUpload}
         onDelete={onCertificateDelete}
         fileName={certificateFileName}
-        uploadText="اضغط هنا للإضافة صورة أو فيديو أو ملف GIF أو SVG, JPG, PNG"
+        uploadText={t('schools.uploadMedia')}
       />
     </div>
   );
