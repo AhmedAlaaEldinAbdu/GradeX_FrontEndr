@@ -34,7 +34,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   certificateFileName,
 }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-4">
       {/* Facilities Section */}
       <div className="space-y-4">
         <h3 className="text-right text-lg font-semibold text-gray-900">المرافق</h3>
