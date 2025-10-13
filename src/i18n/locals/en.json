@@ -47,7 +47,8 @@
     "yes": "Yes",
     "no": "No",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "ok": "Ok"
   },
   "actions": {
     "actions": "Actions",
