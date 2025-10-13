@@ -1,6 +1,7 @@
 import React from 'react';
 import StudentManagement from './components/Schools';
 import PageHeader from '@gradex/shared/components/PageHeader';
+import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
 const SchoolsPage: React.FC = () => {
   return (
@@ -15,7 +16,14 @@ const SchoolsPage: React.FC = () => {
       {/* Page Header */}
       <PageHeader
         title="schools.title"
-        actions={[{ label: 'schools.addSchool', to: '/schools/add-school' }]}
+        actions={[
+          {
+            label: 'schools.addSchool',
+            to: '/schools/add-school',
+            imgSrc: PlusIcon,
+            imgClassName: `w-[24px] h-[24px]`,
+          },
+        ]}
       />
 
       {/* Main Content */}
