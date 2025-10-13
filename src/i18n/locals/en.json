@@ -44,7 +44,11 @@
     "search": "Search",
     "actions": "Actions",
     "noData": "No data available",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "yes": "Yes",
+    "no": "No",
+    "next": "Next",
+    "previous": "Previous"
   },
   "actions": {
     "actions": "Actions",
@@ -135,6 +139,9 @@
     "status": "Status",
     "sendEditRequest": "Send Edit Request",
     "copyAddLink": "Copy Add Link",
+    "copyAdditionLink": "Copy Addition Link",
+    "enterSchoolName": "Enter school name",
+    "chooseAcademicSystem": "Choose Academic Systems",
     "basicInfo": "Basic Information",
     "contactInfo": "Contact Information",
     "address": "Address",
@@ -145,6 +152,8 @@
     "optional": "Optional",
     "writeAboutSchool": "Write a brief about the school and its history",
     "hasCurrentSystem": "Do they have a current system?",
+    "currentSystem": "Current System",
+    "writeCurrentSystem": "Write information about the school's current system",
     "licenses": "Licenses",
     "appFeatures": "App Features",
     "chooseFeatures": "Choose the features that suit you to benefit from our system.",
@@ -193,7 +202,7 @@
     "enterFacilityDescription": "Enter facility description",
     "facilityImages": "Images",
     "schoolUpdated": "School has been updated successfully",
-    "uploadMedia": "Click here to add image or file (GIF, SVG, JPG, PNG)"
+    "uploadMedia": "Click here to add image or file"
   },
   "status": {
     "status": "Status",

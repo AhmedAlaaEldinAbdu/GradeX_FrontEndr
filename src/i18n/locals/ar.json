@@ -44,7 +44,11 @@
     "search": "بحث",
     "actions": "الإجراءات",
     "noData": "لا توجد بيانات",
-    "loading": "جاري التحميل..."
+    "loading": "جاري التحميل...",
+    "yes": "نعم",
+    "no": "لا",
+    "next": "التالي",
+    "previous": "السابق"
   },
   "actions": {
     "actions": "الإجراءات",
@@ -137,6 +141,9 @@
     "status": "الحالة",
     "sendEditRequest": "إرسال طلب تعديل",
     "copyAddLink": "نسخ رابط الإضافة",
+    "copyAdditionLink": "نسخ رابط الإضافة",
+    "enterSchoolName": "اكتب اسم المدرسة",
+    "chooseAcademicSystem": "اختر النظم التعليمية",
     "basicInfo": "البيانات الأساسية",
     "contactInfo": "بيانات التواصل",
     "address": "العنوان",
@@ -147,6 +154,8 @@
     "optional": "اختياري",
     "writeAboutSchool": "اكتب نبذة عن المدرسة و تاريخها",
     "hasCurrentSystem": "هل لديهم نظام حالي؟",
+    "currentSystem": "النظام الحالي",
+    "writeCurrentSystem": "اكتب معلومات عن النظام الحالي الخاص بالمدرسة",
     "licenses": "التراخيص",
     "appFeatures": "مميزات التطبيق",
     "chooseFeatures": "اختر المميزات التي تناسبك لتستفيد منها مع نظامنا.",
@@ -195,7 +204,7 @@
     "enterFacilityDescription": "اكتب نبذة عن المرفق",
     "facilityImages": "صور",
     "schoolUpdated": "تم تعديل المدرسة بنجاح",
-    "uploadMedia": "اضغط هنا للإضافة صورة أو ملف GIF أو SVG, JPG, PNG"
+    "uploadMedia": "اضغط هنا للإضافة صورة أو ملف"
   },
   "status": {
     "status": "الحالة",
