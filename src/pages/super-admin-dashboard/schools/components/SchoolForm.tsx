@@ -161,7 +161,7 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
               </Button>
             ) : (
               <Button variant="primary" onClick={handleSubmit}>
-                {mode === 'add' ? t('schools.addSchool') : t('schools.updateSchool')}
+                {t('common.save')}
               </Button>
             )}
           </div>
