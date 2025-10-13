@@ -5,6 +5,9 @@ import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import Badge from '@gradex/shared/components/Badge';
 import schoolIcon from '@gradex/assets/icons/School.svg';
+import ArrowRightIcon from '@gradex/assets/icons/ArrowRight.svg';
+import ArrowLeftIcon from '@gradex/assets/icons/ArrowLeft.svg';
+import SettingsIcon from '@gradex/assets/icons/Settings.svg';
 import Pagination from '@gradex/shared/components/Pagination';
 import DropdownMenuSchoolsAction from './DropdownMenuSchoolsAction';
 
@@ -21,8 +24,9 @@ interface School {
 
 export default function Schools() {
   const { t } = useTranslation();
-  const [hasSchools] = useState(true);
+  const [hasSchools, setHasSchools] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [academicSystem, setAcademicSystem] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -176,8 +180,8 @@ export default function Schools() {
             </div>
 
             <select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
+              value={academicSystem}
+              onChange={(e) => setAcademicSystem(e.target.value)}
               className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">{t('schools.academicSystem')}</option>
