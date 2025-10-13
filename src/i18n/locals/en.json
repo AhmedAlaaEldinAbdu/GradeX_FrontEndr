@@ -45,7 +45,9 @@
     "noData": "No data available",
     "loading": "Loading...",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "next": "Next",
+    "previous": "Previous"
   },
   "actions": {
     "actions": "Actions",
