@@ -9,10 +9,10 @@ import ContactInfoStep from './ContactInfoStep';
 import FacilitiesStep from './FacilitiesStep';
 import { useSchoolForm } from '../hooks/useSchoolForm';
 import type { SchoolFormData } from '../types/school.types';
-import SchoolIcon from '@gradex/assets/icons/School.svg';
 import LocationIcon from '@gradex/assets/icons/location-fill.svg';
 import PhoneIcon from '@gradex/assets/icons/phone-fill.svg';
 import DiamondIcon from '@gradex/assets/icons/Diamond.svg';
+import FileIcon from '@gradex/assets/icons/File.svg';
 
 interface SchoolFormProps {
   mode: 'add' | 'edit';
@@ -41,7 +41,7 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
     {
       id: 1,
       step: 1,
-      icon: <img src={SchoolIcon} className="h-5 w-5" alt="Basic Info" />,
+      icon: <img src={FileIcon} className="h-5 w-5" alt="Basic Info" />,
       label: t('schools.basicInfo'),
       completed: currentStep > 1,
     },
