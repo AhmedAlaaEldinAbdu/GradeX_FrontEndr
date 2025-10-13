@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Input from '@gradex/shared/components/Input';
 import FormField from '@gradex/shared/components/FormField';
+import PhoneInput from '@gradex/shared/components/PhoneInput';
 
 interface ContactInfoStepProps {
   formData: {
@@ -17,26 +18,20 @@ interface ContactInfoStepProps {
   onInputChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => void;
+  onPhoneChange: (value: string) => void;
   onCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ formData, onInputChange }) => {
+const ContactInfoStep: React.FC<ContactInfoStepProps> = ({
+  formData,
+  onInputChange,
+  onPhoneChange,
+}) => {
   const { t } = useTranslation();
 
   return (
     <div className="space-y-6 p-4">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label={t('schools.mobile')} required>
-          <Input
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={onInputChange}
-            placeholder={t('schools.mobile')}
-            type="tel"
-            required
-          />
-        </FormField>
-
         <FormField label={t('schools.email')}>
           <Input
             name="email"
@@ -46,9 +41,6 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ formData, onInputChan
             type="email"
           />
         </FormField>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <FormField label={t('schools.website')}>
           <Input
             name="website"
@@ -58,8 +50,23 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ formData, onInputChan
             type="url"
           />
         </FormField>
-
-        <FormField label={t('schools.contactPerson')}>
+      </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <PhoneInput
+          label={t('schools.landline')}
+          value={formData.phoneNumber}
+          onChange={onPhoneChange}
+          required
+        />
+        <PhoneInput
+          label={t('schools.mobile')}
+          value={formData.phoneNumber}
+          onChange={onPhoneChange}
+          required
+        />
+      </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <FormField label={t('schools.contactPerson')} required>
           <Input
             name="contactPerson"
             value={formData.contactPerson}
