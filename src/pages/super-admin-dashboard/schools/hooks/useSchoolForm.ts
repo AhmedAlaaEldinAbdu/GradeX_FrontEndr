@@ -24,6 +24,11 @@ export const useSchoolForm = (initialData?: SchoolFormData) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Phone number change handler
+  const handlePhoneChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, phoneNumber: value }));
+  };
+
   // Generic checkbox change handler
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
@@ -87,6 +92,7 @@ export const useSchoolForm = (initialData?: SchoolFormData) => {
     formData,
     files,
     handleInputChange,
+    handlePhoneChange,
     handleCheckboxChange,
     handleRadioChange,
     handleApplicationFeatureChange,
