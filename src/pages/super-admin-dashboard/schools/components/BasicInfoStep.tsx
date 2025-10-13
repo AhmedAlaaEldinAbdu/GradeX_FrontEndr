@@ -46,7 +46,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <h3 className="mb-6 text-right text-lg font-semibold text-gray-900">
         {t('schools.schoolData')}
       </h3>
