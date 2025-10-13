@@ -73,7 +73,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       {/* Map Button */}
       <div className="mb-6 flex w-full justify-end">
         <Button
