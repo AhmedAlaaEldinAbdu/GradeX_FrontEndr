@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import StepIndicator from '@gradex/shared/components/StepIndicator';
 import Button from '@gradex/shared/components/Button';
+import PopupMessage from '@gradex/shared/components/PopupMessage';
 import BasicInfoStep from './BasicInfoStep';
 import AddressStep from './AddressStep';
 import ContactInfoStep from './ContactInfoStep';
@@ -13,6 +14,7 @@ import LocationIcon from '@gradex/assets/icons/location-fill.svg';
 import PhoneIcon from '@gradex/assets/icons/phone-fill.svg';
 import DiamondIcon from '@gradex/assets/icons/Diamond.svg';
 import FileIcon from '@gradex/assets/icons/File.svg';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 
 interface SchoolFormProps {
   mode: 'add' | 'edit';
@@ -24,6 +26,7 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const {
     formData,
@@ -89,85 +92,103 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
       console.log('Mode:', mode);
       console.log('School ID:', schoolId);
 
-      // For now, just navigate back
-      navigate('/dashboard/schools');
+      // Show success popup
+      setShowSuccessPopup(true);
     } catch (error) {
       console.error('Error submitting form:', error);
     }
   };
 
+  const handleCloseSuccessPopup = () => {
+    setShowSuccessPopup(false);
+    navigate('/dashboard/schools');
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Step Indicator */}
-      <StepIndicator steps={steps} currentStep={currentStep} />
+    <>
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <PopupMessage
+          type="success"
+          message={mode === 'add' ? 'schools.schoolAdded' : 'schools.schoolUpdated'}
+          iconSrc={BigSuccessIcon}
+          autoClose={false}
+          onClose={handleCloseSuccessPopup}
+        />
+      )}
 
-      {/* Form Content */}
-      <div className="rounded-lg border border-gray-200 bg-white">
-        {currentStep === 1 && (
-          <BasicInfoStep
-            formData={formData}
-            onInputChange={handleInputChange}
-            onRadioChange={handleRadioChange}
-            onCheckboxChange={handleApplicationFeatureChange}
-            onLogoUpload={handleFileUpload('logo')}
-            logoFileName={files.logo?.name}
-          />
-        )}
+      <div className="space-y-6">
+        {/* Step Indicator */}
+        <StepIndicator steps={steps} currentStep={currentStep} />
 
-        {currentStep === 2 && (
-          <ContactInfoStep
-            formData={formData}
-            onInputChange={handleInputChange}
-            onPhoneChange={handlePhoneChange}
-            onCheckboxChange={handleCheckboxChange}
-          />
-        )}
+        {/* Form Content */}
+        <div className="rounded-lg border border-gray-200 bg-white">
+          {currentStep === 1 && (
+            <BasicInfoStep
+              formData={formData}
+              onInputChange={handleInputChange}
+              onRadioChange={handleRadioChange}
+              onCheckboxChange={handleApplicationFeatureChange}
+              onLogoUpload={handleFileUpload('logo')}
+              logoFileName={files.logo?.name}
+            />
+          )}
 
-        {currentStep === 3 && (
-          <AddressStep
-            formData={formData}
-            onInputChange={handleInputChange}
-            onRadioChange={handleRadioChange}
-          />
-        )}
+          {currentStep === 2 && (
+            <ContactInfoStep
+              formData={formData}
+              onInputChange={handleInputChange}
+              onPhoneChange={handlePhoneChange}
+              onCheckboxChange={handleCheckboxChange}
+            />
+          )}
 
-        {currentStep === 4 && (
-          <FacilitiesStep
-            formData={formData}
-            onCheckboxChange={handleFacilityChange}
-            onImageUpload={handleFileUpload('image')}
-            onCertificateUpload={handleFileUpload('certificate')}
-            onImageDelete={handleFileDelete('image')}
-            onCertificateDelete={handleFileDelete('certificate')}
-            imageFileName={files.image?.name}
-            certificateFileName={files.certificate?.name}
-          />
-        )}
+          {currentStep === 3 && (
+            <AddressStep
+              formData={formData}
+              onInputChange={handleInputChange}
+              onRadioChange={handleRadioChange}
+            />
+          )}
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-end p-6">
-          {/* <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+          {currentStep === 4 && (
+            <FacilitiesStep
+              formData={formData}
+              onCheckboxChange={handleFacilityChange}
+              onImageUpload={handleFileUpload('image')}
+              onCertificateUpload={handleFileUpload('certificate')}
+              onImageDelete={handleFileDelete('image')}
+              onCertificateDelete={handleFileDelete('certificate')}
+              imageFileName={files.image?.name}
+              certificateFileName={files.certificate?.name}
+            />
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-end p-6">
+            {/* <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
             {t('common.previous')}
           </Button> */}
 
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={() => navigate('/dashboard/schools')}>
-              {t('common.cancel')}
-            </Button>
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={() => navigate('/dashboard/schools')}>
+                {t('common.cancel')}
+              </Button>
 
-            {currentStep < 4 ? (
-              <Button variant="primary" onClick={handleNext}>
-                {t('common.next')}
-              </Button>
-            ) : (
-              <Button variant="primary" onClick={handleSubmit}>
-                {t('common.save')}
-              </Button>
-            )}
+              {currentStep < 4 ? (
+                <Button variant="primary" onClick={handleNext}>
+                  {t('common.next')}
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={handleSubmit}>
+                  {t('common.save')}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
