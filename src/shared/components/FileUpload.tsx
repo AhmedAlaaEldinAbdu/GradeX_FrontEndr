@@ -7,6 +7,7 @@ interface FileUploadProps {
   onDelete?: () => void;
   fileName?: string;
   uploadText?: string;
+  formatHints?: string[];
   required?: boolean;
 }
 
@@ -17,6 +18,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onDelete,
   fileName,
   uploadText = 'ارفع الوسائط من هنا',
+  formatHints = ['GIF', 'SVG', 'JPG', 'PNG'],
   required = false,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -100,7 +102,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
             />
             <rect x="8" y="8" width="32" height="32" rx="4" stroke="currentColor" strokeWidth="2" />
           </svg>
-          <p className="text-sm text-gray-600">{uploadText}</p>
+          <p className="text-sm text-green-600">{uploadText}</p>
+          {formatHints.length > 0 && (
+            <p className="text-sm text-gray-500">{formatHints.join(', ')}</p>
+          )}
         </div>
       </div>
 
