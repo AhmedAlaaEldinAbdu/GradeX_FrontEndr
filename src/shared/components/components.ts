@@ -13,3 +13,4 @@ export { default as FileUpload } from './FileUpload';
 export { default as CustomCheckbox } from './CustomCheckbox';
 export { default as FormField } from './FormField';
 export { default as StepIndicator } from './StepIndicator';
+export { default as MapLocationModal } from './MapLocationModal';
