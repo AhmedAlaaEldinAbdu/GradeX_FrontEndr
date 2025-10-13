@@ -6,6 +6,7 @@ export interface SchoolFormData {
   foundationDate: string;
   aboutSchool: string;
   hasCurrentSystem: boolean;
+  currentSystem: string;
   country: string;
 
   // Application Features
@@ -62,6 +63,7 @@ export const initialSchoolFormData: SchoolFormData = {
   foundationDate: '',
   aboutSchool: '',
   hasCurrentSystem: false,
+  currentSystem: '',
   country: '',
   applicationFeatures: {
     attendanceAndDeparture: false,
