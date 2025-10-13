@@ -4,6 +4,7 @@ import Input from '@gradex/shared/components/Input';
 import Select from '@gradex/shared/components/Select';
 import FormField from '@gradex/shared/components/FormField';
 import Button from '@gradex/shared/components/Button';
+import MapLocationModal from '@gradex/shared/components/MapLocationModal';
 
 interface BranchData {
   country: string;
@@ -46,6 +47,8 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
       postalCode: '',
     },
   ]);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [selectedBranchIndex, setSelectedBranchIndex] = useState<number | null>(null);
 
   const handleAddBranch = () => {
     setBranches([
@@ -72,12 +75,31 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
     setBranches(updatedBranches);
   };
 
+  const handleOpenMapModal = (branchIndex: number | null = null) => {
+    setSelectedBranchIndex(branchIndex);
+    setIsMapModalOpen(true);
+  };
+
+  const handleCloseMapModal = () => {
+    setIsMapModalOpen(false);
+    setSelectedBranchIndex(null);
+  };
+
+  const handleConfirmLocation = (location: { lat: number; lng: number; address: string }) => {
+    console.log('Selected location:', location);
+    // TODO: Update form data with selected location
+    // If selectedBranchIndex is null, it's for main address
+    // Otherwise, it's for a specific branch
+  };
+
   return (
     <div className="space-y-6 p-4">
       {/* Map Button */}
       <div className="mb-6 flex w-full justify-end">
         <Button
+          type="button"
           variant="outline"
+          onClick={() => handleOpenMapModal(null)}
           className="border-none bg-transparent text-left text-lg font-semibold text-green-600 hover:bg-transparent"
         >
           تحديد علي الخريطة
@@ -222,7 +244,9 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
               {/* Branch Map Button */}
               <div className="mb-4 flex w-full justify-end">
                 <Button
+                  type="button"
                   variant="outline"
+                  onClick={() => handleOpenMapModal(index)}
                   className="border-none bg-transparent text-left text-sm font-semibold text-green-600 hover:bg-transparent"
                   style={{ backgroundColor: 'transparent', boxShadow: 'none' }}
                 >
@@ -312,6 +336,18 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
           ))}
         </div>
       )}
+
+      {/* Map Location Modal */}
+      <MapLocationModal
+        isOpen={isMapModalOpen}
+        onClose={handleCloseMapModal}
+        onConfirm={handleConfirmLocation}
+        title={
+          selectedBranchIndex === null
+            ? 'تحديد موقع المدرسة'
+            : `تحديد موقع الفرع ${selectedBranchIndex === 0 ? 'الثاني' : `${selectedBranchIndex + 2}`}`
+        }
+      />
     </div>
   );
 };
