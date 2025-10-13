@@ -29,6 +29,7 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
     formData,
     files,
     handleInputChange,
+    handlePhoneChange,
     handleCheckboxChange,
     handleRadioChange,
     handleApplicationFeatureChange,
@@ -117,6 +118,7 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
           <ContactInfoStep
             formData={formData}
             onInputChange={handleInputChange}
+            onPhoneChange={handlePhoneChange}
             onCheckboxChange={handleCheckboxChange}
           />
         )}
