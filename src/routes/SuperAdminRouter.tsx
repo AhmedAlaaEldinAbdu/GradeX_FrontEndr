@@ -12,6 +12,7 @@ import SystemUsersPage from '@gradex/pages/super-admin-dashboard/system-users/sy
 import AddUserPage from '@gradex/pages/super-admin-dashboard/system-users/add-user-page';
 import EditUserPage from '@gradex/pages/super-admin-dashboard/system-users/edit-user-page';
 import AddSchoolPage from '@gradex/pages/super-admin-dashboard/schools/add-school-page';
+import EditSchoolPage from '@gradex/pages/super-admin-dashboard/schools/edit-school-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -45,6 +46,16 @@ const SuperAdminRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
               <AddSchoolPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/schools/edit-school/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <EditSchoolPage />
             </MainLayout>
           </ProtectedRoute>
         }
