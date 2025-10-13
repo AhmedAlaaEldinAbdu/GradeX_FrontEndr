@@ -24,7 +24,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ formData, onInputChan
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <FormField label={t('schools.mobile')} required>
           <Input
