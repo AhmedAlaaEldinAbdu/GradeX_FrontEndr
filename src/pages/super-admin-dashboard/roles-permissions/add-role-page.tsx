@@ -14,7 +14,7 @@ const AddRolePage: React.FC = () => {
       <Breadcrumb
         items={[
           { label: "rolesManagement.title"},
-          { label: "rolesManagement.rolesAndPermissions", path: '/super-admin/employees-administration/roles-permissions' },
+          { label: "rolesManagement.rolesAndPermissions", path: '/employees-administration/roles-permissions' },
           { label: "rolesManagement.addRole"},
         ]}
       />

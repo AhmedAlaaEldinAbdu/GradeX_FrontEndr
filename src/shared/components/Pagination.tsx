@@ -1,5 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import ArrowRightIcon from '@gradex/assets/icons/ArrowRight.svg';
+import ArrowLeftIcon from '@gradex/assets/icons/ArrowLeft.svg';
+import SettingsIcon from '@gradex/assets/icons/Settings.svg';
 
 interface PaginationProps {
   currentPage: number;
@@ -66,7 +69,10 @@ const Pagination: React.FC<PaginationProps> = ({
             currentPage === 1 ? 'cursor-not-allowed text-gray-400' : 'hover:bg-gray-50'
           }`}
         >
-          {t('actions.previous')}
+          <span className="flex items-center gap-1 text-center">
+            <img src={ArrowRightIcon} alt="ArrowIcon" className="" />
+            <span>{t('actions.previous')}</span>
+          </span>
         </button>
 
         {/* Page Numbers */}
@@ -99,7 +105,10 @@ const Pagination: React.FC<PaginationProps> = ({
             currentPage === totalPages ? 'cursor-not-allowed text-gray-400' : 'hover:bg-gray-50'
           }`}
         >
-          {t('actions.next')}
+          <span className="flex items-center gap-1 text-center">
+            <span>{t('actions.next')}</span>
+            <img src={ArrowLeftIcon} alt="ArrowIcon" className="" />
+          </span>
         </button>
       </div>
     </div>

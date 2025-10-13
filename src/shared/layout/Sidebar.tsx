@@ -70,12 +70,12 @@ const getSuperAdminMenuItems = (): MenuItem[] => [
     subItems: [
       {
         key: 'rolesPermissions',
-        path: '/super-admin/employees-administration/roles-permissions',
+        path: '/employees-administration/roles-permissions',
         icon: <img src={ContactIcon} className="h-5 w-5" alt="Roles & Permissions" />,
       },
       {
         key: 'systemUsers',
-        path: '/super-admin/employees-administration/system-users',
+        path: '/employees-administration/system-users',
         icon: <img src={ContactIcon} className="h-5 w-5" alt="System Users" />,
       },
     ],

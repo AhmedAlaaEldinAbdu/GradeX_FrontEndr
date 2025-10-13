@@ -1,7 +1,8 @@
 import { t } from 'i18next';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import 'react-international-phone/style.css';
+import { PhoneInput } from 'react-international-phone';
 interface Permission {
   id: string;
   label: string;
@@ -63,8 +64,8 @@ export default function EditUser() {
       <div className="mb-6 grid gap-3 lg:grid-cols-2">
         <div className="col-span-1">
           <div>
-            <label className="mb-2 block text-start font-medium text-gray-700">
-              {t('rolesManagement.fullUserName')} <span className="text-red-500">*</span>
+            <label className="required mb-2 block text-start font-medium text-gray-700">
+              {t('rolesManagement.fullUserName')}
             </label>
             <input
               type="text"
@@ -77,22 +78,24 @@ export default function EditUser() {
         </div>
         <div className="col-span-1">
           <div>
-            <label className="mb-2 block text-start font-medium text-gray-700">
-              {t('rolesManagement.phoneNumber')} <span className="text-red-500">*</span>
+            <label className="required mb-2 block text-start font-medium text-gray-700">
+              {t('rolesManagement.phoneNumber')}
             </label>
-            <input
-              type="text"
-              placeholder={t('rolesManagement.selectRole')}
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-green-500 focus:ring focus:ring-green-100"
-            />
+            <div dir="ltr">
+              <PhoneInput
+                defaultCountry="eg"
+                value={phoneNumber}
+                onChange={(value) => setPhoneNumber(value)}
+                className="w-full"
+                inputClassName="w-full rounded-md border border-gray-300 px-3 py-5 text-gray-700 focus:border-green-500 focus:ring focus:ring-green-100"
+              />
+            </div>
           </div>
         </div>
         <div className="col-span-1">
           <div>
-            <label className="mb-2 block text-start font-medium text-gray-700">
-              {t('rolesManagement.email')} <span className="text-red-500">*</span>
+            <label className="required mb-2 block text-start font-medium text-gray-700">
+              {t('rolesManagement.email')}
             </label>
             <input
               type="text"
@@ -105,8 +108,8 @@ export default function EditUser() {
         </div>
         <div className="col-span-1">
           <div>
-            <label className="mb-2 block text-start font-medium text-gray-700">
-              {t('rolesManagement.roleName')} <span className="text-red-500">*</span>
+            <label className="required mb-2 block text-start font-medium text-gray-700">
+              {t('rolesManagement.roleName')}
             </label>
             <select
               value={selectedRole}
