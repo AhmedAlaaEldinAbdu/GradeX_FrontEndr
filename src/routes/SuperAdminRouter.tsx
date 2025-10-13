@@ -66,7 +66,7 @@ const SuperAdminRouter: React.FC = () => {
       />
       {/* roles-permissions */}
       <Route
-        path="/super-admin/employees-administration/roles-permissions"
+        path="/employees-administration/roles-permissions"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
@@ -76,7 +76,7 @@ const SuperAdminRouter: React.FC = () => {
         }
       />
       <Route
-        path="/super-admin/employees-administration/roles-permissions/add-role"
+        path="/employees-administration/roles-permissions/add-role"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
@@ -86,7 +86,7 @@ const SuperAdminRouter: React.FC = () => {
         }
       />
       <Route
-        path="/super-admin/employees-administration/roles-permissions/edit-role/:id"
+        path="/employees-administration/roles-permissions/edit-role/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
@@ -97,7 +97,7 @@ const SuperAdminRouter: React.FC = () => {
       />
       {/* system-users */}
       <Route
-        path="/super-admin/employees-administration/system-users"
+        path="/employees-administration/system-users"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
@@ -107,7 +107,7 @@ const SuperAdminRouter: React.FC = () => {
         }
       />
       <Route
-        path="/super-admin/employees-administration/system-users/add-user"
+        path="/employees-administration/system-users/add-user"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
@@ -117,7 +117,7 @@ const SuperAdminRouter: React.FC = () => {
         }
       />
       <Route
-        path="/super-admin/employees-administration/system-users/edit-user/:id"
+        path="/employees-administration/system-users/edit-user/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>

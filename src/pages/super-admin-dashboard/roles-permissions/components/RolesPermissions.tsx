@@ -136,7 +136,7 @@ export default function RolesPermissions() {
           {showPopupMessage && (
             <PopupMessage
               type="success"
-              message="rolesManagement.userDeleted"
+              message="rolesManagement.roleDeleted"
               iconSrc={BigSuccessIcon}
               autoClose={true}
               onClose={() => setShowPopupMessage(false)}

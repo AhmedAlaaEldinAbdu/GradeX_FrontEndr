@@ -15,7 +15,7 @@ const AddUserPage: React.FC = () => {
           { label: 'rolesManagement.title' },
           {
             label: 'rolesManagement.systemUsers',
-            path: '/super-admin/employees-administration/system-users',
+            path: '/employees-administration/system-users',
           },
           { label: 'rolesManagement.addUser' },
         ]}

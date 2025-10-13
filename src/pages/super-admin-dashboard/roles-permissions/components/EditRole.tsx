@@ -94,8 +94,8 @@ export default function EditRole() {
       className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
     >
       <div className="mb-4">
-        <label className="mb-2 block text-start font-medium text-gray-700">
-          {t('rolesManagement.roleName')} <span className="text-red-500">*</span>
+        <label className="mb-2 block text-start font-medium text-gray-700 required">
+          {t('rolesManagement.roleName')}
         </label>
         <input
           type="text"

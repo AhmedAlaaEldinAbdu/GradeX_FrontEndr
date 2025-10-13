@@ -37,3 +37,30 @@
 .read-the-docs {
   color: #888;
 }
+
+.required::after {
+  content: ' *';
+  color: #dd0417;
+}
+
+/* react-international-phone custom css */
+.react-international-phone-country-selector-button {
+  font-size: 16px !important;
+  height: unset !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+.react-international-phone-input-container .react-international-phone-input {
+  font-size: 16px !important;
+  height: unset !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0.375rem !important;
+  border-bottom-right-radius: 0.375rem !important;
+  border-bottom-left-radius: 0px !important;
+}
