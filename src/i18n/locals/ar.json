@@ -258,7 +258,10 @@
       "buildingNumberRequired": "رقم المبنى مطلوب",
       "buildingNumberMax": "لا يمكن أن يتجاوز رقم المبنى 20 حرفاً",
       "postalCodeRequired": "الرمز البريدي مطلوب",
-      "postalCodeInvalid": "يجب أن يكون الرمز البريدي من 4-10 أرقام"
+      "postalCodeInvalid": "يجب أن يكون الرمز البريدي من 4-10 أرقام",
+      "applicationFeaturesRequired": "يرجى اختيار ميزة واحدة على الأقل من مميزات التطبيق",
+      "logoRequired": "شعار المدرسة مطلوب",
+      "certificateRequired": "شهادة المدرسة مطلوبة"
     }
   },
   "status": {

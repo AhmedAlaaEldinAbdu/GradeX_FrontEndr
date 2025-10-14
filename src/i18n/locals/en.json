@@ -256,7 +256,10 @@
       "buildingNumberRequired": "Building number is required",
       "buildingNumberMax": "Building number cannot exceed 20 characters",
       "postalCodeRequired": "Postal code is required",
-      "postalCodeInvalid": "Postal code must be 4-10 digits"
+      "postalCodeInvalid": "Postal code must be 4-10 digits",
+      "applicationFeaturesRequired": "Please select at least one application feature",
+      "logoRequired": "School logo is required",
+      "certificateRequired": "School certificate is required"
     }
   },
   "status": {
