@@ -17,12 +17,18 @@ import FileIcon from '@gradex/assets/icons/File.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 
 interface SchoolFormProps {
-  mode: 'add' | 'edit';
+  mode: 'add' | 'edit' | 'view';
   initialData?: SchoolFormData;
   schoolId?: string;
+  showRejectedLabel?: boolean;
 }
 
-const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
+const SchoolForm = ({
+  mode,
+  initialData,
+  schoolId,
+  showRejectedLabel = false,
+}: SchoolFormProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -131,6 +137,8 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
               onCheckboxChange={handleApplicationFeatureChange}
               onLogoUpload={handleFileUpload('logo')}
               logoFileName={files.logo?.name}
+              readOnly={mode === 'view'}
+              showRejectedLabel={showRejectedLabel}
             />
           )}
 
@@ -140,6 +148,7 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
               onInputChange={handleInputChange}
               onPhoneChange={handlePhoneChange}
               onCheckboxChange={handleCheckboxChange}
+              readOnly={mode === 'view'}
             />
           )}
 
@@ -148,6 +157,7 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
               formData={formData}
               onInputChange={handleInputChange}
               onRadioChange={handleRadioChange}
+              readOnly={mode === 'view'}
             />
           )}
 
@@ -161,30 +171,39 @@ const SchoolForm = ({ mode, initialData, schoolId }: SchoolFormProps) => {
               onCertificateDelete={handleFileDelete('certificate')}
               imageFileName={files.image?.name}
               certificateFileName={files.certificate?.name}
+              readOnly={mode === 'view'}
             />
           )}
 
           {/* Navigation Buttons */}
           <div className="flex justify-end p-6">
-            {/* <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-            {t('common.previous')}
-          </Button> */}
-
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => navigate('/dashboard/schools')}>
-                {t('common.cancel')}
-              </Button>
-
-              {currentStep < 4 ? (
-                <Button variant="primary" onClick={handleNext}>
-                  {t('common.next')}
+            {mode === 'view' ? (
+              // View mode - only show Next button (no Save/Cancel)
+              <div className="flex gap-3">
+                {currentStep < 4 && (
+                  <Button variant="primary" onClick={handleNext}>
+                    {t('common.next')}
+                  </Button>
+                )}
+              </div>
+            ) : (
+              // Add/Edit mode - show Cancel and Next/Save buttons
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => navigate('/dashboard/schools')}>
+                  {t('common.cancel')}
                 </Button>
-              ) : (
-                <Button variant="primary" onClick={handleSubmit}>
-                  {t('common.save')}
-                </Button>
-              )}
-            </div>
+
+                {currentStep < 4 ? (
+                  <Button variant="primary" onClick={handleNext}>
+                    {t('common.next')}
+                  </Button>
+                ) : (
+                  <Button variant="primary" onClick={handleSubmit}>
+                    {t('common.save')}
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
