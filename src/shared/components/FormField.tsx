@@ -4,6 +4,7 @@ interface FormFieldProps {
   label: string;
   required?: boolean;
   optional?: boolean;
+  error?: string;
   children: React.ReactNode;
 }
 
@@ -11,6 +12,7 @@ const FormField: React.FC<FormFieldProps> = ({
   label,
   required = false,
   optional = false,
+  error,
   children,
 }) => {
   return (
@@ -21,6 +23,7 @@ const FormField: React.FC<FormFieldProps> = ({
         {optional && <span className="text-xs text-gray-400">(اختياري)</span>}
       </label>
       {children}
+      {error && <p className="mt-1 text-right text-xs text-red-600">{error}</p>}
     </div>
   );
 };
