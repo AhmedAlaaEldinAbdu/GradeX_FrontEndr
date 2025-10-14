@@ -20,12 +20,14 @@ interface ContactInfoStepProps {
   ) => void;
   onPhoneChange: (value: string) => void;
   onCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  readOnly?: boolean;
 }
 
 const ContactInfoStep: React.FC<ContactInfoStepProps> = ({
   formData,
   onInputChange,
   onPhoneChange,
+  readOnly = false,
 }) => {
   const { t } = useTranslation();
 
@@ -39,6 +41,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({
             onChange={onInputChange}
             placeholder={t('schools.enterEmail')}
             type="email"
+            disabled={readOnly}
           />
         </FormField>
         <FormField label={t('schools.website')} optional>
@@ -48,6 +51,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({
             onChange={onInputChange}
             placeholder={t('schools.enterWebsite')}
             type="url"
+            disabled={readOnly}
           />
         </FormField>
       </div>
@@ -57,12 +61,14 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({
           value={formData.phoneNumber}
           onChange={onPhoneChange}
           required
+          disabled={readOnly}
         />
         <PhoneInput
           label={t('schools.mobile')}
           value={formData.phoneNumber}
           onChange={onPhoneChange}
           required
+          disabled={readOnly}
         />
       </div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -72,6 +78,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({
             value={formData.contactPerson}
             onChange={onInputChange}
             placeholder={t('schools.enterContactPerson')}
+            disabled={readOnly}
           />
         </FormField>
       </div>
