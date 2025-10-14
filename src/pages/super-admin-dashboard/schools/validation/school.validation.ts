@@ -47,13 +47,23 @@ export const basicInfoSchema = yup.object().shape({
     otherwise: (schema) => schema.optional(),
   }),
 
-  // Application Features
-  applicationFeatures: yup.object().shape({
-    attendanceAndDeparture: yup.boolean().default(false),
-    remoteBookTracking: yup.boolean().default(false),
-    expensesTrackingOnly: yup.boolean().default(false),
-    fullExpensesPayment: yup.boolean().default(false),
-  }),
+  // Application Features - At least one must be selected
+  applicationFeatures: yup
+    .object()
+    .shape({
+      attendanceAndDeparture: yup.boolean().default(false),
+      remoteBookTracking: yup.boolean().default(false),
+      expensesTrackingOnly: yup.boolean().default(false),
+      fullExpensesPayment: yup.boolean().default(false),
+    })
+    .test('at-least-one-feature', 'schools.validation.applicationFeaturesRequired', (value) => {
+      return (
+        value.attendanceAndDeparture ||
+        value.remoteBookTracking ||
+        value.expensesTrackingOnly ||
+        value.fullExpensesPayment
+      );
+    }),
 
   // Financial Data
   bankName: yup
@@ -92,6 +102,13 @@ export const contactInfoSchema = yup.object().shape({
     .trim(),
 
   website: yup.string().url('schools.validation.websiteInvalid').trim().optional().nullable(),
+
+  landline: yup
+    .string()
+    .required('schools.validation.landlineRequired')
+    .matches(/^\+?[1-9]\d{1,14}$/, 'schools.validation.landlineInvalid')
+    .min(10, 'schools.validation.phoneNumberMin')
+    .max(15, 'schools.validation.phoneNumberMax'),
 
   phoneNumber: yup
     .string()
