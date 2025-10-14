@@ -13,6 +13,7 @@ import type { SchoolFormData } from '../types/school.types';
 interface BasicInfoStepProps {
   onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   logoFileName?: string;
+  logoError?: string;
   readOnly?: boolean;
   showRejectedLabel?: boolean;
 }
@@ -24,6 +25,7 @@ interface BasicInfoStepProps {
 const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   onLogoUpload,
   logoFileName,
+  logoError,
   readOnly = false,
   showRejectedLabel = false,
 }) => {
@@ -33,6 +35,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
     formState: { errors },
     watch,
     setValue,
+    trigger,
   } = useFormContext<SchoolFormData>();
 
   const hasCurrentSystem = watch('hasCurrentSystem');
@@ -237,12 +240,16 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 
       {/* File Upload */}
       {!readOnly && (
-        <FileUpload
-          label={t('schools.licenses')}
-          onChange={onLogoUpload}
-          fileName={logoFileName}
-          uploadText={t('schools.uploadMedia')}
-        />
+        <div>
+          <FileUpload
+            label={t('schools.licenses')}
+            onChange={onLogoUpload}
+            fileName={logoFileName}
+            uploadText={t('schools.uploadMedia')}
+            required={true}
+          />
+          {logoError && <p className="mt-1 text-right text-xs text-red-600">{t(logoError)}</p>}
+        </div>
       )}
 
       {/* Application Features Section */}
@@ -252,14 +259,19 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           اختر المميزات التي تناسبك لتستفيد منها مع نظامك
         </p>
 
-        <FormField label="مميزات النظام" required>
+        <FormField
+          label="مميزات النظام"
+          required
+          error={errors.applicationFeatures?.message && t(errors.applicationFeatures.message)}
+        >
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <CustomCheckbox
               name="attendanceAndDeparture"
               checked={applicationFeatures.attendanceAndDeparture}
-              onChange={(checked) =>
-                setValue('applicationFeatures.attendanceAndDeparture', checked)
-              }
+              onChange={(checked) => {
+                setValue('applicationFeatures.attendanceAndDeparture', checked);
+                trigger('applicationFeatures');
+              }}
               label="الحضور و الإنصراف"
               disabled={readOnly}
             />
@@ -267,7 +279,10 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <CustomCheckbox
               name="expensesTrackingOnly"
               checked={applicationFeatures.expensesTrackingOnly}
-              onChange={(checked) => setValue('applicationFeatures.expensesTrackingOnly', checked)}
+              onChange={(checked) => {
+                setValue('applicationFeatures.expensesTrackingOnly', checked);
+                trigger('applicationFeatures');
+              }}
               label="دفع المصاريف قسط"
               disabled={readOnly}
             />
@@ -277,7 +292,10 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <CustomCheckbox
               name="remoteBookTracking"
               checked={applicationFeatures.remoteBookTracking}
-              onChange={(checked) => setValue('applicationFeatures.remoteBookTracking', checked)}
+              onChange={(checked) => {
+                setValue('applicationFeatures.remoteBookTracking', checked);
+                trigger('applicationFeatures');
+              }}
               label="شراء الكتب عن طريقنا"
               disabled={readOnly}
             />
@@ -287,7 +305,10 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <CustomCheckbox
               name="fullExpensesPayment"
               checked={applicationFeatures.fullExpensesPayment}
-              onChange={(checked) => setValue('applicationFeatures.fullExpensesPayment', checked)}
+              onChange={(checked) => {
+                setValue('applicationFeatures.fullExpensesPayment', checked);
+                trigger('applicationFeatures');
+              }}
               label="دفع المصاريف كاش"
               disabled={readOnly}
             />
