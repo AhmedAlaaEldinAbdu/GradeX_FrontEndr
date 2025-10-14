@@ -22,6 +22,7 @@ interface FacilitiesStepProps {
   onCertificateDelete?: () => void;
   imageFileName?: string;
   certificateFileName?: string;
+  readOnly?: boolean;
 }
 
 const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
@@ -33,6 +34,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   onCertificateDelete,
   imageFileName,
   certificateFileName,
+  readOnly = false,
 }) => {
   const { t } = useTranslation();
 
@@ -49,6 +51,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               checked={formData.facilities.playground}
               onChange={(checked) => onCheckboxChange('playground', checked)}
               label="ملعب"
+              disabled={readOnly}
             />
 
             <CustomCheckbox
@@ -56,6 +59,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               checked={formData.facilities.library}
               onChange={(checked) => onCheckboxChange('library', checked)}
               label="مكتبة"
+              disabled={readOnly}
             />
 
             <CustomCheckbox
@@ -63,6 +67,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               checked={formData.facilities.laboratory}
               onChange={(checked) => onCheckboxChange('laboratory', checked)}
               label="معمل"
+              disabled={readOnly}
             />
 
             <CustomCheckbox
@@ -70,6 +75,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               checked={formData.facilities.sportField}
               onChange={(checked) => onCheckboxChange('sportField', checked)}
               label="ملاعب رياضية"
+              disabled={readOnly}
             />
 
             <CustomCheckbox
@@ -77,6 +83,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               checked={formData.facilities.canteen}
               onChange={(checked) => onCheckboxChange('canteen', checked)}
               label="كافتيريا"
+              disabled={readOnly}
             />
 
             <CustomCheckbox
@@ -84,30 +91,35 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               checked={formData.facilities.busService}
               onChange={(checked) => onCheckboxChange('busService', checked)}
               label="حافلات"
+              disabled={readOnly}
             />
           </div>
         </FormField>
       </div>
 
       {/* Images Upload Section */}
-      <FileUpload
-        label="الصور"
-        accept="image/*,.svg,.jpg,.jpeg,.png"
-        onChange={onImageUpload}
-        onDelete={onImageDelete}
-        fileName={imageFileName}
-        uploadText={t('schools.uploadMedia')}
-      />
+      {!readOnly && (
+        <FileUpload
+          label="الصور"
+          accept="image/*,.svg,.jpg,.jpeg,.png"
+          onChange={onImageUpload}
+          onDelete={onImageDelete}
+          fileName={imageFileName}
+          uploadText={t('schools.uploadMedia')}
+        />
+      )}
 
       {/* Certificates Upload Section */}
-      <FileUpload
-        label="الشهادات"
-        accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
-        onChange={onCertificateUpload}
-        onDelete={onCertificateDelete}
-        fileName={certificateFileName}
-        uploadText={t('schools.uploadMedia')}
-      />
+      {!readOnly && (
+        <FileUpload
+          label="الشهادات"
+          accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
+          onChange={onCertificateUpload}
+          onDelete={onCertificateDelete}
+          fileName={certificateFileName}
+          uploadText={t('schools.uploadMedia')}
+        />
+      )}
     </div>
   );
 };
