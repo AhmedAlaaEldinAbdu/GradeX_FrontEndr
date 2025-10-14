@@ -5,18 +5,28 @@ interface CustomCheckboxProps {
   onChange: (checked: boolean) => void;
   label: string;
   name?: string;
+  disabled?: boolean;
 }
 
-const CustomCheckbox: React.FC<CustomCheckboxProps> = ({ checked, onChange, label, name }) => {
+const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
+  checked,
+  onChange,
+  label,
+  name,
+  disabled = false,
+}) => {
   return (
-    <label className="flex cursor-pointer items-center gap-3 py-1">
+    <label
+      className={`flex items-center gap-3 py-1 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+    >
       <div className="relative">
         <input
           type="checkbox"
           name={name}
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
-          className="peer h-6 w-6 appearance-none rounded-md border border-gray-400 transition duration-150 checked:border-green-600 checked:bg-green-600 focus:ring-2 focus:ring-green-500"
+          disabled={disabled}
+          className="peer h-6 w-6 appearance-none rounded-md border border-gray-400 transition duration-150 checked:border-green-600 checked:bg-green-600 focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
