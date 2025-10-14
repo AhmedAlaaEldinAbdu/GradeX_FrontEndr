@@ -128,7 +128,7 @@ export default function EditRole() {
           </h3>
 
           <div className="flex items-center gap-2">
-            <input
+            {/* <input
               type="checkbox"
               id="selectAll"
               checked={selectAll}
@@ -137,7 +137,13 @@ export default function EditRole() {
             />
             <label htmlFor="selectAll" className="cursor-pointer font-semibold text-green-700">
               {t('rolesManagement.selectAll')}
-            </label>
+            </label> */}
+            <CustomCheckbox
+              name="selectAll"
+              checked={selectAll}
+              onChange={handleSelectAll}
+              label={t('rolesManagement.selectAll')}
+            />
           </div>
         </div>
 
