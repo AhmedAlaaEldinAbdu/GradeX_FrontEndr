@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Controller, useFormContext } from 'react-hook-form';
 import Input from '@gradex/shared/components/Input';
 import Select from '@gradex/shared/components/Select';
 import TextArea from '@gradex/shared/components/TextArea';
@@ -7,51 +8,39 @@ import calendarIcon from '@gradex/assets/icons/calendar.svg';
 import FormField from '@gradex/shared/components/FormField';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
+import type { SchoolFormData } from '../types/school.types';
 
 interface BasicInfoStepProps {
-  formData: {
-    schoolName: string;
-    academicSystem: string;
-    foundationDate: string;
-    aboutSchool: string;
-    hasCurrentSystem: boolean;
-    currentSystem: string;
-    country: string;
-    applicationFeatures: {
-      attendanceAndDeparture: boolean;
-      remoteBookTracking: boolean;
-      expensesTrackingOnly: boolean;
-      fullExpensesPayment: boolean;
-    };
-    bankName: string;
-    accountNumber: string;
-    ibanNumber: string;
-  };
-  onInputChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => void;
-  onRadioChange: (name: string, value: boolean) => void;
-  onCheckboxChange: (name: string, checked: boolean) => void;
   onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   logoFileName?: string;
   readOnly?: boolean;
   showRejectedLabel?: boolean;
 }
 
+/**
+ * BasicInfoStep - First step in school form with react-hook-form integration
+ * Includes school data, application features, and financial information
+ */
 const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
-  formData,
-  onInputChange,
-  onRadioChange,
-  onCheckboxChange,
   onLogoUpload,
   logoFileName,
   readOnly = false,
   showRejectedLabel = false,
 }) => {
   const { t } = useTranslation();
+  const {
+    control,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useFormContext<SchoolFormData>();
+
+  const hasCurrentSystem = watch('hasCurrentSystem');
+  const applicationFeatures = watch('applicationFeatures');
 
   return (
     <div className="space-y-6 p-4">
+      {/* Rejected Label */}
       {showRejectedLabel && (
         <div className="mb-4 flex justify-end">
           <div className="inline-flex w-max items-center gap-2 rounded-lg bg-red-50 px-3 py-2">
@@ -76,118 +65,177 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         {t('schools.schoolData')}
       </h3>
 
+      {/* School Name and Academic System */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label={t('schools.schoolName')} required>
-          <Input
+        <FormField
+          label={t('schools.schoolName')}
+          required
+          error={errors.schoolName?.message && t(errors.schoolName.message)}
+        >
+          <Controller
             name="schoolName"
-            value={formData.schoolName}
-            onChange={onInputChange}
-            placeholder={t('schools.enterSchoolName')}
-            required
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                placeholder={t('schools.enterSchoolName')}
+                required
+                disabled={readOnly}
+              />
+            )}
           />
         </FormField>
 
-        <FormField label={t('schools.academicSystem')} required>
-          <Select
+        <FormField
+          label={t('schools.academicSystem')}
+          required
+          error={errors.academicSystem?.message && t(errors.academicSystem.message)}
+        >
+          <Controller
             name="academicSystem"
-            value={formData.academicSystem}
-            onChange={onInputChange}
-            options={[
-              { value: '', label: t('schools.chooseAcademicSystem') },
-              { value: 'government', label: 'حكومي' },
-              { value: 'private', label: 'خاص' },
-              { value: 'national', label: 'أهلي' },
-            ]}
-            required
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={[
+                  { value: '', label: t('schools.chooseAcademicSystem') },
+                  { value: 'government', label: 'حكومي' },
+                  { value: 'private', label: 'خاص' },
+                  { value: 'national', label: 'أهلي' },
+                ]}
+                required
+                disabled={readOnly}
+              />
+            )}
           />
         </FormField>
       </div>
 
+      {/* Country and Foundation Date */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label={t('schools.countryWithAl')} required>
-          <Select
+        <FormField
+          label={t('schools.countryWithAl')}
+          required
+          error={errors.country?.message && t(errors.country.message)}
+        >
+          <Controller
             name="country"
-            value={formData.country}
-            onChange={onInputChange}
-            options={[
-              { value: '', label: t('schools.selectCountry') },
-              { value: 'egypt', label: 'مصر' },
-              { value: 'saudi', label: 'السعودية' },
-            ]}
-            required
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={[
+                  { value: '', label: t('schools.selectCountry') },
+                  { value: 'egypt', label: 'مصر' },
+                  { value: 'saudi', label: 'السعودية' },
+                ]}
+                required
+                disabled={readOnly}
+              />
+            )}
           />
         </FormField>
 
-        <FormField label={t('schools.foundationDate')} required>
-          <div className="relative">
-            <Input
-              name="foundationDate"
-              type="date"
-              value={formData.foundationDate}
-              onChange={onInputChange}
-              placeholder="اختر التاريخ"
-              icon={<img src={calendarIcon} alt="calendar" className="h-5 w-5" />}
+        <FormField
+          label={t('schools.foundationDate')}
+          required
+          error={errors.foundationDate?.message && t(errors.foundationDate.message)}
+        >
+          <Controller
+            name="foundationDate"
+            control={control}
+            render={({ field }) => (
+              <div className="relative">
+                <Input
+                  {...field}
+                  type="date"
+                  placeholder="اختر التاريخ"
+                  icon={<img src={calendarIcon} alt="calendar" className="h-5 w-5" />}
+                  disabled={readOnly}
+                />
+              </div>
+            )}
+          />
+        </FormField>
+      </div>
+
+      {/* About School */}
+      <FormField
+        label={t('schools.aboutSchool')}
+        optional
+        error={errors.aboutSchool?.message && t(errors.aboutSchool.message)}
+      >
+        <Controller
+          name="aboutSchool"
+          control={control}
+          render={({ field }) => (
+            <TextArea
+              {...field}
+              placeholder={t('schools.writeAboutSchool')}
+              rows={4}
               disabled={readOnly}
             />
-          </div>
-        </FormField>
-      </div>
-
-      <FormField label={t('schools.aboutSchool')} optional>
-        <TextArea
-          name="aboutSchool"
-          value={formData.aboutSchool}
-          onChange={onInputChange}
-          placeholder={t('schools.writeAboutSchool')}
-          rows={4}
-          disabled={readOnly}
+          )}
         />
       </FormField>
 
-      {/* External Current System Question */}
+      {/* Has Current System Toggle */}
       <FormField label="هل لديهم نظام حالي؟" required>
-        <div className="flex gap-6 text-right">
-          <div className="flex items-center justify-end">
-            <label
-              htmlFor="hasCurrentSystemSwitch"
-              className="relative inline-flex h-6 w-11 cursor-pointer items-center"
-            >
-              <input
-                id="hasCurrentSystemSwitch"
-                type="checkbox"
-                checked={formData.hasCurrentSystem}
-                onChange={(e) => onRadioChange('hasCurrentSystem', e.target.checked)}
-                className="peer sr-only"
-                aria-label="هل لديهم نظام حالي"
-                disabled={readOnly}
-              />
-              <div
-                className={`peer-unchecked:bg-gray-200 h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600 ${readOnly ? 'opacity-50' : ''}`}
-              ></div>
-              <span
-                className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5`}
-              ></span>
-            </label>
-          </div>
-        </div>
+        <Controller
+          name="hasCurrentSystem"
+          control={control}
+          render={({ field }) => (
+            <div className="flex gap-6 text-right">
+              <div className="flex items-center justify-end">
+                <label
+                  htmlFor="hasCurrentSystemSwitch"
+                  className="relative inline-flex h-6 w-11 cursor-pointer items-center"
+                >
+                  <input
+                    id="hasCurrentSystemSwitch"
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={field.onChange}
+                    className="peer sr-only"
+                    aria-label="هل لديهم نظام حالي"
+                    disabled={readOnly}
+                  />
+                  <div
+                    className={`peer-unchecked:bg-gray-200 h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600 ${readOnly ? 'opacity-50' : ''}`}
+                  ></div>
+                  <span
+                    className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5`}
+                  ></span>
+                </label>
+              </div>
+            </div>
+          )}
+        />
       </FormField>
 
-      {formData.hasCurrentSystem ? (
-        <FormField label={t('schools.currentSystem')} required>
-          <TextArea
+      {/* Current System (Conditional) */}
+      {hasCurrentSystem && (
+        <FormField
+          label={t('schools.currentSystem')}
+          required
+          error={errors.currentSystem?.message && t(errors.currentSystem.message)}
+        >
+          <Controller
             name="currentSystem"
-            value={formData.currentSystem}
-            onChange={onInputChange}
-            placeholder={t('schools.writeCurrentSystem')}
-            rows={4}
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                {...field}
+                placeholder={t('schools.writeCurrentSystem')}
+                rows={4}
+                disabled={readOnly}
+              />
+            )}
           />
         </FormField>
-      ) : null}
+      )}
 
+      {/* File Upload */}
       {!readOnly && (
         <FileUpload
           label={t('schools.licenses')}
@@ -208,16 +256,18 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <CustomCheckbox
               name="attendanceAndDeparture"
-              checked={formData.applicationFeatures.attendanceAndDeparture}
-              onChange={(checked) => onCheckboxChange('attendanceAndDeparture', checked)}
+              checked={applicationFeatures.attendanceAndDeparture}
+              onChange={(checked) =>
+                setValue('applicationFeatures.attendanceAndDeparture', checked)
+              }
               label="الحضور و الإنصراف"
               disabled={readOnly}
             />
 
             <CustomCheckbox
               name="expensesTrackingOnly"
-              checked={formData.applicationFeatures.expensesTrackingOnly}
-              onChange={(checked) => onCheckboxChange('expensesTrackingOnly', checked)}
+              checked={applicationFeatures.expensesTrackingOnly}
+              onChange={(checked) => setValue('applicationFeatures.expensesTrackingOnly', checked)}
               label="دفع المصاريف قسط"
               disabled={readOnly}
             />
@@ -226,8 +276,8 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <CustomCheckbox
               name="remoteBookTracking"
-              checked={formData.applicationFeatures.remoteBookTracking}
-              onChange={(checked) => onCheckboxChange('remoteBookTracking', checked)}
+              checked={applicationFeatures.remoteBookTracking}
+              onChange={(checked) => setValue('applicationFeatures.remoteBookTracking', checked)}
               label="شراء الكتب عن طريقنا"
               disabled={readOnly}
             />
@@ -236,8 +286,8 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <CustomCheckbox
               name="fullExpensesPayment"
-              checked={formData.applicationFeatures.fullExpensesPayment}
-              onChange={(checked) => onCheckboxChange('fullExpensesPayment', checked)}
+              checked={applicationFeatures.fullExpensesPayment}
+              onChange={(checked) => setValue('applicationFeatures.fullExpensesPayment', checked)}
               label="دفع المصاريف كاش"
               disabled={readOnly}
             />
@@ -250,38 +300,47 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         <h3 className="text-right text-lg font-semibold text-gray-900">بيانات مالية</h3>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <FormField label="اسم البنك" required>
-            <Input
+          <FormField
+            label="اسم البنك"
+            required
+            error={errors.bankName?.message && t(errors.bankName.message)}
+          >
+            <Controller
               name="bankName"
-              value={formData.bankName}
-              onChange={onInputChange}
-              placeholder="اكتب اسم البنك"
-              required
-              disabled={readOnly}
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="اكتب اسم البنك" required disabled={readOnly} />
+              )}
             />
           </FormField>
 
-          <FormField label="رقم الحساب" required>
-            <Input
+          <FormField
+            label="رقم الحساب"
+            required
+            error={errors.accountNumber?.message && t(errors.accountNumber.message)}
+          >
+            <Controller
               name="accountNumber"
-              value={formData.accountNumber}
-              onChange={onInputChange}
-              placeholder="اكتب رقم الحساب"
-              required
-              disabled={readOnly}
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="اكتب رقم الحساب" required disabled={readOnly} />
+              )}
             />
           </FormField>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <FormField label="رقم (IBAN)" required>
-            <Input
+          <FormField
+            label="رقم (IBAN)"
+            required
+            error={errors.ibanNumber?.message && t(errors.ibanNumber.message)}
+          >
+            <Controller
               name="ibanNumber"
-              value={formData.ibanNumber}
-              onChange={onInputChange}
-              placeholder="اكتب رقم (IBAN)"
-              required
-              disabled={readOnly}
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="اكتب رقم (IBAN)" required disabled={readOnly} />
+              )}
             />
           </FormField>
         </div>
