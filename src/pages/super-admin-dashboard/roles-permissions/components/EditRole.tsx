@@ -1,3 +1,4 @@
+import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
 import { t } from 'i18next';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -94,7 +95,7 @@ export default function EditRole() {
       className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
     >
       <div className="mb-4">
-        <label className="mb-2 block text-start font-medium text-gray-700 required">
+        <label className="required mb-2 block text-start font-medium text-gray-700">
           {t('rolesManagement.roleName')}
         </label>
         <input
@@ -102,7 +103,7 @@ export default function EditRole() {
           placeholder={t('rolesManagement.enterRoleName')}
           value={roleName || 'موظف عام'}
           onChange={(e) => setRoleName(e.target.value)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-green-500 focus:ring focus:ring-green-100"
+          className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
         />
       </div>
 
@@ -116,7 +117,7 @@ export default function EditRole() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-green-500 focus:ring focus:ring-green-100"
+          className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
         />
       </div>
 
@@ -151,33 +152,24 @@ export default function EditRole() {
               {group.permissions
                 .filter((perm) => perm.parentControl)
                 .map((perm) => (
-                  <label
-                    key={perm.id}
-                    className="mb-3 flex w-full items-center gap-2 text-xl font-semibold text-gray-800"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isGroupFullyChecked(group)}
-                      onChange={() => toggleGroupPermissions(group)}
-                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                    />
-                    {t(perm.label)}
-                  </label>
+                  <CustomCheckbox
+                    name={perm.id}
+                    checked={isGroupFullyChecked(group)}
+                    onChange={() => toggleGroupPermissions(group)}
+                    label={t(`${perm.label}`)}
+                  />
                 ))}
 
               <div className="grid gap-2 md:grid-cols-2">
                 {group.permissions
                   .filter((perm) => !perm.parentControl)
                   .map((perm) => (
-                    <label key={perm.id} className="flex items-center gap-2 text-gray-700">
-                      <input
-                        type="checkbox"
-                        checked={selectedPermissions.includes(perm.id)}
-                        onChange={() => handlePermissionChange(perm.id)}
-                        className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                      />
-                      {t(perm.label)}
-                    </label>
+                    <CustomCheckbox
+                      name={perm.id}
+                      checked={selectedPermissions.includes(perm.id)}
+                      onChange={() => handlePermissionChange(perm.id)}
+                      label={t(`${perm.label}`)}
+                    />
                   ))}
               </div>
             </div>

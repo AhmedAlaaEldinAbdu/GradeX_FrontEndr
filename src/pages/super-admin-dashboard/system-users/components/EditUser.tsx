@@ -1,8 +1,7 @@
+import PhoneInput from '@gradex/shared/components/PhoneInput';
 import { t } from 'i18next';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import 'react-international-phone/style.css';
-import { PhoneInput } from 'react-international-phone';
 interface Permission {
   id: string;
   label: string;
@@ -72,24 +71,18 @@ export default function EditUser() {
               placeholder={t('rolesManagement.enterFullUserName')}
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-green-500 focus:ring focus:ring-green-100"
+              className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
         </div>
         <div className="col-span-1">
           <div>
-            <label className="required mb-2 block text-start font-medium text-gray-700">
-              {t('rolesManagement.phoneNumber')}
-            </label>
-            <div dir="ltr">
-              <PhoneInput
-                defaultCountry="eg"
-                value={phoneNumber}
-                onChange={(value) => setPhoneNumber(value)}
-                className="w-full"
-                inputClassName="w-full rounded-md border border-gray-300 px-3 py-5 text-gray-700 focus:border-green-500 focus:ring focus:ring-green-100"
-              />
-            </div>
+            <PhoneInput
+              label={t('rolesManagement.phoneNumber')}
+              value={phoneNumber}
+              onChange={(value) => setPhoneNumber(value)}
+              required
+            />
           </div>
         </div>
         <div className="col-span-1">
@@ -102,7 +95,7 @@ export default function EditUser() {
               placeholder={t('rolesManagement.enterEmail')}
               value={userEmail}
               onChange={(e) => setUserEmail(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-green-500 focus:ring focus:ring-green-100"
+              className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
         </div>

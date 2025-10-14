@@ -145,7 +145,7 @@ export default function DeletedSchoolsTab() {
     {
       header: 'schools.contactMethods',
       accessor: (row: School) => (
-        <div className="flex justify-center gap-3 items-center">
+        <div className="flex items-center justify-center gap-3">
           {' '}
           <span className="cursor-pointer">
             <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
@@ -159,7 +159,7 @@ export default function DeletedSchoolsTab() {
     },
     {
       header: 'common.actions',
-      accessor: () => <DropdownMenuSchoolsAction />,
+      accessor: () => <DropdownMenuSchoolsAction selectedTab={3} />,
       headerClassName: 'min-w-[100px]',
     },
   ];

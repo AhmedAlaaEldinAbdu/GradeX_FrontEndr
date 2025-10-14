@@ -144,7 +144,7 @@ export default function PendingSchoolsTab() {
     {
       header: 'schools.contactMethods',
       accessor: (row: School) => (
-        <div className="flex justify-center gap-3 items-center">
+        <div className="flex items-center justify-center gap-3">
           {' '}
           <span className="cursor-pointer">
             <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
@@ -158,7 +158,7 @@ export default function PendingSchoolsTab() {
     },
     {
       header: 'common.actions',
-      accessor: () => <DropdownMenuSchoolsAction />,
+      accessor: () => <DropdownMenuSchoolsAction selectedTab={2} />,
       headerClassName: 'min-w-[100px]',
     },
   ];

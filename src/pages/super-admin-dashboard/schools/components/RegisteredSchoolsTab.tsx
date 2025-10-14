@@ -145,7 +145,7 @@ export default function RegisteredSchoolsTab() {
     {
       header: 'schools.contactMethods',
       accessor: (row: School) => (
-        <div className="flex justify-center gap-3 items-center">
+        <div className="flex items-center justify-center gap-3">
           {' '}
           <span className="cursor-pointer">
             <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
@@ -159,7 +159,7 @@ export default function RegisteredSchoolsTab() {
     },
     {
       header: 'common.actions',
-      accessor: () => <DropdownMenuSchoolsAction />, // استثناءت
+      accessor: () => <DropdownMenuSchoolsAction selectedTab={1} />,
       headerClassName: 'min-w-[100px]',
     },
   ];
