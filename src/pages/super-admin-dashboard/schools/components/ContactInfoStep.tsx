@@ -64,35 +64,44 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
         </FormField>
       </div>
 
-      {/* Phone Numbers */}
+      {/* Phone Number */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Controller
-          name="phoneNumber"
-          control={control}
-          render={({ field }) => (
-            <PhoneInput
-              label={t('schools.landline')}
-              value={field.value}
-              onChange={field.onChange}
-              required
-              disabled={readOnly}
-            />
-          )}
-        />
-
-        <Controller
-          name="phoneNumber"
-          control={control}
-          render={({ field }) => (
-            <PhoneInput
-              label={t('schools.mobile')}
-              value={field.value}
-              onChange={field.onChange}
-              required
-              disabled={readOnly}
-            />
-          )}
-        />
+        <FormField
+          label={t('schools.landline')}
+          required
+          error={errors.landline?.message && t(errors.landline.message)}
+        >
+          <Controller
+            name="landline"
+            control={control}
+            render={({ field }) => (
+              <PhoneInput
+                value={field.value}
+                onChange={field.onChange}
+                required
+                disabled={readOnly}
+              />
+            )}
+          />
+        </FormField>
+        <FormField
+          label={t('schools.mobile')}
+          required
+          error={errors.phoneNumber?.message && t(errors.phoneNumber.message)}
+        >
+          <Controller
+            name="phoneNumber"
+            control={control}
+            render={({ field }) => (
+              <PhoneInput
+                value={field.value}
+                onChange={field.onChange}
+                required
+                disabled={readOnly}
+              />
+            )}
+          />
+        </FormField>
       </div>
 
       {/* Contact Person */}
@@ -106,11 +115,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
             name="contactPerson"
             control={control}
             render={({ field }) => (
-              <Input
-                {...field}
-                placeholder={t('schools.enterContactPerson')}
-                disabled={readOnly}
-              />
+              <Input {...field} placeholder={t('schools.enterContactPerson')} disabled={readOnly} />
             )}
           />
         </FormField>
