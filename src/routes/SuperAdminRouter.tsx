@@ -13,6 +13,8 @@ import AddUserPage from '@gradex/pages/super-admin-dashboard/system-users/add-us
 import EditUserPage from '@gradex/pages/super-admin-dashboard/system-users/edit-user-page';
 import AddSchoolPage from '@gradex/pages/super-admin-dashboard/schools/add-school-page';
 import EditSchoolPage from '@gradex/pages/super-admin-dashboard/schools/edit-school-page';
+import PendingSchoolDetailsPage from '@gradex/pages/super-admin-dashboard/schools/pending-school-details-page';
+import RejectedSchoolDetailsPage from '@gradex/pages/super-admin-dashboard/schools/rejected-school-details-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -56,6 +58,26 @@ const SuperAdminRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
               <EditSchoolPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/schools/pending/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <PendingSchoolDetailsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/schools/rejected/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <RejectedSchoolDetailsPage />
             </MainLayout>
           </ProtectedRoute>
         }
