@@ -13,6 +13,7 @@ interface FacilitiesStepProps {
   onCertificateDelete?: () => void;
   imageFileName?: string;
   certificateFileName?: string;
+  certificateError?: string;
   readOnly?: boolean;
 }
 
@@ -27,10 +28,11 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   onCertificateDelete,
   imageFileName,
   certificateFileName,
+  certificateError,
   readOnly = false,
 }) => {
   const { t } = useTranslation();
-  const { watch, setValue } = useFormContext<SchoolFormData>();
+  const { watch, setValue, trigger } = useFormContext<SchoolFormData>();
 
   const facilities = watch('facilities');
 
@@ -45,7 +47,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             <CustomCheckbox
               name="playground"
               checked={facilities.playground}
-              onChange={(checked) => setValue('facilities.playground', checked)}
+              onChange={(checked) => {
+                setValue('facilities.playground', checked);
+                trigger('facilities');
+              }}
               label="ملعب"
               disabled={readOnly}
             />
@@ -53,7 +58,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             <CustomCheckbox
               name="library"
               checked={facilities.library}
-              onChange={(checked) => setValue('facilities.library', checked)}
+              onChange={(checked) => {
+                setValue('facilities.library', checked);
+                trigger('facilities');
+              }}
               label="مكتبة"
               disabled={readOnly}
             />
@@ -61,7 +69,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             <CustomCheckbox
               name="laboratory"
               checked={facilities.laboratory}
-              onChange={(checked) => setValue('facilities.laboratory', checked)}
+              onChange={(checked) => {
+                setValue('facilities.laboratory', checked);
+                trigger('facilities');
+              }}
               label="معمل"
               disabled={readOnly}
             />
@@ -69,7 +80,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             <CustomCheckbox
               name="sportField"
               checked={facilities.sportField}
-              onChange={(checked) => setValue('facilities.sportField', checked)}
+              onChange={(checked) => {
+                setValue('facilities.sportField', checked);
+                trigger('facilities');
+              }}
               label="ملاعب رياضية"
               disabled={readOnly}
             />
@@ -77,7 +91,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             <CustomCheckbox
               name="canteen"
               checked={facilities.canteen}
-              onChange={(checked) => setValue('facilities.canteen', checked)}
+              onChange={(checked) => {
+                setValue('facilities.canteen', checked);
+                trigger('facilities');
+              }}
               label="كافتيريا"
               disabled={readOnly}
             />
@@ -85,7 +102,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             <CustomCheckbox
               name="busService"
               checked={facilities.busService}
-              onChange={(checked) => setValue('facilities.busService', checked)}
+              onChange={(checked) => {
+                setValue('facilities.busService', checked);
+                trigger('facilities');
+              }}
               label="حافلات"
               disabled={readOnly}
             />
@@ -107,14 +127,20 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
 
       {/* Certificates Upload Section */}
       {!readOnly && (
-        <FileUpload
-          label="الشهادات"
-          accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
-          onChange={onCertificateUpload}
-          onDelete={onCertificateDelete}
-          fileName={certificateFileName}
-          uploadText={t('schools.uploadMedia')}
-        />
+        <div>
+          <FileUpload
+            label="الشهادات"
+            accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
+            onChange={onCertificateUpload}
+            onDelete={onCertificateDelete}
+            fileName={certificateFileName}
+            uploadText={t('schools.uploadMedia')}
+            required={true}
+          />
+          {certificateError && (
+            <p className="mt-1 text-right text-xs text-red-600">{t(certificateError)}</p>
+          )}
+        </div>
       )}
     </div>
   );
