@@ -34,6 +34,8 @@ interface BasicInfoStepProps {
   onCheckboxChange: (name: string, checked: boolean) => void;
   onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   logoFileName?: string;
+  readOnly?: boolean;
+  showRejectedLabel?: boolean;
 }
 
 const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
@@ -43,11 +45,33 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   onCheckboxChange,
   onLogoUpload,
   logoFileName,
+  readOnly = false,
+  showRejectedLabel = false,
 }) => {
   const { t } = useTranslation();
 
   return (
     <div className="space-y-6 p-4">
+      {showRejectedLabel && (
+        <div className="mb-4 flex justify-end">
+          <div className="inline-flex w-max items-center gap-2 rounded-lg bg-red-50 px-3 py-2">
+            <svg
+              className="h-5 w-5 text-red-600"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm font-medium text-red-800">{t('status.rejected')}</span>
+          </div>
+        </div>
+      )}
+
       <h3 className="mb-6 text-right text-lg font-semibold text-gray-900">
         {t('schools.schoolData')}
       </h3>
@@ -60,6 +84,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             onChange={onInputChange}
             placeholder={t('schools.enterSchoolName')}
             required
+            disabled={readOnly}
           />
         </FormField>
 
@@ -75,6 +100,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               { value: 'national', label: 'أهلي' },
             ]}
             required
+            disabled={readOnly}
           />
         </FormField>
       </div>
@@ -91,6 +117,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               { value: 'saudi', label: 'السعودية' },
             ]}
             required
+            disabled={readOnly}
           />
         </FormField>
 
@@ -103,6 +130,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               onChange={onInputChange}
               placeholder="اختر التاريخ"
               icon={<img src={calendarIcon} alt="calendar" className="h-5 w-5" />}
+              disabled={readOnly}
             />
           </div>
         </FormField>
@@ -115,6 +143,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           onChange={onInputChange}
           placeholder={t('schools.writeAboutSchool')}
           rows={4}
+          disabled={readOnly}
         />
       </FormField>
 
@@ -133,9 +162,10 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                 onChange={(e) => onRadioChange('hasCurrentSystem', e.target.checked)}
                 className="peer sr-only"
                 aria-label="هل لديهم نظام حالي"
+                disabled={readOnly}
               />
               <div
-                className={`peer-unchecked:bg-gray-200 h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600`}
+                className={`peer-unchecked:bg-gray-200 h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600 ${readOnly ? 'opacity-50' : ''}`}
               ></div>
               <span
                 className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5`}
@@ -153,16 +183,19 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             onChange={onInputChange}
             placeholder={t('schools.writeCurrentSystem')}
             rows={4}
+            disabled={readOnly}
           />
         </FormField>
       ) : null}
 
-      <FileUpload
-        label={t('schools.licenses')}
-        onChange={onLogoUpload}
-        fileName={logoFileName}
-        uploadText={t('schools.uploadMedia')}
-      />
+      {!readOnly && (
+        <FileUpload
+          label={t('schools.licenses')}
+          onChange={onLogoUpload}
+          fileName={logoFileName}
+          uploadText={t('schools.uploadMedia')}
+        />
+      )}
 
       {/* Application Features Section */}
       <div className="space-y-4">
@@ -178,6 +211,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               checked={formData.applicationFeatures.attendanceAndDeparture}
               onChange={(checked) => onCheckboxChange('attendanceAndDeparture', checked)}
               label="الحضور و الإنصراف"
+              disabled={readOnly}
             />
 
             <CustomCheckbox
@@ -185,6 +219,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               checked={formData.applicationFeatures.expensesTrackingOnly}
               onChange={(checked) => onCheckboxChange('expensesTrackingOnly', checked)}
               label="دفع المصاريف قسط"
+              disabled={readOnly}
             />
           </div>
 
@@ -194,6 +229,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               checked={formData.applicationFeatures.remoteBookTracking}
               onChange={(checked) => onCheckboxChange('remoteBookTracking', checked)}
               label="شراء الكتب عن طريقنا"
+              disabled={readOnly}
             />
           </div>
 
@@ -203,6 +239,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               checked={formData.applicationFeatures.fullExpensesPayment}
               onChange={(checked) => onCheckboxChange('fullExpensesPayment', checked)}
               label="دفع المصاريف كاش"
+              disabled={readOnly}
             />
           </div>
         </FormField>
@@ -220,6 +257,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               onChange={onInputChange}
               placeholder="اكتب اسم البنك"
               required
+              disabled={readOnly}
             />
           </FormField>
 
@@ -230,6 +268,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               onChange={onInputChange}
               placeholder="اكتب رقم الحساب"
               required
+              disabled={readOnly}
             />
           </FormField>
         </div>
@@ -242,6 +281,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               onChange={onInputChange}
               placeholder="اكتب رقم (IBAN)"
               required
+              disabled={readOnly}
             />
           </FormField>
         </div>
