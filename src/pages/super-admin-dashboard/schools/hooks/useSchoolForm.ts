@@ -11,13 +11,21 @@ interface FileState {
   certificate: File | null;
 }
 
+interface FileErrors {
+  logo?: string;
+  image?: string;
+  certificate?: string;
+}
+
 interface UseSchoolFormReturn {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<SchoolFormData, any, SchoolFormData>;
   files: FileState;
+  fileErrors: FileErrors;
   handleFileUpload: (type: keyof FileState) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleFileDelete: (type: keyof FileState) => () => void;
   validateCurrentStep: (step: number) => Promise<boolean>;
+  validateFiles: (step?: number) => boolean;
   resetForm: () => void;
 }
 
@@ -32,6 +40,8 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
     image: null,
     certificate: null,
   });
+
+  const [fileErrors, setFileErrors] = useState<FileErrors>({});
 
   // Initialize react-hook-form with yup resolver
   const form = useForm<SchoolFormData>({
@@ -99,6 +109,13 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
       }
 
       setFiles((prev) => ({ ...prev, [type]: file }));
+
+      // Clear error for this file when uploaded
+      setFileErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[type];
+        return newErrors;
+      });
     }
   };
 
@@ -118,19 +135,49 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
   };
 
   /**
+   * Validate required files (logo and certificate)
+   * @param step - Optional step number to validate specific files for that step
+   * @returns Boolean indicating if files are valid
+   */
+  const validateFiles = (step?: number): boolean => {
+    const errors: FileErrors = {};
+
+    // If step is provided, only validate files for that step
+    if (step === 1 || step === undefined) {
+      // Logo is required on step 1
+      if (!files.logo) {
+        errors.logo = 'schools.validation.logoRequired';
+      }
+    }
+
+    if (step === 4 || step === undefined) {
+      // Certificate is required on step 4
+      if (!files.certificate) {
+        errors.certificate = 'schools.validation.certificateRequired';
+      }
+    }
+
+    setFileErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  /**
    * Reset form to initial state
    */
   const resetForm = () => {
     form.reset(initialSchoolFormData);
     setFiles({ logo: null, image: null, certificate: null });
+    setFileErrors({});
   };
 
   return {
     form,
     files,
+    fileErrors,
     handleFileUpload,
     handleFileDelete,
     validateCurrentStep,
+    validateFiles,
     resetForm,
   };
 };
