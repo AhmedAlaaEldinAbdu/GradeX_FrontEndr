@@ -35,8 +35,15 @@ const SchoolForm = ({
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  const { form, files, handleFileUpload, handleFileDelete, validateCurrentStep } =
-    useSchoolForm(initialData);
+  const {
+    form,
+    files,
+    fileErrors,
+    handleFileUpload,
+    handleFileDelete,
+    validateCurrentStep,
+    validateFiles,
+  } = useSchoolForm(initialData);
 
   const steps = [
     {
@@ -76,7 +83,14 @@ const SchoolForm = ({
     if (currentStep < 4) {
       // Validate current step before proceeding
       const isValid = await validateCurrentStep(currentStep);
-      if (isValid) {
+
+      // For step 1, also validate logo file (only logo, not certificate)
+      let filesValid = true;
+      if (currentStep === 1) {
+        filesValid = validateFiles(1); // Only validate files for step 1
+      }
+
+      if (isValid && filesValid) {
         // Clear all errors before moving to next step
         form.clearErrors();
         setCurrentStep((prev) => prev + 1);
@@ -102,7 +116,10 @@ const SchoolForm = ({
     try {
       // Validate all steps before submission
       const isValid = await validateCurrentStep(4);
-      if (!isValid) {
+      // Validate all required files (logo and certificate)
+      const filesValid = validateFiles(); // No parameter = validate all files
+
+      if (!isValid || !filesValid) {
         console.error('Form validation failed');
         return;
       }
@@ -148,6 +165,7 @@ const SchoolForm = ({
             <BasicInfoStep
               onLogoUpload={handleFileUpload('logo')}
               logoFileName={files.logo?.name}
+              logoError={fileErrors.logo}
               readOnly={mode === 'view'}
               showRejectedLabel={showRejectedLabel}
             />
@@ -165,6 +183,7 @@ const SchoolForm = ({
               onCertificateDelete={handleFileDelete('certificate')}
               imageFileName={files.image?.name}
               certificateFileName={files.certificate?.name}
+              certificateError={fileErrors.certificate}
               readOnly={mode === 'view'}
             />
           )}
