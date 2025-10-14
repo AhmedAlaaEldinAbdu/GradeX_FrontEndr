@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Controller, useFormContext } from 'react-hook-form';
 import Input from '@gradex/shared/components/Input';
 import Select from '@gradex/shared/components/Select';
 import FormField from '@gradex/shared/components/FormField';
 import Button from '@gradex/shared/components/Button';
 import MapLocationModal from '@gradex/shared/components/MapLocationModal';
+import type { SchoolFormData } from '../types/school.types';
 
 interface BranchData {
   country: string;
@@ -17,31 +19,23 @@ interface BranchData {
 }
 
 interface AddressStepProps {
-  formData: {
-    country: string;
-    region: string;
-    state: string;
-    city: string;
-    street: string;
-    district: string;
-    buildingNumber: string;
-    postalCode: string;
-    hasBranches: boolean;
-  };
-  onInputChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => void;
-  onRadioChange: (name: string, value: boolean) => void;
   readOnly?: boolean;
 }
 
-const AddressStep: React.FC<AddressStepProps> = ({
-  formData,
-  onInputChange,
-  onRadioChange,
-  readOnly = false,
-}) => {
+/**
+ * AddressStep - Third step in school form with react-hook-form integration
+ * Includes main address and optional branches
+ */
+const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
   const { t } = useTranslation();
+  const {
+    control,
+    formState: { errors },
+    watch,
+  } = useFormContext<SchoolFormData>();
+
+  const hasBranches = watch('hasBranches');
+
   const [branches, setBranches] = useState<BranchData[]>([
     {
       country: '',
@@ -94,8 +88,6 @@ const AddressStep: React.FC<AddressStepProps> = ({
   const handleConfirmLocation = (location: { lat: number; lng: number; address: string }) => {
     console.log('Selected location:', location);
     // TODO: Update form data with selected location
-    // If selectedBranchIndex is null, it's for main address
-    // Otherwise, it's for a specific branch
   };
 
   return (
@@ -114,86 +106,125 @@ const AddressStep: React.FC<AddressStepProps> = ({
         </div>
       )}
 
-      {/* Main Address Fields */}
+      {/* Main Address Fields - Row 1 */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label={t('schools.countryWithAl')} required>
-          <Select
+        <FormField
+          label={t('schools.countryWithAl')}
+          required
+          error={errors.country?.message && t(errors.country.message)}
+        >
+          <Controller
             name="country"
-            value={formData.country}
-            onChange={onInputChange}
-            options={[
-              { value: '', label: t('schools.selectCountry') },
-              { value: 'egypt', label: 'مصر' },
-              { value: 'saudi', label: 'السعودية' },
-            ]}
-            required
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={[
+                  { value: '', label: t('schools.selectCountry') },
+                  { value: 'egypt', label: 'مصر' },
+                  { value: 'saudi', label: 'السعودية' },
+                ]}
+                required
+                disabled={readOnly}
+              />
+            )}
           />
         </FormField>
 
-        <FormField label={t('schools.region')} required>
-          <Input
+        <FormField
+          label={t('schools.region')}
+          required
+          error={errors.region?.message && t(errors.region.message)}
+        >
+          <Controller
             name="region"
-            value={formData.region}
-            onChange={onInputChange}
-            placeholder={t('schools.enterRegion')}
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Input {...field} placeholder={t('schools.enterRegion')} disabled={readOnly} />
+            )}
           />
         </FormField>
       </div>
 
+      {/* Main Address Fields - Row 2 */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label={t('schools.city')} required>
-          <Input
+        <FormField
+          label={t('schools.city')}
+          required
+          error={errors.city?.message && t(errors.city.message)}
+        >
+          <Controller
             name="city"
-            value={formData.city}
-            onChange={onInputChange}
-            placeholder={t('schools.enterCity')}
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Input {...field} placeholder={t('schools.enterCity')} disabled={readOnly} />
+            )}
           />
         </FormField>
 
-        <FormField label={t('schools.district')} required>
-          <Input
+        <FormField
+          label={t('schools.district')}
+          required
+          error={errors.district?.message && t(errors.district.message)}
+        >
+          <Controller
             name="district"
-            value={formData.district}
-            onChange={onInputChange}
-            placeholder={t('schools.enterDistrict')}
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Input {...field} placeholder={t('schools.enterDistrict')} disabled={readOnly} />
+            )}
           />
         </FormField>
       </div>
 
+      {/* Main Address Fields - Row 3 */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label={t('schools.street')} required>
-          <Input
+        <FormField
+          label={t('schools.street')}
+          required
+          error={errors.street?.message && t(errors.street.message)}
+        >
+          <Controller
             name="street"
-            value={formData.street}
-            onChange={onInputChange}
-            placeholder={t('schools.enterStreet')}
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Input {...field} placeholder={t('schools.enterStreet')} disabled={readOnly} />
+            )}
           />
         </FormField>
 
-        <FormField label={t('schools.buildingNumber')} required>
-          <Input
+        <FormField
+          label={t('schools.buildingNumber')}
+          required
+          error={errors.buildingNumber?.message && t(errors.buildingNumber.message)}
+        >
+          <Controller
             name="buildingNumber"
-            value={formData.buildingNumber}
-            onChange={onInputChange}
-            placeholder={t('schools.enterBuildingNumber')}
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                placeholder={t('schools.enterBuildingNumber')}
+                disabled={readOnly}
+              />
+            )}
           />
         </FormField>
       </div>
 
+      {/* Main Address Fields - Row 4 */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label={t('schools.postalCode')} required>
-          <Input
+        <FormField
+          label={t('schools.postalCode')}
+          required
+          error={errors.postalCode?.message && t(errors.postalCode.message)}
+        >
+          <Controller
             name="postalCode"
-            value={formData.postalCode}
-            onChange={onInputChange}
-            placeholder={t('schools.enterPostalCode')}
-            disabled={readOnly}
+            control={control}
+            render={({ field }) => (
+              <Input {...field} placeholder={t('schools.enterPostalCode')} disabled={readOnly} />
+            )}
           />
         </FormField>
 
@@ -203,35 +234,41 @@ const AddressStep: React.FC<AddressStepProps> = ({
       {/* Has Branches Toggle */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <FormField label="هل لديكم فروع اخري؟" required>
-          <div className="flex gap-6 text-right">
-            <div className="flex items-center justify-end">
-              <label
-                htmlFor="hasBranchesSwitch"
-                className="items-centers relative inline-flex h-6 w-11 cursor-pointer"
-              >
-                <input
-                  id="hasBranchesSwitch"
-                  type="checkbox"
-                  checked={formData.hasBranches}
-                  onChange={(e) => onRadioChange('hasBranches', e.target.checked)}
-                  className="peer sr-only"
-                  aria-label="هل لديكم فروع اخري"
-                  disabled={readOnly}
-                />
-                <div
-                  className={`h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600 ${readOnly ? 'opacity-50' : ''}`}
-                ></div>
-                <span
-                  className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5`}
-                ></span>
-              </label>
-            </div>
-          </div>
+          <Controller
+            name="hasBranches"
+            control={control}
+            render={({ field }) => (
+              <div className="flex gap-6 text-right">
+                <div className="flex items-center justify-end">
+                  <label
+                    htmlFor="hasBranchesSwitch"
+                    className="items-centers relative inline-flex h-6 w-11 cursor-pointer"
+                  >
+                    <input
+                      id="hasBranchesSwitch"
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={field.onChange}
+                      className="peer sr-only"
+                      aria-label="هل لديكم فروع اخري"
+                      disabled={readOnly}
+                    />
+                    <div
+                      className={`h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600 ${readOnly ? 'opacity-50' : ''}`}
+                    ></div>
+                    <span
+                      className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5`}
+                    ></span>
+                  </label>
+                </div>
+              </div>
+            )}
+          />
         </FormField>
       </div>
 
       {/* Branch Sections */}
-      {formData.hasBranches && (
+      {hasBranches && (
         <div className="space-y-8">
           {branches.map((branch, index) => (
             <div key={index} className="space-y-6 rounded-lg border border-gray-200 bg-gray-50 p-6">
@@ -270,7 +307,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
                 </Button>
               </div>
 
-              {/* Branch Fields */}
+              {/* Branch Fields - Row 1 */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField label={t('schools.countryWithAl')} required>
                   <Select
@@ -296,6 +333,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
                 </FormField>
               </div>
 
+              {/* Branch Fields - Row 2 */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField label={t('schools.city')} required>
                   <Input
@@ -316,6 +354,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
                 </FormField>
               </div>
 
+              {/* Branch Fields - Row 3 */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField label={t('schools.street')} required>
                   <Input
@@ -336,6 +375,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
                 </FormField>
               </div>
 
+              {/* Branch Fields - Row 4 */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField label={t('schools.postalCode')} required>
                   <Input
