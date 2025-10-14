@@ -23,6 +23,7 @@ export interface SchoolFormData {
   ibanNumber: string;
 
   // Contact Info
+  landline: string;
   phoneNumber: string;
   email: string;
   website: string;
@@ -74,6 +75,7 @@ export const initialSchoolFormData: SchoolFormData = {
   bankName: '',
   accountNumber: '',
   ibanNumber: '',
+  landline: '',
   phoneNumber: '',
   email: '',
   website: '',
