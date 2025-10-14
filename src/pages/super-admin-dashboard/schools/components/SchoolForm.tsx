@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { FormProvider } from 'react-hook-form';
 import StepIndicator from '@gradex/shared/components/StepIndicator';
 import Button from '@gradex/shared/components/Button';
 import PopupMessage from '@gradex/shared/components/PopupMessage';
@@ -34,18 +35,8 @@ const SchoolForm = ({
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  const {
-    formData,
-    files,
-    handleInputChange,
-    handlePhoneChange,
-    handleCheckboxChange,
-    handleRadioChange,
-    handleApplicationFeatureChange,
-    handleFacilityChange,
-    handleFileUpload,
-    handleFileDelete,
-  } = useSchoolForm(initialData);
+  const { form, files, handleFileUpload, handleFileDelete, validateCurrentStep } =
+    useSchoolForm(initialData);
 
   const steps = [
     {
@@ -78,22 +69,46 @@ const SchoolForm = ({
     },
   ];
 
-  const handleNext = () => {
+  /**
+   * Handle moving to next step with validation
+   */
+  const handleNext = async () => {
     if (currentStep < 4) {
-      setCurrentStep((prev) => prev + 1);
+      // Validate current step before proceeding
+      const isValid = await validateCurrentStep(currentStep);
+      if (isValid) {
+        // Clear all errors before moving to next step
+        form.clearErrors();
+        setCurrentStep((prev) => prev + 1);
+      }
     }
   };
 
-  //   const handlePrevious = () => {
-  //     if (currentStep > 1) {
-  //       setCurrentStep((prev) => prev - 1);
-  //     }
-  //   };
+  /**
+   * Handle moving to previous step
+   */
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      // Clear all errors when going back
+      form.clearErrors();
+      setCurrentStep((prev) => prev - 1);
+    }
+  };
 
-  const handleSubmit = async () => {
+  /**
+   * Handle form submission with validation
+   */
+  const handleSubmit = form.handleSubmit(async (data) => {
     try {
+      // Validate all steps before submission
+      const isValid = await validateCurrentStep(4);
+      if (!isValid) {
+        console.error('Form validation failed');
+        return;
+      }
+
       // TODO: Implement API call for create/update
-      console.log('Form Data:', formData);
+      console.log('Form Data:', data);
       console.log('Files:', files);
       console.log('Mode:', mode);
       console.log('School ID:', schoolId);
@@ -103,7 +118,7 @@ const SchoolForm = ({
     } catch (error) {
       console.error('Error submitting form:', error);
     }
-  };
+  });
 
   const handleCloseSuccessPopup = () => {
     setShowSuccessPopup(false);
@@ -111,7 +126,7 @@ const SchoolForm = ({
   };
 
   return (
-    <>
+    <FormProvider {...form}>
       {/* Success Popup */}
       {showSuccessPopup && (
         <PopupMessage
@@ -123,7 +138,7 @@ const SchoolForm = ({
         />
       )}
 
-      <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Step Indicator */}
         <StepIndicator steps={steps} currentStep={currentStep} />
 
@@ -131,10 +146,6 @@ const SchoolForm = ({
         <div className="rounded-lg border border-gray-200 bg-white">
           {currentStep === 1 && (
             <BasicInfoStep
-              formData={formData}
-              onInputChange={handleInputChange}
-              onRadioChange={handleRadioChange}
-              onCheckboxChange={handleApplicationFeatureChange}
               onLogoUpload={handleFileUpload('logo')}
               logoFileName={files.logo?.name}
               readOnly={mode === 'view'}
@@ -142,29 +153,12 @@ const SchoolForm = ({
             />
           )}
 
-          {currentStep === 2 && (
-            <ContactInfoStep
-              formData={formData}
-              onInputChange={handleInputChange}
-              onPhoneChange={handlePhoneChange}
-              onCheckboxChange={handleCheckboxChange}
-              readOnly={mode === 'view'}
-            />
-          )}
+          {currentStep === 2 && <ContactInfoStep readOnly={mode === 'view'} />}
 
-          {currentStep === 3 && (
-            <AddressStep
-              formData={formData}
-              onInputChange={handleInputChange}
-              onRadioChange={handleRadioChange}
-              readOnly={mode === 'view'}
-            />
-          )}
+          {currentStep === 3 && <AddressStep readOnly={mode === 'view'} />}
 
           {currentStep === 4 && (
             <FacilitiesStep
-              formData={formData}
-              onCheckboxChange={handleFacilityChange}
               onImageUpload={handleFileUpload('image')}
               onCertificateUpload={handleFileUpload('certificate')}
               onImageDelete={handleFileDelete('image')}
@@ -176,38 +170,54 @@ const SchoolForm = ({
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-end p-6">
-            {mode === 'view' ? (
-              // View mode - only show Next button (no Save/Cancel)
-              <div className="flex gap-3">
-                {currentStep < 4 && (
-                  <Button variant="primary" onClick={handleNext}>
-                    {t('common.next')}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              // Add/Edit mode - show Cancel and Next/Save buttons
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => navigate('/dashboard/schools')}>
-                  {t('common.cancel')}
+          <div className="flex justify-between p-6">
+            {/* Previous Button */}
+            <div>
+              {currentStep > 1 && mode !== 'view' && (
+                <Button type="button" variant="outline" onClick={handlePrevious}>
+                  {t('common.previous')}
                 </Button>
+              )}
+            </div>
 
-                {currentStep < 4 ? (
-                  <Button variant="primary" onClick={handleNext}>
-                    {t('common.next')}
+            {/* Next/Save/Cancel Buttons */}
+            <div className="flex gap-3">
+              {mode === 'view' ? (
+                // View mode - only show Next button
+                <>
+                  {currentStep < 4 && (
+                    <Button type="button" variant="primary" onClick={handleNext}>
+                      {t('common.next')}
+                    </Button>
+                  )}
+                </>
+              ) : (
+                // Add/Edit mode - show Cancel and Next/Save buttons
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate('/dashboard/schools')}
+                  >
+                    {t('common.cancel')}
                   </Button>
-                ) : (
-                  <Button variant="primary" onClick={handleSubmit}>
-                    {t('common.save')}
-                  </Button>
-                )}
-              </div>
-            )}
+
+                  {currentStep < 4 ? (
+                    <Button type="button" variant="primary" onClick={handleNext}>
+                      {t('common.next')}
+                    </Button>
+                  ) : (
+                    <Button type="submit" variant="primary">
+                      {t('common.save')}
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </>
+      </form>
+    </FormProvider>
   );
 };
 
