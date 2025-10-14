@@ -32,9 +32,15 @@ interface AddressStepProps {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => void;
   onRadioChange: (name: string, value: boolean) => void;
+  readOnly?: boolean;
 }
 
-const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRadioChange }) => {
+const AddressStep: React.FC<AddressStepProps> = ({
+  formData,
+  onInputChange,
+  onRadioChange,
+  readOnly = false,
+}) => {
   const { t } = useTranslation();
   const [branches, setBranches] = useState<BranchData[]>([
     {
@@ -95,16 +101,18 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
   return (
     <div className="space-y-6 p-4">
       {/* Map Button */}
-      <div className="mb-6 flex w-full justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => handleOpenMapModal(null)}
-          className="border-none bg-transparent text-left text-lg font-semibold text-green-600 hover:bg-transparent"
-        >
-          تحديد علي الخريطة
-        </Button>
-      </div>
+      {!readOnly && (
+        <div className="mb-6 flex w-full justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenMapModal(null)}
+            className="border-none bg-transparent text-left text-lg font-semibold text-green-600 hover:bg-transparent"
+          >
+            تحديد علي الخريطة
+          </Button>
+        </div>
+      )}
 
       {/* Main Address Fields */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -119,6 +127,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
               { value: 'saudi', label: 'السعودية' },
             ]}
             required
+            disabled={readOnly}
           />
         </FormField>
 
@@ -128,6 +137,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
             value={formData.region}
             onChange={onInputChange}
             placeholder={t('schools.enterRegion')}
+            disabled={readOnly}
           />
         </FormField>
       </div>
@@ -139,6 +149,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
             value={formData.city}
             onChange={onInputChange}
             placeholder={t('schools.enterCity')}
+            disabled={readOnly}
           />
         </FormField>
 
@@ -148,6 +159,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
             value={formData.district}
             onChange={onInputChange}
             placeholder={t('schools.enterDistrict')}
+            disabled={readOnly}
           />
         </FormField>
       </div>
@@ -159,6 +171,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
             value={formData.street}
             onChange={onInputChange}
             placeholder={t('schools.enterStreet')}
+            disabled={readOnly}
           />
         </FormField>
 
@@ -168,6 +181,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
             value={formData.buildingNumber}
             onChange={onInputChange}
             placeholder={t('schools.enterBuildingNumber')}
+            disabled={readOnly}
           />
         </FormField>
       </div>
@@ -179,6 +193,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
             value={formData.postalCode}
             onChange={onInputChange}
             placeholder={t('schools.enterPostalCode')}
+            disabled={readOnly}
           />
         </FormField>
 
@@ -192,7 +207,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
             <div className="flex items-center justify-end">
               <label
                 htmlFor="hasBranchesSwitch"
-                className="relative inline-flex h-6 w-11 cursor-pointer items-center"
+                className="items-centers relative inline-flex h-6 w-11 cursor-pointer"
               >
                 <input
                   id="hasBranchesSwitch"
@@ -201,9 +216,10 @@ const AddressStep: React.FC<AddressStepProps> = ({ formData, onInputChange, onRa
                   onChange={(e) => onRadioChange('hasBranches', e.target.checked)}
                   className="peer sr-only"
                   aria-label="هل لديكم فروع اخري"
+                  disabled={readOnly}
                 />
                 <div
-                  className={`h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600`}
+                  className={`h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600 ${readOnly ? 'opacity-50' : ''}`}
                 ></div>
                 <span
                   className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5`}
