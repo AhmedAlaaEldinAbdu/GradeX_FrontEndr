@@ -60,7 +60,7 @@ export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPop
               onChange={(e) => setMessage(e.target.value)}
               placeholder={t('schools.enterEditRequest')}
               rows={3}
-              className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-green-500 focus:ring focus:ring-green-100"
+              className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 resize-none text-gray-700 "
             />
           </div>
 
