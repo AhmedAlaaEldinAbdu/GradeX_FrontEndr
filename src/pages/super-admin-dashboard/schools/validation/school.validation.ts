@@ -16,7 +16,13 @@ export const basicInfoSchema = yup.object().shape({
   academicSystem: yup
     .string()
     .required('schools.validation.academicSystemRequired')
-    .oneOf(['government', 'private', 'national'], 'schools.validation.academicSystemInvalid'),
+    .test('valid-academic-systems', 'schools.validation.academicSystemInvalid', function (value) {
+      if (!value) return false;
+      // Split comma-separated values and check if all are valid
+      const validOptions = ['government', 'private', 'national'];
+      const selectedSystems = value.split(',').map((s) => s.trim());
+      return selectedSystems.every((system) => validOptions.includes(system));
+    }),
 
   country: yup
     .string()
