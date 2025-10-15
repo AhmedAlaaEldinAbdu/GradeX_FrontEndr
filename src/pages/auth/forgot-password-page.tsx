@@ -126,7 +126,7 @@ const ForgotPasswordPage: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 text-start">
               {/* Email Field */}
               <div>
                 <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
