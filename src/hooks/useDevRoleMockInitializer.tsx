@@ -10,6 +10,7 @@ export const useDevRoleMockInitializer = () => {
   const currentRole = useSelector(selectUserRole);
 
   useEffect(() => {
+    return;
     const savedRole = localStorage.getItem('dev_current_role') as UserRoleType | null;
 
     if (!currentUser) {
