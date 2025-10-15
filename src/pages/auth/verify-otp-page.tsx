@@ -258,13 +258,13 @@ const VerifyOtpPage: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-6 text-center">
+        {/* <div className="border-t border-gray-200 p-6 text-center">
           <p className="text-sm text-gray-600">
             {isRTL
               ? '© 2024 نظام إدارة المدارس. جميع الحقوق محفوظة.'
               : '© 2024 School Management System. All rights reserved.'}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* Right Side - Illustration */}
