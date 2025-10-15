@@ -15,3 +15,5 @@ export { default as FormField } from './FormField';
 export { default as StepIndicator } from './StepIndicator';
 export { default as MapLocationModal } from './MapLocationModal';
 export { default as PhoneInput } from './PhoneInput';
+export { default as MultiSelectTagInput } from './MultiSelectTagInput';
+export type { MultiSelectOption } from './MultiSelectTagInput';
