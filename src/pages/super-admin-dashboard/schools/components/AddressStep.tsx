@@ -271,7 +271,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
       {hasBranches && (
         <div className="space-y-8">
           {branches.map((branch, index) => (
-            <div key={index} className="space-y-6 rounded-lg border border-gray-200 bg-gray-50 p-6">
+            <div key={index} className="space-y-6 rounded-lg border border-gray-200 p-4">
               {/* Branch Header with Add Button */}
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-700">
