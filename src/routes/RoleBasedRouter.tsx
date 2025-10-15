@@ -8,6 +8,13 @@ import React from 'react';
 import { UserRole } from '@gradex/constants';
 import SuperAdminRouter from './SuperAdminRouter';
 import SchoolRouter from './SchoolRouter';
+import {
+  LoginPage,
+  VerifyOtpPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
+  PasswordResetSuccessPage,
+} from '@gradex/pages/auth';
 
 /**
  * Role-Based Router
@@ -20,14 +27,11 @@ const RoleBasedRouter: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <Routes>
-        <Route
-          path="/login"
-          element={
-            <div className="py-16 text-center">
-              <h2 className="text-2xl font-bold text-gray-800">Login Page</h2>
-            </div>
-          }
-        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth/verify-otp" element={<VerifyOtpPage />} />
+        <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/auth/password-reset-success" element={<PasswordResetSuccessPage />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
