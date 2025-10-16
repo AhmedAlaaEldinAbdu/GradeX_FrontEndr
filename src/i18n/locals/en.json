@@ -92,7 +92,21 @@
     "passwordRequired": "Password is required",
     "passwordTooShort": "Password must be at least 6 characters",
     "manageSchoolTitle": "Manage Your School with Ease",
-    "manageSchoolSubtitle": "A complete system to manage all school operations efficiently and professionally"
+    "manageSchoolSubtitle": "A complete system to manage all school operations efficiently and professionally",
+    "emailInvalid": "Invalid email address. Please try again.",
+    "passwordInvalid": "Incorrect password. Please try again.",
+    "loginSuccess": "Logged in successfully",
+    "verificationCode": "Verification Code",
+    "enterVerificationCode": "Enter the code sent to your email",
+    "resendCodeIn": "Resend code in",
+    "seconds": "seconds",
+    "confirm": "Confirm",
+    "invalidCode": "The code entered is incorrect. Please try again.",
+    "resendCode": "Resend Code",
+    "changePassword": "Change Password",
+    "confirmPassword": "Confirm Password",
+    "passwordsNotMatch": "Passwords do not match. Please try again.",
+    "passwordChanged": "Password changed successfully"
   },
   "rolesManagement": {
     "title": "Employees & Administration",

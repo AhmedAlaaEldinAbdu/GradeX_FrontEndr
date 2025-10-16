@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ComputerLoginBanner from '@gradex/assets/illustrations/ComputerLoginBanner.svg';
+import GradeXLogo from '@/assets/identity/GradeX.svg';
 
 const ForgotPasswordPage: React.FC = () => {
   const { i18n } = useTranslation();
@@ -110,11 +111,11 @@ const ForgotPasswordPage: React.FC = () => {
 
             {/* Logo */}
             <div className="mb-8 text-center">
-              <div className="mb-6 flex justify-center">
+              {/* <div className="mb-6 flex justify-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1FAD6C]">
                   <span className="text-2xl font-bold text-white">G</span>
                 </div>
-              </div>
+              </div> */}
               <h1 className="mb-2 text-3xl font-bold text-gray-900">
                 {isRTL ? 'نسيت كلمة المرور؟' : 'Forgot Password?'}
               </h1>
@@ -216,24 +217,30 @@ const ForgotPasswordPage: React.FC = () => {
       </div>
 
       {/* Right Side - Illustration */}
-      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-center lg:justify-center lg:p-12">
-        <div className="max-w-lg text-center">
-          {/* Illustration - Lock/Key */}
-          <div className="mb-8">
-            <div className="mb-8">
-              <img src={ComputerLoginBanner} alt="Login Illustration" className="w-full" />
-            </div>
+      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
+        <div className="flex flex-col gap-24">
+          <div className="flex items-center justify-center">
+            <img src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />
           </div>
 
-          {/* Text */}
-          <h2 className="mb-4 text-3xl font-bold text-green-900">
-            {isRTL ? 'استعادة حسابك' : 'Recover Your Account'}
-          </h2>
-          <p className="text-lg text-green-900/90">
-            {isRTL
-              ? 'سنساعدك على استعادة الوصول إلى حسابك بسرعة وأمان'
-              : "We'll help you regain access to your account quickly and securely"}
-          </p>
+          <div className="max-w-lg text-center">
+            {/* Illustration - Lock/Key */}
+            <div className="mb-8">
+              <div className="mb-8">
+                <img src={ComputerLoginBanner} alt="Login Illustration" className="w-full" />
+              </div>
+            </div>
+
+            {/* Text */}
+            <h2 className="mb-4 text-3xl font-bold text-green-900">
+              {isRTL ? 'استعادة حسابك' : 'Recover Your Account'}
+            </h2>
+            <p className="text-lg text-green-900/90">
+              {isRTL
+                ? 'سنساعدك على استعادة الوصول إلى حسابك بسرعة وأمان'
+                : "We'll help you regain access to your account quickly and securely"}
+            </p>
+          </div>
         </div>
       </div>
     </div>

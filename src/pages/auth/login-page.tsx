@@ -6,17 +6,19 @@ import { setUser } from '@gradex/redux/features/auth/authSlice';
 import { UserRole } from '@gradex/constants';
 import ComputerLoginBanner from '@gradex/assets/illustrations/ComputerLoginBanner.svg';
 import CustomCheckbox from '@/shared/components/CustomCheckbox';
+import GradeXLogo from '@/assets/identity/GradeX.svg';
+import FormErrorMessage from '@/shared/components/FormErrorMessage';
+import { useForm } from 'react-hook-form';
+import { LoginSchema, type LoginProps } from '@/validations/auth';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const LoginPage: React.FC = () => {
   const { t, i18n } = useTranslation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
 
   // Language toggle
@@ -28,35 +30,17 @@ const LoginPage: React.FC = () => {
   //     i18n.changeLanguage(newLang);
   //   };
 
-  // Validation
-  const validateForm = () => {
-    const newErrors: { email?: string; password?: string } = {};
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginProps>({
+    resolver: yupResolver(LoginSchema),
+    mode: 'onChange',
+    reValidateMode: 'onSubmit',
+  });
 
-    if (!email) {
-      newErrors.email = isRTL ? 'البريد الإلكتروني مطلوب' : 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = isRTL ? 'البريد الإلكتروني غير صالح' : 'Invalid email address';
-    }
-
-    if (!password) {
-      newErrors.password = isRTL ? 'كلمة المرور مطلوبة' : 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = isRTL
-        ? 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'
-        : 'Password must be at least 6 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+  const onSubmit = async (data: LoginProps) => {
     setIsLoading(true);
 
     // Simulate API call
@@ -66,7 +50,7 @@ const LoginPage: React.FC = () => {
         setUser({
           id: 1,
           name: isRTL ? 'مستخدم النظام' : 'System User',
-          email: email,
+          email: data.email,
           role: UserRole.SUPER_ADMIN,
         })
       );
@@ -74,7 +58,7 @@ const LoginPage: React.FC = () => {
       setIsLoading(false);
 
       // Navigate to OTP verification
-      navigate('/auth/verify-otp', { state: { email } });
+      navigate('/auth/verify-otp', { state: { email: data.email } });
     }, 1000);
   };
 
@@ -124,26 +108,19 @@ const LoginPage: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="space-y-6">
               {/* Email Field */}
               <div>
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-start text-sm font-medium text-gray-700"
-                >
+                <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                   {t('login.emailLabel')}
                 </label>
                 <div className="relative">
                   <input
                     id="email"
                     type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (errors.email) {
-                        setErrors({ ...errors, email: undefined });
-                      }
-                    }}
+                    inputMode="email"
+                    autoComplete="email"
+                    {...register('email')}
                     className={`w-full rounded-lg border ${
                       errors.email ? 'border-red-500' : 'border-gray-300'
                     } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
@@ -173,7 +150,8 @@ const LoginPage: React.FC = () => {
                     </svg>
                   </div>
                 </div>
-                {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+                {/* {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>} */}
+                <FormErrorMessage message={errors.email?.message} />
               </div>
 
               {/* Password Field */}
@@ -188,13 +166,7 @@ const LoginPage: React.FC = () => {
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (errors.password) {
-                        setErrors({ ...errors, password: undefined });
-                      }
-                    }}
+                    {...register('password')}
                     className={`w-full rounded-lg border ${
                       errors.password ? 'border-red-500' : 'border-gray-300'
                     } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
@@ -251,7 +223,7 @@ const LoginPage: React.FC = () => {
                     )}
                   </button>
                 </div>
-                {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
+                <FormErrorMessage message={errors.password?.message} />
               </div>
 
               {/* Remember Me & Forgot Password */}
@@ -259,7 +231,7 @@ const LoginPage: React.FC = () => {
                 <CustomCheckbox
                   name="saveLoginData"
                   checked={rememberMe}
-                  onChange={(e) => setRememberMe()}
+                  onChange={(checked: boolean) => setRememberMe(checked)}
                   label={t('login.saveLoginData')}
                 />
                 {/* <label className="flex items-center">
@@ -285,7 +257,7 @@ const LoginPage: React.FC = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isSubmitting || isLoading}
                 className="w-full rounded-lg bg-[#1FAD6C] px-4 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
@@ -303,16 +275,24 @@ const LoginPage: React.FC = () => {
       </div>
 
       {/* Right Side - Illustration */}
-      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-center lg:justify-center lg:p-12">
-        <div className="max-w-lg text-center">
-          {/* Illustration */}
-          <div className="mb-8">
-            <img src={ComputerLoginBanner} alt="Login Illustration" className="w-full" />
+      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
+        <div className="flex flex-col gap-24">
+          <div className="flex items-center justify-center">
+            <img src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />
           </div>
 
-          {/* Text */}
-          <h2 className="mb-4 text-3xl font-bold text-green-900">{t('login.manageSchoolTitle')}</h2>
-          <p className="text-green/90 text-lg">{t('login.manageSchoolSubtitle')}</p>
+          <div className="max-w-lg text-center">
+            {/* Illustration */}
+            <div className="mb-8">
+              <img src={ComputerLoginBanner} alt="Login Illustration" className="w-full" />
+            </div>
+
+            {/* Text */}
+            <h2 className="mb-4 text-3xl font-bold text-green-900">
+              {t('login.manageSchoolTitle')}
+            </h2>
+            <p className="text-green/90 text-lg">{t('login.manageSchoolSubtitle')}</p>
+          </div>
         </div>
       </div>
     </div>

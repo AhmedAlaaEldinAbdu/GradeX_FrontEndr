@@ -92,7 +92,21 @@
     "passwordRequired": "كلمة المرور مطلوبة",
     "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
     "manageSchoolTitle": "إدارة مدرستك بسهولة",
-    "manageSchoolSubtitle": "نظام متكامل لإدارة جميع عمليات المدرسة بكفاءة واحترافية"
+    "manageSchoolSubtitle": "نظام متكامل لإدارة جميع عمليات المدرسة بكفاءة واحترافية",
+    "emailInvalid": "البريد الإلكتروني غير صحيحة. يرجى المحاولة مرة أخرى",
+    "passwordInvalid": "كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى",
+    "loginSuccess": "تم تسجيل الدخول بنجاح",
+    "verificationCode": "رمز التحقق",
+    "enterVerificationCode": "قم بكتابة الرمز الذي تم إرسال رمز التحقق إلي بريدك الإلكتروني",
+    "resendCodeIn": "إعادة إرسال الرمز خلال",
+    "seconds": "ثانية",
+    "confirm": "التأكيد",
+    "invalidCode": "الرمز الذي تم إدخاله خاطئ حاول مرة أخري",
+    "resendCode": "إعادة إرسال الرمز",
+    "changePassword": "تغيير كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "passwordsNotMatch": "كلمة المرور غير متشابهة برجاء المحاولة مرة أخري.",
+    "passwordChanged": "تم تغيير كلمة المرور بنجاح"
   },
   "rolesManagement": {
     "title": "الموظفين والإدارة",
