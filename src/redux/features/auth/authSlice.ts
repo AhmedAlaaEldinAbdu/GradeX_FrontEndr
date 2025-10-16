@@ -24,6 +24,7 @@ export const login = createAsyncThunk(
         name: 'Admin user',
         email: credentials.email,
         role: UserRole.SUPER_ADMIN,
+        isAuthenticated: false
       },
       token: 'mock-token',
     };
@@ -47,7 +48,7 @@ const authSlice = createSlice({
      */
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
-      state.isAuthenticated = true;
+      state.isAuthenticated = action.payload.isAuthenticated;
       state.error = null;
     },
     /**

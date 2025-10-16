@@ -7,6 +7,7 @@ export interface User {
   role: UserRoleType;
   avatar?: string;
   permissions?: string[];
+  isAuthenticated?: any;
 }
 
 export interface AuthState {

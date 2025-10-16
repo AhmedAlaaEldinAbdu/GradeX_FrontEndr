@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import EnterOTP from '@gradex/assets/illustrations/EnterOTP.svg';
+import GradeXLogo from '@/assets/identity/GradeX.svg';
 
 const VerifyOtpPage: React.FC = () => {
   const { i18n } = useTranslation();
@@ -10,7 +11,7 @@ const VerifyOtpPage: React.FC = () => {
   const email = location.state?.email || '';
   const fromForgotPassword = location.state?.fromForgotPassword || false;
 
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '',]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [countdown, setCountdown] = useState(60);
@@ -77,7 +78,7 @@ const VerifyOtpPage: React.FC = () => {
     e.preventDefault();
 
     const otpValue = otp.join('');
-    if (otpValue.length !== 6) {
+    if (otpValue.length !== 4) {
       setError(isRTL ? 'الرجاء إدخال الرمز كاملاً' : 'Please enter the complete code');
       return;
     }
@@ -171,11 +172,11 @@ const VerifyOtpPage: React.FC = () => {
 
             {/* Logo */}
             <div className="mb-8 text-center">
-              <div className="mb-6 flex justify-center">
+              {/* <div className="mb-6 flex justify-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1FAD6C]">
                   <span className="text-2xl font-bold text-white">G</span>
                 </div>
-              </div>
+              </div> */}
               <h1 className="mb-2 text-3xl font-bold text-gray-900">
                 {isRTL ? 'التحقق من الرمز' : 'Verify Code'}
               </h1>
@@ -190,8 +191,8 @@ const VerifyOtpPage: React.FC = () => {
               <div>
                 <label className="mb-4 block text-center text-sm font-medium text-gray-700">
                   {isRTL
-                    ? 'أدخل رمز التحقق المكون من 6 أرقام'
-                    : 'Enter the 6-digit verification code'}
+                    ? 'أدخل رمز التحقق المكون من 4 أرقام'
+                    : 'Enter the 4-digit verification code'}
                 </label>
                 <div className="flex justify-center gap-2" dir="ltr">
                   {otp.map((digit, index) => (
@@ -241,7 +242,7 @@ const VerifyOtpPage: React.FC = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading || otp.join('').length !== 6}
+                disabled={isLoading || otp.join('').length !== 4}
                 className="w-full rounded-lg bg-[#1FAD6C] px-4 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
@@ -268,24 +269,29 @@ const VerifyOtpPage: React.FC = () => {
       </div>
 
       {/* Right Side - Illustration */}
-      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-center lg:justify-center lg:p-12">
-        <div className="max-w-lg text-center">
-          {/* Illustration - Security/Shield */}
-          <div className="mb-8">
-            <div className="mb-8">
-              <img src={EnterOTP} alt="Enter OTP Illustration" className="w-full" />
-            </div>
+      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
+        <div className="flex flex-col gap-24">
+          <div className="flex items-center justify-center">
+            <img src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />
           </div>
+          <div className="max-w-lg text-center">
+            {/* Illustration - Security/Shield */}
+            <div className="mb-8">
+              <div className="mb-8">
+                <img src={EnterOTP} alt="Enter OTP Illustration" className="w-full" />
+              </div>
+            </div>
 
-          {/* Text */}
-          <h2 className="mb-4 text-3xl font-bold text-green-900">
-            {isRTL ? 'حماية حسابك' : 'Secure Your Account'}
-          </h2>
-          <p className="text-lg text-green-900/90">
-            {isRTL
-              ? 'نحن نهتم بأمان بياناتك وخصوصيتها'
-              : 'We care about the security and privacy of your data'}
-          </p>
+            {/* Text */}
+            <h2 className="mb-4 text-3xl font-bold text-green-900">
+              {isRTL ? 'حماية حسابك' : 'Secure Your Account'}
+            </h2>
+            <p className="text-lg text-green-900/90">
+              {isRTL
+                ? 'نحن نهتم بأمان بياناتك وخصوصيتها'
+                : 'We care about the security and privacy of your data'}
+            </p>
+          </div>
         </div>
       </div>
     </div>

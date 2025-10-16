@@ -17,6 +17,7 @@ const LoginPage: React.FC = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,9 +53,10 @@ const LoginPage: React.FC = () => {
           name: isRTL ? 'مستخدم النظام' : 'System User',
           email: data.email,
           role: UserRole.SUPER_ADMIN,
+          isAuthenticated: false
         })
       );
-
+      
       setIsLoading(false);
 
       // Navigate to OTP verification
