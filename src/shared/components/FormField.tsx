@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface FormFieldProps {
   label: string;
@@ -15,12 +16,16 @@ const FormField: React.FC<FormFieldProps> = ({
   error,
   children,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div>
-      <label className="mb-2 block text-right text-sm font-medium text-gray-700">
+      <label
+        className={`mb-2 block text-right text-sm font-medium text-gray-700 ${required && 'required'}`}
+      >
         {label}
-        {required && <span className="text-red-500">*</span>}
-        {optional && <span className="text-xs text-gray-400">(اختياري)</span>}
+        {/* {required && <span className="text-red-500">*</span>} */}
+        {optional && <span className="text-xs text-gray-400"> ({t('schools.optional')}) </span>}
       </label>
       {children}
       {error && <p className="mt-1 text-right text-xs text-red-600">{error}</p>}
