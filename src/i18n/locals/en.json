@@ -74,6 +74,26 @@
     "successEdit": "Edited successfully",
     "successDelete": "Deleted successfully"
   },
+  "login": {
+    "title": "Sign In",
+    "emailLabel": "Email Address",
+    "emailInput": "Enter email address",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "passwordInput": "Enter password",
+    "passwordPlaceholder": "Enter your password",
+    "saveLoginData": "Save login data",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signInButton": "Sign In",
+    "signingIn": "Signing in...",
+    "invalidEmail": "Invalid email address",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "manageSchoolTitle": "Manage Your School with Ease",
+    "manageSchoolSubtitle": "A complete system to manage all school operations efficiently and professionally"
+  },
   "rolesManagement": {
     "title": "Employees & Administration",
     "rolesAndPermissions": "Roles & Permissions",

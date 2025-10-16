@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { setUser } from '@gradex/redux/features/auth/authSlice';
 import { UserRole } from '@gradex/constants';
 import ComputerLoginBanner from '@gradex/assets/illustrations/ComputerLoginBanner.svg';
+import CustomCheckbox from '@/shared/components/CustomCheckbox';
 
 const LoginPage: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
@@ -113,14 +115,12 @@ const LoginPage: React.FC = () => {
           <div className="w-full max-w-md">
             {/* Logo */}
             <div className="mb-8 text-center">
-              <div className="mb-6 flex justify-center">
+              {/* <div className="mb-6 flex justify-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1FAD6C]">
                   <span className="text-2xl font-bold text-white">G</span>
                 </div>
-              </div>
-              <h1 className="mb-2 text-3xl font-bold text-gray-900">
-                {isRTL ? 'تسجيل الدخول' : 'Sign In'}
-              </h1>
+              </div> */}
+              <h1 className="mb-2 text-3xl font-bold text-gray-900">{t('login.title')}</h1>
             </div>
 
             {/* Form */}
@@ -131,7 +131,7 @@ const LoginPage: React.FC = () => {
                   htmlFor="email"
                   className="mb-2 block text-start text-sm font-medium text-gray-700"
                 >
-                  {isRTL ? 'البريد الإلكتروني' : 'Email Address'}
+                  {t('login.emailLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -149,7 +149,7 @@ const LoginPage: React.FC = () => {
                     } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
                       errors.email ? 'focus:ring-red-500' : 'focus:ring-[#1FAD6C]'
                     }`}
-                    placeholder={isRTL ? 'أدخل البريد الإلكتروني' : 'Enter your email'}
+                    placeholder={t('login.emailInput')}
                   />
                   <div
                     className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${
@@ -182,7 +182,7 @@ const LoginPage: React.FC = () => {
                   htmlFor="password"
                   className="mb-2 block text-start text-sm font-medium text-gray-700"
                 >
-                  {isRTL ? 'كلمة المرور' : 'Password'}
+                  {t('login.passwordLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -200,7 +200,7 @@ const LoginPage: React.FC = () => {
                     } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
                       errors.password ? 'focus:ring-red-500' : 'focus:ring-[#1FAD6C]'
                     } ${isRTL ? 'pl-12' : 'pr-12'}`}
-                    placeholder={isRTL ? 'أدخل كلمة المرور' : 'Enter your password'}
+                    placeholder={t('login.passwordInput')}
                   />
                   <button
                     type="button"
@@ -217,12 +217,21 @@ const LoginPage: React.FC = () => {
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
                       >
-                        <path
-                          d="M2.5 10C2.5 10 5 4.5 10 4.5C15 4.5 17.5 10 17.5 10C17.5 10 15 15.5 10 15.5C5 15.5 2.5 10 2.5 10Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                        />
-                        <circle cx="10" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+                        <g clip-path="url(#clip0_1761_65302)">
+                          <path
+                            d="M7.49635 10.9966C7.49635 12.3771 8.61952 13.5002 10 13.5002C11.3806 13.5002 12.5037 12.3771 12.5037 10.9966C12.5037 9.61603 11.3806 8.49286 10 8.49286C8.61952 8.49286 7.49635 9.61603 7.49635 10.9966ZM11.327 10.9966C11.327 11.7282 10.7317 12.3235 10 12.3235C9.26837 12.3235 8.6731 11.7282 8.6731 10.9966C8.6731 10.2649 9.26837 9.66961 10 9.66961C10.7317 9.66961 11.327 10.2649 11.327 10.9966Z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M19.8808 10.6415C19.836 10.5823 18.7649 9.17742 17.0274 7.75755C16.426 7.26618 15.8173 6.83326 15.207 6.46156L15.8237 5.60163C16.0131 5.33757 15.9525 4.96995 15.6885 4.78057C15.4244 4.59119 15.0568 4.65176 14.8675 4.91578L14.1691 5.88962C14.083 5.84718 13.9969 5.80556 13.9108 5.76571C12.7905 5.24645 11.6757 4.94481 10.5884 4.8642V3.43676C10.5884 3.11182 10.3249 2.84839 10 2.84839C9.67506 2.84839 9.41162 3.11182 9.41162 3.43676V4.86424C8.32427 4.94485 7.20946 5.24653 6.08915 5.76575C6.00313 5.8056 5.91707 5.84726 5.83093 5.88966L5.13253 4.91582C4.94319 4.65184 4.57565 4.59123 4.31147 4.78061C4.04745 4.96999 3.98689 5.33757 4.17627 5.60167L4.79296 6.4616C4.18274 6.83329 3.574 7.26622 2.97265 7.75759C1.23514 9.17742 0.164019 10.5823 0.119264 10.6415C-0.0397545 10.8515 -0.0397545 11.1417 0.119264 11.3517C0.164019 11.4108 1.2351 12.8157 2.97269 14.2356C3.99975 15.0748 5.04824 15.7449 6.08915 16.2274C7.35149 16.8124 8.60685 17.1217 9.82376 17.149C9.88233 17.1507 9.94104 17.1517 10 17.1517C10.059 17.1517 10.1177 17.1507 10.1762 17.149C11.3931 17.1217 12.6485 16.8124 13.9108 16.2274C14.9518 15.7449 16.0003 15.0747 17.0273 14.2356C18.7649 12.8157 19.836 11.4108 19.8807 11.3517C20.0398 11.1417 20.0398 10.8515 19.8808 10.6415ZM14.9785 10.9966C14.9785 13.6958 12.8191 15.9002 10.1371 15.973C10.0914 15.974 10.0458 15.975 10 15.975C9.94662 15.975 9.89343 15.9735 9.8402 15.9722C7.16882 15.8874 5.0216 13.6882 5.0216 10.9966C5.0216 8.29729 7.18102 6.09292 9.86299 6.02008C9.90861 6.01914 9.95422 6.01812 10 6.01812C10.0534 6.01812 10.1066 6.01965 10.1598 6.02095C12.8313 6.10567 14.9785 8.30498 14.9785 10.9966ZM1.34716 10.9968C1.86725 10.3835 3.05451 9.08497 4.64328 7.96776C4.13535 8.86256 3.84485 9.89622 3.84485 10.9966C3.84485 12.0975 4.13567 13.1317 4.64414 14.0268C4.31657 13.7975 4.01329 13.5654 3.73816 13.3413C2.60754 12.4205 1.76361 11.4886 1.34716 10.9968ZM15.3568 14.0254C15.8647 13.1306 16.1552 12.0969 16.1552 10.9966C16.1552 9.89559 15.8644 8.86138 15.356 7.96627C15.6835 8.19562 15.9868 8.42771 16.262 8.6518C17.3925 9.57261 18.2363 10.5044 18.6529 10.9964C18.1328 11.6096 16.9456 12.9082 15.3568 14.0254Z"
+                            fill="currentColor"
+                          />
+                        </g>
+                        <defs>
+                          <clipPath id="clip0_1761_65302">
+                            <rect width="20" height="20" fill="white" />
+                          </clipPath>
+                        </defs>
                       </svg>
                     ) : (
                       <svg
@@ -247,7 +256,13 @@ const LoginPage: React.FC = () => {
 
               {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
-                <label className="flex items-center">
+                <CustomCheckbox
+                  name="saveLoginData"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe()}
+                  label={t('login.saveLoginData')}
+                />
+                {/* <label className="flex items-center">
                   <input
                     type="checkbox"
                     checked={rememberMe}
@@ -255,15 +270,15 @@ const LoginPage: React.FC = () => {
                     className="h-4 w-4 rounded border-gray-300 text-[#1FAD6C] focus:ring-[#1FAD6C]"
                   />
                   <span className={`text-sm text-gray-700 ${isRTL ? 'mr-2' : 'ml-2'}`}>
-                    {isRTL ? 'تذكرني' : 'Remember me'}
+                    {t('login.saveLoginData')}
                   </span>
-                </label>
+                </label> */}
                 <button
                   type="button"
                   onClick={() => navigate('/auth/forgot-password')}
                   className="text-sm font-medium text-[#1FAD6C] transition-colors hover:text-[#178f5a]"
                 >
-                  {isRTL ? 'نسيت كلمة المرور؟' : 'Forgot password?'}
+                  {t('login.forgotPassword')}
                 </button>
               </div>
 
@@ -276,10 +291,10 @@ const LoginPage: React.FC = () => {
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    <span>{isRTL ? 'جاري تسجيل الدخول...' : 'Signing in...'}</span>
+                    {isLoading && <span>{t('login.signingIn')}</span>}
                   </div>
                 ) : (
-                  <span>{isRTL ? 'تسجيل الدخول' : 'Sign In'}</span>
+                  <span>{t('login.signInButton')}</span>
                 )}
               </button>
             </form>
@@ -296,14 +311,8 @@ const LoginPage: React.FC = () => {
           </div>
 
           {/* Text */}
-          <h2 className="mb-4 text-3xl font-bold text-green-900">
-            {isRTL ? 'إدارة مدرستك بسهولة' : 'Manage Your School with Ease'}
-          </h2>
-          <p className="text-green/90 text-lg">
-            {isRTL
-              ? 'نظام متكامل لإدارة جميع عمليات المدرسة بكفاءة واحترافية'
-              : 'A complete system to manage all school operations efficiently and professionally'}
-          </p>
+          <h2 className="mb-4 text-3xl font-bold text-green-900">{t('login.manageSchoolTitle')}</h2>
+          <p className="text-green/90 text-lg">{t('login.manageSchoolSubtitle')}</p>
         </div>
       </div>
     </div>

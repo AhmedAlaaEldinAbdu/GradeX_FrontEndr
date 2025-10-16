@@ -74,6 +74,26 @@
     "successEdit": "تم التعديل بنجاح",
     "successDelete": "تم الحذف بنجاح"
   },
+  "login": {
+    "title": "تسجيل الدخول",
+    "emailLabel": "البريد الإلكتروني",
+    "emailInput": "اكتب البريد الإلكتروني",
+    "emailPlaceholder": "أدخل البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "passwordInput": "اكتب كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "saveLoginData": "حفظ بيانات الدخول",
+    "rememberMe": "تذكرني",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "signInButton": "تسجيل الدخول",
+    "signingIn": "جاري تسجيل الدخول...",
+    "invalidEmail": "البريد الإلكتروني غير صالح",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    "manageSchoolTitle": "إدارة مدرستك بسهولة",
+    "manageSchoolSubtitle": "نظام متكامل لإدارة جميع عمليات المدرسة بكفاءة واحترافية"
+  },
   "rolesManagement": {
     "title": "الموظفين والإدارة",
     "rolesAndPermissions": "الأدوار و الصلاحيات",

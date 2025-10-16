@@ -17,9 +17,9 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
 }) => {
   return (
     <label
-      className={`flex items-center gap-3 py-1 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+      className={`flex items-center gap-2 py-1 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
     >
-      <div className="relative">
+      <div className="relative flex">
         <input
           type="checkbox"
           name={name}
