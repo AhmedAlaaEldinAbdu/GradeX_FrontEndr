@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaBell, FaChevronDown } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { FaBell, FaChevronDown, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { clearUser } from '@gradex/redux/features/auth/authSlice';
+import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import profileImage from '@gradex/assets/images/profile.png';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleLogout = () => {
+    dispatch(clearUser());
+    navigate('/login');
+  };
 
   return (
     <header className="border-b border-gray-200 bg-white shadow-sm">
@@ -21,13 +34,51 @@ const Header: React.FC = () => {
           </div>
 
           {/* User Profile Dropdown */}
-          <button className="flex items-center gap-3 rounded-full bg-gray-50 px-4 py-2 transition-colors hover:bg-gray-100">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gray-200">
-              <img src={profileImage} alt="User Avatar" className="h-full w-full object-cover" />
-            </div>
-            <span className="text-base font-semibold text-gray-900">أحمد محمد</span>
-            <FaChevronDown className="text-sm text-gray-600" />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="flex items-center gap-3 rounded-full bg-gray-50 px-4 py-2 transition-colors hover:bg-gray-100"
+            >
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                <img src={profileImage} alt="User Avatar" className="h-full w-full object-cover" />
+              </div>
+              <span className="text-base font-semibold text-gray-900">
+                {user?.name || 'أحمد محمد'}
+              </span>
+              <FaChevronDown
+                className={`text-sm text-gray-600 transition-transform ${showDropdown ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showDropdown && (
+              <div className="absolute left-0 top-full z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+                <div className="py-1">
+                  <button
+                    onClick={() => {
+                      setShowDropdown(false);
+                      // Navigate to profile page if exists
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    <FaUser className="text-gray-500" />
+                    <span>{t('header.profile') || 'الملف الشخصي'}</span>
+                  </button>
+                  <hr className="my-1 border-gray-200" />
+                  <button
+                    onClick={() => {
+                      setShowDropdown(false);
+                      handleLogout();
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-red-600 transition-colors hover:bg-red-50"
+                  >
+                    <FaSignOutAlt className="text-red-500" />
+                    <span>{t('header.logout') || 'تسجيل الخروج'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="max-w-md flex-1">
