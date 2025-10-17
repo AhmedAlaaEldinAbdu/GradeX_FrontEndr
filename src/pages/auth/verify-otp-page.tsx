@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@gradex/redux/features/auth/authSlice';
+import { UserRole } from '@gradex/constants';
 import EnterOTP from '@gradex/assets/illustrations/EnterOTP.svg';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
 
@@ -8,10 +11,11 @@ const VerifyOtpPage: React.FC = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const email = location.state?.email || '';
   const fromForgotPassword = location.state?.fromForgotPassword || false;
 
-  const [otp, setOtp] = useState(['', '', '', '',]);
+  const [otp, setOtp] = useState(['', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [countdown, setCountdown] = useState(60);
@@ -93,7 +97,17 @@ const VerifyOtpPage: React.FC = () => {
         // Navigate to reset password page
         navigate('/auth/reset-password', { state: { email, verified: true } });
       } else {
-        // Navigate to dashboard on success (normal login flow)
+        // Coming from login - authenticate the user
+        dispatch(
+          setUser({
+            id: 1,
+            name: isRTL ? 'مستخدم النظام' : 'System User',
+            email: email,
+            role: UserRole.SUPER_ADMIN,
+            isAuthenticated: true,
+          })
+        );
+        // Navigate to dashboard - router will handle the redirect based on role
         navigate('/dashboard');
       }
     }, 1500);
