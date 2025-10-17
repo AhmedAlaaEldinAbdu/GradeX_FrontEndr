@@ -32,7 +32,8 @@
   },
   "header": {
     "search": "Search easily for what you want",
-    "logout": "Logout"
+    "logout": "Logout",
+    "profile": "Profile"
   },
   "common": {
     "add": "Add",
