@@ -3,13 +3,16 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import './i18n';
 
 import RoleBasedRouter from './routes/RoleBasedRouter';
+import AuthInitializer from './components/AuthInitializer';
 import { useDevRoleMockInitializer } from './hooks/useDevRoleMockInitializer';
 
 function App() {
   useDevRoleMockInitializer();
   return (
     <Router>
-      <RoleBasedRouter />
+      <AuthInitializer>
+        <RoleBasedRouter />
+      </AuthInitializer>
     </Router>
   );
 }
