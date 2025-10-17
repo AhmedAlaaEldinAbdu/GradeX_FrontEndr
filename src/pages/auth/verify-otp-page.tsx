@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@gradex/redux/features/auth/authSlice';
 import { UserRole } from '@gradex/constants';
+import { generateMockToken } from '@gradex/lib/auth/token-manager';
 import EnterOTP from '@gradex/assets/illustrations/EnterOTP.svg';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
 
@@ -14,6 +15,7 @@ const VerifyOtpPage: React.FC = () => {
   const dispatch = useDispatch();
   const email = location.state?.email || '';
   const fromForgotPassword = location.state?.fromForgotPassword || false;
+  const rememberMe = location.state?.rememberMe || false;
 
   const [otp, setOtp] = useState(['', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
@@ -97,7 +99,9 @@ const VerifyOtpPage: React.FC = () => {
         // Navigate to reset password page
         navigate('/auth/reset-password', { state: { email, verified: true } });
       } else {
-        // Coming from login - authenticate the user
+        // Coming from login - authenticate the user with token
+        const mockToken = generateMockToken(email, UserRole.SUPER_ADMIN);
+
         dispatch(
           setUser({
             id: 1,
@@ -105,6 +109,8 @@ const VerifyOtpPage: React.FC = () => {
             email: email,
             role: UserRole.SUPER_ADMIN,
             isAuthenticated: true,
+            rememberMe: rememberMe,
+            token: mockToken,
           })
         );
         // Navigate to dashboard - router will handle the redirect based on role
