@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { setUser } from '@gradex/redux/features/auth/authSlice';
 import { UserRole } from '@gradex/constants';
+import { generateMockToken } from '@gradex/lib/auth/token-manager';
 import ComputerLoginBanner from '@gradex/assets/illustrations/ComputerLoginBanner.svg';
 import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
@@ -46,21 +47,26 @@ const LoginPage: React.FC = () => {
 
     // Simulate API call
     setTimeout(() => {
-      // Mock login - dispatch user to Redux
+      // Generate mock token
+      const mockToken = generateMockToken(data.email, UserRole.SUPER_ADMIN);
+
+      // Mock login - dispatch user to Redux with rememberMe flag
       dispatch(
         setUser({
           id: 1,
           name: isRTL ? 'مستخدم النظام' : 'System User',
           email: data.email,
           role: UserRole.SUPER_ADMIN,
-          isAuthenticated: false
+          isAuthenticated: false,
+          rememberMe: rememberMe,
+          token: mockToken,
         })
       );
-      
+
       setIsLoading(false);
 
       // Navigate to OTP verification
-      navigate('/auth/verify-otp', { state: { email: data.email } });
+      navigate('/auth/verify-otp', { state: { email: data.email, rememberMe } });
     }, 1000);
   };
 
