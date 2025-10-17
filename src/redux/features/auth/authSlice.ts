@@ -2,14 +2,38 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { ActionReducerMapBuilder, PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, User } from './authTypes';
 import { UserRole, type UserRoleType } from '@gradex/constants';
+import {
+  tokenManager,
+  type StoredUserData,
+  generateMockRefreshToken,
+} from '@gradex/lib/auth/token-manager';
 
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   isLoading: false,
+  isInitialized: false, // Start as false until initial session check completes
   error: null,
   token: null,
 };
+
+/**
+ * Async thunk for restoring user session from storage
+ */
+export const restoreSession = createAsyncThunk('auth/restoreSession', async () => {
+  const token = tokenManager.getToken();
+  const userData = tokenManager.getUserData();
+
+  if (!token || !userData || tokenManager.isTokenExpired()) {
+    tokenManager.clearTokens();
+    throw new Error('No valid session found');
+  }
+
+  return {
+    user: userData,
+    token,
+  };
+});
 
 /**
  * Async thunk for user login
@@ -24,7 +48,7 @@ export const login = createAsyncThunk(
         name: 'Admin user',
         email: credentials.email,
         role: UserRole.SUPER_ADMIN,
-        isAuthenticated: false
+        isAuthenticated: false,
       },
       token: 'mock-token',
     };
@@ -35,7 +59,7 @@ export const login = createAsyncThunk(
  * Async thunk for user logout
  */
 export const logout = createAsyncThunk('auth/logout', async () => {
-  localStorage.removeItem('authToken');
+  tokenManager.clearTokens();
   return null;
 });
 
@@ -44,12 +68,27 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     /**
-     * Set user manually
+     * Set user manually (with token persistence)
      */
-    setUser: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
-      state.isAuthenticated = action.payload.isAuthenticated;
+    setUser: (state, action: PayloadAction<User & { rememberMe?: boolean; token?: string }>) => {
+      const { rememberMe = false, token, ...user } = action.payload;
+
+      state.user = user as User;
+      state.isAuthenticated = user.isAuthenticated ?? false;
       state.error = null;
+
+      // Persist to storage if authenticated
+      if (user.isAuthenticated && token) {
+        state.token = token;
+        tokenManager.setToken(token, rememberMe);
+        tokenManager.setUserData(user as StoredUserData, rememberMe);
+
+        // Also save refresh token (mock)
+        const refreshToken = tokenManager.getRefreshToken();
+        if (!refreshToken) {
+          tokenManager.setRefreshToken(generateMockRefreshToken(), rememberMe);
+        }
+      }
     },
     /**
      * Clear user session
@@ -59,6 +98,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.token = null;
       state.error = null;
+      tokenManager.clearTokens();
     },
     /**
      * Update user role
@@ -70,6 +110,29 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder: ActionReducerMapBuilder<AuthState>) => {
+    // Restore Session
+    builder
+      .addCase(restoreSession.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(restoreSession.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true; // Session check complete
+        state.isAuthenticated = true;
+        state.user = action.payload.user as User;
+        state.token = action.payload.token;
+        state.error = null;
+      })
+      .addCase(restoreSession.rejected, (state) => {
+        state.isLoading = false;
+        state.isInitialized = true; // Session check complete (no valid session)
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.error = null;
+      });
+
     // Login
     builder
       .addCase(login.pending, (state) => {
