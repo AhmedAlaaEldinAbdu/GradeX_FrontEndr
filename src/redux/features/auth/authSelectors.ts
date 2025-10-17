@@ -9,6 +9,7 @@ import { getDashboardTypeFromRole } from '@gradex/shared/common/dashboard-config
 export const selectUser = (state: RootState) => state.auth.user;
 export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
 export const selectIsLoading = (state: RootState) => state.auth.isLoading;
+export const selectIsInitialized = (state: RootState) => state.auth.isInitialized;
 export const selectAuthError = (state: RootState) => state.auth.error;
 export const selectToken = (state: RootState) => state.auth.token;
 
