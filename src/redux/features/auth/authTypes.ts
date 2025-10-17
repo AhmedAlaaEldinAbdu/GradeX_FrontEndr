@@ -7,13 +7,14 @@ export interface User {
   role: UserRoleType;
   avatar?: string;
   permissions?: string[];
-  isAuthenticated?: any;
+  isAuthenticated?: boolean;
 }
 
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitialized: boolean; // Track if initial session check is complete
   error: string | null;
   token: string | null;
 }
