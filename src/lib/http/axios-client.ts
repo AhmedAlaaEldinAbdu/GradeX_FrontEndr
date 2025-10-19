@@ -35,7 +35,16 @@ export const axiosClient: AxiosInstance = axios.create({
 axiosClient.interceptors.request.use(
   (config) => {
     // Add authentication token
-    const token = localStorage.getItem('authToken');
+    // In development, use the dev token if available, otherwise use stored token
+    let token: string | null = null;
+
+    if (import.meta.env.DEV && import.meta.env.VITE_DEV_AUTH_TOKEN) {
+      token = import.meta.env.VITE_DEV_AUTH_TOKEN;
+      console.log('🔑 Using development auth token');
+    } else {
+      token = localStorage.getItem('authToken');
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
