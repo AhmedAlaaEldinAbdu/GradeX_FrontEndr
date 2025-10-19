@@ -1,8 +1,3 @@
-/**
- * HTTP Client Core
- * Main HTTP client implementation with interceptors
- */
-
 import type {
   FetchConfig,
   FetchError,
