@@ -6,15 +6,8 @@
 // Config
 export * from './config';
 
-// Interceptors
-export * from './interceptors';
-
 // Services
-export * from './schools';
+export * from './schools/schools.service';
 
 // Types
 export * from './types/school.types';
-
-// Initialize interceptors
-import { setupInterceptors } from './interceptors';
-setupInterceptors();
