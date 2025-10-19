@@ -2,78 +2,43 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ResetPassword from '@gradex/assets/illustrations/ResetPassword.svg';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { ChangePasswordSchema, type ChangePasswordProps } from '@/validations/auth';
+import { useForm } from 'react-hook-form';
+import FormErrorMessage from '@/shared/components/FormErrorMessage';
+import GradeXLogo from '@/assets/identity/GradeX.svg';
 
 const ResetPasswordPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || '';
+  const currentLang = i18n.language;
+  const isRTL = currentLang === 'ar';
 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<{ newPassword?: string; confirmPassword?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
-
-  const currentLang = i18n.language;
-  const isRTL = currentLang === 'ar';
 
   //   const toggleLanguage = () => {
   //     const newLang = currentLang === 'ar' ? 'en' : 'ar';
   //     i18n.changeLanguage(newLang);
   //   };
 
-  // Calculate password strength
-  const calculatePasswordStrength = (password: string) => {
-    let strength = 0;
-    if (password.length >= 8) strength += 25;
-    if (password.length >= 12) strength += 25;
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
-    if (/\d/.test(password)) strength += 15;
-    if (/[^a-zA-Z0-9]/.test(password)) strength += 10;
-    return Math.min(strength, 100);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ChangePasswordProps>({
+    resolver: yupResolver(ChangePasswordSchema),
+    mode: 'onChange',
+    reValidateMode: 'onSubmit',
+  });
 
-  const handleNewPasswordChange = (value: string) => {
-    setNewPassword(value);
-    setPasswordStrength(calculatePasswordStrength(value));
-    if (errors.newPassword) {
-      setErrors({ ...errors, newPassword: undefined });
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors: { newPassword?: string; confirmPassword?: string } = {};
-
-    if (!newPassword) {
-      newErrors.newPassword = isRTL ? 'كلمة المرور الجديدة مطلوبة' : 'New password is required';
-    } else if (newPassword.length < 8) {
-      newErrors.newPassword = isRTL
-        ? 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'
-        : 'Password must be at least 8 characters';
-    }
-
-    if (!confirmPassword) {
-      newErrors.confirmPassword = isRTL
-        ? 'تأكيد كلمة المرور مطلوب'
-        : 'Confirm password is required';
-    } else if (newPassword !== confirmPassword) {
-      newErrors.confirmPassword = isRTL ? 'كلمات المرور غير متطابقة' : 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+  const onSubmit = async (data: ChangePasswordProps) => {
     setIsLoading(true);
 
     // Simulate API call
@@ -82,19 +47,6 @@ const ResetPasswordPage: React.FC = () => {
       // Navigate to success page or login
       navigate('/auth/password-reset-success');
     }, 1500);
-  };
-
-  const getPasswordStrengthColor = () => {
-    if (passwordStrength < 40) return 'bg-red-500';
-    if (passwordStrength < 70) return 'bg-yellow-500';
-    return 'bg-green-500';
-  };
-
-  const getPasswordStrengthText = () => {
-    if (passwordStrength === 0) return '';
-    if (passwordStrength < 40) return isRTL ? 'ضعيفة' : 'Weak';
-    if (passwordStrength < 70) return isRTL ? 'متوسطة' : 'Medium';
-    return isRTL ? 'قوية' : 'Strong';
   };
 
   return (
@@ -165,32 +117,27 @@ const ResetPasswordPage: React.FC = () => {
                   <span className="text-2xl font-bold text-white">G</span>
                 </div>
               </div> */}
-              <h1 className="mb-2 text-3xl font-bold text-gray-900">
-                {/* {isRTL ? 'إعادة تعيين كلمة المرور' : 'Reset Password'} */}
-                {t('login.changePassword')}
-              </h1>
+              <h1 className="mb-2 text-3xl font-bold text-gray-900">{t('login.changePassword')}</h1>
               {/* <p className="text-gray-600">
                 {isRTL ? `إنشاء كلمة مرور جديدة لـ ${email}` : `Create a new password for ${email}`}
               </p> */}
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6 text-start">
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6 text-start">
               {/* New Password Field */}
               <div>
                 <label
                   htmlFor="newPassword"
                   className="mb-2 block text-sm font-medium text-gray-700"
                 >
-                  {/* {isRTL ? 'كلمة المرور الجديدة' : 'New Password'} */}
                   {t('login.passwordLabel')}
                 </label>
                 <div className="relative">
                   <input
                     id="newPassword"
                     type={showNewPassword ? 'text' : 'password'}
-                    value={newPassword}
-                    onChange={(e) => handleNewPasswordChange(e.target.value)}
+                    {...register('newPassword')}
                     className={`w-full rounded-lg border ${
                       errors.newPassword ? 'border-red-500' : 'border-gray-300'
                     } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
@@ -247,12 +194,10 @@ const ResetPasswordPage: React.FC = () => {
                     )}
                   </button>
                 </div>
-                {errors.newPassword && (
-                  <p className="mt-1 text-sm text-red-500">{errors.newPassword}</p>
-                )}
+                <FormErrorMessage message={errors?.newPassword?.message} />
 
                 {/* Password Strength Indicator */}
-                {newPassword && (
+                {/* {newPassword && (
                   <div className="mt-2">
                     <div className="mb-1 flex items-center justify-between">
                       <span className="text-xs text-gray-600">
@@ -277,10 +222,10 @@ const ResetPasswordPage: React.FC = () => {
                       />
                     </div>
                   </div>
-                )}
+                )} */}
 
                 {/* Password Requirements */}
-                <div className="mt-2 space-y-1">
+                {/* <div className="mt-2 space-y-1">
                   <p className="text-xs text-gray-600">
                     {isRTL ? 'يجب أن تحتوي كلمة المرور على:' : 'Password must contain:'}
                   </p>
@@ -306,7 +251,7 @@ const ResetPasswordPage: React.FC = () => {
                       <span>{isRTL ? 'رقم واحد على الأقل' : 'At least one number'}</span>
                     </li>
                   </ul>
-                </div>
+                </div> */}
               </div>
 
               {/* Confirm Password Field */}
@@ -315,20 +260,13 @@ const ResetPasswordPage: React.FC = () => {
                   htmlFor="confirmPassword"
                   className="mb-2 block text-sm font-medium text-gray-700"
                 >
-                  {/* {isRTL ? 'تأكيد كلمة المرور' : 'Confirm Password'} */}
                   {t('login.confirmPassword')}
                 </label>
                 <div className="relative">
                   <input
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value);
-                      if (errors.confirmPassword) {
-                        setErrors({ ...errors, confirmPassword: undefined });
-                      }
-                    }}
+                    {...register('confirmPassword')}
                     className={`w-full rounded-lg border ${
                       errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
                     } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
@@ -385,15 +323,13 @@ const ResetPasswordPage: React.FC = () => {
                     )}
                   </button>
                 </div>
-                {errors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
-                )}
+                <FormErrorMessage message={errors?.confirmPassword?.message} />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isSubmitting || isLoading}
                 className="w-full rounded-lg bg-[#1FAD6C] px-4 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
@@ -420,24 +356,30 @@ const ResetPasswordPage: React.FC = () => {
       </div>
 
       {/* Right Side - Illustration */}
-      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-center lg:justify-center lg:p-12">
-        <div className="max-w-lg text-center">
-          {/* Illustration - Password Reset */}
-          <div className="mb-8">
-            <div className="mb-8">
-              <img src={ResetPassword} alt="Reset Password Illustration" className="w-full" />
-            </div>
+      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
+        <div className="flex flex-col gap-24">
+          <div className="flex items-center justify-center">
+            <img src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />
           </div>
 
-          {/* Text */}
-          <h2 className="mb-4 text-3xl font-bold text-green-900">
-            {isRTL ? 'كلمة مرور قوية وآمنة' : 'Strong & Secure Password'}
-          </h2>
-          <p className="text-lg text-green-900/90">
-            {isRTL
-              ? 'أنشئ كلمة مرور قوية لحماية حسابك'
-              : 'Create a strong password to protect your account'}
-          </p>
+          <div className="max-w-lg text-center">
+            {/* Illustration - Password Reset */}
+            <div className="mb-8">
+              <div className="mb-8">
+                <img src={ResetPassword} alt="Reset Password Illustration" className="w-full" />
+              </div>
+            </div>
+
+            {/* Text */}
+            <h2 className="mb-4 text-3xl font-bold text-green-900">
+              {isRTL ? 'كلمة مرور قوية وآمنة' : 'Strong & Secure Password'}
+            </h2>
+            <p className="text-lg text-green-900/90">
+              {isRTL
+                ? 'أنشئ كلمة مرور قوية لحماية حسابك'
+                : 'Create a strong password to protect your account'}
+            </p>
+          </div>
         </div>
       </div>
     </div>
