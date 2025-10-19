@@ -71,7 +71,11 @@ export default function DropdownMenuSchoolsAction({ id = '', selectedTab }: Acti
                 onClick={action.onClick}
                 className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-right ${action.color}`}
               >
-                <img src={action.icon} alt={`${action.id}Icon`} className='w-[20px] h-[20px]'/>
+                <img
+                  src={action.icon}
+                  alt={`${action.id}Icon`}
+                  className={`${action.id === 'reject' ? 'h-[16px] w-[16px]' : 'h-[20px] w-[20px]'}`}
+                />
                 <span>{action.label}</span>
               </button>
             ))}
