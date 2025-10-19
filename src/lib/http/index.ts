@@ -1,18 +1,23 @@
 /**
- * HTTP Client Instance
- * Default configured HTTP client instance
+ * HTTP Client Exports
+ * Main export point for HTTP client utilities
  */
 
-import { HttpClient } from './client';
+// Primary Axios client
+export { default as axiosClient } from './axios-client';
 
-export const httpClient = new HttpClient({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
-  timeout: 30000,
-  retry: {
-    maxRetries: 2,
-    retryDelay: 1000,
-  },
-});
+// Error handling utilities
+export {
+  getErrorMessage,
+  isErrorStatus,
+  isValidationError,
+  isUnauthorizedError,
+  isForbiddenError,
+  isNotFoundError,
+} from './axios-client';
 
+// Axios types
+export type { AxiosInstance, AxiosRequestConfig, AxiosError } from './axios-client';
+
+// General types
 export * from './types';
-export * from './client';
