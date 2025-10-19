@@ -99,6 +99,8 @@
     "loginSuccess": "تم تسجيل الدخول بنجاح",
     "verificationCode": "رمز التحقق",
     "enterVerificationCode": "قم بكتابة الرمز الذي تم إرسال رمز التحقق إلي بريدك الإلكتروني",
+    "enter4DigitCode": "أدخل رمز التحقق المكون من 4 أرقام",
+    "didNotReceiveCode": "لم تستلم الرمز؟",
     "resendCodeIn": "إعادة إرسال الرمز خلال",
     "seconds": "ثانية",
     "confirm": "التأكيد",

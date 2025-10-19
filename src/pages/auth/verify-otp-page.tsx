@@ -9,7 +9,7 @@ import EnterOTP from '@gradex/assets/illustrations/EnterOTP.svg';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
 
 const VerifyOtpPage: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -66,12 +66,12 @@ const VerifyOtpPage: React.FC = () => {
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').slice(0, 6);
+    const pastedData = e.clipboardData.getData('text').slice(0, 4);
     if (!/^\d+$/.test(pastedData)) return;
 
     const newOtp = [...otp];
     pastedData.split('').forEach((char, idx) => {
-      if (idx < 6) newOtp[idx] = char;
+      if (idx < 4) newOtp[idx] = char;
     });
     setOtp(newOtp);
 
@@ -198,10 +198,12 @@ const VerifyOtpPage: React.FC = () => {
                 </div>
               </div> */}
               <h1 className="mb-2 text-3xl font-bold text-gray-900">
-                {isRTL ? 'التحقق من الرمز' : 'Verify Code'}
+                {/* {isRTL ? 'التحقق من الرمز' : 'Verify Code'} */}
+                {t('login.verificationCode')}
               </h1>
               <p className="text-gray-600">
-                {isRTL ? `تم إرسال رمز التحقق إلى ${email}` : `Verification code sent to ${email}`}
+                {/* {isRTL ? `تم إرسال رمز التحقق إلى ${email}` : `Verification code sent to ${email}`} */}
+                {`${t('login.enterVerificationCode')} ${email}`}
               </p>
             </div>
 
@@ -210,9 +212,10 @@ const VerifyOtpPage: React.FC = () => {
               {/* OTP Input */}
               <div>
                 <label className="mb-4 block text-center text-sm font-medium text-gray-700">
-                  {isRTL
+                  {/* {isRTL
                     ? 'أدخل رمز التحقق المكون من 4 أرقام'
-                    : 'Enter the 4-digit verification code'}
+                    : 'Enter the 4-digit verification code'} */}
+                  {t('login.enter4DigitCode')}
                 </label>
                 <div className="flex justify-center gap-2" dir="ltr">
                   {otp.map((digit, index) => (
@@ -242,7 +245,8 @@ const VerifyOtpPage: React.FC = () => {
               {/* Resend Code */}
               <div className="text-center">
                 <p className="text-sm text-gray-600">
-                  {isRTL ? 'لم تستلم الرمز؟' : "Didn't receive the code?"}
+                  {/* {isRTL ? 'لم تستلم الرمز؟' : "Didn't receive the code?"} */}
+                  {t('login.didNotReceiveCode')}
                 </p>
                 {canResend ? (
                   <button
@@ -250,11 +254,17 @@ const VerifyOtpPage: React.FC = () => {
                     onClick={handleResend}
                     className="mt-2 text-sm font-medium text-[#1FAD6C] transition-colors hover:text-[#178f5a]"
                   >
-                    {isRTL ? 'إعادة إرسال الرمز' : 'Resend code'}
+                    {/* {isRTL ? 'إعادة إرسال الرمز' : 'Resend code'} */}
+                    {t('login.resendCode')}
                   </button>
                 ) : (
                   <p className="mt-2 text-sm font-medium text-gray-400">
-                    {isRTL ? `إعادة الإرسال بعد ${countdown} ثانية` : `Resend in ${countdown}s`}
+                    {/* {isRTL ? `إعادة الإرسال بعد ${countdown} ثانية` : `Resend in ${countdown}s`} */}
+                    {t('login.resendCodeIn')}{' '}
+                    <span className={countdown > 10 ? 'text-green-600' : 'text-red-600'}>
+                      ({countdown})
+                    </span>{' '}
+                    {t('login.seconds')}
                   </p>
                 )}
               </div>
@@ -271,7 +281,10 @@ const VerifyOtpPage: React.FC = () => {
                     <span>{isRTL ? 'جاري التحقق...' : 'Verifying...'}</span>
                   </div>
                 ) : (
-                  <span>{isRTL ? 'تحقق' : 'Verify'}</span>
+                  <span>
+                    {/* {isRTL ? 'تحقق' : 'Verify'} */}
+                    {t('login.confirm')}
+                  </span>
                 )}
               </button>
             </form>

@@ -99,6 +99,8 @@
     "loginSuccess": "Logged in successfully",
     "verificationCode": "Verification Code",
     "enterVerificationCode": "Enter the code sent to your email",
+    "enter4DigitCode": "Enter the 4-digit verification code",
+    "didNotReceiveCode": "Didn’t receive the code?",
     "resendCodeIn": "Resend code in",
     "seconds": "seconds",
     "confirm": "Confirm",
