@@ -4,74 +4,82 @@
  */
 
 // ============================================================================
-// Environment Variables
+// Environment Configuration
 // ============================================================================
 
 export const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
   TIMEOUT: 30000,
-  MAX_RETRIES: 2,
-  RETRY_DELAY: 1000,
 } as const;
 
 // ============================================================================
 // API Endpoints
 // ============================================================================
 
+const SCHOOLS = '/schools';
+const AUTH = '/auth';
+const USERS = '/users';
+const ROLES = '/roles';
+const UPLOAD = '/upload';
+
 export const API_ENDPOINTS = {
-  // Auth
+  // Authentication
   AUTH: {
-    LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout',
-    REFRESH: '/auth/refresh',
-    REGISTER: '/auth/register',
-    FORGOT_PASSWORD: '/auth/forgot-password',
-    RESET_PASSWORD: '/auth/reset-password',
-    VERIFY_EMAIL: '/auth/verify-email',
+    LOGIN: `${AUTH}/login`,
+    LOGOUT: `${AUTH}/logout`,
+    REFRESH: `${AUTH}/refresh`,
+    REGISTER: `${AUTH}/register`,
+    FORGOT_PASSWORD: `${AUTH}/forgot-password`,
+    RESET_PASSWORD: `${AUTH}/reset-password`,
+    VERIFY_EMAIL: `${AUTH}/verify-email`,
+    VERIFY_OTP: `${AUTH}/verify-otp`,
   },
 
-  // Schools
+  // Schools Management
   SCHOOLS: {
-    BASE: '/schools',
-    LIST: '/schools',
-    CREATE: '/schools',
-    GET_BY_ID: (id: string) => `/schools/${id}`,
-    UPDATE: (id: string) => `/schools/${id}`,
-    DELETE: (id: string) => `/schools/${id}`,
-    RESTORE: (id: string) => `/schools/${id}/restore`,
-    PENDING: '/schools/pending',
-    REJECTED: '/schools/rejected',
-    DELETED: '/schools/deleted',
-    APPROVE: (id: string) => `/schools/${id}/approve`,
-    REJECT: (id: string) => `/schools/${id}/reject`,
-    ACTIVATE: (id: string) => `/schools/${id}/activate`,
-    DEACTIVATE: (id: string) => `/schools/${id}/deactivate`,
-    STATISTICS: '/schools/statistics',
-    EXPORT: '/schools/export',
-    BULK_DELETE: '/schools/bulk-delete',
-    BULK_APPROVE: '/schools/bulk-approve',
-    BULK_REJECT: '/schools/bulk-reject',
+    BASE: SCHOOLS,
+    LIST: SCHOOLS,
+    CREATE: SCHOOLS,
+    GET_BY_ID: (id: string) => `${SCHOOLS}/${id}`,
+    UPDATE: (id: string) => `${SCHOOLS}/${id}`,
+    DELETE: (id: string) => `${SCHOOLS}/${id}`,
+    RESTORE: (id: string) => `${SCHOOLS}/${id}/restore`,
+    UPDATE_STATUS: (id: string) => `${SCHOOLS}/${id}/status`,
+    UPDATE_REQUEST: (id: string) => `${SCHOOLS}/${id}/update-request`,
+    LOCATION_FILTERS: `${SCHOOLS}/location/filters`,
+    STATISTICS: `${SCHOOLS}/statistics`,
+    EXPORT: `${SCHOOLS}/export`,
+    BULK_DELETE: `${SCHOOLS}/bulk-delete`,
+    BULK_APPROVE: `${SCHOOLS}/bulk-approve`,
+    BULK_REJECT: `${SCHOOLS}/bulk-reject`,
   },
 
-  // System Users
+  // User Management
   USERS: {
-    BASE: '/users',
-    LIST: '/users',
-    CREATE: '/users',
-    GET_BY_ID: (id: string) => `/users/${id}`,
-    UPDATE: (id: string) => `/users/${id}`,
-    DELETE: (id: string) => `/users/${id}`,
+    BASE: USERS,
+    LIST: USERS,
+    CREATE: USERS,
+    GET_BY_ID: (id: string) => `${USERS}/${id}`,
+    UPDATE: (id: string) => `${USERS}/${id}`,
+    DELETE: (id: string) => `${USERS}/${id}`,
   },
 
   // Roles & Permissions
   ROLES: {
-    BASE: '/roles',
-    LIST: '/roles',
-    CREATE: '/roles',
-    GET_BY_ID: (id: string) => `/roles/${id}`,
-    UPDATE: (id: string) => `/roles/${id}`,
-    DELETE: (id: string) => `/roles/${id}`,
-    PERMISSIONS: '/roles/permissions',
+    BASE: ROLES,
+    LIST: ROLES,
+    CREATE: ROLES,
+    GET_BY_ID: (id: string) => `${ROLES}/${id}`,
+    UPDATE: (id: string) => `${ROLES}/${id}`,
+    DELETE: (id: string) => `${ROLES}/${id}`,
+    PERMISSIONS: `${ROLES}/permissions`,
+  },
+
+  // File Upload
+  UPLOAD: {
+    IMAGE: `${UPLOAD}/image`,
+    DOCUMENT: `${UPLOAD}/document`,
+    BULK: `${UPLOAD}/bulk`,
   },
 
   // Control Panel
@@ -80,7 +88,7 @@ export const API_ENDPOINTS = {
     SETTINGS: '/control-panel/settings',
   },
 
-  // Student Management
+  // Students
   STUDENTS: {
     BASE: '/students',
     LIST: '/students',
@@ -88,13 +96,6 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id: string) => `/students/${id}`,
     UPDATE: (id: string) => `/students/${id}`,
     DELETE: (id: string) => `/students/${id}`,
-  },
-
-  // File Upload
-  UPLOAD: {
-    IMAGE: '/upload/image',
-    DOCUMENT: '/upload/document',
-    BULK: '/upload/bulk',
   },
 } as const;
 
@@ -126,7 +127,7 @@ export interface ApiErrorResponse {
 export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 // ============================================================================
-// Pagination Types
+// Pagination & Filtering
 // ============================================================================
 
 export interface PaginationParams {
@@ -145,10 +146,6 @@ export interface PaginatedResponse<T> {
     totalPages: number;
   };
 }
-
-// ============================================================================
-// Filter Types
-// ============================================================================
 
 export interface FilterParams {
   search?: string;
