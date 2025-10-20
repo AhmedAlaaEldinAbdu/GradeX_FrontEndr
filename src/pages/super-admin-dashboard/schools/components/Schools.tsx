@@ -55,11 +55,11 @@ export default function Schools() {
           <div>
             {/* Filters */}
             <div className="mb-6 flex flex-wrap gap-4 lg:flex-nowrap">
-              <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg lg:w-fit">
+              <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[60%]">
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder={t('schools.searchBySchoolName')}
+                    placeholder={t('schools.searchBySchoolRegionDistrictName')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="h-[40px] w-full rounded-lg border border-gray-300 pl-4 pr-10 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -79,7 +79,8 @@ export default function Schools() {
                   </svg>
                 </div>
               </div>
-              <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 md:grid-cols-4 lg:w-fit lg:grid-cols-5">
+              <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
+                
                 <div>
                   <select
                     value={academicSystem}
@@ -105,7 +106,7 @@ export default function Schools() {
                   </select>
                 </div>
 
-                <div>
+                {/* <div>
                   <select
                     value={selectedRegion}
                     onChange={(e) => setSelectedRegion(e.target.value)}
@@ -115,8 +116,8 @@ export default function Schools() {
                     <option value="cairo">القاهرة</option>
                     <option value="riyadh">الرياض</option>
                   </select>
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                   <select
                     value={selectedStatus}
                     onChange={(e) => setSelectedStatus(e.target.value)}
@@ -126,7 +127,7 @@ export default function Schools() {
                     <option value="1">الشرقي</option>
                     <option value="2">الغربي</option>
                   </select>
-                </div>
+                </div> */}
               </div>
             </div>
 
