@@ -75,6 +75,20 @@
     "successEdit": "تم التعديل بنجاح",
     "successDelete": "تم الحذف بنجاح"
   },
+  "loading": {
+    "sending": "جاري الإرسال...",
+    "verifying": "جاري التحقق...",
+    "editing": "جاري التعديل...",
+    "deleting": "جاري الحذف...",
+    "adding": "جاري الإضافة...",
+    "loggingIn": "جاري تسجيل الدخول...",
+    "loggingOut": "جاري تسجيل الخروج...",
+    "updating": "جاري التحديث...",
+    "searching": "جاري البحث...",
+    "loadingData": "جاري تحميل البيانات...",
+    "saving": "جاري الحفظ...",
+    "loading": "جاري التحميل..."
+  },
   "login": {
     "title": "تسجيل الدخول",
     "emailLabel": "البريد الإلكتروني",
@@ -109,7 +123,19 @@
     "changePassword": "تغيير كلمة المرور",
     "confirmPassword": "تأكيد كلمة المرور",
     "passwordsNotMatch": "كلمة المرور غير متشابهة برجاء المحاولة مرة أخري.",
-    "passwordChanged": "تم تغيير كلمة المرور بنجاح"
+    "passwordChanged": "تم تغيير كلمة المرور بنجاح",
+    "backToLogin": "العودة إلى تسجيل الدخول",
+    "resetInstructions": "لا تقلق، سنرسل لك تعليمات إعادة تعيين كلمة المرور",
+    "rememberPassword": "تذكرت كلمة المرور؟",
+    "sendResetLink": "إرسال رابط إعادة التعيين",
+    "recoverAccount": "استعادة حسابك",
+    "recoverDescription": "سنساعدك على استعادة الوصول إلى حسابك بسرعة وأمان",
+    "back": "العودة",
+    "protectAccount": "حماية حسابك",
+    "securityMessage": "نحن نهتم بأمان بياناتك وخصوصيتها",
+    "enterFullCode": "الرجاء إدخال الرمز كاملاً",
+    "strongPassword": "كلمة مرور قوية وآمنة",
+    "createStrongPassword": "أنشئ كلمة مرور قوية لحماية حسابك"
   },
   "rolesManagement": {
     "title": "الموظفين والإدارة",

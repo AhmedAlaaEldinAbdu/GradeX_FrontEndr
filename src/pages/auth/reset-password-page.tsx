@@ -107,7 +107,7 @@ const ResetPasswordPage: React.FC = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-sm font-medium">{isRTL ? 'العودة' : 'Back'}</span>
+              <span className="text-sm font-medium">{t('login.back')}</span>
             </button>
 
             {/* Logo */}
@@ -335,7 +335,7 @@ const ResetPasswordPage: React.FC = () => {
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    <span>{isRTL ? 'جاري التحديث...' : 'Updating...'}</span>
+                    <span>{t('loading.verifying')}</span>
                   </div>
                 ) : (
                   <span>{t('login.changePassword')}</span>
@@ -371,14 +371,8 @@ const ResetPasswordPage: React.FC = () => {
             </div>
 
             {/* Text */}
-            <h2 className="mb-4 text-3xl font-bold text-green-900">
-              {isRTL ? 'كلمة مرور قوية وآمنة' : 'Strong & Secure Password'}
-            </h2>
-            <p className="text-lg text-green-900/90">
-              {isRTL
-                ? 'أنشئ كلمة مرور قوية لحماية حسابك'
-                : 'Create a strong password to protect your account'}
-            </p>
+            <h2 className="mb-4 text-3xl font-bold text-green-900">{t('login.strongPassword')}</h2>
+            <p className="text-lg text-green-900/90">{t('login.createStrongPassword')}</p>
           </div>
         </div>
       </div>

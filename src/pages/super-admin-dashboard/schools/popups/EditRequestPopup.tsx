@@ -1,3 +1,5 @@
+import ToastMessage from '@/shared/components/ToastMessage';
+import { useToast } from '@/shared/context/ToastContext';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +10,7 @@ interface EditRequestPopupProps {
 
 export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPopupProps) {
   const { t } = useTranslation();
+  const { show } = useToast();
 
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState('');
@@ -29,6 +32,12 @@ export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPop
 
   const handleSubmit = () => {
     onConfirm(message);
+    show({
+      message: 'schools.editRequestSentSuccessfully',
+      type: 'success',
+      duration: 3000,
+      position: 'top-left',
+    });
   };
 
   return (
@@ -51,7 +60,7 @@ export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPop
             <p className="text-2xl font-medium text-gray-800">{t('schools.editRequest')}</p>
           </div>
 
-          <div className="w-full text-right mb-4">
+          <div className="mb-4 w-full text-right">
             <label className="required mb-2 block font-medium text-gray-700">
               {t('schools.editRequest')}
             </label>
@@ -60,7 +69,7 @@ export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPop
               onChange={(e) => setMessage(e.target.value)}
               placeholder={t('schools.enterEditRequest')}
               rows={3}
-              className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 resize-none text-gray-700 "
+              className="w-full resize-none rounded-lg border px-4 py-2 text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 

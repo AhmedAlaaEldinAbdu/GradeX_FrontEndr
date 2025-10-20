@@ -75,6 +75,20 @@
     "successEdit": "Edited successfully",
     "successDelete": "Deleted successfully"
   },
+  "loading": {
+    "sending": "Sending...",
+    "verifying": "Verifying...",
+    "editing": "Editing...",
+    "deleting": "Deleting...",
+    "adding": "Adding...",
+    "loggingIn": "Logging in...",
+    "loggingOut": "Logging out...",
+    "updating": "Updating...",
+    "searching": "Searching...",
+    "loadingData": "Loading data...",
+    "saving": "Saving...",
+    "loading": "Loading..."
+  },
   "login": {
     "title": "Sign In",
     "emailLabel": "Email Address",
@@ -109,7 +123,19 @@
     "changePassword": "Change Password",
     "confirmPassword": "Confirm Password",
     "passwordsNotMatch": "Passwords do not match. Please try again.",
-    "passwordChanged": "Password changed successfully"
+    "passwordChanged": "Password changed successfully",
+    "backToLogin": "Back to Login",
+    "resetInstructions": "Don't worry, we'll send you instructions to reset your password.",
+    "rememberPassword": "Remembered your password?",
+    "sendResetLink": "Send Reset Link",
+    "recoverAccount": "Recover Your Account",
+    "recoverDescription": "We'll help you regain access to your account quickly and securely.",
+    "back": "Back",
+    "protectAccount": "Protect Your Account",
+    "securityMessage": "We care about the security and privacy of your data.",
+    "enterFullCode": "Please enter the complete code.",
+    "strongPassword": "Strong and Secure Password",
+    "createStrongPassword": "Create a strong password to protect your account."
   },
   "rolesManagement": {
     "title": "Employees & Administration",

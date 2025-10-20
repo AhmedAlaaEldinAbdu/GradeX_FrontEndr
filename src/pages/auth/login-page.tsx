@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
           name: isRTL ? 'مستخدم النظام' : 'System User',
           email: data.email,
           role: UserRole.SUPER_ADMIN,
-          isAuthenticated: false,
+          isAuthenticated: true,
           rememberMe: rememberMe,
           token: mockToken,
         })
@@ -66,7 +66,7 @@ const LoginPage: React.FC = () => {
       setIsLoading(false);
 
       // Navigate to OTP verification
-      navigate('/auth/verify-otp', { state: { email: data.email, rememberMe } });
+      navigate('/dashboard', { state: { email: data.email, rememberMe } });
     }, 1000);
   };
 

@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ComputerLoginBanner from '@gradex/assets/illustrations/ComputerLoginBanner.svg';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
+import { EmailSchema, type EmaileProps } from '@/validations/auth';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import FormErrorMessage from '@/shared/components/FormErrorMessage';
 
 const ForgotPasswordPage: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -19,32 +23,24 @@ const ForgotPasswordPage: React.FC = () => {
   //     i18n.changeLanguage(newLang);
   //   };
 
-  const validateEmail = () => {
-    if (!email) {
-      setError(isRTL ? 'البريد الإلكتروني مطلوب' : 'Email is required');
-      return false;
-    }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError(isRTL ? 'البريد الإلكتروني غير صالح' : 'Invalid email address');
-      return false;
-    }
-    return true;
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<EmaileProps>({
+    resolver: yupResolver(EmailSchema),
+    mode: 'onChange',
+    reValidateMode: 'onSubmit',
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateEmail()) {
-      return;
-    }
-
+  const onSubmit = async (data: EmaileProps) => {
     setIsLoading(true);
 
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
       // Navigate to OTP verification for password reset
-      navigate('/auth/verify-otp', { state: { email, fromForgotPassword: true } });
+      navigate('/auth/verify-otp', { state: { email: data.email, fromForgotPassword: true } });
     }, 1500);
   };
 
@@ -104,9 +100,7 @@ const ForgotPasswordPage: React.FC = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-sm font-medium">
-                {isRTL ? 'العودة إلى تسجيل الدخول' : 'Back to Login'}
-              </span>
+              <span className="text-sm font-medium">{t('login.backToLogin')}</span>
             </button>
 
             {/* Logo */}
@@ -116,38 +110,30 @@ const ForgotPasswordPage: React.FC = () => {
                   <span className="text-2xl font-bold text-white">G</span>
                 </div>
               </div> */}
-              <h1 className="mb-2 text-3xl font-bold text-gray-900">
-                {isRTL ? 'نسيت كلمة المرور؟' : 'Forgot Password?'}
-              </h1>
-              <p className="text-gray-600">
-                {isRTL
-                  ? 'لا تقلق، سنرسل لك تعليمات إعادة تعيين كلمة المرور'
-                  : "Don't worry, we'll send you reset instructions"}
-              </p>
+              <h1 className="mb-2 text-3xl font-bold text-gray-900">{t('login.forgotPassword')}</h1>
+              <p className="text-gray-600">{t('login.resetInstructions')}</p>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6 text-start">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 text-start">
               {/* Email Field */}
               <div>
                 <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
-                  {isRTL ? 'البريد الإلكتروني' : 'Email Address'}
+                  {t('login.emailLabel')}
                 </label>
                 <div className="relative">
                   <input
                     id="email"
                     type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (error) setError('');
-                    }}
+                    inputMode="email"
+                    autoComplete="email"
+                    {...register('email')}
                     className={`w-full rounded-lg border ${
                       error ? 'border-red-500' : 'border-gray-300'
                     } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
                       error ? 'focus:ring-red-500' : 'focus:ring-[#1FAD6C]'
                     }`}
-                    placeholder={isRTL ? 'أدخل البريد الإلكتروني' : 'Enter your email'}
+                    placeholder={t('login.emailInput')}
                   />
                   <div
                     className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${
@@ -171,36 +157,34 @@ const ForgotPasswordPage: React.FC = () => {
                     </svg>
                   </div>
                 </div>
-                {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+                <FormErrorMessage message={errors?.email?.message} />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isSubmitting || isLoading}
                 className="w-full rounded-lg bg-[#1FAD6C] px-4 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    <span>{isRTL ? 'جاري الإرسال...' : 'Sending...'}</span>
+                    <span>{t('loading.sending')}</span>
                   </div>
                 ) : (
-                  <span>{isRTL ? 'إرسال رابط إعادة التعيين' : 'Send Reset Link'}</span>
+                  <span>{t('login.sendResetLink')}</span>
                 )}
               </button>
             </form>
 
             {/* Help Text */}
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                {isRTL ? 'تذكرت كلمة المرور؟' : 'Remember your password?'}
-              </p>
+              <p className="text-sm text-gray-600">{t('login.rememberPassword')}</p>
               <button
                 onClick={() => navigate('/login')}
                 className="mt-2 text-sm font-medium text-[#1FAD6C] transition-colors hover:text-[#178f5a]"
               >
-                {isRTL ? 'تسجيل الدخول' : 'Sign In'}
+                {t('login.signInButton')}
               </button>
             </div>
           </div>
@@ -232,14 +216,8 @@ const ForgotPasswordPage: React.FC = () => {
             </div>
 
             {/* Text */}
-            <h2 className="mb-4 text-3xl font-bold text-green-900">
-              {isRTL ? 'استعادة حسابك' : 'Recover Your Account'}
-            </h2>
-            <p className="text-lg text-green-900/90">
-              {isRTL
-                ? 'سنساعدك على استعادة الوصول إلى حسابك بسرعة وأمان'
-                : "We'll help you regain access to your account quickly and securely"}
-            </p>
+            <h2 className="mb-4 text-3xl font-bold text-green-900">{t('login.recoverAccount')}</h2>
+            <p className="text-lg text-green-900/90">{t('login.recoverDescription')}</p>
           </div>
         </div>
       </div>

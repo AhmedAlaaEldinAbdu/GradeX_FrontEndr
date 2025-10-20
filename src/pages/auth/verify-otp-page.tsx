@@ -7,6 +7,7 @@ import { UserRole } from '@gradex/constants';
 import { generateMockToken } from '@gradex/lib/auth/token-manager';
 import EnterOTP from '@gradex/assets/illustrations/EnterOTP.svg';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
+import FormErrorMessage from '@/shared/components/FormErrorMessage';
 
 const VerifyOtpPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -85,7 +86,7 @@ const VerifyOtpPage: React.FC = () => {
 
     const otpValue = otp.join('');
     if (otpValue.length !== 4) {
-      setError(isRTL ? 'الرجاء إدخال الرمز كاملاً' : 'Please enter the complete code');
+      setError(t('login.enterFullCode'));
       return;
     }
 
@@ -187,7 +188,7 @@ const VerifyOtpPage: React.FC = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-sm font-medium">{isRTL ? 'العودة' : 'Back'}</span>
+              <span className="text-sm font-medium">{t('login.back')}</span>
             </button>
 
             {/* Logo */}
@@ -198,13 +199,9 @@ const VerifyOtpPage: React.FC = () => {
                 </div>
               </div> */}
               <h1 className="mb-2 text-3xl font-bold text-gray-900">
-                {/* {isRTL ? 'التحقق من الرمز' : 'Verify Code'} */}
                 {t('login.verificationCode')}
               </h1>
-              <p className="text-gray-600">
-                {/* {isRTL ? `تم إرسال رمز التحقق إلى ${email}` : `Verification code sent to ${email}`} */}
-                {`${t('login.enterVerificationCode')} ${email}`}
-              </p>
+              <p className="text-gray-600">{`${t('login.enterVerificationCode')} ${email}`}</p>
             </div>
 
             {/* OTP Form */}
@@ -212,9 +209,6 @@ const VerifyOtpPage: React.FC = () => {
               {/* OTP Input */}
               <div>
                 <label className="mb-4 block text-center text-sm font-medium text-gray-700">
-                  {/* {isRTL
-                    ? 'أدخل رمز التحقق المكون من 4 أرقام'
-                    : 'Enter the 4-digit verification code'} */}
                   {t('login.enter4DigitCode')}
                 </label>
                 <div className="flex justify-center gap-2" dir="ltr">
@@ -239,27 +233,22 @@ const VerifyOtpPage: React.FC = () => {
                     />
                   ))}
                 </div>
-                {error && <p className="mt-2 text-center text-sm text-red-500">{error}</p>}
+                <FormErrorMessage message={error} />
               </div>
 
               {/* Resend Code */}
               <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  {/* {isRTL ? 'لم تستلم الرمز؟' : "Didn't receive the code?"} */}
-                  {t('login.didNotReceiveCode')}
-                </p>
+                <p className="text-sm text-gray-600">{t('login.didNotReceiveCode')}</p>
                 {canResend ? (
                   <button
                     type="button"
                     onClick={handleResend}
                     className="mt-2 text-sm font-medium text-[#1FAD6C] transition-colors hover:text-[#178f5a]"
                   >
-                    {/* {isRTL ? 'إعادة إرسال الرمز' : 'Resend code'} */}
                     {t('login.resendCode')}
                   </button>
                 ) : (
                   <p className="mt-2 text-sm font-medium text-gray-400">
-                    {/* {isRTL ? `إعادة الإرسال بعد ${countdown} ثانية` : `Resend in ${countdown}s`} */}
                     {t('login.resendCodeIn')}{' '}
                     <span className={countdown > 10 ? 'text-green-600' : 'text-red-600'}>
                       ({countdown})
@@ -278,13 +267,10 @@ const VerifyOtpPage: React.FC = () => {
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    <span>{isRTL ? 'جاري التحقق...' : 'Verifying...'}</span>
+                    <span>{t('loading.verifying')}</span>
                   </div>
                 ) : (
-                  <span>
-                    {/* {isRTL ? 'تحقق' : 'Verify'} */}
-                    {t('login.confirm')}
-                  </span>
+                  <span>{t('login.confirm')}</span>
                 )}
               </button>
             </form>
@@ -316,14 +302,8 @@ const VerifyOtpPage: React.FC = () => {
             </div>
 
             {/* Text */}
-            <h2 className="mb-4 text-3xl font-bold text-green-900">
-              {isRTL ? 'حماية حسابك' : 'Secure Your Account'}
-            </h2>
-            <p className="text-lg text-green-900/90">
-              {isRTL
-                ? 'نحن نهتم بأمان بياناتك وخصوصيتها'
-                : 'We care about the security and privacy of your data'}
-            </p>
+            <h2 className="mb-4 text-3xl font-bold text-green-900">{t('login.protectAccount')}</h2>
+            <p className="text-lg text-green-900/90">{t('login.securityMessage')}</p>
           </div>
         </div>
       </div>

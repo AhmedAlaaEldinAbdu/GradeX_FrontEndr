@@ -5,6 +5,10 @@ export const LoginSchema = object({
   password: string().min(6, "login.passwordInvalid").required("login.passwordRequired"),
 });
 
+export const EmailSchema = object({
+  email: string().email("login.emailInvalid").required("login.emailRequired").typeError("login.emailInvalid"),
+});
+
 export const ChangePasswordSchema = object({
   // currentPassword: string()
   //   .required("login.currentPasswordRequired"),
@@ -18,4 +22,5 @@ export const ChangePasswordSchema = object({
 
 
 export type LoginProps = InferType<typeof LoginSchema>;
+export type EmaileProps = InferType<typeof EmailSchema>;
 export type ChangePasswordProps = InferType<typeof ChangePasswordSchema>;
