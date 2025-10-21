@@ -15,6 +15,7 @@ import AddSchoolPage from '@gradex/pages/super-admin-dashboard/schools/add-schoo
 import EditSchoolPage from '@gradex/pages/super-admin-dashboard/schools/edit-school-page';
 import PendingSchoolDetailsPage from '@gradex/pages/super-admin-dashboard/schools/pending-school-details-page';
 import RejectedSchoolDetailsPage from '@gradex/pages/super-admin-dashboard/schools/rejected-school-details-page';
+import AcademicSystemPage from '@gradex/pages/super-admin-dashboard/academic-system/academic-system-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -82,19 +83,58 @@ const SuperAdminRouter: React.FC = () => {
           </ProtectedRoute>
         }
       />
+      {/* academic-system */}
       <Route
         path="/academic-system"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">النظام الأكاديمي</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <AcademicSystemPage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/academic-system/add-academic-system"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <AcademicSystemPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/academic-system/edit-academic-system"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <AcademicSystemPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/academic-system/add-educational-stages"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <AcademicSystemPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/academic-system/edit-educational-stages"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <AcademicSystemPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      {/*  */}
       <Route
         path="/books"
         element={
