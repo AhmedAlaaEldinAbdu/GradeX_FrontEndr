@@ -161,6 +161,7 @@ export default function RegisteredSchoolsTab() {
       header: 'common.actions',
       accessor: () => <DropdownMenuSchoolsAction selectedTab={1} />,
       headerClassName: 'min-w-[100px]',
+      sticky: true,
     },
   ];
 
