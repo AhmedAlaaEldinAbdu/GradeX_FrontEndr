@@ -20,6 +20,8 @@ import AddAcademicSystemPage from '@/pages/super-admin-dashboard/academic-system
 import EditAcademicSystemPage from '@/pages/super-admin-dashboard/academic-system/edit-academic-system-page';
 import AddEducationalStagesPage from '@/pages/super-admin-dashboard/academic-system/add-educational-stages-page';
 import EditEducationalStagesPage from '@/pages/super-admin-dashboard/academic-system/edit-educational-stages-page';
+import NotificationsPage from '@gradex/pages/super-admin-dashboard/notifications/notifications-page';
+import AddNotificationPage from '@gradex/pages/super-admin-dashboard/notifications/add-notification-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -284,10 +286,17 @@ const SuperAdminRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الإشعارات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <NotificationsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications/add-notification"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <AddNotificationPage />
             </MainLayout>
           </ProtectedRoute>
         }
