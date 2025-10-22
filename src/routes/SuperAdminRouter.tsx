@@ -22,6 +22,7 @@ import AddEducationalStagesPage from '@/pages/super-admin-dashboard/academic-sys
 import EditEducationalStagesPage from '@/pages/super-admin-dashboard/academic-system/edit-educational-stages-page';
 import NotificationsPage from '@gradex/pages/super-admin-dashboard/notifications/notifications-page';
 import AddNotificationPage from '@gradex/pages/super-admin-dashboard/notifications/add-notification-page';
+import EditNotificationPage from '@gradex/pages/super-admin-dashboard/notifications/edit-notification-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -297,6 +298,16 @@ const SuperAdminRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
               <AddNotificationPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications/edit-notification/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <EditNotificationPage />
             </MainLayout>
           </ProtectedRoute>
         }
