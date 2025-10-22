@@ -1,19 +1,40 @@
 import { t } from 'i18next';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import MultiSelectTagInput from '@gradex/shared/components/MultiSelectTagInput';
 import FormField from '@gradex/shared/components/FormField';
+import PopupMessage from '@gradex/shared/components/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import type { MultiSelectOption } from '@gradex/shared/components/MultiSelectTagInput';
+import { NotificationSchema } from '@gradex/validations/notifications-validations';
 
 export default function AddNotification() {
   const navigate = useNavigate();
-  const [sentTo, setSentTo] = useState('');
-  const [recipientType, setRecipientType] = useState('');
-  const [recipientNames, setRecipientNames] = useState('');
-  const [date, setDate] = useState('');
-  const [content, setContent] = useState('');
-  const [attachmentFile, setAttachmentFile] = useState<string>('');
+  const [showPopupMessage, setShowPopupMessage] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(NotificationSchema),
+    defaultValues: {
+      sentTo: '',
+      recipientType: '',
+      recipientNames: '',
+      date: '',
+      content: '',
+      attachmentFile: '',
+    },
+  });
+
+  const sentTo = watch('sentTo');
+  const attachmentFile = watch('attachmentFile');
 
   const sentToOptions: MultiSelectOption[] = [
     { value: 'دولة', label: 'دولة' },
@@ -45,122 +66,199 @@ export default function AddNotification() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setAttachmentFile(file.name);
+      setValue('attachmentFile', file.name);
     }
   };
 
   const handleFileDelete = () => {
-    setAttachmentFile('');
+    setValue('attachmentFile', '');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({
-      sentTo,
-      recipientType,
-      recipientNames,
-      date,
-      content,
-      attachmentFile,
-    });
+  const onSubmit = (data: Record<string, unknown>) => {
+    console.log(data);
+    // TODO: Add API call here
+    setShowPopupMessage(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopupMessage(false);
+    navigate('/notifications');
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-    >
-      <div className="mb-6 flex flex-col gap-6">
-        {/* مرسلة إلي */}
-        <FormField label={t('notifications.sentTo')} required>
-          <MultiSelectTagInput
-            value={sentTo}
-            onChange={setSentTo}
-            options={sentToOptions}
-            placeholder={t('notifications.selectRecipient')}
-          />
-        </FormField>
-
-        {hasCountry && (
-          <FormField label={t('notifications.recipientType')} required>
-            <MultiSelectTagInput
-              value={recipientType}
-              onChange={setRecipientType}
-              options={countryOptions}
-              placeholder={t('notifications.selectRecipient')}
+    <>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+      >
+        <div className="mb-6 flex flex-col gap-6">
+          {/* مرسلة إلي */}
+          <FormField
+            label={t('notifications.sentTo')}
+            required
+            error={errors.sentTo?.message && t(errors.sentTo.message)}
+          >
+            <Controller
+              name="sentTo"
+              control={control}
+              render={({ field }) => (
+                <MultiSelectTagInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={sentToOptions}
+                  placeholder={t('notifications.selectRecipient')}
+                  error={!!errors.sentTo}
+                />
+              )}
             />
           </FormField>
-        )}
 
-        {hasCity && (
-          <FormField label={t('notifications.city')} required>
-            <MultiSelectTagInput
-              value={recipientNames}
-              onChange={setRecipientNames}
-              options={cityOptions}
-              placeholder={t('notifications.selectRecipient')}
+          {hasCountry && (
+            <FormField
+              label={t('notifications.recipientType')}
+              required
+              error={errors.recipientType?.message && t(errors.recipientType.message)}
+            >
+              <Controller
+                name="recipientType"
+                control={control}
+                render={({ field }) => (
+                  <MultiSelectTagInput
+                    value={field.value || ''}
+                    onChange={field.onChange}
+                    options={countryOptions}
+                    placeholder={t('notifications.selectRecipient')}
+                    error={!!errors.recipientType}
+                  />
+                )}
+              />
+            </FormField>
+          )}
+
+          {hasCity && (
+            <FormField
+              label={t('notifications.city')}
+              required
+              error={errors.recipientNames?.message && t(errors.recipientNames.message)}
+            >
+              <Controller
+                name="recipientNames"
+                control={control}
+                render={({ field }) => (
+                  <MultiSelectTagInput
+                    value={field.value || ''}
+                    onChange={field.onChange}
+                    options={cityOptions}
+                    placeholder={t('notifications.selectRecipient')}
+                    error={!!errors.recipientNames}
+                  />
+                )}
+              />
+            </FormField>
+          )}
+
+          {hasEmployees && (
+            <FormField
+              label={t('notifications.recipientNames')}
+              required
+              error={errors.recipientNames?.message && t(errors.recipientNames.message)}
+            >
+              <Controller
+                name="recipientNames"
+                control={control}
+                render={({ field }) => (
+                  <MultiSelectTagInput
+                    value={field.value || ''}
+                    onChange={field.onChange}
+                    options={employeeOptions}
+                    placeholder={t('notifications.chooseNames')}
+                    error={!!errors.recipientNames}
+                  />
+                )}
+              />
+            </FormField>
+          )}
+
+          <FormField
+            label={t('notifications.date')}
+            required
+            error={errors.date?.message && t(errors.date.message)}
+          >
+            <Controller
+              name="date"
+              control={control}
+              render={({ field }) => (
+                <input
+                  type="date"
+                  value={field.value}
+                  onChange={field.onChange}
+                  className="h-[42px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              )}
             />
           </FormField>
-        )}
 
-        {hasEmployees && (
-          <FormField label={t('notifications.recipientNames')} required>
-            <MultiSelectTagInput
-              value={recipientNames}
-              onChange={setRecipientNames}
-              options={employeeOptions}
-              placeholder={t('notifications.chooseNames')}
+          <FormField
+            label={t('notifications.notificationContent')}
+            required
+            error={errors.content?.message && t(errors.content.message)}
+          >
+            <Controller
+              name="content"
+              control={control}
+              render={({ field }) => (
+                <textarea
+                  placeholder={t('notifications.enterContent')}
+                  value={field.value}
+                  onChange={field.onChange}
+                  rows={4}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              )}
             />
           </FormField>
-        )}
 
-        <FormField label={t('notifications.date')} required>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="h-[42px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </FormField>
+          <FormField label={t('notifications.attachments')} optional>
+            <FileUpload
+              label=""
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg"
+              onChange={handleFileChange}
+              onDelete={handleFileDelete}
+              fileName={attachmentFile || ''}
+              uploadText={t('notifications.uploadAttachments')}
+              formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
+            />
+          </FormField>
+        </div>
 
-        <FormField label={t('notifications.notificationContent')} required>
-          <textarea
-            placeholder={t('notifications.enterContent')}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={4}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </FormField>
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            className="rounded-lg border border-green-700 px-6 py-2 text-green-700 hover:bg-green-50"
+            onClick={() => navigate(-1)}
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            type="submit"
+            className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
+          >
+            {t('common.send')}
+          </button>
+        </div>
+      </form>
 
-        <FormField label={t('notifications.attachments')} optional>
-          <FileUpload
-            label=""
-            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg"
-            onChange={handleFileChange}
-            onDelete={handleFileDelete}
-            fileName={attachmentFile}
-            uploadText={t('notifications.uploadAttachments')}
-            formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
-          />
-        </FormField>
-      </div>
-
-      <div className="mt-6 flex justify-end gap-3">
-        <button
-          type="button"
-          className="rounded-lg border border-green-700 px-6 py-2 text-green-700 hover:bg-green-50"
-          onClick={() => navigate(-1)}
-        >
-          {t('common.cancel')}
-        </button>
-        <button
-          type="submit"
-          className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
-        >
-          {t('common.send')}
-        </button>
-      </div>
-    </form>
+      {/* Success Popup */}
+      {showPopupMessage && (
+        <PopupMessage
+          type="success"
+          message="notifications.notificationSent"
+          iconSrc={BigSuccessIcon}
+          autoClose={true}
+          duration={1000}
+          onClose={handleClosePopup}
+        />
+      )}
+    </>
   );
 }
