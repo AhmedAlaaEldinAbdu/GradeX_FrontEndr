@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Card from '@gradex/shared/components/Card';
 import EmptyState from '@gradex/shared/components/EmptyState';
 import Table from '@gradex/shared/components/Table';
@@ -23,6 +24,7 @@ interface NotificationItem {
 
 export default function Notifications() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [hasNotifications] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRecipient, setSelectedRecipient] = useState('');
@@ -112,9 +114,12 @@ export default function Notifications() {
     },
     {
       header: 'notifications.operations',
-      accessor: () => (
+      accessor: (row: NotificationItem) => (
         <div className="flex items-center justify-center gap-2">
-          <button className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100">
+          <button
+            onClick={() => navigate(`/notifications/edit-notification/${row.id}`)}
+            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
+          >
             <img src={EditIcon} alt="Edit" />
           </button>
           <button
