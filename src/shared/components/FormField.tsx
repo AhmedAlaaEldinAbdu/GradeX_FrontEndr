@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import FormErrorMessage from './FormErrorMessage';
 
 interface FormFieldProps {
   label: string;
@@ -28,7 +29,8 @@ const FormField: React.FC<FormFieldProps> = ({
         {optional && <span className="text-xs text-gray-400"> ({t('schools.optional')}) </span>}
       </label>
       {children}
-      {error && <p className="mt-1 text-right text-xs text-red-600">{error}</p>}
+      {/* {error && <p className="mt-1 text-right text-xs text-red-600">{error}</p>} */}
+      <FormErrorMessage message={error}/>
     </div>
   );
 };

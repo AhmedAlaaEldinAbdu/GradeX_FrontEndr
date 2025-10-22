@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ResetPassword from '@gradex/assets/illustrations/ResetPassword.svg';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ChangePasswordSchema, type ChangePasswordProps } from '@/validations/auth';
+import { ChangePasswordSchema, type ChangePasswordProps } from '@/validations/auth-validations';
 import { useForm } from 'react-hook-form';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import GradeXLogo from '@/assets/identity/GradeX.svg';

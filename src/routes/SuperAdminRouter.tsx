@@ -16,6 +16,10 @@ import EditSchoolPage from '@gradex/pages/super-admin-dashboard/schools/edit-sch
 import PendingSchoolDetailsPage from '@gradex/pages/super-admin-dashboard/schools/pending-school-details-page';
 import RejectedSchoolDetailsPage from '@gradex/pages/super-admin-dashboard/schools/rejected-school-details-page';
 import AcademicSystemPage from '@gradex/pages/super-admin-dashboard/academic-system/academic-system-page';
+import AddAcademicSystemPage from '@/pages/super-admin-dashboard/academic-system/add-academic-system-page';
+import EditAcademicSystemPage from '@/pages/super-admin-dashboard/academic-system/edit-academic-system-page';
+import AddEducationalStagesPage from '@/pages/super-admin-dashboard/academic-system/add-educational-stages-page';
+import EditEducationalStagesPage from '@/pages/super-admin-dashboard/academic-system/edit-educational-stages-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -99,17 +103,17 @@ const SuperAdminRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
-              <AcademicSystemPage />
+              <AddAcademicSystemPage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
       <Route
-        path="/academic-system/edit-academic-system"
+        path="/academic-system/edit-academic-system/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
-              <AcademicSystemPage />
+              <EditAcademicSystemPage />
             </MainLayout>
           </ProtectedRoute>
         }
@@ -119,17 +123,17 @@ const SuperAdminRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
-              <AcademicSystemPage />
+              <AddEducationalStagesPage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
       <Route
-        path="/academic-system/edit-educational-stages"
+        path="/academic-system/edit-educational-stages/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
-              <AcademicSystemPage />
+              <EditEducationalStagesPage />
             </MainLayout>
           </ProtectedRoute>
         }

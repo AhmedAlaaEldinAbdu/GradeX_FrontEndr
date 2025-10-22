@@ -1,0 +1,29 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import PageHeader from '@gradex/shared/components/PageHeader';
+import Breadcrumb from '@gradex/shared/layout/Breadcrumb';
+import EditAcademicSystem from './components/EditAcademicSystem';
+
+const EditAcademicSystemPage: React.FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div dir="rtl">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: 'academicSystem.title', path: '/academic-system' },
+          { label: 'academicSystem.editAcademicSystem' },
+        ]}
+      />
+
+      {/* Page Header */}
+      <PageHeader title="academicSystem.editAcademicSystem" />
+
+      {/* Main Content */}
+      <EditAcademicSystem />
+    </div>
+  );
+};
+
+export default EditAcademicSystemPage;

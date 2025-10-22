@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ComputerLoginBanner from '@gradex/assets/illustrations/ComputerLoginBanner.svg';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
-import { EmailSchema, type EmaileProps } from '@/validations/auth';
+import { EmailSchema, type EmaileProps } from '@/validations/auth-validations';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';

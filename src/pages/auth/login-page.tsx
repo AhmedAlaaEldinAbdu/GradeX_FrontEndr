@@ -10,7 +10,7 @@ import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import { useForm } from 'react-hook-form';
-import { LoginSchema, type LoginProps } from '@/validations/auth';
+import { LoginSchema, type LoginProps } from '@/validations/auth-validations';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 const LoginPage: React.FC = () => {

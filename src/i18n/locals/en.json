@@ -172,8 +172,17 @@
     "selectEducationSystem": "Select the education system compatible with the educational stage",
     "educationalStagesAddedSuccessfully": "Educational stages have been added successfully",
     "editEducationalStage": "Edit Educational Stage",
-    "educationalStageEditedSuccessfully": "Educational stage has been edited successfully"
+    "educationalStageEditedSuccessfully": "Educational stage has been edited successfully",
+    "validation": {
+      "academicSystemNameRequired": "Academic system name is required",
+      "countryRequired": "Country is required",
+      "educationalStagesNameRequired": "Educational stage name is required",
+      "academicSystemRequired": "Educational system is required",
+      "atLeastOne": "You must select at least one item",
+      "requiredList": "This list is required"
+    }
   },
+
   "rolesManagement": {
     "title": "Employees & Administration",
     "rolesAndPermissions": "Roles & Permissions",

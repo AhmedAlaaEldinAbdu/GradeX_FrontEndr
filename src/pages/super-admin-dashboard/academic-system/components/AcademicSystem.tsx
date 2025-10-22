@@ -11,6 +11,7 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@/shared/components/DeletePopup';
 import PopupMessage from '@/shared/components/PopupMessage';
+import { useNavigate } from 'react-router-dom';
 
 interface AcademicSystem {
   id: number;
@@ -24,6 +25,7 @@ interface AcademicSystem {
 
 export default function AcademicSystemsTable() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [hasAcademicSystems, setHasAcademicSystems] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showPopupMessage, setShowPopupMessage] = useState(false);
@@ -124,9 +126,12 @@ export default function AcademicSystemsTable() {
     },
     {
       header: 'common.actions',
-      accessor: () => (
+      accessor: (row: AcademicSystem) => (
         <div className="flex items-center gap-2">
-          <button className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100">
+          <button
+            onClick={() => navigate(`/academic-system/edit-academic-system/${row.id}`)}
+            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
+          >
             <img src={EditIcon} alt="Edit" />
           </button>
           <button

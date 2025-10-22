@@ -172,7 +172,15 @@
     "selectEducationSystem": "أختر النظام التعليمي المتوافق مع المرحلة التعليمية",
     "educationalStagesAddedSuccessfully": "تم إضافة المراحل التعليمية بنجاح",
     "editEducationalStage": "تعديل المرحلة التعليمية",
-    "educationalStageEditedSuccessfully": "تم تعديل المرحلة التعليمية بنجاح"
+    "educationalStageEditedSuccessfully": "تم تعديل المرحلة التعليمية بنجاح",
+    "validation": {
+      "academicSystemNameRequired": "يجب إدخال اسم النظام الأكاديمي",
+      "countryRequired": "يجب اختيار الدولة",
+      "educationalStagesNameRequired": "يجب إدخال اسم المرحلة التعليمية",
+      "academicSystemRequired": "يجب اختيار نظام تعليمي",
+      "atLeastOne": "يجب اختيار عنصر واحد على الأقل",
+      "requiredList": "هذه القائمة مطلوبة"
+    }
   },
   "rolesManagement": {
     "title": "الموظفين والإدارة",
