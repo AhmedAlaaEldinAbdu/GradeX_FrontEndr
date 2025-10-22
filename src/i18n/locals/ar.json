@@ -461,6 +461,13 @@
     "enterContent": "الموضوع",
     "optional": "اختياري",
     "uploadAttachments": "اضغط هنا للإضافة صورة أو ملف",
-    "notificationAdded": "تم إضافة الإشعار بنجاح"
+    "notificationSent": "تم إرسال الإشعار بنجاح",
+    "validation": {
+      "sentToRequired": "مرسلة إلي مطلوبة",
+      "recipientTypeRequired": "نوع المرسل إليه مطلوب",
+      "recipientNamesRequired": "أسماء المرسلين مطلوبة",
+      "dateRequired": "التاريخ مطلوب",
+      "contentRequired": "موضوع الإشعار مطلوب"
+    }
   }
 }

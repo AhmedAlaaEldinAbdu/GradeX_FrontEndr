@@ -460,6 +460,13 @@
     "enterContent": "Content",
     "optional": "Optional",
     "uploadAttachments": "Click here to add image or file",
-    "notificationAdded": "Notification added successfully"
+    "notificationSent": "Notification sent successfully",
+    "validation": {
+      "sentToRequired": "Sent to is required",
+      "recipientTypeRequired": "Recipient type is required",
+      "recipientNamesRequired": "Recipient names are required",
+      "dateRequired": "Date is required",
+      "contentRequired": "Notification content is required"
+    }
   }
 }
