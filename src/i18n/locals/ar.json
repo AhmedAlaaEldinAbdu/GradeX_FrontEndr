@@ -462,6 +462,8 @@
     "optional": "اختياري",
     "uploadAttachments": "اضغط هنا للإضافة صورة أو ملف",
     "notificationSent": "تم إرسال الإشعار بنجاح",
+    "notificationEdited": "تم تعديل الإشعار بنجاح",
+    "editNotification": "تعديل الإشعار",
     "validation": {
       "sentToRequired": "مرسلة إلي مطلوبة",
       "recipientTypeRequired": "نوع المرسل إليه مطلوب",

@@ -461,6 +461,8 @@
     "optional": "Optional",
     "uploadAttachments": "Click here to add image or file",
     "notificationSent": "Notification sent successfully",
+    "notificationEdited": "Notification edited successfully",
+    "editNotification": "Edit Notification",
     "validation": {
       "sentToRequired": "Sent to is required",
       "recipientTypeRequired": "Recipient type is required",
