@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import MultiSelectTagInput from '@gradex/shared/components/MultiSelectTagInput';
+import FormField from '@gradex/shared/components/FormField';
 import type { MultiSelectOption } from '@gradex/shared/components/MultiSelectTagInput';
 
 export default function AddNotification() {
@@ -11,7 +12,6 @@ export default function AddNotification() {
   const [recipientType, setRecipientType] = useState('');
   const [recipientNames, setRecipientNames] = useState('');
   const [date, setDate] = useState('');
-  const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [attachmentFile, setAttachmentFile] = useState<string>('');
 
@@ -60,7 +60,6 @@ export default function AddNotification() {
       recipientType,
       recipientNames,
       date,
-      subject,
       content,
       attachmentFile,
     });
@@ -73,95 +72,58 @@ export default function AddNotification() {
     >
       <div className="mb-6 flex flex-col gap-6">
         {/* مرسلة إلي */}
-        <div>
-          <label className="required mb-2 block text-start font-medium text-gray-700">
-            {t('notifications.sentTo')}
-          </label>
+        <FormField label={t('notifications.sentTo')} required>
           <MultiSelectTagInput
             value={sentTo}
             onChange={setSentTo}
             options={sentToOptions}
             placeholder={t('notifications.selectRecipient')}
           />
-        </div>
+        </FormField>
 
         {hasCountry && (
-          <>
-            <div>
-              <label className="required mb-2 block text-start font-medium text-gray-700">
-                {t('notifications.recipientType')}
-              </label>
-              <MultiSelectTagInput
-                value={recipientType}
-                onChange={setRecipientType}
-                options={countryOptions}
-                placeholder={t('notifications.selectRecipient')}
-              />
-            </div>
-          </>
+          <FormField label={t('notifications.recipientType')} required>
+            <MultiSelectTagInput
+              value={recipientType}
+              onChange={setRecipientType}
+              options={countryOptions}
+              placeholder={t('notifications.selectRecipient')}
+            />
+          </FormField>
         )}
 
         {hasCity && (
-          <>
-            <div>
-              <label className="required mb-2 block text-start font-medium text-gray-700">
-                {t('notifications.city')}
-              </label>
-              <MultiSelectTagInput
-                value={recipientNames}
-                onChange={setRecipientNames}
-                options={cityOptions}
-                placeholder={t('notifications.selectRecipient')}
-              />
-            </div>
-          </>
+          <FormField label={t('notifications.city')} required>
+            <MultiSelectTagInput
+              value={recipientNames}
+              onChange={setRecipientNames}
+              options={cityOptions}
+              placeholder={t('notifications.selectRecipient')}
+            />
+          </FormField>
         )}
 
         {hasEmployees && (
-          <>
-            <div>
-              <label className="required mb-2 block text-start font-medium text-gray-700">
-                {t('notifications.recipientNames')}
-              </label>
-              <MultiSelectTagInput
-                value={recipientNames}
-                onChange={setRecipientNames}
-                options={employeeOptions}
-                placeholder={t('notifications.chooseNames')}
-              />
-            </div>
-          </>
+          <FormField label={t('notifications.recipientNames')} required>
+            <MultiSelectTagInput
+              value={recipientNames}
+              onChange={setRecipientNames}
+              options={employeeOptions}
+              placeholder={t('notifications.chooseNames')}
+            />
+          </FormField>
         )}
 
-        <div>
-          <label className="required mb-2 block text-start font-medium text-gray-700">
-            {t('notifications.date')}
-          </label>
+        <FormField label={t('notifications.date')} required>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             className="h-[42px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label className="required mb-2 block text-start font-medium text-gray-700">
-            {t('notifications.notificationSubject')}
-          </label>
-          <input
-            type="text"
-            placeholder={t('notifications.enterSubject')}
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            className="h-[42px] w-full rounded-lg border border-gray-300 px-4 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block text-start font-medium text-gray-700">
-            {t('notifications.notificationContent')}
-          </label>
+        <FormField label={t('notifications.notificationContent')} required>
           <textarea
             placeholder={t('notifications.enterContent')}
             value={content}
@@ -169,12 +131,9 @@ export default function AddNotification() {
             rows={4}
             className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label className="mb-2 block text-start font-medium text-gray-700">
-            {t('notifications.attachments')} ({t('notifications.optional')})
-          </label>
+        <FormField label={t('notifications.attachments')} optional>
           <FileUpload
             label=""
             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.svg"
@@ -184,7 +143,7 @@ export default function AddNotification() {
             uploadText={t('notifications.uploadAttachments')}
             formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
           />
-        </div>
+        </FormField>
       </div>
 
       <div className="mt-6 flex justify-end gap-3">
