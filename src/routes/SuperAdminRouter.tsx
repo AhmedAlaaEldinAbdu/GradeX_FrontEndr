@@ -23,6 +23,8 @@ import EditEducationalStagesPage from '@/pages/super-admin-dashboard/academic-sy
 import NotificationsPage from '@gradex/pages/super-admin-dashboard/notifications/notifications-page';
 import AddNotificationPage from '@gradex/pages/super-admin-dashboard/notifications/add-notification-page';
 import EditNotificationPage from '@gradex/pages/super-admin-dashboard/notifications/edit-notification-page';
+import OfficialHolidaysPage from './../pages/super-admin-dashboard/official-holidays/official-holidays-page';
+import CountryHolidaysPage from './../pages/super-admin-dashboard/official-holidays/country-holidays-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -278,6 +280,26 @@ const SuperAdminRouter: React.FC = () => {
                 <h2 className="text-2xl font-bold text-gray-800">الحضور والغياب</h2>
                 <p className="mt-4 text-gray-600">قريباً...</p>
               </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/official-holidays"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <OfficialHolidaysPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/official-holidays/country/:countryId"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <CountryHolidaysPage />
             </MainLayout>
           </ProtectedRoute>
         }
