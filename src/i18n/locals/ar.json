@@ -471,5 +471,27 @@
       "dateRequired": "التاريخ مطلوب",
       "contentRequired": "موضوع الإشعار مطلوب"
     }
+  },
+  "officialHolidays": {
+    "addHoliday": "إضافة إجازة",
+    "noOfficialHolidays": "لم يتم إضافة أي أجازات رسمية حتى الآن. يمكنك البدء بإضافة الأجازات لتنظيم الإدارة بشكل أفضل.",
+    "searchByCountryName": "ابحث عن اسم الدولة",
+    "country": "الدولة",
+    "holidayName": "اسم الإجازة",
+    "fromDate": "من تاريخ",
+    "toDate": "الي تاريخ",
+    "hasOfficialDocument": "له تاريخ رسمي",
+    "officialHoliday": "إجازة رسمية",
+    "operations": "العمليات",
+    "confirmDeleteHoliday": "هل أنت متأكد من حذف هذه الإجازة الرسمية؟",
+    "holidayDeletedSuccessfully": "تم حذف الإجازة بنجاح",
+    "holidays": "الإجازات",
+    "countryHolidays": "إجازات الدولة",
+    "fixedHolidays": "الاجازات الثابتة",
+    "officialHolidays": "الاجازات الرسمية",
+    "noFixedHolidaysYet": "لا توجد إجازات ثابتة حتى الآن",
+    "date": "التاريخ",
+    "reason": "سبب الاجازة",
+    "editable": "قابلة للتعديل"
   }
 }

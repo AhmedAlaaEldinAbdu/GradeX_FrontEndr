@@ -470,5 +470,27 @@
       "dateRequired": "Date is required",
       "contentRequired": "Notification content is required"
     }
+  },
+  "officialHolidays": {
+    "addHoliday": "Add Holiday",
+    "noOfficialHolidays": "No official holidays have been added yet. You can start by adding official holidays to manage and organize them effectively.",
+    "searchByCountryName": "Search by country name",
+    "country": "Country",
+    "holidayName": "Holiday Name",
+    "fromDate": "From Date",
+    "toDate": "To Date",
+    "hasOfficialDocument": "Has Official Document",
+    "officialHoliday": "official holiday",
+    "operations": "Operations",
+    "confirmDeleteHoliday": "Are you sure you want to delete this official holiday?",
+    "holidayDeletedSuccessfully": "Holiday deleted successfully",
+    "holidays": "Holidays",
+    "countryHolidays": "Country Holidays",
+    "fixedHolidays": "Fixed Holidays",
+    "officialHolidays": "Official Holidays",
+    "noFixedHolidaysYet": "No fixed holidays yet",
+    "date": "Date",
+    "reason": "Reason",
+    "editable": "Editable"
   }
 }
