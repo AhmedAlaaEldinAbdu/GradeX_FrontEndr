@@ -26,14 +26,14 @@ export default function CountryHolidays() {
     {
       id: 1,
       dateRange: '7/1/2025 الثلاثاء',
-      reason: 'سبب الاجازة: عيد الميلاد المجيد',
+      reason: 'عيد الميلاد المجيد',
       hasOfficialDocument: true,
       date: '2025-01-07',
     },
     {
       id: 2,
       dateRange: '25/1/2025 السبت',
-      reason: 'سبب الاجازة: ثورة 25 يناير وعيد الشرطة',
+      reason: 'ثورة 25 يناير وعيد الشرطة',
       hasOfficialDocument: true,
       date: '2025-01-25',
     },
@@ -41,28 +41,28 @@ export default function CountryHolidays() {
       id: 3,
       dateRange: 'السبت 29/3/2025 - الأربعاء 2/4/2025',
       arabicDateRange: 'السبت 29/3/2025 - الأربعاء 2/4/2025',
-      reason: 'سبب الاجازة: عيد الفطر المبارك',
+      reason: 'عيد الفطر المبارك',
       hasOfficialDocument: false,
       date: '2025-03-29',
     },
     {
       id: 4,
       dateRange: '2/4/2025 الاثنين',
-      reason: 'سبب الاجازة: عيد شم النسيم',
+      reason: 'عيد شم النسيم',
       hasOfficialDocument: true,
       date: '2025-04-02',
     },
     {
       id: 5,
       dateRange: '24/4/2026 الخميس',
-      reason: 'سبب الاجازة: مناسبة عيد تحرير سيناء (25 أبريل 2026)',
+      reason: 'مناسبة عيد تحرير سيناء (25 أبريل 2026)',
       hasOfficialDocument: false,
       date: '2026-04-24',
     },
     {
       id: 6,
       dateRange: '25/1/2026 السبت',
-      reason: 'سبب الاجازة: ثورة 25 يناير وعيد الشرطة',
+      reason: 'ثورة 25 يناير وعيد الشرطة',
       hasOfficialDocument: true,
       date: '2026-01-25',
     },
@@ -101,7 +101,7 @@ export default function CountryHolidays() {
 
         {fixedHolidays.length === 0 ? (
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <img src={CheckIcon} alt="Check" className="h-5 w-5" />
+            <img src={CheckIcon} alt="Check" className="h-4 w-4" />
             <span>يوم الجمعة و السبت</span>
           </div>
         ) : (
