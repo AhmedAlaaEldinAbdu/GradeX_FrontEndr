@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import type { OfficialHoliday } from '@/types/officialHolidays';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
-import DotsIcon from '@gradex/assets/icons/Dots.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
-import { useNavigate } from 'react-router-dom';
+import { ActionsDropdown, type Action } from '@/shared/components/components';
 
 interface HolidayCardProps {
   holiday: OfficialHoliday;
@@ -27,8 +27,6 @@ export default function HolidayCard({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [open, setOpen] = useState(false);
-
   const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
@@ -37,7 +35,7 @@ export default function HolidayCard({
     setShowPopupMessage(true);
   };
 
-  const actions = [
+  const actions: Action[] = [
     {
       id: 'edit',
       label: t('actions.edit'),
@@ -51,7 +49,6 @@ export default function HolidayCard({
       icon: TrashIcon,
       color: 'text-red-600 hover:bg-red-50',
       onClick: () => {
-        setOpen(false);
         setShowDeletePopup(true);
       },
     },
@@ -149,29 +146,7 @@ export default function HolidayCard({
             </div>
 
             {/* Actions Dropdown */}
-            <div className="relative inline-block text-left">
-              <button className="rounded p-1 hover:bg-gray-100" onClick={() => setOpen(!open)}>
-                <img src={DotsIcon} alt="Options" className="h-6 w-6" />
-              </button>
-              {open && (
-                <div className="absolute left-0 z-10 mt-2 w-28 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
-                  {actions?.map((action) => (
-                    <button
-                      key={action.id}
-                      onClick={action.onClick}
-                      className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-right ${action.color}`}
-                    >
-                      <img
-                        src={action.icon}
-                        alt={`${action.id}Icon`}
-                        className={`${action.id === 'reject' ? 'h-[16px] w-[16px]' : 'h-[20px] w-[20px]'}`}
-                      />
-                      <span>{action.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ActionsDropdown actions={actions} />
           </div>
         </div>
       </div>
