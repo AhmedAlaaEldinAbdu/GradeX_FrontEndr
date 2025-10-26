@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import EmptyState from '@/shared/components/EmptyState';
 import DeletePopup from '@/shared/components/DeletePopup';
 import PopupMessage from '@/shared/components/PopupMessage';
-import CheckIcon from '@gradex/assets/icons/Check.svg';
-import DotsIcon from '@gradex/assets/icons/Dots.svg';
-import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import HolidayTimeline from './HolidayTimeline';
 import type { FixedHoliday, OfficialHoliday } from '@/types/officialHolidays';
+import CheckIcon from '@gradex/assets/icons/Check.svg';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import { ActionsDropdown, type Action } from '@/shared/components/components';
 
 export default function CountryHolidays() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { countryId } = useParams<{ countryId: string }>();
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -81,6 +85,25 @@ export default function CountryHolidays() {
     setShowSuccessMessage(true);
   };
 
+  const actions: Action[] = [
+    {
+      id: 'edit',
+      label: t('actions.edit'),
+      icon: EditFilledIcon,
+      color: 'text-gray-700 hover:bg-gray-100',
+      onClick: () => navigate(`/official-holidays/edit/1`),
+    },
+    {
+      id: 'delete',
+      label: t('actions.delete'),
+      icon: TrashIcon,
+      color: 'text-red-600 hover:bg-red-50',
+      onClick: () => {
+        setShowDeletePopup(true);
+      },
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Country Name Header with Search */}
@@ -94,9 +117,10 @@ export default function CountryHolidays() {
           <h2 className="text-lg font-semibold text-gray-800">
             {t('officialHolidays.fixedHolidays')}
           </h2>
-          <button className="rounded p-1 hover:bg-gray-100">
+          {/* <button className="rounded p-1 hover:bg-gray-100">
             <img src={DotsIcon} alt="Options" className="h-6 w-6" />
-          </button>
+          </button> */}
+          <ActionsDropdown actions={actions} />
         </div>
 
         {fixedHolidays.length === 0 ? (
@@ -144,6 +168,7 @@ export default function CountryHolidays() {
           type="success"
           message={t('officialHolidays.holidayDeletedSuccessfully')}
           autoClose={true}
+          iconSrc={BigSuccessIcon}
           duration={3000}
           onClose={() => setShowSuccessMessage(false)}
         />
