@@ -1,21 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import Card from '@gradex/shared/components/Card';
 import EmptyState from '@gradex/shared/components/EmptyState';
+import CustomSelect from '@gradex/shared/components/CustomSelect';
 import { useTranslation } from 'react-i18next';
 import schoolIcon from '@gradex/assets/icons/School.svg';
 import RegisteredSchoolsTab from './RegisteredSchoolsTab';
 import PendingSchoolsTab from './PendingSchoolsTab';
 import DeletedSchoolsTab from './DeletedSchoolsTab';
+import { fetchCountries } from '@gradex/redux/features/lookups/lookupsActions';
+import {
+  selectCountries,
+  selectIsLoadingCountries,
+} from '@gradex/redux/features/lookups/lookupsSelectors';
 
 export default function Schools() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
+
   const [activeTab, setActiveTab] = useState('RegisteredSchools');
-  const [hasSchools, setHasSchools] = useState(true);
+  const [hasSchools] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [academicSystem, setAcademicSystem] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+
+  // Get countries from Redux
+  const countries = useSelector(selectCountries);
+  const isLoadingCountries = useSelector(selectIsLoadingCountries);
+
+  // Get current language
+  const currentLang = i18n.language as 'ar' | 'en';
+
+  // Fetch countries on component mount
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
+
+  // Log countries when loaded
+  useEffect(() => {
+    if (countries.length > 0) {
+      console.log('✅ Countries loaded:', countries.length, 'countries');
+      console.log('📍 First country:', countries[0]);
+    }
+  }, [countries]);
 
   const tabs = [
     { id: 'RegisteredSchools', label: 'schools.registeredSchools' },
@@ -80,7 +108,6 @@ export default function Schools() {
                 </div>
               </div>
               <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
-                
                 <div>
                   <select
                     value={academicSystem}
@@ -95,15 +122,17 @@ export default function Schools() {
                 </div>
 
                 <div>
-                  <select
+                  <CustomSelect
                     value={selectedCountry}
-                    onChange={(e) => setSelectedCountry(e.target.value)}
-                    className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    <option value="">{t('schools.country')}</option>
-                    <option value="egypt">مصر</option>
-                    <option value="ksa">السعودية</option>
-                  </select>
+                    onChange={(value) => setSelectedCountry(value)}
+                    options={countries.map((country) => ({
+                      value: country.id,
+                      label: currentLang === 'ar' ? country.arabicName : country.englishName,
+                    }))}
+                    placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
+                    disabled={isLoadingCountries}
+                    maxHeight="200px"
+                  />
                 </div>
 
                 {/* <div>
