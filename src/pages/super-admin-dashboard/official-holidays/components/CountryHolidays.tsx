@@ -143,10 +143,7 @@ export default function CountryHolidays() {
         ) : (
           <div className="relative">
             {/* Timeline Container */}
-            <div className="hidden lg:absolute lg:left-1/2 lg:top-[20px] lg:block lg:h-[calc(100%-40px)] lg:-translate-x-1/2">
-              {/* Vertical Timeline Line */}
-              <div className="h-full w-[2px] bg-green-600"></div>
-            </div>
+            <div className="hidden lg:absolute lg:left-1/2 lg:top-[20px] lg:block lg:h-[calc(100%-40px)] lg:-translate-x-1/2"></div>
 
             {/* Grid Layout */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-x-8">
@@ -169,13 +166,22 @@ export default function CountryHolidays() {
                             {/* Number Circle with Connector Line */}
                             <div className="relative flex flex-col items-center">
                               <div
-                                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
+                                className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium ${
                                   !isUpcomingHoliday(leftHoliday.date)
                                     ? 'bg-green-600 text-white'
                                     : 'border border-gray-300 bg-white text-gray-500'
                                 }`}
                               >
-                                {rowIndex + 1}
+                                {!isUpcomingHoliday(leftHoliday.date) ? (
+                                  <img
+                                    src={CheckIcon}
+                                    alt="Completed"
+                                    className="h-3 w-3 brightness-200 invert saturate-0 filter"
+                                    style={{ filter: 'brightness(0) invert(1)' }}
+                                  />
+                                ) : (
+                                  rowIndex + 1
+                                )}
                               </div>
                               {/* Connector line to next circle */}
                               {rowIndex < leftColumn.length - 1 && (
@@ -257,13 +263,22 @@ export default function CountryHolidays() {
                             {/* Number Circle with Connector Line */}
                             <div className="relative flex flex-col items-center">
                               <div
-                                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
+                                className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium ${
                                   !isUpcomingHoliday(rightHoliday.date)
                                     ? 'bg-green-600 text-white'
                                     : 'border border-gray-300 bg-white text-gray-500'
                                 }`}
                               >
-                                {midpoint + rowIndex + 1}
+                                {!isUpcomingHoliday(rightHoliday.date) ? (
+                                  <img
+                                    src={CheckIcon}
+                                    alt="Completed"
+                                    className="h-3 w-3 brightness-200 invert saturate-0 filter"
+                                    style={{ filter: 'brightness(0) invert(1)' }}
+                                  />
+                                ) : (
+                                  midpoint + rowIndex + 1
+                                )}
                               </div>
                               {/* Connector line to next circle */}
                               {rowIndex < rightColumn.length - 1 && (
