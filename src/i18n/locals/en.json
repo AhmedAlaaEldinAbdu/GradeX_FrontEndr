@@ -102,6 +102,7 @@
     "forgotPassword": "Forgot password?",
     "signInButton": "Sign In",
     "signingIn": "Signing in...",
+    "loginFailed": "Login failed. Please check your credentials.",
     "invalidEmail": "Invalid email address",
     "emailRequired": "Email is required",
     "passwordRequired": "Password is required",
