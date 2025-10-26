@@ -58,7 +58,7 @@ export default function HolidayCard({
             {/* Top Row: Date */}
             <div className="flex items-center justify-between">
               {/* Date with Calendar Icon */}
-              <div className="flex items-center gap-1 text-sm text-gray-700">
+              <div className="flex items-center gap-1 text-sm text-gray-800">
                 <svg
                   width="16"
                   height="16"
@@ -96,9 +96,9 @@ export default function HolidayCard({
             </div>
 
             {/* Holiday Reason */}
-            <p className="text-start text-sm text-gray-700">
+            <p className="text-start text-sm text-gray-800">
               <span className="me-2 font-semibold">{t('officialHolidays.reason')}:</span>
-              {holiday.reason}
+              <span className="text-gray-700">{holiday.reason}</span>
             </p>
           </div>
         </div>
