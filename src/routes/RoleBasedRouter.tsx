@@ -24,6 +24,11 @@ const RoleBasedRouter: React.FC = () => {
   const dashboardType = useSelector(selectDashboardType);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
+  console.log('🔀 RoleBasedRouter render:', {
+    isAuthenticated,
+    dashboardType,
+  });
+
   if (!isAuthenticated) {
     return (
       <Routes>
