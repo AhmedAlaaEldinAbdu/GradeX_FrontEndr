@@ -8,7 +8,7 @@ import PopupMessage from '@/shared/components/PopupMessage';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import DotsIcon from '@gradex/assets/icons/Dots.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import HolidayCard from './HolidayCard';
+import HolidayTimeline from './HolidayTimeline';
 import type { FixedHoliday, OfficialHoliday } from '@/types/officialHolidays';
 
 export default function CountryHolidays() {
@@ -126,56 +126,7 @@ export default function CountryHolidays() {
             blend={true}
           />
         ) : (
-          <div className="relative">
-            {/* Timeline Container */}
-            <div className="hidden lg:absolute lg:left-1/2 lg:top-[20px] lg:block lg:h-[calc(100%-40px)] lg:-translate-x-1/2">
-              {/* Vertical Timeline Line */}
-              <div className="h-full w-[2px] bg-green-600"></div>
-            </div>
-
-            {/* Grid Layout */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-x-8">
-              {(() => {
-                const midpoint = Math.ceil(officialHolidays.length / 2);
-                const leftColumn = officialHolidays.slice(0, midpoint);
-                const rightColumn = officialHolidays.slice(midpoint);
-                const maxLength = Math.max(leftColumn.length, rightColumn.length);
-
-                return Array.from({ length: maxLength }).map((_, rowIndex) => {
-                  const leftHoliday = leftColumn[rowIndex];
-                  const rightHoliday = rightColumn[rowIndex];
-
-                  return (
-                    <>
-                      {/* Left Column */}
-                      {leftHoliday && (
-                        <div key={`left-${leftHoliday.id}`} className="lg:col-start-1">
-                          <HolidayCard
-                            holiday={leftHoliday}
-                            index={rowIndex + 1}
-                            isUpcomingHoliday={isUpcomingHoliday}
-                            showConnector={rowIndex < leftColumn.length - 1}
-                          />
-                        </div>
-                      )}
-
-                      {/* Right Column */}
-                      {rightHoliday && (
-                        <div key={`right-${rightHoliday.id}`} className="lg:col-start-2">
-                          <HolidayCard
-                            holiday={rightHoliday}
-                            index={midpoint + rowIndex + 1}
-                            isUpcomingHoliday={isUpcomingHoliday}
-                            showConnector={rowIndex < rightColumn.length - 1}
-                          />
-                        </div>
-                      )}
-                    </>
-                  );
-                });
-              })()}
-            </div>
-          </div>
+          <HolidayTimeline holidays={officialHolidays} isUpcomingHoliday={isUpcomingHoliday} />
         )}
       </Card>
 
