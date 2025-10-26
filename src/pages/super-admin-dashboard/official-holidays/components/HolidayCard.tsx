@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { OfficialHoliday } from '@/types/officialHolidays';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 
@@ -14,6 +15,8 @@ export default function HolidayCard({
   isUpcomingHoliday,
   showConnector,
 }: HolidayCardProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="relative">
       <div className="flex gap-2">
@@ -55,8 +58,7 @@ export default function HolidayCard({
             {/* Top Row: Date */}
             <div className="flex items-center justify-between">
               {/* Date with Calendar Icon */}
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span className="text-gray-500">:التاريخ</span>
+              <div className="flex items-center gap-1 text-sm text-gray-700">
                 <svg
                   width="16"
                   height="16"
@@ -87,12 +89,17 @@ export default function HolidayCard({
                     strokeLinecap="round"
                   />
                 </svg>
+                <span className="me-2 font-semibold">{t('officialHolidays.date')}:</span>
+
                 <span className="font-medium text-gray-700">{holiday.dateRange}</span>
               </div>
             </div>
 
             {/* Holiday Reason */}
-            <p className="text-start text-sm text-gray-700">{holiday.reason}</p>
+            <p className="text-start text-sm text-gray-700">
+              <span className="me-2 font-semibold">{t('officialHolidays.reason')}:</span>
+              {holiday.reason}
+            </p>
           </div>
         </div>
       </div>
