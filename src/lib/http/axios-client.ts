@@ -42,7 +42,8 @@ axiosClient.interceptors.request.use(
       token = import.meta.env.VITE_DEV_AUTH_TOKEN;
       console.log('🔑 Using development auth token');
     } else {
-      token = localStorage.getItem('authToken');
+      // Check both localStorage and sessionStorage
+      token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
     }
 
     if (token) {
