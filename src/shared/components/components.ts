@@ -16,4 +16,6 @@ export { default as StepIndicator } from './StepIndicator';
 export { default as MapLocationModal } from './MapLocationModal';
 export { default as PhoneInput } from './PhoneInput';
 export { default as MultiSelectTagInput } from './MultiSelectTagInput';
+export { default as ActionsDropdown } from './ActionsDropdown';
 export type { MultiSelectOption } from './MultiSelectTagInput';
+export type { Action } from './ActionsDropdown';
