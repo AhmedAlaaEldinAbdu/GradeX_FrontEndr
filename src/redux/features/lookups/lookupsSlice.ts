@@ -12,6 +12,32 @@ import type { LookupsState } from './lookupsTypes';
 import { LOOKUP_CACHE_DURATION } from './lookupsTypes';
 
 // ============================================================================
+// Initial State
+// ============================================================================
+
+const initialState: LookupsState = {
+  // Data
+  applicationFeatures: [],
+  countries: [],
+
+  // Loading States
+  isLoadingFeatures: false,
+  isLoadingCountries: false,
+
+  // Error States
+  featuresError: null,
+  countriesError: null,
+
+  // Initialization States
+  isFeaturesInitialized: false,
+  isCountriesInitialized: false,
+
+  // Timestamps
+  lastFetchedFeatures: null,
+  lastFetchedCountries: null,
+};
+
+// ============================================================================
 // Async Thunks
 // ============================================================================
 
@@ -101,32 +127,6 @@ export const fetchAllLookups = createAsyncThunk<
     return rejectWithValue(getErrorMessage(error));
   }
 });
-
-// ============================================================================
-// Initial State
-// ============================================================================
-
-const initialState: LookupsState = {
-  // Data
-  applicationFeatures: [],
-  countries: [],
-
-  // Loading States
-  isLoadingFeatures: false,
-  isLoadingCountries: false,
-
-  // Error States
-  featuresError: null,
-  countriesError: null,
-
-  // Initialization States
-  isFeaturesInitialized: false,
-  isCountriesInitialized: false,
-
-  // Timestamps
-  lastFetchedFeatures: null,
-  lastFetchedCountries: null,
-};
 
 // ============================================================================
 // Slice Definition
