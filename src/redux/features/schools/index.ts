@@ -7,21 +7,10 @@
 export { default as schoolsReducer } from './schoolsSlice';
 
 // Actions from Slice
-export {
-  setFilters,
-  clearFilters,
-  setPagination,
-  selectSchools as selectSchoolsAction,
-  toggleSchoolSelection,
-  selectAllSchools as selectAllSchoolsAction,
-  clearSelection,
-  clearCurrentSchool,
-  clearErrors,
-  resetSchoolsState,
-} from './schoolsSlice';
+export {} from './schoolsSlice';
 
 // Actions (Async Thunks)
-export * from './schoolsActions';
+export {} from './schoolsSlice';
 
 // Selectors
 export * from './schoolsSelectors';
