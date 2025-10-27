@@ -133,6 +133,8 @@ export const contactInfoSchema = yup.object().shape({
  * Includes main address and optional branches
  */
 export const addressSchema = yup.object().shape({
+  addressCountry: yup.string().required('schools.validation.countryRequired'),
+
   region: yup
     .string()
     .required('schools.validation.regionRequired')
