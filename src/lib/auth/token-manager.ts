@@ -9,7 +9,7 @@ const USER_DATA_KEY = 'userData';
 const REMEMBER_ME_KEY = 'rememberMe';
 
 export interface StoredUserData {
-  id: number;
+  id: string | number;
   name: string;
   email: string;
   role: string;
@@ -41,6 +41,70 @@ export const generateMockRefreshToken = (): string => {
   return btoa('refresh-token-' + Date.now() + '-' + Math.random().toString(36));
 };
 
+/**
+ * Decode JWT token and extract user data
+ */
+export const decodeJwtToken = (token: string): StoredUserData | null => {
+  try {
+    // Decode JWT payload
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      console.error('Invalid JWT token format');
+      return null;
+    }
+
+    const payload = JSON.parse(atob(parts[1]));
+
+    // Extract role from JWT and normalize it
+    const rawRole =
+      payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
+      payload.role ||
+      'User';
+
+    // Normalize role to match our constants
+    // Backend sends: "SuperAdmin" -> we need: "super-admin"
+    const normalizeRole = (role: string): string => {
+      const roleMap: Record<string, string> = {
+        SuperAdmin: 'super-admin',
+        SchoolAdmin: 'school-admin',
+        superadmin: 'super-admin',
+        schooladmin: 'school-admin',
+        'super-admin': 'super-admin',
+        'school-admin': 'school-admin',
+      };
+      return roleMap[role] || 'super-admin'; // Default to super-admin if unknown
+    };
+
+    // Extract user data from JWT claims with mock fallbacks
+    const userId = payload.sub || `user-${Date.now()}`;
+    const userName =
+      payload.FullName ||
+      payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
+      payload.name ||
+      'System User';
+    const userEmail =
+      payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ||
+      payload.email ||
+      'user@gradex.com';
+    const userRole = normalizeRole(rawRole);
+
+    const userData: StoredUserData = {
+      id: userId,
+      name: userName,
+      email: userEmail,
+      role: userRole,
+      isAuthenticated: true,
+    };
+
+    console.log('✅ Decoded user data from JWT:', userData);
+
+    return userData;
+  } catch (error) {
+    console.error('Error decoding JWT token:', error);
+    return null;
+  }
+};
+
 export const tokenManager = {
   /**
    * Get access token
@@ -60,9 +124,11 @@ export const tokenManager = {
     if (rememberMe) {
       localStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(REMEMBER_ME_KEY, 'true');
+      console.log('🔐 Token stored in localStorage');
     } else {
       sessionStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(REMEMBER_ME_KEY, 'false');
+      console.log('🔐 Token stored in sessionStorage');
     }
   },
 
@@ -105,8 +171,10 @@ export const tokenManager = {
     const dataString = JSON.stringify(userData);
     if (rememberMe) {
       localStorage.setItem(USER_DATA_KEY, dataString);
+      console.log('👤 User data stored in localStorage:', userData);
     } else {
       sessionStorage.setItem(USER_DATA_KEY, dataString);
+      console.log('👤 User data stored in sessionStorage:', userData);
     }
   },
 

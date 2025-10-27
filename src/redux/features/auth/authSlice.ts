@@ -1,12 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { ActionReducerMapBuilder, PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, User } from './authTypes';
-import { UserRole, type UserRoleType } from '@gradex/constants';
+import type { UserRoleType } from '@gradex/constants';
 import {
   tokenManager,
   type StoredUserData,
   generateMockRefreshToken,
+  decodeJwtToken,
 } from '@gradex/lib/auth/token-manager';
+import { authApiService } from '@/services/api/auth/auth.service';
+import { getErrorMessage } from '@/lib/http';
+import type { LoginRequest } from '@/services/api/types/auth.types';
 
 const initialState: AuthState = {
   user: null,
@@ -24,13 +28,32 @@ export const restoreSession = createAsyncThunk('auth/restoreSession', async () =
   const token = tokenManager.getToken();
   const userData = tokenManager.getUserData();
 
+  console.log('🔄 Attempting to restore session:', {
+    hasToken: !!token,
+    hasUserData: !!userData,
+    isExpired: token ? tokenManager.isTokenExpired() : 'no token',
+  });
+
   if (!token || !userData || tokenManager.isTokenExpired()) {
+    console.log('❌ Session restore failed - clearing tokens');
     tokenManager.clearTokens();
     throw new Error('No valid session found');
   }
 
+  // Convert StoredUserData to User type
+  const user: User = {
+    id: Number(userData.id) || 0,
+    name: userData.name,
+    email: userData.email,
+    role: userData.role as UserRoleType,
+    avatar: userData.avatar,
+    isAuthenticated: true,
+  };
+
+  console.log('✅ Session restored successfully:', user);
+
   return {
-    user: userData,
+    user,
     token,
   };
 });
@@ -40,18 +63,49 @@ export const restoreSession = createAsyncThunk('auth/restoreSession', async () =
  */
 export const login = createAsyncThunk(
   'auth/login',
-  async (credentials: { email: string; password: string }) => {
-    // TODO: Replace with real API call
-    return {
-      user: {
-        id: 1,
-        name: 'Admin user',
+  async (credentials: LoginRequest & { rememberMe?: boolean }, { rejectWithValue }) => {
+    try {
+      // Call the real API
+      const response = await authApiService.login({
         email: credentials.email,
-        role: UserRole.SUPER_ADMIN,
-        isAuthenticated: false,
-      },
-      token: 'mock-token',
-    };
+        password: credentials.password,
+      });
+
+      // Decode the JWT token to extract user data
+      const userData = decodeJwtToken(response.token);
+
+      if (!userData) {
+        throw new Error('Failed to decode user data from token');
+      }
+
+      // Store token and user data
+      const rememberMe = credentials.rememberMe ?? false;
+      tokenManager.setToken(response.token, rememberMe);
+      tokenManager.setUserData(userData, rememberMe);
+
+      // Generate and store mock refresh token
+      const refreshToken = generateMockRefreshToken();
+      tokenManager.setRefreshToken(refreshToken, rememberMe);
+
+      console.log('✅ Login successful - Token stored:', {
+        rememberMe,
+        token: response.token.substring(0, 50) + '...',
+        storage: rememberMe ? 'localStorage' : 'sessionStorage',
+      });
+
+      return {
+        user: {
+          id: Number(userData.id) || 0,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role as UserRoleType,
+          isAuthenticated: true,
+        },
+        token: response.token,
+      };
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
 );
 
@@ -115,6 +169,7 @@ const authSlice = createSlice({
       .addCase(restoreSession.pending, (state) => {
         state.isLoading = true;
         state.error = null;
+        console.log('⏳ Restore session pending...');
       })
       .addCase(restoreSession.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -123,6 +178,7 @@ const authSlice = createSlice({
         state.user = action.payload.user as User;
         state.token = action.payload.token;
         state.error = null;
+        console.log('✅ Restore session fulfilled - User authenticated:', action.payload.user);
       })
       .addCase(restoreSession.rejected, (state) => {
         state.isLoading = false;
@@ -131,6 +187,7 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         state.error = null;
+        console.log('❌ Restore session rejected - No valid session');
       });
 
     // Login
@@ -138,17 +195,27 @@ const authSlice = createSlice({
       .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
+        console.log('⏳ Login pending...');
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isInitialized = true; // Mark as initialized after successful login
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
+        console.log('✅ Login fulfilled - Redux state updated:', {
+          isAuthenticated: state.isAuthenticated,
+          isInitialized: state.isInitialized,
+          user: state.user,
+          hasToken: !!state.token,
+        });
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
+        state.isInitialized = true; // Mark as initialized even on failure
         state.error = action.error.message || 'Login failed';
+        console.log('❌ Login rejected:', action.error.message);
       });
 
     // Logout

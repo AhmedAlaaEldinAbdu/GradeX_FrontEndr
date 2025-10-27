@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { setUser } from '@gradex/redux/features/auth/authSlice';
-import { UserRole } from '@gradex/constants';
-import { generateMockToken } from '@gradex/lib/auth/token-manager';
+import { login } from '@gradex/redux/features/auth/authSlice';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import ComputerLoginBanner from '@gradex/assets/illustrations/ComputerLoginBanner.svg';
 import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
@@ -17,11 +16,11 @@ const LoginPage: React.FC = () => {
   const { t, i18n } = useTranslation();
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   // Language toggle
   const currentLang = i18n.language;
@@ -43,31 +42,32 @@ const LoginPage: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginProps) => {
-    setIsLoading(true);
+    try {
+      setLoginError(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      // Generate mock token
-      const mockToken = generateMockToken(data.email, UserRole.SUPER_ADMIN);
+      console.log('📧 Attempting login with:', {
+        email: data.email,
+        rememberMe: rememberMe,
+      });
 
-      // Mock login - dispatch user to Redux with rememberMe flag
-      dispatch(
-        setUser({
-          id: 1,
-          name: isRTL ? 'مستخدم النظام' : 'System User',
+      await dispatch(
+        login({
           email: data.email,
-          role: UserRole.SUPER_ADMIN,
-          isAuthenticated: true,
+          password: data.password,
           rememberMe: rememberMe,
-          token: mockToken,
         })
+      ).unwrap();
+
+      console.log('✅ Login successful, navigating to dashboard...');
+
+      navigate('/dashboard');
+    } catch (error) {
+      setLoginError(
+        typeof error === 'string'
+          ? error
+          : t('login.loginFailed') || 'Login failed. Please check your credentials.'
       );
-
-      setIsLoading(false);
-
-      // Navigate to OTP verification
-      navigate('/dashboard', { state: { email: data.email, rememberMe } });
-    }, 1000);
+    }
   };
 
   return (
@@ -265,18 +265,25 @@ const LoginPage: React.FC = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting || isLoading}
+                disabled={isSubmitting}
                 className="w-full rounded-lg bg-[#1FAD6C] px-4 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isLoading ? (
+                {isSubmitting ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    {isLoading && <span>{t('login.signingIn')}</span>}
+                    <span>{t('login.signingIn')}</span>
                   </div>
                 ) : (
                   <span>{t('login.signInButton')}</span>
                 )}
               </button>
+
+              {/* Error Message */}
+              {loginError && (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+                  {loginError}
+                </div>
+              )}
             </form>
           </div>
         </div>
