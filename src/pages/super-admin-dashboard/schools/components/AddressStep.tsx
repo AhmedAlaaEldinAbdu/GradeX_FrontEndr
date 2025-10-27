@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
 import { Controller, useFormContext } from 'react-hook-form';
 import Input from '@gradex/shared/components/Input';
@@ -7,6 +9,13 @@ import FormField from '@gradex/shared/components/FormField';
 import Button from '@gradex/shared/components/Button';
 import MapLocationModal from '@gradex/shared/components/MapLocationModal';
 import type { SchoolFormData } from '../types/school.types';
+import {
+  fetchCountries,
+  selectCountries,
+  selectIsLoadingCountries,
+} from '@gradex/redux/features/lookups';
+import CustomSelect from '@/shared/components/CustomSelect';
+import i18n from '@/i18n';
 
 interface BranchData {
   country: string;
@@ -28,11 +37,19 @@ interface AddressStepProps {
  */
 const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
+
   const {
     control,
     formState: { errors },
+    trigger,
     watch,
   } = useFormContext<SchoolFormData>();
+
+  const currentLang = i18n.language as 'ar' | 'en';
+
+  const countries = useSelector(selectCountries);
+  const isLoadingCountries = useSelector(selectIsLoadingCountries);
 
   const hasBranches = watch('hasBranches');
 
@@ -90,6 +107,10 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
     // TODO: Update form data with selected location
   };
 
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
+
   return (
     <div className="space-y-6 p-4">
       {/* Map Button */}
@@ -111,21 +132,25 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
         <FormField
           label={t('schools.countryWithAl')}
           required
-          error={errors.country?.message && t(errors.country.message)}
+          error={errors.addressCountry?.message && t(errors.addressCountry.message)}
         >
           <Controller
-            name="country"
+            name="addressCountry"
             control={control}
             render={({ field }) => (
-              <Select
-                {...field}
-                options={[
-                  { value: '', label: t('schools.selectCountry') },
-                  { value: 'egypt', label: 'مصر' },
-                  { value: 'saudi', label: 'السعودية' },
-                ]}
-                required
-                disabled={readOnly}
+              <CustomSelect
+                value={field.value || ''}
+                onChange={(value) => {
+                  field.onChange(value);
+                  trigger('addressCountry');
+                }}
+                options={countries.map((country) => ({
+                  value: country.id,
+                  label: currentLang === 'ar' ? country.arabicName : country.englishName,
+                }))}
+                placeholder={isLoadingCountries ? t('common.loading') : t('schools.selectCountry')}
+                disabled={isLoadingCountries || readOnly}
+                maxHeight="200px"
               />
             )}
           />
