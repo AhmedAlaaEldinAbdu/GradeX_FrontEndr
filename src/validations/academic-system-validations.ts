@@ -9,7 +9,7 @@ export const AcademicSystemSchema = yup.object({
           .string()
           .required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
         systemType: yup.array().of(yup.string()).optional(),
-        countryName: yup
+        countryId: yup
           .array()
           .of(yup.string())
           .required("academicSystem.validation.countryRequired").typeError("academicSystem.validation.countryRequired"),

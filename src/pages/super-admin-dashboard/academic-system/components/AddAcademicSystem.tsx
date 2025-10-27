@@ -3,7 +3,7 @@ import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import Card from '@/shared/components/Card';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
 import type { MultiSelectOption } from '@/shared/components/MultiSelectTagInput';
@@ -17,12 +17,31 @@ import {
   type AcademicSystemProps,
 } from '@/validations/academic-system-validations';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchCountries } from '@/redux/features/lookups';
+import { addAcademicSystem } from '@/redux/features/academic-system/academicSystemSlice';
+import type { CreateAcademicSystem } from '@/services/api/types/academic-system.types';
+import type { ApiResponseModel } from '@/services/api';
 
 export default function AddAcademicSystem() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const currentLang = i18n.language as 'ar' | 'en';
   const [numOfAcademic, setNumOfAcademic] = useState<number[]>([1]);
   const [showPopupMessage, setShowPopupMessage] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
+
+  const countries = useAppSelector((state) => {
+    return state.lookups.countries;
+  });
+  const isLoadingCountries = useAppSelector((state) => {
+    return state.lookups.isLoadingCountries;
+  });
+
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
 
   const {
     control,
@@ -31,13 +50,37 @@ export default function AddAcademicSystem() {
   } = useForm<AcademicSystemProps>({
     resolver: yupResolver(AcademicSystemSchema),
     defaultValues: {
-      academicSystems: [{ academicSystemName: '', systemType: [], countryName: [] }],
+      academicSystems: [{ academicSystemName: '', systemType: [], countryId: [] }],
     },
   });
 
-  const onSubmit = async (data: any) => {
-    console.log(data);
-    setShowPopupMessage(true);
+  const onSubmit = (data: AcademicSystemProps) => {
+    // const payload: CreateAcademicSystem[] = data?.academicSystems?.map((system) => ({
+    //   type: 1,
+    //   // name: system.academicSystemName,
+    //  // subSystemIds: (system.systemType || []).filter(Boolean) as string[],
+    //   subSystemIds: (['2a0596c8-eef8-44a5-7313-08de15741f1b'])?.filter(Boolean) as string[],
+    //   countryIds: (system.countryId || [])?.filter(Boolean) as string[],
+    // }));
+
+    const system = data.academicSystems[0];
+    const payload: CreateAcademicSystem = {
+      type: 1,
+      // name: system.academicSystemName,
+      subSystemIds: (['2a0596c8-eef8-44a5-7313-08de15741f1b'])?.filter(Boolean) as string[],
+      countryIds: (system.countryId || []).filter(Boolean) as string[],
+    };
+
+    dispatch(addAcademicSystem(payload))
+      .unwrap()
+      .then((res) => {
+        if (res.isSuccess) {
+          setShowPopupMessage(true);
+        }
+      })
+      .catch((err) => {
+        console.error('Error creating academic system:', err);
+      });
   };
 
   const handleAddAcademicSystem = () => {
@@ -118,11 +161,8 @@ export default function AddAcademicSystem() {
                       control={control}
                       render={({ field }) => {
                         const systemTypeOptions: MultiSelectOption[] = [
-                          { value: 'government', label: 'حكومي' },
-                          { value: 'private', label: 'خاص' },
-                          { value: 'national', label: 'أهلي' },
-                          { value: 'usa', label: 'أمريكي' },
-                          { value: 'global', label: 'دولي' },
+                          { value: '1', label: 'national' },
+                          { value: '2', label: 'international' },
                         ];
 
                         return (
@@ -159,36 +199,35 @@ export default function AddAcademicSystem() {
                     label={t('academicSystem.countryName')}
                     required
                     error={
-                      errors.academicSystems?.[index]?.countryName?.message &&
-                      t(errors.academicSystems[index].countryName.message)
+                      errors.academicSystems?.[index]?.countryId?.message &&
+                      t(errors.academicSystems[index].countryId.message)
                     }
                   >
                     <Controller
-                      // name="countryName"
-                      name={`academicSystems.${index}.countryName`}
+                      name={`academicSystems.${index}.countryId`}
                       control={control}
-                      render={({ field }) => {
-                        const countryNameOptions: MultiSelectOption[] = [
-                          { value: 'egypt', label: 'مصر' },
-                          { value: 'ksa', label: 'السعودية' },
-                          { value: 'uae', label: 'الإمارات' },
-                        ];
-
-                        return (
-                          <MultiSelectTagInput
-                            value={
-                              Array.isArray(field.value) ? field.value.join(',') : field.value || ''
-                            }
-                            onChange={(value) => {
-                              const parsedValue = value.split(',').filter((v) => v.trim());
-                              field.onChange(parsedValue);
-                            }}
-                            options={countryNameOptions}
-                            placeholder={t('academicSystem.selectSystemCountry')}
-                            error={!!errors.academicSystems?.[index]?.countryName}
-                          />
-                        );
-                      }}
+                      render={({ field }) => (
+                        <MultiSelectTagInput
+                          value={
+                            Array.isArray(field.value) ? field.value.join(',') : field.value || ''
+                          }
+                          onChange={(value) => {
+                            const parsedValue = value.split(',').filter((v) => v.trim());
+                            field.onChange(parsedValue);
+                          }}
+                          options={countries?.map((country) => ({
+                            value: country.id,
+                            label: currentLang === 'ar' ? country.arabicName : country.englishName,
+                          }))}
+                          error={!!errors.academicSystems?.[index]?.systemType}
+                          disabled={isLoadingCountries}
+                          placeholder={
+                            isLoadingCountries
+                              ? t('common.loading')
+                              : t('academicSystem.selectItem')
+                          }
+                        />
+                      )}
                     />
                   </FormField>
                 </div>

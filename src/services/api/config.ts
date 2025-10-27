@@ -123,7 +123,13 @@ export interface ApiResponseModel<T = unknown> {
   correlationId: string;
   location: string;
   errors: string[];
-  validationErrors: string[];
+  validationErrors: ValidationErrorResponse[] | string[] | null;
+}
+export interface ValidationErrorResponse {
+  identifier: string | null;
+  errorMessage: string;
+  errorCode: string | null;
+  severity: number;
 }
 
 export interface ApiErrorResponse {
