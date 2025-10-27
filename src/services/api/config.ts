@@ -115,6 +115,17 @@ export interface ApiSuccessResponse<T = unknown> {
   };
 }
 
+export interface ApiResponseModel<T = unknown> {
+  value: T;
+  status: number;
+  isSuccess: boolean;
+  successMessage: string;
+  correlationId: string;
+  location: string;
+  errors: string[];
+  validationErrors: string[];
+}
+
 export interface ApiErrorResponse {
   success: false;
   error: {
