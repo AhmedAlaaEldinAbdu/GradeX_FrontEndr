@@ -6,11 +6,11 @@
 // Reducer
 export { default as lookupsReducer } from './lookupsSlice';
 
-// Actions from Slice
+// Actions from Slice (Sync)
 export { clearLookupsData, clearLookupsErrors, resetLookupsState } from './lookupsSlice';
 
 // Actions (Async Thunks)
-export * from './lookupsActions';
+export { fetchApplicationFeatures, fetchCountries, fetchAllLookups } from './lookupsSlice';
 
 // Selectors
 export * from './lookupsSelectors';
