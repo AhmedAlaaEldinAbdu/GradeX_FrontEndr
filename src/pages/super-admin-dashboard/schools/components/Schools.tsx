@@ -9,11 +9,11 @@ import schoolIcon from '@gradex/assets/icons/School.svg';
 import RegisteredSchoolsTab from './RegisteredSchoolsTab';
 import PendingSchoolsTab from './PendingSchoolsTab';
 import DeletedSchoolsTab from './DeletedSchoolsTab';
-import { fetchCountries } from '@gradex/redux/features/lookups/lookupsActions';
 import {
+  fetchCountries,
   selectCountries,
   selectIsLoadingCountries,
-} from '@gradex/redux/features/lookups/lookupsSelectors';
+} from '@gradex/redux/features/lookups';
 
 export default function Schools() {
   const { t, i18n } = useTranslation();
