@@ -12,6 +12,8 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@/shared/components/DeletePopup';
 import PopupMessage from '@/shared/components/PopupMessage';
 import { useNavigate } from 'react-router-dom';
+import AcademicDetailsPopup from '../popups/AcademicSystemDetailsPopup';
+import { useToast } from '@/shared/context/ToastContext';
 
 interface AcademicSystem {
   id: number;
@@ -32,10 +34,18 @@ export default function AcademicSystemsTable() {
   const [showDelete, setShowDelete] = useState(false);
   const [academicSystem, setAcademicSystem] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
+  const [showAcademicDetails, setShowAcademicDetails] = useState(false);
+  const { showToast } = useToast();
 
   const handleDeleteConfirm = () => {
     setShowDelete(false);
     setShowPopupMessage(true);
+    showToast({
+      message: 'academicSystem.systemDeletedSuccessfully',
+      type: 'success',
+      duration: 5000,
+      position: 'bottom-left',
+    });
   };
 
   const systems: AcademicSystem[] = [
@@ -99,7 +109,9 @@ export default function AcademicSystemsTable() {
     { header: '#', accessor: (row: AcademicSystem) => row.id },
     {
       header: 'academicSystem.systemName',
-      accessor: (row: AcademicSystem) => row.systemName,
+      accessor: (row: AcademicSystem) => (
+        <div onClick={() => setShowAcademicDetails(true)}>{row.systemName}</div>
+      ),
       headerClassName: 'min-w-[150px]',
     },
     {
@@ -162,7 +174,7 @@ export default function AcademicSystemsTable() {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder={t('schools.searchBySchoolRegionDistrictName')}
+                  placeholder={t('academicSystem.searchBySystemName')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="h-[40px] w-full rounded-lg border border-gray-300 pl-4 pr-10 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -244,13 +256,19 @@ export default function AcademicSystemsTable() {
               iconSrc={BigTrashIcon}
             />
           )}
-          {showPopupMessage && (
+          {/* {showPopupMessage && (
             <PopupMessage
               type="success"
               message="academicSystem.systemDeletedSuccessfully"
               iconSrc={BigSuccessIcon}
               autoClose={true}
               onClose={() => setShowPopupMessage(false)}
+            />
+          )} */}
+          {showAcademicDetails && (
+            <AcademicDetailsPopup
+              title="نظام التعليم العالمي الأمريكي"
+              onClose={() => setShowAcademicDetails(false)}
             />
           )}
         </div>

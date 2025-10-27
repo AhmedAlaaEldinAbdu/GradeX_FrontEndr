@@ -98,7 +98,7 @@ export default function AddEducationalStages() {
                     </>
                   ) : (
                     <>
-                      <button className="h-8 w-8"></button>
+                      <div className="h-8 w-8"></div>
                     </>
                   )}
                 </div>
@@ -143,7 +143,7 @@ export default function AddEducationalStages() {
                   </FormField>
                 </div>
                 <div>
-                  <button className="h-8 w-8"></button>
+                  <div className="h-8 w-8"></div>
                 </div>
               </div>
             </div>

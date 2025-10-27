@@ -14,7 +14,7 @@ interface ToastData {
 }
 
 interface ToastContextProps {
-  show: (toast: ToastData) => void;
+  showToast: (toast: ToastData) => void;
 }
 
 const ToastContext = createContext<ToastContextProps | undefined>(undefined);
@@ -26,7 +26,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<ToastData | null>(null);
   const [timeoutId, setTimeoutId] = useState<number | null>(null);
 
-  const show = (data: ToastData) => {
+  const showToast = (data: ToastData) => {
     if (timeoutId) clearTimeout(timeoutId);
 
     setToast(data);
@@ -38,7 +38,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ToastContext.Provider value={{ show }}>
+    <ToastContext.Provider value={{ showToast }}>
       {children}
       {toast && (
         <ToastMessage

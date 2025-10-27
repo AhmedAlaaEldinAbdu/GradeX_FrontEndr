@@ -97,7 +97,7 @@ export default function AddAcademicSystem() {
                     </>
                   ) : (
                     <>
-                      <button className="h-8 w-8"></button>
+                      <div className="h-8 w-8"></div>
                     </>
                   )}
                 </div>
@@ -193,7 +193,7 @@ export default function AddAcademicSystem() {
                   </FormField>
                 </div>
                 <div>
-                  <button className="h-8 w-8"></button>
+                  <div className="h-8 w-8"></div>
                 </div>
               </div>
             </div>

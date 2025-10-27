@@ -97,7 +97,7 @@ export default function EditAcademicSystem() {
                     </>
                   ) : (
                     <>
-                      <button className="h-8 w-8"></button>
+                      <div className="h-8 w-8"></div>
                     </>
                   )}
                 </div>
@@ -193,7 +193,7 @@ export default function EditAcademicSystem() {
                   </FormField>
                 </div>
                 <div>
-                  <button className="h-8 w-8"></button>
+                  <div className="h-8 w-8"></div>
                 </div>
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function EditAcademicSystem() {
               type="submit"
               className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
             >
-              {t('common.Edit')}
+              {t('common.edit')}
             </button>
           </div>
         </form>

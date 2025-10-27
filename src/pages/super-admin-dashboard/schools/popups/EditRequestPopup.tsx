@@ -10,7 +10,7 @@ interface EditRequestPopupProps {
 
 export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPopupProps) {
   const { t } = useTranslation();
-  const { show } = useToast();
+  const { showToast } = useToast();
 
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState('');
@@ -32,7 +32,7 @@ export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPop
 
   const handleSubmit = () => {
     onConfirm(message);
-    show({
+    showToast({
       message: 'schools.editRequestSentSuccessfully',
       type: 'success',
       duration: 3000,
