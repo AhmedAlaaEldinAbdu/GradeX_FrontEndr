@@ -30,6 +30,7 @@ export interface SchoolFormData {
   contactPerson: string;
 
   // Address
+  addressCountry: string;
   region: string;
   state: string;
   city: string;
@@ -80,6 +81,7 @@ export const initialSchoolFormData: SchoolFormData = {
   email: '',
   website: '',
   contactPerson: '',
+  addressCountry: '',
   region: '',
   state: '',
   city: '',
