@@ -24,10 +24,7 @@ export const basicInfoSchema = yup.object().shape({
       return selectedSystems.every((system) => validOptions.includes(system));
     }),
 
-  country: yup
-    .string()
-    .required('schools.validation.countryRequired')
-    .oneOf(['egypt', 'saudi'], 'schools.validation.countryInvalid'),
+  country: yup.string().required('schools.validation.countryRequired'),
 
   foundationDate: yup
     .string()
