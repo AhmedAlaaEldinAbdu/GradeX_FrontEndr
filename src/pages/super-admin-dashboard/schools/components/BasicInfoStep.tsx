@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
 import { Controller, useFormContext } from 'react-hook-form';
 import Input from '@gradex/shared/components/Input';
-import Select from '@gradex/shared/components/Select';
 import TextArea from '@gradex/shared/components/TextArea';
 import calendarIcon from '@gradex/assets/icons/calendar.svg';
 import FormField from '@gradex/shared/components/FormField';
@@ -11,6 +12,13 @@ import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
 import MultiSelectTagInput from '@gradex/shared/components/MultiSelectTagInput';
 import type { MultiSelectOption } from '@gradex/shared/components/MultiSelectTagInput';
 import type { SchoolFormData } from '../types/school.types';
+import {
+  fetchCountries,
+  selectCountries,
+  selectIsLoadingCountries,
+} from '@gradex/redux/features/lookups';
+import CustomSelect from '@/shared/components/CustomSelect';
+import i18n from '@/i18n';
 
 interface BasicInfoStepProps {
   onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -32,6 +40,8 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   showRejectedLabel = false,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
+
   const {
     control,
     formState: { errors },
@@ -40,8 +50,17 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
     trigger,
   } = useFormContext<SchoolFormData>();
 
+  const currentLang = i18n.language as 'ar' | 'en';
+
   const hasCurrentSystem = watch('hasCurrentSystem');
   const applicationFeatures = watch('applicationFeatures');
+
+  const countries = useSelector(selectCountries);
+  const isLoadingCountries = useSelector(selectIsLoadingCountries);
+
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
 
   return (
     <div className="space-y-6 p-4">
@@ -133,15 +152,19 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               name="country"
               control={control}
               render={({ field }) => (
-                <Select
-                  {...field}
-                  options={[
-                    { value: '', label: t('schools.selectCountry') },
-                    { value: 'egypt', label: 'مصر' },
-                    { value: 'saudi', label: 'السعودية' },
-                  ]}
-                  required
-                  disabled={readOnly}
+                <CustomSelect
+                  value={field.value || ''}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    trigger('country');
+                  }}
+                  options={countries.map((country) => ({
+                    value: country.id,
+                    label: currentLang === 'ar' ? country.arabicName : country.englishName,
+                  }))}
+                  placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
+                  disabled={isLoadingCountries || readOnly}
+                  maxHeight="200px"
                 />
               )}
             />
