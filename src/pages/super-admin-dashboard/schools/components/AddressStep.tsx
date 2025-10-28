@@ -4,7 +4,6 @@ import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
 import { Controller, useFormContext } from 'react-hook-form';
 import Input from '@gradex/shared/components/Input';
-import Select from '@gradex/shared/components/Select';
 import FormField from '@gradex/shared/components/FormField';
 import Button from '@gradex/shared/components/Button';
 import MapLocationModal from '@gradex/shared/components/MapLocationModal';
@@ -335,16 +334,22 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
               {/* Branch Fields - Row 1 */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField label={t('schools.countryWithAl')} required>
-                  <Select
-                    name="country"
-                    value={branch.country}
-                    onChange={(e) => handleBranchInputChange(index, e)}
-                    options={[
-                      { value: '', label: t('schools.selectCountry') },
-                      { value: 'egypt', label: 'مصر' },
-                      { value: 'saudi', label: 'السعودية' },
-                    ]}
-                    required
+                  <CustomSelect
+                    value={branch.country || ''}
+                    onChange={(value) => {
+                      const updatedBranches = [...branches];
+                      updatedBranches[index].country = value;
+                      setBranches(updatedBranches);
+                    }}
+                    options={countries.map((country) => ({
+                      value: country.id,
+                      label: currentLang === 'ar' ? country.arabicName : country.englishName,
+                    }))}
+                    placeholder={
+                      isLoadingCountries ? t('common.loading') : t('schools.selectCountry')
+                    }
+                    disabled={isLoadingCountries || readOnly}
+                    maxHeight="200px"
                   />
                 </FormField>
 
