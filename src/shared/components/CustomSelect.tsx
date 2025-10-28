@@ -7,13 +7,14 @@ export interface CustomSelectOption {
 }
 
 interface CustomSelectProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: string | string[];
+  onChange: (value: string | string[]) => void;
   options: CustomSelectOption[];
   placeholder?: string;
   disabled?: boolean;
   className?: string;
   maxHeight?: string;
+  isMulti?: boolean;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -24,6 +25,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   disabled = false,
   className = '',
   maxHeight = '250px',
+  isMulti = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,22 +34,30 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { i18n, t } = useTranslation();
 
-  const selectedOption = options.find((opt) => opt.value === value);
   const isRTL = i18n.language === 'ar';
 
-  // Filter options based on search query
+  const selectedValues = isMulti ? (Array.isArray(value) ? value : []) : [];
+  const selectedOption =
+    !isMulti && typeof value === 'string' ? options.find((opt) => opt.value === value) : null;
+
+  const selectedOptions = isMulti
+    ? options.filter((opt) => selectedValues.includes(opt.value))
+    : [];
+
   const filteredOptions = options.filter((option) =>
     option.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Focus search input when dropdown opens
+  const availableOptions = isMulti
+    ? filteredOptions.filter((option) => !selectedValues.includes(option.value))
+    : filteredOptions;
+
   useEffect(() => {
     if (isOpen && searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [isOpen]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
@@ -66,9 +76,24 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   }, [isOpen]);
 
   const handleSelect = (optionValue: string) => {
-    onChange(optionValue);
-    setIsOpen(false);
-    setSearchQuery('');
+    if (isMulti) {
+      const currentValues = Array.isArray(value) ? value : [];
+      const newValues = [...currentValues, optionValue];
+      onChange(newValues);
+      setSearchQuery('');
+    } else {
+      onChange(optionValue);
+      setIsOpen(false);
+      setSearchQuery('');
+    }
+  };
+
+  const handleRemoveTag = (optionValue: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isMulti && Array.isArray(value)) {
+      const newValues = value.filter((v) => v !== optionValue);
+      onChange(newValues);
+    }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,16 +107,56 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`min-h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50 ${
           isOpen ? 'ring-2 ring-green-500' : ''
         } ${isRTL ? 'text-right' : 'text-left'}`}
       >
-        <div className="flex flex-row-reverse items-center justify-between">
-          <span className={selectedOption ? 'text-gray-900' : 'text-gray-800'}>
-            {selectedOption ? selectedOption.label : placeholder}
-          </span>
+        <div className="flex flex-row-reverse items-center justify-between gap-2">
+          {/* Display selected items */}
+          <div className="flex-1 overflow-hidden">
+            {isMulti ? (
+              selectedOptions.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {selectedOptions.map((opt) => (
+                    <div
+                      key={opt.value}
+                      className="flex items-center gap-1.5 rounded-lg bg-teal-50 px-2.5 py-1"
+                    >
+                      <span className="text-sm font-medium text-teal-800">{opt.label}</span>
+                      <button
+                        type="button"
+                        onClick={(e) => handleRemoveTag(opt.value, e)}
+                        className="flex h-4 w-4 items-center justify-center rounded-full bg-teal-800 text-white transition-colors hover:bg-teal-900"
+                        aria-label={`Remove ${opt.label}`}
+                      >
+                        <svg
+                          className="h-2.5 w-2.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-gray-800">{placeholder}</span>
+              )
+            ) : (
+              <span className={selectedOption ? 'text-gray-900' : 'text-gray-800'}>
+                {selectedOption ? selectedOption.label : placeholder}
+              </span>
+            )}
+          </div>
           <svg
-            className={`h-5 w-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''} ${isRTL ? 'order-first' : ''}`}
+            className={`h-5 w-5 flex-shrink-0 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''} ${isRTL ? 'order-first' : ''}`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -141,25 +206,31 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
           {/* Options List */}
           <div className="overflow-auto" style={{ maxHeight: `calc(${maxHeight} - 60px)` }}>
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  data-value={option.value}
-                  onClick={() => handleSelect(option.value)}
-                  className={`w-full px-3 py-2 text-sm hover:bg-green-50 focus:bg-green-50 focus:outline-none ${
-                    option.value === value ? 'bg-green-100 text-green-900' : 'text-gray-900'
-                  } ${isRTL ? 'text-right' : 'text-left'}`}
-                >
-                  {option.label}
-                </button>
-              ))
+            {availableOptions.length > 0 ? (
+              availableOptions.map((option) => {
+                const isSelected = !isMulti && option.value === value;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    data-value={option.value}
+                    onClick={() => handleSelect(option.value)}
+                    className={`w-full px-3 py-2 text-sm hover:bg-green-50 focus:bg-green-50 focus:outline-none ${
+                      isSelected ? 'bg-green-100 text-green-900' : 'text-gray-900'
+                    } ${isRTL ? 'text-right' : 'text-left'}`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })
             ) : (
               <div
                 className={`px-3 py-4 text-center text-sm text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}
               >
-                {t('common.noResults') || 'No results found'}
+                {isMulti && selectedOptions.length > 0
+                  ? t('common.noMoreOptions') || 'All options selected'
+                  : t('common.noResults') || 'No results found'}
               </div>
             )}
           </div>

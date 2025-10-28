@@ -14,14 +14,20 @@ export const basicInfoSchema = yup.object().shape({
     .trim(),
 
   academicSystem: yup
-    .string()
+    .mixed()
     .required('schools.validation.academicSystemRequired')
     .test('valid-academic-systems', 'schools.validation.academicSystemInvalid', function (value) {
       if (!value) return false;
-      // Split comma-separated values and check if all are valid
-      const validOptions = ['government', 'private', 'national'];
-      const selectedSystems = value.split(',').map((s) => s.trim());
-      return selectedSystems.every((system) => validOptions.includes(system));
+
+      if (typeof value === 'string') {
+        return value.length > 0;
+      }
+
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+
+      return false;
     }),
 
   country: yup.string().required('schools.validation.countryRequired'),

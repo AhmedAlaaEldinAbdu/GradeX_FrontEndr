@@ -9,14 +9,17 @@ import calendarIcon from '@gradex/assets/icons/calendar.svg';
 import FormField from '@gradex/shared/components/FormField';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
-import MultiSelectTagInput from '@gradex/shared/components/MultiSelectTagInput';
-import type { MultiSelectOption } from '@gradex/shared/components/MultiSelectTagInput';
 import type { SchoolFormData } from '../types/school.types';
 import {
   fetchCountries,
   selectCountries,
   selectIsLoadingCountries,
 } from '@gradex/redux/features/lookups';
+import {
+  getAcademicSystems,
+  selectAcademicSystems,
+  selectIsLoadingAcademicSystems,
+} from '@gradex/redux/features/academic-system';
 import CustomSelect from '@/shared/components/CustomSelect';
 import i18n from '@/i18n';
 
@@ -57,9 +60,12 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 
   const countries = useSelector(selectCountries);
   const isLoadingCountries = useSelector(selectIsLoadingCountries);
+  const academicSystems = useSelector(selectAcademicSystems);
+  const isLoadingAcademicSystems = useSelector(selectIsLoadingAcademicSystems);
 
   useEffect(() => {
     dispatch(fetchCountries());
+    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 1000 }));
   }, [dispatch]);
 
   return (
@@ -119,24 +125,30 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <Controller
               name="academicSystem"
               control={control}
-              render={({ field }) => {
-                const academicSystemOptions: MultiSelectOption[] = [
-                  { value: 'government', label: 'حكومي' },
-                  { value: 'private', label: 'خاص' },
-                  { value: 'national', label: 'أهلي' },
-                ];
-
-                return (
-                  <MultiSelectTagInput
-                    value={field.value || ''}
-                    onChange={field.onChange}
-                    options={academicSystemOptions}
-                    placeholder={t('schools.chooseAcademicSystem')}
-                    disabled={readOnly}
-                    error={!!errors.academicSystem}
-                  />
-                );
-              }}
+              render={({ field }) => (
+                <CustomSelect
+                  value={field.value || []}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    trigger('academicSystem');
+                  }}
+                  options={academicSystems.map((system) => ({
+                    value: system.id,
+                    label:
+                      currentLang === 'ar'
+                        ? system.academicSubSystemDto[0]?.nameAr || ''
+                        : system.academicSubSystemDto[0]?.nameEn || '',
+                  }))}
+                  placeholder={
+                    isLoadingAcademicSystems
+                      ? t('common.loading')
+                      : t('schools.chooseAcademicSystem')
+                  }
+                  disabled={isLoadingAcademicSystems || readOnly}
+                  maxHeight="200px"
+                  isMulti={true}
+                />
+              )}
             />
           </FormField>
         </div>
