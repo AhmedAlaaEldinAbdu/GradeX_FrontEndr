@@ -7,6 +7,7 @@ import Input from '@gradex/shared/components/Input';
 import FormField from '@gradex/shared/components/FormField';
 import Button from '@gradex/shared/components/Button';
 import MapLocationModal from '@gradex/shared/components/MapLocationModal';
+import AddressBranch from './AddressBranch';
 import type { SchoolFormData } from '../types/school.types';
 import {
   fetchCountries,
@@ -81,13 +82,12 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
     ]);
   };
 
-  const handleBranchInputChange = (
-    index: number,
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
+  const handleBranchChange = (index: number, field: string, value: string) => {
     const updatedBranches = [...branches];
-    updatedBranches[index] = { ...updatedBranches[index], [name]: value };
+    updatedBranches[index] = {
+      ...updatedBranches[index],
+      [field]: value,
+    };
     setBranches(updatedBranches);
   };
 
@@ -293,134 +293,13 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
 
       {/* Branch Sections */}
       {hasBranches && (
-        <div className="space-y-8">
-          {branches.map((branch, index) => (
-            <div key={index} className="space-y-6 rounded-lg border border-gray-200 p-4">
-              {/* Branch Header with Add Button */}
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-700">
-                  الفرع {index === 0 ? 'الثاني' : `${index + 2}`}
-                </h3>
-                <Button
-                  type="button"
-                  onClick={handleAddBranch}
-                  className="flex h-10 w-10 items-center justify-center bg-green-600 p-0 text-white hover:bg-green-700"
-                  style={{ borderRadius: '50%' }}
-                >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                </Button>
-              </div>
-
-              {/* Branch Map Button */}
-              <div className="mb-4 flex w-full justify-end">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => handleOpenMapModal(index)}
-                  className="border-none bg-transparent text-left text-sm font-semibold text-green-600 hover:bg-transparent"
-                  style={{ backgroundColor: 'transparent', boxShadow: 'none' }}
-                >
-                  تحديد علي الخريطة
-                </Button>
-              </div>
-
-              {/* Branch Fields - Row 1 */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <FormField label={t('schools.countryWithAl')} required>
-                  <CustomSelect
-                    value={branch.country || ''}
-                    onChange={(value) => {
-                      const updatedBranches = [...branches];
-                      updatedBranches[index].country = value;
-                      setBranches(updatedBranches);
-                    }}
-                    options={countries.map((country) => ({
-                      value: country.id,
-                      label: currentLang === 'ar' ? country.arabicName : country.englishName,
-                    }))}
-                    placeholder={
-                      isLoadingCountries ? t('common.loading') : t('schools.selectCountry')
-                    }
-                    disabled={isLoadingCountries || readOnly}
-                    maxHeight="200px"
-                  />
-                </FormField>
-
-                <FormField label={t('schools.region')} required>
-                  <Input
-                    name="region"
-                    value={branch.region}
-                    onChange={(e) => handleBranchInputChange(index, e)}
-                    placeholder={t('schools.enterRegion')}
-                  />
-                </FormField>
-              </div>
-
-              {/* Branch Fields - Row 2 */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <FormField label={t('schools.city')} required>
-                  <Input
-                    name="city"
-                    value={branch.city}
-                    onChange={(e) => handleBranchInputChange(index, e)}
-                    placeholder={t('schools.enterCity')}
-                  />
-                </FormField>
-
-                <FormField label={t('schools.district')} required>
-                  <Input
-                    name="district"
-                    value={branch.district}
-                    onChange={(e) => handleBranchInputChange(index, e)}
-                    placeholder={t('schools.enterDistrict')}
-                  />
-                </FormField>
-              </div>
-
-              {/* Branch Fields - Row 3 */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <FormField label={t('schools.street')} required>
-                  <Input
-                    name="street"
-                    value={branch.street}
-                    onChange={(e) => handleBranchInputChange(index, e)}
-                    placeholder={t('schools.enterStreet')}
-                  />
-                </FormField>
-
-                <FormField label={t('schools.buildingNumber')} required>
-                  <Input
-                    name="buildingNumber"
-                    value={branch.buildingNumber}
-                    onChange={(e) => handleBranchInputChange(index, e)}
-                    placeholder={t('schools.enterBuildingNumber')}
-                  />
-                </FormField>
-              </div>
-
-              {/* Branch Fields - Row 4 */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <FormField label={t('schools.postalCode')} required>
-                  <Input
-                    name="postalCode"
-                    value={branch.postalCode}
-                    onChange={(e) => handleBranchInputChange(index, e)}
-                    placeholder={t('schools.enterPostalCode')}
-                  />
-                </FormField>
-
-                <div className="md:col-span-1"></div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <AddressBranch
+          branches={branches}
+          onBranchChange={handleBranchChange}
+          onAddBranch={handleAddBranch}
+          onOpenMapModal={handleOpenMapModal}
+          readOnly={readOnly}
+        />
       )}
 
       {/* Map Location Modal */}
