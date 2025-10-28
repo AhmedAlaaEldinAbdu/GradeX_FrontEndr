@@ -22,6 +22,7 @@ import { fetchCountries } from '@/redux/features/lookups';
 import { addAcademicSystem } from '@/redux/features/academic-system/academicSystemSlice';
 import type { CreateAcademicSystem } from '@/services/api/types/academic-system.types';
 import type { ApiResponseModel } from '@/services/api';
+import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 
 export default function AddAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -38,10 +39,20 @@ export default function AddAcademicSystem() {
   const isLoadingCountries = useAppSelector((state) => {
     return state.lookups.isLoadingCountries;
   });
+  // fetch academic subsystems for selection
+  const academicSubSystems = useAppSelector((state) => {
+    return state.academicSubSystems.academicSubSystems;
+  });
+  const isLoadingSubSystems = useAppSelector((state) => {
+    return state.academicSubSystems.isLoading;
+  });
 
   useEffect(() => {
     dispatch(fetchCountries());
+    dispatch(getAcademicSubSystems());
   }, [dispatch]);
+
+  console.log('academicSubSystems', academicSubSystems);
 
   const {
     control,
@@ -67,7 +78,7 @@ export default function AddAcademicSystem() {
     const payload: CreateAcademicSystem = {
       type: 1,
       // name: system.academicSystemName,
-      subSystemIds: (['2a0596c8-eef8-44a5-7313-08de15741f1b'])?.filter(Boolean) as string[],
+      subSystemIds: ['2a0596c8-eef8-44a5-7313-08de15741f1b']?.filter(Boolean) as string[],
       countryIds: (system.countryId || []).filter(Boolean) as string[],
     };
 
@@ -160,11 +171,6 @@ export default function AddAcademicSystem() {
                       name={`academicSystems.${index}.systemType`}
                       control={control}
                       render={({ field }) => {
-                        const systemTypeOptions: MultiSelectOption[] = [
-                          { value: '1', label: 'national' },
-                          { value: '2', label: 'international' },
-                        ];
-
                         return (
                           <MultiSelectTagInput
                             value={
@@ -174,7 +180,11 @@ export default function AddAcademicSystem() {
                               const parsedValue = value.split(',').filter((v) => v.trim());
                               field.onChange(parsedValue);
                             }}
-                            options={systemTypeOptions}
+                            options={academicSubSystems?.map((subSystem) => ({
+                              value: subSystem.id,
+                              label: currentLang === 'ar' ? subSystem.nameAr : subSystem.nameEn,
+                            }))}
+                            disabled={isLoadingSubSystems}
                             placeholder={t('academicSystem.selectItem')}
                             error={!!errors.academicSystems?.[index]?.systemType}
                           />
@@ -186,7 +196,7 @@ export default function AddAcademicSystem() {
                 <div>
                   <button
                     // onClick={() => setNewSystemType(true)}
-                    type='button'
+                    type="button"
                     className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
                   >
                     <img src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />

@@ -52,7 +52,13 @@
     "no": "No",
     "next": "Next",
     "previous": "Previous",
-    "ok": "Ok"
+    "ok": "Ok",
+    "validation": {
+      "required": "this field is required",
+      "nameRequired": "name is required",
+      "nameArRequired": "name in Arabic is required",
+      "nameEnRequired": "name in English is required"
+    }
   },
   "actions": {
     "actions": "Actions",

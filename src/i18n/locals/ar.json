@@ -52,7 +52,13 @@
     "no": "لا",
     "next": "التالي",
     "previous": "السابق",
-    "ok": "موافق"
+    "ok": "موافق",
+    "validation": {
+      "required": "هذا الحقل مطلوب",
+      "nameRequired": "الاسم مطلوب",
+      "nameArRequired": "الاسم بالعربية مطلوب",
+      "nameEnRequired": "الاسم بالإنجليزية مطلوب"
+    }
   },
   "actions": {
     "actions": "الإجراءات",

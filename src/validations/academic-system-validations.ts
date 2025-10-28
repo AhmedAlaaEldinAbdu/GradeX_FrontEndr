@@ -1,17 +1,12 @@
-import * as yup from "yup";
+import { array, object, string, type InferType } from "yup";
 
-export const AcademicSystemSchema = yup.object({
-  academicSystems: yup
-    .array()
+export const AcademicSystemSchema = object({
+  academicSystems: array()
     .of(
-      yup.object({
-        academicSystemName: yup
-          .string()
-          .required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
-        systemType: yup.array().of(yup.string()).optional(),
-        countryId: yup
-          .array()
-          .of(yup.string())
+      object({
+        academicSystemName: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
+        systemType: array().of(string()).optional(),
+        countryId: array().of(string())
           .required("academicSystem.validation.countryRequired").typeError("academicSystem.validation.countryRequired"),
       })
     )
@@ -19,28 +14,24 @@ export const AcademicSystemSchema = yup.object({
     .min(1, "academicSystem.validation.atLeastOne").typeError("academicSystem.validation.requiredList"),
 });
 
-export const EducationalStagesSchema = yup.object({
-  educationalStages: yup
-    .array()
-    .of(
-      yup.object({
-        educationalStagesSystemName: yup
-          .string()
-          .required("academicSystem.validation.educationalStagesNameRequired").typeError("academicSystem.validation.educationalStagesNameRequired"),
-        academicSystem: yup
-          .array()
-          .of(yup.string())
-          .required("academicSystem.validation.academicSystemRequired").typeError("academicSystem.validation.academicSystemRequired"),
-      })
-    )
+export const EducationalStagesSchema = object({
+  educationalStages: array().of(
+    object({
+      educationalStagesSystemName: string()
+        .required("academicSystem.validation.educationalStagesNameRequired").typeError("academicSystem.validation.educationalStagesNameRequired"),
+      academicSystem: array()
+        .of(string())
+        .required("academicSystem.validation.academicSystemRequired").typeError("academicSystem.validation.academicSystemRequired"),
+    })
+  )
     .required("academicSystem.validation.requiredList")
     .min(1, "academicSystem.validation.atLeastOne").typeError("academicSystem.validation.requiredList"),
 });
 
 
-export type AcademicSystemProps = yup.InferType<
+export type AcademicSystemProps = InferType<
   typeof AcademicSystemSchema
 >;
-export type EducationalStagesProps = yup.InferType<
+export type EducationalStagesProps = InferType<
   typeof EducationalStagesSchema
 >;
