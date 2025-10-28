@@ -2,7 +2,7 @@
 export interface SchoolFormData {
   // Basic Info
   schoolName: string;
-  academicSystem: string;
+  academicSystem: string | string[];
   foundationDate: string;
   aboutSchool: string;
   hasCurrentSystem: boolean;
@@ -61,7 +61,7 @@ export interface SchoolFormData {
 // Initial empty form data
 export const initialSchoolFormData: SchoolFormData = {
   schoolName: '',
-  academicSystem: '',
+  academicSystem: [],
   foundationDate: '',
   aboutSchool: '',
   hasCurrentSystem: false,
