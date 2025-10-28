@@ -46,6 +46,7 @@
     "actions": "Actions",
     "noData": "No data available",
     "noResults": "No results found",
+    "noMoreOptions": "All options selected",
     "loading": "Loading...",
     "yes": "Yes",
     "no": "No",
