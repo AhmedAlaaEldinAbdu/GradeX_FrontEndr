@@ -186,6 +186,7 @@ export default function AddAcademicSystem() {
                 <div>
                   <button
                     // onClick={() => setNewSystemType(true)}
+                    type='button'
                     className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
                   >
                     <img src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
@@ -224,7 +225,7 @@ export default function AddAcademicSystem() {
                           placeholder={
                             isLoadingCountries
                               ? t('common.loading')
-                              : t('academicSystem.selectItem')
+                              : t('academicSystem.selectSystemCountry')
                           }
                         />
                       )}

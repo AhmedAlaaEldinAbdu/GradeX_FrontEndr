@@ -3,7 +3,7 @@ import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import Card from '@/shared/components/Card';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
 import type { MultiSelectOption } from '@/shared/components/MultiSelectTagInput';
@@ -16,13 +16,50 @@ import {
   AcademicSystemSchema,
   type AcademicSystemProps,
 } from '@/validations/academic-system-validations';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchCountries } from '@/redux/features/lookups';
+import type { CreateAcademicSystem } from '@/services/api/types/academic-system.types';
+import {
+  addAcademicSystem,
+  getAcademicSystemById,
+} from '@/redux/features/academic-system/academicSystemSlice';
 
 export default function EditAcademicSystem() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const currentLang = i18n.language as 'ar' | 'en';
   const [numOfAcademic, setNumOfAcademic] = useState<number[]>([1, 2]);
   const [showPopupMessage, setShowPopupMessage] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
+
+  const academicSystem = useAppSelector((state) => {
+    return state.academicSystems.academicSystemDetails;
+  });
+  const countries = useAppSelector((state) => {
+    return state.lookups.countries;
+  });
+  const isLoadingCountries = useAppSelector((state) => {
+    return state.lookups.isLoadingCountries;
+  });
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getAcademicSystemById(id));
+    }
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (academicSystem) {
+      setNumOfAcademic([1]);
+    }
+  }, [academicSystem]);
 
   const {
     control,
@@ -31,13 +68,29 @@ export default function EditAcademicSystem() {
   } = useForm<AcademicSystemProps>({
     resolver: yupResolver(AcademicSystemSchema),
     defaultValues: {
-      academicSystems: [{ academicSystemName: '', systemType: [], countryName: [] }],
+      academicSystems: [{ academicSystemName: '', systemType: [], countryId: [] }],
     },
   });
 
-  const onSubmit = async (data: any) => {
-    console.log(data);
-    setShowPopupMessage(true);
+  const onSubmit = async (data: AcademicSystemProps) => {
+    const system = data.academicSystems[0];
+    const payload: CreateAcademicSystem = {
+      type: 1,
+      // name: system.academicSystemName,
+      subSystemIds: ['2a0596c8-eef8-44a5-7313-08de15741f1b']?.filter(Boolean) as string[],
+      countryIds: (system.countryId || []).filter(Boolean) as string[],
+    };
+
+    dispatch(addAcademicSystem(payload))
+      .unwrap()
+      .then((res) => {
+        if (res.isSuccess) {
+          setShowPopupMessage(true);
+        }
+      })
+      .catch((err) => {
+        console.error('Error creating academic system:', err);
+      });
   };
 
   const handleAddAcademicSystem = () => {
@@ -146,6 +199,7 @@ export default function EditAcademicSystem() {
                 <div>
                   <button
                     // onClick={() => setNewSystemType(true)}
+                    type='button'
                     className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
                   >
                     <img src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
@@ -159,21 +213,14 @@ export default function EditAcademicSystem() {
                     label={t('academicSystem.countryName')}
                     required
                     error={
-                      errors.academicSystems?.[index]?.countryName?.message &&
-                      t(errors.academicSystems[index].countryName.message)
+                      errors.academicSystems?.[index]?.countryId?.message &&
+                      t(errors.academicSystems[index].countryId.message)
                     }
                   >
                     <Controller
-                      // name="countryName"
-                      name={`academicSystems.${index}.countryName`}
+                      name={`academicSystems.${index}.countryId`}
                       control={control}
                       render={({ field }) => {
-                        const countryNameOptions: MultiSelectOption[] = [
-                          { value: 'egypt', label: 'مصر' },
-                          { value: 'ksa', label: 'السعودية' },
-                          { value: 'uae', label: 'الإمارات' },
-                        ];
-
                         return (
                           <MultiSelectTagInput
                             value={
@@ -183,9 +230,18 @@ export default function EditAcademicSystem() {
                               const parsedValue = value.split(',').filter((v) => v.trim());
                               field.onChange(parsedValue);
                             }}
-                            options={countryNameOptions}
-                            placeholder={t('academicSystem.selectSystemCountry')}
-                            error={!!errors.academicSystems?.[index]?.countryName}
+                            options={countries?.map((country) => ({
+                              value: country.id,
+                              label:
+                                currentLang === 'ar' ? country.arabicName : country.englishName,
+                            }))}
+                            error={!!errors.academicSystems?.[index]?.systemType}
+                            disabled={isLoadingCountries}
+                            placeholder={
+                              isLoadingCountries
+                                ? t('common.loading')
+                                : t('academicSystem.selectSystemCountry')
+                            }
                           />
                         );
                       }}
