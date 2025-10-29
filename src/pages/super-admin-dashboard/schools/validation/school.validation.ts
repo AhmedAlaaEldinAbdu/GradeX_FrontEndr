@@ -56,23 +56,12 @@ export const basicInfoSchema = yup.object().shape({
     otherwise: (schema) => schema.optional(),
   }),
 
-  // Application Features - At least one must be selected
+  // Application Features - Array of feature IDs, at least one must be selected
   applicationFeatures: yup
-    .object()
-    .shape({
-      attendanceAndDeparture: yup.boolean().default(false),
-      remoteBookTracking: yup.boolean().default(false),
-      expensesTrackingOnly: yup.boolean().default(false),
-      fullExpensesPayment: yup.boolean().default(false),
-    })
-    .test('at-least-one-feature', 'schools.validation.applicationFeaturesRequired', (value) => {
-      return (
-        value.attendanceAndDeparture ||
-        value.remoteBookTracking ||
-        value.expensesTrackingOnly ||
-        value.fullExpensesPayment
-      );
-    }),
+    .array()
+    .of(yup.string().required())
+    .min(1, 'schools.validation.applicationFeaturesRequired')
+    .required('schools.validation.applicationFeaturesRequired'),
 
   // Financial Data
   bankName: yup
@@ -187,17 +176,14 @@ export const addressSchema = yup.object().shape({
 
 /**
  * Validation schema for Facilities step
- * Includes facilities checkboxes
+ * Includes facilities array - at least one facility must be selected
  */
 export const facilitiesSchema = yup.object().shape({
-  facilities: yup.object().shape({
-    playground: yup.boolean().default(false),
-    library: yup.boolean().default(false),
-    laboratory: yup.boolean().default(false),
-    sportField: yup.boolean().default(false),
-    canteen: yup.boolean().default(false),
-    busService: yup.boolean().default(false),
-  }),
+  facilities: yup
+    .array()
+    .of(yup.string().required())
+    .min(1, 'schools.validation.facilitiesRequired')
+    .required('schools.validation.facilitiesRequired'),
 });
 
 /**
@@ -211,10 +197,6 @@ export const schoolFormSchema = basicInfoSchema
   .shape({
     // Additional fields not in step schemas
     hasOtherBranches: yup.boolean().default(false),
-    attendanceFeature: yup.boolean().default(false),
-    buyBooksFeature: yup.boolean().default(false),
-    payCashFeature: yup.boolean().default(false),
-    payInstallmentFeature: yup.boolean().default(false),
   });
 
 /**
