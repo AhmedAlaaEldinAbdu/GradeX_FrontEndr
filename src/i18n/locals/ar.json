@@ -55,6 +55,8 @@
     "ok": "موافق",
     "saving": "جاري الحفظ...",
     "chooseDate": "اختر التاريخ",
+    "copied": "تم النسخ",
+    "copyAdditionLink": "نسخ رابط الإضافة",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",

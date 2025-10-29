@@ -55,6 +55,8 @@
     "ok": "Ok",
     "saving": "Saving...",
     "chooseDate": "Choose Date",
+    "copied": "Copied",
+    "copyAdditionLink": "Copy Addition Link",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
