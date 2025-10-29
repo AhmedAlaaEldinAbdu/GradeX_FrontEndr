@@ -6,8 +6,17 @@
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '@/redux/store/store';
 import type { LookupsState } from './lookupsTypes';
-import type { ApplicationFeature, Country, LookupOption } from '@/services/api/types/lookup.types';
-import { countryToOption, featureToOption } from '@/services/api/types/lookup.types';
+import type {
+  ApplicationFeature,
+  Country,
+  Facility,
+  LookupOption,
+} from '@/services/api/types/lookup.types';
+import {
+  countryToOption,
+  featureToOption,
+  facilityToOption,
+} from '@/services/api/types/lookup.types';
 
 // ============================================================================
 // Base Selectors
@@ -68,6 +77,58 @@ export const selectApplicationFeaturesOptions = (language: 'ar' | 'en' = 'en') =
 export const selectApplicationFeatureById = (id: string) =>
   createSelector([selectApplicationFeatures], (features) =>
     features.find((feature) => feature.id === id)
+  );
+
+// ============================================================================
+// Facilities Selectors
+// ============================================================================
+
+/**
+ * Select all facilities
+ */
+export const selectFacilities = createSelector(
+  [selectLookupsState],
+  (lookupsState): Facility[] => lookupsState.facilities
+);
+
+/**
+ * Select facilities loading state
+ */
+export const selectIsLoadingFacilities = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.isLoadingFacilities
+);
+
+/**
+ * Select facilities error
+ */
+export const selectFacilitiesError = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.facilitiesError
+);
+
+/**
+ * Select facilities initialization state
+ */
+export const selectIsFacilitiesInitialized = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.isFacilitiesInitialized
+);
+
+/**
+ * Select facilities as dropdown options
+ */
+export const selectFacilitiesOptions = (language: 'ar' | 'en' = 'en') =>
+  createSelector([selectFacilities], (facilities): LookupOption[] =>
+    facilities.map((facility) => facilityToOption(facility, language))
+  );
+
+/**
+ * Get facility by ID
+ */
+export const selectFacilityById = (id: string) =>
+  createSelector([selectFacilities], (facilities) =>
+    facilities.find((facility) => facility.id === id)
   );
 
 // ============================================================================
@@ -184,34 +245,38 @@ export const selectCountriesGrouped = (language: 'ar' | 'en' = 'en') =>
  * Select if any lookup is loading
  */
 export const selectIsAnyLoading = createSelector(
-  [selectIsLoadingFeatures, selectIsLoadingCountries],
-  (isLoadingFeatures, isLoadingCountries) => isLoadingFeatures || isLoadingCountries
+  [selectIsLoadingFeatures, selectIsLoadingFacilities, selectIsLoadingCountries],
+  (isLoadingFeatures, isLoadingFacilities, isLoadingCountries) =>
+    isLoadingFeatures || isLoadingFacilities || isLoadingCountries
 );
 
 /**
  * Select if all lookups are initialized
  */
 export const selectAreAllLookupsInitialized = createSelector(
-  [selectIsFeaturesInitialized, selectIsCountriesInitialized],
-  (isFeaturesInit, isCountriesInit) => isFeaturesInit && isCountriesInit
+  [selectIsFeaturesInitialized, selectIsFacilitiesInitialized, selectIsCountriesInitialized],
+  (isFeaturesInit, isFacilitiesInit, isCountriesInit) =>
+    isFeaturesInit && isFacilitiesInit && isCountriesInit
 );
 
 /**
  * Select if there are any errors
  */
 export const selectHasAnyError = createSelector(
-  [selectFeaturesError, selectCountriesError],
-  (featuresError, countriesError) => featuresError !== null || countriesError !== null
+  [selectFeaturesError, selectFacilitiesError, selectCountriesError],
+  (featuresError, facilitiesError, countriesError) =>
+    featuresError !== null || facilitiesError !== null || countriesError !== null
 );
 
 /**
  * Select all errors
  */
 export const selectAllErrors = createSelector(
-  [selectFeaturesError, selectCountriesError],
-  (featuresError, countriesError) => {
+  [selectFeaturesError, selectFacilitiesError, selectCountriesError],
+  (featuresError, facilitiesError, countriesError) => {
     const errors: string[] = [];
     if (featuresError) errors.push(featuresError);
+    if (facilitiesError) errors.push(facilitiesError);
     if (countriesError) errors.push(countriesError);
     return errors;
   }
