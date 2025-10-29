@@ -16,7 +16,7 @@ import type {
   BulkOperationResponse,
   SchoolQueryParams,
 } from '@/services/api/types/school.types';
-import type { ApiSuccessResponse } from '../config';
+import type { ApiSuccessResponse, ApiResponseModel } from '../config';
 
 // ============================================================================
 // School CRUD Operations
@@ -48,13 +48,37 @@ export async function getSchoolById(id: string): Promise<SchoolDetail> {
 /**
  * Create a new school
  */
-export async function createSchool(data: CreateSchoolRequest): Promise<SchoolDetail> {
-  const response: AxiosResponse<ApiSuccessResponse<SchoolDetailResponse>> = await axiosClient.post(
+export async function createSchool(data: CreateSchoolRequest | FormData): Promise<SchoolDetail> {
+  const response: AxiosResponse<ApiResponseModel<SchoolDetailResponse>> = await axiosClient.post(
     SchoolsEndpoints.addSchool,
-    data
+    data,
+    {
+      headers:
+        data instanceof FormData
+          ? {
+              'Content-Type': 'multipart/form-data',
+            }
+          : undefined,
+    }
   );
 
-  return response.data.data.data;
+  // Check if the response indicates validation errors
+  if (
+    !response.data.isSuccess &&
+    response.data.validationErrors &&
+    response.data.validationErrors.length > 0
+  ) {
+    // Create a custom error that includes validation errors
+    const error = new Error('Validation failed') as Error & {
+      validationErrors: typeof response.data.validationErrors;
+      isValidationError: boolean;
+    };
+    error.validationErrors = response.data.validationErrors;
+    error.isValidationError = true;
+    throw error;
+  }
+
+  return response.data.value.data;
 }
 
 /**
