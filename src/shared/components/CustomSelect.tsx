@@ -15,6 +15,7 @@ interface CustomSelectProps {
   className?: string;
   maxHeight?: string;
   isMulti?: boolean;
+  showSearch?: boolean;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -26,6 +27,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   className = '',
   maxHeight = '250px',
   isMulti = false,
+  showSearch = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -177,35 +179,40 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           className="absolute z-50 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg"
         >
           {/* Search Input */}
-          <div className="border-b border-gray-200 p-2">
-            <div className="relative">
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                placeholder={t('common.search') || 'Search...'}
-                className={`w-full rounded-md border border-gray-300 py-2 pl-4 pr-7 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
-                  isRTL ? 'text-right' : 'text-left'
-                }`}
-              />
-              <svg
-                className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 ${isRTL ? 'right-2' : 'left-2'}`}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                  clipRule="evenodd"
+          {showSearch && (
+            <div className="border-b border-gray-200 p-2">
+              <div className="relative">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder={t('common.search') || 'Search...'}
+                  className={`w-full rounded-md border border-gray-300 py-2 pl-4 pr-7 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                    isRTL ? 'text-right' : 'text-left'
+                  }`}
                 />
-              </svg>
+                <svg
+                  className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 ${isRTL ? 'right-2' : 'left-2'}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Options List */}
-          <div className="overflow-auto" style={{ maxHeight: `calc(${maxHeight} - 60px)` }}>
+          <div
+            className="overflow-auto"
+            style={{ maxHeight: showSearch ? `calc(${maxHeight} - 60px)` : maxHeight }}
+          >
             {availableOptions.length > 0 ? (
               availableOptions.map((option) => {
                 const isSelected = !isMulti && option.value === value;
