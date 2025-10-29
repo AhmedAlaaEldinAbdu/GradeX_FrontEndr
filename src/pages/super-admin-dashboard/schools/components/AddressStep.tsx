@@ -29,13 +29,26 @@ interface BranchData {
 
 interface AddressStepProps {
   readOnly?: boolean;
+  onBranchesChange?: (
+    branches: Array<{
+      country: string;
+      region: string;
+      city: string;
+      district: string;
+      street: string;
+      buildingNumber: string;
+      postalCode: string;
+      latitude?: number;
+      longitude?: number;
+    }>
+  ) => void;
 }
 
 /**
  * AddressStep - Third step in school form with react-hook-form integration
  * Includes main address and optional branches
  */
-const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
+const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false, onBranchesChange }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -67,8 +80,21 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [selectedBranchIndex, setSelectedBranchIndex] = useState<number | null>(null);
 
+  const handleBranchChange = (index: number, field: string, value: string) => {
+    const updatedBranches = [...branches];
+    updatedBranches[index] = {
+      ...updatedBranches[index],
+      [field]: value,
+    };
+    setBranches(updatedBranches);
+
+    if (onBranchesChange) {
+      onBranchesChange(updatedBranches);
+    }
+  };
+
   const handleAddBranch = () => {
-    setBranches([
+    const newBranches = [
       ...branches,
       {
         country: '',
@@ -79,16 +105,12 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
         buildingNumber: '',
         postalCode: '',
       },
-    ]);
-  };
+    ];
+    setBranches(newBranches);
 
-  const handleBranchChange = (index: number, field: string, value: string) => {
-    const updatedBranches = [...branches];
-    updatedBranches[index] = {
-      ...updatedBranches[index],
-      [field]: value,
-    };
-    setBranches(updatedBranches);
+    if (onBranchesChange) {
+      onBranchesChange(newBranches);
+    }
   };
 
   const handleOpenMapModal = (branchIndex: number | null = null) => {
@@ -121,7 +143,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
             onClick={() => handleOpenMapModal(null)}
             className="border-none bg-transparent text-left text-lg font-semibold text-green-600 hover:bg-transparent"
           >
-            تحديد علي الخريطة
+            {t('schools.mapLocation')}
           </Button>
         </div>
       )}
@@ -274,7 +296,7 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
                       checked={field.value}
                       onChange={field.onChange}
                       className="peer sr-only"
-                      aria-label="هل لديكم فروع اخري"
+                      aria-label={t('schools.hasOtherBranches')}
                       disabled={readOnly}
                     />
                     <div
@@ -309,8 +331,8 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false }) => {
         onConfirm={handleConfirmLocation}
         title={
           selectedBranchIndex === null
-            ? 'تحديد موقع المدرسة'
-            : `تحديد موقع الفرع ${selectedBranchIndex === 0 ? 'الثاني' : `${selectedBranchIndex + 2}`}`
+            ? t('schools.setSchoolLocation')
+            : `${t('schools.setBranchLocation')} ${selectedBranchIndex === 0 ? t('schools.secondBranch') : `${selectedBranchIndex + 2}`}`
         }
       />
     </div>
