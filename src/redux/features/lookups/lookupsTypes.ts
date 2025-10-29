@@ -3,7 +3,7 @@
  * Type definitions for lookups state management
  */
 
-import type { ApplicationFeature, Country } from '@/services/api/types/lookup.types';
+import type { ApplicationFeature, Country, Facility } from '@/services/api/types/lookup.types';
 
 // ============================================================================
 // State Types
@@ -12,22 +12,27 @@ import type { ApplicationFeature, Country } from '@/services/api/types/lookup.ty
 export interface LookupsState {
   // Data
   applicationFeatures: ApplicationFeature[];
+  facilities: Facility[];
   countries: Country[];
 
   // Loading States
   isLoadingFeatures: boolean;
+  isLoadingFacilities: boolean;
   isLoadingCountries: boolean;
 
   // Error States
   featuresError: string | null;
+  facilitiesError: string | null;
   countriesError: string | null;
 
   // Initialization States
   isFeaturesInitialized: boolean;
+  isFacilitiesInitialized: boolean;
   isCountriesInitialized: boolean;
 
   // Timestamp for cache management
   lastFetchedFeatures: number | null;
+  lastFetchedFacilities: number | null;
   lastFetchedCountries: number | null;
 }
 
