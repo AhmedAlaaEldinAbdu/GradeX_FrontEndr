@@ -10,7 +10,12 @@ export { default as lookupsReducer } from './lookupsSlice';
 export { clearLookupsData, clearLookupsErrors, resetLookupsState } from './lookupsSlice';
 
 // Actions (Async Thunks)
-export { fetchApplicationFeatures, fetchCountries, fetchAllLookups } from './lookupsSlice';
+export {
+  fetchApplicationFeatures,
+  fetchFacilities,
+  fetchCountries,
+  fetchAllLookups,
+} from './lookupsSlice';
 
 // Selectors
 export * from './lookupsSelectors';
