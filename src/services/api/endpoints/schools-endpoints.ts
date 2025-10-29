@@ -1,4 +1,4 @@
-const SCHOOLS = '/schools';
+const SCHOOLS = '/school';
 
 export const SchoolsEndpoints = {
   addSchool: SCHOOLS,
