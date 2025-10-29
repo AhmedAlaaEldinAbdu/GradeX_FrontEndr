@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
 import FormField from '@gradex/shared/components/FormField';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
 import type { SchoolFormData } from '../types/school.types';
+import {
+  fetchFacilities,
+  selectFacilities,
+  selectIsLoadingFacilities,
+} from '@gradex/redux/features/lookups';
+import i18n from '@/i18n';
 
 interface FacilitiesStepProps {
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -32,83 +40,55 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   readOnly = false,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
   const { watch, setValue, trigger } = useFormContext<SchoolFormData>();
 
-  const facilities = watch('facilities');
+  const currentLang = i18n.language as 'ar' | 'en';
+
+  const facilities = useSelector(selectFacilities);
+  const isLoadingFacilities = useSelector(selectIsLoadingFacilities);
+
+  const selectedFacilities = watch('facilities');
+
+  useEffect(() => {
+    dispatch(fetchFacilities());
+  }, [dispatch]);
 
   return (
     <div className="space-y-8 p-4">
       {/* Facilities Section */}
       <div className="space-y-4">
-        <h3 className="text-right text-lg font-semibold text-gray-900">المرافق</h3>
+        <h3 className="text-right text-lg font-semibold text-gray-900">
+          {t('schools.facilitiesSection')}
+        </h3>
 
-        <FormField label="المرافق" required>
+        <FormField label={t('schools.facilitiesSection')} required>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <CustomCheckbox
-              name="playground"
-              checked={facilities.playground}
-              onChange={(checked) => {
-                setValue('facilities.playground', checked);
-                trigger('facilities');
-              }}
-              label="ملعب"
-              disabled={readOnly}
-            />
-
-            <CustomCheckbox
-              name="library"
-              checked={facilities.library}
-              onChange={(checked) => {
-                setValue('facilities.library', checked);
-                trigger('facilities');
-              }}
-              label="مكتبة"
-              disabled={readOnly}
-            />
-
-            <CustomCheckbox
-              name="laboratory"
-              checked={facilities.laboratory}
-              onChange={(checked) => {
-                setValue('facilities.laboratory', checked);
-                trigger('facilities');
-              }}
-              label="معمل"
-              disabled={readOnly}
-            />
-
-            <CustomCheckbox
-              name="sportField"
-              checked={facilities.sportField}
-              onChange={(checked) => {
-                setValue('facilities.sportField', checked);
-                trigger('facilities');
-              }}
-              label="ملاعب رياضية"
-              disabled={readOnly}
-            />
-
-            <CustomCheckbox
-              name="canteen"
-              checked={facilities.canteen}
-              onChange={(checked) => {
-                setValue('facilities.canteen', checked);
-                trigger('facilities');
-              }}
-              label="كافتيريا"
-              disabled={readOnly}
-            />
-
-            <CustomCheckbox
-              name="busService"
-              checked={facilities.busService}
-              onChange={(checked) => {
-                setValue('facilities.busService', checked);
-                trigger('facilities');
-              }}
-              label="حافلات"
-              disabled={readOnly}
-            />
+            {isLoadingFacilities ? (
+              <p className="text-gray-500">{t('common.loading')}</p>
+            ) : (
+              facilities.map((facility) => (
+                <CustomCheckbox
+                  key={facility.id}
+                  name={facility.id}
+                  checked={selectedFacilities?.includes(facility.id) || false}
+                  onChange={(checked) => {
+                    const currentFacilities = selectedFacilities || [];
+                    if (checked) {
+                      setValue('facilities', [...currentFacilities, facility.id]);
+                    } else {
+                      setValue(
+                        'facilities',
+                        currentFacilities.filter((id) => id !== facility.id)
+                      );
+                    }
+                    trigger('facilities');
+                  }}
+                  label={currentLang === 'ar' ? facility.arabicName : facility.englishName}
+                  disabled={readOnly}
+                />
+              ))
+            )}
           </div>
         </FormField>
       </div>
@@ -116,7 +96,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
       {/* Images Upload Section */}
       {!readOnly && (
         <FileUpload
-          label="الصور"
+          label={t('schools.images')}
           accept="image/*,.svg,.jpg,.jpeg,.png"
           onChange={onImageUpload}
           onDelete={onImageDelete}
@@ -129,7 +109,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
       {!readOnly && (
         <div>
           <FileUpload
-            label="الشهادات"
+            label={t('schools.certificates')}
             accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
             onChange={onCertificateUpload}
             onDelete={onCertificateDelete}
