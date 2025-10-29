@@ -14,6 +14,9 @@ import {
   fetchCountries,
   selectCountries,
   selectIsLoadingCountries,
+  fetchApplicationFeatures,
+  selectApplicationFeatures,
+  selectIsLoadingFeatures,
 } from '@gradex/redux/features/lookups';
 import {
   getAcademicSystems,
@@ -56,16 +59,19 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   const currentLang = i18n.language as 'ar' | 'en';
 
   const hasCurrentSystem = watch('hasCurrentSystem');
-  const applicationFeatures = watch('applicationFeatures');
+  const selectedFeatures = watch('applicationFeatures');
 
   const countries = useSelector(selectCountries);
   const isLoadingCountries = useSelector(selectIsLoadingCountries);
   const academicSystems = useSelector(selectAcademicSystems);
   const isLoadingAcademicSystems = useSelector(selectIsLoadingAcademicSystems);
+  const applicationFeatures = useSelector(selectApplicationFeatures);
+  const isLoadingFeatures = useSelector(selectIsLoadingFeatures);
 
   useEffect(() => {
     dispatch(fetchCountries());
     dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 1000 }));
+    dispatch(fetchApplicationFeatures());
   }, [dispatch]);
 
   return (
@@ -195,7 +201,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   <Input
                     {...field}
                     type="date"
-                    placeholder="اختر التاريخ"
+                    placeholder={t('common.chooseDate')}
                     icon={<img src={calendarIcon} alt="calendar" className="h-5 w-5" />}
                     disabled={readOnly}
                   />
@@ -226,7 +232,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         </FormField>
 
         {/* Has Current System Toggle */}
-        <FormField label="هل لديهم نظام حالي؟" required>
+        <FormField label={t('schools.hasCurrentSystem')} required>
           <Controller
             name="hasCurrentSystem"
             control={control}
@@ -243,7 +249,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                       checked={field.value}
                       onChange={field.onChange}
                       className="peer sr-only"
-                      aria-label="هل لديهم نظام حالي"
+                      aria-label={t('schools.hasCurrentSystem')}
                       disabled={readOnly}
                     />
                     <div
@@ -299,65 +305,39 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
       {/* Application Features Section */}
       <div className="space-y-4 rounded-lg border border-gray-200 p-4">
         <div className="space-y-4">
-          <h3 className="text-right text-lg font-semibold text-gray-900">مميزات التطبيق</h3>
-          <p className="text-right text-sm text-gray-600">
-            اختر المميزات التي تناسبك لتستفيد منها مع نظامك
-          </p>
+          <h3 className="text-right text-lg font-semibold text-gray-900">
+            {t('schools.appFeatures')}
+          </h3>
+          <p className="text-right text-sm text-gray-600">{t('schools.chooseFeatures')}</p>
 
           <FormField
-            label="مميزات النظام"
+            label={t('schools.appFeatures')}
             required
             error={errors.applicationFeatures?.message && t(errors.applicationFeatures.message)}
           >
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <CustomCheckbox
-                name="attendanceAndDeparture"
-                checked={applicationFeatures.attendanceAndDeparture}
-                onChange={(checked) => {
-                  setValue('applicationFeatures.attendanceAndDeparture', checked);
-                  trigger('applicationFeatures');
-                }}
-                label="الحضور و الإنصراف"
-                disabled={readOnly}
-              />
-
-              <CustomCheckbox
-                name="expensesTrackingOnly"
-                checked={applicationFeatures.expensesTrackingOnly}
-                onChange={(checked) => {
-                  setValue('applicationFeatures.expensesTrackingOnly', checked);
-                  trigger('applicationFeatures');
-                }}
-                label="دفع المصاريف قسط"
-                disabled={readOnly}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <CustomCheckbox
-                name="remoteBookTracking"
-                checked={applicationFeatures.remoteBookTracking}
-                onChange={(checked) => {
-                  setValue('applicationFeatures.remoteBookTracking', checked);
-                  trigger('applicationFeatures');
-                }}
-                label="شراء الكتب عن طريقنا"
-                disabled={readOnly}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <CustomCheckbox
-                name="fullExpensesPayment"
-                checked={applicationFeatures.fullExpensesPayment}
-                onChange={(checked) => {
-                  setValue('applicationFeatures.fullExpensesPayment', checked);
-                  trigger('applicationFeatures');
-                }}
-                label="دفع المصاريف كاش"
-                disabled={readOnly}
-              />
-            </div>
+            {isLoadingFeatures ? (
+              <div className="text-center text-sm text-gray-500">{t('common.loading')}</div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {applicationFeatures.map((feature) => (
+                  <CustomCheckbox
+                    key={feature.id}
+                    name={feature.id}
+                    checked={selectedFeatures?.includes(feature.id) || false}
+                    onChange={(checked) => {
+                      const currentFeatures = selectedFeatures || [];
+                      const updatedFeatures = checked
+                        ? [...currentFeatures, feature.id]
+                        : currentFeatures.filter((id) => id !== feature.id);
+                      setValue('applicationFeatures', updatedFeatures);
+                      trigger('applicationFeatures');
+                    }}
+                    label={currentLang === 'ar' ? feature.nameAr : feature.nameEn}
+                    disabled={readOnly}
+                  />
+                ))}
+              </div>
+            )}
           </FormField>
         </div>
       </div>
@@ -365,11 +345,13 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
       {/* Financial Data Section */}
       <div className="space-y-4 rounded-lg border border-gray-200 p-4">
         <div className="space-y-4">
-          <h3 className="text-right text-lg font-semibold text-gray-900">بيانات مالية</h3>
+          <h3 className="text-right text-lg font-semibold text-gray-900">
+            {t('schools.financialData')}
+          </h3>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <FormField
-              label="اسم البنك"
+              label={t('schools.bankName')}
               required
               error={errors.bankName?.message && t(errors.bankName.message)}
             >
@@ -377,13 +359,18 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                 name="bankName"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} placeholder="اكتب اسم البنك" required disabled={readOnly} />
+                  <Input
+                    {...field}
+                    placeholder={t('schools.enterBankName')}
+                    required
+                    disabled={readOnly}
+                  />
                 )}
               />
             </FormField>
 
             <FormField
-              label="رقم الحساب"
+              label={t('schools.accountNumber')}
               required
               error={errors.accountNumber?.message && t(errors.accountNumber.message)}
             >
@@ -391,7 +378,12 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                 name="accountNumber"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} placeholder="اكتب رقم الحساب" required disabled={readOnly} />
+                  <Input
+                    {...field}
+                    placeholder={t('schools.enterAccountNumber')}
+                    required
+                    disabled={readOnly}
+                  />
                 )}
               />
             </FormField>
@@ -399,7 +391,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <FormField
-              label="رقم (IBAN)"
+              label={t('schools.ibanNumber')}
               required
               error={errors.ibanNumber?.message && t(errors.ibanNumber.message)}
             >
@@ -407,7 +399,12 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                 name="ibanNumber"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} placeholder="اكتب رقم (IBAN)" required disabled={readOnly} />
+                  <Input
+                    {...field}
+                    placeholder={t('schools.enterIbanNumber')}
+                    required
+                    disabled={readOnly}
+                  />
                 )}
               />
             </FormField>
