@@ -5,5 +5,6 @@
 
 export const LookupsEndpoints = {
   applicationFeatures: '/LKApplicationFeatures',
+  facilities: '/LKFacalities',
   countries: '/LKCountries/GetAllCountries',
 } as const;
