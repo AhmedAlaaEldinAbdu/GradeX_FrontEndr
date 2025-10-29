@@ -11,6 +11,8 @@ import type {
   ApplicationFeaturesResponse,
   Country,
   CountriesResponse,
+  Facility,
+  FacilitiesResponse,
 } from '../types/lookup.types';
 
 // ============================================================================
@@ -27,6 +29,25 @@ export async function getApplicationFeatures(): Promise<ApplicationFeature[]> {
 
   if (!response.data.isSuccess) {
     throw new Error(response.data.successMessage || 'Failed to fetch application features');
+  }
+
+  return response.data.value;
+}
+
+// ============================================================================
+// Facilities
+// ============================================================================
+
+/**
+ * Get all facilities
+ */
+export async function getFacilities(): Promise<Facility[]> {
+  const response: AxiosResponse<FacilitiesResponse> = await axiosClient.get(
+    LookupsEndpoints.facilities
+  );
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.successMessage || 'Failed to fetch facilities');
   }
 
   return response.data.value;
@@ -92,6 +113,9 @@ export function searchCountries(
 export const lookupsApiService = {
   // Application Features
   getApplicationFeatures,
+
+  // Facilities
+  getFacilities,
 
   // Countries
   getCountries,
