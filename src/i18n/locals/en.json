@@ -53,6 +53,8 @@
     "next": "Next",
     "previous": "Previous",
     "ok": "Ok",
+    "saving": "Saving...",
+    "chooseDate": "Choose Date",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
@@ -313,6 +315,7 @@
     "selectRegion": "Select region",
     "mapLocation": "Locate on Map",
     "setSchoolLocation": "Set School Location",
+    "setBranchLocation": "Set Branch Location",
     "secondBranch": "Second Branch",
     "facilitiesSection": "Facilities",
     "images": "Images",

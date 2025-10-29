@@ -53,6 +53,8 @@
     "next": "التالي",
     "previous": "السابق",
     "ok": "موافق",
+    "saving": "جاري الحفظ...",
+    "chooseDate": "اختر التاريخ",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
@@ -314,6 +316,7 @@
     "selectRegion": "اختر المنطقة",
     "mapLocation": "تحديد علي الخريطة",
     "setSchoolLocation": "تحديد موقع المدرسة",
+    "setBranchLocation": "تحديد موقع الفرع",
     "secondBranch": "الفرع الثاني",
     "facilitiesSection": "المرافق",
     "images": "الصور",
