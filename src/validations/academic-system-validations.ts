@@ -4,9 +4,9 @@ export const AcademicSystemSchema = object({
   academicSystems: array()
     .of(
       object({
-        academicSystemName: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
-        systemType: array().of(string()).optional(),
-        countryId: array().of(string())
+        name: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
+        subSystemIds: array().of(string()).optional(),
+        countryIds: array().of(string())
           .required("academicSystem.validation.countryRequired").typeError("academicSystem.validation.countryRequired"),
       })
     )

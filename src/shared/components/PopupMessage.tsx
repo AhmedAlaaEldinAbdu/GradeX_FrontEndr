@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface PopupMessageProps {
   type?: 'success' | 'error' | 'warning' | 'info';
@@ -8,6 +9,7 @@ interface PopupMessageProps {
   autoClose?: boolean;
   duration?: number;
   onClose: () => void;
+  navigateAfterClose?: string | -1;
 }
 
 export default function PopupMessage({
@@ -17,8 +19,10 @@ export default function PopupMessage({
   autoClose = false,
   duration = 1000,
   onClose,
+  navigateAfterClose,
 }: PopupMessageProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const popupRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -41,11 +45,21 @@ export default function PopupMessage({
     }
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoClose, duration]);
 
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(onClose, 200);
+    setTimeout(() => {
+      if (navigateAfterClose) {
+        if (navigateAfterClose === -1) {
+          navigate(-1);
+        } else {
+          navigate(navigateAfterClose);
+        }
+      }
+    }, 600);
   };
 
   const typeColors = {

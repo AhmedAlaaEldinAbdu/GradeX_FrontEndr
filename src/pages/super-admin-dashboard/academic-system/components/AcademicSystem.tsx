@@ -6,7 +6,7 @@ import EditIcon from '@gradex/assets/icons/Edit.svg';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
 import AcademicIcon from '@gradex/assets/icons/Academic.svg';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@/shared/components/DeletePopup';
@@ -14,143 +14,196 @@ import PopupMessage from '@/shared/components/PopupMessage';
 import { useNavigate } from 'react-router-dom';
 import AcademicDetailsPopup from '../popups/AcademicSystemDetailsPopup';
 import { useToast } from '@/shared/context/ToastContext';
-
-interface AcademicSystem {
-  id: number;
-  systemName: string;
-  systemType: string;
-  countriesCount: number;
-  countryName: string;
-  educationalStagesCount: number;
-  addedDate: string;
-}
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import {
+  deleteAcademicSystem,
+  getAcademicSystems,
+} from '@/redux/features/academic-system/academicSystemSlice';
+import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
+import { fetchCountries } from '@/redux/features/lookups';
+import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
 
 export default function AcademicSystemsTable() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [hasAcademicSystems, setHasAcademicSystems] = useState(true);
+  const dispatch = useAppDispatch();
+  const currentLang = i18n.language as 'ar' | 'en';
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
-  const [academicSystem, setAcademicSystem] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedSystemId, setSelectedSystemId] = useState<string>('');
+  const [selectedSubSystemId, setSelectedSubSystemId] = useState('');
+  const [selectedCountryId, setSelectedCountryId] = useState('');
   const [showAcademicDetails, setShowAcademicDetails] = useState(false);
+  const [selectedSystem, setSelectedSystem] = useState<AcademicSubSystemResponse | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const { showToast } = useToast();
 
-  const handleDeleteConfirm = () => {
-    setShowDelete(false);
-    setShowPopupMessage(true);
-    showToast({
-      message: 'academicSystem.systemDeletedSuccessfully',
-      type: 'success',
-      duration: 5000,
-      position: 'bottom-left',
-    });
+  // Redux state
+  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
+  const pagination = useAppSelector((state) => state.academicSystems.pagination);
+  const isLoading = useAppSelector((state) => state.academicSystems.isLoading);
+  const isDeleting = useAppSelector((state) => state.academicSystems.isDeleting);
+
+  const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
+  const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
+
+  const countries = useAppSelector((state) => state.lookups.countries);
+  const isLoadingCountries = useAppSelector((state) => state.lookups.isLoadingCountries);
+
+  // Fetch data on mount and when filters change
+  useEffect(() => {
+    fetchAcademicSystems();
+    dispatch(getAcademicSubSystems());
+    dispatch(fetchCountries());
+  }, [dispatch]);
+
+  useEffect(() => {
+    fetchAcademicSystems();
+  }, [currentPage, searchTerm, selectedSubSystemId, selectedCountryId]);
+
+  const fetchAcademicSystems = () => {
+    dispatch(
+      getAcademicSystems({
+        pageIndex: currentPage,
+        pageSize,
+        name: searchTerm || undefined,
+        subsystemId: selectedSubSystemId || undefined,
+        countryId: selectedCountryId || undefined,
+      })
+    );
   };
 
-  const systems: AcademicSystem[] = [
-    {
-      id: 1,
-      systemName: 'عالمي',
-      systemType: 'أمريكي',
-      countriesCount: 1,
-      countryName: 'مصر',
-      educationalStagesCount: 12,
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 2,
-      systemName: 'عالمي',
-      systemType: 'أمريكي',
-      countriesCount: 1,
-      countryName: 'السعودية',
-      educationalStagesCount: 12,
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 3,
-      systemName: 'عالمي',
-      systemType: 'دولي',
-      countriesCount: 1,
-      countryName: 'مصر',
-      educationalStagesCount: 12,
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 4,
-      systemName: 'عالمي',
-      systemType: 'دولي',
-      countriesCount: 1,
-      countryName: 'مصر',
-      educationalStagesCount: 12,
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 5,
-      systemName: 'عالمي',
-      systemType: 'أمريكي',
-      countriesCount: 1,
-      countryName: 'السعودية',
-      educationalStagesCount: 12,
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 6,
-      systemName: 'عالمي',
-      systemType: 'أمريكي',
-      countriesCount: 1,
-      countryName: 'السعودية',
-      educationalStagesCount: 12,
-      addedDate: '22-4-2025',
-    },
-  ];
+  const handleDeleteClick = (system: AcademicSubSystemResponse) => {
+    setSelectedSystem(system);
+    setSelectedSystemId(system.id);
+    setShowDelete(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedSystemId) {
+      dispatch(deleteAcademicSystem(selectedSystemId))
+        .unwrap()
+        .then((res) => {
+          if (res.isSuccess) {
+            setShowDelete(false);
+            setShowPopupMessage(true);
+            showToast({
+              message: 'academicSystem.systemDeletedSuccessfully',
+              type: 'success',
+              duration: 3000,
+              position: 'bottom-left',
+            });
+            // Refresh the list
+            fetchAcademicSystems();
+          }
+        })
+        .catch((error) => {
+          console.error('Error deleting academic system:', error);
+          showToast({
+            message: 'common.errorOccurred',
+            type: 'error',
+            duration: 3000,
+            position: 'bottom-left',
+          });
+        });
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleSystemClick = (system: AcademicSubSystemResponse) => {
+    setSelectedSystem(system);
+    setShowAcademicDetails(true);
+  };
+
+  // Check if we have any filters or search active
+  const hasActiveFilters = searchTerm || selectedSubSystemId || selectedCountryId;
+
+  // Show empty state only when: not loading AND no data AND no active filters
+  const shouldShowEmptyState = !isLoading && academicSystems.length === 0 && !hasActiveFilters;
+
+  // Show content when: loading OR has data OR has active filters
+  const shouldShowContent = isLoading || academicSystems.length > 0 || hasActiveFilters;
 
   const columns = [
-    { header: '#', accessor: (row: AcademicSystem) => row.id },
+    {
+      header: '#',
+      accessor: (_row: AcademicSubSystemResponse, index?: number) =>
+        (currentPage - 1) * pageSize + (index || 0) + 1,
+    },
     {
       header: 'academicSystem.systemName',
-      accessor: (row: AcademicSystem) => (
-        <div onClick={() => setShowAcademicDetails(true)}>{row.systemName}</div>
+      accessor: (row: AcademicSubSystemResponse) => (
+        <div onClick={() => handleSystemClick(row)} className="cursor-pointer hover:text-green-600">
+          {currentLang === 'ar' ? row.name : row.name}
+        </div>
       ),
       headerClassName: 'min-w-[150px]',
     },
     {
       header: 'academicSystem.systemType',
-      accessor: (row: AcademicSystem) => row.systemType,
-      headerClassName: 'min-w-[150px]',
+      accessor: (row: AcademicSubSystemResponse) => {
+        const subSystemNames = row.academicSubSystemDto?.map((subSystem) =>
+          currentLang === 'ar' ? subSystem.nameAr : subSystem.nameEn
+        );
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            <span className="text-sm">{subSystemNames?.join(' - ')}</span>
+          </div>
+        );
+      },
+
+      headerClassName: 'w-[250px]',
     },
     {
       header: 'academicSystem.countryName',
-      accessor: (row: AcademicSystem) => row.countryName,
-      headerClassName: 'min-w-[150px]',
+      accessor: (row: AcademicSubSystemResponse) => {
+        const countries = row.lkCountriesDto?.map((country) =>
+          currentLang === 'ar' ? country.arabicName : country.englishName
+        );
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            <span className="text-sm">{countries?.join(' - ')}</span>
+          </div>
+        );
+      },
+      headerClassName: 'w-[250px]',
     },
     {
       header: 'academicSystem.educationalStagesCount',
-      accessor: (row: AcademicSystem) => row.educationalStagesCount,
+      accessor: () => '-',
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
-    {
-      header: 'academicSystem.addedDate',
-      accessor: (row: AcademicSystem) => row.addedDate,
-      headerClassName: 'min-w-[120px]',
-      className: 'text-center',
-    },
+    // {
+    //   header: 'academicSystem.addedDate',
+    //   accessor: (row: AcademicSubSystemResponse) => row.addedDate,
+    //   headerClassName: 'min-w-[120px]',
+    //   className: 'text-center',
+    // },
     {
       header: 'common.actions',
-      accessor: (row: AcademicSystem) => (
-        <div className="flex items-center gap-2">
+      accessor: (row: AcademicSubSystemResponse) => (
+        <div className="flex items-center justify-center gap-2">
           <button
             onClick={() => navigate(`/academic-system/edit-academic-system/${row.id}`)}
             className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
           >
-            <img src={EditIcon} alt="Edit" />
+            <img src={EditIcon} alt="Edit" className="h-4 w-4" />
           </button>
           <button
-            onClick={() => setShowDelete(true)}
+            onClick={() => handleDeleteClick(row)}
             className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+            disabled={isDeleting}
           >
-            <img src={TrashIcon} alt="Delete" />
+            <img src={TrashIcon} alt="Delete" className="h-4 w-4" />
           </button>
         </div>
       ),
@@ -161,13 +214,13 @@ export default function AcademicSystemsTable() {
 
   return (
     <Card>
-      {!hasAcademicSystems ? (
+      {shouldShowEmptyState ? (
         <EmptyState
           imgSrc={AcademicIcon}
           description={t('academicSystem.noAcademicSystemMessage')}
           blend={true}
         />
-      ) : (
+      ) : shouldShowContent ? (
         <div>
           <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
             <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[40%]">
@@ -194,41 +247,36 @@ export default function AcademicSystemsTable() {
                 </svg>
               </div>
             </div>
-            <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
               <div>
                 <select
-                  value={academicSystem}
-                  onChange={(e) => setAcademicSystem(e.target.value)}
+                  value={selectedSubSystemId}
+                  onChange={(e) => setSelectedSubSystemId(e.target.value)}
                   className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">{t('academicSystem.educationSystem')}</option>
-                  <option value="1">حكومي</option>
-                  <option value="2">خاص</option>
-                  <option value="3">أهلي</option>
-                </select>
-              </div>
-
-              <div>
-                <select
-                  value={selectedCountry}
-                  onChange={(e) => setSelectedCountry(e.target.value)}
-                  className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">{t('academicSystem.country')}</option>
-                  <option value="egypt">مصر</option>
-                  <option value="ksa">السعودية</option>
-                </select>
-              </div>
-
-              <div>
-                <select
-                  value={selectedCountry}
-                  onChange={(e) => setSelectedCountry(e.target.value)}
-                  className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                  disabled={isLoadingSubSystems}
                 >
                   <option value="">{t('academicSystem.systemType')}</option>
-                  <option value="usa">أمريكي</option>
-                  <option value="global">دولي</option>
+                  {academicSubSystems.map((subSystem) => (
+                    <option key={subSystem.id} value={subSystem.id}>
+                      {currentLang === 'ar' ? subSystem.nameAr : subSystem.nameEn}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <select
+                  value={selectedCountryId}
+                  onChange={(e) => setSelectedCountryId(e.target.value)}
+                  className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                  disabled={isLoadingCountries}
+                >
+                  <option value="">{t('academicSystem.country')}</option>
+                  {countries.map((country) => (
+                    <option key={country.id} value={country.id}>
+                      {currentLang === 'ar' ? country.arabicName : country.englishName}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -236,17 +284,29 @@ export default function AcademicSystemsTable() {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <Table columns={columns} data={systems} keyExtractor={(row) => row.id} />
+            {isLoading ? (
+              <div className="flex justify-center py-10">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent"></div>
+              </div>
+            ) : academicSystems?.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10">
+                <p className="text-lg text-gray-500">{t('common.noResults')}</p>
+              </div>
+            ) : (
+              <Table columns={columns} data={academicSystems} keyExtractor={(row) => row.id} />
+            )}
           </div>
 
           {/* Pagination */}
-          <Pagination
-            currentPage={1}
-            totalPages={10}
-            to={6}
-            from={1}
-            onPageChange={() => console.log('Page changed')}
-          />
+          {academicSystems.length > 0 && (
+            <Pagination
+              currentPage={pagination.pageIndex}
+              totalPages={pagination.totalPages}
+              to={Math.min(pagination.pageIndex * pagination.pageSize, pagination.totalItems)}
+              from={(pagination.pageIndex - 1) * pagination.pageSize + 1}
+              onPageChange={handlePageChange}
+            />
+          )}
           {/* Popups */}
           {showDelete && (
             <DeletePopup
@@ -256,23 +316,24 @@ export default function AcademicSystemsTable() {
               iconSrc={BigTrashIcon}
             />
           )}
-          {/* {showPopupMessage && (
+          {showPopupMessage && (
             <PopupMessage
               type="success"
               message="academicSystem.systemDeletedSuccessfully"
               iconSrc={BigSuccessIcon}
               autoClose={true}
+              duration={2000}
               onClose={() => setShowPopupMessage(false)}
             />
-          )} */}
-          {showAcademicDetails && (
+          )}
+          {showAcademicDetails && selectedSystem && (
             <AcademicDetailsPopup
-              title="نظام التعليم العالمي الأمريكي"
+              title={currentLang === 'ar' ? selectedSystem.name || '' : selectedSystem.name || ''}
               onClose={() => setShowAcademicDetails(false)}
             />
           )}
         </div>
-      )}
+      ) : null}
     </Card>
   );
 }

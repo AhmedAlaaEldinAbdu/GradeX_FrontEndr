@@ -68,18 +68,16 @@ export default function EditAcademicSystem() {
   } = useForm<AcademicSystemProps>({
     resolver: yupResolver(AcademicSystemSchema),
     defaultValues: {
-      academicSystems: [{ academicSystemName: '', systemType: [], countryId: [] }],
+      academicSystems: [{ name: '', subSystemIds: [], countryIds: [] }],
     },
   });
 
   const onSubmit = async (data: AcademicSystemProps) => {
-    const system = data.academicSystems[0];
-    const payload: CreateAcademicSystem = {
-      type: 1,
-      // name: system.academicSystemName,
-      subSystemIds: ['2a0596c8-eef8-44a5-7313-08de15741f1b']?.filter(Boolean) as string[],
-      countryIds: (system.countryId || []).filter(Boolean) as string[],
-    };
+    const payload: CreateAcademicSystem[] = data?.academicSystems?.map((system) => ({
+      name: system.name,
+      subSystemIds: (system.subSystemIds || []).filter(Boolean) as string[],
+      countryIds: (system.countryIds || []).filter(Boolean) as string[],
+    }));
 
     dispatch(addAcademicSystem(payload))
       .unwrap()
@@ -121,12 +119,12 @@ export default function EditAcademicSystem() {
                     label={t('academicSystem.title')}
                     required
                     error={
-                      errors.academicSystems?.[index]?.academicSystemName?.message &&
-                      t(errors.academicSystems[index].academicSystemName.message)
+                      errors.academicSystems?.[index]?.name?.message &&
+                      t(errors.academicSystems[index].name.message)
                     }
                   >
                     <Controller
-                      name={`academicSystems.${index}.academicSystemName`}
+                      name={`academicSystems.${index}.name`}
                       control={control}
                       render={({ field }) => (
                         <Input
@@ -159,18 +157,18 @@ export default function EditAcademicSystem() {
               <div className="flex">
                 <div className="flex-grow">
                   <FormField
-                    label={t('academicSystem.systemType')}
+                    label={t('academicSystem.subSystemIds')}
                     optional
                     error={
-                      errors.academicSystems?.[index]?.systemType?.message &&
-                      t(errors.academicSystems[index].systemType.message)
+                      errors.academicSystems?.[index]?.subSystemIds?.message &&
+                      t(errors.academicSystems[index].subSystemIds.message)
                     }
                   >
                     <Controller
-                      name={`academicSystems.${index}.systemType`}
+                      name={`academicSystems.${index}.subSystemIds`}
                       control={control}
                       render={({ field }) => {
-                        const systemTypeOptions: MultiSelectOption[] = [
+                        const subSystemIdsOptions: MultiSelectOption[] = [
                           { value: 'government', label: 'حكومي' },
                           { value: 'private', label: 'خاص' },
                           { value: 'national', label: 'أهلي' },
@@ -187,9 +185,9 @@ export default function EditAcademicSystem() {
                               const parsedValue = value.split(',').filter((v) => v.trim());
                               field.onChange(parsedValue);
                             }}
-                            options={systemTypeOptions}
+                            options={subSystemIdsOptions}
                             placeholder={t('academicSystem.selectItem')}
-                            error={!!errors.academicSystems?.[index]?.systemType}
+                            error={!!errors.academicSystems?.[index]?.subSystemIds}
                           />
                         );
                       }}
@@ -198,8 +196,8 @@ export default function EditAcademicSystem() {
                 </div>
                 <div>
                   <button
-                    // onClick={() => setNewSystemType(true)}
-                    type='button'
+                    // onClick={() => setNewsubSystemIds(true)}
+                    type="button"
                     className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
                   >
                     <img src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
@@ -213,12 +211,12 @@ export default function EditAcademicSystem() {
                     label={t('academicSystem.countryName')}
                     required
                     error={
-                      errors.academicSystems?.[index]?.countryId?.message &&
-                      t(errors.academicSystems[index].countryId.message)
+                      errors.academicSystems?.[index]?.countryIds?.message &&
+                      t(errors.academicSystems[index].countryIds.message)
                     }
                   >
                     <Controller
-                      name={`academicSystems.${index}.countryId`}
+                      name={`academicSystems.${index}.countryIds`}
                       control={control}
                       render={({ field }) => {
                         return (
@@ -235,7 +233,7 @@ export default function EditAcademicSystem() {
                               label:
                                 currentLang === 'ar' ? country.arabicName : country.englishName,
                             }))}
-                            error={!!errors.academicSystems?.[index]?.systemType}
+                            error={!!errors.academicSystems?.[index]?.subSystemIds}
                             disabled={isLoadingCountries}
                             placeholder={
                               isLoadingCountries

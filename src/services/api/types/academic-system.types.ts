@@ -8,15 +8,13 @@ export interface AcademicSystemListValue extends Pagination {
 }
 
 export interface AcademicSystemDetailsValue {
-  type: number;
   id: string;
   academicSubSystemDto: AcademicSubSystemDto[];
   lkCountriesDto: Country[];
 }
 
 export interface AcademicSubSystemResponse {
-  type?: number;
-  name?: string;
+  name: string;
   id: string;
   academicSubSystemDto: AcademicSubSystemDto[];
   lkCountriesDto: Country[];
@@ -31,15 +29,13 @@ export interface AcademicSubSystemDto {
 export interface AcademicSubSystemParams {
   pageIndex: number;
   pageSize: number;
-  type?: number;
   name?: string;
   subsystemId?: string;
   countryId?: string;
 }
 
 export interface CreateAcademicSystem {
-  type: number;
-  name?: string;
+  name: string;
   subSystemIds: string[];
   countryIds: string[];
 }

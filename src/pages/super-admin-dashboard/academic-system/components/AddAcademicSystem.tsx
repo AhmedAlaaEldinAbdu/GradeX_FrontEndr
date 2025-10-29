@@ -6,7 +6,6 @@ import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
-import type { MultiSelectOption } from '@/shared/components/MultiSelectTagInput';
 import MultiSelectTagInput from '@/shared/components/MultiSelectTagInput';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';
@@ -21,7 +20,6 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchCountries } from '@/redux/features/lookups';
 import { addAcademicSystem } from '@/redux/features/academic-system/academicSystemSlice';
 import type { CreateAcademicSystem } from '@/services/api/types/academic-system.types';
-import type { ApiResponseModel } from '@/services/api';
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 
 export default function AddAcademicSystem() {
@@ -31,7 +29,6 @@ export default function AddAcademicSystem() {
   const currentLang = i18n.language as 'ar' | 'en';
   const [numOfAcademic, setNumOfAcademic] = useState<number[]>([1]);
   const [showPopupMessage, setShowPopupMessage] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<string>('');
 
   const countries = useAppSelector((state) => {
     return state.lookups.countries;
@@ -39,7 +36,7 @@ export default function AddAcademicSystem() {
   const isLoadingCountries = useAppSelector((state) => {
     return state.lookups.isLoadingCountries;
   });
-  // fetch academic subsystems for selection
+
   const academicSubSystems = useAppSelector((state) => {
     return state.academicSubSystems.academicSubSystems;
   });
@@ -52,8 +49,6 @@ export default function AddAcademicSystem() {
     dispatch(getAcademicSubSystems());
   }, [dispatch]);
 
-  console.log('academicSubSystems', academicSubSystems);
-
   const {
     control,
     handleSubmit,
@@ -61,26 +56,16 @@ export default function AddAcademicSystem() {
   } = useForm<AcademicSystemProps>({
     resolver: yupResolver(AcademicSystemSchema),
     defaultValues: {
-      academicSystems: [{ academicSystemName: '', systemType: [], countryId: [] }],
+      academicSystems: [{ name: '', subSystemIds: [], countryIds: [] }],
     },
   });
 
   const onSubmit = (data: AcademicSystemProps) => {
-    // const payload: CreateAcademicSystem[] = data?.academicSystems?.map((system) => ({
-    //   type: 1,
-    //   // name: system.academicSystemName,
-    //  // subSystemIds: (system.systemType || []).filter(Boolean) as string[],
-    //   subSystemIds: (['2a0596c8-eef8-44a5-7313-08de15741f1b'])?.filter(Boolean) as string[],
-    //   countryIds: (system.countryId || [])?.filter(Boolean) as string[],
-    // }));
-
-    const system = data.academicSystems[0];
-    const payload: CreateAcademicSystem = {
-      type: 1,
-      // name: system.academicSystemName,
-      subSystemIds: ['2a0596c8-eef8-44a5-7313-08de15741f1b']?.filter(Boolean) as string[],
-      countryIds: (system.countryId || []).filter(Boolean) as string[],
-    };
+    const payload: CreateAcademicSystem[] = data?.academicSystems?.map((system) => ({
+      name: system.name,
+      subSystemIds: (system.subSystemIds || []).filter(Boolean) as string[],
+      countryIds: (system.countryIds || []).filter(Boolean) as string[],
+    }));
 
     dispatch(addAcademicSystem(payload))
       .unwrap()
@@ -122,12 +107,12 @@ export default function AddAcademicSystem() {
                     label={t('academicSystem.title')}
                     required
                     error={
-                      errors.academicSystems?.[index]?.academicSystemName?.message &&
-                      t(errors.academicSystems[index].academicSystemName.message)
+                      errors.academicSystems?.[index]?.name?.message &&
+                      t(errors.academicSystems[index].name.message)
                     }
                   >
                     <Controller
-                      name={`academicSystems.${index}.academicSystemName`}
+                      name={`academicSystems.${index}.name`}
                       control={control}
                       render={({ field }) => (
                         <Input
@@ -163,12 +148,12 @@ export default function AddAcademicSystem() {
                     label={t('academicSystem.systemType')}
                     optional
                     error={
-                      errors.academicSystems?.[index]?.systemType?.message &&
-                      t(errors.academicSystems[index].systemType.message)
+                      errors.academicSystems?.[index]?.subSystemIds?.message &&
+                      t(errors.academicSystems[index]?.subSystemIds.message)
                     }
                   >
                     <Controller
-                      name={`academicSystems.${index}.systemType`}
+                      name={`academicSystems.${index}.subSystemIds`}
                       control={control}
                       render={({ field }) => {
                         return (
@@ -186,7 +171,7 @@ export default function AddAcademicSystem() {
                             }))}
                             disabled={isLoadingSubSystems}
                             placeholder={t('academicSystem.selectItem')}
-                            error={!!errors.academicSystems?.[index]?.systemType}
+                            error={!!errors.academicSystems?.[index]?.subSystemIds}
                           />
                         );
                       }}
@@ -210,12 +195,12 @@ export default function AddAcademicSystem() {
                     label={t('academicSystem.countryName')}
                     required
                     error={
-                      errors.academicSystems?.[index]?.countryId?.message &&
-                      t(errors.academicSystems[index].countryId.message)
+                      errors.academicSystems?.[index]?.countryIds?.message &&
+                      t(errors.academicSystems[index].countryIds.message)
                     }
                   >
                     <Controller
-                      name={`academicSystems.${index}.countryId`}
+                      name={`academicSystems.${index}.countryIds`}
                       control={control}
                       render={({ field }) => (
                         <MultiSelectTagInput
@@ -230,7 +215,7 @@ export default function AddAcademicSystem() {
                             value: country.id,
                             label: currentLang === 'ar' ? country.arabicName : country.englishName,
                           }))}
-                          error={!!errors.academicSystems?.[index]?.systemType}
+                          error={!!errors.academicSystems?.[index]?.countryIds}
                           disabled={isLoadingCountries}
                           placeholder={
                             isLoadingCountries
@@ -272,7 +257,9 @@ export default function AddAcademicSystem() {
             message="academicSystem.systemAddedSuccessfully"
             iconSrc={BigSuccessIcon}
             autoClose={true}
+            duration={2000}
             onClose={() => setShowPopupMessage(false)}
+            navigateAfterClose={-1}
           />
         )}
       </div>
