@@ -10,12 +10,7 @@ export interface SchoolFormData {
   country: string;
 
   // Application Features
-  applicationFeatures: {
-    attendanceAndDeparture: boolean;
-    remoteBookTracking: boolean;
-    expensesTrackingOnly: boolean;
-    fullExpensesPayment: boolean;
-  };
+  applicationFeatures: string[];
 
   // Financial Data
   bankName: string;
@@ -42,20 +37,7 @@ export interface SchoolFormData {
 
   // Facilities
   hasOtherBranches: boolean;
-
-  // Features
-  attendanceFeature: boolean;
-  buyBooksFeature: boolean;
-  payCashFeature: boolean;
-  payInstallmentFeature: boolean;
-  facilities: {
-    playground: boolean;
-    library: boolean;
-    laboratory: boolean;
-    sportField: boolean;
-    canteen: boolean;
-    busService: boolean;
-  };
+  facilities: string[];
 }
 
 // Initial empty form data
@@ -67,12 +49,7 @@ export const initialSchoolFormData: SchoolFormData = {
   hasCurrentSystem: false,
   currentSystem: '',
   country: '',
-  applicationFeatures: {
-    attendanceAndDeparture: false,
-    remoteBookTracking: false,
-    expensesTrackingOnly: false,
-    fullExpensesPayment: false,
-  },
+  applicationFeatures: [],
   bankName: '',
   accountNumber: '',
   ibanNumber: '',
@@ -91,18 +68,7 @@ export const initialSchoolFormData: SchoolFormData = {
   postalCode: '',
   hasBranches: false,
   hasOtherBranches: false,
-  attendanceFeature: false,
-  buyBooksFeature: false,
-  payCashFeature: false,
-  payInstallmentFeature: false,
-  facilities: {
-    playground: false,
-    library: false,
-    laboratory: false,
-    sportField: false,
-    canteen: false,
-    busService: false,
-  },
+  facilities: [],
 };
 
 // School data for display in tables
