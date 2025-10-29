@@ -77,7 +77,7 @@ const AddressBranch: React.FC<AddressBranchProps> = ({
                 className="border-none bg-transparent text-left text-sm font-semibold text-green-600 hover:bg-transparent"
                 style={{ backgroundColor: 'transparent', boxShadow: 'none' }}
               >
-                تحديد علي الخريطة
+                {t('schools.mapLocation')}
               </Button>
             </div>
           )}
@@ -87,7 +87,10 @@ const AddressBranch: React.FC<AddressBranchProps> = ({
             <FormField label={t('schools.countryWithAl')} required>
               <CustomSelect
                 value={branch.country || ''}
-                onChange={(value) => onBranchChange(index, 'country', value)}
+                onChange={(value) => {
+                  const normalized = Array.isArray(value) ? (value[0] ?? '') : (value ?? '');
+                  onBranchChange(index, 'country', normalized);
+                }}
                 options={countries.map((country) => ({
                   value: country.id,
                   label: currentLang === 'ar' ? country.arabicName : country.englishName,
