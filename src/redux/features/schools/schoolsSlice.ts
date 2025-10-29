@@ -1,8 +1,24 @@
-import { createSlice, type PayloadAction, type ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import type { FetchSchoolsPayload, FetchSchoolsResponse, SchoolsState, UpdateSchoolStatusPayload } from './schoolsTypes';
-import { schoolsApiService, type CreateSchoolRequest, type SchoolDetail, type SchoolQueryParams, type SchoolStatisticsResponse, type UpdateSchoolRequest } from '@/services/api';
+import {
+  createSlice,
+  type PayloadAction,
+  type ActionReducerMapBuilder,
+  createAsyncThunk,
+} from '@reduxjs/toolkit';
+import type {
+  FetchSchoolsPayload,
+  FetchSchoolsResponse,
+  SchoolsState,
+  UpdateSchoolStatusPayload,
+} from './schoolsTypes';
+import {
+  schoolsApiService,
+  type CreateSchoolRequest,
+  type SchoolDetail,
+  type SchoolQueryParams,
+  type SchoolStatisticsResponse,
+  type UpdateSchoolRequest,
+} from '@/services/api';
 import { getErrorMessage } from '@/lib/http';
-
 
 const initialState: SchoolsState = {
   // Data
@@ -43,12 +59,12 @@ export const fetchSchools = createAsyncThunk<FetchSchoolsResponse, FetchSchoolsP
     try {
       const params: Partial<SchoolQueryParams> = payload
         ? {
-          page: payload.page,
-          limit: payload.limit,
-          ...payload.filters,
-          sortBy: payload.sortBy as SchoolQueryParams['sortBy'],
-          sortOrder: payload.sortOrder,
-        }
+            page: payload.page,
+            limit: payload.limit,
+            ...payload.filters,
+            sortBy: payload.sortBy as SchoolQueryParams['sortBy'],
+            sortOrder: payload.sortOrder,
+          }
         : {};
 
       const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
@@ -79,6 +95,29 @@ export const createSchool = createAsyncThunk<SchoolDetail, CreateSchoolRequest>(
       return school;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const createSchoolWithFormData = createAsyncThunk<SchoolDetail, FormData>(
+  'schools/createSchoolWithFormData',
+  async (formData, { rejectWithValue }) => {
+    try {
+      const school = await schoolsApiService.createSchool(formData);
+      return school;
+    } catch (error) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'isValidationError' in error &&
+        error.isValidationError
+      ) {
+        return rejectWithValue({
+          message: getErrorMessage(error),
+          validationErrors: (error as unknown as { validationErrors: unknown }).validationErrors,
+        });
+      }
+      return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });
     }
   }
 );
@@ -206,12 +245,9 @@ const schoolsSlice = createSlice({
         state.pagination.limit = action.payload.limit;
       }
     },
-
-   
   },
 
   extraReducers: (builder: ActionReducerMapBuilder<SchoolsState>) => {
-
     builder
       .addCase(fetchSchools.pending, (state) => {
         state.isLoading = true;
@@ -264,6 +300,32 @@ const schoolsSlice = createSlice({
       .addCase(createSchool.rejected, (state, action) => {
         state.isCreating = false;
         state.error = action.payload as string;
+      });
+
+    // Handle createSchoolWithFormData
+    builder
+      .addCase(createSchoolWithFormData.pending, (state) => {
+        state.isCreating = true;
+        state.error = null;
+        state.validationErrors = null;
+      })
+      .addCase(createSchoolWithFormData.fulfilled, (state, action) => {
+        state.isCreating = false;
+        state.schools.unshift(action.payload);
+        state.pagination.total += 1;
+        state.error = null;
+      })
+      .addCase(createSchoolWithFormData.rejected, (state, action) => {
+        state.isCreating = false;
+        const payload = action.payload as
+          | { message: string; validationErrors: unknown }
+          | undefined;
+        if (payload) {
+          state.error = payload.message;
+          state.validationErrors = payload.validationErrors as Record<string, string> | null;
+        } else {
+          state.error = 'An error occurred';
+        }
       });
 
     builder
@@ -357,7 +419,6 @@ const schoolsSlice = createSlice({
         state.error = action.payload as string;
       });
 
-
     builder
       .addCase(activateSchool.pending, (state) => {
         state.isUpdating = true;
@@ -373,7 +434,6 @@ const schoolsSlice = createSlice({
         state.isUpdating = false;
         state.error = action.payload as string;
       });
-
 
     builder
       .addCase(deactivateSchool.pending, (state) => {
@@ -407,6 +467,5 @@ const schoolsSlice = createSlice({
       });
   },
 });
-
 
 export default schoolsSlice.reducer;
