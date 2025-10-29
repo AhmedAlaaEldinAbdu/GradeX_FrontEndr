@@ -31,6 +31,20 @@ export interface ApplicationFeature {
 export type ApplicationFeaturesResponse = LookupApiResponse<ApplicationFeature>;
 
 // ============================================================================
+// Facilities
+// ============================================================================
+
+export interface Facility {
+  id: string;
+  arabicName: string;
+  englishName: string;
+  description: string;
+  imageUrl: string | null;
+}
+
+export type FacilitiesResponse = LookupApiResponse<Facility>;
+
+// ============================================================================
 // Countries
 // ============================================================================
 
@@ -80,6 +94,20 @@ export function featureToOption(
   return {
     value: feature.id,
     label: language === 'ar' ? feature.nameAr : feature.nameEn,
+  };
+}
+
+/**
+ * Convert facility to dropdown option
+ */
+export function facilityToOption(facility: Facility, language: 'ar' | 'en' = 'en'): LookupOption {
+  return {
+    value: facility.id,
+    label: language === 'ar' ? facility.arabicName : facility.englishName,
+    extra: {
+      description: facility.description,
+      imageUrl: facility.imageUrl,
+    },
   };
 }
 
