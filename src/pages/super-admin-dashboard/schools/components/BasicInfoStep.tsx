@@ -152,7 +152,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   }
                   disabled={isLoadingAcademicSystems || readOnly}
                   maxHeight="200px"
-                  isMulti={true}
+                  isMulti={false}
                 />
               )}
             />
