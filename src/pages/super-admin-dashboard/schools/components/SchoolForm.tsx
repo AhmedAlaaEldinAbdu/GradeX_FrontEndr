@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import StepIndicator from '@gradex/shared/components/StepIndicator';
 import Button from '@gradex/shared/components/Button';
 import PopupMessage from '@gradex/shared/components/PopupMessage';
@@ -11,6 +13,15 @@ import ContactInfoStep from './ContactInfoStep';
 import FacilitiesStep from './FacilitiesStep';
 import { useSchoolForm } from '../hooks/useSchoolForm';
 import type { SchoolFormData } from '../types/school.types';
+import { transformSchoolFormBackend } from '../utils/school-form.transformer';
+import { logFormData } from '@/shared/common/common';
+import {
+  createSchoolWithFormData,
+  selectIsCreating,
+  selectValidationErrors,
+} from '@gradex/redux/features/schools';
+import { useToast } from '@/shared/context/ToastContext';
+import type { ValidationErrorResponse } from '@/services/api/config';
 import LocationIcon from '@gradex/assets/icons/location-fill.svg';
 import PhoneIcon from '@gradex/assets/icons/phone-fill.svg';
 import DiamondIcon from '@gradex/assets/icons/Diamond.svg';
@@ -32,8 +43,57 @@ const SchoolForm = ({
 }: SchoolFormProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [branches, setBranches] = useState<
+    Array<{
+      country: string;
+      region: string;
+      city: string;
+      district: string;
+      street: string;
+      buildingNumber: string;
+      postalCode: string;
+      latitude?: number;
+      longitude?: number;
+    }>
+  >([]);
+
+  const isCreating = useSelector(selectIsCreating);
+  const validationErrors = useSelector(selectValidationErrors);
+
+  // Show validation errors in toast when they occur
+  useEffect(() => {
+    if (validationErrors) {
+      // Handle array of validation errors
+      if (Array.isArray(validationErrors)) {
+        validationErrors.forEach((error: ValidationErrorResponse) => {
+          showToast({
+            message: error.errorMessage,
+            type: 'error',
+            duration: 5000,
+          });
+        });
+      }
+      // Handle object with error messages
+      else if (typeof validationErrors === 'object') {
+        const errorMessages = Object.values(validationErrors);
+        if (errorMessages.length > 0) {
+          errorMessages.forEach((errorMsg) => {
+            if (typeof errorMsg === 'string') {
+              showToast({
+                message: errorMsg,
+                type: 'error',
+                duration: 5000,
+              });
+            }
+          });
+        }
+      }
+    }
+  }, [validationErrors, showToast]);
 
   const {
     form,
@@ -124,14 +184,23 @@ const SchoolForm = ({
         return;
       }
 
-      // TODO: Implement API call for create/update
-      console.log('Form Data:', data);
-      console.log('Files:', files);
-      console.log('Mode:', mode);
-      console.log('School ID:', schoolId);
+      const backendFormData = transformSchoolFormBackend(data, files, branches);
 
-      // Show success popup
-      setShowSuccessPopup(true);
+      if (import.meta.env.DEV) {
+        logFormData(backendFormData);
+      }
+
+      if (mode === 'add') {
+        const resultAction = await dispatch(createSchoolWithFormData(backendFormData));
+
+        if (createSchoolWithFormData.fulfilled.match(resultAction)) {
+          // Success - show popup
+          setShowSuccessPopup(true);
+        }
+      } else if (mode === 'edit' && schoolId) {
+        console.log('Update school:', schoolId, backendFormData);
+        setShowSuccessPopup(true);
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
     }
@@ -139,7 +208,7 @@ const SchoolForm = ({
 
   const handleCloseSuccessPopup = () => {
     setShowSuccessPopup(false);
-    navigate('/dashboard/schools');
+    navigate('/schools');
   };
 
   return (
@@ -173,7 +242,9 @@ const SchoolForm = ({
 
           {currentStep === 2 && <ContactInfoStep readOnly={mode === 'view'} />}
 
-          {currentStep === 3 && <AddressStep readOnly={mode === 'view'} />}
+          {currentStep === 3 && (
+            <AddressStep readOnly={mode === 'view'} onBranchesChange={setBranches} />
+          )}
 
           {currentStep === 4 && (
             <FacilitiesStep
@@ -213,11 +284,7 @@ const SchoolForm = ({
               ) : (
                 // Add/Edit mode - show Cancel and Next/Save buttons
                 <>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => navigate('/dashboard/schools')}
-                  >
+                  <Button type="button" variant="outline" onClick={() => navigate('/schools')}>
                     {t('common.cancel')}
                   </Button>
 
@@ -226,8 +293,8 @@ const SchoolForm = ({
                       {t('common.next')}
                     </Button>
                   ) : (
-                    <Button type="submit" variant="primary">
-                      {t('common.save')}
+                    <Button type="submit" variant="primary" disabled={isCreating}>
+                      {isCreating ? t('common.saving') : t('common.save')}
                     </Button>
                   )}
                 </>
