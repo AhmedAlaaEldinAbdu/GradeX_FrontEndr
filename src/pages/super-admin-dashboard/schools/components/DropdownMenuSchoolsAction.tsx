@@ -1,29 +1,99 @@
 import { useState } from 'react';
-import dotsIcon from '@gradex/assets/icons/Dots.svg';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import FilesIcon from '@gradex/assets/icons/Files.svg';
 import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useTranslation } from 'react-i18next';
 import EditRequestPopup from '../popups/EditRequestPopup';
 import RejectSchoolPopup from '../popups/RejectSchoolPopup';
-import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
+import { ActionsDropdown } from '@/shared/components/components';
+import { acceptSchoolApplication, rejectSchoolApplication } from '@gradex/redux/features/schools';
+import { useToast } from '@/shared/context/ToastContext';
 
 interface ActionProps {
-  id?: string; // mandatory
+  id: string;
   selectedTab: number;
+  onActionComplete?: () => void;
 }
 
-export default function DropdownMenuSchoolsAction({ id = '', selectedTab }: ActionProps) {
+export default function DropdownMenuSchoolsAction({
+  id,
+  selectedTab,
+  onActionComplete,
+}: ActionProps) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
   const [showEditRequestPopup, setShowEditRequestPopup] = useState(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showRejectPopup, setShowRejectPopup] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleConfirmEditRequest = (message: string) => {
     console.log('Edit request message:', message);
     setShowEditRequestPopup(false);
+  };
+
+  const handleAcceptSchool = async () => {
+    try {
+      setIsProcessing(true);
+      await dispatch(acceptSchoolApplication(id)).unwrap();
+
+      showToast({
+        message: t('schools.schoolAcceptedSuccessfully'),
+        type: 'success',
+        duration: 3000,
+      });
+
+      if (onActionComplete) {
+        onActionComplete();
+      }
+    } catch (error) {
+      console.error('Failed to accept school:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRejectSchool = async (rejectionReason: string) => {
+    if (!rejectionReason.trim()) {
+      showToast({
+        message: t('schools.rejectionReasonRequired'),
+        type: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await dispatch(rejectSchoolApplication({ id, rejectionReason })).unwrap();
+      setShowRejectPopup(false);
+
+      showToast({
+        message: t('schools.schoolRejectedSuccessfully'),
+        type: 'success',
+        duration: 3000,
+      });
+
+      if (onActionComplete) {
+        onActionComplete();
+      }
+    } catch (error) {
+      console.error('Failed to reject school:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const actions = [
@@ -41,7 +111,8 @@ export default function DropdownMenuSchoolsAction({ id = '', selectedTab }: Acti
       label: t('actions.accept'),
       icon: CheckmarkCircleIcon,
       color: 'text-green-600 hover:bg-green-50',
-      onClick: () => setShowSuccessPopup(true),
+      onClick: handleAcceptSchool,
+      disabled: isProcessing,
     },
     {
       id: 'reject',
@@ -50,56 +121,26 @@ export default function DropdownMenuSchoolsAction({ id = '', selectedTab }: Acti
       icon: XMarkDangerIcon,
       color: 'text-red-600 hover:bg-red-50',
       onClick: () => setShowRejectPopup(true),
+      disabled: isProcessing,
     },
   ];
 
   return (
     <div className="relative inline-block text-left">
-      <button
-        onClick={() => setOpen(!open)}
-        className="rounded-full bg-gray-100 p-2 text-gray-600 transition hover:bg-gray-200"
-      >
-        <img src={dotsIcon} alt="action" />
-      </button>
-      {open && (
-        <div className="absolute left-0 z-10 mt-2 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
-          {actions
-            ?.filter((action) => action?.visible?.includes(selectedTab))
-            ?.map((action) => (
-              <button
-                key={action.id}
-                onClick={action.onClick}
-                className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-right ${action.color}`}
-              >
-                <img
-                  src={action.icon}
-                  alt={`${action.id}Icon`}
-                  className={`${action.id === 'reject' ? 'h-[16px] w-[16px]' : 'h-[20px] w-[20px]'}`}
-                />
-                <span>{action.label}</span>
-              </button>
-            ))}
-        </div>
-      )}
+      <ActionsDropdown
+        actions={actions.filter((action) => action?.visible?.includes(selectedTab))}
+        dropdownClassName="absolute left-0 z-10 mt-2 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+      />
       {showEditRequestPopup && (
         <EditRequestPopup
           onCancel={() => setShowEditRequestPopup(false)}
           onConfirm={handleConfirmEditRequest}
         />
-      )}{' '}
+      )}
       {showRejectPopup && (
         <RejectSchoolPopup
           onCancel={() => setShowRejectPopup(false)}
-          onConfirm={handleConfirmEditRequest}
-        />
-      )}
-      {showSuccessPopup && (
-        <PopupMessage
-          type="success"
-          message="schools.schoolAcceptedSuccessfully"
-          iconSrc={BigSuccessIcon}
-          autoClose={true}
-          onClose={() => setShowSuccessPopup(false)}
+          onConfirm={handleRejectSchool}
         />
       )}
     </div>
