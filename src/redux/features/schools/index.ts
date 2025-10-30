@@ -9,6 +9,9 @@ export { default as schoolsReducer } from './schoolsSlice';
 // Actions (Async Thunks)
 export {
   fetchSchools,
+  fetchRegisteredSchools,
+  fetchPendingSchools,
+  fetchDeletedSchools,
   fetchSchoolById,
   createSchool,
   createSchoolWithFormData,
@@ -18,6 +21,8 @@ export {
   updateSchoolStatus,
   approveSchool,
   rejectSchool,
+  acceptSchoolApplication,
+  rejectSchoolApplication,
   activateSchool,
   deactivateSchool,
   fetchSchoolStatistics,
