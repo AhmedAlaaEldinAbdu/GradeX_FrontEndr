@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import Badge from '@gradex/shared/components/Badge';
@@ -5,160 +8,198 @@ import Pagination from '@gradex/shared/components/Pagination';
 import DropdownMenuSchoolsAction from './DropdownMenuSchoolsAction';
 import PhoneIcon from '@gradex/assets/icons/Phone.svg';
 import EmailIcon from '@gradex/assets/icons/Email.svg';
+import Loading from '@gradex/shared/components/Loading';
+import {
+  fetchPendingSchools,
+  selectSchools,
+  selectIsLoading,
+  selectPagination,
+  selectError,
+} from '@gradex/redux/features/schools';
+import { selectCountries } from '@gradex/redux/features/lookups';
+import type { School } from '@gradex/services/api/types/school.types';
 
-interface School {
-  id: number;
-  schoolName: string;
-  educationSystem: string;
-  status: string;
-  statusEnum: number | string;
-  country: string;
-  region: string;
-  district: string;
-  addedDate: string;
+interface PendingSchoolsTabProps {
+  filters?: {
+    searchTerm?: string;
+    academicSystemId?: string;
+    lKCountryId?: string;
+  };
 }
 
-export default function PendingSchoolsTab() {
-  const { t } = useTranslation();
-  const schools: School[] = [
-    {
-      id: 1,
-      schoolName: 'مدرسة الرشيد بنات',
-      educationSystem: 'حكومي',
-      status: 'قيد الانتظار',
-      statusEnum: 'pending',
-      country: 'مصر',
-      region: 'القاهرة',
-      district: 'الغربي',
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 2,
-      schoolName: 'مدرسة الأمل',
-      educationSystem: 'خاص',
-      status: 'قيد الانتظار',
-      statusEnum: 'pending',
-      country: 'السعودية',
-      region: 'الرياض',
-      district: 'الشرقي',
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 3,
-      schoolName: 'مدرسة النهضة',
-      educationSystem: 'حكومي',
-      status: 'قيد الانتظار',
-      statusEnum: 'pending',
-      country: 'مصر',
-      region: 'القاهرة',
-      district: 'الثالث',
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 4,
-      schoolName: 'مدرسة الإبداع',
-      educationSystem: 'أهلي',
-      status: 'قيد الانتظار',
-      statusEnum: 'pending',
-      country: 'مصر',
-      region: 'الإسكندرية',
-      district: 'الشرقي',
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 5,
-      schoolName: 'مدرسة المستقبل',
-      educationSystem: 'حكومي',
-      status: 'قيد الانتظار',
-      statusEnum: 'pending',
-      country: 'السعودية',
-      region: 'جدة',
-      district: 'الغربي',
-      addedDate: '22-4-2025',
-    },
-    {
-      id: 6,
-      schoolName: 'مدرسة المعرفة',
-      educationSystem: 'خاص',
-      status: 'قيد الانتظار',
-      statusEnum: 'pending',
-      country: 'السعودية',
-      region: 'الرياض',
-      district: 'الثالث',
-      addedDate: '22-4-2025',
-    },
-  ];
+export default function PendingSchoolsTab({ filters }: PendingSchoolsTabProps) {
+  const { t, i18n } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const schools = useSelector(selectSchools) || [];
+  const isLoading = useSelector(selectIsLoading);
+  const pagination = useSelector(selectPagination);
+  const error = useSelector(selectError);
+  const countries = useSelector(selectCountries);
+
+  const currentLang = i18n.language as 'ar' | 'en';
+
+  const getCountryName = (countryId: string): string => {
+    const country = countries.find((c) => c.id === countryId);
+    if (!country) return '-';
+    return currentLang === 'ar' ? country.arabicName : country.englishName;
+  };
+
+  useEffect(() => {
+    dispatch(
+      fetchPendingSchools({
+        page: pagination.page,
+        limit: pagination.limit,
+        filters,
+      })
+    );
+  }, [dispatch, filters]);
+
+  const handlePageChange = (page: number) => {
+    dispatch(
+      fetchPendingSchools({
+        page,
+        limit: pagination.limit,
+        filters,
+      })
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-10">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-10 text-center text-red-600">
+        {t('common.error')}: {error}
+      </div>
+    );
+  }
 
   const columns = [
-    { header: '#', accessor: (row: School) => row.id },
+    {
+      header: '#',
+      accessor: (_row: School) => {
+        const index = schools.findIndex((s) => s.id === _row.id);
+        return (pagination.page - 1) * pagination.limit + index + 1;
+      },
+    },
     {
       header: 'schools.schoolName',
-      accessor: (row: School) => row.schoolName,
+      accessor: (row: School) => row.name,
       headerClassName: 'min-w-[150px]',
     },
     {
       header: 'schools.educationSystem',
-      accessor: (row: School) => row.educationSystem,
+      accessor: (row: School) => {
+        const academicSystemName =
+          row?.schoolStagesDto && row.schoolStagesDto.length > 0
+            ? currentLang === 'ar'
+              ? row.schoolStagesDto[0]?.nameAr || '-'
+              : row.schoolStagesDto[0]?.nameEn || '-'
+            : '-';
+        return academicSystemName;
+      },
       headerClassName: 'min-w-[150px]',
     },
     {
       header: 'schools.status',
-      accessor: (row: School) => {
-        const statusVariants: Record<string, 'success' | 'warning' | 'danger'> = {
-          approved: 'success',
-          pending: 'warning',
-          rejected: 'danger',
-        };
-
-        const variant = statusVariants[row.statusEnum] || 'default';
-
-        return (
-          <Badge variant={variant} size="lg">
-            {t(`${row.status}`)}
-          </Badge>
-        );
-      },
+      accessor: () => (
+        <Badge variant="warning" size="lg">
+          {t('common.pending')}
+        </Badge>
+      ),
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
       header: 'schools.country',
-      accessor: (row: School) => row.country,
+      accessor: (row: School) => {
+        // Get country name from school branches
+        const countryId =
+          row?.schoolBranches && row.schoolBranches.length > 0
+            ? row.schoolBranches[0]?.lkCountryId
+            : null;
+        return countryId ? getCountryName(countryId) : '-';
+      },
       headerClassName: 'min-w-[150px]',
     },
     {
       header: 'schools.region',
-      accessor: (row: School) => row.region,
+      accessor: (row: School) => {
+        const region =
+          row?.schoolBranches && row.schoolBranches.length > 0
+            ? row.schoolBranches[0]?.region || '-'
+            : '-';
+        return region;
+      },
       headerClassName: 'min-w-[150px]',
     },
     {
       header: 'schools.district',
-      accessor: (row: School) => row.district,
+      accessor: (row: School) => {
+        const neighborhood =
+          row?.schoolBranches && row.schoolBranches.length > 0
+            ? row.schoolBranches[0]?.neighborhood || '-'
+            : '-';
+        return neighborhood;
+      },
       headerClassName: 'min-w-[100px]',
     },
     {
       header: 'schools.addedDate',
-      accessor: (row: School) => row.addedDate,
+      accessor: (row: School) => {
+        if (!row?.foundingDate) return '-';
+        try {
+          const date = new Date(row.foundingDate);
+          return date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+        } catch {
+          return '-';
+        }
+      },
       headerClassName: 'min-w-[100px]',
     },
     {
       header: 'schools.contactMethods',
       accessor: (row: School) => (
         <div className="flex items-center justify-center gap-3">
-          {' '}
-          <span className="cursor-pointer">
-            <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
-          </span>
-          <span className="cursor-pointer">
-            <img src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
-          </span>{' '}
+          {row?.email && (
+            <a href={`mailto:${row.email}`} className="cursor-pointer">
+              <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
+            </a>
+          )}
+          {row?.phoneNumber && (
+            <a href={`tel:${row.phoneNumber}`} className="cursor-pointer">
+              <img src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
+            </a>
+          )}
         </div>
       ),
       headerClassName: 'min-w-[100px]',
     },
     {
       header: 'common.actions',
-      accessor: () => <DropdownMenuSchoolsAction selectedTab={2} />,
+      accessor: (row: School) => (
+        <DropdownMenuSchoolsAction
+          id={row.id}
+          selectedTab={2}
+          onActionComplete={() => {
+            // Refresh the pending schools list
+            dispatch(
+              fetchPendingSchools({
+                page: pagination.page,
+                limit: pagination.limit,
+                filters,
+              })
+            );
+          }}
+        />
+      ),
       headerClassName: 'min-w-[100px]',
     },
   ];
@@ -167,17 +208,23 @@ export default function PendingSchoolsTab() {
     <div>
       {/* Table */}
       <div className="overflow-x-auto">
-        <Table columns={columns} data={schools} keyExtractor={(row) => row.id} />
+        {schools.length === 0 ? (
+          <div className="py-10 text-center text-gray-500">{t('schools.noSchoolsFound')}</div>
+        ) : (
+          <Table columns={columns} data={schools} keyExtractor={(row) => row.id} />
+        )}
       </div>
 
       {/* Pagination */}
-      <Pagination
-        currentPage={1}
-        totalPages={10}
-        to={6}
-        from={7}
-        onPageChange={() => console.log('click to change page')}
-      />
+      {pagination.totalPages > 1 && (
+        <Pagination
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          to={(pagination.page - 1) * pagination.limit + schools.length}
+          from={(pagination.page - 1) * pagination.limit + 1}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }
