@@ -26,12 +26,42 @@ import type { ApiSuccessResponse, ApiResponseModel } from '../config';
  * Get list of schools with pagination and filters
  */
 export async function getSchools(params?: SchoolQueryParams): Promise<SchoolListResponse> {
-  const response: AxiosResponse<ApiSuccessResponse<SchoolListResponse>> = await axiosClient.get(
+  const response: AxiosResponse<ApiResponseModel<SchoolListResponse>> = await axiosClient.get(
     SchoolsEndpoints.getSchools,
-    { params }
+    {
+      params,
+      paramsSerializer: {
+        serialize: (params) => {
+          const searchParams = new URLSearchParams();
+
+          Object.entries(params).forEach(([key, value]) => {
+            if (value === undefined || value === null) return;
+
+            if (Array.isArray(value)) {
+              value.forEach((v) => searchParams.append(key, String(v)));
+            } else {
+              searchParams.append(key, String(value));
+            }
+          });
+
+          return searchParams.toString();
+        },
+      },
+    }
   );
 
-  return response.data.data;
+  // Handle null or undefined response
+  if (!response?.data?.value) {
+    return {
+      items: [],
+      totalItems: 0,
+      totalPages: 0,
+      pageIndex: params?.pageIndex || 1,
+      pageSize: params?.pageSize || 10,
+    };
+  }
+
+  return response.data.value;
 }
 
 /**
@@ -135,6 +165,37 @@ export async function updateSchoolStatus(
 }
 
 /**
+ * Accept a school
+ */
+export async function acceptSchool(id: string): Promise<{ success: boolean; message: string }> {
+  const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.put(
+    `${SchoolsEndpoints.editSchoolStatus(id)}?status=1`
+  );
+
+  return {
+    success: response.data.isSuccess,
+    message: response.data.value || 'UPDATED_SUCCESSFULLY',
+  };
+}
+
+/**
+ * Reject a school
+ */
+export async function rejectSchool(
+  id: string,
+  rejectionReason: string
+): Promise<{ success: boolean; message: string }> {
+  const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.put(
+    `${SchoolsEndpoints.editSchoolStatus(id)}?status=2&rejectionReason=${encodeURIComponent(rejectionReason)}`
+  );
+
+  return {
+    success: response.data.isSuccess,
+    message: response.data.value || 'UPDATED_SUCCESSFULLY',
+  };
+}
+
+/**
  * Add school update request
  */
 export async function addSchoolUpdateRequest(
@@ -176,42 +237,42 @@ export async function getLocationFilters(): Promise<{
  * Get pending schools
  */
 export async function getPendingSchools(params?: SchoolQueryParams): Promise<SchoolListResponse> {
-  return getSchools({ ...params, status: 'pending' });
+  return getSchools({ ...params, schoolStatus: 3 });
 }
 
 /**
- * Get approved schools
+ * Get approved/registered schools
  */
 export async function getApprovedSchools(params?: SchoolQueryParams): Promise<SchoolListResponse> {
-  return getSchools({ ...params, status: 'approved' });
+  return getSchools({ ...params, schoolStatus: [1, 2] });
 }
 
 /**
  * Get rejected schools
  */
 export async function getRejectedSchools(params?: SchoolQueryParams): Promise<SchoolListResponse> {
-  return getSchools({ ...params, status: 'rejected' });
+  return getSchools({ ...params, schoolStatus: 4 });
 }
 
 /**
  * Get active schools
  */
 export async function getActiveSchools(params?: SchoolQueryParams): Promise<SchoolListResponse> {
-  return getSchools({ ...params, status: 'active' });
+  return getSchools({ ...params, schoolStatus: 1 });
 }
 
 /**
  * Get inactive schools
  */
 export async function getInactiveSchools(params?: SchoolQueryParams): Promise<SchoolListResponse> {
-  return getSchools({ ...params, status: 'inactive' });
+  return getSchools({ ...params, schoolStatus: 2 });
 }
 
 /**
  * Get deleted schools
  */
 export async function getDeletedSchools(params?: SchoolQueryParams): Promise<SchoolListResponse> {
-  return getSchools({ ...params, status: 'deleted' });
+  return getSchools({ ...params, schoolStatus: 4 });
 }
 
 // ============================================================================
@@ -367,6 +428,8 @@ export const schoolsApiService = {
 
   // Status Management
   updateSchoolStatus,
+  acceptSchool,
+  rejectSchool,
   addSchoolUpdateRequest,
   getLocationFilters,
 
