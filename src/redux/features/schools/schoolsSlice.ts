@@ -17,6 +17,7 @@ import {
   type SchoolQueryParams,
   type SchoolStatisticsResponse,
   type UpdateSchoolRequest,
+  SchoolStatusEnum,
 } from '@/services/api';
 import { getErrorMessage } from '@/lib/http';
 
@@ -59,8 +60,8 @@ export const fetchSchools = createAsyncThunk<FetchSchoolsResponse, FetchSchoolsP
     try {
       const params: Partial<SchoolQueryParams> = payload
         ? {
-            page: payload.page,
-            limit: payload.limit,
+            pageIndex: payload.page,
+            pageSize: payload.limit,
             ...payload.filters,
             sortBy: payload.sortBy as SchoolQueryParams['sortBy'],
             sortOrder: payload.sortOrder,
@@ -68,12 +69,163 @@ export const fetchSchools = createAsyncThunk<FetchSchoolsResponse, FetchSchoolsP
         : {};
 
       const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
-      return response;
+
+      // Transform backend response to match FetchSchoolsResponse
+      if (!response) {
+        return {
+          data: [],
+          meta: {
+            total: 0,
+            page: 1,
+            limit: 10,
+            totalPages: 0,
+          },
+        };
+      }
+
+      return {
+        data: response.items || [],
+        meta: {
+          total: response.totalItems || 0,
+          page: response.pageIndex || 1,
+          limit: response.pageSize || 10,
+          totalPages: response.totalPages || 0,
+        },
+      };
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
   }
 );
+
+// Fetch registered schools
+export const fetchRegisteredSchools = createAsyncThunk<
+  FetchSchoolsResponse,
+  FetchSchoolsPayload | void
+>('schools/fetchRegisteredSchools', async (payload, { rejectWithValue }) => {
+  try {
+    const params: Partial<SchoolQueryParams> = {
+      pageIndex: payload?.page || 1,
+      pageSize: payload?.limit || 10,
+      schoolStatus: SchoolStatusEnum.ACTIVE,
+      ...payload?.filters,
+      sortBy: payload?.sortBy as SchoolQueryParams['sortBy'],
+      sortOrder: payload?.sortOrder,
+    };
+
+    const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
+
+    if (!response) {
+      return {
+        data: [],
+        meta: {
+          total: 0,
+          page: 1,
+          limit: 10,
+          totalPages: 0,
+        },
+      };
+    }
+
+    return {
+      data: response.items || [],
+      meta: {
+        total: response.totalItems || 0,
+        page: response.pageIndex || 1,
+        limit: response.pageSize || 10,
+        totalPages: response.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// Fetch pending schools (status 3)
+export const fetchPendingSchools = createAsyncThunk<
+  FetchSchoolsResponse,
+  FetchSchoolsPayload | void
+>('schools/fetchPendingSchools', async (payload, { rejectWithValue }) => {
+  try {
+    const params: Partial<SchoolQueryParams> = {
+      pageIndex: payload?.page || 1,
+      pageSize: payload?.limit || 10,
+      schoolStatus: SchoolStatusEnum.PENDING,
+      ...payload?.filters,
+      sortBy: payload?.sortBy as SchoolQueryParams['sortBy'],
+      sortOrder: payload?.sortOrder,
+    };
+
+    const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
+
+    if (!response) {
+      return {
+        data: [],
+        meta: {
+          total: 0,
+          page: 1,
+          limit: 10,
+          totalPages: 0,
+        },
+      };
+    }
+
+    return {
+      data: response.items || [],
+      meta: {
+        total: response.totalItems || 0,
+        page: response.pageIndex || 1,
+        limit: response.pageSize || 10,
+        totalPages: response.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// Fetch deleted schools
+export const fetchDeletedSchools = createAsyncThunk<
+  FetchSchoolsResponse,
+  FetchSchoolsPayload | void
+>('schools/fetchDeletedSchools', async (payload, { rejectWithValue }) => {
+  try {
+    const params: Partial<SchoolQueryParams> = {
+      pageIndex: payload?.page || 1,
+      pageSize: payload?.limit || 10,
+      schoolStatus: [SchoolStatusEnum.REJECTED, SchoolStatusEnum.DELETED],
+      ...payload?.filters,
+      sortBy: payload?.sortBy as SchoolQueryParams['sortBy'],
+      sortOrder: payload?.sortOrder,
+    };
+
+    const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
+
+    if (!response) {
+      return {
+        data: [],
+        meta: {
+          total: 0,
+          page: 1,
+          limit: 10,
+          totalPages: 0,
+        },
+      };
+    }
+
+    return {
+      data: response.items || [],
+      meta: {
+        total: response.totalItems || 0,
+        page: response.pageIndex || 1,
+        limit: response.pageSize || 10,
+        totalPages: response.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const fetchSchoolById = createAsyncThunk<SchoolDetail, string>(
   'schools/fetchSchoolById',
@@ -157,6 +309,30 @@ export const restoreSchool = createAsyncThunk<string, string>(
     }
   }
 );
+
+export const acceptSchoolApplication = createAsyncThunk<
+  { id: string; success: boolean; message: string },
+  string
+>('schools/acceptSchoolApplication', async (id, { rejectWithValue }) => {
+  try {
+    const result = await schoolsApiService.acceptSchool(id);
+    return { id, ...result };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const rejectSchoolApplication = createAsyncThunk<
+  { id: string; success: boolean; message: string },
+  { id: string; rejectionReason: string }
+>('schools/rejectSchoolApplication', async ({ id, rejectionReason }, { rejectWithValue }) => {
+  try {
+    const result = await schoolsApiService.rejectSchool(id, rejectionReason);
+    return { id, ...result };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const updateSchoolStatus = createAsyncThunk<SchoolDetail, UpdateSchoolStatusPayload>(
   'schools/updateSchoolStatus',
@@ -266,6 +442,75 @@ const schoolsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchSchools.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Registered Schools
+    builder
+      .addCase(fetchRegisteredSchools.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchRegisteredSchools.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.schools = action.payload.data;
+        state.pagination = {
+          page: action.payload.meta.page,
+          limit: action.payload.meta.limit,
+          total: action.payload.meta.total,
+          totalPages: action.payload.meta.totalPages,
+        };
+        state.error = null;
+      })
+      .addCase(fetchRegisteredSchools.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Pending Schools
+    builder
+      .addCase(fetchPendingSchools.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchPendingSchools.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.schools = action.payload.data;
+        state.pagination = {
+          page: action.payload.meta.page,
+          limit: action.payload.meta.limit,
+          total: action.payload.meta.total,
+          totalPages: action.payload.meta.totalPages,
+        };
+        state.error = null;
+      })
+      .addCase(fetchPendingSchools.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Deleted Schools
+    builder
+      .addCase(fetchDeletedSchools.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchDeletedSchools.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.schools = action.payload.data;
+        state.pagination = {
+          page: action.payload.meta.page,
+          limit: action.payload.meta.limit,
+          total: action.payload.meta.total,
+          totalPages: action.payload.meta.totalPages,
+        };
+        state.error = null;
+      })
+      .addCase(fetchDeletedSchools.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
@@ -463,6 +708,40 @@ const schoolsSlice = createSlice({
       })
       .addCase(fetchSchoolStatistics.rejected, (state, action) => {
         state.isFetchingStats = false;
+        state.error = action.payload as string;
+      });
+
+    // Accept School Application
+    builder
+      .addCase(acceptSchoolApplication.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(acceptSchoolApplication.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        state.schools = state.schools.filter((s) => s.id !== action.payload.id);
+        state.pagination.total -= 1;
+        state.error = null;
+      })
+      .addCase(acceptSchoolApplication.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.error = action.payload as string;
+      });
+
+    // Reject School Application
+    builder
+      .addCase(rejectSchoolApplication.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(rejectSchoolApplication.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        state.schools = state.schools.filter((s) => s.id !== action.payload.id);
+        state.pagination.total -= 1;
+        state.error = null;
+      })
+      .addCase(rejectSchoolApplication.rejected, (state, action) => {
+        state.isUpdating = false;
         state.error = action.payload as string;
       });
   },
