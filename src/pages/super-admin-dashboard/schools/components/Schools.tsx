@@ -124,7 +124,9 @@ export default function Schools() {
                 <div>
                   <CustomSelect
                     value={selectedCountry}
-                    onChange={(value) => setSelectedCountry(value)}
+                    onChange={(value) =>
+                      setSelectedCountry(Array.isArray(value) ? (value[0] ?? '') : value)
+                    }
                     options={countries.map((country) => ({
                       value: country.id,
                       label: currentLang === 'ar' ? country.arabicName : country.englishName,
@@ -161,9 +163,33 @@ export default function Schools() {
             </div>
 
             <div className="overflow-x-auto">
-              {activeTab === 'RegisteredSchools' && <RegisteredSchoolsTab />}
-              {activeTab === 'PendingSchools' && <PendingSchoolsTab />}
-              {activeTab === 'DeletedSchools' && <DeletedSchoolsTab />}
+              {activeTab === 'RegisteredSchools' && (
+                <RegisteredSchoolsTab
+                  filters={{
+                    searchTerm: searchTerm || undefined,
+                    academicSystemId: academicSystem || undefined,
+                    lKCountryId: selectedCountry || undefined,
+                  }}
+                />
+              )}
+              {activeTab === 'PendingSchools' && (
+                <PendingSchoolsTab
+                  filters={{
+                    searchTerm: searchTerm || undefined,
+                    academicSystemId: academicSystem || undefined,
+                    lKCountryId: selectedCountry || undefined,
+                  }}
+                />
+              )}
+              {activeTab === 'DeletedSchools' && (
+                <DeletedSchoolsTab
+                  filters={{
+                    searchTerm: searchTerm || undefined,
+                    academicSystemId: academicSystem || undefined,
+                    lKCountryId: selectedCountry || undefined,
+                  }}
+                />
+              )}
             </div>
           </div>
         )}
