@@ -12,17 +12,91 @@ import type { SchoolFormData } from '@/pages/super-admin-dashboard/schools/types
 export interface School {
   id: string;
   name: string;
-  academicSystem: string;
-  foundationDate: string;
+  academicSystemId: string;
+  foundingDate: string;
   description: string;
-  country: string;
-  currentSystem?: string | null;
-  status: SchoolStatus;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt?: string | null;
+  services: string | null;
+  numberOfStudents: number | null;
+  numberOfTeachers: number | null;
+  isCurrentSystem: boolean;
+  financialData: {
+    id: string;
+    bankName: string;
+    iban: string;
+    accountNumber: string;
+    schoolId: string;
+  };
+  email: string;
+  webSite: string;
+  phoneNumber: string;
+  landlineNumber: string;
+  communicationOfficer: string;
+  schoolStatus: SchoolStatusEnum;
+  schoolGender: number;
+  otherBranches: boolean;
+  schoolStagesDto: Array<{
+    id: string;
+    nameAr: string;
+    nameEn: string;
+    lkSchoolStageId: string;
+    schoolId: string;
+  }>;
+  applicationFeaturesDto: Array<{
+    id: string;
+    nameAr: string;
+    nameEn: string;
+    lkApplicationFeatureId: string;
+    schoolId: string;
+  }>;
+  licensesAttachments: Array<{
+    id: string;
+    fileName: string;
+    filePath: string;
+    schoolId: string;
+  }>;
+  schoolBranches: Array<{
+    id: string;
+    lkCountryId: string;
+    city: string;
+    neighborhood: string;
+    region: string;
+    street: string;
+    buildingNumber: string;
+    zipCode: string;
+    buildingCount: number;
+    classCount: number;
+    schoolSpace: number;
+    latitude: number;
+    longitude: number;
+    address: string;
+    schoolId: string;
+  }>;
+  facilities: Array<{
+    id: string;
+    arabicName: string;
+    englishName: string;
+    description: string;
+    imageUrl: string;
+    schoolId: string;
+    licensesAttachmentsFacilities: Array<{
+      id: string;
+      attachmentFile: string;
+      attachmentName: string;
+      lkFacilitiesId: string;
+    }>;
+  }>;
 }
 
+export const SchoolStatusEnum = {
+  ACTIVE: 1,
+  REJECTED: 2,
+  PENDING: 3,
+  DELETED: 4,
+} as const;
+
+export type SchoolStatusEnum = (typeof SchoolStatusEnum)[keyof typeof SchoolStatusEnum];
+
+// Legacy status type for compatibility
 export const SchoolStatus = {
   PENDING: 'pending',
   APPROVED: 'approved',
@@ -39,14 +113,8 @@ export type SchoolStatus = (typeof SchoolStatus)[keyof typeof SchoolStatus];
 // ============================================================================
 
 export interface SchoolDetail extends School {
-  features: SchoolFeatures;
-  banking: BankingInfo;
-  contact: ContactInfo;
-  address: AddressInfo;
-  facilities: Facilities;
   logo?: string;
   documents?: Document[];
-  branches?: Branch[];
   statistics?: SchoolStats;
 }
 
@@ -159,13 +227,11 @@ export interface BulkOperationRequest {
 // ============================================================================
 
 export interface SchoolListResponse {
-  data: School[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
+  items: School[];
+  totalItems: number;
+  totalPages: number;
+  pageIndex: number;
+  pageSize: number;
 }
 
 export interface SchoolDetailResponse {
@@ -207,14 +273,12 @@ export interface SchoolStatisticsResponse {
 // ============================================================================
 
 export interface SchoolFilters {
-  search?: string;
-  status?: SchoolStatus | SchoolStatus[];
-  country?: string;
-  academicSystem?: string;
-  fromDate?: string;
-  toDate?: string;
-  hasCurrentSystem?: boolean;
-  features?: Partial<SchoolFeatures>;
+  searchTerm?: string;
+  schoolStatus?: SchoolStatusEnum | SchoolStatusEnum[];
+  academicSystemId?: string;
+  lKCountryId?: string;
+  region?: string;
+  neighborhood?: string;
 }
 
 // ============================================================================
@@ -222,8 +286,8 @@ export interface SchoolFilters {
 // ============================================================================
 
 export interface SchoolQueryParams extends SchoolFilters {
-  page?: number;
-  limit?: number;
+  pageIndex?: number;
+  pageSize?: number;
   sortBy?: SchoolSortField;
   sortOrder?: 'asc' | 'desc';
 }
