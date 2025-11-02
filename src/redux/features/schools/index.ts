@@ -23,6 +23,7 @@ export {
   rejectSchool,
   acceptSchoolApplication,
   rejectSchoolApplication,
+  sendSchoolEditRequest,
   activateSchool,
   deactivateSchool,
   fetchSchoolStatistics,
