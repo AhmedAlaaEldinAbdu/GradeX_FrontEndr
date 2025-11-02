@@ -17,6 +17,7 @@ import {
   selectError,
 } from '@gradex/redux/features/schools';
 import { selectCountries } from '@gradex/redux/features/lookups';
+import { selectAcademicSystems } from '@gradex/redux/features/academic-system';
 import type { School } from '@gradex/services/api/types/school.types';
 
 interface DeletedSchoolsTabProps {
@@ -35,15 +36,24 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
   const isLoading = useSelector(selectIsLoading);
   const pagination = useSelector(selectPagination);
   const error = useSelector(selectError);
-  const countries = useSelector(selectCountries);
+  const countries = useSelector(selectCountries) || [];
+  const academicSystems = useSelector(selectAcademicSystems) || [];
 
   const currentLang = i18n.language as 'ar' | 'en';
 
   // Helper function to get country name from country ID
   const getCountryName = (countryId: string): string => {
-    const country = countries.find((c) => c.id === countryId);
+    if (!countryId || !Array.isArray(countries)) return '-';
+    const country = countries.find((c) => c?.id === countryId);
     if (!country) return '-';
     return currentLang === 'ar' ? country.arabicName : country.englishName;
+  };
+
+  const getAcademicSystemName = (academicSystemId: string): string => {
+    if (!academicSystemId || !Array.isArray(academicSystems)) return '-';
+    const system = academicSystems.find((s) => s?.id === academicSystemId);
+    if (!system) return '-';
+    return system.name || '-';
   };
 
   // Fetch schools on mount and when filters change
@@ -87,25 +97,23 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
     {
       header: '#',
       accessor: (_row: School) => {
-        const index = schools.findIndex((s) => s.id === _row.id);
+        if (!_row || !Array.isArray(schools) || !pagination) return '-';
+        const index = schools.findIndex((s) => s?.id === _row?.id);
         return (pagination.page - 1) * pagination.limit + index + 1;
       },
     },
     {
       header: 'schools.schoolName',
-      accessor: (row: School) => row.name,
+      accessor: (row: School) => row?.name || '-',
       headerClassName: 'min-w-[150px]',
     },
     {
       header: 'schools.educationSystem',
       accessor: (row: School) => {
-        const academicSystemName =
-          row?.schoolStagesDto && row.schoolStagesDto.length > 0
-            ? currentLang === 'ar'
-              ? row.schoolStagesDto[0]?.nameAr || '-'
-              : row.schoolStagesDto[0]?.nameEn || '-'
-            : '-';
-        return academicSystemName;
+        if (row?.academicSystemId) {
+          return getAcademicSystemName(row.academicSystemId);
+        }
+        return '-';
       },
       headerClassName: 'min-w-[150px]',
     },
@@ -122,9 +130,10 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
     {
       header: 'schools.country',
       accessor: (row: School) => {
+        if (!row) return '-';
         // Get country name from school branches
         const countryId =
-          row?.schoolBranches && row.schoolBranches.length > 0
+          row?.schoolBranches && Array.isArray(row.schoolBranches) && row.schoolBranches.length > 0
             ? row.schoolBranches[0]?.lkCountryId
             : null;
         return countryId ? getCountryName(countryId) : '-';
@@ -134,8 +143,9 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
     {
       header: 'schools.region',
       accessor: (row: School) => {
+        if (!row) return '-';
         const region =
-          row?.schoolBranches && row.schoolBranches.length > 0
+          row?.schoolBranches && Array.isArray(row.schoolBranches) && row.schoolBranches.length > 0
             ? row.schoolBranches[0]?.region || '-'
             : '-';
         return region;
@@ -145,8 +155,9 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
     {
       header: 'schools.district',
       accessor: (row: School) => {
+        if (!row) return '-';
         const neighborhood =
-          row?.schoolBranches && row.schoolBranches.length > 0
+          row?.schoolBranches && Array.isArray(row.schoolBranches) && row.schoolBranches.length > 0
             ? row.schoolBranches[0]?.neighborhood || '-'
             : '-';
         return neighborhood;
@@ -168,40 +179,46 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
     },
     {
       header: 'schools.contactMethods',
-      accessor: (row: School) => (
-        <div className="flex items-center justify-center gap-3">
-          {row?.email && (
-            <a href={`mailto:${row.email}`} className="cursor-pointer">
-              <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
-            </a>
-          )}
-          {row?.phoneNumber && (
-            <a href={`tel:${row.phoneNumber}`} className="cursor-pointer">
-              <img src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
-            </a>
-          )}
-        </div>
-      ),
+      accessor: (row: School) => {
+        if (!row) return null;
+        return (
+          <div className="flex items-center justify-center gap-3">
+            {row?.email && (
+              <a href={`mailto:${row.email}`} className="cursor-pointer">
+                <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
+              </a>
+            )}
+            {row?.phoneNumber && (
+              <a href={`tel:${row.phoneNumber}`} className="cursor-pointer">
+                <img src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
+              </a>
+            )}
+          </div>
+        );
+      },
       headerClassName: 'min-w-[100px]',
     },
     {
       header: 'common.actions',
-      accessor: (row: School) => (
-        <DropdownMenuSchoolsAction
-          id={row.id}
-          selectedTab={3}
-          onActionComplete={() => {
-            // Refresh the deleted schools list
-            dispatch(
-              fetchDeletedSchools({
-                page: pagination.page,
-                limit: pagination.limit,
-                filters,
-              })
-            );
-          }}
-        />
-      ),
+      accessor: (row: School) => {
+        if (!row || !row.id) return null;
+        return (
+          <DropdownMenuSchoolsAction
+            id={row.id}
+            selectedTab={3}
+            onActionComplete={() => {
+              // Refresh the deleted schools list
+              dispatch(
+                fetchDeletedSchools({
+                  page: pagination.page,
+                  limit: pagination.limit,
+                  filters,
+                })
+              );
+            }}
+          />
+        );
+      },
       headerClassName: 'min-w-[100px]',
     },
   ];
@@ -210,18 +227,18 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
     <div>
       {/* Table */}
       <div className="overflow-x-auto">
-        {schools.length === 0 ? (
+        {!Array.isArray(schools) || schools.length === 0 ? (
           <div className="py-10 text-center text-gray-500">{t('schools.noSchoolsFound')}</div>
         ) : (
-          <Table columns={columns} data={schools} keyExtractor={(row) => row.id} />
+          <Table columns={columns} data={schools} keyExtractor={(row) => row?.id || ''} />
         )}
       </div>
 
       {/* Pagination */}
-      {pagination.totalPages > 1 && (
+      {Array.isArray(schools) && schools.length > 0 && pagination && (
         <Pagination
-          currentPage={pagination.page}
-          totalPages={pagination.totalPages}
+          currentPage={pagination.page || 1}
+          totalPages={pagination.totalPages || 0}
           to={(pagination.page - 1) * pagination.limit + schools.length}
           from={(pagination.page - 1) * pagination.limit + 1}
           onPageChange={handlePageChange}
