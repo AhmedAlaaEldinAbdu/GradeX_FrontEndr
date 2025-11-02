@@ -49,8 +49,6 @@ export async function getSchools(params?: SchoolQueryParams): Promise<SchoolList
       },
     }
   );
-
-  // Handle null or undefined response
   if (!response?.data?.value) {
     return {
       items: [],
