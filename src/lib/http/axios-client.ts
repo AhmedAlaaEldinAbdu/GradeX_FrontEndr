@@ -189,6 +189,10 @@ baseAxiosClient.interceptors.response.use(
 
           if ('value' in response.data) {
             const value = response.data.value as Record<string, unknown>;
+            if (!value) {
+              responseInfo.hasValue = false;
+              return;
+            }
             responseInfo.hasValue = true;
             responseInfo.valueKeys = Object.keys(value);
 
