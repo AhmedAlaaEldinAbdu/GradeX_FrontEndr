@@ -8,7 +8,11 @@ import { useTranslation } from 'react-i18next';
 import EditRequestPopup from '../popups/EditRequestPopup';
 import RejectSchoolPopup from '../popups/RejectSchoolPopup';
 import { ActionsDropdown } from '@/shared/components/components';
-import { acceptSchoolApplication, rejectSchoolApplication } from '@gradex/redux/features/schools';
+import {
+  acceptSchoolApplication,
+  rejectSchoolApplication,
+  sendSchoolEditRequest,
+} from '@gradex/redux/features/schools';
 import { useToast } from '@/shared/context/ToastContext';
 
 interface ActionProps {
@@ -29,9 +33,40 @@ export default function DropdownMenuSchoolsAction({
   const [showRejectPopup, setShowRejectPopup] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleConfirmEditRequest = (message: string) => {
-    console.log('Edit request message:', message);
-    setShowEditRequestPopup(false);
+  const handleConfirmEditRequest = async (message: string) => {
+    if (!message.trim()) {
+      showToast({
+        message: t('schools.editRequestMessageRequired'),
+        type: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await dispatch(sendSchoolEditRequest({ id, message })).unwrap();
+      setShowEditRequestPopup(false);
+
+      showToast({
+        message: t('schools.editRequestSentSuccessfully'),
+        type: 'success',
+        duration: 3000,
+      });
+
+      if (onActionComplete) {
+        onActionComplete();
+      }
+    } catch (error) {
+      console.error('Failed to send edit request:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleAcceptSchool = async () => {

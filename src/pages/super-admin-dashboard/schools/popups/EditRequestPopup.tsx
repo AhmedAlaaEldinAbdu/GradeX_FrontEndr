@@ -30,13 +30,15 @@ export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPop
   };
 
   const handleSubmit = () => {
+    if (!message.trim()) {
+      showToast({
+        message: t('schools.editRequestMessageRequired'),
+        type: 'error',
+        duration: 3000,
+      });
+      return;
+    }
     onConfirm(message);
-    showToast({
-      message: 'schools.editRequestSentSuccessfully',
-      type: 'success',
-      duration: 3000,
-      position: 'top-left',
-    });
   };
 
   return (
