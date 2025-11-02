@@ -58,15 +58,25 @@ export const fetchSchools = createAsyncThunk<FetchSchoolsResponse, FetchSchoolsP
   'schools/fetchSchools',
   async (payload, { rejectWithValue }) => {
     try {
-      const params: Partial<SchoolQueryParams> = payload
-        ? {
-            pageIndex: payload.page,
-            pageSize: payload.limit,
-            ...payload.filters,
-            sortBy: payload.sortBy as SchoolQueryParams['sortBy'],
-            sortOrder: payload.sortOrder,
-          }
-        : {};
+      const params: Partial<SchoolQueryParams> = {};
+
+      if (payload) {
+        if (payload.page) params.pageIndex = payload.page;
+        if (payload.limit) params.pageSize = payload.limit;
+        if (payload.sortBy) params.sortBy = payload.sortBy as SchoolQueryParams['sortBy'];
+        if (payload.sortOrder) params.sortOrder = payload.sortOrder;
+
+        if (payload.filters) {
+          if (payload.filters.searchTerm) params.searchTerm = payload.filters.searchTerm;
+          if (payload.filters.academicSystemId)
+            params.academicSystemId = payload.filters.academicSystemId;
+          if (payload.filters.lKCountryId) params.lKCountryId = payload.filters.lKCountryId;
+          if (payload.filters.region) params.region = payload.filters.region;
+          if (payload.filters.neighborhood) params.neighborhood = payload.filters.neighborhood;
+          if (payload.filters.schoolStatus !== undefined)
+            params.schoolStatus = payload.filters.schoolStatus;
+        }
+      }
 
       const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
 
@@ -108,10 +118,19 @@ export const fetchRegisteredSchools = createAsyncThunk<
       pageIndex: payload?.page || 1,
       pageSize: payload?.limit || 10,
       schoolStatus: SchoolStatusEnum.ACTIVE,
-      ...payload?.filters,
-      sortBy: payload?.sortBy as SchoolQueryParams['sortBy'],
-      sortOrder: payload?.sortOrder,
     };
+
+    if (payload?.filters) {
+      if (payload.filters.searchTerm) params.searchTerm = payload.filters.searchTerm;
+      if (payload.filters.academicSystemId)
+        params.academicSystemId = payload.filters.academicSystemId;
+      if (payload.filters.lKCountryId) params.lKCountryId = payload.filters.lKCountryId;
+      if (payload.filters.region) params.region = payload.filters.region;
+      if (payload.filters.neighborhood) params.neighborhood = payload.filters.neighborhood;
+    }
+
+    if (payload?.sortBy) params.sortBy = payload.sortBy as SchoolQueryParams['sortBy'];
+    if (payload?.sortOrder) params.sortOrder = payload.sortOrder;
 
     const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
 
@@ -147,14 +166,24 @@ export const fetchPendingSchools = createAsyncThunk<
   FetchSchoolsPayload | void
 >('schools/fetchPendingSchools', async (payload, { rejectWithValue }) => {
   try {
+    // Build params object with only defined values to avoid null/undefined issues
     const params: Partial<SchoolQueryParams> = {
       pageIndex: payload?.page || 1,
       pageSize: payload?.limit || 10,
       schoolStatus: SchoolStatusEnum.PENDING,
-      ...payload?.filters,
-      sortBy: payload?.sortBy as SchoolQueryParams['sortBy'],
-      sortOrder: payload?.sortOrder,
     };
+
+    if (payload?.filters) {
+      if (payload.filters.searchTerm) params.searchTerm = payload.filters.searchTerm;
+      if (payload.filters.academicSystemId)
+        params.academicSystemId = payload.filters.academicSystemId;
+      if (payload.filters.lKCountryId) params.lKCountryId = payload.filters.lKCountryId;
+      if (payload.filters.region) params.region = payload.filters.region;
+      if (payload.filters.neighborhood) params.neighborhood = payload.filters.neighborhood;
+    }
+
+    if (payload?.sortBy) params.sortBy = payload.sortBy as SchoolQueryParams['sortBy'];
+    if (payload?.sortOrder) params.sortOrder = payload.sortOrder;
 
     const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
 
@@ -194,10 +223,19 @@ export const fetchDeletedSchools = createAsyncThunk<
       pageIndex: payload?.page || 1,
       pageSize: payload?.limit || 10,
       schoolStatus: [SchoolStatusEnum.REJECTED, SchoolStatusEnum.DELETED],
-      ...payload?.filters,
-      sortBy: payload?.sortBy as SchoolQueryParams['sortBy'],
-      sortOrder: payload?.sortOrder,
     };
+
+    if (payload?.filters) {
+      if (payload.filters.searchTerm) params.searchTerm = payload.filters.searchTerm;
+      if (payload.filters.academicSystemId)
+        params.academicSystemId = payload.filters.academicSystemId;
+      if (payload.filters.lKCountryId) params.lKCountryId = payload.filters.lKCountryId;
+      if (payload.filters.region) params.region = payload.filters.region;
+      if (payload.filters.neighborhood) params.neighborhood = payload.filters.neighborhood;
+    }
+
+    if (payload?.sortBy) params.sortBy = payload.sortBy as SchoolQueryParams['sortBy'];
+    if (payload?.sortOrder) params.sortOrder = payload.sortOrder;
 
     const response = await schoolsApiService.getSchools(params as SchoolQueryParams);
 
