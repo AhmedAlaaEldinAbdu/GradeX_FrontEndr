@@ -2,7 +2,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ArrowRightIcon from '@gradex/assets/icons/ArrowRight.svg';
 import ArrowLeftIcon from '@gradex/assets/icons/ArrowLeft.svg';
-import SettingsIcon from '@gradex/assets/icons/Settings.svg';
 
 interface PaginationProps {
   currentPage: number;
@@ -30,8 +29,6 @@ const Pagination: React.FC<PaginationProps> = ({
       }
       return pages;
     }
-    const firstPage = 1;
-    const lastPage = totalPages;
 
     if (currentPage <= 2) {
       pages.push(1, 2, '...', totalPages - 1, totalPages);
