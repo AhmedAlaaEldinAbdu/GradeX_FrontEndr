@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import Badge from '@gradex/shared/components/Badge';
 import Pagination from '@gradex/shared/components/Pagination';
 import DropdownMenuSchoolsAction from './DropdownMenuSchoolsAction';
-// import PhoneIcon from '@gradex/assets/icons/Phone.svg';
-// import EmailIcon from '@gradex/assets/icons/Email.svg';
+import PhoneIcon from '@gradex/assets/icons/Phone.svg';
+import EmailIcon from '@gradex/assets/icons/Email.svg';
 import Loading from '@gradex/shared/components/Loading';
 import {
   fetchRegisteredSchools,
@@ -183,37 +183,37 @@ export default function RegisteredSchoolsTab({ filters }: RegisteredSchoolsTabPr
       },
       headerClassName: 'min-w-[100px]',
     },
-    // {
-    //   header: 'schools.addedDate',
-    //   accessor: (row: School) => {
-    //     if (!row?.foundingDate) return '-';
-    //     try {
-    //       const date = new Date(row.foundingDate);
-    //       return date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
-    //     } catch {
-    //       return '-';
-    //     }
-    //   },
-    //   headerClassName: 'min-w-[100px]',
-    // },
-    // {
-    //   header: 'schools.contactMethods',
-    //   accessor: (row: School) => (
-    //     <div className="flex items-center justify-center gap-3">
-    //       {row?.email && (
-    //         <a href={`mailto:${row.email}`} className="cursor-pointer">
-    //           <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
-    //         </a>
-    //       )}
-    //       {row?.phoneNumber && (
-    //         <a href={`tel:${row.phoneNumber}`} className="cursor-pointer">
-    //           <img src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
-    //         </a>
-    //       )}
-    //     </div>
-    //   ),
-    //   headerClassName: 'min-w-[100px]',
-    // },
+    {
+      header: 'schools.addedDate',
+      accessor: (row: School) => {
+        if (!row?.foundingDate) return '-';
+        try {
+          const date = new Date(row.foundingDate);
+          return date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+        } catch {
+          return '-';
+        }
+      },
+      headerClassName: 'min-w-[100px]',
+    },
+    {
+      header: 'schools.contactMethods',
+      accessor: (row: School) => (
+        <div className="flex items-center justify-center gap-3">
+          {row?.email && (
+            <a href={`mailto:${row.email}`} className="cursor-pointer">
+              <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
+            </a>
+          )}
+          {row?.phoneNumber && (
+            <a href={`tel:${row.phoneNumber}`} className="cursor-pointer">
+              <img src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
+            </a>
+          )}
+        </div>
+      ),
+      headerClassName: 'min-w-[100px]',
+    },
     {
       header: 'common.actions',
       accessor: (row: School) => {
