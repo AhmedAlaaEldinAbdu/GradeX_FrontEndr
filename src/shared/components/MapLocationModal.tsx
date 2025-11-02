@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import Modal from './Modal';
 import Button from './Button';
+import { logger } from '@/lib/utils/logger';
 
 interface MapLocationModalProps {
   isOpen: boolean;
@@ -44,7 +45,7 @@ const MapLocationModal: React.FC<MapLocationModalProps> = ({
           setAddress(data.results[0].formatted_address);
         }
       } catch (error) {
-        console.error('Error reverse geocoding:', error);
+        logger.error('Error reverse geocoding', error);
         setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
       } finally {
         setIsLoadingAddress(false);
@@ -84,7 +85,7 @@ const MapLocationModal: React.FC<MapLocationModalProps> = ({
           reverseGeocode(lat, lng);
         },
         (error) => {
-          console.error('Error getting location:', error);
+          logger.error('Error getting location', error);
           alert('تعذر الحصول على موقعك الحالي');
         }
       );
