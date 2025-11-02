@@ -56,8 +56,7 @@ function copyToClipboardFallback(text: string): boolean {
     const successful = document.execCommand('copy');
     document.body.removeChild(textArea);
     return successful;
-  } catch (err) {
-    console.error('Fallback: Oops, unable to copy', err);
+  } catch {
     document.body.removeChild(textArea);
     return false;
   }
