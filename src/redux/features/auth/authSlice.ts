@@ -11,6 +11,7 @@ import {
 import { authApiService } from '@/services/api/auth/auth.service';
 import { getErrorMessage } from '@/lib/http';
 import type { LoginRequest } from '@/services/api/types/auth.types';
+import { logger } from '@/lib/utils/logger';
 
 const initialState: AuthState = {
   user: null,
@@ -28,14 +29,14 @@ export const restoreSession = createAsyncThunk('auth/restoreSession', async () =
   const token = tokenManager.getToken();
   const userData = tokenManager.getUserData();
 
-  console.log('🔄 Attempting to restore session:', {
+  logger.info('Attempting to restore session', {
     hasToken: !!token,
     hasUserData: !!userData,
     isExpired: token ? tokenManager.isTokenExpired() : 'no token',
   });
 
   if (!token || !userData || tokenManager.isTokenExpired()) {
-    console.log('❌ Session restore failed - clearing tokens');
+    logger.warn('Session restore failed - clearing tokens');
     tokenManager.clearTokens();
     throw new Error('No valid session found');
   }
@@ -50,7 +51,7 @@ export const restoreSession = createAsyncThunk('auth/restoreSession', async () =
     isAuthenticated: true,
   };
 
-  console.log('✅ Session restored successfully:', user);
+  logger.success('Session restored successfully', user);
 
   return {
     user,
@@ -87,9 +88,9 @@ export const login = createAsyncThunk(
       const refreshToken = generateMockRefreshToken();
       tokenManager.setRefreshToken(refreshToken, rememberMe);
 
-      console.log('✅ Login successful - Token stored:', {
+      logger.success('Login successful - Token stored', {
         rememberMe,
-        token: response.token.substring(0, 50) + '...',
+        tokenPreview: response.token.substring(0, 30) + '...',
         storage: rememberMe ? 'localStorage' : 'sessionStorage',
       });
 
@@ -169,7 +170,7 @@ const authSlice = createSlice({
       .addCase(restoreSession.pending, (state) => {
         state.isLoading = true;
         state.error = null;
-        console.log('⏳ Restore session pending...');
+        logger.debug('Restore session pending...');
       })
       .addCase(restoreSession.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -178,7 +179,7 @@ const authSlice = createSlice({
         state.user = action.payload.user as User;
         state.token = action.payload.token;
         state.error = null;
-        console.log('✅ Restore session fulfilled - User authenticated:', action.payload.user);
+        logger.success('Restore session fulfilled - User authenticated', action.payload.user);
       })
       .addCase(restoreSession.rejected, (state) => {
         state.isLoading = false;
@@ -187,7 +188,7 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         state.error = null;
-        console.log('❌ Restore session rejected - No valid session');
+        logger.info('Restore session rejected - No valid session');
       });
 
     // Login
@@ -195,7 +196,7 @@ const authSlice = createSlice({
       .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
-        console.log('⏳ Login pending...');
+        logger.debug('Login pending...');
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -204,7 +205,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
-        console.log('✅ Login fulfilled - Redux state updated:', {
+        logger.success('Login fulfilled - Redux state updated', {
           isAuthenticated: state.isAuthenticated,
           isInitialized: state.isInitialized,
           user: state.user,
@@ -215,7 +216,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isInitialized = true; // Mark as initialized even on failure
         state.error = action.error.message || 'Login failed';
-        console.log('❌ Login rejected:', action.error.message);
+        logger.error('Login rejected', action.error.message);
       });
 
     // Logout
