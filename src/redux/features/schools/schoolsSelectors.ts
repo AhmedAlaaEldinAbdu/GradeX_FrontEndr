@@ -10,6 +10,7 @@ import type {
   School,
   SchoolDetail,
   SchoolStatisticsResponse,
+  SchoolStatusEnum,
 } from '@/services/api/types/school.types';
 
 // ============================================================================
@@ -248,19 +249,19 @@ export const selectSchoolById = (id: string) =>
 /**
  * Select schools by status
  */
-export const selectSchoolsByStatus = (status: string) =>
+export const selectSchoolsByStatus = (status: SchoolStatusEnum) =>
   createSelector([selectSchools], (schools) =>
-    schools.filter((school) => school.status === status)
+    schools.filter((school) => school.schoolStatus === status)
   );
 
 /**
  * Select schools count by status
  */
 export const selectSchoolsCountByStatus = createSelector([selectSchools], (schools) => {
-  const counts: Record<string, number> = {};
+  const counts: Record<number, number> = {};
 
   schools.forEach((school) => {
-    counts[school.status] = (counts[school.status] || 0) + 1;
+    counts[school.schoolStatus] = (counts[school.schoolStatus] || 0) + 1;
   });
 
   return counts;
@@ -321,30 +322,49 @@ export const selectFilteredSchools = createSelector(
     let filtered = [...schools];
 
     // Apply search filter
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(
-        (school) =>
-          school.name.toLowerCase().includes(searchLower) ||
-          school.country.toLowerCase().includes(searchLower) ||
-          school.academicSystem.toLowerCase().includes(searchLower)
-      );
+    if (filters.searchTerm) {
+      const searchLower = filters.searchTerm.toLowerCase();
+      filtered = filtered.filter((school) => {
+        const nameMatch = school.name.toLowerCase().includes(searchLower);
+        const emailMatch = school.email.toLowerCase().includes(searchLower);
+        const academicSystemMatch = school.academicSystemId.toLowerCase().includes(searchLower);
+
+        return nameMatch || emailMatch || academicSystemMatch;
+      });
     }
 
     // Apply status filter
-    if (filters.status) {
-      const statusArray = Array.isArray(filters.status) ? filters.status : [filters.status];
-      filtered = filtered.filter((school) => statusArray.includes(school.status));
+    if (filters.schoolStatus) {
+      const statusArray = Array.isArray(filters.schoolStatus)
+        ? filters.schoolStatus
+        : [filters.schoolStatus];
+      filtered = filtered.filter((school) => statusArray.includes(school.schoolStatus));
     }
 
     // Apply country filter
-    if (filters.country) {
-      filtered = filtered.filter((school) => school.country === filters.country);
+    if (filters.lKCountryId) {
+      filtered = filtered.filter((school) =>
+        school.schoolBranches.some((branch) => branch.lkCountryId === filters.lKCountryId)
+      );
+    }
+
+    // Apply region filter
+    if (filters.region) {
+      filtered = filtered.filter((school) =>
+        school.schoolBranches.some((branch) => branch.region === filters.region)
+      );
+    }
+
+    // Apply neighborhood filter
+    if (filters.neighborhood) {
+      filtered = filtered.filter((school) =>
+        school.schoolBranches.some((branch) => branch.neighborhood === filters.neighborhood)
+      );
     }
 
     // Apply academic system filter
-    if (filters.academicSystem) {
-      filtered = filtered.filter((school) => school.academicSystem === filters.academicSystem);
+    if (filters.academicSystemId) {
+      filtered = filtered.filter((school) => school.academicSystemId === filters.academicSystemId);
     }
 
     return filtered;
