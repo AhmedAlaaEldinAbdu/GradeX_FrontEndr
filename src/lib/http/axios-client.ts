@@ -188,24 +188,55 @@ baseAxiosClient.interceptors.response.use(
           responseInfo.status = response.data.status;
 
           if ('value' in response.data) {
-            const value = response.data.value as Record<string, unknown>;
+            const value = response.data.value;
+
+            // Check if value is null or undefined
             if (!value) {
               responseInfo.hasValue = false;
-              return;
+              responseInfo.valueType = 'null';
             }
-            responseInfo.hasValue = true;
-            responseInfo.valueKeys = Object.keys(value);
+            // Check if value is an object (not string, not array, not null)
+            else if (typeof value === 'object' && !Array.isArray(value)) {
+              responseInfo.hasValue = true;
+              responseInfo.valueType = 'object';
+              responseInfo.valueKeys = Object.keys(value);
 
-            if ('items' in value && Array.isArray(value.items)) {
-              responseInfo.itemsCount = value.items.length;
+              // Safely check for 'items' property
+              if ('items' in value && Array.isArray((value as Record<string, unknown>).items)) {
+                responseInfo.itemsCount = (
+                  (value as Record<string, unknown>).items as unknown[]
+                ).length;
+              }
+              // Safely check for 'totalItems' property
+              if ('totalItems' in value) {
+                responseInfo.totalItems = (value as Record<string, unknown>).totalItems;
+              }
             }
-            if ('totalItems' in value) {
-              responseInfo.totalItems = value.totalItems;
+            // Check if value is a string
+            else if (typeof value === 'string') {
+              responseInfo.hasValue = true;
+              responseInfo.valueType = 'string';
+              responseInfo.valueContent = value;
+            }
+            // Check if value is an array
+            else if (Array.isArray(value)) {
+              responseInfo.hasValue = true;
+              responseInfo.valueType = 'array';
+              responseInfo.itemsCount = value.length;
+            }
+            // Handle other primitive types
+            else {
+              responseInfo.hasValue = true;
+              responseInfo.valueType = typeof value;
+              responseInfo.valueContent = value;
             }
           }
 
           if (response.data.message) {
             responseInfo.message = response.data.message;
+          }
+          if (response.data.successMessage) {
+            responseInfo.successMessage = response.data.successMessage;
           }
         }
 
