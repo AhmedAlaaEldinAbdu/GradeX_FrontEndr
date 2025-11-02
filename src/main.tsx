@@ -5,10 +5,14 @@ import { store } from './redux/store/store';
 import './index.css';
 import App from './App.tsx';
 
+const isDevelopment = import.meta.env.DEV;
+
+const rootElement = (
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </StrictMode>
+  isDevelopment ? <StrictMode>{rootElement}</StrictMode> : rootElement
 );
