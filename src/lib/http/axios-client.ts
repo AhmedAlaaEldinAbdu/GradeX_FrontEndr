@@ -5,6 +5,7 @@
 
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } from 'axios';
 import type { ApiResponse } from './types';
+import { logger } from '../utils/logger';
 
 // ============================================================================
 // Configuration
@@ -16,10 +17,29 @@ const API_CONFIG = {
 } as const;
 
 // ============================================================================
+// Request Deduplication System (DEV environment only)
+// ============================================================================
+
+// Enable deduplication only in DEV environment
+const ENABLE_DEDUPLICATION = import.meta.env.DEV;
+
+// Cache to track in-flight GET requests and prevent duplicates
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+/**
+ * Generate unique key for request deduplication
+ */
+function generateRequestKey(method: string, url: string, params?: unknown, data?: unknown): string {
+  const paramsStr = params ? JSON.stringify(params) : '';
+  const dataStr = data ? JSON.stringify(data) : '';
+  return `${method.toUpperCase()}-${url}-${paramsStr}-${dataStr}`;
+}
+
+// ============================================================================
 // Create Axios Instance
 // ============================================================================
 
-export const axiosClient: AxiosInstance = axios.create({
+const baseAxiosClient: AxiosInstance = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   timeout: API_CONFIG.TIMEOUT,
   headers: {
@@ -29,23 +49,75 @@ export const axiosClient: AxiosInstance = axios.create({
 });
 
 // ============================================================================
+// Axios Client with Request Deduplication
+// ============================================================================
+
+/**
+ * Wrapper for axios client that implements request deduplication for GET requests
+ * Deduplication is only active in DEV environment
+ */
+export const axiosClient = new Proxy(baseAxiosClient, {
+  get(target, prop: string | symbol) {
+    const original = target[prop as keyof typeof target];
+
+    // Only intercept 'get' method for deduplication (and only in DEV)
+    if (prop === 'get' && typeof original === 'function' && !ENABLE_DEDUPLICATION) {
+      return function (url: string, config?: AxiosRequestConfig) {
+        const requestKey = generateRequestKey('GET', url, config?.params, undefined);
+
+        // Check if identical request is in flight
+        const pendingRequest = pendingRequests.get(requestKey);
+        if (pendingRequest) {
+          logger.custom('🔄', `Deduplicating GET request: ${url}`, {
+            params: config?.params,
+            cacheKey: requestKey,
+          });
+          return pendingRequest;
+        }
+
+        // Make the request and cache the promise
+        const requestPromise = (
+          original as (url: string, config?: AxiosRequestConfig) => Promise<unknown>
+        )
+          .apply(target, [url, config])
+          .finally(() => {
+            // Remove from cache when completed
+            pendingRequests.delete(requestKey);
+            logger.debug(`Cache cleared for: ${url}`);
+          });
+
+        pendingRequests.set(requestKey, requestPromise);
+        return requestPromise;
+      };
+    }
+
+    // Return original property/method for everything else
+    return typeof original === 'function' ? original.bind(target) : original;
+  },
+}) as AxiosInstance;
+
+// ============================================================================
 // Request Interceptor
 // ============================================================================
 
-axiosClient.interceptors.request.use(
+baseAxiosClient.interceptors.request.use(
   (config) => {
+    // Add request start time for performance tracking
+    (config as AxiosRequestConfig & { metadata?: { startTime: number } }).metadata = {
+      startTime: Date.now(),
+    };
+
     const token: string | null =
       localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔐 Token attached to request:', {
-        url: config.url,
+      logger.custom('🔐', `Auth token attached to request: ${config.url}`, {
         hasToken: true,
-        tokenPreview: token.substring(0, 30) + '...',
+        tokenPreview: `${token.substring(0, 20)}...`,
       });
     } else {
-      console.warn('⚠️ No token found for request:', config.url);
+      logger.warn(`No auth token found for request: ${config.url}`);
     }
 
     // Add language header
@@ -55,22 +127,34 @@ axiosClient.interceptors.request.use(
     // Add custom headers
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
 
-    // Log request in development
-    if (import.meta.env.DEV) {
-      console.log('🚀 Request:', {
-        method: config.method?.toUpperCase(),
-        url: config.url,
-        baseURL: config.baseURL,
-        hasAuth: !!config.headers.Authorization,
-        data: config.data,
-        params: config.params,
-      });
-    }
+    // Log outgoing request details
+    logger.group(`🚀 Outgoing Request: ${config.method?.toUpperCase()} ${config.url}`, () => {
+      logger.info('Base URL', config.baseURL);
+      logger.info('Full URL', `${config.baseURL}${config.url}`);
+      logger.info('Has Authorization', !!config.headers.Authorization);
+      logger.info('Language', config.headers['Accept-Language']);
+
+      if (config.params) {
+        logger.info('Query Params', config.params);
+      }
+
+      if (config.data) {
+        logger.info('Request Body', config.data);
+      }
+
+      if (config.headers) {
+        const sanitizedHeaders = { ...config.headers };
+        if (sanitizedHeaders.Authorization) {
+          sanitizedHeaders.Authorization = 'Bearer [REDACTED]';
+        }
+        logger.debug('Headers', sanitizedHeaders);
+      }
+    });
 
     return config;
   },
   (error) => {
-    console.error('❌ Request Error:', error);
+    logger.error('Request interceptor error', error);
     return Promise.reject(error);
   }
 );
@@ -79,31 +163,79 @@ axiosClient.interceptors.request.use(
 // Response Interceptor
 // ============================================================================
 
-axiosClient.interceptors.response.use(
+baseAxiosClient.interceptors.response.use(
   (response) => {
-    // Log response in development
-    if (import.meta.env.DEV) {
-      console.log('📥 Response:', {
-        status: response.status,
-        statusText: response.statusText,
-        data: response.data,
-        url: response.config.url,
-      });
-    }
+    // Calculate response time if available
+    const config = response.config as AxiosRequestConfig & { metadata?: { startTime: number } };
+    const duration = config.metadata?.startTime
+      ? Date.now() - config.metadata.startTime
+      : undefined;
+
+    // Log successful response
+    logger.group(`📥 Response: ${response.status} ${response.config.url}`, () => {
+      logger.success('Status', `${response.status} ${response.statusText}`);
+
+      if (duration) {
+        logger.performance('Request Duration', duration);
+      }
+
+      if (response.data) {
+        // Log response structure without sensitive data
+        const responseInfo: Record<string, unknown> = {};
+
+        if (typeof response.data === 'object' && response.data !== null) {
+          responseInfo.isSuccess = response.data.isSuccess;
+          responseInfo.status = response.data.status;
+
+          if ('value' in response.data) {
+            const value = response.data.value as Record<string, unknown>;
+            responseInfo.hasValue = true;
+            responseInfo.valueKeys = Object.keys(value);
+
+            if ('items' in value && Array.isArray(value.items)) {
+              responseInfo.itemsCount = value.items.length;
+            }
+            if ('totalItems' in value) {
+              responseInfo.totalItems = value.totalItems;
+            }
+          }
+
+          if (response.data.message) {
+            responseInfo.message = response.data.message;
+          }
+        }
+
+        logger.info('Response Data', responseInfo);
+        logger.debug('Full Response', response.data);
+      }
+    });
 
     return response;
   },
   async (error: AxiosError) => {
-    // Log error in development
-    if (import.meta.env.DEV) {
-      console.error('❌ Response Error:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        url: error.config?.url,
-      });
-    }
+    // Log error response with details
+    logger.group(`❌ Response Error: ${error.config?.url || 'Unknown URL'}`, () => {
+      logger.error('Error Message', error.message);
+
+      if (error.response) {
+        logger.error('Status Code', error.response.status);
+        logger.error('Status Text', error.response.statusText);
+        logger.error('Response Data', error.response.data);
+      } else if (error.request) {
+        logger.error('Network Error', 'No response received from server');
+        logger.debug('Request Details', error.request);
+      } else {
+        logger.error('Error Details', error.message);
+      }
+
+      if (error.config) {
+        logger.debug('Failed Request Config', {
+          method: error.config.method,
+          url: error.config.url,
+          params: error.config.params,
+        });
+      }
+    });
 
     // Handle specific error cases
     if (error.response) {
@@ -111,6 +243,10 @@ axiosClient.interceptors.response.use(
 
       switch (status) {
         case 401: {
+          logger.warn('Unauthorized request - Attempting token refresh', {
+            url: error.config?.url,
+          });
+
           // Unauthorized - Try to refresh token
           const originalRequest = error.config;
 
@@ -119,6 +255,8 @@ axiosClient.interceptors.response.use(
               const refreshToken = localStorage.getItem('refreshToken');
 
               if (refreshToken) {
+                logger.info('Attempting to refresh auth token...');
+
                 // Attempt token refresh
                 const response = await axios.post(
                   `${API_CONFIG.BASE_URL}/auth/refresh`,
@@ -133,6 +271,8 @@ axiosClient.interceptors.response.use(
                 const { token } = response.data.data;
                 localStorage.setItem('authToken', token);
 
+                logger.success('Token refreshed successfully. Retrying original request...');
+
                 // Retry original request with new token
                 originalRequest.headers.Authorization = `Bearer ${token}`;
                 originalRequest.headers['X-Retry'] = 'true';
@@ -140,6 +280,8 @@ axiosClient.interceptors.response.use(
                 return axiosClient(originalRequest);
               }
             } catch (refreshError) {
+              logger.error('Token refresh failed. Redirecting to login...', refreshError);
+
               // Refresh failed - clear tokens and redirect to login
               localStorage.removeItem('authToken');
               localStorage.removeItem('refreshToken');
@@ -149,6 +291,10 @@ axiosClient.interceptors.response.use(
               return Promise.reject(refreshError);
             }
           }
+
+          logger.warn(
+            'No refresh token available or retry already attempted. Redirecting to login...'
+          );
 
           // No refresh token or retry already attempted
           localStorage.removeItem('authToken');
@@ -160,32 +306,53 @@ axiosClient.interceptors.response.use(
         }
 
         case 403:
-          console.error('Access forbidden - Insufficient permissions');
+          logger.error('Access Forbidden - Insufficient permissions', {
+            url: error.config?.url,
+            data: error.response.data,
+          });
           break;
 
         case 404:
-          console.error('Resource not found');
+          logger.error('Resource Not Found', {
+            url: error.config?.url,
+            data: error.response.data,
+          });
           break;
 
         case 422:
-          console.error('Validation error:', error.response.data);
+          logger.error('Validation Error', {
+            url: error.config?.url,
+            validationErrors: error.response.data,
+          });
           break;
 
         case 500:
         case 502:
         case 503:
-          console.error('Server error - Please try again later');
+          logger.error('Server Error - Please try again later', {
+            status,
+            url: error.config?.url,
+            data: error.response.data,
+          });
           break;
 
         default:
-          console.error('An error occurred:', error.message);
+          logger.error(`HTTP Error ${status}`, {
+            message: error.message,
+            url: error.config?.url,
+            data: error.response.data,
+          });
       }
     } else if (error.request) {
-      // Request made but no response received
-      console.error('Network error - No response from server');
+      logger.error('Network Error - No response from server', {
+        url: error.config?.url,
+        message: 'The request was made but no response was received',
+      });
     } else {
-      // Something else happened
-      console.error('Error:', error.message);
+      logger.error('Request Setup Error', {
+        message: error.message,
+        url: error.config?.url,
+      });
     }
 
     return Promise.reject(error);
