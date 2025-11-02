@@ -198,14 +198,22 @@ export async function rejectSchool(
  */
 export async function addSchoolUpdateRequest(
   id: string,
-  data: UpdateSchoolRequest
-): Promise<SchoolDetail> {
-  const response: AxiosResponse<ApiSuccessResponse<SchoolDetailResponse>> = await axiosClient.post(
+  message: string
+): Promise<{ success: boolean; message: string }> {
+  const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.post(
     SchoolsEndpoints.addSchoolRequest(id),
-    data
+    JSON.stringify(message),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
   );
 
-  return response.data.data.data;
+  return {
+    success: response.data.isSuccess,
+    message: response.data.value || 'UPDATE_REQUEST_SENT_SUCCESSFULLY',
+  };
 }
 
 /**
