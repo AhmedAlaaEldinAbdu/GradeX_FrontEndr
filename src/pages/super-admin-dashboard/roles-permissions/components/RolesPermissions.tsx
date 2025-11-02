@@ -21,7 +21,7 @@ interface Role {
 
 export default function RolesPermissions() {
   const { t } = useTranslation();
-  const [hasRoles, setHasRoles] = useState(true);
+  const [hasRoles] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   const [showPopupMessage, setShowPopupMessage] = useState(false);

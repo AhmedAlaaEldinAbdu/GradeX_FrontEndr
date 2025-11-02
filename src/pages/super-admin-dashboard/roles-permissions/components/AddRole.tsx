@@ -1,6 +1,6 @@
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
 import { t } from 'i18next';
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface Permission {
@@ -201,7 +201,6 @@ export default function AddRole() {
           ))}
         </div>
       </div>
-    
 
       <div className="mt-6 flex justify-end gap-3">
         <button
