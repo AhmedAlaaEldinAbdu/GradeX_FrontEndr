@@ -16,12 +16,9 @@ const ResetPasswordPage: React.FC = () => {
   const currentLang = i18n.language;
   const isRTL = currentLang === 'ar';
 
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0);
 
   //   const toggleLanguage = () => {
   //     const newLang = currentLang === 'ar' ? 'en' : 'ar';
@@ -38,7 +35,7 @@ const ResetPasswordPage: React.FC = () => {
     reValidateMode: 'onSubmit',
   });
 
-  const onSubmit = async (data: ChangePasswordProps) => {
+  const onSubmit = async () => {
     setIsLoading(true);
 
     // Simulate API call

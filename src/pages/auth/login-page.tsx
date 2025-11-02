@@ -11,6 +11,7 @@ import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import { useForm } from 'react-hook-form';
 import { LoginSchema, type LoginProps } from '@/validations/auth-validations';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { logger } from '@/lib/utils/logger';
 
 const LoginPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -45,7 +46,7 @@ const LoginPage: React.FC = () => {
     try {
       setLoginError(null);
 
-      console.log('📧 Attempting login with:', {
+      logger.info('Attempting login', {
         email: data.email,
         rememberMe: rememberMe,
       });
@@ -58,7 +59,7 @@ const LoginPage: React.FC = () => {
         })
       ).unwrap();
 
-      console.log('✅ Login successful, navigating to dashboard...');
+      logger.success('Login successful, navigating to dashboard...');
 
       navigate('/dashboard');
     } catch (error) {

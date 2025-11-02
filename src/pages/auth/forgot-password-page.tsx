@@ -11,8 +11,7 @@ import FormErrorMessage from '@/shared/components/FormErrorMessage';
 const ForgotPasswordPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [error] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const currentLang = i18n.language;

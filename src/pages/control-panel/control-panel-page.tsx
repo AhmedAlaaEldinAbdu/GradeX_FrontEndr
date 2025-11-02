@@ -1,4 +1,3 @@
-import React from 'react';
 import ControlPanel from './components/ControlPanel';
 import ControlPanelPopup from './popups/ControlPanelPopup';
 
