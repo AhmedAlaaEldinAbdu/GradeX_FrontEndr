@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils';
 import PhoneInput from '@gradex/shared/components/PhoneInput';
 import { t } from 'i18next';
 import { useState } from 'react';
@@ -49,6 +50,8 @@ export default function EditUser() {
   const [userEmail, setUserEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
+
+  logger.debug('permissionGroups: ', permissionGroups);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
