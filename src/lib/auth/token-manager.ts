@@ -3,6 +3,8 @@
  * Handles JWT token storage and retrieval with Remember Me support
  */
 
+import { logger } from '@/lib/utils/logger';
+
 const TOKEN_KEY = 'authToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 const USER_DATA_KEY = 'userData';
@@ -49,7 +51,7 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
     // Decode JWT payload
     const parts = token.split('.');
     if (parts.length !== 3) {
-      console.error('Invalid JWT token format');
+      logger.error('Invalid JWT token format');
       return null;
     }
 
@@ -96,11 +98,11 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       isAuthenticated: true,
     };
 
-    console.log('✅ Decoded user data from JWT:', userData);
+    logger.success('Decoded user data from JWT', userData);
 
     return userData;
   } catch (error) {
-    console.error('Error decoding JWT token:', error);
+    logger.error('Error decoding JWT token', error);
     return null;
   }
 };
@@ -124,11 +126,11 @@ export const tokenManager = {
     if (rememberMe) {
       localStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(REMEMBER_ME_KEY, 'true');
-      console.log('🔐 Token stored in localStorage');
+      logger.debug('Token stored in localStorage');
     } else {
       sessionStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(REMEMBER_ME_KEY, 'false');
-      console.log('🔐 Token stored in sessionStorage');
+      logger.debug('Token stored in sessionStorage');
     }
   },
 
@@ -171,10 +173,10 @@ export const tokenManager = {
     const dataString = JSON.stringify(userData);
     if (rememberMe) {
       localStorage.setItem(USER_DATA_KEY, dataString);
-      console.log('👤 User data stored in localStorage:', userData);
+      logger.debug('User data stored in localStorage', userData);
     } else {
       sessionStorage.setItem(USER_DATA_KEY, dataString);
-      console.log('👤 User data stored in sessionStorage:', userData);
+      logger.debug('User data stored in sessionStorage', userData);
     }
   },
 
