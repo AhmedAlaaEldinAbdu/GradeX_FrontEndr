@@ -10,7 +10,9 @@ export const useDevRoleMockInitializer = () => {
   const currentRole = useSelector(selectUserRole);
 
   useEffect(() => {
-    return;
+    if (import.meta.env.VITE_API_BASE_URL) {
+      return;
+    }
     const savedRole = localStorage.getItem('dev_current_role') as UserRoleType | null;
 
     if (!currentUser) {
