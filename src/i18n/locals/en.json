@@ -266,6 +266,7 @@
     "rejectionReasonRequired": "rejection reason is required",
     "schoolRejectedSuccessfully": "school rejected successfully",
     "editRequestSentSuccessfully": "edit request sent successfully",
+    "editRequestMessageRequired": "edit request message is required",
     "schoolName": "School Name",
     "educationSystem": "Education System",
     "status": "Status",

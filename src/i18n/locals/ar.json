@@ -267,6 +267,7 @@
     "rejectionReasonRequired": "سبب الرفض مطلوب",
     "schoolRejectedSuccessfully": "تم رفض المدرسة بنجاح",
     "editRequestSentSuccessfully": "تم إرسال طلب التعديل بنجاح",
+    "editRequestMessageRequired": "رسالة طلب التعديل مطلوبة",
     "schoolName": "اسم المدرسة",
     "educationSystem": "النظام التعليمي",
     "status": "الحالة",
