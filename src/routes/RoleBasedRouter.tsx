@@ -8,6 +8,7 @@ import React from 'react';
 import { UserRole } from '@gradex/constants';
 import SuperAdminRouter from './SuperAdminRouter';
 import SchoolRouter from './SchoolRouter';
+import { logger } from '@/lib/utils/logger';
 import {
   LoginPage,
   VerifyOtpPage,
@@ -24,7 +25,7 @@ const RoleBasedRouter: React.FC = () => {
   const dashboardType = useSelector(selectDashboardType);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  console.log('🔀 RoleBasedRouter render:', {
+  logger.debug('RoleBasedRouter render', {
     isAuthenticated,
     dashboardType,
   });
