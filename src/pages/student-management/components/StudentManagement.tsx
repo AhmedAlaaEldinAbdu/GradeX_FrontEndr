@@ -18,7 +18,7 @@ interface Student {
 
 export default function StudentManagement() {
   const { t } = useTranslation();
-  const [hasStudents, setHasStudents] = useState(true);
+  const [hasStudents] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedClass, setSelectedClass] = useState('');

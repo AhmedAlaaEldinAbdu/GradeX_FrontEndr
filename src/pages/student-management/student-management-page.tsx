@@ -10,7 +10,7 @@ const StudentManagementPage: React.FC = () => {
   return (
     <div dir="rtl">
       {/* Breadcrumb */}
-      <Breadcrumb items={[{ label: 'الطلاب' }]} />
+      <Breadcrumb items={[{ label: t('studentManagement.students') }]} />
 
       {/* Page Header */}
       <div className="mb-6 flex items-center justify-between">
