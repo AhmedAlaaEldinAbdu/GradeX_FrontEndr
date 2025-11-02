@@ -62,6 +62,7 @@
     "pending": "Pending",
     "deleted": "Deleted",
     "rejected": "Rejected",
+    "approved": "Approved",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
