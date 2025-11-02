@@ -432,6 +432,18 @@ export const deactivateSchool = createAsyncThunk<SchoolDetail, string>(
   }
 );
 
+export const sendSchoolEditRequest = createAsyncThunk<
+  { id: string; success: boolean; message: string },
+  { id: string; message: string }
+>('schools/sendSchoolEditRequest', async ({ id, message }, { rejectWithValue }) => {
+  try {
+    const result = await schoolsApiService.addSchoolUpdateRequest(id, message);
+    return { id, ...result };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 export const fetchSchoolStatistics = createAsyncThunk<SchoolStatisticsResponse, void>(
   'schools/fetchStatistics',
   async (_, { rejectWithValue }) => {
@@ -779,6 +791,21 @@ const schoolsSlice = createSlice({
         state.error = null;
       })
       .addCase(rejectSchoolApplication.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.error = action.payload as string;
+      });
+
+    // Send School Edit Request
+    builder
+      .addCase(sendSchoolEditRequest.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(sendSchoolEditRequest.fulfilled, (state) => {
+        state.isUpdating = false;
+        state.error = null;
+      })
+      .addCase(sendSchoolEditRequest.rejected, (state, action) => {
         state.isUpdating = false;
         state.error = action.payload as string;
       });
