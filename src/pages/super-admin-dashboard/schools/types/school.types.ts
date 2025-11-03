@@ -54,7 +54,9 @@ export interface SchoolFormData {
   // Facilities
   hasOtherBranches: boolean;
   facilities: string[];
-  facilityDetails?: Record<string, FacilityDetails>; // Map of facility ID to its details
+  facilityDetails?: Record<string, FacilityDetails>;
+  hasOtherFacility: boolean;
+  otherFacilityName?: string;
 }
 
 // Initial empty form data
@@ -87,6 +89,8 @@ export const initialSchoolFormData: SchoolFormData = {
   hasOtherBranches: false,
   facilities: [],
   facilityDetails: {},
+  hasOtherFacility: false,
+  otherFacilityName: '',
 };
 
 // School data for display in tables
