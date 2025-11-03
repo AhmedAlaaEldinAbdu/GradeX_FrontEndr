@@ -6,9 +6,9 @@ import type { SchoolFormData } from '../types/school.types';
 // ============================================================================
 
 interface FileAttachments {
-  logo: File | null;
-  image: File | null;
-  certificate: File | null;
+  license: File[];
+  image: File[];
+  certificate: File[];
 }
 
 interface BranchData {
@@ -218,9 +218,9 @@ function appendFacilities(
     }
   }
 
-  // Legacy certificate handling (for backward compatibility)
-  if (files.certificate) {
-    appendFacilityCertificate(formData, files.certificate);
+  // Append certificate files
+  if (files.certificate && files.certificate.length > 0) {
+    appendFacilityCertificates(formData, files.certificate);
   }
 }
 
@@ -288,27 +288,40 @@ function formatFoundingDate(date?: string): string {
 function collectLicenseAttachments(files: FileAttachments): Array<{ file: File; name: string }> {
   const attachments: Array<{ file: File; name: string }> = [];
 
-  if (files.logo) {
-    attachments.push({
-      file: files.logo,
-      name: files.logo.name || 'School Logo',
+  // Add all logo files
+  if (files.license && files.license.length > 0) {
+    files.license.forEach((file) => {
+      attachments.push({
+        file: file,
+        name: file.name || 'School Logo',
+      });
     });
   }
 
-  if (files.image) {
-    attachments.push({
-      file: files.image,
-      name: files.image.name || 'School Image',
+  // Add all image files
+  if (files.image && files.image.length > 0) {
+    files.image.forEach((file) => {
+      attachments.push({
+        file: file,
+        name: file.name || 'School Image',
+      });
     });
   }
 
   return attachments;
 }
 
-function appendFacilityCertificate(formData: FormData, certificate: File): void {
-  const prefix = 'facilities[0].licensesAttachmentFacilitiesDto[0]';
-  formData.append(`${prefix}.attachmentFile`, certificate);
-  formData.append(`${prefix}.attachmentName`, certificate.name || 'Facility Certificate');
+function appendFacilityCertificates(formData: FormData, certificates: File[]): void {
+  if (!certificates || certificates.length === 0) return;
+
+  certificates.forEach((certificate, index) => {
+    const prefix = `facilities[0].licensesAttachmentFacilitiesDto[${index}]`;
+    formData.append(`${prefix}.attachmentFile`, certificate);
+    formData.append(
+      `${prefix}.attachmentName`,
+      certificate.name || `Facility Certificate ${index + 1}`
+    );
+  });
 }
 
 // ============================================================================
