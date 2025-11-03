@@ -149,34 +149,74 @@ function appendFacilities(
   schoolData: SchoolFormData,
   files: FileAttachments
 ): void {
-  if (!schoolData.facilities?.length) return;
+  let facilityIndex = 0;
 
-  schoolData.facilities.forEach((facilityId, index) => {
-    formData.append(`Facilities[${index}].id`, facilityId);
+  // Append regular facilities
+  if (schoolData.facilities?.length) {
+    schoolData.facilities.forEach((facilityId) => {
+      formData.append(`Facilities[${facilityIndex}].id`, facilityId);
 
-    const facilityDetail = schoolData.facilityDetails?.[facilityId];
-    if (facilityDetail) {
-      if (facilityDetail.arabicName) {
-        formData.append(`Facilities[${index}].arabicName`, facilityDetail.arabicName);
+      const facilityDetail = schoolData.facilityDetails?.[facilityId];
+      if (facilityDetail) {
+        if (facilityDetail.arabicName) {
+          formData.append(`Facilities[${facilityIndex}].arabicName`, facilityDetail.arabicName);
+        }
+        if (facilityDetail.englishName) {
+          formData.append(`Facilities[${facilityIndex}].englishName`, facilityDetail.englishName);
+        }
+        formData.append(`Facilities[${facilityIndex}].description`, facilityDetail.description);
+
+        if (facilityDetail.imageFile) {
+          formData.append(`Facilities[${facilityIndex}].imageUrl`, facilityDetail.imageFile);
+        } else if (facilityDetail.imageUrl) {
+          formData.append(`Facilities[${facilityIndex}].imageUrl`, facilityDetail.imageUrl);
+        }
+
+        if (
+          facilityDetail.oldFacilitiesFilePath &&
+          facilityDetail.oldFacilitiesFilePath.length > 0
+        ) {
+          facilityDetail.oldFacilitiesFilePath.forEach((path, pathIndex) => {
+            formData.append(
+              `Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`,
+              path
+            );
+          });
+        }
       }
-      if (facilityDetail.englishName) {
-        formData.append(`Facilities[${index}].englishName`, facilityDetail.englishName);
-      }
-      formData.append(`Facilities[${index}].description`, facilityDetail.description);
 
-      if (facilityDetail.imageFile) {
-        formData.append(`Facilities[${index}].imageUrl`, facilityDetail.imageFile);
-      } else if (facilityDetail.imageUrl) {
-        formData.append(`Facilities[${index}].imageUrl`, facilityDetail.imageUrl);
+      facilityIndex++;
+    });
+  }
+
+  // Append "Other" custom facility (without ID)
+  if (schoolData.hasOtherFacility && schoolData.otherFacilityName?.trim()) {
+    const otherFacilityName = schoolData.otherFacilityName.trim();
+    // Send same name for both Arabic and English
+    formData.append(`Facilities[${facilityIndex}].arabicName`, otherFacilityName);
+    // formData.append(`Facilities[${facilityIndex}].englishName`, otherFacilityName);
+
+    // Append "Other" facility details if available
+    const otherFacilityDetail = schoolData.facilityDetails?.['other'];
+    if (otherFacilityDetail) {
+      formData.append(`Facilities[${facilityIndex}].description`, otherFacilityDetail.description);
+
+      if (otherFacilityDetail.imageFile) {
+        formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageFile);
+      } else if (otherFacilityDetail.imageUrl) {
+        formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageUrl);
       }
 
-      if (facilityDetail.oldFacilitiesFilePath && facilityDetail.oldFacilitiesFilePath.length > 0) {
-        facilityDetail.oldFacilitiesFilePath.forEach((path, pathIndex) => {
-          formData.append(`Facilities[${index}].oldFacilitiesFilePath[${pathIndex}]`, path);
+      if (
+        otherFacilityDetail.oldFacilitiesFilePath &&
+        otherFacilityDetail.oldFacilitiesFilePath.length > 0
+      ) {
+        otherFacilityDetail.oldFacilitiesFilePath.forEach((path, pathIndex) => {
+          formData.append(`Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`, path);
         });
       }
     }
-  });
+  }
 
   // Legacy certificate handling (for backward compatibility)
   if (files.certificate) {
@@ -317,5 +357,8 @@ export function transformBackendToSchoolForm(backendData: unknown): SchoolFormDa
 
     // Facilities
     facilities: [],
+    facilityDetails: {},
+    hasOtherFacility: false,
+    otherFacilityName: '',
   };
 }
