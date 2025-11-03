@@ -330,16 +330,18 @@
     "setBranchLocation": "تحديد موقع الفرع",
     "secondBranch": "الفرع الثاني",
     "facilitiesSection": "المرافق",
+    "otherFacility": "أخرى",
+    "enterOtherFacilityName": "اكتب اسم المرفق",
     "images": "الصور",
     "certificates": "الشهادات",
     "schoolAdded": "تم إضافة المدرسة بنجاح",
+    "addData": "إضافة بيانات",
     "addFacilityData": "إضافة بيانات المرافق",
     "facilityDescription": "نبذة عن المرفق",
     "enterFacilityDescription": "اكتب نبذة عن المرفق",
     "facilityImages": "صور",
     "schoolUpdated": "تم تعديل المدرسة بنجاح",
     "uploadMedia": "اضغط هنا للإضافة صورة أو ملف",
-    "addData": "إضافة بيانات",
     "validation": {
       "schoolNameRequired": "اسم المدرسة مطلوب",
       "schoolNameMin": "يجب أن يكون اسم المدرسة 3 أحرف على الأقل",
@@ -394,7 +396,13 @@
       "postalCodeInvalid": "يجب أن يكون الرمز البريدي من 4-10 أرقام",
       "applicationFeaturesRequired": "يرجى اختيار ميزة واحدة على الأقل من مميزات التطبيق",
       "logoRequired": "شعار المدرسة مطلوب",
-      "certificateRequired": "شهادة المدرسة مطلوبة"
+      "certificateRequired": "شهادة المدرسة مطلوبة",
+      "facilitiesRequired": "يرجى اختيار مرفق واحد على الأقل أو تحديد مرفق آخر",
+      "otherFacilityNameRequired": "اسم المرفق الآخر مطلوب",
+      "otherFacilityNameMin": "يجب أن يكون اسم المرفق الآخر 3 أحرف على الأقل",
+      "otherFacilityNameMax": "لا يمكن أن يتجاوز اسم المرفق الآخر 100 حرف",
+      "landlineRequired": "رقم الهاتف الأرضي مطلوب",
+      "landlineInvalid": "يرجى إدخال رقم هاتف أرضي صالح"
     }
   },
   "status": {

@@ -329,16 +329,18 @@
     "setBranchLocation": "Set Branch Location",
     "secondBranch": "Second Branch",
     "facilitiesSection": "Facilities",
+    "otherFacility": "Other",
+    "enterOtherFacilityName": "Enter facility name",
     "images": "Images",
     "certificates": "Certificates",
     "schoolAdded": "School has been added successfully",
+    "addData": "Add Data",
     "addFacilityData": "Add Facility Data",
     "facilityDescription": "Facility Description",
     "enterFacilityDescription": "Enter facility description",
     "facilityImages": "Images",
     "schoolUpdated": "School has been updated successfully",
     "uploadMedia": "Click here to add image or file",
-    "addData": "Add Data",
     "validation": {
       "schoolNameRequired": "School name is required",
       "schoolNameMin": "School name must be at least 3 characters",
@@ -393,7 +395,13 @@
       "postalCodeInvalid": "Postal code must be 4-10 digits",
       "applicationFeaturesRequired": "Please select at least one application feature",
       "logoRequired": "School logo is required",
-      "certificateRequired": "School certificate is required"
+      "certificateRequired": "School certificate is required",
+      "facilitiesRequired": "Please select at least one facility or specify other facility",
+      "otherFacilityNameRequired": "Other facility name is required",
+      "otherFacilityNameMin": "Other facility name must be at least 3 characters",
+      "otherFacilityNameMax": "Other facility name cannot exceed 100 characters",
+      "landlineRequired": "Landline number is required",
+      "landlineInvalid": "Please enter a valid landline number"
     }
   },
   "status": {
