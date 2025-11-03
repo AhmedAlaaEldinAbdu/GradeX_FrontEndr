@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface FileUploadProps {
   label: string;
@@ -9,6 +10,7 @@ interface FileUploadProps {
   uploadText?: string;
   formatHints?: string[];
   required?: boolean;
+  optional?: boolean;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -20,7 +22,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
   uploadText = 'ارفع الوسائط من هنا',
   formatHints = ['GIF', 'SVG', 'JPG', 'PNG'],
   required = false,
+  optional = false,
 }) => {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [filePreview, setFilePreview] = useState<string | null>(null);
@@ -74,6 +78,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       <label className="mb-2 block text-right text-sm font-medium text-gray-700">
         {label}
         {required && <span className="mr-1 text-red-500">*</span>}
+        {optional && <span className="text-xs text-gray-400"> ({t('schools.optional')}) </span>}
       </label>
 
       {/* Upload Area */}
