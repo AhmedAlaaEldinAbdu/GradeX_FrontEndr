@@ -18,10 +18,12 @@ import AddFacilityDetailsPopup from '../popups/AddFacilityDetailsPopup';
 interface FacilitiesStepProps {
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCertificateUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onImageDelete?: () => void;
-  onCertificateDelete?: () => void;
+  onImageDelete?: (index?: number) => void;
+  onCertificateDelete?: (index?: number) => void;
   imageFileName?: string;
+  imageFileNames?: string[];
   certificateFileName?: string;
+  certificateFileNames?: string[];
   certificateError?: string;
   readOnly?: boolean;
 }
@@ -36,7 +38,9 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   onImageDelete,
   onCertificateDelete,
   imageFileName,
+  imageFileNames,
   certificateFileName,
+  certificateFileNames,
   certificateError,
   readOnly = false,
 }) => {
@@ -216,19 +220,20 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
         </FormField>
       </div>
 
-      {/* Images Upload Section */}
+      {/* Images Upload Section - Multiple Files */}
       {!readOnly && (
         <FileUpload
           label={t('schools.images')}
           accept="image/*,.svg,.jpg,.jpeg,.png"
           onChange={onImageUpload}
           onDelete={onImageDelete}
-          fileName={imageFileName}
+          fileNames={imageFileNames || (imageFileName ? imageFileName.split(', ') : [])}
           uploadText={t('schools.uploadMedia')}
+          multiple={true}
         />
       )}
 
-      {/* Certificates Upload Section */}
+      {/* Certificates Upload Section - Multiple Files */}
       {!readOnly && (
         <div>
           <FileUpload
@@ -236,9 +241,13 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
             onChange={onCertificateUpload}
             onDelete={onCertificateDelete}
-            fileName={certificateFileName}
+            fileNames={
+              certificateFileNames || (certificateFileName ? certificateFileName.split(', ') : [])
+            }
             uploadText={t('schools.uploadMedia')}
             required={true}
+            multiple={true}
+            error={!!certificateError}
           />
           {certificateError && (
             <p className="mt-1 text-right text-xs text-red-600">{t(certificateError)}</p>
