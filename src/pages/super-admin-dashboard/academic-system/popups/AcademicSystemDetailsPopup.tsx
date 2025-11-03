@@ -1,16 +1,17 @@
 import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
+import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
 
 interface AcademicDetailsPopupProps {
-  title: string;
+  system: AcademicSubSystemResponse;
   onClose: () => void;
 }
 
-export default function AcademicDetailsPopup({ title, onClose }: AcademicDetailsPopupProps) {
-  const { t } = useTranslation();
+export default function AcademicDetailsPopup({ system, onClose }: AcademicDetailsPopupProps) {
+  const { t, i18n } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const currentLang = i18n.language as 'ar' | 'en';
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 10);
@@ -30,12 +31,15 @@ export default function AcademicDetailsPopup({ title, onClose }: AcademicDetails
     setTimeout(onClose, 200);
   };
 
-  const dummyData = {
-    sysName: 'عالمي',
-    sysType: 'امريكي',
-    eduStages: ['المرحلة الأبتدائية', 'المرحلة الأعدادية', 'رياض الأطفال'],
-    countries: ['قطر', 'السعودية', 'الإمارات', 'مصر'],
-  };
+  // Extract data from system object
+  const systemName = system.name;
+  const systemTypes = system.academicSubSystemDto?.map((sub) =>
+    currentLang === 'ar' ? sub.nameAr : sub.nameEn
+  );
+  const countries = system.lkCountriesDto?.map((country) =>
+    currentLang === 'ar' ? country.arabicName : country.englishName
+  );
+  const gradeCount = system.gradeCount;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
@@ -53,36 +57,48 @@ export default function AcademicDetailsPopup({ title, onClose }: AcademicDetails
         </button>
 
         <div className="my-6 flex flex-col justify-start gap-7 py-3">
-          <div className="w-[100%] text-2xl font-medium text-gray-800">{t(`${title}`)}</div>
+          <div className="w-[100%] text-2xl font-medium text-gray-800">{systemName}</div>
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3 font-semibold text-gray-800">
-              <span>{t('academicSystem.academicSystemName')}:</span>
-              <span className="text-sm text-gray-700">{dummyData.sysName}</span>
+            <div className="flex items-start gap-3 font-semibold text-gray-800">
+              <span className="flex flex-shrink-0">{t('academicSystem.academicSystemName')}:</span>
+              <span className="py-1 text-sm text-gray-700">{systemName}</span>
             </div>
-            <div className="flex items-center gap-3 font-semibold text-gray-800">
-              <span>{t('academicSystem.systemType')}:</span>{' '}
-              <span className="text-sm text-gray-700">{dummyData.sysType}</span>
-            </div>
-            <div className="flex items-center gap-3 font-semibold text-gray-800">
-              <span className='flex flex-shrink-0'>{t('academicSystem.educationalStages')}:</span>{' '}
-              <span className="flex items-center gap-2 flex-wrap">
-                {dummyData.eduStages?.map((stage) => (
-                  <span className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-sm text-gray-700">
-                    {stage}
-                    <img src={XmarkCircleIcon} className='cursor-pointer' alt="Xmark" />
-                  </span>
-                ))}
+            <div className="flex items-start gap-3 font-semibold text-gray-800">
+              <span className="flex flex-shrink-0">{t('academicSystem.systemType')}:</span>{' '}
+              <span className="flex py-1 text-sm text-gray-700">
+                {systemTypes?.join(' - ') || '-'}
               </span>
             </div>
-            <div className="flex items-center gap-3 font-semibold text-gray-800">
-              <span className='flex flex-shrink-0'>{t('academicSystem.countries')}:</span>{' '}
-              <span className="flex items-center gap-2 flex-wrap">
-                {dummyData.countries?.map((country) => (
+            <div className="flex items-start gap-3 font-semibold text-gray-800">
+              <span className="flex flex-shrink-0">
+                {t('academicSystem.educationalStagesCount')}:
+              </span>{' '}
+              <span className="py-1 text-sm text-gray-700">{gradeCount}</span>
+              {/* <span className="flex flex-shrink-0">{t('academicSystem.educationalStages')}:</span>{' '}
+              <span className="flex flex-wrap items-start gap-2">
+                {dummyData.eduStages?.map((stage) => (
                   <span className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-sm text-gray-700">
-                    {country}
-                    <img src={XmarkCircleIcon} className='cursor-pointer' alt="Xmark" />
+                  {stage}
+                    <img src={XmarkCircleIcon} className="cursor-pointer" alt="Xmark" />
                   </span>
-                ))}
+                  ))}
+              </span> */}
+            </div>
+            <div className="flex items-center gap-3 font-semibold text-gray-800">
+              <span className="flex flex-shrink-0">{t('academicSystem.countries')}:</span>{' '}
+              <span className="flex flex-wrap items-center gap-2 py-1">
+                {countries && countries.length > 0 ? (
+                  countries.map((country, index) => (
+                    <span
+                      key={index}
+                      className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-sm text-gray-700"
+                    >
+                      {country}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm text-gray-700">-</span>
+                )}
               </span>
             </div>
           </div>

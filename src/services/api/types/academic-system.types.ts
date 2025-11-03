@@ -9,6 +9,7 @@ export interface AcademicSystemListValue extends Pagination {
 
 export interface AcademicSystemDetailsValue {
   id: string;
+  name: string;
   academicSubSystemDto: AcademicSubSystemDto[];
   lkCountriesDto: Country[];
 }
@@ -18,6 +19,8 @@ export interface AcademicSubSystemResponse {
   id: string;
   academicSubSystemDto: AcademicSubSystemDto[];
   lkCountriesDto: Country[];
+  created: string;
+  gradeCount: number;
 }
 
 export interface AcademicSubSystemDto {

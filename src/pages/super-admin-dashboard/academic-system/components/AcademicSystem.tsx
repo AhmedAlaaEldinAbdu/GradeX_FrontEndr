@@ -22,6 +22,7 @@ import {
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import { fetchCountries } from '@/redux/features/lookups';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
+import CustomSelect from '@/shared/components/CustomSelect';
 
 export default function AcademicSystemsTable() {
   const { t, i18n } = useTranslation();
@@ -53,9 +54,7 @@ export default function AcademicSystemsTable() {
   const countries = useAppSelector((state) => state.lookups.countries);
   const isLoadingCountries = useAppSelector((state) => state.lookups.isLoadingCountries);
 
-  // Fetch data on mount and when filters change
   useEffect(() => {
-    fetchAcademicSystems();
     dispatch(getAcademicSubSystems());
     dispatch(fetchCountries());
   }, [dispatch]);
@@ -133,8 +132,11 @@ export default function AcademicSystemsTable() {
   const columns = [
     {
       header: '#',
-      accessor: (_row: AcademicSubSystemResponse, index?: number) =>
-        (currentPage - 1) * pageSize + (index || 0) + 1,
+      accessor: (_row: AcademicSubSystemResponse) => {
+        if (!_row || !Array.isArray(academicSystems) || !pagination) return '-';
+        const index = academicSystems?.findIndex((s) => s?.id === _row?.id);
+        return (pagination.pageIndex - 1) * pagination.pageSize + (index + 1);
+      },
     },
     {
       header: 'academicSystem.systemName',
@@ -178,16 +180,18 @@ export default function AcademicSystemsTable() {
     },
     {
       header: 'academicSystem.educationalStagesCount',
-      accessor: () => '-',
+      accessor: (row: AcademicSubSystemResponse) => row.gradeCount,
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
-    // {
-    //   header: 'academicSystem.addedDate',
-    //   accessor: (row: AcademicSubSystemResponse) => row.addedDate,
-    //   headerClassName: 'min-w-[120px]',
-    //   className: 'text-center',
-    // },
+    {
+      header: 'academicSystem.addedDate',
+      accessor: (row: AcademicSubSystemResponse) => (
+        <div>{new Date(row.created).toLocaleDateString()}</div>
+      ),
+      headerClassName: 'min-w-[120px]',
+      className: 'text-center',
+    },
     {
       header: 'common.actions',
       accessor: (row: AcademicSubSystemResponse) => (
@@ -249,35 +253,53 @@ export default function AcademicSystemsTable() {
             </div>
             <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
               <div>
-                <select
+                <CustomSelect
                   value={selectedSubSystemId}
-                  onChange={(e) => setSelectedSubSystemId(e.target.value)}
-                  className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                  onChange={(value) =>
+                    setSelectedSubSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
+                  }
+                  options={
+                    Array.isArray(academicSubSystems)
+                      ? academicSubSystems.map((subSystem) => ({
+                          value: subSystem?.id || '',
+                          label:
+                            currentLang === 'ar'
+                              ? subSystem?.nameAr || ''
+                              : subSystem?.nameEn || '',
+                        }))
+                      : []
+                  }
+                  placeholder={
+                    isLoadingSubSystems ? t('common.loading') : t('academicSystem.systemType')
+                  }
                   disabled={isLoadingSubSystems}
-                >
-                  <option value="">{t('academicSystem.systemType')}</option>
-                  {academicSubSystems.map((subSystem) => (
-                    <option key={subSystem.id} value={subSystem.id}>
-                      {currentLang === 'ar' ? subSystem.nameAr : subSystem.nameEn}
-                    </option>
-                  ))}
-                </select>
+                  maxHeight="200px"
+                />
               </div>
 
               <div>
-                <select
+                <CustomSelect
                   value={selectedCountryId}
-                  onChange={(e) => setSelectedCountryId(e.target.value)}
-                  className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                  onChange={(value) =>
+                    setSelectedCountryId(Array.isArray(value) ? (value[0] ?? '') : value)
+                  }
+                  options={
+                    Array.isArray(countries)
+                      ? countries.map((country) => ({
+                          value: country?.id || '',
+                          label:
+                            currentLang === 'ar'
+                              ? country?.arabicName || ''
+                              : country?.englishName || '',
+                        }))
+                      : []
+                  }
+                  placeholder={
+                    isLoadingCountries ? t('common.loading') : t('academicSystem.country')
+                  }
                   disabled={isLoadingCountries}
-                >
-                  <option value="">{t('academicSystem.country')}</option>
-                  {countries.map((country) => (
-                    <option key={country.id} value={country.id}>
-                      {currentLang === 'ar' ? country.arabicName : country.englishName}
-                    </option>
-                  ))}
-                </select>
+                  maxHeight="200px"
+                />
               </div>
             </div>
           </div>
@@ -328,7 +350,7 @@ export default function AcademicSystemsTable() {
           )}
           {showAcademicDetails && selectedSystem && (
             <AcademicDetailsPopup
-              title={currentLang === 'ar' ? selectedSystem.name || '' : selectedSystem.name || ''}
+              system={selectedSystem}
               onClose={() => setShowAcademicDetails(false)}
             />
           )}

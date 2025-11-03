@@ -170,7 +170,11 @@ export default function AddAcademicSystem() {
                               label: currentLang === 'ar' ? subSystem.nameAr : subSystem.nameEn,
                             }))}
                             disabled={isLoadingSubSystems}
-                            placeholder={t('academicSystem.selectItem')}
+                            placeholder={
+                              isLoadingSubSystems
+                                ? t('common.loading')
+                                : t('academicSystem.selectItem')
+                            }
                             error={!!errors.academicSystems?.[index]?.subSystemIds}
                           />
                         );
