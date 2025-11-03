@@ -53,6 +53,8 @@
     "next": "Next",
     "previous": "Previous",
     "ok": "Ok",
+    "uploaded": "Uploaded",
+    "existingFile": "Existing file",
     "saving": "Saving...",
     "chooseDate": "Choose Date",
     "copied": "Copied",
