@@ -42,7 +42,12 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const { watch, setValue, trigger } = useFormContext<SchoolFormData>();
+  const {
+    watch,
+    setValue,
+    trigger,
+    formState: { errors },
+  } = useFormContext<SchoolFormData>();
 
   const currentLang = i18n.language as 'ar' | 'en';
 
@@ -51,6 +56,8 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
 
   const selectedFacilities = watch('facilities');
   const facilityDetails = watch('facilityDetails') || {};
+  const hasOtherFacility = watch('hasOtherFacility');
+  const otherFacilityName = watch('otherFacilityName');
 
   const [showAddDetailsPopup, setShowAddDetailsPopup] = useState(false);
   const [selectedFacilityForDetails, setSelectedFacilityForDetails] = useState<{
@@ -90,7 +97,11 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
           {t('schools.facilitiesSection')}
         </h3>
 
-        <FormField label={t('schools.facilitiesSection')} required>
+        <FormField
+          label={t('schools.facilitiesSection')}
+          required
+          error={errors.facilities?.message && t(errors.facilities.message)}
+        >
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {isLoadingFacilities ? (
               <p className="text-gray-500">{t('common.loading')}</p>
@@ -140,6 +151,66 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                   </div>
                 );
               })
+            )}
+          </div>
+
+          {/* Other Facility Option */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <CustomCheckbox
+                name="hasOtherFacility"
+                checked={hasOtherFacility || false}
+                onChange={(checked) => {
+                  setValue('hasOtherFacility', checked);
+                  if (!checked) {
+                    setValue('otherFacilityName', '');
+                    const currentDetails = { ...facilityDetails };
+                    delete currentDetails['other'];
+                    setValue('facilityDetails', currentDetails);
+                  }
+                  trigger('hasOtherFacility');
+                  trigger('facilities');
+                }}
+                label={t('schools.otherFacility')}
+                disabled={readOnly}
+              />
+
+              {/* Add Details Button for Other Facility */}
+              {hasOtherFacility && !readOnly && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleAddDetailsClick('other', otherFacilityName || t('schools.otherFacility'))
+                  }
+                  className={`whitespace-nowrap rounded-lg py-1 text-xs font-bold text-green-700 transition-colors`}
+                >
+                  {facilityDetails['other'] ? '✓ ' : ''}
+                  {t('schools.addData')}
+                </button>
+              )}
+            </div>
+
+            {/* Other Facility Name Input  */}
+            {hasOtherFacility && !readOnly && (
+              <div className="mr-8 mt-2">
+                <input
+                  type="text"
+                  value={otherFacilityName || ''}
+                  onChange={(e) => {
+                    setValue('otherFacilityName', e.target.value);
+                    trigger('otherFacilityName');
+                  }}
+                  placeholder={t('schools.enterOtherFacilityName')}
+                  className={`w-full rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                    errors.otherFacilityName ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                {errors.otherFacilityName?.message && (
+                  <p className="mt-1 text-right text-xs text-red-600">
+                    {t(errors.otherFacilityName.message)}
+                  </p>
+                )}
+              </div>
             )}
           </div>
         </FormField>
