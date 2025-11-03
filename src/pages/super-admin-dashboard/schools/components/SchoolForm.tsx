@@ -103,6 +103,7 @@ const SchoolForm = ({
     handleFileDelete,
     validateCurrentStep,
     validateFiles,
+    getFileNames,
   } = useSchoolForm(initialData);
 
   const steps = [
@@ -232,9 +233,9 @@ const SchoolForm = ({
         <div className="rounded-lg border border-gray-200 bg-white">
           {currentStep === 1 && (
             <BasicInfoStep
-              onLogoUpload={handleFileUpload('logo')}
-              logoFileName={files.logo?.name}
-              logoError={fileErrors.logo}
+              onLogoUpload={handleFileUpload('license')}
+              licenseFileNames={getFileNames('license')}
+              licenseError={fileErrors.license}
               readOnly={mode === 'view'}
               showRejectedLabel={showRejectedLabel}
             />
@@ -252,8 +253,8 @@ const SchoolForm = ({
               onCertificateUpload={handleFileUpload('certificate')}
               onImageDelete={handleFileDelete('image')}
               onCertificateDelete={handleFileDelete('certificate')}
-              imageFileName={files.image?.name}
-              certificateFileName={files.certificate?.name}
+              imageFileNames={getFileNames('image')}
+              certificateFileNames={getFileNames('certificate')}
               certificateError={fileErrors.certificate}
               readOnly={mode === 'view'}
             />
