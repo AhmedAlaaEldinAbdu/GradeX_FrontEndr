@@ -398,6 +398,7 @@
       "postalCodeInvalid": "يجب أن يكون الرمز البريدي من 4-10 أرقام",
       "applicationFeaturesRequired": "يرجى اختيار ميزة واحدة على الأقل من مميزات التطبيق",
       "logoRequired": "شعار المدرسة مطلوب",
+      "licensesRequired": "شهادات المدرسة مطلوبة",
       "certificateRequired": "شهادة المدرسة مطلوبة",
       "facilitiesRequired": "يرجى اختيار مرفق واحد على الأقل أو تحديد مرفق آخر",
       "otherFacilityNameRequired": "اسم المرفق الآخر مطلوب",

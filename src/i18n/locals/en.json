@@ -397,6 +397,7 @@
       "postalCodeInvalid": "Postal code must be 4-10 digits",
       "applicationFeaturesRequired": "Please select at least one application feature",
       "logoRequired": "School logo is required",
+      "licensesRequired": "At least one license is required",
       "certificateRequired": "School certificate is required",
       "facilitiesRequired": "Please select at least one facility or specify other facility",
       "otherFacilityNameRequired": "Other facility name is required",
