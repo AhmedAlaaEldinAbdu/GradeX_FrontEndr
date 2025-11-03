@@ -1,24 +1,16 @@
 import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import Pagination from '@gradex/shared/components/Pagination';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
+import DropdownMenuAcademicSystemAction from './DropdownMenuAcademicSystemAction';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
 import AcademicIcon from '@gradex/assets/icons/Academic.svg';
 import { useEffect, useState } from 'react';
-import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
-import DeletePopup from '@/shared/components/DeletePopup';
-import PopupMessage from '@/shared/components/PopupMessage';
+// Removed local delete popup handling; actions moved into DropdownMenuAcademicSystemAction
 import { useNavigate } from 'react-router-dom';
 import AcademicDetailsPopup from '../popups/AcademicSystemDetailsPopup';
-import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import {
-  deleteAcademicSystem,
-  getAcademicSystems,
-} from '@/redux/features/academic-system/academicSystemSlice';
+import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import { fetchCountries } from '@/redux/features/lookups';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
@@ -31,22 +23,19 @@ export default function AcademicSystemsTable() {
   const currentLang = i18n.language as 'ar' | 'en';
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-  const [selectedSystemId, setSelectedSystemId] = useState<string>('');
+  // Local popups removed; handled inside DropdownMenuAcademicSystemAction
   const [selectedSubSystemId, setSelectedSubSystemId] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [showAcademicDetails, setShowAcademicDetails] = useState(false);
   const [selectedSystem, setSelectedSystem] = useState<AcademicSubSystemResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const { showToast } = useToast();
+  const [pageSize] = useState(10);
 
   // Redux state
   const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
   const pagination = useAppSelector((state) => state.academicSystems.pagination);
   const isLoading = useAppSelector((state) => state.academicSystems.isLoading);
-  const isDeleting = useAppSelector((state) => state.academicSystems.isDeleting);
+  // const isDeleting = useAppSelector((state) => state.academicSystems.isDeleting);
 
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
   const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
@@ -75,41 +64,7 @@ export default function AcademicSystemsTable() {
     );
   };
 
-  const handleDeleteClick = (system: AcademicSubSystemResponse) => {
-    setSelectedSystem(system);
-    setSelectedSystemId(system.id);
-    setShowDelete(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    if (selectedSystemId) {
-      dispatch(deleteAcademicSystem(selectedSystemId))
-        .unwrap()
-        .then((res) => {
-          if (res.isSuccess) {
-            setShowDelete(false);
-            setShowPopupMessage(true);
-            showToast({
-              message: 'academicSystem.systemDeletedSuccessfully',
-              type: 'success',
-              duration: 3000,
-              position: 'bottom-left',
-            });
-            // Refresh the list
-            fetchAcademicSystems();
-          }
-        })
-        .catch((error) => {
-          console.error('Error deleting academic system:', error);
-          showToast({
-            message: 'common.errorOccurred',
-            type: 'error',
-            duration: 3000,
-            position: 'bottom-left',
-          });
-        });
-    }
-  };
+  // Delete action handled in DropdownMenuAcademicSystemAction
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -195,20 +150,8 @@ export default function AcademicSystemsTable() {
     {
       header: 'common.actions',
       accessor: (row: AcademicSubSystemResponse) => (
-        <div className="flex items-center justify-center gap-2">
-          <button
-            onClick={() => navigate(`/academic-system/edit-academic-system/${row.id}`)}
-            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
-          >
-            <img src={EditIcon} alt="Edit" className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row)}
-            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
-            disabled={isDeleting}
-          >
-            <img src={TrashIcon} alt="Delete" className="h-4 w-4" />
-          </button>
+        <div className="flex items-center justify-center">
+          <DropdownMenuAcademicSystemAction id={row.id} onActionComplete={fetchAcademicSystems} />
         </div>
       ),
       headerClassName: 'min-w-[100px]',
@@ -329,25 +272,7 @@ export default function AcademicSystemsTable() {
               onPageChange={handlePageChange}
             />
           )}
-          {/* Popups */}
-          {showDelete && (
-            <DeletePopup
-              message="academicSystem.confirmDeleteSystem"
-              onConfirm={handleDeleteConfirm}
-              onCancel={() => setShowDelete(false)}
-              iconSrc={BigTrashIcon}
-            />
-          )}
-          {showPopupMessage && (
-            <PopupMessage
-              type="success"
-              message="academicSystem.systemDeletedSuccessfully"
-              iconSrc={BigSuccessIcon}
-              autoClose={true}
-              duration={2000}
-              onClose={() => setShowPopupMessage(false)}
-            />
-          )}
+
           {showAcademicDetails && selectedSystem && (
             <AcademicDetailsPopup
               system={selectedSystem}
