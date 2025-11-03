@@ -338,6 +338,7 @@
     "facilityImages": "Images",
     "schoolUpdated": "School has been updated successfully",
     "uploadMedia": "Click here to add image or file",
+    "addData": "Add Data",
     "validation": {
       "schoolNameRequired": "School name is required",
       "schoolNameMin": "School name must be at least 3 characters",
