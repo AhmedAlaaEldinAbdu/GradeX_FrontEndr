@@ -153,8 +153,32 @@ function appendFacilities(
 
   schoolData.facilities.forEach((facilityId, index) => {
     formData.append(`Facilities[${index}].id`, facilityId);
+
+    const facilityDetail = schoolData.facilityDetails?.[facilityId];
+    if (facilityDetail) {
+      if (facilityDetail.arabicName) {
+        formData.append(`Facilities[${index}].arabicName`, facilityDetail.arabicName);
+      }
+      if (facilityDetail.englishName) {
+        formData.append(`Facilities[${index}].englishName`, facilityDetail.englishName);
+      }
+      formData.append(`Facilities[${index}].description`, facilityDetail.description);
+
+      if (facilityDetail.imageFile) {
+        formData.append(`Facilities[${index}].imageUrl`, facilityDetail.imageFile);
+      } else if (facilityDetail.imageUrl) {
+        formData.append(`Facilities[${index}].imageUrl`, facilityDetail.imageUrl);
+      }
+
+      if (facilityDetail.oldFacilitiesFilePath && facilityDetail.oldFacilitiesFilePath.length > 0) {
+        facilityDetail.oldFacilitiesFilePath.forEach((path, pathIndex) => {
+          formData.append(`Facilities[${index}].oldFacilitiesFilePath[${pathIndex}]`, path);
+        });
+      }
+    }
   });
 
+  // Legacy certificate handling (for backward compatibility)
   if (files.certificate) {
     appendFacilityCertificate(formData, files.certificate);
   }

@@ -339,6 +339,7 @@
     "facilityImages": "صور",
     "schoolUpdated": "تم تعديل المدرسة بنجاح",
     "uploadMedia": "اضغط هنا للإضافة صورة أو ملف",
+    "addData": "إضافة بيانات",
     "validation": {
       "schoolNameRequired": "اسم المدرسة مطلوب",
       "schoolNameMin": "يجب أن يكون اسم المدرسة 3 أحرف على الأقل",

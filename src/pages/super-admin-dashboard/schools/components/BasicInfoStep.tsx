@@ -140,10 +140,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   }}
                   options={academicSystems.map((system) => ({
                     value: system.id,
-                    label:
-                      currentLang === 'ar'
-                        ? system.academicSubSystemDto[0]?.nameAr || ''
-                        : system.academicSubSystemDto[0]?.nameEn || '',
+                    label: system.name,
                   }))}
                   placeholder={
                     isLoadingAcademicSystems

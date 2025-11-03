@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
@@ -6,13 +6,14 @@ import { useFormContext } from 'react-hook-form';
 import FormField from '@gradex/shared/components/FormField';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
-import type { SchoolFormData } from '../types/school.types';
+import type { SchoolFormData, FacilityDetails } from '../types/school.types';
 import {
   fetchFacilities,
   selectFacilities,
   selectIsLoadingFacilities,
 } from '@gradex/redux/features/lookups';
 import i18n from '@/i18n';
+import AddFacilityDetailsPopup from '../popups/AddFacilityDetailsPopup';
 
 interface FacilitiesStepProps {
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -49,10 +50,37 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   const isLoadingFacilities = useSelector(selectIsLoadingFacilities);
 
   const selectedFacilities = watch('facilities');
+  const facilityDetails = watch('facilityDetails') || {};
+
+  const [showAddDetailsPopup, setShowAddDetailsPopup] = useState(false);
+  const [selectedFacilityForDetails, setSelectedFacilityForDetails] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     dispatch(fetchFacilities());
   }, [dispatch]);
+
+  const handleAddDetailsClick = (facilityId: string, facilityName: string) => {
+    setSelectedFacilityForDetails({ id: facilityId, name: facilityName });
+    setShowAddDetailsPopup(true);
+  };
+
+  const handleSaveFacilityDetails = (details: FacilityDetails) => {
+    const currentDetails = facilityDetails || {};
+    setValue('facilityDetails', {
+      ...currentDetails,
+      [details.id]: details,
+    });
+    setShowAddDetailsPopup(false);
+    setSelectedFacilityForDetails(null);
+  };
+
+  const handleCancelAddDetails = () => {
+    setShowAddDetailsPopup(false);
+    setSelectedFacilityForDetails(null);
+  };
 
   return (
     <div className="space-y-8 p-4">
@@ -67,27 +95,51 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             {isLoadingFacilities ? (
               <p className="text-gray-500">{t('common.loading')}</p>
             ) : (
-              facilities.map((facility) => (
-                <CustomCheckbox
-                  key={facility.id}
-                  name={facility.id}
-                  checked={selectedFacilities?.includes(facility.id) || false}
-                  onChange={(checked) => {
-                    const currentFacilities = selectedFacilities || [];
-                    if (checked) {
-                      setValue('facilities', [...currentFacilities, facility.id]);
-                    } else {
-                      setValue(
-                        'facilities',
-                        currentFacilities.filter((id) => id !== facility.id)
-                      );
-                    }
-                    trigger('facilities');
-                  }}
-                  label={currentLang === 'ar' ? facility.arabicName : facility.englishName}
-                  disabled={readOnly}
-                />
-              ))
+              facilities.map((facility) => {
+                const isChecked = selectedFacilities?.includes(facility.id) || false;
+                const hasDetails = !!facilityDetails[facility.id];
+                const facilityName =
+                  currentLang === 'ar' ? facility.arabicName : facility.englishName;
+
+                return (
+                  <div key={facility.id} className="flex items-center gap-2">
+                    <CustomCheckbox
+                      name={facility.id}
+                      checked={isChecked}
+                      onChange={(checked) => {
+                        const currentFacilities = selectedFacilities || [];
+                        if (checked) {
+                          setValue('facilities', [...currentFacilities, facility.id]);
+                        } else {
+                          setValue(
+                            'facilities',
+                            currentFacilities.filter((id) => id !== facility.id)
+                          );
+                          // Remove facility details when unchecked
+                          const currentDetails = { ...facilityDetails };
+                          delete currentDetails[facility.id];
+                          setValue('facilityDetails', currentDetails);
+                        }
+                        trigger('facilities');
+                      }}
+                      label={facilityName}
+                      disabled={readOnly}
+                    />
+
+                    {/* Add Details Button */}
+                    {isChecked && !readOnly && (
+                      <button
+                        type="button"
+                        onClick={() => handleAddDetailsClick(facility.id, facilityName)}
+                        className={`whitespace-nowrap rounded-lg py-1 text-xs font-bold text-green-700 transition-colors`}
+                      >
+                        {hasDetails ? '✓ ' : ''}
+                        {t('schools.addData')}
+                      </button>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
         </FormField>
@@ -121,6 +173,17 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
             <p className="mt-1 text-right text-xs text-red-600">{t(certificateError)}</p>
           )}
         </div>
+      )}
+
+      {/* Add Facility Details Popup */}
+      {showAddDetailsPopup && selectedFacilityForDetails && (
+        <AddFacilityDetailsPopup
+          facilityId={selectedFacilityForDetails.id}
+          facilityName={selectedFacilityForDetails.name}
+          existingDetails={facilityDetails[selectedFacilityForDetails.id]}
+          onConfirm={handleSaveFacilityDetails}
+          onCancel={handleCancelAddDetails}
+        />
       )}
     </div>
   );

@@ -1,3 +1,19 @@
+// Facility Details Types
+export interface FacilityLicenseAttachment {
+  attachmentFile: File;
+  attachmentName: string;
+}
+
+export interface FacilityDetails {
+  id: string;
+  arabicName?: string;
+  englishName?: string;
+  description: string;
+  imageUrl?: string | null;
+  imageFile?: File | null;
+  oldFacilitiesFilePath?: string[];
+}
+
 // School form data types
 export interface SchoolFormData {
   // Basic Info
@@ -38,6 +54,7 @@ export interface SchoolFormData {
   // Facilities
   hasOtherBranches: boolean;
   facilities: string[];
+  facilityDetails?: Record<string, FacilityDetails>; // Map of facility ID to its details
 }
 
 // Initial empty form data
@@ -69,6 +86,7 @@ export const initialSchoolFormData: SchoolFormData = {
   hasBranches: false,
   hasOtherBranches: false,
   facilities: [],
+  facilityDetails: {},
 };
 
 // School data for display in tables
