@@ -176,14 +176,30 @@ export const addressSchema = yup.object().shape({
 
 /**
  * Validation schema for Facilities step
- * Includes facilities array - at least one facility must be selected
+ * Includes facilities array - at least one facility OR the "other" facility must be selected
  */
 export const facilitiesSchema = yup.object().shape({
   facilities: yup
     .array()
     .of(yup.string().required())
-    .min(1, 'schools.validation.facilitiesRequired')
+    .test('at-least-one-facility', 'schools.validation.facilitiesRequired', function (value) {
+      const { hasOtherFacility } = this.parent;
+      return (value && value.length > 0) || hasOtherFacility === true;
+    })
     .required('schools.validation.facilitiesRequired'),
+
+  hasOtherFacility: yup.boolean().default(false),
+
+  otherFacilityName: yup.string().when('hasOtherFacility', {
+    is: true,
+    then: (schema) =>
+      schema
+        .required('schools.validation.otherFacilityNameRequired')
+        .min(3, 'schools.validation.otherFacilityNameMin')
+        .max(100, 'schools.validation.otherFacilityNameMax')
+        .trim(),
+    otherwise: (schema) => schema.optional(),
+  }),
 });
 
 /**
