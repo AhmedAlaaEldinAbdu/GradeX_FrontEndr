@@ -28,8 +28,9 @@ import i18n from '@/i18n';
 
 interface BasicInfoStepProps {
   onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  logoFileName?: string;
-  logoError?: string;
+  licenseFileName?: string;
+  licenseFileNames?: string[];
+  licenseError?: string;
   readOnly?: boolean;
   showRejectedLabel?: boolean;
 }
@@ -40,8 +41,9 @@ interface BasicInfoStepProps {
  */
 const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   onLogoUpload,
-  logoFileName,
-  logoError,
+  licenseFileName: licenseFileName,
+  licenseFileNames: licenseFileNames,
+  licenseError: licenseError,
   readOnly = false,
   showRejectedLabel = false,
 }) => {
@@ -284,17 +286,21 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           </FormField>
         )}
 
-        {/* File Upload */}
+        {/* File Upload - Multiple Files */}
         {!readOnly && (
           <div>
             <FileUpload
               label={t('schools.licenses')}
               onChange={onLogoUpload}
-              fileName={logoFileName}
+              fileNames={licenseFileNames || (licenseFileName ? [licenseFileName] : [])}
               uploadText={t('schools.uploadMedia')}
               required={true}
+              multiple={true}
+              error={!!licenseError}
             />
-            {logoError && <p className="mt-1 text-right text-xs text-red-600">{t(logoError)}</p>}
+            {licenseError && (
+              <p className="mt-1 text-right text-xs text-red-600">{t(licenseError)}</p>
+            )}
           </div>
         )}
       </div>
