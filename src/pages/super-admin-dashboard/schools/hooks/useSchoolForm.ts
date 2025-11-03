@@ -6,13 +6,13 @@ import { initialSchoolFormData } from '../types/school.types';
 import { schoolFormSchema, getStepValidationSchema } from '../validation/school.validation';
 
 interface FileState {
-  logo: File | null;
-  image: File | null;
-  certificate: File | null;
+  license: File[];
+  image: File[];
+  certificate: File[];
 }
 
 interface FileErrors {
-  logo?: string;
+  license?: string;
   image?: string;
   certificate?: string;
 }
@@ -23,10 +23,11 @@ interface UseSchoolFormReturn {
   files: FileState;
   fileErrors: FileErrors;
   handleFileUpload: (type: keyof FileState) => (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleFileDelete: (type: keyof FileState) => () => void;
+  handleFileDelete: (type: keyof FileState, index?: number) => () => void;
   validateCurrentStep: (step: number) => Promise<boolean>;
   validateFiles: (step?: number) => boolean;
   resetForm: () => void;
+  getFileNames: (type: keyof FileState) => string[];
 }
 
 /**
@@ -36,9 +37,9 @@ interface UseSchoolFormReturn {
  */
 export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn => {
   const [files, setFiles] = useState<FileState>({
-    logo: null,
-    image: null,
-    certificate: null,
+    license: [],
+    image: [],
+    certificate: [],
   });
 
   const [fileErrors, setFileErrors] = useState<FileErrors>({});
@@ -87,55 +88,87 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
   };
 
   /**
-   * File upload handler for logo, image, and certificate
+   * File upload handler for license, image, and certificate (supports multiple files)
    * @param type - Type of file to upload
    * @returns Change event handler
    */
   const handleFileUpload = (type: keyof FileState) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+    if (e.target.files && e.target.files.length > 0) {
+      const uploadedFiles = Array.from(e.target.files);
+      const validFiles: File[] = [];
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        console.error('File size exceeds 5MB');
-        return;
-      }
+      uploadedFiles.forEach((file) => {
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          console.error('File size exceeds 5MB:', file.name);
+          return;
+        }
 
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-      if (!allowedTypes.includes(file.type)) {
-        console.error('Invalid file type');
-        return;
-      }
+        // Validate file type
+        const allowedTypes = [
+          'image/jpeg',
+          'image/png',
+          'image/jpg',
+          'application/pdf',
+          'image/svg+xml',
+        ];
+        if (!allowedTypes.includes(file.type)) {
+          console.error('Invalid file type:', file.name);
+          return;
+        }
 
-      setFiles((prev) => ({ ...prev, [type]: file }));
-
-      // Clear error for this file when uploaded
-      setFileErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[type];
-        return newErrors;
+        validFiles.push(file);
       });
+
+      if (validFiles.length > 0) {
+        setFiles((prev) => ({ ...prev, [type]: [...prev[type], ...validFiles] }));
+
+        // Clear error for this file when uploaded
+        setFileErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[type];
+          return newErrors;
+        });
+      }
     }
   };
 
   /**
-   * File delete handler
+   * File delete handler (supports deleting specific file from multiple files)
    * @param type - Type of file to delete
+   * @param index - Optional index of file to delete (for multiple files)
    * @returns Delete handler function
    */
-  const handleFileDelete = (type: keyof FileState) => () => {
-    setFiles((prev) => ({ ...prev, [type]: null }));
+  const handleFileDelete = (type: keyof FileState, index?: number) => () => {
+    if (index !== undefined) {
+      setFiles((prev) => ({
+        ...prev,
+        [type]: prev[type].filter((_, i) => i !== index),
+      }));
+    } else {
+      setFiles((prev) => ({ ...prev, [type]: [] }));
+    }
 
-    // Reset file input if needed
-    const fileInput = document.querySelector(`input[name="${type}"]`) as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
+    // Reset file input if all files are deleted
+    if (index === undefined || files[type].length === 1) {
+      const fileInput = document.querySelector(`input[name="${type}"]`) as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
     }
   };
 
   /**
-   * Validate required files (logo and certificate)
+   * Get file names for a specific file type
+   * @param type - Type of files
+   * @returns Array of file names
+   */
+  const getFileNames = (type: keyof FileState): string[] => {
+    return files[type].map((file) => file.name);
+  };
+
+  /**
+   * Validate required files (license and certificate)
    * @param step - Optional step number to validate specific files for that step
    * @returns Boolean indicating if files are valid
    */
@@ -144,15 +177,14 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
 
     // If step is provided, only validate files for that step
     if (step === 1 || step === undefined) {
-      // Logo is required on step 1
-      if (!files.logo) {
-        errors.logo = 'schools.validation.logoRequired';
+      if (!files.license || files.license.length === 0) {
+        errors.license = 'schools.validation.licensesRequired';
       }
     }
 
     if (step === 4 || step === undefined) {
       // Certificate is required on step 4
-      if (!files.certificate) {
+      if (!files.certificate || files.certificate.length === 0) {
         errors.certificate = 'schools.validation.certificateRequired';
       }
     }
@@ -166,7 +198,7 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
    */
   const resetForm = () => {
     form.reset(initialSchoolFormData);
-    setFiles({ logo: null, image: null, certificate: null });
+    setFiles({ license: [], image: [], certificate: [] });
     setFileErrors({});
   };
 
@@ -179,5 +211,6 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
     validateCurrentStep,
     validateFiles,
     resetForm,
+    getFileNames,
   };
 };
