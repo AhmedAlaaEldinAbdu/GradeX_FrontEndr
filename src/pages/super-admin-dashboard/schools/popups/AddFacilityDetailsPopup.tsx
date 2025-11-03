@@ -1,7 +1,5 @@
-import { useToast } from '@/shared/context/ToastContext';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import FileUpload from '@gradex/shared/components/FileUpload';
 import type { FacilityDetails } from '../types/school.types';
 import FormField from '@/shared/components/FormField';
 
@@ -20,13 +18,15 @@ export default function AddFacilityDetailsPopup({
   onCancel,
 }: AddFacilityDetailsPopupProps) {
   const { t } = useTranslation();
-  const { showToast } = useToast();
 
   const [isVisible, setIsVisible] = useState(false);
   const [description, setDescription] = useState(existingDetails?.description || '');
   const [imageFile, setImageFile] = useState<File | null>(existingDetails?.imageFile || null);
   const [imageFileName, setImageFileName] = useState<string | undefined>(
     existingDetails?.imageFile?.name
+  );
+  const [hasExistingImage, setHasExistingImage] = useState<boolean>(
+    !!(existingDetails?.imageFile || existingDetails?.imageUrl)
   );
 
   const popupRef = useRef<HTMLDivElement>(null);
@@ -50,24 +50,17 @@ export default function AddFacilityDetailsPopup({
     if (file) {
       setImageFile(file);
       setImageFileName(file.name);
+      setHasExistingImage(true);
     }
   };
 
   const handleImageDelete = () => {
     setImageFile(null);
     setImageFileName(undefined);
+    setHasExistingImage(false);
   };
 
   const handleSubmit = () => {
-    if (!description.trim()) {
-      showToast({
-        message: t('common.validation.required'),
-        type: 'error',
-        duration: 3000,
-      });
-      return;
-    }
-
     const facilityDetails: FacilityDetails = {
       id: facilityId,
       description,
@@ -114,15 +107,142 @@ export default function AddFacilityDetailsPopup({
           </div>
 
           {/* Image Upload */}
-          <FileUpload
-            label={t('schools.facilityImages')}
-            accept="image/*,.svg,.jpg,.jpeg,.png"
-            onChange={handleImageUpload}
-            onDelete={handleImageDelete}
-            fileName={imageFileName}
-            uploadText={t('schools.uploadMedia')}
-            optional={true}
-          />
+          <div className="space-y-3">
+            <label className="mb-2 block text-right text-sm font-medium text-gray-700">
+              {t('schools.facilityImages')}
+              <span className="text-xs text-gray-400"> ({t('schools.optional')}) </span>
+            </label>
+
+            {/* Upload Area - Show when no image exists */}
+            {!hasExistingImage && (
+              <div className="relative rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center transition-all hover:border-green-500">
+                <input
+                  type="file"
+                  accept="image/*,.svg,.jpg,.jpeg,.png"
+                  onChange={handleImageUpload}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                />
+                <div className="flex flex-col items-center gap-2">
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 48 48"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="text-gray-400"
+                  >
+                    <path
+                      d="M24 16V32M16 24H32"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                    <rect
+                      x="8"
+                      y="8"
+                      width="32"
+                      height="32"
+                      rx="4"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  <p className="text-sm text-green-600">{t('schools.uploadMedia')}</p>
+                  <p className="text-sm text-gray-500">GIF, SVG, JPG, PNG</p>
+                </div>
+              </div>
+            )}
+
+            {/* File Preview Section - Show when image exists */}
+            {hasExistingImage && imageFileName && (
+              <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {/* File Preview */}
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
+                      <svg
+                        className="h-6 w-6 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+
+                    {/* File Info */}
+                    <div className="flex-1 text-right">
+                      <p className="text-sm font-medium text-gray-900">
+                        {imageFileName || t('schools.facilityImages')}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {imageFile ? t('common.uploaded') : t('common.existingFile')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-2">
+                    <label
+                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50"
+                      title={t('common.edit')}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*,.svg,.jpg,.jpeg,.png"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        />
+                      </svg>
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={handleImageDelete}
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
+                      title={t('common.delete')}
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Progress Bar (Full) */}
+                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div className="h-full w-full bg-green-600 transition-all duration-300"></div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Action Buttons */}
           <div className="flex w-full justify-center gap-3 pt-4">
