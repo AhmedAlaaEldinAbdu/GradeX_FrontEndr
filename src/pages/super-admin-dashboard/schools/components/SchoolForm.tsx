@@ -47,6 +47,7 @@ const SchoolForm = ({
   const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [branches, setBranches] = useState<
     Array<{
       country: string;
@@ -173,18 +174,8 @@ const SchoolForm = ({
   /**
    * Handle form submission with validation
    */
-  const handleSubmit = form.handleSubmit(async (data) => {
+  const onFormSubmit = async (data: SchoolFormData) => {
     try {
-      // Validate all steps before submission
-      const isValid = await validateCurrentStep(4);
-      // Validate all required files (logo and certificate)
-      const filesValid = validateFiles(); // No parameter = validate all files
-
-      if (!isValid || !filesValid) {
-        console.error('Form validation failed');
-        return;
-      }
-
       const backendFormData = transformSchoolFormBackend(data, files, branches);
 
       if (import.meta.env.DEV) {
@@ -205,7 +196,20 @@ const SchoolForm = ({
     } catch (error) {
       console.error('Error submitting form:', error);
     }
-  });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowValidationErrors(true);
+    await form.trigger(['facilities', 'hasOtherFacility', 'otherFacilityName']);
+    const isValid = await validateCurrentStep(4);
+    const filesValid = validateFiles();
+    if (!isValid || !filesValid) {
+      console.error('Form validation failed');
+      return;
+    }
+    form.handleSubmit(onFormSubmit)(e);
+  };
 
   const handleCloseSuccessPopup = () => {
     setShowSuccessPopup(false);
@@ -257,6 +261,7 @@ const SchoolForm = ({
               certificateFileNames={getFileNames('certificate')}
               certificateError={fileErrors.certificate}
               readOnly={mode === 'view'}
+              showValidationErrors={showValidationErrors}
             />
           )}
 
