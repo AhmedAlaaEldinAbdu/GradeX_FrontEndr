@@ -30,9 +30,25 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 
 interface SchoolFormProps {
   mode: 'add' | 'edit' | 'view';
-  initialData?: SchoolFormData;
+  initialData?: SchoolFormData & {
+    licenseFiles?: string[];
+    imageFiles?: string[];
+    certificateFiles?: string[];
+    branches?: Array<{
+      country: string;
+      region: string;
+      city: string;
+      district: string;
+      street: string;
+      buildingNumber: string;
+      postalCode: string;
+      latitude?: number;
+      longitude?: number;
+    }>;
+  };
   schoolId?: string;
   showRejectedLabel?: boolean;
+  showPendingLabel?: boolean;
 }
 
 const SchoolForm = ({
@@ -40,6 +56,7 @@ const SchoolForm = ({
   initialData,
   schoolId,
   showRejectedLabel = false,
+  showPendingLabel = false,
 }: SchoolFormProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -64,6 +81,14 @@ const SchoolForm = ({
 
   const isCreating = useSelector(selectIsCreating);
   const validationErrors = useSelector(selectValidationErrors);
+
+  // Initialize branches from initialData when in edit/view mode
+  useEffect(() => {
+    if (initialData?.branches && initialData.branches.length > 0) {
+      console.log('📋 SchoolForm: Initializing branches from initialData:', initialData.branches);
+      setBranches(initialData.branches);
+    }
+  }, [initialData]);
 
   // Show validation errors in toast when they occur
   useEffect(() => {
@@ -143,6 +168,12 @@ const SchoolForm = ({
    */
   const handleNext = async () => {
     if (currentStep < 4) {
+      // In view mode, skip validation and just move to next step
+      if (mode === 'view') {
+        setCurrentStep((prev) => prev + 1);
+        return;
+      }
+
       // Validate current step before proceeding
       const isValid = await validateCurrentStep(currentStep);
 
@@ -238,17 +269,24 @@ const SchoolForm = ({
           {currentStep === 1 && (
             <BasicInfoStep
               onLogoUpload={handleFileUpload('license')}
-              licenseFileNames={getFileNames('license')}
+              licenseFileNames={
+                mode === 'view' ? initialData?.licenseFiles || [] : getFileNames('license')
+              }
               licenseError={fileErrors.license}
               readOnly={mode === 'view'}
               showRejectedLabel={showRejectedLabel}
+              showPendingLabel={showPendingLabel}
             />
           )}
 
           {currentStep === 2 && <ContactInfoStep readOnly={mode === 'view'} />}
 
           {currentStep === 3 && (
-            <AddressStep readOnly={mode === 'view'} onBranchesChange={setBranches} />
+            <AddressStep
+              readOnly={mode === 'view'}
+              initialBranches={branches}
+              onBranchesChange={setBranches}
+            />
           )}
 
           {currentStep === 4 && (
@@ -257,8 +295,10 @@ const SchoolForm = ({
               onCertificateUpload={handleFileUpload('certificate')}
               onImageDelete={handleFileDelete('image')}
               onCertificateDelete={handleFileDelete('certificate')}
-              imageFileNames={getFileNames('image')}
-              certificateFileNames={getFileNames('certificate')}
+              imageFileNames={mode === 'view' ? [] : getFileNames('image')}
+              certificateFileNames={
+                mode === 'view' ? initialData?.certificateFiles || [] : getFileNames('certificate')
+              }
               certificateError={fileErrors.certificate}
               readOnly={mode === 'view'}
               showValidationErrors={showValidationErrors}
@@ -269,7 +309,7 @@ const SchoolForm = ({
           <div className="flex justify-between p-6">
             {/* Previous Button */}
             <div>
-              {currentStep > 1 && mode !== 'view' && (
+              {currentStep > 1 && (
                 <Button type="button" variant="outline" onClick={handlePrevious}>
                   {t('common.previous')}
                 </Button>
@@ -279,8 +319,11 @@ const SchoolForm = ({
             {/* Next/Save/Cancel Buttons */}
             <div className="flex gap-3">
               {mode === 'view' ? (
-                // View mode - only show Next button
+                // View mode - show Next button and Back to list
                 <>
+                  <Button type="button" variant="outline" onClick={() => navigate('/schools')}>
+                    {t('common.backToList')}
+                  </Button>
                   {currentStep < 4 && (
                     <Button type="button" variant="primary" onClick={handleNext}>
                       {t('common.next')}
