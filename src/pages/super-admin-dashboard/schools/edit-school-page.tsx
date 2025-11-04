@@ -1,106 +1,80 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import Breadcrumb from '@gradex/shared/layout/Breadcrumb';
 import Loading from '@gradex/shared/components/Loading';
 import SchoolForm from './components/SchoolForm';
 import type { SchoolFormData } from './types/school.types';
+import { transformBackendSchoolToForm } from './utils/school-form.transformer';
+import { fetchSchoolById, selectIsLoading } from '@gradex/redux/features/schools';
+import { useToast } from '@/shared/context/ToastContext';
 
-const EditSchoolPage: React.FC = () => {
+interface EditSchoolPageProps {
+  mode?: 'edit' | 'view';
+}
+
+const EditSchoolPage: React.FC<EditSchoolPageProps> = ({ mode: propMode }) => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
+
   const [schoolData, setSchoolData] = useState<SchoolFormData | null>(null);
 
+  const isLoading = useSelector(selectIsLoading);
+
+  const mode = propMode || (location.pathname.includes('/view-school/') ? 'view' : 'edit');
+
   useEffect(() => {
-    // TODO: Fetch school data from API
     const fetchSchoolData = async () => {
-      try {
-        setLoading(true);
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Mock data - replace with actual API call
-        const mockData: SchoolFormData = {
-          schoolName: 'مدرسة المستقبل',
-          academicSystem: 'semester',
-          foundationDate: '2020-01-15',
-          aboutSchool: 'مدرسة رائدة في التعليم الحديث',
-          hasCurrentSystem: true,
-          currentSystem: 'نظام إلكتروني متكامل',
-          country: 'SA',
-          applicationFeatures: {
-            attendanceAndDeparture: true,
-            remoteBookTracking: false,
-            expensesTrackingOnly: false,
-            fullExpensesPayment: true,
-          },
-          bankName: 'البنك الأهلي',
-          accountNumber: '1234567890',
-          ibanNumber: 'SA1234567890123456789012',
-          phoneNumber: '+966501234567',
-          email: 'info@school.com',
-          website: 'www.school.com',
-          contactPerson: 'أحمد محمد',
-          region: 'الرياض',
-          state: 'الرياض',
-          city: 'الرياض',
-          street: 'شارع الملك فهد',
-          district: 'العليا',
-          buildingNumber: '1234',
-          postalCode: '12345',
-          hasBranches: false,
-          hasOtherBranches: false,
-          attendanceFeature: true,
-          buyBooksFeature: false,
-          payCashFeature: true,
-          payInstallmentFeature: true,
-          facilities: {
-            playground: true,
-            library: true,
-            laboratory: false,
-            sportField: true,
-            canteen: false,
-            busService: true,
-          },
-        };
-
-        setSchoolData(mockData);
-      } catch (error) {
-        console.error('Error fetching school data:', error);
-        // TODO: Show error message to user
+      if (!id) {
+        showToast({
+          message: t('schools.schoolNotFound'),
+          type: 'error',
+        });
         navigate('/schools');
-      } finally {
-        setLoading(false);
+        return;
+      }
+
+      try {
+        const resultAction = await dispatch(fetchSchoolById(id));
+
+        if (fetchSchoolById.fulfilled.match(resultAction)) {
+          const formData = transformBackendSchoolToForm(resultAction.payload);
+          setSchoolData(formData);
+        } else if (fetchSchoolById.rejected.match(resultAction)) {
+          showToast({
+            message: (resultAction.payload as string) || t('common.error'),
+            type: 'error',
+          });
+          navigate('/schools');
+        }
+      } catch (err) {
+        console.error('Error fetching school data:', err);
+        showToast({
+          message: t('common.error'),
+          type: 'error',
+        });
+        navigate('/schools');
       }
     };
 
-    if (id) {
-      fetchSchoolData();
-    }
-  }, [id, navigate]);
+    fetchSchoolData();
+  }, [id, dispatch, navigate, showToast, t]);
 
   const breadcrumbItems = [
     { label: t('schools.title'), path: '/schools' },
-    { label: t('schools.editSchool') },
+    { label: mode === 'view' ? t('schools.viewSchool') : t('schools.editSchool') },
   ];
 
-  if (loading) {
+  if (isLoading || !schoolData) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loading />
-      </div>
-    );
-  }
-
-  if (!schoolData) {
-    return (
-      <div className="pb-8" dir="rtl">
-        <Breadcrumb items={breadcrumbItems} />
-        <div className="text-center">
-          <p className="text-gray-600">{t('schools.schoolNotFound')}</p>
-        </div>
       </div>
     );
   }
@@ -110,10 +84,12 @@ const EditSchoolPage: React.FC = () => {
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">{t('schools.editSchool')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {mode === 'view' ? schoolData.schoolName : t('schools.editSchool')}
+        </h1>
       </div>
 
-      <SchoolForm mode="edit" initialData={schoolData} schoolId={id} />
+      <SchoolForm mode={mode} initialData={schoolData} schoolId={id} />
     </div>
   );
 };
