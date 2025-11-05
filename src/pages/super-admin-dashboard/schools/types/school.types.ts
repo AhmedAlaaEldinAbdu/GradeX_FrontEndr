@@ -56,7 +56,9 @@ export interface SchoolFormData {
   facilities: string[];
   facilityDetails?: Record<string, FacilityDetails>;
   hasOtherFacility: boolean;
-  otherFacilityName?: string;
+  otherFacilityName?: string; // Deprecated - kept for backward compatibility
+  otherFacilityNameAr?: string;
+  otherFacilityNameEn?: string;
 }
 
 // Initial empty form data
@@ -91,6 +93,8 @@ export const initialSchoolFormData: SchoolFormData = {
   facilityDetails: {},
   hasOtherFacility: false,
   otherFacilityName: '',
+  otherFacilityNameAr: '',
+  otherFacilityNameEn: '',
 };
 
 // School data for display in tables
