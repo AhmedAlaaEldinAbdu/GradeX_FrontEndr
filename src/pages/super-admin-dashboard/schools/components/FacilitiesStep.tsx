@@ -63,27 +63,9 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   const isLoadingFacilities = useSelector(selectIsLoadingFacilities);
 
   const facilityDetails = watch('facilityDetails') || {};
-  const selectedFacilities = watch('facilities');
-
-  useEffect(() => {
-    if (readOnly && facilities.length > 0 && selectedFacilities) {
-      console.log(
-        '🔍 DEBUG - Lookup Facilities IDs:',
-        facilities.map((f) => f.id)
-      );
-      console.log('🔍 DEBUG - Selected Facility IDs from form:', selectedFacilities);
-      console.log(
-        '🔍 DEBUG - Match check:',
-        facilities.map((f) => ({
-          id: f.id,
-          name: f.arabicName,
-          isChecked: selectedFacilities.includes(f.id),
-        }))
-      );
-    }
-  }, [readOnly, facilities, selectedFacilities]);
 
   const [showAddDetailsPopup, setShowAddDetailsPopup] = useState(false);
+  const [showViewDetailsPopup, setShowViewDetailsPopup] = useState(false);
   const [selectedFacilityForDetails, setSelectedFacilityForDetails] = useState<{
     id: string;
     name: string;
@@ -105,6 +87,11 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
     setShowAddDetailsPopup(true);
   };
 
+  const handleViewDetailsClick = (facilityId: string, facilityName: string) => {
+    setSelectedFacilityForDetails({ id: facilityId, name: facilityName });
+    setShowViewDetailsPopup(true);
+  };
+
   const handleSaveFacilityDetails = (details: FacilityDetails) => {
     const currentDetails = facilityDetails || {};
     setValue('facilityDetails', {
@@ -117,6 +104,11 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
 
   const handleCancelAddDetails = () => {
     setShowAddDetailsPopup(false);
+    setSelectedFacilityForDetails(null);
+  };
+
+  const handleCancelViewDetails = () => {
+    setShowViewDetailsPopup(false);
     setSelectedFacilityForDetails(null);
   };
 
@@ -175,7 +167,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                               disabled={readOnly}
                             />
 
-                            {/* Add Details Button */}
+                            {/* Add Details Button (Edit Mode) */}
                             {isChecked && !readOnly && (
                               <button
                                 type="button"
@@ -186,32 +178,18 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                                 {t('schools.addData')}
                               </button>
                             )}
-                          </div>
 
-                          {/* Display Facility Details in View Mode */}
-                          {isChecked && readOnly && hasDetails && (
-                            <div className="mr-8 rounded-lg border border-gray-200 bg-gray-50 p-3">
-                              {facilityDetails[facility.id]?.description && (
-                                <div className="mb-2">
-                                  <span className="text-xs font-semibold text-gray-700">
-                                    {t('schools.facilityDescription')}:{' '}
-                                  </span>
-                                  <span className="text-xs text-gray-600">
-                                    {facilityDetails[facility.id].description}
-                                  </span>
-                                </div>
-                              )}
-                              {facilityDetails[facility.id]?.imageUrl && (
-                                <div className="mt-2">
-                                  <img
-                                    src={facilityDetails[facility.id].imageUrl || ''}
-                                    alt={facilityName}
-                                    className="h-24 w-24 rounded-lg object-cover"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          )}
+                            {/* View Details Button (View Mode) */}
+                            {isChecked && readOnly && hasDetails && (
+                              <button
+                                type="button"
+                                onClick={() => handleViewDetailsClick(facility.id, facilityName)}
+                                className="whitespace-nowrap rounded-lg bg-green-700 px-3 py-1 text-xs font-bold text-white transition-colors hover:bg-green-800"
+                              >
+                                {t('schools.viewData')}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       );
                     })}
@@ -235,6 +213,8 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                       field.onChange(checked);
                       if (!checked) {
                         setValue('otherFacilityName', '');
+                        setValue('otherFacilityNameAr', '');
+                        setValue('otherFacilityNameEn', '');
                         const currentDetails = { ...facilityDetails };
                         delete currentDetails['other'];
                         setValue('facilityDetails', currentDetails);
@@ -248,10 +228,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                     disabled={readOnly}
                   />
 
-                  {/* Add Details Button for Other Facility */}
+                  {/* Add Details Button for Other Facility (Edit Mode) */}
                   {field.value && !readOnly && (
                     <Controller
-                      name="otherFacilityName"
+                      name="otherFacilityNameAr"
                       control={control}
                       render={({ field: nameField }) => (
                         <button
@@ -270,11 +250,33 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                       )}
                     />
                   )}
+
+                  {/* View Details Button for Other Facility (View Mode) */}
+                  {field.value && readOnly && facilityDetails['other'] && (
+                    <Controller
+                      name="otherFacilityNameAr"
+                      control={control}
+                      render={({ field: nameField }) => (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleViewDetailsClick(
+                              'other',
+                              nameField.value || t('schools.otherFacility')
+                            )
+                          }
+                          className="whitespace-nowrap rounded-lg bg-green-700 px-3 py-1 text-xs font-bold text-white transition-colors hover:bg-green-800"
+                        >
+                          {t('schools.viewData')}
+                        </button>
+                      )}
+                    />
+                  )}
                 </div>
               )}
             />
 
-            {/* Other Facility Name Input (Edit Mode) */}
+            {/* Other Facility Name Inputs (Edit Mode) */}
             {!readOnly && (
               <Controller
                 name="hasOtherFacility"
@@ -282,37 +284,85 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                 render={({ field: hasOtherField }) => (
                   <>
                     {hasOtherField.value && (
-                      <Controller
-                        name="otherFacilityName"
-                        control={control}
-                        render={({ field: nameField, fieldState: nameFieldState }) => (
-                          <div className="mr-8 mt-2">
-                            <input
-                              type="text"
-                              value={nameField.value || ''}
-                              onChange={(e) => {
-                                nameField.onChange(e.target.value);
-                                // Only trigger validation if field was touched
-                                if (nameFieldState.isTouched) {
-                                  trigger('otherFacilityName');
-                                }
-                              }}
-                              onBlur={nameField.onBlur}
-                              placeholder={t('schools.enterOtherFacilityName')}
-                              className={`w-full rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                                errors.otherFacilityName && nameFieldState.isTouched
-                                  ? 'border-red-500'
-                                  : 'border-gray-300'
-                              }`}
-                            />
-                            {errors.otherFacilityName?.message && nameFieldState.isTouched && (
-                              <p className="mt-1 text-right text-xs text-red-600">
-                                {t(errors.otherFacilityName.message)}
-                              </p>
+                      <div className="mr-8 mt-2">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          {/* Arabic Name Input */}
+                          <Controller
+                            name="otherFacilityNameAr"
+                            control={control}
+                            render={({ field: nameArField, fieldState: nameArFieldState }) => (
+                              <div>
+                                <label className="mb-1 block text-right text-sm font-medium text-gray-700">
+                                  {t('schools.facilityNameAr')}{' '}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={nameArField.value || ''}
+                                  onChange={(e) => {
+                                    nameArField.onChange(e.target.value);
+                                    // Also update deprecated field for backward compatibility
+                                    setValue('otherFacilityName', e.target.value);
+                                    if (nameArFieldState.isTouched) {
+                                      trigger('otherFacilityNameAr');
+                                    }
+                                  }}
+                                  onBlur={nameArField.onBlur}
+                                  placeholder={t('schools.enterFacilityNameAr')}
+                                  className={`w-full rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                                    errors.otherFacilityNameAr && nameArFieldState.isTouched
+                                      ? 'border-red-500'
+                                      : 'border-gray-300'
+                                  }`}
+                                />
+                                {errors.otherFacilityNameAr?.message &&
+                                  nameArFieldState.isTouched && (
+                                    <p className="mt-1 text-right text-xs text-red-600">
+                                      {t(errors.otherFacilityNameAr.message)}
+                                    </p>
+                                  )}
+                              </div>
                             )}
-                          </div>
-                        )}
-                      />
+                          />
+
+                          {/* English Name Input */}
+                          <Controller
+                            name="otherFacilityNameEn"
+                            control={control}
+                            render={({ field: nameEnField, fieldState: nameEnFieldState }) => (
+                              <div>
+                                <label className="mb-1 block text-right text-sm font-medium text-gray-700">
+                                  {t('schools.facilityNameEn')}{' '}
+                                  <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  value={nameEnField.value || ''}
+                                  onChange={(e) => {
+                                    nameEnField.onChange(e.target.value);
+                                    if (nameEnFieldState.isTouched) {
+                                      trigger('otherFacilityNameEn');
+                                    }
+                                  }}
+                                  onBlur={nameEnField.onBlur}
+                                  placeholder={t('schools.enterFacilityNameEn')}
+                                  className={`w-full rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                                    errors.otherFacilityNameEn && nameEnFieldState.isTouched
+                                      ? 'border-red-500'
+                                      : 'border-gray-300'
+                                  }`}
+                                />
+                                {errors.otherFacilityNameEn?.message &&
+                                  nameEnFieldState.isTouched && (
+                                    <p className="mt-1 text-right text-xs text-red-600">
+                                      {t(errors.otherFacilityNameEn.message)}
+                                    </p>
+                                  )}
+                              </div>
+                            )}
+                          />
+                        </div>
+                      </div>
                     )}
                   </>
                 )}
@@ -327,48 +377,42 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                 render={({ field: hasOtherField }) => (
                   <>
                     {hasOtherField.value && (
-                      <Controller
-                        name="otherFacilityName"
-                        control={control}
-                        render={({ field: nameField }) => (
-                          <div className="mr-8 mt-2 space-y-2">
-                            {/* Facility Name */}
-                            {nameField.value && (
-                              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                <span className="text-sm font-semibold text-gray-700">
-                                  {t('schools.facilityName')}:{' '}
-                                </span>
-                                <span className="text-sm text-gray-600">{nameField.value}</span>
-                              </div>
-                            )}
+                      <div className="mr-8 mt-2 space-y-2">
+                        {/* Facility Names */}
+                        <Controller
+                          name="otherFacilityNameAr"
+                          control={control}
+                          render={({ field: nameArField }) => (
+                            <>
+                              {nameArField.value && (
+                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                  <span className="text-sm font-semibold text-gray-700">
+                                    {t('schools.facilityNameAr')}:{' '}
+                                  </span>
+                                  <span className="text-sm text-gray-600">{nameArField.value}</span>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        />
 
-                            {/* Facility Details */}
-                            {facilityDetails['other'] && (
-                              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                {facilityDetails['other']?.description && (
-                                  <div className="mb-2">
-                                    <span className="text-xs font-semibold text-gray-700">
-                                      {t('schools.facilityDescription')}:{' '}
-                                    </span>
-                                    <span className="text-xs text-gray-600">
-                                      {facilityDetails['other'].description}
-                                    </span>
-                                  </div>
-                                )}
-                                {facilityDetails['other']?.imageUrl && (
-                                  <div className="mt-2">
-                                    <img
-                                      src={facilityDetails['other'].imageUrl || ''}
-                                      alt={nameField.value || t('schools.otherFacility')}
-                                      className="h-24 w-24 rounded-lg object-cover"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      />
+                        <Controller
+                          name="otherFacilityNameEn"
+                          control={control}
+                          render={({ field: nameEnField }) => (
+                            <>
+                              {nameEnField.value && (
+                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                  <span className="text-sm font-semibold text-gray-700">
+                                    {t('schools.facilityNameEn')}:{' '}
+                                  </span>
+                                  <span className="text-sm text-gray-600">{nameEnField.value}</span>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        />
+                      </div>
                     )}
                   </>
                 )}
@@ -446,7 +490,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
         </>
       )}
 
-      {/* Add Facility Details Popup */}
+      {/* Add Facility Details Popup (Edit Mode) */}
       {showAddDetailsPopup && selectedFacilityForDetails && (
         <AddFacilityDetailsPopup
           facilityId={selectedFacilityForDetails.id}
@@ -454,6 +498,18 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
           existingDetails={facilityDetails[selectedFacilityForDetails.id]}
           onConfirm={handleSaveFacilityDetails}
           onCancel={handleCancelAddDetails}
+        />
+      )}
+
+      {/* View Facility Details Popup (View Mode) */}
+      {showViewDetailsPopup && selectedFacilityForDetails && (
+        <AddFacilityDetailsPopup
+          facilityId={selectedFacilityForDetails.id}
+          facilityName={selectedFacilityForDetails.name}
+          existingDetails={facilityDetails[selectedFacilityForDetails.id]}
+          onConfirm={handleSaveFacilityDetails}
+          onCancel={handleCancelViewDetails}
+          readOnly={true}
         />
       )}
     </div>
