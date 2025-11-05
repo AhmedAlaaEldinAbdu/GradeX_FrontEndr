@@ -20,6 +20,7 @@ import {
   selectAcademicSystems,
   selectIsLoadingAcademicSystems,
 } from '@gradex/redux/features/academic-system';
+import { resetPagination } from '@gradex/redux/features/schools';
 
 export default function Schools() {
   const { t, i18n } = useTranslation();
@@ -70,7 +71,7 @@ export default function Schools() {
     setSearchTerm('');
     setAcademicSystem('');
     setSelectedCountry('');
-    // Then change tab
+    dispatch(resetPagination());
     setActiveTab(tabId);
   };
 
