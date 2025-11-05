@@ -16,6 +16,7 @@ import {
   rejectSchoolApplication,
   sendSchoolEditRequest,
 } from '@gradex/redux/features/schools';
+import { fetchFacilities, selectFacilities } from '@gradex/redux/features/lookups';
 import { useToast } from '@/shared/context/ToastContext';
 import EditRequestPopup from './popups/EditRequestPopup';
 import RejectSchoolPopup from './popups/RejectSchoolPopup';
@@ -36,10 +37,15 @@ const ViewSchoolPage: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const isLoading = useSelector(selectIsLoading);
+  const lookupFacilities = useSelector(selectFacilities);
 
   const fromPendingSchools = location.state?.fromPendingSchools;
   const fromRejectedSchools = location.state?.fromRejectedSchools;
   const fromRegisteredSchools = location.state?.fromRegisteredSchools;
+
+  useEffect(() => {
+    dispatch(fetchFacilities());
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchSchoolData = async () => {
@@ -56,7 +62,7 @@ const ViewSchoolPage: React.FC = () => {
         const resultAction = await dispatch(fetchSchoolById(id));
 
         if (fetchSchoolById.fulfilled.match(resultAction)) {
-          const formData = transformBackendSchoolToForm(resultAction.payload);
+          const formData = transformBackendSchoolToForm(resultAction.payload, lookupFacilities);
           setSchoolData(formData);
           setSchoolStatus(resultAction.payload.schoolStatus);
         } else if (fetchSchoolById.rejected.match(resultAction)) {
@@ -77,7 +83,7 @@ const ViewSchoolPage: React.FC = () => {
     };
 
     fetchSchoolData();
-  }, [id, dispatch, navigate, showToast, t]);
+  }, [id, dispatch, navigate, showToast, t, lookupFacilities]);
 
   const handleConfirmEditRequest = async (message: string) => {
     if (!message.trim() || !id) {
