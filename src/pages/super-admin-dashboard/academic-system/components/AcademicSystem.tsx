@@ -3,6 +3,8 @@ import Card from '@/shared/components/Card';
 import { useState } from 'react';
 import AcademicSystemTab from './AcademicSystemTab';
 import EducationalStagesTab from './EducationalStagesTab';
+import EmptyState from '@/shared/components/EmptyState';
+import AcademicIcon from '@gradex/assets/icons/Academic.svg';
 
 interface IAcademicSystemProps {
   setSelectedTab: (tab: 'AcademicSystem' | 'EducationalStages') => void;
@@ -26,7 +28,12 @@ export default function AcademicSystem({ setSelectedTab }: IAcademicSystemProps)
 
   return (
     <div>
-      <div className="mb-5 w-full max-w-lg px-1">
+      <EmptyState
+          imgSrc={AcademicIcon}
+          description={t('academicSystem.noAcademicSystemMessage')}
+          blend={true}
+        />
+      {/* <div className="mb-5 w-full max-w-lg px-1">
         <div className="flex">
           {tabs.map((tab) => (
             <button
@@ -46,7 +53,7 @@ export default function AcademicSystem({ setSelectedTab }: IAcademicSystemProps)
       <div>
         {activeTab === 'AcademicSystem' && <AcademicSystemTab />}
         {activeTab === 'EducationalStages' && <EducationalStagesTab />}
-      </div>
+      </div> */}
     </div>
   );
 }

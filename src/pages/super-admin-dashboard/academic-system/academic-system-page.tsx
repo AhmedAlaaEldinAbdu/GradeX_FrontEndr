@@ -18,7 +18,8 @@ const AcademicSystemPage: React.FC = () => {
             ? [
                 {
                   label: 'academicSystem.addAcademicSystem',
-                  to: '/academic-system/add-academic-system',
+                  // to: '/academic-system/add-academic-system',
+                  to: '#!',
                   imgSrc: PlusIcon,
                   imgClassName: `w-[24px] h-[24px]`,
                 },
@@ -26,7 +27,8 @@ const AcademicSystemPage: React.FC = () => {
             : [
                 {
                   label: 'academicSystem.addEducationalStages',
-                  to: '/academic-system/add-educational-stages',
+                  // to: '/academic-system/add-educational-stages',
+                  to: '#!',
                   imgSrc: PlusIcon,
                   imgClassName: `w-[24px] h-[24px]`,
                 },
