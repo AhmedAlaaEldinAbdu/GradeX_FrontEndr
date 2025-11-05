@@ -9,6 +9,7 @@ import SchoolForm from './components/SchoolForm';
 import type { SchoolFormData } from './types/school.types';
 import { transformBackendSchoolToForm } from './utils/school-form.transformer';
 import { fetchSchoolById, selectIsLoading } from '@gradex/redux/features/schools';
+import { fetchFacilities, selectFacilities } from '@gradex/redux/features/lookups';
 import { useToast } from '@/shared/context/ToastContext';
 
 interface EditSchoolPageProps {
@@ -26,8 +27,14 @@ const EditSchoolPage: React.FC<EditSchoolPageProps> = ({ mode: propMode }) => {
   const [schoolData, setSchoolData] = useState<SchoolFormData | null>(null);
 
   const isLoading = useSelector(selectIsLoading);
+  const lookupFacilities = useSelector(selectFacilities);
 
   const mode = propMode || (location.pathname.includes('/view-school/') ? 'view' : 'edit');
+
+  // Fetch lookup facilities
+  useEffect(() => {
+    dispatch(fetchFacilities());
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchSchoolData = async () => {
@@ -44,7 +51,7 @@ const EditSchoolPage: React.FC<EditSchoolPageProps> = ({ mode: propMode }) => {
         const resultAction = await dispatch(fetchSchoolById(id));
 
         if (fetchSchoolById.fulfilled.match(resultAction)) {
-          const formData = transformBackendSchoolToForm(resultAction.payload);
+          const formData = transformBackendSchoolToForm(resultAction.payload, lookupFacilities);
           setSchoolData(formData);
         } else if (fetchSchoolById.rejected.match(resultAction)) {
           showToast({
@@ -64,7 +71,7 @@ const EditSchoolPage: React.FC<EditSchoolPageProps> = ({ mode: propMode }) => {
     };
 
     fetchSchoolData();
-  }, [id, dispatch, navigate, showToast, t]);
+  }, [id, dispatch, navigate, showToast, t, lookupFacilities]);
 
   const breadcrumbItems = [
     { label: t('schools.title'), path: '/schools' },
