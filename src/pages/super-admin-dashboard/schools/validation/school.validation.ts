@@ -200,6 +200,28 @@ export const facilitiesSchema = yup.object().shape({
         .trim(),
     otherwise: (schema) => schema.optional(),
   }),
+
+  otherFacilityNameAr: yup.string().when('hasOtherFacility', {
+    is: true,
+    then: (schema) =>
+      schema
+        .required('schools.validation.otherFacilityNameArRequired')
+        .min(3, 'schools.validation.otherFacilityNameMin')
+        .max(100, 'schools.validation.otherFacilityNameMax')
+        .trim(),
+    otherwise: (schema) => schema.optional(),
+  }),
+
+  otherFacilityNameEn: yup.string().when('hasOtherFacility', {
+    is: true,
+    then: (schema) =>
+      schema
+        .required('schools.validation.otherFacilityNameEnRequired')
+        .min(3, 'schools.validation.otherFacilityNameMin')
+        .max(100, 'schools.validation.otherFacilityNameMax')
+        .trim(),
+    otherwise: (schema) => schema.optional(),
+  }),
 });
 
 /**
