@@ -6,7 +6,7 @@
 // Reducer
 export { default as schoolsReducer } from './schoolsSlice';
 
-// Actions (Async Thunks)
+// Actions (Async Thunks and Sync Actions)
 export {
   fetchSchools,
   fetchRegisteredSchools,
@@ -27,6 +27,8 @@ export {
   activateSchool,
   deactivateSchool,
   fetchSchoolStatistics,
+  setPagination,
+  resetPagination,
 } from './schoolsSlice';
 
 // Selectors
