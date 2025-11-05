@@ -29,6 +29,17 @@ interface BranchData {
 
 interface AddressStepProps {
   readOnly?: boolean;
+  initialBranches?: Array<{
+    country: string;
+    region: string;
+    city: string;
+    district: string;
+    street: string;
+    buildingNumber: string;
+    postalCode: string;
+    latitude?: number;
+    longitude?: number;
+  }>;
   onBranchesChange?: (
     branches: Array<{
       country: string;
@@ -48,7 +59,11 @@ interface AddressStepProps {
  * AddressStep - Third step in school form with react-hook-form integration
  * Includes main address and optional branches
  */
-const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false, onBranchesChange }) => {
+const AddressStep: React.FC<AddressStepProps> = ({
+  readOnly = false,
+  initialBranches,
+  onBranchesChange,
+}) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -131,6 +146,14 @@ const AddressStep: React.FC<AddressStepProps> = ({ readOnly = false, onBranchesC
   useEffect(() => {
     dispatch(fetchCountries());
   }, [dispatch]);
+
+  // Initialize branches from initialBranches prop (for edit/view mode)
+  useEffect(() => {
+    if (initialBranches && initialBranches.length > 0) {
+      console.log('📍 AddressStep: Initializing branches from props:', initialBranches);
+      setBranches(initialBranches);
+    }
+  }, [initialBranches]);
 
   return (
     <div className="space-y-6 p-4">

@@ -66,11 +66,11 @@ export async function getSchools(params?: SchoolQueryParams): Promise<SchoolList
  * Get school by ID
  */
 export async function getSchoolById(id: string): Promise<SchoolDetail> {
-  const response: AxiosResponse<ApiSuccessResponse<SchoolDetailResponse>> = await axiosClient.get(
+  const response: AxiosResponse<ApiResponseModel<SchoolDetail>> = await axiosClient.get(
     SchoolsEndpoints.getSchoolById(id)
   );
 
-  return response.data.data.data;
+  return response.data.value;
 }
 
 /**

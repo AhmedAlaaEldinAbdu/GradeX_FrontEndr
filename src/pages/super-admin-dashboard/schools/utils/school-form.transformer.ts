@@ -328,6 +328,84 @@ function appendFacilityCertificates(formData: FormData, certificates: File[]): v
 // Backend to Form Transformation
 // ============================================================================
 
+interface BackendSchoolResponse {
+  id?: string;
+  name?: string;
+  academicSystemId?: string;
+  foundingDate?: string;
+  description?: string;
+  services?: string | null;
+  numberOfStudents?: number | null;
+  numberOfTeachers?: number | null;
+  isCurrentSystem?: boolean;
+  financialData?: {
+    id?: string;
+    bankName?: string;
+    iban?: string;
+    accountNumber?: string;
+    schoolId?: string;
+  };
+  email?: string;
+  webSite?: string;
+  phoneNumber?: string;
+  landlineNumber?: string;
+  communicationOfficer?: string;
+  schoolStatus?: number;
+  schoolGender?: number;
+  otherBranches?: boolean;
+  schoolStagesDto?: Array<{
+    id: string;
+    nameAr: string;
+    nameEn: string;
+    lkSchoolStageId: string;
+    schoolId: string;
+  }>;
+  applicationFeaturesDto?: Array<{
+    id: string;
+    nameAr: string;
+    nameEn: string;
+    lkApplicationFeatureId: string;
+    schoolId: string;
+  }>;
+  licensesAttachments?: Array<{
+    id: string;
+    fileName: string;
+    filePath: string;
+    schoolId: string;
+  }>;
+  schoolBranches?: Array<{
+    id: string;
+    lkCountryId: string;
+    city: string;
+    neighborhood: string;
+    region: string;
+    street: string;
+    buildingNumber: string;
+    zipCode: string;
+    buildingCount: number;
+    classCount: number;
+    schoolSpace: number;
+    latitude: number;
+    longitude: number;
+    address: string;
+    schoolId: string;
+  }>;
+  facilities?: Array<{
+    id: string;
+    arabicName: string;
+    englishName: string;
+    description: string;
+    imageUrl: string;
+    schoolId: string;
+    licensesAttachmentsFacilities: Array<{
+      id: string;
+      attachmentFile: string;
+      attachmentName: string;
+      lkFacilitiesId: string;
+    }>;
+  }>;
+}
+
 export function transformBackendToSchoolForm(backendData: unknown): SchoolFormData {
   const data = backendData as BackendSchoolData;
 
@@ -373,5 +451,152 @@ export function transformBackendToSchoolForm(backendData: unknown): SchoolFormDa
     facilityDetails: {},
     hasOtherFacility: false,
     otherFacilityName: '',
+  };
+}
+
+/**
+ * Transform backend API response to frontend form data
+ * Also extracts file information and branches for display in view mode
+ */
+export function transformBackendSchoolToForm(backendData: unknown): SchoolFormData & {
+  licenseFiles?: string[];
+  imageFiles?: string[];
+  certificateFiles?: string[];
+  branches?: Array<{
+    country: string;
+    region: string;
+    city: string;
+    district: string;
+    street: string;
+    buildingNumber: string;
+    postalCode: string;
+    latitude?: number;
+    longitude?: number;
+  }>;
+} {
+  const data = backendData as BackendSchoolResponse;
+
+  // Extract application feature IDs
+  const applicationFeatures =
+    data.applicationFeaturesDto?.map((feature) => feature.lkApplicationFeatureId) || [];
+
+  // Extract license file paths from attachments (use filePath for full URL access)
+  const licenseFiles = data.licensesAttachments?.map((attachment) => attachment.filePath) || [];
+
+  // Extract certificate files from all facilities
+  const certificateFiles: string[] = [];
+  data.facilities?.forEach((facility) => {
+    facility.licensesAttachmentsFacilities?.forEach((attachment) => {
+      if (attachment.attachmentFile) {
+        certificateFiles.push(attachment.attachmentFile);
+      }
+    });
+  });
+
+  // Extract facilities IDs and details
+  // Use the facility.id directly as it matches the lookup facility IDs
+  const facilities: string[] = [];
+  const facilityDetails: Record<
+    string,
+    {
+      id: string;
+      arabicName?: string;
+      englishName?: string;
+      description: string;
+      imageUrl?: string;
+      oldFacilitiesFilePath?: string[];
+    }
+  > = {};
+
+  data.facilities?.forEach((facility) => {
+    // Use facility.id directly - it matches the lookup facility IDs
+    facilities.push(facility.id);
+    facilityDetails[facility.id] = {
+      id: facility.id,
+      arabicName: facility.arabicName,
+      englishName: facility.englishName,
+      description: facility.description,
+      imageUrl: facility.imageUrl,
+      oldFacilitiesFilePath: facility.licensesAttachmentsFacilities?.map(
+        (att) => att.attachmentFile
+      ),
+    };
+  });
+
+  // Format date to YYYY-MM-DD for input fields
+  const formatDateForInput = (dateString?: string): string => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0];
+    } catch {
+      return '';
+    }
+  };
+
+  return {
+    // Basic Information
+    schoolName: data.name || '',
+    academicSystem: data.academicSystemId ? [data.academicSystemId] : [],
+    foundationDate: formatDateForInput(data.foundingDate),
+    aboutSchool: data.description || '',
+    hasCurrentSystem: data.isCurrentSystem || false,
+    currentSystem: data.services || '',
+    country: data.schoolBranches?.[0]?.lkCountryId || '',
+
+    // Application Features
+    applicationFeatures,
+
+    // Financial Data
+    bankName: data.financialData?.bankName || '',
+    accountNumber: data.financialData?.accountNumber || '',
+    ibanNumber: data.financialData?.iban || '',
+
+    // Contact Information
+    landline: data.landlineNumber || '',
+    phoneNumber: data.phoneNumber || '',
+    email: data.email || '',
+    website: data.webSite || '',
+    contactPerson: data.communicationOfficer || '',
+
+    // Address (from main branch)
+    addressCountry: data.schoolBranches?.[0]?.lkCountryId || '',
+    region: data.schoolBranches?.[0]?.region || '',
+    state: '',
+    city: data.schoolBranches?.[0]?.city || '',
+    street: data.schoolBranches?.[0]?.street || '',
+    district: data.schoolBranches?.[0]?.neighborhood || '',
+    buildingNumber: data.schoolBranches?.[0]?.buildingNumber || '',
+    postalCode: data.schoolBranches?.[0]?.zipCode || '',
+
+    // Branches (extract additional branches beyond the first one)
+    hasBranches: !!(data.schoolBranches && data.schoolBranches.length > 1),
+    hasOtherBranches: !!(data.schoolBranches && data.schoolBranches.length > 1),
+
+    // Facilities
+    facilities,
+    facilityDetails,
+    hasOtherFacility: false, // Other facility is handled separately in the form
+    otherFacilityName: '',
+
+    // Files from backend (for view mode)
+    licenseFiles,
+    certificateFiles,
+
+    // Additional branches (for view/edit mode) - skip the first branch as it's the main address
+    branches:
+      data.schoolBranches && data.schoolBranches.length > 1
+        ? data.schoolBranches.slice(1).map((branch) => ({
+            country: branch.lkCountryId || '',
+            region: branch.region || '',
+            city: branch.city || '',
+            district: branch.neighborhood || '',
+            street: branch.street || '',
+            buildingNumber: branch.buildingNumber || '',
+            postalCode: branch.zipCode || '',
+            latitude: branch.latitude,
+            longitude: branch.longitude,
+          }))
+        : [],
   };
 }

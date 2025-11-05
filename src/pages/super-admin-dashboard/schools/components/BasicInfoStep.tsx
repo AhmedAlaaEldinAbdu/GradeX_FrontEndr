@@ -9,6 +9,7 @@ import calendarIcon from '@gradex/assets/icons/calendar.svg';
 import FormField from '@gradex/shared/components/FormField';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
+import ViewModeFileDisplay from './ViewModeFileDisplay';
 import type { SchoolFormData } from '../types/school.types';
 import {
   fetchCountries,
@@ -33,6 +34,7 @@ interface BasicInfoStepProps {
   licenseError?: string;
   readOnly?: boolean;
   showRejectedLabel?: boolean;
+  showPendingLabel?: boolean;
 }
 
 /**
@@ -46,6 +48,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   licenseError: licenseError,
   readOnly = false,
   showRejectedLabel = false,
+  showPendingLabel = false,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
@@ -79,30 +82,37 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   return (
     <div className="space-y-6 p-4">
       <div className="space-y-4 rounded-lg border border-gray-200 p-4">
-        {/* Rejected Label */}
-        {showRejectedLabel && (
-          <div className="mb-4 flex justify-end">
-            <div className="inline-flex w-max items-center gap-2 rounded-lg bg-red-50 px-3 py-2">
-              <svg
-                className="h-5 w-5 text-red-600"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="text-sm font-medium text-red-800">{t('status.rejected')}</span>
+        <div className={`${showRejectedLabel || showPendingLabel ? 'flex justify-between' : ''}`}>
+          <h3 className="mb-6 text-right text-lg font-semibold text-gray-900">
+            {t('schools.schoolData')}
+          </h3>
+          {/* Rejected Label */}
+          {(showRejectedLabel || showPendingLabel) && (
+            <div className="mb-4 flex justify-end">
+              <div className="inline-flex w-max items-center gap-2 rounded-lg bg-red-50 px-3 py-2">
+                {showRejectedLabel && (
+                  <svg
+                    className="h-5 w-5 text-red-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+                <span
+                  className={`text-sm font-medium ${showPendingLabel ? 'text-yellow-800' : 'text-red-800'}`}
+                >
+                  {showPendingLabel ? t('status.pending') : t('status.rejected')}
+                </span>
+              </div>
             </div>
-          </div>
-        )}
-
-        <h3 className="mb-6 text-right text-lg font-semibold text-gray-900">
-          {t('schools.schoolData')}
-        </h3>
+          )}
+        </div>
 
         {/* School Name and Academic System */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -133,27 +143,33 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <Controller
               name="academicSystem"
               control={control}
-              render={({ field }) => (
-                <CustomSelect
-                  value={field.value || []}
-                  onChange={(value) => {
-                    field.onChange(value);
-                    trigger('academicSystem');
-                  }}
-                  options={academicSystems.map((system) => ({
-                    value: system.id,
-                    label: system.name,
-                  }))}
-                  placeholder={
-                    isLoadingAcademicSystems
-                      ? t('common.loading')
-                      : t('schools.chooseAcademicSystem')
-                  }
-                  disabled={isLoadingAcademicSystems || readOnly}
-                  maxHeight="200px"
-                  isMulti={false}
-                />
-              )}
+              render={({ field }) => {
+                const fieldValue = Array.isArray(field.value)
+                  ? field.value[0] || ''
+                  : field.value || '';
+
+                return (
+                  <CustomSelect
+                    value={fieldValue}
+                    onChange={(value) => {
+                      field.onChange(typeof value === 'string' ? [value] : value);
+                      trigger('academicSystem');
+                    }}
+                    options={academicSystems.map((system) => ({
+                      value: system.id,
+                      label: system.name,
+                    }))}
+                    placeholder={
+                      isLoadingAcademicSystems
+                        ? t('common.loading')
+                        : t('schools.chooseAcademicSystem')
+                    }
+                    disabled={isLoadingAcademicSystems || readOnly}
+                    maxHeight="200px"
+                    isMulti={false}
+                  />
+                );
+              }}
             />
           </FormField>
         </div>
@@ -287,7 +303,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         )}
 
         {/* File Upload - Multiple Files */}
-        {!readOnly && (
+        {!readOnly ? (
           <div>
             <FileUpload
               label={t('schools.licenses')}
@@ -302,6 +318,12 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               <p className="mt-1 text-right text-xs text-red-600">{t(licenseError)}</p>
             )}
           </div>
+        ) : (
+          <>
+            {licenseFileNames && licenseFileNames.length > 0 && (
+              <ViewModeFileDisplay files={licenseFileNames} label={t('schools.licenses')} />
+            )}
+          </>
         )}
       </div>
 

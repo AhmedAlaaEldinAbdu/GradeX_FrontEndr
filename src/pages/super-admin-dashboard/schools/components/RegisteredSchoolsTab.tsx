@@ -19,6 +19,7 @@ import {
 import { selectCountries } from '@gradex/redux/features/lookups';
 import { selectAcademicSystems } from '@gradex/redux/features/academic-system';
 import type { School } from '@gradex/services/api/types/school.types';
+import { Link } from 'react-router-dom';
 
 interface RegisteredSchoolsTabProps {
   filters?: {
@@ -123,7 +124,9 @@ export default function RegisteredSchoolsTab({ filters }: RegisteredSchoolsTabPr
     },
     {
       header: 'schools.schoolName',
-      accessor: (row: School) => row?.name || '-',
+      accessor: (row: School) => (
+        <Link to={`/schools/view-school/${row?.id}`}>{row?.name || '-'}</Link>
+      ),
       headerClassName: 'min-w-[150px]',
     },
     {
