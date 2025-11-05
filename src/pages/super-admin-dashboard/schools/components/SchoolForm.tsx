@@ -232,7 +232,13 @@ const SchoolForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowValidationErrors(true);
-    await form.trigger(['facilities', 'hasOtherFacility', 'otherFacilityName']);
+    await form.trigger([
+      'facilities',
+      'hasOtherFacility',
+      'otherFacilityName',
+      'otherFacilityNameAr',
+      'otherFacilityNameEn',
+    ]);
     const isValid = await validateCurrentStep(4);
     const filesValid = validateFiles();
     if (!isValid || !filesValid) {
