@@ -1,19 +1,17 @@
 import { useTranslation } from 'react-i18next';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
-import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import Card from '@/shared/components/Card';
-import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
+import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
 import MultiSelectTagInput from '@/shared/components/MultiSelectTagInput';
 import FormField from '@/shared/components/FormField';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useForm, type Resolver, type SubmitHandler } from 'react-hook-form';
 import Input from '@/shared/components/Input';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-  AcademicSystemSchema,
-  type AcademicSystemProps,
+  EditAcademicSystemSchema,
+  type EditAcademicSystemProps,
 } from '@/validations/academic-system-validations';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -24,6 +22,7 @@ import {
   getAcademicSystemById,
 } from '@/redux/features/academic-system/academicSystemSlice';
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
+import AddSystemTypePopup from '../popups/AddSystemTypePopup';
 
 export default function EditAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -31,6 +30,7 @@ export default function EditAcademicSystem() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const [showAddSystemTypePopup, setShowAddSystemTypePopup] = useState(false);
   const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -55,16 +55,13 @@ export default function EditAcademicSystem() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<AcademicSystemProps>({
-    resolver: yupResolver(AcademicSystemSchema),
+  } = useForm<EditAcademicSystemProps>({
+    resolver: yupResolver(EditAcademicSystemSchema) as Resolver<EditAcademicSystemProps>,
     defaultValues: {
-      academicSystems: [{ name: '', subSystemIds: [], countryIds: [] }],
+      name: '',
+      subSystemIds: [],
+      countryIds: [],
     },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'academicSystems',
   });
 
   // Fetch lookups data only once on mount
@@ -92,29 +89,23 @@ export default function EditAcademicSystem() {
   useEffect(() => {
     if (academicSystem && !isLoadingData) {
       reset({
-        academicSystems: [
-          {
-            name: academicSystem.name || '',
-            subSystemIds: academicSystem.academicSubSystemDto?.map((sub) => sub.id) || [],
-            countryIds: academicSystem.lkCountriesDto?.map((country) => country.id) || [],
-          },
-        ],
+        name: academicSystem.name || '',
+        subSystemIds: academicSystem.academicSubSystemDto?.map((sub) => sub.id) || [],
+        countryIds: academicSystem.lkCountriesDto?.map((country) => country.id) || [],
       });
     }
   }, [academicSystem, isLoadingData, reset]);
 
-  const onSubmit = (data: AcademicSystemProps) => {
+  const onSubmit: SubmitHandler<EditAcademicSystemProps> = (data) => {
     if (!id) return;
-
-    const system = data.academicSystems[0];
     const payload: UpdateAcademicSystemRequest = {
       id,
-      name: system.name,
-      subSystemIds: (system.subSystemIds || []).filter(Boolean) as string[],
-      countryIds: (system.countryIds || []).filter(Boolean) as string[],
+      name: data.name,
+      subSystemIds: (data.subSystemIds || []).filter(Boolean) as string[],
+      countryIds: (data.countryIds || []).filter(Boolean) as string[],
     };
 
-    dispatch(editAcademicSystem(payload))
+    dispatch(editAcademicSystem([payload] as any))
       .unwrap()
       .then((res) => {
         if (res.isSuccess) {
@@ -126,26 +117,13 @@ export default function EditAcademicSystem() {
       });
   };
 
-  const handleAddAcademicSystem = () => {
-    append({ name: '', subSystemIds: [], countryIds: [] });
-  };
-
-  const handleDeleteAcademicSystem = (index: number) => {
-    if (fields.length > 1) {
-      remove(index);
-    }
-  };
+  // Single academic system edit – no remove/add handlers needed
 
   return (
     <Card>
       <div className="rounded-md border p-4">
         <div className="mb-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="text-xl font-bold text-gray-700">{t('academicSystem.title')}</div>
-          <div className="flex items-center gap-3">
-            <button type="button" onClick={handleAddAcademicSystem}>
-              <img src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
-            </button>
-          </div>
         </div>
 
         {isLoadingData ? (
@@ -154,139 +132,118 @@ export default function EditAcademicSystem() {
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
-            {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-1 gap-6 rounded-md border p-4">
-                <div className="flex">
-                  <div className="flex-grow">
-                    <FormField
-                      label={t('academicSystem.title')}
-                      required
-                      error={
-                        errors.academicSystems?.[index]?.name?.message &&
-                        t(errors.academicSystems[index].name.message)
-                      }
-                    >
-                      <Controller
-                        name={`academicSystems.${index}.name`}
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder={t('academicSystem.enterAcademicSystem')}
-                            required
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                  <div>
-                    {fields.length > 1 ? (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteAcademicSystem(index)}
-                        className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
-                      >
-                        <img src={TrashIcon} alt="Trash" className="h-4 w-4" />
-                      </button>
-                    ) : (
-                      <div className="h-8 w-8"></div>
-                    )}
-                  </div>
+            <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
+              <div className="flex">
+                <div className="flex-grow">
+                  <FormField
+                    label={t('academicSystem.title')}
+                    required
+                    error={errors.name?.message && t(errors.name.message)}
+                  >
+                    <Controller
+                      name={`name`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          placeholder={t('academicSystem.enterAcademicSystem')}
+                          required
+                        />
+                      )}
+                    />
+                  </FormField>
                 </div>
-
-                <div className="flex">
-                  <div className="flex-grow">
-                    <FormField
-                      label={t('academicSystem.systemType')}
-                      optional
-                      error={
-                        errors.academicSystems?.[index]?.subSystemIds?.message &&
-                        t(errors.academicSystems[index]?.subSystemIds.message)
-                      }
-                    >
-                      <Controller
-                        name={`academicSystems.${index}.subSystemIds`}
-                        control={control}
-                        render={({ field }) => (
-                          <MultiSelectTagInput
-                            value={
-                              Array.isArray(field.value) ? field.value.join(',') : field.value || ''
-                            }
-                            onChange={(value) => {
-                              const parsedValue = value.split(',').filter((v) => v.trim());
-                              field.onChange(parsedValue);
-                            }}
-                            options={academicSubSystems?.map((subSystem) => ({
-                              value: subSystem.id,
-                              label: currentLang === 'ar' ? subSystem.nameAr : subSystem.nameEn,
-                            }))}
-                            disabled={isLoadingSubSystems}
-                            placeholder={
-                              isLoadingSubSystems
-                                ? t('common.loading')
-                                : t('academicSystem.selectItem')
-                            }
-                            error={!!errors.academicSystems?.[index]?.subSystemIds}
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                  <div>
-                    <button
-                      type="button"
-                      className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
-                    >
-                      <img src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex">
-                  <div className="flex-grow">
-                    <FormField
-                      label={t('academicSystem.countryName')}
-                      required
-                      error={
-                        errors.academicSystems?.[index]?.countryIds?.message &&
-                        t(errors.academicSystems[index].countryIds.message)
-                      }
-                    >
-                      <Controller
-                        name={`academicSystems.${index}.countryIds`}
-                        control={control}
-                        render={({ field }) => (
-                          <MultiSelectTagInput
-                            value={
-                              Array.isArray(field.value) ? field.value.join(',') : field.value || ''
-                            }
-                            onChange={(value) => {
-                              const parsedValue = value.split(',').filter((v) => v.trim());
-                              field.onChange(parsedValue);
-                            }}
-                            options={countries?.map((country) => ({
-                              value: country.id,
-                              label:
-                                currentLang === 'ar' ? country.arabicName : country.englishName,
-                            }))}
-                            error={!!errors.academicSystems?.[index]?.countryIds}
-                            disabled={isLoadingCountries}
-                            placeholder={
-                              isLoadingCountries
-                                ? t('common.loading')
-                                : t('academicSystem.selectSystemCountry')
-                            }
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                  <div>
-                    <div className="h-8 w-8"></div>
-                  </div>
+                <div>
+                  <div className="h-8 w-8"></div>
                 </div>
               </div>
-            ))}
+
+              <div className="flex">
+                <div className="flex-grow">
+                  <FormField
+                    label={t('academicSystem.systemType')}
+                    optional
+                    error={errors.subSystemIds?.message && t(errors.subSystemIds.message)}
+                  >
+                    <Controller
+                      name={`subSystemIds`}
+                      control={control}
+                      render={({ field }) => (
+                        <MultiSelectTagInput
+                          value={
+                            Array.isArray(field.value) ? field.value.join(',') : field.value || ''
+                          }
+                          onChange={(value) => {
+                            const parsedValue = value.split(',').filter((v) => v.trim());
+                            field.onChange(parsedValue);
+                          }}
+                          options={academicSubSystems?.map((subSystem) => ({
+                            value: subSystem.id,
+                            label: currentLang === 'ar' ? subSystem.nameAr : subSystem.nameEn,
+                          }))}
+                          disabled={isLoadingSubSystems}
+                          placeholder={
+                            isLoadingSubSystems
+                              ? t('common.loading')
+                              : t('academicSystem.selectItem')
+                          }
+                          error={!!errors.subSystemIds}
+                        />
+                      )}
+                    />
+                  </FormField>
+                </div>
+                <div>
+                  <button
+                    onClick={() => setShowAddSystemTypePopup(true)}
+                    type="button"
+                    className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
+                  >
+                    <img src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex">
+                <div className="flex-grow">
+                  <FormField
+                    label={t('academicSystem.countryName')}
+                    required
+                    error={errors.countryIds?.message && t(errors.countryIds.message)}
+                  >
+                    <Controller
+                      name={`countryIds`}
+                      control={control}
+                      render={({ field }) => (
+                        <MultiSelectTagInput
+                          value={
+                            Array.isArray(field.value) ? field.value.join(',') : field.value || ''
+                          }
+                          onChange={(value) => {
+                            const parsedValue = value.split(',').filter((v) => v.trim());
+                            field.onChange(parsedValue);
+                          }}
+                          options={countries?.map((country) => ({
+                            value: country.id,
+                            label: currentLang === 'ar' ? country.arabicName : country.englishName,
+                          }))}
+                          error={!!errors.countryIds}
+                          disabled={isLoadingCountries}
+                          placeholder={
+                            isLoadingCountries
+                              ? t('common.loading')
+                              : t('academicSystem.selectSystemCountry')
+                          }
+                        />
+                      )}
+                    />
+                  </FormField>
+                </div>
+                <div>
+                  <div className="h-8 w-8"></div>
+                </div>
+              </div>
+            </div>
 
             <div className="mt-6 flex justify-end gap-3">
               <button
@@ -307,6 +264,9 @@ export default function EditAcademicSystem() {
         )}
 
         {/* Popups */}
+        {showAddSystemTypePopup && (
+          <AddSystemTypePopup onCancel={() => setShowAddSystemTypePopup(false)} />
+        )}
         {showPopupMessage && (
           <PopupMessage
             type="success"

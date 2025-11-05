@@ -5,6 +5,7 @@ import lookupsReducer from '../features/lookups/lookupsSlice';
 // import academicSystemsSlice from '../features/academic-system/academicSystemSlice';
 import academicSystemsReducer from '../features/academic-system/academicSystemSlice';
 import academicSubSystemsReducer from '../features/academic-subsystem/academicSubSystemSlice';
+import educationalStagesReducer from '../features/educational-stages/educationalStagesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     // academicSystems: academicSystemsSlice,
     academicSystems: academicSystemsReducer,
     academicSubSystems: academicSubSystemsReducer,
+    educationalStages: educationalStagesReducer,
   },
 });
 

@@ -21,6 +21,7 @@ import { fetchCountries } from '@/redux/features/lookups';
 import { addAcademicSystem } from '@/redux/features/academic-system/academicSystemSlice';
 import type { CreateAcademicSystem } from '@/services/api/types/academic-system.types';
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
+import AddSystemTypePopup from '../popups/AddSystemTypePopup';
 
 export default function AddAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -28,6 +29,7 @@ export default function AddAcademicSystem() {
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
   const [numOfAcademic, setNumOfAcademic] = useState<number[]>([1]);
+  const [showAddSystemTypePopup, setShowAddSystemTypePopup] = useState(false);
   const [showPopupMessage, setShowPopupMessage] = useState(false);
 
   const countries = useAppSelector((state) => {
@@ -184,7 +186,7 @@ export default function AddAcademicSystem() {
                 </div>
                 <div>
                   <button
-                    // onClick={() => setNewSystemType(true)}
+                    onClick={() => setShowAddSystemTypePopup(true)}
                     type="button"
                     className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
                   >
@@ -255,6 +257,9 @@ export default function AddAcademicSystem() {
         </form>
 
         {/* Popups */}
+        {showAddSystemTypePopup && (
+          <AddSystemTypePopup onCancel={() => setShowAddSystemTypePopup(false)} />
+        )}
         {showPopupMessage && (
           <PopupMessage
             type="success"
