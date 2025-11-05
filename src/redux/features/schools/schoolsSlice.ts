@@ -471,6 +471,17 @@ const schoolsSlice = createSlice({
         state.pagination.limit = action.payload.limit;
       }
     },
+    /**
+     * Reset pagination to initial state
+     */
+    resetPagination: (state) => {
+      state.pagination = {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+      };
+    },
   },
 
   extraReducers: (builder: ActionReducerMapBuilder<SchoolsState>) => {
@@ -811,5 +822,7 @@ const schoolsSlice = createSlice({
       });
   },
 });
+
+export const { setPagination, resetPagination } = schoolsSlice.actions;
 
 export default schoolsSlice.reducer;
