@@ -190,30 +190,40 @@ function appendFacilities(
   }
 
   // Append "Other" custom facility (without ID)
-  if (schoolData.hasOtherFacility && schoolData.otherFacilityName?.trim()) {
-    const otherFacilityName = schoolData.otherFacilityName.trim();
-    // Send same name for both Arabic and English
-    formData.append(`Facilities[${facilityIndex}].arabicName`, otherFacilityName);
-    // formData.append(`Facilities[${facilityIndex}].englishName`, otherFacilityName);
+  if (schoolData.hasOtherFacility) {
+    const arabicName =
+      schoolData.otherFacilityNameAr?.trim() || schoolData.otherFacilityName?.trim() || '';
+    const englishName = schoolData.otherFacilityNameEn?.trim() || '';
 
-    // Append "Other" facility details if available
-    const otherFacilityDetail = schoolData.facilityDetails?.['other'];
-    if (otherFacilityDetail) {
-      formData.append(`Facilities[${facilityIndex}].description`, otherFacilityDetail.description);
+    if (arabicName && englishName) {
+      formData.append(`Facilities[${facilityIndex}].arabicName`, arabicName);
+      formData.append(`Facilities[${facilityIndex}].englishName`, englishName);
 
-      if (otherFacilityDetail.imageFile) {
-        formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageFile);
-      } else if (otherFacilityDetail.imageUrl) {
-        formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageUrl);
-      }
+      // Append "Other" facility details if available
+      const otherFacilityDetail = schoolData.facilityDetails?.['other'];
+      if (otherFacilityDetail) {
+        formData.append(
+          `Facilities[${facilityIndex}].description`,
+          otherFacilityDetail.description
+        );
 
-      if (
-        otherFacilityDetail.oldFacilitiesFilePath &&
-        otherFacilityDetail.oldFacilitiesFilePath.length > 0
-      ) {
-        otherFacilityDetail.oldFacilitiesFilePath.forEach((path, pathIndex) => {
-          formData.append(`Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`, path);
-        });
+        if (otherFacilityDetail.imageFile) {
+          formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageFile);
+        } else if (otherFacilityDetail.imageUrl) {
+          formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageUrl);
+        }
+
+        if (
+          otherFacilityDetail.oldFacilitiesFilePath &&
+          otherFacilityDetail.oldFacilitiesFilePath.length > 0
+        ) {
+          otherFacilityDetail.oldFacilitiesFilePath.forEach((path, pathIndex) => {
+            formData.append(
+              `Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`,
+              path
+            );
+          });
+        }
       }
     }
   }
@@ -457,8 +467,14 @@ export function transformBackendToSchoolForm(backendData: unknown): SchoolFormDa
 /**
  * Transform backend API response to frontend form data
  * Also extracts file information and branches for display in view mode
+ *
+ * Note: This function will be called from the component where lookup facilities are available
+ * We'll use a helper to match facilities by name
  */
-export function transformBackendSchoolToForm(backendData: unknown): SchoolFormData & {
+export function transformBackendSchoolToForm(
+  backendData: unknown,
+  lookupFacilities?: Array<{ id: string; arabicName: string; englishName: string }>
+): SchoolFormData & {
   licenseFiles?: string[];
   imageFiles?: string[];
   certificateFiles?: string[];
@@ -508,20 +524,71 @@ export function transformBackendSchoolToForm(backendData: unknown): SchoolFormDa
     }
   > = {};
 
+  // Variables to track "other" facility
+  let hasOtherFacility = false;
+  let otherFacilityNameAr = '';
+  let otherFacilityNameEn = '';
+
   data.facilities?.forEach((facility) => {
-    // Use facility.id directly - it matches the lookup facility IDs
-    facilities.push(facility.id);
-    facilityDetails[facility.id] = {
-      id: facility.id,
-      arabicName: facility.arabicName,
-      englishName: facility.englishName,
-      description: facility.description,
-      imageUrl: facility.imageUrl,
-      oldFacilitiesFilePath: facility.licensesAttachmentsFacilities?.map(
-        (att) => att.attachmentFile
-      ),
-    };
+    if (!facility) return;
+
+    // Try to find matching lookup facility by Arabic and English names
+    let matchedLookupFacility = null;
+    if (lookupFacilities && facility.arabicName && facility.englishName) {
+      matchedLookupFacility = lookupFacilities.find(
+        (lookup) =>
+          lookup.arabicName?.toLowerCase() === facility.arabicName?.toLowerCase() &&
+          lookup.englishName?.toLowerCase() === facility.englishName?.toLowerCase()
+      );
+    }
+
+    if (matchedLookupFacility) {
+      // This facility matches a lookup facility by name
+      // Use the lookup facility ID for the form
+      facilities.push(matchedLookupFacility.id);
+
+      // Store complete facility details for display using the lookup ID
+      facilityDetails[matchedLookupFacility.id] = {
+        id: matchedLookupFacility.id,
+        arabicName: facility.arabicName,
+        englishName: facility.englishName,
+        description: facility.description || '',
+        imageUrl: facility.imageUrl,
+        oldFacilitiesFilePath: facility.licensesAttachmentsFacilities?.map(
+          (att) => att.attachmentFile
+        ),
+      };
+
+      console.log(
+        `✅ Matched facility by name: ${matchedLookupFacility.id} - ${facility.arabicName} / ${facility.englishName}`
+      );
+    } else if (facility.arabicName && facility.englishName) {
+      // This is a custom "other" facility (no match in lookups)
+      hasOtherFacility = true;
+      otherFacilityNameAr = facility.arabicName;
+      otherFacilityNameEn = facility.englishName;
+
+      // Store details under 'other' key
+      facilityDetails['other'] = {
+        id: 'other',
+        arabicName: facility.arabicName,
+        englishName: facility.englishName,
+        description: facility.description || '',
+        imageUrl: facility.imageUrl,
+        oldFacilitiesFilePath: facility.licensesAttachmentsFacilities?.map(
+          (att) => att.attachmentFile
+        ),
+      };
+
+      console.log(
+        `✅ Added custom "other" facility: ${facility.arabicName} / ${facility.englishName}`
+      );
+    }
   });
+
+  console.log('📋 Total facilities found:', facilities.length);
+  console.log('📋 Facility IDs:', facilities);
+  console.log('📋 Has other facility:', hasOtherFacility);
 
   // Format date to YYYY-MM-DD for input fields
   const formatDateForInput = (dateString?: string): string => {
@@ -576,8 +643,10 @@ export function transformBackendSchoolToForm(backendData: unknown): SchoolFormDa
     // Facilities
     facilities,
     facilityDetails,
-    hasOtherFacility: false, // Other facility is handled separately in the form
-    otherFacilityName: '',
+    hasOtherFacility,
+    otherFacilityName: otherFacilityNameAr, // Backward compatibility
+    otherFacilityNameAr,
+    otherFacilityNameEn,
 
     // Files from backend (for view mode)
     licenseFiles,
