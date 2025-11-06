@@ -36,3 +36,14 @@
     @apply bg-gray-400;
   }
 }
+
+input[type='date'] {
+  direction: rtl;
+  text-align: right;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 8px;
+  right: auto;
+}
