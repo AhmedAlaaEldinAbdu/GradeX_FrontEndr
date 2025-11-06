@@ -22,14 +22,15 @@ export async function getAcademicSystem(
 }
 
 export async function getAcademicSystemById(id: string): Promise<AcademicSystemDetailsValue> {
-  const response: AxiosResponse<ApiResponseModel<AcademicSystemDetailsValue>> = await axiosClient.get(
-    AcademicSystemEndpoints.getAcademicSystemById(id)
-  );
+  const response: AxiosResponse<ApiResponseModel<AcademicSystemDetailsValue>> =
+    await axiosClient.get(AcademicSystemEndpoints.getAcademicSystemById(id));
 
   return response.data.value;
 }
 
-export async function createAcademicSystem(data: CreateAcademicSystem[]): Promise<ApiResponseModel<null>> {
+export async function createAcademicSystem(
+  data: CreateAcademicSystem[]
+): Promise<ApiResponseModel<null>> {
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
     AcademicSystemEndpoints.addAcademicSystem,
     data
@@ -38,7 +39,9 @@ export async function createAcademicSystem(data: CreateAcademicSystem[]): Promis
   return response.data;
 }
 
-export async function updateAcademicSystem(data: UpdateAcademicSystemRequest): Promise<ApiResponseModel<null>> {
+export async function updateAcademicSystem(
+  data: UpdateAcademicSystemRequest
+): Promise<ApiResponseModel<null>> {
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
     AcademicSystemEndpoints.editAcademicSystem,
     data
