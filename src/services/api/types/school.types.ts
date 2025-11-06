@@ -11,7 +11,9 @@ import type { SchoolFormData } from '@/pages/super-admin-dashboard/schools/types
 
 export interface School {
   id: string;
-  name: string;
+  name?: string;
+  nameAr: string;
+  nameEn: string;
   academicSystemId: string;
   foundingDate: string;
   description: string;
