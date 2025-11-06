@@ -8,7 +8,21 @@ export const basicInfoSchema = yup.object().shape({
   // School Basic Information
   schoolName: yup
     .string()
-    .required('schools.validation.schoolNameRequired')
+    .optional()
+    .min(3, 'schools.validation.schoolNameMin')
+    .max(100, 'schools.validation.schoolNameMax')
+    .trim(),
+
+  schoolNameAr: yup
+    .string()
+    .required('schools.validation.schoolNameArRequired')
+    .min(3, 'schools.validation.schoolNameMin')
+    .max(100, 'schools.validation.schoolNameMax')
+    .trim(),
+
+  schoolNameEn: yup
+    .string()
+    .required('schools.validation.schoolNameEnRequired')
     .min(3, 'schools.validation.schoolNameMin')
     .max(100, 'schools.validation.schoolNameMax')
     .trim(),
