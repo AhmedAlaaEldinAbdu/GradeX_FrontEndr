@@ -105,9 +105,11 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
     },
     {
       header: 'schools.schoolName',
-      accessor: (row: School) => (
-        <Link to={`/schools/view-school/${row?.id}`}>{row?.name || '-'}</Link>
-      ),
+      accessor: (row: School) => {
+        const schoolName =
+          currentLang === 'ar' ? row?.nameAr || row?.name || '-' : row?.nameEn || row?.name || '-';
+        return <Link to={`/schools/view-school/${row?.id}`}>{schoolName}</Link>;
+      },
       headerClassName: 'min-w-[150px]',
     },
     {
