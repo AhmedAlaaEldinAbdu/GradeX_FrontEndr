@@ -4,6 +4,7 @@ import Sidebar from './Sidebar.tsx';
 import Header from './Header.tsx';
 import { selectUserRole } from '@gradex/redux/features/auth/authSelectors';
 import { UserRole } from '@gradex/constants/roles';
+import MainContainer from './Container.tsx';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -24,7 +25,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         <Header />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">{children}</main>
+        <MainContainer>{children}</MainContainer>
       </div>
     </div>
   );
