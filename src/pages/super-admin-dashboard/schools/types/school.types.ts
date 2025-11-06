@@ -18,6 +18,8 @@ export interface FacilityDetails {
 export interface SchoolFormData {
   // Basic Info
   schoolName: string;
+  schoolNameAr: string;
+  schoolNameEn: string;
   academicSystem: string | string[];
   foundationDate: string;
   aboutSchool: string;
@@ -64,6 +66,8 @@ export interface SchoolFormData {
 // Initial empty form data
 export const initialSchoolFormData: SchoolFormData = {
   schoolName: '',
+  schoolNameAr: '',
+  schoolNameEn: '',
   academicSystem: [],
   foundationDate: '',
   aboutSchool: '',
