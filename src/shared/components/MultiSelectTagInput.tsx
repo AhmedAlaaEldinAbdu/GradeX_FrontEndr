@@ -42,7 +42,7 @@ const MultiSelectTagInput: React.FC<MultiSelectTagInputProps> = ({
 
   // Filter options by search query
   const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase())
+    option?.label?.toLowerCase().includes(searchQuery?.toLowerCase())
   );
 
   // Get available options (not yet selected and matching search)
