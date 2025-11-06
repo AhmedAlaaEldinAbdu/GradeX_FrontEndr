@@ -6,12 +6,6 @@ import * as yup from 'yup';
  */
 export const basicInfoSchema = yup.object().shape({
   // School Basic Information
-  schoolName: yup
-    .string()
-    .optional()
-    .min(3, 'schools.validation.schoolNameMin')
-    .max(100, 'schools.validation.schoolNameMax')
-    .trim(),
 
   schoolNameAr: yup
     .string()
