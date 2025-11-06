@@ -83,7 +83,8 @@ export function transformSchoolFormBackend(
 // ============================================================================
 
 function appendBasicInformation(formData: FormData, schoolData: SchoolFormData): void {
-  formData.append('Name', schoolData.schoolName);
+  formData.append('NameAr', schoolData.schoolNameAr || schoolData.schoolName);
+  formData.append('NameEn', schoolData.schoolNameEn || schoolData.schoolName);
 
   const academicSystemId = extractAcademicSystemId(schoolData.academicSystem);
   formData.append('AcademicSystemId', academicSystemId);
@@ -341,6 +342,8 @@ function appendFacilityCertificates(formData: FormData, certificates: File[]): v
 interface BackendSchoolResponse {
   id?: string;
   name?: string;
+  nameAr?: string;
+  nameEn?: string;
   academicSystemId?: string;
   foundingDate?: string;
   description?: string;
@@ -422,6 +425,8 @@ export function transformBackendToSchoolForm(backendData: unknown): SchoolFormDa
   return {
     // Basic Information
     schoolName: data.Name || '',
+    schoolNameAr: data.Name || '',
+    schoolNameEn: data.Name || '',
     academicSystem: data.AcademicSystemId ? [data.AcademicSystemId] : [],
     foundationDate: parseDate(data.FoundingDate),
     aboutSchool: data.Description || '',
@@ -603,7 +608,9 @@ export function transformBackendSchoolToForm(
 
   return {
     // Basic Information
-    schoolName: data.name || '',
+    schoolName: data.name || data.nameAr || data.nameEn || '',
+    schoolNameAr: data.nameAr || '',
+    schoolNameEn: data.nameEn || '',
     academicSystem: data.academicSystemId ? [data.academicSystemId] : [],
     foundationDate: formatDateForInput(data.foundingDate),
     aboutSchool: data.description || '',
