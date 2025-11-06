@@ -6,7 +6,11 @@ import CopyIcon from '@gradex/assets/icons/Copy.svg';
 import SchoolForm from './components/SchoolForm';
 import { useClipboard } from '@/hooks/useClipboard';
 
-const AddSchoolPage: React.FC = () => {
+interface AddSchoolPageProps {
+  showBreadcrumb?: boolean;
+}
+
+const AddSchoolPage: React.FC<AddSchoolPageProps> = ({ showBreadcrumb = true }) => {
   const { t } = useTranslation();
   const { isCopied, copyToClipboard } = useClipboard({
     successDuration: 3000,
@@ -29,7 +33,7 @@ const AddSchoolPage: React.FC = () => {
 
   return (
     <div dir="rtl" className="pb-8">
-      <Breadcrumb items={breadcrumbItems} />
+      {showBreadcrumb && <Breadcrumb items={breadcrumbItems} />}
 
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">{t('schools.addSchool')}</h1>
