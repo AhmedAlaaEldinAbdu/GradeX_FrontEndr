@@ -47,7 +47,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     : [];
 
   const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase())
+    option?.label?.toLowerCase().includes(searchQuery?.toLowerCase())
   );
 
   const availableOptions = isMulti
