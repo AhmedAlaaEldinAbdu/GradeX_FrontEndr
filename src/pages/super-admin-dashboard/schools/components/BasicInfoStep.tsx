@@ -114,20 +114,20 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           )}
         </div>
 
-        {/* School Name and Academic System */}
+        {/* School Name (Arabic and English) */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
-            label={t('schools.schoolName')}
+            label={t('schools.schoolNameAr')}
             required
-            error={errors.schoolName?.message && t(errors.schoolName.message)}
+            error={errors.schoolNameAr?.message && t(errors.schoolNameAr.message)}
           >
             <Controller
-              name="schoolName"
+              name="schoolNameAr"
               control={control}
               render={({ field }) => (
                 <Input
                   {...field}
-                  placeholder={t('schools.enterSchoolName')}
+                  placeholder={t('schools.enterSchoolNameAr')}
                   required
                   disabled={readOnly}
                 />
@@ -135,6 +135,28 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             />
           </FormField>
 
+          <FormField
+            label={t('schools.schoolNameEn')}
+            required
+            error={errors.schoolNameEn?.message && t(errors.schoolNameEn.message)}
+          >
+            <Controller
+              name="schoolNameEn"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder={t('schools.enterSchoolNameEn')}
+                  required
+                  disabled={readOnly}
+                />
+              )}
+            />
+          </FormField>
+        </div>
+
+        {/* Academic System and Country */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             label={t('schools.academicSystem')}
             required
@@ -172,10 +194,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               }}
             />
           </FormField>
-        </div>
 
-        {/* Country and Foundation Date */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             label={t('schools.countryWithAl')}
             required
@@ -202,29 +221,31 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               )}
             />
           </FormField>
-
-          <FormField
-            label={t('schools.foundationDate')}
-            required
-            error={errors.foundationDate?.message && t(errors.foundationDate.message)}
-          >
-            <Controller
-              name="foundationDate"
-              control={control}
-              render={({ field }) => (
-                <div className="relative">
-                  <Input
-                    {...field}
-                    type="date"
-                    placeholder={t('common.chooseDate')}
-                    icon={<img src={calendarIcon} alt="calendar" className="h-5 w-5" />}
-                    disabled={readOnly}
-                  />
-                </div>
-              )}
-            />
-          </FormField>
         </div>
+
+        {/* Foundation Date */}
+        <FormField
+          label={t('schools.foundationDate')}
+          required
+          error={errors.foundationDate?.message && t(errors.foundationDate.message)}
+        >
+          <Controller
+            name="foundationDate"
+            control={control}
+            render={({ field }) => (
+              <div className="relative">
+                <Input
+                  {...field}
+                  type="date"
+                  placeholder={t('common.chooseDate')}
+                  icon={<img src={calendarIcon} alt="calendar" className="h-5 w-5" />}
+                  disabled={readOnly}
+                  className={'text-end'}
+                />
+              </div>
+            )}
+          />
+        </FormField>
 
         {/* About School */}
         <FormField
