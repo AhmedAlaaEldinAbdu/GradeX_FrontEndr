@@ -148,8 +148,8 @@ export default function Schools() {
                       options={
                         Array.isArray(academicSystems)
                           ? academicSystems.map((system) => ({
-                              value: system?.id || '',
-                              label: system?.name || '',
+                              value: system.id,
+                              label: system.name,
                             }))
                           : []
                       }
