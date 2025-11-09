@@ -52,7 +52,7 @@ export const getEducationalStages = createAsyncThunk<
   }
 });
 
-export const getEducationalStageById = createAsyncThunk<
+export const getEducationalStageBySubsystemId = createAsyncThunk<
   EducationalStageResponse,
   string
 >('educationalStages/fetchById', async (id, { rejectWithValue }) => {
@@ -66,7 +66,7 @@ export const getEducationalStageById = createAsyncThunk<
 
 export const addEducationalStage = createAsyncThunk<
   ApiResponseModel<null>,
-  CreateEducationalStageRequest
+  CreateEducationalStageRequest[] | any
 >('educationalStages/create', async (data, { rejectWithValue }) => {
   try {
     const response = await EducationalStagesApiService.createEducationalStage(data);
@@ -125,15 +125,15 @@ const educationalStagesSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      .addCase(getEducationalStageById.pending, (state) => {
+      .addCase(getEducationalStageBySubsystemId.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getEducationalStageById.fulfilled, (state, action: PayloadAction<EducationalStageResponse>) => {
+      .addCase(getEducationalStageBySubsystemId.fulfilled, (state, action: PayloadAction<EducationalStageResponse>) => {
         state.isLoading = false;
         state.educationalStageDetails = action.payload as EducationalStageResponse;
       })
-      .addCase(getEducationalStageById.rejected, (state, action) => {
+      .addCase(getEducationalStageBySubsystemId.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

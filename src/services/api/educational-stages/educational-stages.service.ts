@@ -14,7 +14,7 @@ export async function fetchEducationalStages(
   params?: Partial<EducationalStageParams>
 ): Promise<EducationalStagesListValue> {
   const response: AxiosResponse<ApiResponseModel<EducationalStagesListValue>> = await axiosClient.get(
-    EducationalStagesEndpoints.list,
+    EducationalStagesEndpoints.base,
     { params }
   );
   return response.data.value;
@@ -25,8 +25,8 @@ export async function fetchEducationalStagesBySubSystemId(
   params?: Partial<Omit<EducationalStageParams, 'academicSubSystemId'>>
 ): Promise<EducationalStagesListValue> {
   const response: AxiosResponse<ApiResponseModel<EducationalStagesListValue>> = await axiosClient.get(
-    EducationalStagesEndpoints.getBySubSystemId,
-    { params: { academicSubSystemId, ...params } }
+    EducationalStagesEndpoints.getGradeBySubSystemId,
+    { params: { academicSubSystemId: academicSubSystemId, ...params } }
   );
   return response.data.value;
 }

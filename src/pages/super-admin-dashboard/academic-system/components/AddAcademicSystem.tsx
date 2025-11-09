@@ -48,23 +48,24 @@ export default function AddAcademicSystem() {
 
   useEffect(() => {
     dispatch(fetchCountries());
-    dispatch(getAcademicSubSystems());
+    dispatch(getAcademicSubSystems({pageIndex: 1, pageSize: 1000}));
   }, [dispatch]);
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<AcademicSystemProps>({
     resolver: yupResolver(AcademicSystemSchema),
     defaultValues: {
-      academicSystems: [{ name: '', subSystemIds: [], countryIds: [] }],
+      academicSystems: [{ nameAr: '', nameEn: '', subSystemIds: [], countryIds: [] }],
     },
   });
 
   const onSubmit = (data: AcademicSystemProps) => {
     const payload: CreateAcademicSystem[] = data?.academicSystems?.map((system) => ({
-      name: system.name,
+      nameAr: system.nameAr,
+      nameEn: system.nameEn,
       subSystemIds: (system.subSystemIds || []).filter(Boolean) as string[],
       countryIds: (system.countryIds || []).filter(Boolean) as string[],
     }));
@@ -104,27 +105,51 @@ export default function AddAcademicSystem() {
           {numOfAcademic.map((_, index) => (
             <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
               <div className="flex">
-                <div className="flex-grow">
-                  <FormField
-                    label={t('academicSystem.title')}
-                    required
-                    error={
-                      errors.academicSystems?.[index]?.name?.message &&
-                      t(errors.academicSystems[index].name.message)
-                    }
-                  >
-                    <Controller
-                      name={`academicSystems.${index}.name`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          placeholder={t('academicSystem.enterAcademicSystem')}
-                          required
-                        />
-                      )}
-                    />
-                  </FormField>
+                <div className="flex flex-grow flex-col gap-5 md:flex-row">
+                  <div className="flex-grow">
+                    <FormField
+                      label={t('academicSystem.academicSystemAr')}
+                      required
+                      error={
+                        errors.academicSystems?.[index]?.nameAr?.message &&
+                        t(errors.academicSystems[index].nameAr.message)
+                      }
+                    >
+                      <Controller
+                        name={`academicSystems.${index}.nameAr`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder={t('academicSystem.enterAcademicSystemAr')}
+                            required
+                          />
+                        )}
+                      />
+                    </FormField>
+                  </div>
+                  <div className="flex-grow">
+                    <FormField
+                      label={t('academicSystem.academicSystemEn')}
+                      required
+                      error={
+                        errors.academicSystems?.[index]?.nameEn?.message &&
+                        t(errors.academicSystems[index].nameEn.message)
+                      }
+                    >
+                      <Controller
+                        name={`academicSystems.${index}.nameEn`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder={t('academicSystem.enterAcademicSystemEn')}
+                            required
+                          />
+                        )}
+                      />
+                    </FormField>
+                  </div>
                 </div>
                 <div>
                   {numOfAcademic?.length !== 1 ? (
@@ -249,9 +274,10 @@ export default function AddAcademicSystem() {
             </button>
             <button
               type="submit"
+              disabled={isSubmitting}
               className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
             >
-              {t('common.add')}
+              {isSubmitting ? t('common.loading') : t('common.add')}
             </button>
           </div>
         </form>
@@ -271,6 +297,17 @@ export default function AddAcademicSystem() {
             navigateAfterClose={-1}
           />
         )}
+
+        {/* {showPopupMessage && (
+          <PopupMessage
+            type="success"
+            message="academicSystem.systemTypeAddedSuccessfully"
+            iconSrc={BigSuccessIcon}
+            autoClose={true}
+            duration={2000}
+            onClose={() => setShowPopupMessage(false)}
+          />
+        )} */}
       </div>
     </Card>
   );

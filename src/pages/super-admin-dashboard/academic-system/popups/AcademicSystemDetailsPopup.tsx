@@ -32,7 +32,7 @@ export default function AcademicDetailsPopup({ system, onClose }: AcademicDetail
   };
 
   // Extract data from system object
-  const systemName = system.name;
+  const systemName = currentLang === 'ar' ? system.nameAr : system.nameEn;
   const systemTypes = system.academicSubSystemDto?.map((sub) =>
     currentLang === 'ar' ? sub.nameAr : sub.nameEn
   );
@@ -61,7 +61,7 @@ export default function AcademicDetailsPopup({ system, onClose }: AcademicDetail
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3 font-semibold text-gray-800">
               <span className="flex flex-shrink-0">{t('academicSystem.academicSystemName')}:</span>
-              <span className="py-1 text-sm text-gray-700">{systemName}</span>
+              <span className="py-1 text-sm text-gray-700">{currentLang === 'ar' ? system.nameAr : system.nameEn}</span>
             </div>
             <div className="flex items-start gap-3 font-semibold text-gray-800">
               <span className="flex flex-shrink-0">{t('academicSystem.systemType')}:</span>{' '}

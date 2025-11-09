@@ -2,10 +2,9 @@ import { useTranslation } from 'react-i18next';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import Card from '@/shared/components/Card';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
-import type { MultiSelectOption } from '@/shared/components/MultiSelectTagInput';
 import MultiSelectTagInput from '@/shared/components/MultiSelectTagInput';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';
@@ -16,27 +15,60 @@ import {
   type EducationalStagesProps,
 } from '@/validations/academic-system-validations';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
+import { addEducationalStage } from '@/redux/features/educational-stages/educationalStagesSlice';
+import type { CreateEducationalStageRequest } from '@/services/api/types/educational-stages.types';
 
 export default function AddEducationalStages() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const currentLang = i18n.language as 'ar' | 'en';
   const [numOfStages, setNumOfStages] = useState<number[]>([1]);
   const [showPopupMessage, setShowPopupMessage] = useState(false);
+
+  const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
+  const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
+
+  useEffect(() => {
+    dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
+  }, [dispatch]);
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<EducationalStagesProps>({
     resolver: yupResolver(EducationalStagesSchema),
     defaultValues: {
-      educationalStages: [{ educationalStagesSystemName: '', academicSystem: [] }],
+      educationalStages: [{ nameAr: '', nameEn: '', academicSystem: [] }],
     },
   });
 
-  const onSubmit = async (data: any) => {
-    console.log(data);
-    setShowPopupMessage(true);
+  const onSubmit = (data: EducationalStagesProps) => {
+    const payload: CreateEducationalStageRequest[] = data?.educationalStages?.map(
+      (educational) => ({
+        nameAr: educational.nameAr,
+        nameEn: educational.nameEn,
+        age: 3,
+        academicSubSystemId: Array.isArray(educational.academicSystem)
+          ? (educational.academicSystem[0] ?? '')
+          : '',
+      })
+    );
+
+    dispatch(addEducationalStage(payload))
+      .unwrap()
+      .then((res) => {
+        if (res.isSuccess) {
+          setShowPopupMessage(true);
+          navigate(-1);
+        }
+      })
+      .catch((err) => {
+        console.error('Error creating Educational stage:', err);
+      });
   };
 
   const handleAddEducationalStages = () => {
@@ -64,27 +96,51 @@ export default function AddEducationalStages() {
           {numOfStages.map((_, index) => (
             <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
               <div className="flex">
-                <div className="flex-grow">
-                  <FormField
-                    label={t('academicSystem.title')}
-                    required
-                    error={
-                      errors.educationalStages?.[index]?.educationalStagesSystemName?.message &&
-                      t(errors.educationalStages?.[index]?.educationalStagesSystemName.message)
-                    }
-                  >
-                    <Controller
-                      name={`educationalStages.${index}.educationalStagesSystemName`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          placeholder={t('academicSystem.enterEducationalStage')}
-                          required
-                        />
-                      )}
-                    />
-                  </FormField>
+                <div className="flex flex-grow flex-col gap-5 md:flex-row">
+                  <div className="flex-grow">
+                    <FormField
+                      label={t('academicSystem.academicSystemAr')}
+                      required
+                      error={
+                        errors.educationalStages?.[index]?.nameAr?.message &&
+                        t(errors.educationalStages?.[index]?.nameAr.message)
+                      }
+                    >
+                      <Controller
+                        name={`educationalStages.${index}.nameAr`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder={t('academicSystem.enterAcademicSystemAr')}
+                            required
+                          />
+                        )}
+                      />
+                    </FormField>
+                  </div>
+                  <div className="flex-grow">
+                    <FormField
+                      label={t('academicSystem.academicSystemEn')}
+                      required
+                      error={
+                        errors.educationalStages?.[index]?.nameEn?.message &&
+                        t(errors.educationalStages?.[index]?.nameEn.message)
+                      }
+                    >
+                      <Controller
+                        name={`educationalStages.${index}.nameEn`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder={t('academicSystem.enterAcademicSystemEn')}
+                            required
+                          />
+                        )}
+                      />
+                    </FormField>
+                  </div>
                 </div>
                 <div>
                   {numOfStages?.length !== 1 ? (
@@ -118,12 +174,6 @@ export default function AddEducationalStages() {
                       name={`educationalStages.${index}.academicSystem`}
                       control={control}
                       render={({ field }) => {
-                        const academicSystemOptions: MultiSelectOption[] = [
-                          { value: 'glo', label: 'عالمي' },
-                          { value: 'private', label: 'خاص' },
-                          { value: 'global', label: 'دولي' },
-                        ];
-
                         return (
                           <MultiSelectTagInput
                             value={
@@ -133,8 +183,20 @@ export default function AddEducationalStages() {
                               const parsedValue = value.split(',').filter((v) => v.trim());
                               field.onChange(parsedValue);
                             }}
-                            options={academicSystemOptions}
-                            placeholder={t('academicSystem.selectEducationSystem')}
+                            options={
+                              Array.isArray(academicSubSystems)
+                                ? academicSubSystems.map((s) => ({
+                                    value: s.id,
+                                    label: currentLang === 'ar' ? s.nameAr : s.nameEn,
+                                  }))
+                                : []
+                            }
+                            disabled={isLoadingSubSystems}
+                            placeholder={
+                              isLoadingSubSystems
+                                ? t('common.loading')
+                                : t('academicSystem.selectEducationSystem')
+                            }
                             error={!!errors.educationalStages?.[index]?.academicSystem}
                           />
                         );
@@ -158,9 +220,10 @@ export default function AddEducationalStages() {
             </button>
             <button
               type="submit"
+              disabled={isSubmitting}
               className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
             >
-              {t('common.add')}
+              {isSubmitting ? t('common.loading') : t('common.add')}
             </button>
           </div>
         </form>
@@ -172,7 +235,9 @@ export default function AddEducationalStages() {
             message="academicSystem.educationalStagesAddedSuccessfully"
             iconSrc={BigSuccessIcon}
             autoClose={true}
+            duration={2000}
             onClose={() => setShowPopupMessage(false)}
+            navigateAfterClose={-1}
           />
         )}
       </div>

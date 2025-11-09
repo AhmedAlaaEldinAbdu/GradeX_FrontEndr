@@ -28,13 +28,13 @@ export default function AcademicSystem({ setSelectedTab }: IAcademicSystemProps)
 
   return (
     <div>
-      <EmptyState
+      {/* <EmptyState
           imgSrc={AcademicIcon}
           description={t('academicSystem.noAcademicSystemMessage')}
           blend={true}
-        />
-      {/* <div className="mb-5 w-full max-w-lg px-1">
-        <div className="flex">
+        /> */}
+      <div className="mb-5 w-full max-w-lg px-1">
+        <div className="flex w-[75%]">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -53,7 +53,7 @@ export default function AcademicSystem({ setSelectedTab }: IAcademicSystemProps)
       <div>
         {activeTab === 'AcademicSystem' && <AcademicSystemTab />}
         {activeTab === 'EducationalStages' && <EducationalStagesTab />}
-      </div> */}
+      </div>
     </div>
   );
 }

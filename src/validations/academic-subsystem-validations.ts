@@ -7,4 +7,4 @@ export const AcademicSubsystemSchema = object({
     .typeError("common.validation.nameRequired"),
 });
 
-export type AcademicSystemProps = InferType<typeof AcademicSubsystemSchema>;
+export type AcademicSubsystemForm = InferType<typeof AcademicSubsystemSchema>;

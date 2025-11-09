@@ -4,7 +4,8 @@ export const AcademicSystemSchema = object({
   academicSystems: array()
     .of(
       object({
-        name: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
+        nameAr: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
+        nameEn: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
         subSystemIds: array().of(string()).optional(),
         countryIds: array().of(string())
           .required("academicSystem.validation.countryRequired").typeError("academicSystem.validation.countryRequired"),
@@ -14,7 +15,8 @@ export const AcademicSystemSchema = object({
     .min(1, "academicSystem.validation.atLeastOne").typeError("academicSystem.validation.requiredList"),
 });
 export const EditAcademicSystemSchema = object({
-  name: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
+  nameAr: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
+  nameEn: string().required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
   subSystemIds: array().of(string()).optional(),
   countryIds: array().of(string()).required("academicSystem.validation.countryRequired").typeError("academicSystem.validation.countryRequired"),
 })
@@ -22,8 +24,10 @@ export const EditAcademicSystemSchema = object({
 export const EducationalStagesSchema = object({
   educationalStages: array().of(
     object({
-      educationalStagesSystemName: string()
-        .required("academicSystem.validation.educationalStagesNameRequired").typeError("academicSystem.validation.educationalStagesNameRequired"),
+      nameAr: string()
+        .required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
+      nameEn: string()
+        .required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
       academicSystem: array()
         .of(string())
         .required("academicSystem.validation.academicSystemRequired").typeError("academicSystem.validation.academicSystemRequired"),
@@ -33,8 +37,10 @@ export const EducationalStagesSchema = object({
     .min(1, "academicSystem.validation.atLeastOne").typeError("academicSystem.validation.requiredList"),
 });
 export const EditEducationalStagesSchema = object({
-  educationalStagesSystemName: string()
-    .required("academicSystem.validation.educationalStagesNameRequired").typeError("academicSystem.validation.educationalStagesNameRequired"),
+  nameAr: string()
+    .required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
+  nameEn: string()
+    .required("academicSystem.validation.academicSystemNameRequired").typeError("academicSystem.validation.academicSystemNameRequired"),
   academicSystem: array()
     .of(string())
     .required("academicSystem.validation.academicSystemRequired").typeError("academicSystem.validation.academicSystemRequired"),

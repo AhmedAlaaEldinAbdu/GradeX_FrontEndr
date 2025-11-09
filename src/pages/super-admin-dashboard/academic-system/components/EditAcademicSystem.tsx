@@ -54,11 +54,12 @@ export default function EditAcademicSystem() {
     control,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<EditAcademicSystemProps>({
     resolver: yupResolver(EditAcademicSystemSchema) as Resolver<EditAcademicSystemProps>,
     defaultValues: {
-      name: '',
+      nameAr: '',
+      nameEn: '',
       subSystemIds: [],
       countryIds: [],
     },
@@ -67,7 +68,7 @@ export default function EditAcademicSystem() {
   // Fetch lookups data only once on mount
   useEffect(() => {
     dispatch(fetchCountries());
-    dispatch(getAcademicSubSystems());
+    dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
   }, [dispatch]);
 
   // Fetch academic system details only when ID changes
@@ -89,7 +90,9 @@ export default function EditAcademicSystem() {
   useEffect(() => {
     if (academicSystem && !isLoadingData) {
       reset({
-        name: academicSystem.name || '',
+        // Backend details currently returns a single 'name'. Initialize both languages with it.
+        nameAr: (academicSystem as any).nameAr ?? academicSystem.nameAr ?? '',
+        nameEn: (academicSystem as any).nameEn ?? academicSystem.nameEn ?? '',
         subSystemIds: academicSystem.academicSubSystemDto?.map((sub) => sub.id) || [],
         countryIds: academicSystem.lkCountriesDto?.map((country) => country.id) || [],
       });
@@ -100,7 +103,8 @@ export default function EditAcademicSystem() {
     if (!id) return;
     const payload: UpdateAcademicSystemRequest = {
       id,
-      name: data.name,
+      nameAr: data.nameAr,
+      nameEn: data.nameEn,
       subSystemIds: (data.subSystemIds || []).filter(Boolean) as string[],
       countryIds: (data.countryIds || []).filter(Boolean) as string[],
     };
@@ -134,24 +138,45 @@ export default function EditAcademicSystem() {
           <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
             <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
               <div className="flex">
-                <div className="flex-grow">
-                  <FormField
-                    label={t('academicSystem.title')}
-                    required
-                    error={errors.name?.message && t(errors.name.message)}
-                  >
-                    <Controller
-                      name={`name`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          placeholder={t('academicSystem.enterAcademicSystem')}
-                          required
-                        />
-                      )}
-                    />
-                  </FormField>
+                <div className="flex flex-grow flex-col gap-5 md:flex-row">
+                  <div className="flex-grow">
+                    <FormField
+                      label={t('academicSystem.academicSystemAr')}
+                      required
+                      error={errors.nameAr?.message && t(errors.nameAr.message)}
+                    >
+                      <Controller
+                        name={`nameAr`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder={t('academicSystem.enterAcademicSystemAr')}
+                            required
+                          />
+                        )}
+                      />
+                    </FormField>
+                  </div>
+                  <div className="flex-grow">
+                    <FormField
+                      label={t('academicSystem.academicSystemEn')}
+                      required
+                      error={errors.nameEn?.message && t(errors.nameEn.message)}
+                    >
+                      <Controller
+                        name={`nameEn`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder={t('academicSystem.enterAcademicSystemEn')}
+                            required
+                          />
+                        )}
+                      />
+                    </FormField>
+                  </div>
                 </div>
                 <div>
                   <div className="h-8 w-8"></div>
@@ -255,9 +280,10 @@ export default function EditAcademicSystem() {
               </button>
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
               >
-                {t('common.edit')}
+                {isSubmitting ? t('common.loading') : t('common.edit')}
               </button>
             </div>
           </form>
