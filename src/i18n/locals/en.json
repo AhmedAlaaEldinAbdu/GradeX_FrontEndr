@@ -260,7 +260,13 @@
     "userUpdated": "System user updated successfully",
     "confirmDeleteUser": "Are you sure you want to delete this user?",
     "userDeleted": "User deleted successfully",
-    "optional": "Optional"
+    "optional": "Optional",
+    "noRolesFound": "No roles found",
+    "roleCreatedSuccessfully": "Role created successfully",
+    "validation": {
+      "roleNameRequired": "Role name is required",
+      "permissionsRequired": "At least one permission must be selected"
+    }
   },
   "schools": {
     "title": "Schools",

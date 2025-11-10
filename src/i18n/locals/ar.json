@@ -261,7 +261,13 @@
     "userUpdated": "تم تعديل مستخدم نظام بنجاح",
     "confirmDeleteUser": "هل أنت متأكد من حذف المستخدم؟",
     "userDeleted": "تم حذف المستخدم بنجاح",
-    "optional": "اختياري"
+    "optional": "اختياري",
+    "noRolesFound": "لا توجد أدوار",
+    "roleCreatedSuccessfully": "تم إنشاء الدور بنجاح",
+    "validation": {
+      "roleNameRequired": "اسم الدور مطلوب",
+      "permissionsRequired": "يجب اختيار صلاحية واحدة على الأقل"
+    }
   },
   "schools": {
     "title": "المدارس",
