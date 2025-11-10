@@ -26,8 +26,11 @@ export interface CreateRoleRequest {
   permissions: string[];
 }
 
-export interface UpdateRoleRequest extends Partial<CreateRoleRequest> {
-  id?: string;
+export interface UpdateRoleRequest {
+  roleId: string;
+  roleName: string;
+  description?: string;
+  permissions: string[];
 }
 
 // ============================================================================
