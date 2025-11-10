@@ -54,7 +54,7 @@ export default function DeletedSchoolsTab({ filters }: DeletedSchoolsTabProps) {
     if (!academicSystemId || !Array.isArray(academicSystems)) return '-';
     const system = academicSystems.find((s) => s?.id === academicSystemId);
     if (!system) return '-';
-    return system.name || '-';
+    return system.nameAr || '-';
   };
 
   // Fetch schools on mount and when filters change

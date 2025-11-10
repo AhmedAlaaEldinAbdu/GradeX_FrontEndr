@@ -53,7 +53,7 @@ export default function PendingSchoolsTab({ filters }: PendingSchoolsTabProps) {
     if (!academicSystemId || !Array.isArray(academicSystems)) return '-';
     const system = academicSystems.find((s) => s?.id === academicSystemId);
     if (!system) return '-';
-    return system.name || '-';
+    return system.nameAr || '-';
   };
 
   useEffect(() => {
