@@ -263,6 +263,7 @@
     "optional": "Optional",
     "noRolesFound": "No roles found",
     "roleCreatedSuccessfully": "Role created successfully",
+    "roleUpdatedSuccessfully": "Role updated successfully",
     "validation": {
       "roleNameRequired": "Role name is required",
       "permissionsRequired": "At least one permission must be selected"

@@ -264,6 +264,7 @@
     "optional": "اختياري",
     "noRolesFound": "لا توجد أدوار",
     "roleCreatedSuccessfully": "تم إنشاء الدور بنجاح",
+    "roleUpdatedSuccessfully": "تم تحديث الدور بنجاح",
     "validation": {
       "roleNameRequired": "اسم الدور مطلوب",
       "permissionsRequired": "يجب اختيار صلاحية واحدة على الأقل"
