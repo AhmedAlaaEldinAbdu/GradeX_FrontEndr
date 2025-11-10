@@ -135,14 +135,25 @@ export const createRole = createAsyncThunk<Role, CreateRoleRequest>(
   }
 );
 
-export const updateRole = createAsyncThunk<Role, { id: string; data: UpdateRoleRequest }>(
+export const updateRole = createAsyncThunk<Role, UpdateRoleRequest>(
   'roles/updateRole',
-  async ({ id, data }, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
-      const role = await rolesApiService.updateRole(id, data);
+      const role = await rolesApiService.updateRole(data);
       return role;
     } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
+      if (
+        error &&
+        typeof error === 'object' &&
+        'isValidationError' in error &&
+        error.isValidationError
+      ) {
+        return rejectWithValue({
+          message: getErrorMessage(error),
+          validationErrors: (error as unknown as { validationErrors: unknown }).validationErrors,
+        });
+      }
+      return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });
     }
   }
 );
@@ -290,7 +301,15 @@ const rolesSlice = createSlice({
       })
       .addCase(updateRole.rejected, (state, action) => {
         state.isUpdating = false;
-        state.error = action.payload as string;
+        const payload = action.payload as
+          | { message: string; validationErrors: unknown }
+          | undefined;
+        if (payload) {
+          state.error = payload.message;
+          state.validationErrors = payload.validationErrors as Record<string, string> | null;
+        } else {
+          state.error = 'An error occurred';
+        }
       });
 
     // Delete Role
