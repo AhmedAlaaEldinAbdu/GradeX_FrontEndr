@@ -97,11 +97,25 @@ export async function createRole(data: CreateRoleRequest): Promise<Role> {
 /**
  * Update an existing role
  */
-export async function updateRole(id: string, data: UpdateRoleRequest): Promise<Role> {
+export async function updateRole(data: UpdateRoleRequest): Promise<Role> {
   const response: AxiosResponse<ApiResponseModel<Role>> = await axiosClient.put(
-    RolesEndpoints.updateRole(id),
+    RolesEndpoints.updateRole,
     data
   );
+
+  if (
+    !response.data.isSuccess &&
+    response.data.validationErrors &&
+    response.data.validationErrors.length > 0
+  ) {
+    const error = new Error('Validation failed') as Error & {
+      validationErrors: typeof response.data.validationErrors;
+      isValidationError: boolean;
+    };
+    error.validationErrors = response.data.validationErrors;
+    error.isValidationError = true;
+    throw error;
+  }
 
   return response.data.value;
 }
