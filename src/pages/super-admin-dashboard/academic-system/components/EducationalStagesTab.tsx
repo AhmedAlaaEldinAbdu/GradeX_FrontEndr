@@ -23,6 +23,9 @@ import { fetchCountries } from '@/redux/features/lookups';
 import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
 import CustomSelect from '@/shared/components/CustomSelect';
 import SearchInput from '@/shared/components/SearchInput';
+import Loading from '@/shared/components/Loading';
+import NotFoundMessage from '@/shared/components/NotFoundMessage';
+import ErrorMessage from '@/shared/components/ErrorMessage';
 
 export default function EducationalStagesTab() {
   const { t, i18n } = useTranslation();
@@ -44,6 +47,7 @@ export default function EducationalStagesTab() {
   const pagination = useAppSelector((state) => state.educationalStages.pagination);
   const isLoading = useAppSelector((state) => state.educationalStages.isLoading);
   const isDeleting = useAppSelector((state) => state.educationalStages.isDeleting);
+  const error = useAppSelector((state) => state.educationalStages.error);
   const { showToast } = useToast();
 
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
@@ -174,12 +178,13 @@ export default function EducationalStagesTab() {
       ) : shouldShowContent ? (
         <div>
           <div className="flex justify-between">
-            <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center flex-grow">
+            <div className="mb-6 flex flex-grow flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
               <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[40%]">
                 <SearchInput
                   value={searchTerm}
                   onChange={setSearchTerm}
                   placeholder={t('academicSystem.searchEducationalStage')}
+                  name="searchEducationalStage"
                 />
               </div>
               <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
@@ -277,12 +282,12 @@ export default function EducationalStagesTab() {
           <div className="overflow-x-auto">
             {isLoading ? (
               <div className="flex justify-center py-10">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent"></div>
+                <Loading />
               </div>
             ) : educationalStages?.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10">
-                <p className="text-lg text-gray-500">{t('common.noResults')}</p>
-              </div>
+              <NotFoundMessage message="common.noResults" />
+            ) : error ? (
+              <ErrorMessage message="common.errorOccurred" />
             ) : (
               <Table columns={columns} data={educationalStages} keyExtractor={(row) => row.id} />
             )}
@@ -314,8 +319,6 @@ export default function EducationalStagesTab() {
                       showToast({
                         message: 'academicSystem.systemDeletedSuccessfully',
                         type: 'success',
-                        duration: 3000,
-                        position: 'bottom-left',
                       });
                       fetchEducationalStages();
                     }
@@ -324,8 +327,6 @@ export default function EducationalStagesTab() {
                     showToast({
                       message: 'common.errorOccurred',
                       type: 'error',
-                      duration: 3000,
-                      position: 'bottom-left',
                     });
                   });
               }}

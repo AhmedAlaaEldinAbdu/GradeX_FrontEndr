@@ -34,7 +34,9 @@ export interface AcademicSubSystemDto {
 export interface AcademicSubSystemParams {
   pageIndex: number;
   pageSize: number;
-  name?: string;
+  academicSubSystemName?: string;
+  nameAr?: string;
+  nameEn?: string;
   subsystemId?: string;
   countryId?: string;
 }

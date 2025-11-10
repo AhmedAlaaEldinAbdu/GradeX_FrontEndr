@@ -14,6 +14,9 @@ import { fetchCountries } from '@/redux/features/lookups';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
 import CustomSelect from '@/shared/components/CustomSelect';
 import SearchInput from '@/shared/components/SearchInput';
+import Loading from '@/shared/components/Loading';
+import NotFoundMessage from '@/shared/components/NotFoundMessage';
+import ErrorMessage from '@/shared/components/ErrorMessage';
 
 export default function AcademicSystemTab() {
   const { t, i18n } = useTranslation();
@@ -33,7 +36,7 @@ export default function AcademicSystemTab() {
   const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
   const pagination = useAppSelector((state) => state.academicSystems.pagination);
   const isLoading = useAppSelector((state) => state.academicSystems.isLoading);
-  // const isDeleting = useAppSelector((state) => state.academicSystems.isDeleting);
+  const error = useAppSelector((state) => state.academicSystems.error);
 
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
   const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
@@ -55,7 +58,10 @@ export default function AcademicSystemTab() {
       getAcademicSystems({
         pageIndex: currentPage,
         pageSize,
-        name: searchTerm || undefined,
+        academicSubSystemName: undefined,
+        ...(currentLang === 'ar'
+          ? { nameAr: searchTerm || undefined }
+          : { nameEn: searchTerm || undefined }),
         subsystemId: selectedSubSystemId || undefined,
         countryId: selectedCountryId || undefined,
       })
@@ -168,12 +174,13 @@ export default function AcademicSystemTab() {
       ) : shouldShowContent ? (
         <div>
           <div className="flex justify-between">
-            <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center flex-grow">
+            <div className="mb-6 flex flex-grow flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
               <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[40%]">
                 <SearchInput
                   value={searchTerm}
                   onChange={setSearchTerm}
                   placeholder={t('academicSystem.searchBySystemName')}
+                  name="searchBySystemName"
                 />
               </div>
               <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
@@ -271,12 +278,12 @@ export default function AcademicSystemTab() {
           <div className="overflow-x-auto">
             {isLoading ? (
               <div className="flex justify-center py-10">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent"></div>
+                <Loading />
               </div>
             ) : academicSystems?.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10">
-                <p className="text-lg text-gray-500">{t('common.noResults')}</p>
-              </div>
+              <NotFoundMessage message="common.noResults" />
+            ) : error ? (
+              <ErrorMessage message="common.errorOccurred" />
             ) : (
               <Table columns={columns} data={academicSystems} keyExtractor={(row) => row.id} />
             )}
