@@ -149,7 +149,7 @@ export default function Schools() {
                         Array.isArray(academicSystems)
                           ? academicSystems.map((system) => ({
                               value: system.id,
-                              label: system.name,
+                              label: system.nameAr,
                             }))
                           : []
                       }
