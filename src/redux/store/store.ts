@@ -6,6 +6,7 @@ import lookupsReducer from '../features/lookups/lookupsSlice';
 import academicSystemsReducer from '../features/academic-system/academicSystemSlice';
 import academicSubSystemsReducer from '../features/academic-subsystem/academicSubSystemSlice';
 import educationalStagesReducer from '../features/educational-stages/educationalStagesSlice';
+import rolesReducer from '../features/roles/rolesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     academicSystems: academicSystemsReducer,
     academicSubSystems: academicSubSystemsReducer,
     educationalStages: educationalStagesReducer,
+    roles: rolesReducer,
   },
 });
 
