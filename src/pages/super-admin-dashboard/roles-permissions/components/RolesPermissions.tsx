@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import Card from '@gradex/shared/components/Card';
-import EmptyState from '@gradex/shared/components/EmptyState';
 import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import Pagination from '@gradex/shared/components/Pagination';
-import EmployeesIcon from '@gradex/assets/icons/Employees.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import { Link } from 'react-router-dom';
@@ -12,45 +12,96 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
 import PopupMessage from '@gradex/shared/components/PopupMessage';
-
-interface Role {
-  id: number;
-  roleName: string;
-  description: string;
-}
+import Loading from '@gradex/shared/components/Loading';
+import {
+  fetchRoles,
+  deleteRole,
+  selectRoles,
+  selectIsLoading,
+  selectPagination,
+} from '@gradex/redux/features/roles';
+import type { Role } from '@gradex/services/api/types/roles.types';
 
 export default function RolesPermissions() {
   const { t } = useTranslation();
-  const [hasRoles] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const dispatch = useDispatch<AppDispatch>();
 
+  const roles = useSelector(selectRoles) || [];
+  const isLoading = useSelector(selectIsLoading);
+  const pagination = useSelector(selectPagination);
+
+  const [searchTerm, setSearchTerm] = useState('');
   const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
 
-  const handleDeleteConfirm = () => {
-    setShowDelete(false);
-    setShowPopupMessage(true);
+  // Fetch roles on component mount
+  useEffect(() => {
+    dispatch(
+      fetchRoles({
+        page: 1,
+        limit: 10,
+      })
+    );
+  }, [dispatch]);
+
+  // Handle search with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchTerm !== undefined) {
+        dispatch(
+          fetchRoles({
+            page: 1,
+            limit: pagination.limit,
+            filters: searchTerm ? { searchTerm } : undefined,
+          })
+        );
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, dispatch, pagination.limit]);
+
+  const handlePageChange = (page: number) => {
+    dispatch(
+      fetchRoles({
+        page,
+        limit: pagination.limit,
+        filters: searchTerm ? { searchTerm } : undefined,
+      })
+    );
   };
 
-  const roles: Role[] = [
-    { id: 1, roleName: 'مشرف عام', description: 'الوصف' },
-    { id: 2, roleName: 'مشرف عام', description: 'الوصف' },
-    { id: 3, roleName: 'مشرف عام', description: 'الوصف' },
-    { id: 4, roleName: 'مشرف عام', description: 'الوصف' },
-    { id: 5, roleName: 'مشرف عام', description: 'الوصف' },
-    { id: 6, roleName: 'مشرف عام', description: 'الوصف' },
-  ];
+  const handleDeleteClick = (roleId: string) => {
+    setSelectedRoleId(roleId);
+    setShowDelete(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (selectedRoleId) {
+      try {
+        await dispatch(deleteRole(selectedRoleId)).unwrap();
+        setShowDelete(false);
+        setShowPopupMessage(true);
+        setSelectedRoleId(null);
+      } catch (err) {
+        setShowDelete(false);
+        // Handle error (you can show error popup if needed)
+        console.error('Failed to delete role:', err);
+      }
+    }
+  };
 
   const columns = [
-    { header: '#', accessor: (row: Role) => row.id },
+    { header: '#', accessor: (_row: Role, index?: number) => (index ?? 0) + 1 },
     {
       header: 'rolesManagement.roleName',
-      accessor: (row: Role) => row.roleName,
+      accessor: (row: Role) => row.name,
       headerClassName: 'min-w-[100px]',
     },
     {
       header: 'rolesManagement.description',
-      accessor: (row: Role) => row.description,
+      accessor: (row: Role) => row.description || '-',
       headerClassName: 'min-w-[200px]',
     },
     {
@@ -64,7 +115,7 @@ export default function RolesPermissions() {
             <img src={EditIcon} alt="Edit" />
           </Link>
           <button
-            onClick={() => setShowDelete(true)}
+            onClick={() => handleDeleteClick(row.id)}
             className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
           >
             <img src={TrashIcon} alt="Trash" />
@@ -77,12 +128,8 @@ export default function RolesPermissions() {
 
   return (
     <Card>
-      {!hasRoles ? (
-        <EmptyState
-          imgSrc={EmployeesIcon}
-          description={t('rolesManagement.noRolesMessage')}
-          blend={true}
-        />
+      {isLoading && roles.length === 0 ? (
+        <Loading />
       ) : (
         <div>
           <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
@@ -112,17 +159,25 @@ export default function RolesPermissions() {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <Table columns={columns} data={roles} keyExtractor={(row) => row.id} />
+            {!Array.isArray(roles) || roles.length === 0 ? (
+              <div className="py-10 text-center text-gray-500">
+                {t('rolesManagement.noRolesFound')}
+              </div>
+            ) : (
+              <Table columns={columns} data={roles} keyExtractor={(row) => row.id} />
+            )}
           </div>
 
           {/* Pagination */}
-          <Pagination
-            currentPage={1}
-            totalPages={2}
-            to={6}
-            from={1}
-            onPageChange={() => console.log('change page')}
-          />
+          {Array.isArray(roles) && roles.length > 0 && pagination && pagination.totalPages > 0 && (
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              to={Math.min(pagination.page * pagination.limit, pagination.total)}
+              from={(pagination.page - 1) * pagination.limit + 1}
+              onPageChange={handlePageChange}
+            />
+          )}
 
           {/* Popups */}
           {showDelete && (
