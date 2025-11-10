@@ -179,7 +179,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                     }}
                     options={academicSystems.map((system) => ({
                       value: system.id,
-                      label: system.name || system.academicSubSystemDto?.[0]?.nameAr || '',
+                      label: system.nameAr || '',
                     }))}
                     placeholder={
                       isLoadingAcademicSystems
