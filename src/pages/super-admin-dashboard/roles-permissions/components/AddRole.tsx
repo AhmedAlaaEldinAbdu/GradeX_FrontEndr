@@ -1,222 +1,350 @@
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
 import { t } from 'i18next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface Permission {
-  id: string;
-  label: string;
-  parentControl?: boolean;
-}
-
-interface PermissionGroup {
-  id: string;
-  permissions: Permission[];
-}
-
-const permissionGroups: PermissionGroup[] = [
-  {
-    id: 'first',
-    permissions: [
-      {
-        id: 'education-systems',
-        label: 'rolesManagement.educationalSystemPermissions',
-        parentControl: true,
-      },
-      { id: 'add-school', label: 'إضافة المدارس' },
-      { id: 'approve-school', label: 'قبول المدارس' },
-      { id: 'edit-school', label: 'تعديل المدارس' },
-      { id: 'delete-school', label: 'حذف المدارس' },
-    ],
-  },
-  {
-    id: 'second',
-    permissions: [
-      {
-        id: 'education-management',
-        label: 'rolesManagement.educationalSystemPermissions',
-        parentControl: true,
-      },
-      { id: 'add-system', label: 'إضافة أنظمة تعليمية' },
-      { id: 'edit-system', label: 'تعديل أنظمة تعليمية' },
-      { id: 'delete-system', label: 'حذف أنظمة تعليمية' },
-    ],
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { Controller, FormProvider } from 'react-hook-form';
+import type { AppDispatch } from '@gradex/redux/store/store';
+import { createRole, selectValidationErrors, selectIsCreating } from '@gradex/redux/features/roles';
+import { permissionsApiService } from '@gradex/services/api';
+import type { PermissionGroup as APIPermissionGroup } from '@gradex/services/api/types/permissions.types';
+import Loading from '@gradex/shared/components/Loading';
+import PopupMessage from '@gradex/shared/components/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import { useToast } from '@/shared/context/ToastContext';
+import type { ValidationErrorResponse } from '@/services/api/config';
+import { useRoleForm, type RoleFormData } from '../hooks/useRoleForm';
+import FormField from '@gradex/shared/components/FormField';
+import Input from '@gradex/shared/components/Input';
+import TextArea from '@gradex/shared/components/TextArea';
 
 export default function AddRole() {
-  const [roleName, setRoleName] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [permissionGroups, setPermissionGroups] = useState<APIPermissionGroup[]>([]);
+  const [isLoadingPermissions, setIsLoadingPermissions] = useState(true);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
+
+  // Initialize form with custom hook
+  const { form, validateForm } = useRoleForm();
+  const {
+    control,
+    formState: { errors },
+    watch,
+    setValue,
+    trigger,
+  } = form;
+
+  // Watch form values
+  const selectedPermissions = watch('permissions') || [];
+
+  const isCreating = useSelector(selectIsCreating);
+  const validationErrorsFromRedux = useSelector(selectValidationErrors);
+
+  // Show validation errors in toast when they occur
+  useEffect(() => {
+    if (validationErrorsFromRedux) {
+      // Handle array of validation errors
+      if (Array.isArray(validationErrorsFromRedux)) {
+        validationErrorsFromRedux.forEach((error: ValidationErrorResponse) => {
+          showToast({
+            message: error.errorMessage,
+            type: 'error',
+            duration: 5000,
+          });
+        });
+      }
+      // Handle object with error messages
+      else if (typeof validationErrorsFromRedux === 'object') {
+        const errorMessages = Object.values(validationErrorsFromRedux);
+        if (errorMessages.length > 0) {
+          errorMessages.forEach((errorMsg) => {
+            if (typeof errorMsg === 'string') {
+              showToast({
+                message: errorMsg,
+                type: 'error',
+                duration: 5000,
+              });
+            }
+          });
+        }
+      }
+    }
+  }, [validationErrorsFromRedux, showToast]);
+
+  // Fetch all permissions on component mount
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      try {
+        setIsLoadingPermissions(true);
+        const response = await permissionsApiService.getPermissions({
+          PageIndex: 1,
+          PageSize: 10000,
+        });
+        setPermissionGroups(response.permissionGroupDtos || []);
+      } catch (error) {
+        console.error('Failed to fetch permissions:', error);
+        showToast({
+          message: t('rolesManagement.failedToLoadPermissions'),
+          type: 'error',
+          duration: 5000,
+        });
+      } finally {
+        setIsLoadingPermissions(false);
+      }
+    };
+
+    fetchPermissions();
+  }, [showToast]);
 
   const handlePermissionChange = (id: string) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(id) ? prev.filter((perm) => perm !== id) : [...prev, id]
-    );
+    const currentPermissions = selectedPermissions || [];
+    const updatedPermissions = currentPermissions.includes(id)
+      ? currentPermissions.filter((perm) => perm !== id)
+      : [...currentPermissions, id];
+
+    setValue('permissions', updatedPermissions);
+    // Clear permissions validation error when user selects/deselects
+    if (errors.permissions) {
+      trigger('permissions');
+    }
   };
 
   const handleSelectAll = () => {
     if (selectAll) {
-      setSelectedPermissions([]);
+      setValue('permissions', []);
       setSelectAll(false);
     } else {
       const all = permissionGroups.flatMap((group) => group.permissions.map((p) => p.id));
-      setSelectedPermissions(all);
+      setValue('permissions', all);
       setSelectAll(true);
+    }
+    // Clear validation error
+    if (errors.permissions) {
+      trigger('permissions');
     }
   };
 
-  const toggleGroupPermissions = (group: PermissionGroup) => {
+  const toggleGroupPermissions = (group: APIPermissionGroup) => {
     const allIds = group.permissions.map((p) => p.id);
     const allSelected = allIds.every((id) => selectedPermissions.includes(id));
 
-    setSelectedPermissions((prev) =>
-      allSelected ? prev.filter((id) => !allIds.includes(id)) : [...new Set([...prev, ...allIds])]
-    );
+    const currentPermissions = selectedPermissions || [];
+    const updatedPermissions = allSelected
+      ? currentPermissions.filter((id) => !allIds.includes(id))
+      : [...new Set([...currentPermissions, ...allIds])];
+
+    setValue('permissions', updatedPermissions);
+    // Clear validation error
+    if (errors.permissions) {
+      trigger('permissions');
+    }
   };
 
-  const isGroupFullyChecked = (group: PermissionGroup) => {
+  const isGroupFullyChecked = (group: APIPermissionGroup) => {
     const allIds = group.permissions.map((p) => p.id);
     return allIds.every((id) => selectedPermissions.includes(id));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({ roleName, description, selectedPermissions });
+  /**
+   * Handle form submission with validation
+   */
+  const onFormSubmit = async (data: RoleFormData) => {
+    try {
+      await dispatch(
+        createRole({
+          roleName: data.roleName.trim(),
+          description: data.description?.trim() || undefined,
+          permissions: data.permissions,
+        })
+      ).unwrap();
+
+      setShowSuccessPopup(true);
+      setTimeout(() => {
+        navigate('/employees-administration/roles-permissions');
+      }, 1500);
+    } catch (error) {
+      console.error('Failed to create role:', error);
+      showToast({
+        message: error && typeof error === 'string' ? error : t('rolesManagement.createRoleFailed'),
+        type: 'error',
+        duration: 5000,
+      });
+    }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowValidationErrors(true);
+
+    // Trigger validation for all fields
+    await form.trigger(['roleName', 'description', 'permissions']);
+
+    // Validate entire form
+    const isValid = await validateForm();
+
+    if (!isValid) {
+      console.error('Form validation failed');
+      return;
+    }
+
+    // Use react-hook-form's handleSubmit
+    form.handleSubmit(onFormSubmit)(e);
+  };
+
+  const handleCloseSuccessPopup = () => {
+    setShowSuccessPopup(false);
+    navigate('/employees-administration/roles-permissions');
+  };
+
+  if (isLoadingPermissions) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-    >
-      <div className="mb-4">
-        <label className="required mb-2 block text-start font-medium text-gray-700">
-          {t('rolesManagement.roleName')}
-        </label>
-        <input
-          type="text"
-          placeholder={t('rolesManagement.enterRoleName')}
-          value={roleName}
-          onChange={(e) => setRoleName(e.target.value)}
-          className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+    <FormProvider {...form}>
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <PopupMessage
+          type="success"
+          message="rolesManagement.roleCreatedSuccessfully"
+          iconSrc={BigSuccessIcon}
+          autoClose={false}
+          onClose={handleCloseSuccessPopup}
         />
-      </div>
+      )}
 
-      <div className="mb-6">
-        <label className="mb-2 block text-start font-medium text-gray-700">
-          {t('rolesManagement.description')}
-          <span className="text-gray-500"> ({t('rolesManagement.optional')}) </span>
-        </label>
-        <textarea
-          placeholder={t('rolesManagement.enterRoleDescription')}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-          className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
-      </div>
-
-      <div className="mb-4">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-2xl font-semibold text-gray-800">
-            {t('rolesManagement.permissions')}
-          </h3>
-
-          <div className="flex items-center gap-2">
-            <CustomCheckbox
-              name="selectAll"
-              checked={selectAll}
-              onChange={handleSelectAll}
-              label={t('rolesManagement.selectAll')}
+      <form
+        onSubmit={handleSubmit}
+        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+      >
+        {/* Role Name Field */}
+        <div className="mb-4">
+          <FormField
+            label={t('rolesManagement.roleName')}
+            required
+            error={errors.roleName?.message && t(errors.roleName.message)}
+          >
+            <Controller
+              name="roleName"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="text"
+                  placeholder={t('rolesManagement.enterRoleName')}
+                  required
+                />
+              )}
             />
-            {/* <input
-              type="checkbox"
-              id="selectAll"
-              checked={selectAll}
-              onChange={handleSelectAll}
-              className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-            />
-            <label htmlFor="selectAll" className="cursor-pointer font-semibold text-green-700">
-              {t('rolesManagement.selectAll')}
-            </label> */}
-          </div>
+          </FormField>
         </div>
 
-        {/* <label
-            key={perm.id}
-            className="mb-3 flex w-full items-center gap-2 text-xl font-semibold text-gray-800"
+        {/* Description Field */}
+        <div className="mb-6">
+          <FormField
+            label={t('rolesManagement.description')}
+            optional
+            error={errors.description?.message && t(errors.description.message)}
           >
-            <input
-              type="checkbox"
-              checked={isGroupFullyChecked(group)}
-              onChange={() => toggleGroupPermissions(group)}
-              className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextArea
+                  {...field}
+                  placeholder={t('rolesManagement.enterRoleDescription')}
+                  rows={3}
+                />
+              )}
             />
-            {t(perm.label)}
-        </label> */}
-        {/* <label key={perm.id} className="flex items-center gap-2 text-gray-700">
-            <input
-              type="checkbox"
-              checked={selectedPermissions.includes(perm.id)}
-              onChange={() => handlePermissionChange(perm.id)}
-              className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-            />
-            {t(perm.label)}
-        </label> */}
-        <div className="space-y-4">
-          {permissionGroups.map((group, index) => (
-            <div
-              key={group.id}
-              className={`rounded-lg border border-gray-200 p-4 ${
-                index === 0 ? 'bg-gray-50' : 'bg-white'
-              }`}
-            >
-              {group.permissions
-                .filter((perm) => perm.parentControl)
-                .map((perm) => (
+          </FormField>
+        </div>
+
+        {/* Permissions Section */}
+        <div className="mb-4">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-2xl font-semibold text-gray-800">
+              {t('rolesManagement.permissions')}
+            </h3>
+
+            <div className="flex items-center gap-2">
+              <CustomCheckbox
+                name="selectAll"
+                checked={selectAll}
+                onChange={handleSelectAll}
+                label={t('rolesManagement.selectAll')}
+              />
+            </div>
+          </div>
+
+          <FormField
+            label={''}
+            error={
+              showValidationErrors && errors.permissions?.message
+                ? t(errors.permissions.message)
+                : undefined
+            }
+          >
+            <div className="space-y-4">
+              {permissionGroups.map((group, index) => (
+                <div
+                  key={group.module}
+                  className={`rounded-lg border border-gray-200 p-4 ${
+                    index === 0 ? 'bg-gray-50' : 'bg-white'
+                  }`}
+                >
                   <CustomCheckbox
-                    name={perm.id}
+                    name={group.module}
                     checked={isGroupFullyChecked(group)}
                     onChange={() => toggleGroupPermissions(group)}
-                    label={t(`${perm.label}`)}
+                    label={group.module}
+                    textClassName="text-xl font-semibold text-gray-800"
                   />
-                ))}
 
-              <div className="grid gap-2 md:grid-cols-2">
-                {group.permissions
-                  .filter((perm) => !perm.parentControl)
-                  .map((perm) => (
-                    <CustomCheckbox
-                      name={perm.id}
-                      checked={selectedPermissions.includes(perm.id)}
-                      onChange={() => handlePermissionChange(perm.id)}
-                      label={t(`${perm.label}`)}
-                    />
-                  ))}
-              </div>
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {group.permissions.map((perm) => (
+                      <CustomCheckbox
+                        key={perm.id}
+                        name={perm.id}
+                        checked={selectedPermissions.includes(perm.id)}
+                        onChange={() => handlePermissionChange(perm.id)}
+                        label={perm.arabicName || perm.englishName}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </FormField>
         </div>
-      </div>
 
-      <div className="mt-6 flex justify-end gap-3">
-        <button
-          type="button"
-          className="rounded-lg border border-green-700 px-6 py-2 text-green-700 hover:bg-green-50"
-          onClick={() => navigate(-1)}
-        >
-          {t('common.cancel')}
-        </button>
-        <button
-          type="submit"
-          className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
-        >
-          {t('common.add')}
-        </button>
-      </div>
-    </form>
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            className="rounded-lg border border-green-700 px-6 py-2 text-green-700 hover:bg-green-50"
+            onClick={() => navigate(-1)}
+            disabled={isCreating}
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            type="submit"
+            className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isCreating}
+          >
+            {isCreating ? t('common.saving') : t('common.add')}
+          </button>
+        </div>
+      </form>
+    </FormProvider>
   );
 }
