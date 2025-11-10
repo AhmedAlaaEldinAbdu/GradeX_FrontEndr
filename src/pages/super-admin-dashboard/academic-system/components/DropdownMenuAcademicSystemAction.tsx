@@ -36,13 +36,11 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
         showToast({
           message: t('academicSystem.systemDeletedSuccessfully'),
           type: 'success',
-          duration: 3000,
         });
         onActionComplete?.();
       }
     } catch (error) {
-      console.error('Failed to delete academic system:', error);
-      showToast({ message: t('common.errorOccurred'), type: 'error', duration: 3000 });
+      showToast({ message: t('common.errorOccurred'), type: 'error' });
     } finally {
       setIsProcessing(false);
     }
@@ -50,7 +48,6 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
 
   return (
     <div className="relative inline-block text-left">
-      
       <div className="flex items-center justify-center gap-2">
         <button
           onClick={() => handleEdit()}
