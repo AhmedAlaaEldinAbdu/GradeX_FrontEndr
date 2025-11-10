@@ -1,105 +1,148 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import Card from '@gradex/shared/components/Card';
-import EmptyState from '@gradex/shared/components/EmptyState';
 import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import Pagination from '@gradex/shared/components/Pagination';
-import EmployeesIcon from '@gradex/assets/icons/Employees.svg';
+import Loading from '@gradex/shared/components/Loading';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
-import { Link } from 'react-router-dom';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
-
-interface User {
-  id: number;
-  userName: string;
-  roleName: string;
-  userPhone: string;
-  userEmail: string;
-}
+import { Link } from 'react-router-dom';
+import { useToast } from '@/shared/context/ToastContext';
+import {
+  fetchUsers,
+  deleteUser,
+  selectUsers,
+  selectUsersLoading,
+  selectPagination,
+} from '@gradex/redux/features/user-management';
+import type { User } from '@gradex/services/api/types/users.types';
 
 export default function SystemUsers() {
   const { t } = useTranslation();
-  const [hasUsers, setHasUsers] = useState(true);
-  const [selectedRole, setSelectedRole] = useState('');
+  const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
+
+  const users = useSelector(selectUsers) || [];
+  const isLoading = useSelector(selectUsersLoading);
+  const pagination = useSelector(selectPagination);
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
+  // Fetch users on component mount
+  useEffect(() => {
+    dispatch(
+      fetchUsers({
+        page: 1,
+        limit: 10,
+      })
+    );
+  }, [dispatch]);
 
-  const handleDeleteConfirm = () => {
-    setShowDelete(false);
-    setShowPopupMessage(true);
+  // Handle search and role filter with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const filters: Record<string, string> = {};
+      if (searchTerm) filters.searchTerm = searchTerm;
+      if (selectedRole) filters.roleId = selectedRole;
+
+      dispatch(
+        fetchUsers({
+          page: 1,
+          limit: pagination.limit,
+          filters: Object.keys(filters).length > 0 ? filters : undefined,
+        })
+      );
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, selectedRole, dispatch, pagination.limit]);
+
+  const handlePageChange = (page: number) => {
+    const filters: Record<string, string> = {};
+    if (searchTerm) filters.searchTerm = searchTerm;
+    if (selectedRole) filters.roleId = selectedRole;
+
+    dispatch(
+      fetchUsers({
+        page,
+        limit: pagination.limit,
+        filters: Object.keys(filters).length > 0 ? filters : undefined,
+      })
+    );
   };
 
-  const roles: User[] = [
-    {
-      id: 1,
-      userName: 'أحمد محمد ابراهيم',
-      roleName: 'مشرف عام',
-      userPhone: '+966 556831361',
-      userEmail: 'Ahmed@gmail.com',
-    },
-    {
-      id: 2,
-      userName: 'عبدالكريم عزيز أحمد',
-      roleName: 'مشرف عام',
-      userPhone: '+966 556831361',
-      userEmail: 'Ahmed@gmail.com',
-    },
-    {
-      id: 3,
-      userName: 'أحمد محمد ابراهيم',
-      roleName: 'مشرف عام',
-      userPhone: '+966 556831361',
-      userEmail: 'Ahmed@gmail.com',
-    },
-    {
-      id: 4,
-      userName: 'عبدالكريم عزيز أحمد',
-      roleName: 'مشرف عام',
-      userPhone: '+966 556831361',
-      userEmail: 'Ahmed@gmail.com',
-    },
-    {
-      id: 5,
-      userName: 'أحمد محمد ابراهيم',
-      roleName: 'مشرف عام',
-      userPhone: '+966 556831361',
-      userEmail: 'Ahmed@gmail.com',
-    },
-    {
-      id: 6,
-      userName: 'عبدالكريم عزيز أحمد',
-      roleName: 'مشرف عام',
-      userPhone: '+966 556831361',
-      userEmail: 'Ahmed@gmail.com',
-    },
-  ];
+  const handleDeleteClick = (userId: string) => {
+    setSelectedUserId(userId);
+    setShowDeletePopup(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedUserId) return;
+
+    try {
+      setIsDeleting(true);
+      await dispatch(deleteUser(selectedUserId)).unwrap();
+      setShowDeletePopup(false);
+      setSelectedUserId(null);
+
+      showToast({
+        message: t('rolesManagement.userDeleted'),
+        type: 'success',
+        duration: 3000,
+      });
+
+      // Refresh the users list
+      const filters: Record<string, string> = {};
+      if (searchTerm) filters.searchTerm = searchTerm;
+      if (selectedRole) filters.roleId = selectedRole;
+
+      dispatch(
+        fetchUsers({
+          page: pagination.page,
+          limit: pagination.limit,
+          filters: Object.keys(filters).length > 0 ? filters : undefined,
+        })
+      );
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const columns = [
-    { header: '#', accessor: (row: User) => row.id },
+    { header: '#', accessor: (_row: User, index?: number) => (index ?? 0) + 1 },
     {
       header: 'rolesManagement.userName',
-      accessor: (row: User) => row.userName,
+      accessor: (row: User) => row.fullName,
       headerClassName: 'min-w-[200px]',
     },
     {
       header: 'rolesManagement.roleName',
-      accessor: (row: User) => row.roleName,
+      accessor: (row: User) => (row.roles && row.roles.length > 0 ? row.roles.join(', ') : '-'),
       headerClassName: 'min-w-[100px]',
     },
     {
       header: 'rolesManagement.phoneNumber',
-      accessor: (row: User) => row.userPhone,
+      accessor: (row: User) => row.phoneNumber || '-',
       headerClassName: 'min-w-[150px]',
     },
     {
       header: 'rolesManagement.email',
-      accessor: (row: User) => row.userEmail,
+      accessor: (row: User) => row.email,
       headerClassName: 'min-w-[200px]',
     },
     {
@@ -113,10 +156,11 @@ export default function SystemUsers() {
             <img src={EditIcon} alt="Edit" />
           </Link>
           <button
-            onClick={() => setShowDelete(true)}
-            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+            onClick={() => handleDeleteClick(row.id)}
+            disabled={isDeleting}
+            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
           >
-            <img src={TrashIcon} alt="Trash" />
+            <img src={TrashIcon} alt="Delete" />
           </button>
         </div>
       ),
@@ -126,12 +170,8 @@ export default function SystemUsers() {
 
   return (
     <Card>
-      {!hasUsers ? (
-        <EmptyState
-          imgSrc={EmployeesIcon}
-          description={t('rolesManagement.noUsersMessage')}
-          blend={true}
-        />
+      {isLoading && users.length === 0 ? (
+        <Loading />
       ) : (
         <div>
           <div className="mb-6 grid gap-3 lg:grid-cols-3">
@@ -167,9 +207,7 @@ export default function SystemUsers() {
                   className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="">{t('rolesManagement.role')}</option>
-                  <option value="1">مشرف عام</option>
-                  <option value="2">مشرف عام</option>
-                  <option value="3">مشرف عام</option>
+                  {/* TODO: Fetch roles dynamically from API */}
                 </select>
               </div>
             </div>
@@ -177,34 +215,33 @@ export default function SystemUsers() {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <Table columns={columns} data={roles} keyExtractor={(row) => row.id} />
+            {!Array.isArray(users) || users.length === 0 ? (
+              <div className="py-10 text-center text-gray-500">
+                {t('rolesManagement.noUsersFound')}
+              </div>
+            ) : (
+              <Table columns={columns} data={users} keyExtractor={(row) => row.id} />
+            )}
           </div>
 
           {/* Pagination */}
-          <Pagination
-            currentPage={1}
-            totalPages={2}
-            to={6}
-            from={1}
-            onPageChange={() => console.log('change page')}
-          />
-
-          {/* Popups */}
-          {showDelete && (
-            <DeletePopup
-              message="rolesManagement.confirmDeleteRole"
-              onConfirm={handleDeleteConfirm}
-              onCancel={() => setShowDelete(false)}
-              iconSrc={BigTrashIcon}
+          {Array.isArray(users) && users.length > 0 && pagination && pagination.totalPages > 0 && (
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              to={Math.min(pagination.page * pagination.limit, pagination.total)}
+              from={(pagination.page - 1) * pagination.limit + 1}
+              onPageChange={handlePageChange}
             />
           )}
-          {showPopupMessage && (
-            <PopupMessage
-              type="success"
-              message="rolesManagement.userDeleted"
-              iconSrc={BigSuccessIcon}
-              autoClose={true}
-              onClose={() => setShowPopupMessage(false)}
+
+          {/* Delete Popup */}
+          {showDeletePopup && (
+            <DeletePopup
+              message="rolesManagement.confirmDeleteUser"
+              onConfirm={handleDeleteConfirm}
+              onCancel={() => setShowDeletePopup(false)}
+              iconSrc={BigTrashIcon}
             />
           )}
         </div>
