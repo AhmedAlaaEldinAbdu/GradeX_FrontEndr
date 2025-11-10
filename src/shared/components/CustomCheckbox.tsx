@@ -8,25 +8,42 @@ interface CustomCheckboxProps {
   disabled?: boolean;
 }
 
+interface CustomCheckboxProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: string;
+  name?: string;
+  disabled?: boolean;
+  className?: string;
+  inputClassName?: string;
+  textClassName?: string;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+}
+
 const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
   checked,
   onChange,
   label,
   name,
   disabled = false,
+  className,
+  inputClassName,
+  textClassName = 'text-sm text-gray-700',
+  inputProps,
 }) => {
   return (
     <label
-      className={`flex items-center gap-2 py-1 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+      className={`flex items-center gap-2 py-1 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${className ?? ''}`}
     >
       <div className="relative flex">
         <input
+          {...inputProps}
           type="checkbox"
           name={name}
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
           disabled={disabled}
-          className="peer h-6 w-6 appearance-none rounded-md border border-gray-400 transition duration-150 checked:border-green-600 checked:bg-green-600 focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed"
+          className={`peer h-6 w-6 appearance-none rounded-md border border-gray-400 transition duration-150 checked:border-green-600 checked:bg-green-600 focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed ${inputClassName ?? ''}`}
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +58,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
           />
         </svg>
       </div>
-      <span className="text-sm text-gray-700">{label}</span>
+      <span className={`${textClassName || 'text-sm text-gray-700'} `}>{label}</span>
     </label>
   );
 };
