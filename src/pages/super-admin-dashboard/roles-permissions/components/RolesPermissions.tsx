@@ -5,14 +5,13 @@ import Card from '@gradex/shared/components/Card';
 import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import Pagination from '@gradex/shared/components/Pagination';
+import Loading from '@gradex/shared/components/Loading';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
-import { Link } from 'react-router-dom';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
-import Loading from '@gradex/shared/components/Loading';
+import { Link } from 'react-router-dom';
+import { useToast } from '@/shared/context/ToastContext';
 import {
   fetchRoles,
   deleteRole,
@@ -25,15 +24,16 @@ import type { Role } from '@gradex/services/api/types/roles.types';
 export default function RolesPermissions() {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
 
   const roles = useSelector(selectRoles) || [];
   const isLoading = useSelector(selectIsLoading);
   const pagination = useSelector(selectPagination);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch roles on component mount
   useEffect(() => {
@@ -74,21 +74,41 @@ export default function RolesPermissions() {
 
   const handleDeleteClick = (roleId: string) => {
     setSelectedRoleId(roleId);
-    setShowDelete(true);
+    setShowDeletePopup(true);
   };
 
   const handleDeleteConfirm = async () => {
-    if (selectedRoleId) {
-      try {
-        await dispatch(deleteRole(selectedRoleId)).unwrap();
-        setShowDelete(false);
-        setShowPopupMessage(true);
-        setSelectedRoleId(null);
-      } catch (err) {
-        setShowDelete(false);
-        // Handle error (you can show error popup if needed)
-        console.error('Failed to delete role:', err);
-      }
+    if (!selectedRoleId) return;
+
+    try {
+      setIsDeleting(true);
+      await dispatch(deleteRole(selectedRoleId)).unwrap();
+      setShowDeletePopup(false);
+      setSelectedRoleId(null);
+
+      showToast({
+        message: t('rolesManagement.roleDeleted'),
+        type: 'success',
+        duration: 3000,
+      });
+
+      // Refresh the roles list
+      dispatch(
+        fetchRoles({
+          page: pagination.page,
+          limit: pagination.limit,
+          filters: searchTerm ? { searchTerm } : undefined,
+        })
+      );
+    } catch (error) {
+      console.error('Failed to delete role:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -116,9 +136,10 @@ export default function RolesPermissions() {
           </Link>
           <button
             onClick={() => handleDeleteClick(row.id)}
-            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+            disabled={isDeleting}
+            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
           >
-            <img src={TrashIcon} alt="Trash" />
+            <img src={TrashIcon} alt="Delete" />
           </button>
         </div>
       ),
@@ -179,22 +200,13 @@ export default function RolesPermissions() {
             />
           )}
 
-          {/* Popups */}
-          {showDelete && (
+          {/* Delete Popup */}
+          {showDeletePopup && (
             <DeletePopup
               message="rolesManagement.confirmDeleteRole"
               onConfirm={handleDeleteConfirm}
-              onCancel={() => setShowDelete(false)}
+              onCancel={() => setShowDeletePopup(false)}
               iconSrc={BigTrashIcon}
-            />
-          )}
-          {showPopupMessage && (
-            <PopupMessage
-              type="success"
-              message="rolesManagement.roleDeleted"
-              iconSrc={BigSuccessIcon}
-              autoClose={true}
-              onClose={() => setShowPopupMessage(false)}
             />
           )}
         </div>
