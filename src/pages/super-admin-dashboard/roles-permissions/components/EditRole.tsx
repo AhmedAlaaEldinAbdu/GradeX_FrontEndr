@@ -1,61 +1,91 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
+import { useTranslation } from 'react-i18next';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
-import { t } from 'i18next';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-interface Permission {
-  id: string;
-  label: string;
-  parentControl?: boolean;
-}
-
-interface PermissionGroup {
-  id: string;
-  permissions: Permission[];
-}
-
-const permissionGroups: PermissionGroup[] = [
-  {
-    id: 'first',
-    permissions: [
-      {
-        id: 'education-systems',
-        label: 'rolesManagement.educationalSystemPermissions',
-        parentControl: true,
-      },
-      { id: 'add-school', label: 'إضافة المدارس' },
-      { id: 'approve-school', label: 'قبول المدارس' },
-      { id: 'edit-school', label: 'تعديل المدارس' },
-      { id: 'delete-school', label: 'حذف المدارس' },
-    ],
-  },
-  {
-    id: 'second',
-    permissions: [
-      {
-        id: 'education-management',
-        label: 'rolesManagement.educationalSystemPermissions',
-        parentControl: true,
-      },
-      { id: 'add-system', label: 'إضافة أنظمة تعليمية' },
-      { id: 'edit-system', label: 'تعديل أنظمة تعليمية' },
-      { id: 'delete-system', label: 'حذف أنظمة تعليمية' },
-    ],
-  },
-];
+import Loading from '@gradex/shared/components/Loading';
+import { useRoleForm } from '../hooks/useRoleForm';
+import {
+  fetchRoleById,
+  updateRole,
+  selectCurrentRole,
+  selectIsLoading,
+  selectIsUpdating,
+} from '@gradex/redux/features/roles';
+import { permissionsApiService } from '@gradex/services/api/permissions/permissions.service';
+import type { PermissionGroup } from '@gradex/services/api/types/permissions.types';
+import { useToast } from '@/shared/context/ToastContext';
 
 export default function EditRole() {
+  const { t } = useTranslation();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
+
+  const currentRole = useSelector(selectCurrentRole);
+  const isLoading = useSelector(selectIsLoading);
+  const isUpdating = useSelector(selectIsUpdating);
+
+  const [permissionGroups, setPermissionGroups] = useState<PermissionGroup[]>([]);
+  const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
   const [roleName, setRoleName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>(
-    [{ id: 'add-school' }, { id: 'approve-school' }].map((p) => p.id)
-  );
-  const [selectAll, setSelectAll] = useState(false);
-  const navigate = useNavigate();
 
-  const handlePermissionChange = (id: string) => {
+  const { form } = useRoleForm();
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchRoleById(id));
+    }
+  }, [id, dispatch]);
+
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      try {
+        setIsLoadingPermissions(true);
+        const response = await permissionsApiService.getPermissions({
+          PageIndex: 1,
+          PageSize: 1000,
+        });
+        setPermissionGroups(response.permissionGroupDtos || []);
+      } catch (error) {
+        console.error('Failed to fetch permissions:', error);
+        showToast({
+          message: t('common.error'),
+          type: 'error',
+          duration: 3000,
+        });
+      } finally {
+        setIsLoadingPermissions(false);
+      }
+    };
+
+    fetchPermissions();
+  }, [showToast, t]);
+
+  useEffect(() => {
+    if (currentRole) {
+      setRoleName(currentRole.name || '');
+      setDescription(currentRole.description || '');
+      const permissionIds = currentRole.permissions?.map((p) => p.id) || [];
+      setSelectedPermissions(permissionIds);
+      form.reset({
+        roleName: currentRole.name || '',
+        description: currentRole.description || '',
+        permissions: permissionIds,
+      });
+    }
+  }, [currentRole, form]);
+
+  const handlePermissionChange = (permissionId: string) => {
     setSelectedPermissions((prev) =>
-      prev.includes(id) ? prev.filter((perm) => perm !== id) : [...prev, id]
+      prev.includes(permissionId)
+        ? prev.filter((perm) => perm !== permissionId)
+        : [...prev, permissionId]
     );
   };
 
@@ -84,10 +114,70 @@ export default function EditRole() {
     return allIds.every((id) => selectedPermissions.includes(id));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ roleName, description, selectedPermissions });
+
+    if (!id) {
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (!roleName.trim()) {
+      showToast({
+        message: t('rolesManagement.roleNameRequired'),
+        type: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (selectedPermissions.length === 0) {
+      showToast({
+        message: t('rolesManagement.permissionsRequired'),
+        type: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      await dispatch(
+        updateRole({
+          roleId: id,
+          roleName: roleName.trim(),
+          description: description.trim() || undefined,
+          permissions: selectedPermissions,
+        })
+      ).unwrap();
+
+      showToast({
+        message: t('rolesManagement.roleUpdatedSuccessfully'),
+        type: 'success',
+        duration: 3000,
+      });
+
+      navigate('/employees-administration/roles-permissions');
+    } catch (error) {
+      console.error('Failed to update role:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    }
   };
+
+  if (isLoading || isLoadingPermissions) {
+    return (
+      <div className="flex justify-center py-10">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <form
@@ -101,7 +191,7 @@ export default function EditRole() {
         <input
           type="text"
           placeholder={t('rolesManagement.enterRoleName')}
-          value={roleName || 'موظف عام'}
+          value={roleName}
           onChange={(e) => setRoleName(e.target.value)}
           className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
         />
@@ -128,16 +218,6 @@ export default function EditRole() {
           </h3>
 
           <div className="flex items-center gap-2">
-            {/* <input
-              type="checkbox"
-              id="selectAll"
-              checked={selectAll}
-              onChange={handleSelectAll}
-              className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-            />
-            <label htmlFor="selectAll" className="cursor-pointer font-semibold text-green-700">
-              {t('rolesManagement.selectAll')}
-            </label> */}
             <CustomCheckbox
               name="selectAll"
               checked={selectAll}
@@ -150,33 +230,28 @@ export default function EditRole() {
         <div className="space-y-4">
           {permissionGroups.map((group, index) => (
             <div
-              key={group.id}
+              key={group.module}
               className={`rounded-lg border border-gray-200 p-4 ${
-                index === 0 ? 'bg-gray-50' : 'bg-white'
+                index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
               }`}
             >
-              {group.permissions
-                .filter((perm) => perm.parentControl)
-                .map((perm) => (
-                  <CustomCheckbox
-                    name={perm.id}
-                    checked={isGroupFullyChecked(group)}
-                    onChange={() => toggleGroupPermissions(group)}
-                    label={t(`${perm.label}`)}
-                  />
-                ))}
+              <CustomCheckbox
+                name={`group-${group.module}`}
+                checked={isGroupFullyChecked(group)}
+                onChange={() => toggleGroupPermissions(group)}
+                label={group.module}
+              />
 
               <div className="grid gap-2 md:grid-cols-2">
-                {group.permissions
-                  .filter((perm) => !perm.parentControl)
-                  .map((perm) => (
-                    <CustomCheckbox
-                      name={perm.id}
-                      checked={selectedPermissions.includes(perm.id)}
-                      onChange={() => handlePermissionChange(perm.id)}
-                      label={t(`${perm.label}`)}
-                    />
-                  ))}
+                {group.permissions.map((perm) => (
+                  <CustomCheckbox
+                    key={perm.id}
+                    name={perm.id}
+                    checked={selectedPermissions.includes(perm.id)}
+                    onChange={() => handlePermissionChange(perm.id)}
+                    label={perm.arabicName}
+                  />
+                ))}
               </div>
             </div>
           ))}
@@ -187,15 +262,16 @@ export default function EditRole() {
         <button
           type="button"
           className="rounded-lg border border-green-700 px-6 py-2 text-green-700 hover:bg-green-50"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/employees-administration/roles-permissions')}
         >
           {t('common.cancel')}
         </button>
         <button
           type="submit"
-          className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
+          disabled={isUpdating}
+          className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800 disabled:opacity-50"
         >
-          {t('actions.saveChanges')}
+          {isUpdating ? t('common.saving') : t('actions.saveChanges')}
         </button>
       </div>
     </form>
