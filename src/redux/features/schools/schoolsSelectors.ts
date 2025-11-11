@@ -325,7 +325,9 @@ export const selectFilteredSchools = createSelector(
     if (filters.searchTerm) {
       const searchLower = filters.searchTerm.toLowerCase();
       filtered = filtered.filter((school) => {
-        const nameMatch = school.name.toLowerCase().includes(searchLower);
+        const nameMatch =
+          school.nameAr.toLowerCase().includes(searchLower) ||
+          school.nameEn.toLowerCase().includes(searchLower);
         const emailMatch = school.email.toLowerCase().includes(searchLower);
         const academicSystemMatch = school.academicSystemId.toLowerCase().includes(searchLower);
 
