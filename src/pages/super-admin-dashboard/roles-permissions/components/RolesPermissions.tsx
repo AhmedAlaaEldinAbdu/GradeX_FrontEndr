@@ -113,7 +113,14 @@ export default function RolesPermissions() {
   };
 
   const columns = [
-    { header: '#', accessor: (_row: Role, index?: number) => (index ?? 0) + 1 },
+    {
+      header: '#',
+      accessor: (_row: Role) => {
+        if (!_row || !Array.isArray(roles) || !pagination) return '-';
+        const index = roles.findIndex((s) => s?.id === _row?.id);
+        return (pagination.page - 1) * pagination.limit + index + 1;
+      },
+    },
     {
       header: 'rolesManagement.roleName',
       accessor: (row: Role) => row.name,
