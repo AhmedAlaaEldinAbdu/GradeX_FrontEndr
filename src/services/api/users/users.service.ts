@@ -20,6 +20,12 @@ export async function getUsers(params?: UserQueryParams): Promise<UserListRespon
   if (params?.searchTerm || params?.Search) {
     apiParams.Search = params.searchTerm || params.Search || '';
   }
+  if (params?.roleId) {
+    apiParams.RoleId = params.roleId;
+  }
+  if (params?.lkCountryId) {
+    apiParams.LkCountryId = params.lkCountryId;
+  }
   if (params?.pageIndex || params?.PageNumber) {
     apiParams.PageNumber = params.pageIndex || params.PageNumber || 1;
   }
