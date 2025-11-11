@@ -67,6 +67,8 @@ export interface UserDetailResponse {
 
 export interface UserFilters {
   searchTerm?: string;
+  roleId?: string;
+  lkCountryId?: string;
 }
 
 // ============================================================================

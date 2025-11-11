@@ -5,6 +5,7 @@ import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
 import { Controller, FormProvider } from 'react-hook-form';
 import PopupMessage from '@gradex/shared/components/PopupMessage';
+import Loading from '@gradex/shared/components/Loading';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import FormField from '@gradex/shared/components/FormField';
 import Input from '@gradex/shared/components/Input';
@@ -204,6 +205,14 @@ export default function EditUser() {
     navigate('/employees-administration/system-users');
   };
 
+  if (isLoading || isLoadingRoles || isLoadingCountries) {
+    return (
+      <div className="flex justify-center py-10">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <FormProvider {...form}>
       {showSuccessPopup && (
@@ -232,22 +241,18 @@ export default function EditUser() {
                   : undefined
               }
             >
-              {isLoading ? (
-                <div className="h-10 animate-pulse rounded-lg bg-gray-200"></div>
-              ) : (
-                <Controller
-                  name="fullName"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder={t('rolesManagement.enterFullUserName')}
-                      required
-                    />
-                  )}
-                />
-              )}
+              <Controller
+                name="fullName"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder={t('rolesManagement.enterFullUserName')}
+                    required
+                  />
+                )}
+              />
             </FormField>
           </div>
 
@@ -262,27 +267,23 @@ export default function EditUser() {
                   : undefined
               }
             >
-              {isLoading ? (
-                <div className="h-10 animate-pulse rounded-lg bg-gray-200"></div>
-              ) : (
-                <Controller
-                  name="phoneNumber"
-                  control={control}
-                  render={({ field }) => (
-                    <PhoneInput
-                      label=""
-                      value={field.value}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        if (errors.phoneNumber) {
-                          trigger('phoneNumber');
-                        }
-                      }}
-                      required
-                    />
-                  )}
-                />
-              )}
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput
+                    label=""
+                    value={field.value}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (errors.phoneNumber) {
+                        trigger('phoneNumber');
+                      }
+                    }}
+                    required
+                  />
+                )}
+              />
             </FormField>
           </div>
 
@@ -295,22 +296,18 @@ export default function EditUser() {
                 showValidationErrors && errors.email?.message ? t(errors.email.message) : undefined
               }
             >
-              {isLoading ? (
-                <div className="h-10 animate-pulse rounded-lg bg-gray-200"></div>
-              ) : (
-                <Controller
-                  name="email"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder={t('rolesManagement.enterEmail')}
-                      required
-                    />
-                  )}
-                />
-              )}
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder={t('rolesManagement.enterEmail')}
+                    required
+                  />
+                )}
+              />
             </FormField>
           </div>
 
@@ -325,43 +322,39 @@ export default function EditUser() {
                   : undefined
               }
             >
-              {isLoading ? (
-                <div className="h-10 animate-pulse rounded-lg bg-gray-200"></div>
-              ) : (
-                <Controller
-                  name="roleId"
-                  control={control}
-                  render={({ field }) => {
-                    // Ensure we have a valid string value
-                    const fieldValue = Array.isArray(field.value)
-                      ? field.value[0] || ''
-                      : field.value || '';
+              <Controller
+                name="roleId"
+                control={control}
+                render={({ field }) => {
+                  // Ensure we have a valid string value
+                  const fieldValue = Array.isArray(field.value)
+                    ? field.value[0] || ''
+                    : field.value || '';
 
-                    return (
-                      <CustomSelect
-                        value={fieldValue}
-                        onChange={(value) => {
-                          const newValue = typeof value === 'string' ? value : value[0] || '';
-                          field.onChange(newValue);
-                          if (errors.roleId) {
-                            trigger('roleId');
-                          }
-                        }}
-                        options={roles.map((role) => ({
-                          value: role.id,
-                          label: role.name,
-                        }))}
-                        placeholder={
-                          isLoadingRoles ? t('common.loading') : t('rolesManagement.selectRole')
+                  return (
+                    <CustomSelect
+                      value={fieldValue}
+                      onChange={(value) => {
+                        const newValue = typeof value === 'string' ? value : value[0] || '';
+                        field.onChange(newValue);
+                        if (errors.roleId) {
+                          trigger('roleId');
                         }
-                        disabled={isLoadingRoles}
-                        maxHeight="200px"
-                        isMulti={false}
-                      />
-                    );
-                  }}
-                />
-              )}
+                      }}
+                      options={roles.map((role) => ({
+                        value: role.id,
+                        label: role.name,
+                      }))}
+                      placeholder={
+                        isLoadingRoles ? t('common.loading') : t('rolesManagement.selectRole')
+                      }
+                      disabled={isLoadingRoles}
+                      maxHeight="200px"
+                      isMulti={false}
+                    />
+                  );
+                }}
+              />
             </FormField>
           </div>
 
@@ -376,36 +369,30 @@ export default function EditUser() {
                   : undefined
               }
             >
-              {isLoading ? (
-                <div className="h-10 animate-pulse rounded-lg bg-gray-200"></div>
-              ) : (
-                <Controller
-                  name="lkCountryId"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomSelect
-                      value={field.value || ''}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        if (errors.lkCountryId) {
-                          trigger('lkCountryId');
-                        }
-                      }}
-                      options={countries.map((country) => ({
-                        value: country.id,
-                        label: currentLang === 'ar' ? country.arabicName : country.englishName,
-                      }))}
-                      placeholder={
-                        isLoadingCountries
-                          ? t('common.loading')
-                          : t('rolesManagement.selectCountry')
+              <Controller
+                name="lkCountryId"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value || ''}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (errors.lkCountryId) {
+                        trigger('lkCountryId');
                       }
-                      disabled={isLoadingCountries}
-                      maxHeight="200px"
-                    />
-                  )}
-                />
-              )}
+                    }}
+                    options={countries.map((country) => ({
+                      value: country.id,
+                      label: currentLang === 'ar' ? country.arabicName : country.englishName,
+                    }))}
+                    placeholder={
+                      isLoadingCountries ? t('common.loading') : t('rolesManagement.selectCountry')
+                    }
+                    disabled={isLoadingCountries}
+                    maxHeight="200px"
+                  />
+                )}
+              />
             </FormField>
           </div>
         </div>

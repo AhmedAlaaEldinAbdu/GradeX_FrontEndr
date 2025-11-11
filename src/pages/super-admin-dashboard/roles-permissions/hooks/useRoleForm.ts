@@ -1,6 +1,6 @@
 import { useForm, type UseFormReturn } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { roleValidationSchema } from '../validation/role.validation';
+import { roleValidationSchema } from '../../../../validations/role-permission-validations';
 
 export interface RoleFormData {
   roleName: string;

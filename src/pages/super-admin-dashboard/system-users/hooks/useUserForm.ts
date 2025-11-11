@@ -1,6 +1,9 @@
 import { useForm, type UseFormReturn } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { userValidationSchema, userEditValidationSchema } from '../validation/user.validation';
+import {
+  userValidationSchema,
+  userEditValidationSchema,
+} from '../../../../validations/system-user-validations';
 
 export interface UserFormData {
   fullName: string;
