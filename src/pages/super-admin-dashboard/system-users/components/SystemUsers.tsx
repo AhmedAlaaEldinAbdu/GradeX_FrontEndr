@@ -151,7 +151,7 @@ export default function SystemUsers() {
     },
     {
       header: 'rolesManagement.phoneNumber',
-      accessor: (row: User) => row.phoneNumber || '-',
+      accessor: (row: User) => <bdi>{row.phoneNumber || '-'}</bdi>,
       headerClassName: 'min-w-[150px]',
     },
     {
