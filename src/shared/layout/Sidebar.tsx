@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { UserRole, type UserRoleType } from '@gradex/constants';
@@ -214,6 +214,29 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   // Get menu items based on dashboard type or use custom items
   const menuItems = customMenuItems || getMenuItemsForDashboard(dashboardType);
 
+  // Auto-expand parent menu item when visiting a sub-item URL
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    // Find if current path matches any sub-item or starts with a sub-item path
+    menuItems.forEach((item) => {
+      if (item.subItems && item.subItems.length > 0) {
+        const isSubItemActive = item.subItems.some(
+          (subItem) => currentPath === subItem.path || currentPath.startsWith(subItem.path + '/')
+        );
+
+        if (isSubItemActive) {
+          setExpandedItems((prev) => {
+            if (!prev.includes(item.key)) {
+              return [item.key];
+            }
+            return prev;
+          });
+        }
+      }
+    });
+  }, [location.pathname, menuItems]);
+
   const toggleExpand = (key: string, firstSubItemPath?: string) => {
     const isCurrentlyExpanded = expandedItems.includes(key);
 
@@ -231,8 +254,13 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     const isExpanded = expandedItems.includes(item.key);
     const hasSubItems = item.subItems && item.subItems.length > 0;
 
+    // Check if any sub-item is active (exact match or nested route)
     const isAnySubItemActive =
-      hasSubItems && item.subItems?.some((subItem) => location.pathname === subItem.path);
+      hasSubItems &&
+      item.subItems?.some(
+        (subItem) =>
+          location.pathname === subItem.path || location.pathname.startsWith(subItem.path + '/')
+      );
 
     if (hasSubItems) {
       const firstSubItemPath = item.subItems?.[0]?.path;
@@ -296,14 +324,17 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           {isExpanded && (
             <div className="space-y-0">
               {item.subItems?.map((subItem) => {
-                const isSubItemActive = location.pathname === subItem.path;
+                // Check if sub-item is active (exact match or nested route)
+                const isSubItemActive =
+                  location.pathname === subItem.path ||
+                  location.pathname.startsWith(subItem.path + '/');
                 return (
                   <NavLink
                     key={subItem.path}
                     to={subItem.path}
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-200 ${
-                        isActive
+                        isActive || isSubItemActive
                           ? 'bg-green-100 font-semibold text-green-800'
                           : 'hover:bg-green-75 text-green-700'
                       }`
