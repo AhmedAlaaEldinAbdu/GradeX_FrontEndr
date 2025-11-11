@@ -234,7 +234,7 @@
     "addRole": "Add Role",
     "noRolesMessage": "No roles have been added yet. You can start by adding roles to organize permissions and better manage administration.",
     "role": "Role",
-    "SearchEmployeeName": "Search employee name",
+    "searchRole": "Search for role name",
     "description": "Description",
     "roleName": "Role Name",
     "enterRoleName": "Enter the role name",
