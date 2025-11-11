@@ -167,7 +167,7 @@ export default function RolesPermissions() {
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder={t('rolesManagement.SearchEmployeeName')}
+                    placeholder={t('rolesManagement.searchRole')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="h-[40px] w-full rounded-lg border border-gray-300 pl-4 pr-10 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
