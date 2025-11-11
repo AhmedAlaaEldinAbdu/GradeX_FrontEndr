@@ -65,13 +65,11 @@ export default function EditAcademicSystem() {
     },
   });
 
-  // Fetch lookups data only once on mount
   useEffect(() => {
     dispatch(fetchCountries());
     dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
   }, [dispatch]);
 
-  // Fetch academic system details only when ID changes
   useEffect(() => {
     if (id) {
       setIsLoadingData(true);
@@ -86,11 +84,9 @@ export default function EditAcademicSystem() {
     }
   }, [dispatch, id]);
 
-  // Populate form only when data is loaded
   useEffect(() => {
     if (academicSystem && !isLoadingData) {
       reset({
-        // Backend details currently returns a single 'name'. Initialize both languages with it.
         nameAr: (academicSystem as any).nameAr ?? academicSystem.nameAr ?? '',
         nameEn: (academicSystem as any).nameEn ?? academicSystem.nameEn ?? '',
         subSystemIds: academicSystem.academicSubSystemDto?.map((sub) => sub.id) || [],
@@ -120,8 +116,6 @@ export default function EditAcademicSystem() {
         console.error('Error updating academic system:', err);
       });
   };
-
-  // Single academic system edit – no remove/add handlers needed
 
   return (
     <Card>

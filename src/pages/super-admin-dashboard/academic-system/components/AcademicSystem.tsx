@@ -1,58 +1,44 @@
 import { useTranslation } from 'react-i18next';
-import Card from '@/shared/components/Card';
 import { useState } from 'react';
 import AcademicSystemTab from './AcademicSystemTab';
 import EducationalStagesTab from './EducationalStagesTab';
-import EmptyState from '@/shared/components/EmptyState';
-import AcademicIcon from '@gradex/assets/icons/Academic.svg';
-
-interface IAcademicSystemProps {
-  setSelectedTab: (tab: 'AcademicSystem' | 'EducationalStages') => void;
-}
+import Tabs from '@/shared/components/Tabs';
+import { ACADEMICSYSTEM, EDUCATIONALSTAGES, type IAcademicSystemProps } from '../types/academicSystem.types';
 
 export default function AcademicSystem({ setSelectedTab }: IAcademicSystemProps) {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'AcademicSystem' | 'EducationalStages'>(
-    'AcademicSystem'
+  const [activeTab, setActiveTab] = useState<typeof ACADEMICSYSTEM | typeof EDUCATIONALSTAGES>(
+    ACADEMICSYSTEM
   );
 
   const tabs = [
-    { id: 'AcademicSystem', label: 'academicSystem.title' },
-    { id: 'EducationalStages', label: 'academicSystem.educationalStages' },
-  ] as const;
-
-  const handleTabChange = (id: 'AcademicSystem' | 'EducationalStages') => {
-    setActiveTab(id);
-    setSelectedTab(id);
-  };
+    {
+      id: 'AcademicSystem',
+      label: t('academicSystem.title'),
+      content: <AcademicSystemTab />,
+    },
+    {
+      id: 'EducationalStages',
+      label: t('academicSystem.educationalStages'),
+      content: <EducationalStagesTab />,
+    },
+  ];
 
   return (
     <div>
-      {/* <EmptyState
-          imgSrc={AcademicIcon}
-          description={t('academicSystem.noAcademicSystemMessage')}
-          blend={true}
-        /> */}
-      <div className="mb-5 w-full max-w-lg px-1">
-        <div className="flex w-[75%]">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabChange(tab.id)}
-              className={`flex-1 py-2 text-center font-medium transition-colors duration-200 ${
-                activeTab === tab.id
-                  ? 'border-b-2 border-green-500 text-green-600'
-                  : 'text-gray-500 hover:text-green-500'
-              }`}
-            >
-              {t(tab.label)}
-            </button>
-          ))}
+      <div className="mb-5 w-full px-1">
+        <div>
+          <Tabs
+            items={tabs}
+            value={activeTab}
+            onChange={(id) => {
+              setActiveTab(id as typeof ACADEMICSYSTEM | typeof EDUCATIONALSTAGES);
+              setSelectedTab(id as typeof ACADEMICSYSTEM | typeof EDUCATIONALSTAGES);
+            }}
+            variant="underline"
+            listClassName="flex w-[100%] md:w-[75%] lg:w-[35%] gap-2 mb-8 px-1 flex-wrap"
+          />
         </div>
-      </div>
-      <div>
-        {activeTab === 'AcademicSystem' && <AcademicSystemTab />}
-        {activeTab === 'EducationalStages' && <EducationalStagesTab />}
       </div>
     </div>
   );

@@ -24,7 +24,6 @@ export default function AcademicSystemTab() {
   const currentLang = i18n.language as 'ar' | 'en';
 
   const [searchTerm, setSearchTerm] = useState('');
-  // Local popups removed; handled inside DropdownMenuAcademicSystemAction
   const [selectedSubSystemId, setSelectedSubSystemId] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [showAcademicDetails, setShowAcademicDetails] = useState(false);
@@ -67,8 +66,6 @@ export default function AcademicSystemTab() {
       })
     );
   };
-
-  // Delete action handled in DropdownMenuAcademicSystemAction
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
