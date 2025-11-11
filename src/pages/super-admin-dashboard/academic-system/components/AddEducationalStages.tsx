@@ -48,14 +48,18 @@ export default function AddEducationalStages() {
 
   const onSubmit = (data: EducationalStagesProps) => {
     const payload: CreateEducationalStageRequest[] = data?.educationalStages?.map(
-      (educational) => ({
-        nameAr: educational.nameAr,
-        nameEn: educational.nameEn,
-        age: 3,
-        academicSubSystemId: Array.isArray(educational.academicSystem)
+      (educational) => {
+        const gradeId = Array.isArray(educational.academicSystem)
           ? (educational.academicSystem[0] ?? '')
-          : '',
-      })
+          : '';
+        return {
+          nameAr: educational.nameAr,
+          nameEn: educational.nameEn,
+          age: 3,
+          academicSubSystemId: gradeId,
+          academicSubSystemGradeId: gradeId,
+        } as CreateEducationalStageRequest;
+      }
     );
 
     dispatch(addEducationalStage(payload))
@@ -99,7 +103,7 @@ export default function AddEducationalStages() {
                 <div className="flex flex-grow flex-col gap-5 md:flex-row">
                   <div className="flex-grow">
                     <FormField
-                      label={t('academicSystem.academicSystemAr')}
+                      label={t('academicSystem.educationalStageAr')}
                       required
                       error={
                         errors.educationalStages?.[index]?.nameAr?.message &&
@@ -112,7 +116,7 @@ export default function AddEducationalStages() {
                         render={({ field }) => (
                           <Input
                             {...field}
-                            placeholder={t('academicSystem.enterAcademicSystemAr')}
+                            placeholder={t('academicSystem.enterEducationalStageAr')}
                             required
                           />
                         )}
@@ -121,7 +125,7 @@ export default function AddEducationalStages() {
                   </div>
                   <div className="flex-grow">
                     <FormField
-                      label={t('academicSystem.academicSystemEn')}
+                      label={t('academicSystem.educationalStageEn')}
                       required
                       error={
                         errors.educationalStages?.[index]?.nameEn?.message &&
@@ -134,7 +138,7 @@ export default function AddEducationalStages() {
                         render={({ field }) => (
                           <Input
                             {...field}
-                            placeholder={t('academicSystem.enterAcademicSystemEn')}
+                            placeholder={t('academicSystem.enterEducationalStageEn')}
                             required
                           />
                         )}

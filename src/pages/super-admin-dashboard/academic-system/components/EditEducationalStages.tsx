@@ -71,7 +71,7 @@ export default function EditEducationalStages() {
           {
             nameAr: educationalStageDetails.nameAr,
             nameEn: educationalStageDetails.nameEn,
-            academicSystem: [educationalStageDetails.academicSubSystemId],
+            academicSystem: [educationalStageDetails.academicSubSystemId || ''],
           },
         ],
       });
@@ -82,15 +82,14 @@ export default function EditEducationalStages() {
     if (!id) return;
     const stage = data.educationalStages[0];
     try {
-      const payload = {
+      const gradeId = Array.isArray(stage.academicSystem) ? (stage.academicSystem[0] ?? '') : '';
+      const payload: UpdateEducationalStageRequest = {
         id,
         nameAr: stage.nameAr,
         nameEn: stage.nameEn,
         age: 3,
-        academicSubSystemId: Array.isArray(stage.academicSystem)
-          ? (stage.academicSystem[0] ?? '')
-          : '',
-      } as UpdateEducationalStageRequest;
+        academicSubSystemId: gradeId,
+      };
       const res = await dispatch(editEducationalStage(payload)).unwrap();
       if (res.isSuccess) setShowPopupMessage(true);
     } catch (e) {}
@@ -124,7 +123,7 @@ export default function EditEducationalStages() {
                 <div className="flex flex-grow flex-col gap-5 md:flex-row">
                   <div className="flex-grow">
                     <FormField
-                      label={t('academicSystem.academicSystemAr')}
+                      label={t('academicSystem.educationalStageAr')}
                       required
                       error={
                         errors.educationalStages?.[index]?.nameAr?.message &&
@@ -137,7 +136,7 @@ export default function EditEducationalStages() {
                         render={({ field }) => (
                           <Input
                             {...field}
-                            placeholder={t('academicSystem.enterAcademicSystemAr')}
+                            placeholder={t('academicSystem.enterEducationalStageAr')}
                             required
                           />
                         )}
@@ -146,7 +145,7 @@ export default function EditEducationalStages() {
                   </div>
                   <div className="flex-grow">
                     <FormField
-                      label={t('academicSystem.academicSystemEn')}
+                      label={t('academicSystem.educationalStageEn')}
                       required
                       error={
                         errors.educationalStages?.[index]?.nameEn?.message &&
@@ -159,7 +158,7 @@ export default function EditEducationalStages() {
                         render={({ field }) => (
                           <Input
                             {...field}
-                            placeholder={t('academicSystem.enterAcademicSystemEn')}
+                            placeholder={t('academicSystem.enterEducationalStageEn')}
                             required
                           />
                         )}
@@ -245,7 +244,8 @@ export default function EditEducationalStages() {
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
+              disabled={isSubmitting}
+              className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800 disabled:opacity-70"
             >
               {isSubmitting ? t('common.loading') : t('common.edit')}
             </button>

@@ -38,7 +38,7 @@ export default function EducationalStagesTab() {
   const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [selectedStageId, setSelectedStageId] = useState<string>('');
   const [selectedSubSystemId, setSelectedSubSystemId] = useState('');
-  const [selectedCountryId, setSelectedCountryId] = useState('');
+  const [selectedAcademicSystemId, setSelectedAcademicSystemId] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
 
@@ -53,25 +53,28 @@ export default function EducationalStagesTab() {
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
   const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
 
-  const countries = useAppSelector((state) => state.lookups.countries);
-  const isLoadingCountries = useAppSelector((state) => state.lookups.isLoadingCountries);
+  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
+  const isLoadingAcademicSystems = useAppSelector((state) => state.academicSystems.isLoading);
 
   useEffect(() => {
-    dispatch(getAcademicSubSystems());
+    dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
     dispatch(fetchCountries());
   }, [dispatch]);
 
   useEffect(() => {
     fetchEducationalStages();
-  }, [currentPage, searchTerm, selectedSubSystemId]);
+  }, [currentPage, searchTerm, selectedSubSystemId, selectedAcademicSystemId]);
 
   const fetchEducationalStages = () => {
     dispatch(
       getEducationalStages({
         pageIndex: currentPage,
         pageSize,
-        name: searchTerm || undefined,
-        academicSubSystemId: selectedSubSystemId || undefined,
+        ...(currentLang === 'ar'
+          ? { nameAr: searchTerm || undefined }
+          : { nameEn: searchTerm || undefined }),
+        acdemicSubsystemId: selectedSubSystemId || undefined,
+        acdemicsystemId: selectedAcademicSystemId || undefined,
       })
     );
   };
@@ -81,7 +84,7 @@ export default function EducationalStagesTab() {
   };
 
   // Check if we have any filters or search active
-  const hasActiveFilters = searchTerm || selectedSubSystemId || selectedCountryId;
+  const hasActiveFilters = searchTerm || selectedSubSystemId || selectedAcademicSystemId;
 
   // Show empty state only when: not loading AND no data AND no active filters
   const shouldShowEmptyState = !isLoading && educationalStages.length === 0 && !hasActiveFilters;
@@ -107,25 +110,27 @@ export default function EducationalStagesTab() {
     },
     {
       header: 'academicSystem.title',
-      accessor: (row: EducationalStageResponse) => (
-        <div className="flex flex-wrap gap-1">
-          <span className="text-sm">{row.age ?? '-'}</span>
-        </div>
-      ),
-
+      accessor: (row: EducationalStageResponse) => {
+        const academicSystemNames = row.academicSystemsDto?.map((academicSys) =>
+          currentLang === 'ar' ? academicSys.nameAr : academicSys.nameEn
+        );
+        return (
+          <div className="flex flex-wrap gap-1">
+            <span className="text-sm">{academicSystemNames?.join(' - ')}</span>
+          </div>
+        );
+      },
       headerClassName: 'w-[250px]',
     },
     {
       header: 'academicSystem.systemType',
       accessor: (row: EducationalStageResponse) => {
-        const subSystem = academicSubSystems.find(
-          (subSystem: any) => subSystem?.id === row.academicSubSystemId
-        );
-
         return (
           <div className="flex flex-wrap gap-1">
             <span className="text-sm">
-              {currentLang === 'ar' ? subSystem?.nameAr : subSystem?.nameEn || '-'}
+              {currentLang === 'ar'
+                ? row.academicSubSystemGradeDto?.nameAr
+                : row.academicSubSystemGradeDto?.nameEn || '-'}
             </span>
           </div>
         );
@@ -145,7 +150,7 @@ export default function EducationalStagesTab() {
       accessor: (row: EducationalStageResponse) => (
         <div className="flex items-center justify-center gap-2">
           <button
-            onClick={() => navigate(`/academic-system/edit-educational-stage/${row.id}`)}
+            onClick={() => navigate(`/academic-system/edit-educational-stages/${row.id}`)}
             className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
           >
             <img src={EditIcon} alt="Edit" className="h-4 w-4" />
@@ -166,6 +171,29 @@ export default function EducationalStagesTab() {
       className: 'text-center',
     },
   ];
+
+  const handleDeleteConfirm = () => {
+    if (!selectedStageId) return;
+    dispatch(deleteEducationalStage(selectedStageId))
+      .unwrap()
+      .then((res) => {
+        if (res?.isSuccess) {
+          setShowDelete(false);
+          setShowPopupMessage(true);
+          showToast({
+            message: 'academicSystem.systemDeletedSuccessfully',
+            type: 'success',
+          });
+          fetchEducationalStages();
+        }
+      })
+      .catch(() => {
+        showToast({
+          message: 'common.errorOccurred',
+          type: 'error',
+        });
+      });
+  };
 
   return (
     <Card>
@@ -190,6 +218,29 @@ export default function EducationalStagesTab() {
               <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
                 <div>
                   <CustomSelect
+                    value={selectedAcademicSystemId}
+                    onChange={(value) =>
+                      setSelectedAcademicSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
+                    }
+                    options={
+                      Array.isArray(academicSystems)
+                        ? academicSystems.map((system) => ({
+                            value: system?.id || '',
+                            label:
+                              currentLang === 'ar' ? system?.nameAr || '' : system?.nameEn || '',
+                          }))
+                        : []
+                    }
+                    placeholder={
+                      isLoadingAcademicSystems ? t('common.loading') : t('academicSystem.title')
+                    }
+                    disabled={isLoadingAcademicSystems}
+                    maxHeight="200px"
+                  />
+                </div>
+
+                <div>
+                  <CustomSelect
                     value={selectedSubSystemId}
                     onChange={(value) =>
                       setSelectedSubSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
@@ -212,31 +263,6 @@ export default function EducationalStagesTab() {
                     maxHeight="200px"
                   />
                 </div>
-
-                <div>
-                  <CustomSelect
-                    value={selectedCountryId}
-                    onChange={(value) =>
-                      setSelectedCountryId(Array.isArray(value) ? (value[0] ?? '') : value)
-                    }
-                    options={
-                      Array.isArray(countries)
-                        ? countries.map((country) => ({
-                            value: country?.id || '',
-                            label:
-                              currentLang === 'ar'
-                                ? country?.arabicName || ''
-                                : country?.englishName || '',
-                          }))
-                        : []
-                    }
-                    placeholder={
-                      isLoadingCountries ? t('common.loading') : t('academicSystem.country')
-                    }
-                    disabled={isLoadingCountries}
-                    maxHeight="200px"
-                  />
-                </div>
               </div>
             </div>
             <div>
@@ -245,7 +271,7 @@ export default function EducationalStagesTab() {
                 onClick={() => {
                   setSearchTerm('');
                   setSelectedSubSystemId('');
-                  setSelectedCountryId('');
+                  setSelectedAcademicSystemId('');
                 }}
                 className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
                 title={t('actions.clearFilter')}
@@ -308,28 +334,7 @@ export default function EducationalStagesTab() {
           {showDelete && (
             <DeletePopup
               message="academicSystem.confirmDeleteSystem"
-              onConfirm={() => {
-                if (!selectedStageId) return;
-                dispatch(deleteEducationalStage(selectedStageId))
-                  .unwrap()
-                  .then((res) => {
-                    if (res?.isSuccess) {
-                      setShowDelete(false);
-                      setShowPopupMessage(true);
-                      showToast({
-                        message: 'academicSystem.systemDeletedSuccessfully',
-                        type: 'success',
-                      });
-                      fetchEducationalStages();
-                    }
-                  })
-                  .catch(() => {
-                    showToast({
-                      message: 'common.errorOccurred',
-                      type: 'error',
-                    });
-                  });
-              }}
+              onConfirm={handleDeleteConfirm}
               onCancel={() => setShowDelete(false)}
               iconSrc={BigTrashIcon}
             />

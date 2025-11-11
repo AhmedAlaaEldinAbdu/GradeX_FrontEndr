@@ -1,12 +1,28 @@
 import type { Pagination } from '@/types/Pagination';
 import type { ApiResponse } from '../config';
 
+// Nested DTOs returned inside each grade item
+export interface AcademicSubSystemGradeDto {
+  id: string;
+  nameEn: string | null;
+  nameAr: string | null;
+}
+
+export interface AcademicSystemRefDto {
+  id: string;
+  nameEn: string | null;
+  nameAr: string | null;
+}
+
 export interface EducationalStageResponse {
   id: string;
   nameAr: string;
   nameEn: string;
   age?: number;
-  academicSubSystemId: string;
+  academicSubSystemGradeId: string;
+  academicSubSystemGradeDto?: AcademicSubSystemGradeDto;
+  academicSystemsDto?: AcademicSystemRefDto[];
+  academicSubSystemId?: string;
   created?: string;
 }
 
@@ -17,8 +33,11 @@ export interface EducationalStagesListValue extends Pagination {
 export interface EducationalStageParams {
   pageIndex: number;
   pageSize: number;
-  name?: string;
-  academicSubSystemId?: string;
+  nameAr?: string;
+  nameEn?: string;
+  acdemicSubsystemId?: string;
+  acdemicsystemId?: string;
+  // academicSubSystemId?: string; // backend changed the param name
 }
 
 export interface CreateEducationalStageRequest {

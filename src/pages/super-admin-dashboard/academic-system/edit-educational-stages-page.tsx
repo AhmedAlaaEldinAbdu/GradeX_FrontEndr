@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '@gradex/shared/components/PageHeader';
 import Breadcrumb from '@gradex/shared/layout/Breadcrumb';
-// import EditEducationalStages from './components/EditEducationalStages';
+import EditEducationalStages from './components/EditEducationalStages';
 
 const EditEducationalStagesPage: React.FC = () => {
   const { t } = useTranslation();
@@ -21,7 +21,7 @@ const EditEducationalStagesPage: React.FC = () => {
       <PageHeader title="academicSystem.editEducationalStages" />
 
       {/* Main Content */}
-      {/* <EditEducationalStages /> */}
+      <EditEducationalStages />
     </div>
   );
 };

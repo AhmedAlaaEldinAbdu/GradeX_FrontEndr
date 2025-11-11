@@ -109,7 +109,7 @@ export default function EditAcademicSystem() {
       countryIds: (data.countryIds || []).filter(Boolean) as string[],
     };
 
-    dispatch(editAcademicSystem([payload] as any))
+    dispatch(editAcademicSystem(payload))
       .unwrap()
       .then((res) => {
         if (res.isSuccess) {
