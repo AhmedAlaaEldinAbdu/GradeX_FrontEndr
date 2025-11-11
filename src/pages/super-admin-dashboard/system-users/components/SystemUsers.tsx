@@ -138,7 +138,14 @@ export default function SystemUsers() {
   };
 
   const columns = [
-    { header: '#', accessor: (_row: User, index?: number) => (index ?? 0) + 1 },
+    {
+      header: '#',
+      accessor: (_row: User) => {
+        if (!_row || !Array.isArray(users) || !pagination) return '-';
+        const index = users.findIndex((s) => s?.id === _row?.id);
+        return (pagination.page - 1) * pagination.limit + index + 1;
+      },
+    },
     {
       header: 'rolesManagement.userName',
       accessor: (row: User) => row.fullName,
