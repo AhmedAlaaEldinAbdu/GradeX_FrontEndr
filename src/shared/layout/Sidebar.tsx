@@ -217,6 +217,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   // Auto-expand parent menu item when visiting a sub-item URL
   useEffect(() => {
     const currentPath = location.pathname;
+    let shouldExpandKey: string | null = null;
 
     // Find if current path matches any sub-item or starts with a sub-item path
     menuItems.forEach((item) => {
@@ -226,16 +227,20 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         );
 
         if (isSubItemActive) {
-          setExpandedItems((prev) => {
-            if (!prev.includes(item.key)) {
-              return [item.key];
-            }
-            return prev;
-          });
+          shouldExpandKey = item.key;
         }
       }
     });
-  }, [location.pathname, menuItems]);
+
+    setExpandedItems((prev) => {
+      if (shouldExpandKey) {
+        return prev.includes(shouldExpandKey) ? prev : [shouldExpandKey];
+      } else {
+        return [];
+      }
+    });
+    // eslint-disable-next-line
+  }, [location.pathname]);
 
   const toggleExpand = (key: string, firstSubItemPath?: string) => {
     const isCurrentlyExpanded = expandedItems.includes(key);
