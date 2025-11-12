@@ -1,7 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import Card from '@/shared/components/Card';
-import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
@@ -11,8 +9,8 @@ import { Controller, useForm } from 'react-hook-form';
 import Input from '@/shared/components/Input';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-  EducationalStagesSchema,
-  type EducationalStagesProps,
+  EditEducationalStagesSchema,
+  type EditEducationalStagesProps,
 } from '@/validations/academic-system-validations';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -29,7 +27,6 @@ export default function EditEducationalStages() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
-  const [numOfStages, setNumOfStages] = useState<number[]>([1]);
   const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
@@ -43,10 +40,12 @@ export default function EditEducationalStages() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<EducationalStagesProps>({
-    resolver: yupResolver(EducationalStagesSchema),
+  } = useForm<EditEducationalStagesProps>({
+    resolver: yupResolver(EditEducationalStagesSchema),
     defaultValues: {
-      educationalStages: [{ nameAr: '', nameEn: '', academicSystem: [] }],
+      nameAr: '',
+      nameEn: '',
+      academicSystem: [],
     },
   });
 
@@ -67,40 +66,32 @@ export default function EditEducationalStages() {
   useEffect(() => {
     if (educationalStageDetails && !isLoadingData) {
       reset({
-        educationalStages: [
-          {
-            nameAr: educationalStageDetails.nameAr,
-            nameEn: educationalStageDetails.nameEn,
-            academicSystem: [educationalStageDetails.academicSubSystemId || ''],
-          },
+        nameAr: educationalStageDetails.nameAr,
+        nameEn: educationalStageDetails.nameEn,
+        academicSystem: [
+          educationalStageDetails.academicSubSystemId ||
+            (educationalStageDetails as any).academicSubSystemGradeId ||
+            '',
         ],
       });
     }
   }, [educationalStageDetails, isLoadingData, reset]);
 
-  const onSubmit = async (data: EducationalStagesProps) => {
+  const onSubmit = async (data: EditEducationalStagesProps) => {
     if (!id) return;
-    const stage = data.educationalStages[0];
     try {
-      const gradeId = Array.isArray(stage.academicSystem) ? (stage.academicSystem[0] ?? '') : '';
+      // const gradeId = Array.isArray(data.academicSystem) ? (data.academicSystem[0] ?? '') : '';
+      
       const payload: UpdateEducationalStageRequest = {
         id,
-        nameAr: stage.nameAr,
-        nameEn: stage.nameEn,
+        nameAr: data.nameAr,
+        nameEn: data.nameEn,
         age: 3,
-        academicSubSystemId: gradeId,
+        academicSubSystemId: (data.academicSystem || []).filter(Boolean) as string[],
       };
       const res = await dispatch(editEducationalStage(payload)).unwrap();
       if (res.isSuccess) setShowPopupMessage(true);
     } catch (e) {}
-  };
-
-  const handleAddEducationalStages = () => {
-    setNumOfStages((prev) => [...prev, prev.length + 1]);
-  };
-
-  const handleDeleteEducationalStage = (selectedIdx: number) => {
-    setNumOfStages((prev) => prev.filter((_, i) => i !== selectedIdx));
   };
 
   return (
@@ -108,132 +99,103 @@ export default function EditEducationalStages() {
       <div className="rounded-md border p-4">
         <div className="mb-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="text-xl font-bold text-gray-700">
-            {t('academicSystem.educationalStages')}
-          </div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => handleAddEducationalStages()}>
-              <img src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
-            </button>
+            {t('academicSystem.educationalStage')}
           </div>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
-          {numOfStages.map((_, index) => (
-            <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
-              <div className="flex">
-                <div className="flex flex-grow flex-col gap-5 md:flex-row">
-                  <div className="flex-grow">
-                    <FormField
-                      label={t('academicSystem.educationalStageAr')}
-                      required
-                      error={
-                        errors.educationalStages?.[index]?.nameAr?.message &&
-                        t(errors.educationalStages?.[index]?.nameAr.message)
-                      }
-                    >
-                      <Controller
-                        name={`educationalStages.${index}.nameAr`}
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder={t('academicSystem.enterEducationalStageAr')}
-                            required
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                  <div className="flex-grow">
-                    <FormField
-                      label={t('academicSystem.educationalStageEn')}
-                      required
-                      error={
-                        errors.educationalStages?.[index]?.nameEn?.message &&
-                        t(errors.educationalStages?.[index]?.nameEn.message)
-                      }
-                    >
-                      <Controller
-                        name={`educationalStages.${index}.nameEn`}
-                        control={control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder={t('academicSystem.enterEducationalStageEn')}
-                            required
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                </div>
-                <div>
-                  {numOfStages?.length !== 1 ? (
-                    <>
-                      <button
-                        onClick={() => handleDeleteEducationalStage(index)}
-                        className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
-                      >
-                        <img src={TrashIcon} alt="Trash" className="h-4 w-4" />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <div className="h-8 w-8"></div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex">
+          <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
+            <div className="flex">
+              <div className="flex flex-grow flex-col gap-5 md:flex-row">
                 <div className="flex-grow">
                   <FormField
-                    label={t('academicSystem.academicSystemName')}
+                    label={t('academicSystem.educationalStageAr')}
                     required
-                    error={
-                      errors.educationalStages?.[index]?.academicSystem?.message &&
-                      t(errors.educationalStages[index]?.academicSystem.message)
-                    }
+                    error={errors.nameAr?.message && t(errors.nameAr.message)}
                   >
                     <Controller
-                      name={`educationalStages.${index}.academicSystem`}
+                      name={`nameAr`}
                       control={control}
-                      render={({ field }) => {
-                        return (
-                          <MultiSelectTagInput
-                            value={
-                              Array.isArray(field.value) ? field.value.join(',') : field.value || ''
-                            }
-                            onChange={(value) => {
-                              const parsedValue = value.split(',').filter((v) => v.trim());
-                              field.onChange(parsedValue);
-                            }}
-                            options={
-                              Array.isArray(academicSubSystems)
-                                ? academicSubSystems.map((s) => ({
-                                    value: s.id,
-                                    label: currentLang === 'ar' ? s.nameAr : s.nameEn,
-                                  }))
-                                : []
-                            }
-                            disabled={isLoadingSubSystems}
-                            placeholder={
-                              isLoadingSubSystems
-                                ? t('common.loading')
-                                : t('academicSystem.selectEducationSystem')
-                            }
-                            error={!!errors.educationalStages?.[index]?.academicSystem}
-                          />
-                        );
-                      }}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          placeholder={t('academicSystem.enterEducationalStageAr')}
+                          required
+                        />
+                      )}
                     />
                   </FormField>
                 </div>
-                <div>
-                  <div className="h-8 w-8"></div>
+                <div className="flex-grow">
+                  <FormField
+                    label={t('academicSystem.educationalStageEn')}
+                    required
+                    error={errors.nameEn?.message && t(errors.nameEn.message)}
+                  >
+                    <Controller
+                      name={`nameEn`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          placeholder={t('academicSystem.enterEducationalStageEn')}
+                          required
+                        />
+                      )}
+                    />
+                  </FormField>
                 </div>
               </div>
+              <div>
+                <div className="h-8 w-8"></div>
+              </div>
             </div>
-          ))}
+
+            <div className="flex">
+              <div className="flex-grow">
+                <FormField
+                  label={t('academicSystem.academicSystemName')}
+                  required
+                  error={errors.academicSystem?.message && t(errors.academicSystem.message)}
+                >
+                  <Controller
+                    name={`academicSystem`}
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <MultiSelectTagInput
+                          value={
+                            Array.isArray(field.value) ? field.value.join(',') : field.value || ''
+                          }
+                          onChange={(value) => {
+                            const parsedValue = value.split(',').filter((v) => v.trim());
+                            field.onChange(parsedValue);
+                          }}
+                          options={
+                            Array.isArray(academicSubSystems)
+                              ? academicSubSystems.map((s) => ({
+                                  value: s.id,
+                                  label: currentLang === 'ar' ? s.nameAr : s.nameEn,
+                                }))
+                              : []
+                          }
+                          disabled={isLoadingSubSystems}
+                          placeholder={
+                            isLoadingSubSystems
+                              ? t('common.loading')
+                              : t('academicSystem.selectEducationSystem')
+                          }
+                          error={!!errors.academicSystem}
+                        />
+                      );
+                    }}
+                  />
+                </FormField>
+              </div>
+              <div>
+                <div className="h-8 w-8"></div>
+              </div>
+            </div>
+          </div>
           <div className="mt-6 flex justify-end gap-3">
             <button
               type="button"

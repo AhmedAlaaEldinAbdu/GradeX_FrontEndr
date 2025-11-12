@@ -13,12 +13,12 @@ const EditEducationalStagesPage: React.FC = () => {
       <Breadcrumb
         items={[
           { label: 'academicSystem.title', path: '/academic-system' },
-          { label: 'academicSystem.editEducationalStages' },
+          { label: 'academicSystem.editEducationalStage' },
         ]}
       />
 
       {/* Page Header */}
-      <PageHeader title="academicSystem.editEducationalStages" />
+      <PageHeader title="academicSystem.editEducationalStage" />
 
       {/* Main Content */}
       <EditEducationalStages />

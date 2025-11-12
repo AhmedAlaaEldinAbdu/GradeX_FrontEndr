@@ -44,7 +44,7 @@ export interface CreateEducationalStageRequest {
   nameAr: string;
   nameEn: string;
   age?: number;
-  academicSubSystemId: string;
+  academicSubSystemId: string[];
 }
 
 export interface UpdateEducationalStageRequest extends CreateEducationalStageRequest {
