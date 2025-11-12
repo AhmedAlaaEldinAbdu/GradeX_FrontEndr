@@ -36,7 +36,7 @@ export default function AcademicSystem({ setSelectedTab }: IAcademicSystemProps)
               setSelectedTab(id as typeof ACADEMICSYSTEM | typeof EDUCATIONALSTAGES);
             }}
             variant="underline"
-            listClassName="flex w-[100%] md:w-[75%] lg:w-[35%] gap-2 mb-8 px-1 flex-wrap"
+            listClassName="flex w-[100%] md:w-[75%] lg:w-[35%] gap-2 mb-5 px-1 flex-wrap"
           />
         </div>
       </div>

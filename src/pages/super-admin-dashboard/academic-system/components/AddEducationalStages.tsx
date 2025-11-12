@@ -47,20 +47,14 @@ export default function AddEducationalStages() {
   });
 
   const onSubmit = (data: EducationalStagesProps) => {
-    const payload: CreateEducationalStageRequest[] = data?.educationalStages?.map(
-      (educational) => {
-        const gradeId = Array.isArray(educational.academicSystem)
-          ? (educational.academicSystem[0] ?? '')
-          : '';
-        return {
-          nameAr: educational.nameAr,
-          nameEn: educational.nameEn,
-          age: 3,
-          academicSubSystemId: gradeId,
-          academicSubSystemGradeId: gradeId,
-        } as CreateEducationalStageRequest;
-      }
-    );
+    const payload: CreateEducationalStageRequest[] = data?.educationalStages?.map((educational) => {
+      return {
+        nameAr: educational.nameAr,
+        nameEn: educational.nameEn,
+        age: 3,
+        academicSubSystemId: (educational.academicSystem || []).filter(Boolean) as string[],
+      } as CreateEducationalStageRequest;
+    });
 
     dispatch(addEducationalStage(payload))
       .unwrap()

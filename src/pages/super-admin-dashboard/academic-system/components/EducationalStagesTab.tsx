@@ -184,7 +184,7 @@ export default function EducationalStagesTab() {
             message: 'academicSystem.systemDeletedSuccessfully',
             type: 'success',
           });
-          fetchEducationalStages();
+          dispatch(getEducationalStages({ pageIndex: currentPage, pageSize }));
         }
       })
       .catch(() => {
