@@ -21,7 +21,7 @@ export async function getUsers(params?: UserQueryParams): Promise<UserListRespon
     apiParams.Search = params.searchTerm || params.Search || '';
   }
   if (params?.roleId) {
-    apiParams.RoleId = params.roleId;
+    apiParams.roleId = params.roleId;
   }
   if (params?.lkCountryId) {
     apiParams.LkCountryId = params.lkCountryId;
