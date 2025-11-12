@@ -80,13 +80,11 @@ export default function EditEducationalStages() {
   const onSubmit = async (data: EditEducationalStagesProps) => {
     if (!id) return;
     try {
-      // const gradeId = Array.isArray(data.academicSystem) ? (data.academicSystem[0] ?? '') : '';
-      
       const payload: UpdateEducationalStageRequest = {
         id,
         nameAr: data.nameAr,
         nameEn: data.nameEn,
-        age: 3,
+        age: 0,
         academicSubSystemId: (data.academicSystem || []).filter(Boolean) as string[],
       };
       const res = await dispatch(editEducationalStage(payload)).unwrap();

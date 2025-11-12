@@ -51,7 +51,7 @@ export default function AddEducationalStages() {
       return {
         nameAr: educational.nameAr,
         nameEn: educational.nameEn,
-        age: 3,
+        age: 0,
         academicSubSystemId: (educational.academicSystem || []).filter(Boolean) as string[],
       } as CreateEducationalStageRequest;
     });
