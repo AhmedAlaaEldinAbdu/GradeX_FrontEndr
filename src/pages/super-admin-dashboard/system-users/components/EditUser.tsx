@@ -15,7 +15,7 @@ import {
   fetchUserById,
   updateUser,
   selectCurrentUser,
-  selectUsersLoading,
+  selectIsLoading,
   selectValidationErrors,
 } from '@gradex/redux/features/user-management';
 import {
@@ -41,7 +41,7 @@ export default function EditUser() {
   const { showToast } = useToast();
 
   const currentUser = useSelector(selectCurrentUser);
-  const isLoading = useSelector(selectUsersLoading);
+  const isLoading = useSelector(selectIsLoading);
   const validationErrorsFromRedux = useSelector(selectValidationErrors);
   const rolesData = useSelector(selectRoles);
   const roles = useMemo(() => rolesData || [], [rolesData]);

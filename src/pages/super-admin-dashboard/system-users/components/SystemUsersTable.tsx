@@ -12,7 +12,7 @@ import type { User } from '@gradex/services/api/types/users.types';
 import {
   fetchUsers,
   selectUsers,
-  selectUsersLoading,
+  selectIsLoading,
   selectPagination,
 } from '@gradex/redux/features/user-management';
 
@@ -34,7 +34,7 @@ export default function SystemUsersTable({
   const dispatch = useDispatch<AppDispatch>();
 
   const users = useSelector(selectUsers) || [];
-  const isLoading = useSelector(selectUsersLoading);
+  const isLoading = useSelector(selectIsLoading);
   const pagination = useSelector(selectPagination);
 
   useEffect(() => {
