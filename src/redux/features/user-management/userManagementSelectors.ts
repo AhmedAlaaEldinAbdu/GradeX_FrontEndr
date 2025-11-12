@@ -117,11 +117,6 @@ export const selectIsLoading = createSelector(
 );
 
 /**
- * @deprecated Use selectIsLoading instead
- */
-export const selectUsersLoading = selectIsLoading;
-
-/**
  * Select creating state
  */
 export const selectIsCreating = createSelector(
