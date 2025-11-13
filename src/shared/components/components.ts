@@ -18,6 +18,8 @@ export { default as MapLocationModal } from './MapLocationModal';
 export { default as PhoneInput } from './PhoneInput';
 export { default as MultiSelectTagInput } from './MultiSelectTagInput';
 export { default as ActionsDropdown } from './ActionsDropdown';
+export { default as DataTable } from './DataTable';
 export type { MultiSelectOption } from './MultiSelectTagInput';
 export type { CustomSelectOption } from './CustomSelect';
 export type { Action } from './ActionsDropdown';
+export type { FilterConfig, DataTableColumn, PaginationData, DataTableProps } from './DataTable';
