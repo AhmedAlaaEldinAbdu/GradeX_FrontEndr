@@ -1,14 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
-import Table from '@gradex/shared/components/Table';
+import DataTable, { type DataTableColumn } from '@gradex/shared/components/DataTable';
 import { useTranslation } from 'react-i18next';
 import Badge from '@gradex/shared/components/Badge';
-import Pagination from '@gradex/shared/components/Pagination';
 import DropdownMenuSchoolsAction from './DropdownMenuSchoolsAction';
 import PhoneIcon from '@gradex/assets/icons/Phone.svg';
 import EmailIcon from '@gradex/assets/icons/Email.svg';
-import Loading from '@gradex/shared/components/Loading';
 import {
   fetchPendingSchools,
   selectSchools,
@@ -27,9 +25,10 @@ interface PendingSchoolsTabProps {
     academicSystemId?: string;
     lKCountryId?: string;
   };
+  filterComponent?: ReactNode;
 }
 
-export default function PendingSchoolsTab({ filters }: PendingSchoolsTabProps) {
+export default function PendingSchoolsTab({ filters, filterComponent }: PendingSchoolsTabProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -64,7 +63,7 @@ export default function PendingSchoolsTab({ filters }: PendingSchoolsTabProps) {
         filters,
       })
     );
-  }, [dispatch, filters]);
+  }, [dispatch, filters, pagination.page, pagination.limit]);
 
   const handlePageChange = (page: number) => {
     dispatch(
@@ -76,14 +75,6 @@ export default function PendingSchoolsTab({ filters }: PendingSchoolsTabProps) {
     );
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-10">
-        <Loading />
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="py-10 text-center text-red-600">
@@ -92,7 +83,7 @@ export default function PendingSchoolsTab({ filters }: PendingSchoolsTabProps) {
     );
   }
 
-  const columns = [
+  const columns: DataTableColumn<School>[] = [
     {
       header: '#',
       accessor: (_row: School) => {
@@ -231,26 +222,17 @@ export default function PendingSchoolsTab({ filters }: PendingSchoolsTabProps) {
   ];
 
   return (
-    <div>
-      {/* Table */}
-      <div className="overflow-x-auto">
-        {!Array.isArray(schools) || schools.length === 0 ? (
-          <div className="py-10 text-center text-gray-500">{t('schools.noSchoolsFound')}</div>
-        ) : (
-          <Table columns={columns} data={schools} keyExtractor={(row) => row?.id || ''} />
-        )}
-      </div>
-
-      {/* Pagination */}
-      {Array.isArray(schools) && schools.length > 0 && pagination && (
-        <Pagination
-          currentPage={pagination.page || 1}
-          totalPages={pagination.totalPages || 0}
-          to={(pagination.page - 1) * pagination.limit + schools.length}
-          from={(pagination.page - 1) * pagination.limit + 1}
-          onPageChange={handlePageChange}
-        />
-      )}
-    </div>
+    <DataTable
+      data={schools}
+      columns={columns}
+      keyExtractor={(row) => row?.id || ''}
+      pagination={pagination}
+      onPageChange={handlePageChange}
+      showFilters={true}
+      filterComponent={filterComponent}
+      isLoading={isLoading}
+      emptyMessage={t('schools.noSchoolsFound')}
+      t={t}
+    />
   );
 }
