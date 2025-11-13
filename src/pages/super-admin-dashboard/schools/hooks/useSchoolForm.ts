@@ -3,7 +3,10 @@ import { useForm, type UseFormReturn } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { SchoolFormData } from '../types/school.types';
 import { initialSchoolFormData } from '../types/school.types';
-import { schoolFormSchema, getStepValidationSchema } from '../validation/school.validation';
+import {
+  schoolFormSchema,
+  getStepValidationSchema,
+} from '../../../../validations/school-validations';
 
 interface FileState {
   license: File[];
