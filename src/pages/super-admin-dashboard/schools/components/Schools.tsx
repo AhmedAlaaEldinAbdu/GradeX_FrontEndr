@@ -76,6 +76,104 @@ export default function Schools() {
     setActiveTab(tabId);
   };
 
+  // Build a reusable filter component to pass into each tab (so filters are defined once)
+  const filterComponent = (
+    <div className="flex justify-between">
+      <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
+        <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[60%]">
+          <div className="relative">
+            <SearchInput
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder={t('schools.searchBySchoolRegionDistrictName')}
+              name="school-search"
+            />
+          </div>
+        </div>
+        <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
+          <div>
+            <CustomSelect
+              value={academicSystem}
+              onChange={(value) =>
+                setAcademicSystem(Array.isArray(value) ? (value[0] ?? '') : value)
+              }
+              options={
+                Array.isArray(academicSystems)
+                  ? academicSystems.map((system) => ({ value: system.id, label: system.nameAr }))
+                  : []
+              }
+              placeholder={
+                isLoadingAcademicSystems ? t('common.loading') : t('schools.academicSystem')
+              }
+              disabled={isLoadingAcademicSystems}
+              maxHeight="200px"
+            />
+          </div>
+
+          <div>
+            <CustomSelect
+              value={selectedCountry}
+              onChange={(value) =>
+                setSelectedCountry(Array.isArray(value) ? (value[0] ?? '') : value)
+              }
+              options={
+                Array.isArray(countries)
+                  ? countries.map((country) => ({
+                      value: country?.id || '',
+                      label:
+                        currentLang === 'ar'
+                          ? country?.arabicName || ''
+                          : country?.englishName || '',
+                    }))
+                  : []
+              }
+              placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
+              disabled={isLoadingCountries}
+              maxHeight="200px"
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        {/* Reset Button */}
+        <button
+          onClick={() => {
+            setSearchTerm('');
+            setAcademicSystem('');
+            setSelectedCountry('');
+          }}
+          className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+          title={t('actions.clearFilter')}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className=""
+            aria-hidden="true"
+          >
+            <path
+              d="M21 12a9 9 0 1 0-3.46 6.54"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M21 3v6h-6"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+
   const tabs = [
     { id: 'RegisteredSchools', label: 'schools.registeredSchools' },
     { id: 'PendingSchools', label: 'schools.pendingSchools' },
@@ -112,104 +210,7 @@ export default function Schools() {
           />
         ) : (
           <div>
-            {/* Filters */}
-            <div className="flex justify-between">
-              <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
-                <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[60%]">
-                  <div className="relative">
-                    <SearchInput
-                      value={searchTerm}
-                      onChange={setSearchTerm}
-                      placeholder={t('schools.searchBySchoolRegionDistrictName')}
-                      name="school-search"
-                    />
-                  </div>
-                </div>
-                <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
-                  <div>
-                    <CustomSelect
-                      value={academicSystem}
-                      onChange={(value) =>
-                        setAcademicSystem(Array.isArray(value) ? (value[0] ?? '') : value)
-                      }
-                      options={
-                        Array.isArray(academicSystems)
-                          ? academicSystems.map((system) => ({
-                              value: system.id,
-                              label: system.nameAr,
-                            }))
-                          : []
-                      }
-                      placeholder={
-                        isLoadingAcademicSystems ? t('common.loading') : t('schools.academicSystem')
-                      }
-                      disabled={isLoadingAcademicSystems}
-                      maxHeight="200px"
-                    />
-                  </div>
-
-                  <div>
-                    <CustomSelect
-                      value={selectedCountry}
-                      onChange={(value) =>
-                        setSelectedCountry(Array.isArray(value) ? (value[0] ?? '') : value)
-                      }
-                      options={
-                        Array.isArray(countries)
-                          ? countries.map((country) => ({
-                              value: country?.id || '',
-                              label:
-                                currentLang === 'ar'
-                                  ? country?.arabicName || ''
-                                  : country?.englishName || '',
-                            }))
-                          : []
-                      }
-                      placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
-                      disabled={isLoadingCountries}
-                      maxHeight="200px"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div>
-                {/* Reset Button */}
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setAcademicSystem('');
-                    setSelectedCountry('');
-                  }}
-                  className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-                  title={t('actions.clearFilter')}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className=""
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M21 12a9 9 0 1 0-3.46 6.54"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M21 3v6h-6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
+            {filterComponent}
 
             <div className="overflow-x-auto">
               {activeTab === 'RegisteredSchools' && (
@@ -219,6 +220,7 @@ export default function Schools() {
                     academicSystemId: academicSystem || undefined,
                     lKCountryId: selectedCountry || undefined,
                   }}
+                  filterComponent={filterComponent}
                 />
               )}
               {activeTab === 'PendingSchools' && (
@@ -228,6 +230,7 @@ export default function Schools() {
                     academicSystemId: academicSystem || undefined,
                     lKCountryId: selectedCountry || undefined,
                   }}
+                  filterComponent={filterComponent}
                 />
               )}
               {activeTab === 'DeletedSchools' && (
@@ -237,6 +240,7 @@ export default function Schools() {
                     academicSystemId: academicSystem || undefined,
                     lKCountryId: selectedCountry || undefined,
                   }}
+                  filterComponent={filterComponent}
                 />
               )}
             </div>
