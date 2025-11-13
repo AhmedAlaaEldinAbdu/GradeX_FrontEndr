@@ -1,26 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
-import Card from '@gradex/shared/components/Card';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import Card from '@gradex/shared/components/Card';
+import DataTable, {
+  type FilterConfig,
+  type DataTableColumn,
+} from '@gradex/shared/components/DataTable';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import EditIcon from '@gradex/assets/icons/Edit.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
-import SystemUsersTable from './SystemUsersTable';
-import { fetchUsers, deleteUser, selectPagination } from '@gradex/redux/features/user-management';
+import type { User } from '@gradex/services/api/types/users.types';
+import {
+  fetchUsers,
+  deleteUser,
+  selectUsers,
+  selectIsLoading,
+  selectPagination,
+} from '@gradex/redux/features/user-management';
 import {
   fetchRoles,
   selectRoles,
   selectIsLoading as selectIsLoadingRoles,
 } from '@gradex/redux/features/roles';
 import { fetchCountries } from '@gradex/redux/features/lookups';
-import SearchInput from '@/shared/components/SearchInput';
 
 export default function SystemUsers() {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
 
+  const users = useSelector(selectUsers) || [];
+  const isLoading = useSelector(selectIsLoading);
   const pagination = useSelector(selectPagination);
   const roles = useSelector(selectRoles) || [];
   const isLoadingRoles = useSelector(selectIsLoadingRoles);
@@ -30,7 +44,6 @@ export default function SystemUsers() {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [filters, setFilters] = useState<{ searchTerm?: string; roleId?: string }>({});
 
   // Fetch roles and countries on mount
   useEffect(() => {
@@ -43,22 +56,24 @@ export default function SystemUsers() {
     dispatch(fetchCountries());
   }, [dispatch]);
 
-  // Handle search and role filter with debounce
+  // Fetch users with debounce when filters change
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const newFilters: { searchTerm?: string; roleId?: string } = {};
-      if (searchTerm) newFilters.searchTerm = searchTerm;
-      if (selectedRole) newFilters.roleId = selectedRole;
-      setFilters(newFilters);
+      const filtersObj: Record<string, string> = {};
+      if (searchTerm) filtersObj.searchTerm = searchTerm;
+      if (selectedRole) filtersObj.roleId = selectedRole;
+
+      dispatch(
+        fetchUsers({
+          page: 1,
+          limit: 10,
+          filters: Object.keys(filtersObj).length > 0 ? filtersObj : undefined,
+        })
+      );
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, selectedRole]);
-
-  const handleDeleteClick = (userId: string) => {
-    setSelectedUserId(userId);
-    setShowDeletePopup(true);
-  };
+  }, [searchTerm, selectedRole, dispatch]);
 
   const handleDeleteConfirm = async () => {
     if (!selectedUserId) return;
@@ -76,15 +91,15 @@ export default function SystemUsers() {
       });
 
       // Refresh the users list
-      const filters: Record<string, string> = {};
-      if (searchTerm) filters.searchTerm = searchTerm;
-      if (selectedRole) filters.roleId = selectedRole;
+      const filtersObj: Record<string, string> = {};
+      if (searchTerm) filtersObj.searchTerm = searchTerm;
+      if (selectedRole) filtersObj.roleId = selectedRole;
 
       dispatch(
         fetchUsers({
           page: pagination.page,
           limit: pagination.limit,
-          filters: Object.keys(filters).length > 0 ? filters : undefined,
+          filters: Object.keys(filtersObj).length > 0 ? filtersObj : undefined,
         })
       );
     } catch (error) {
@@ -99,83 +114,123 @@ export default function SystemUsers() {
     }
   };
 
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedRole('');
+  };
+
+  const handlePageChange = (page: number) => {
+    const filtersObj: Record<string, string> = {};
+    if (searchTerm) filtersObj.searchTerm = searchTerm;
+    if (selectedRole) filtersObj.roleId = selectedRole;
+
+    dispatch(
+      fetchUsers({
+        page,
+        limit: 10,
+        filters: Object.keys(filtersObj).length > 0 ? filtersObj : undefined,
+      })
+    );
+  };
+
+  // Define table columns
+  const columns: DataTableColumn<User>[] = [
+    {
+      header: '#',
+      accessor: (_row) => {
+        if (!_row || !Array.isArray(users) || !pagination) return '-';
+        const rowIndex = users.findIndex((u) => u?.id === _row?.id);
+        return (pagination.page - 1) * pagination.limit + rowIndex + 1;
+      },
+      headerClassName: 'w-16',
+      className: 'text-center',
+    },
+    {
+      header: 'rolesManagement.userName',
+      accessor: (row) => row.fullName,
+      headerClassName: 'min-w-[200px]',
+    },
+    {
+      header: 'rolesManagement.roleName',
+      accessor: (row) => (row.roles && row.roles.length > 0 ? row.roles.join(', ') : '-'),
+      headerClassName: 'min-w-[100px]',
+    },
+    {
+      header: 'rolesManagement.phoneNumber',
+      accessor: (row) => <bdi>{row.phoneNumber || '-'}</bdi>,
+      headerClassName: 'min-w-[150px]',
+    },
+    {
+      header: 'rolesManagement.email',
+      accessor: (row) => row.email,
+      headerClassName: 'min-w-[200px]',
+    },
+    {
+      header: 'common.actions',
+      accessor: (row) => (
+        <div className="flex items-center gap-2">
+          <Link
+            to={`edit-user/${row.id}`}
+            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
+          >
+            <img src={EditIcon} alt="Edit" />
+          </Link>
+          <button
+            onClick={() => {
+              setSelectedUserId(row.id);
+              setShowDeletePopup(true);
+            }}
+            disabled={isDeleting}
+            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
+          >
+            <img src={TrashIcon} alt="Delete" />
+          </button>
+        </div>
+      ),
+      headerClassName: 'min-w-[100px]',
+    },
+  ];
+
+  // Define filters configuration
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'search',
+      name: 'user-search',
+      placeholder: t('rolesManagement.SearchUsername'),
+      value: searchTerm,
+      onChange: (value) => setSearchTerm(value as string),
+      width: '60%',
+    },
+    {
+      type: 'select',
+      name: 'role-filter',
+      placeholder: t('rolesManagement.role'),
+      value: selectedRole,
+      onChange: (value) => setSelectedRole(value as string),
+      options: [
+        { value: '', label: t('rolesManagement.all') },
+        ...roles.map((role) => ({ value: role.id, label: role.name })),
+      ],
+      disabled: isLoadingRoles,
+      loading: isLoadingRoles,
+    },
+  ];
+
   return (
     <Card>
       <div>
-        {/* Filters */}
-        <div className="flex justify-between">
-          <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
-            <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[60%]">
-              <div className="relative">
-                <SearchInput
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder={t('rolesManagement.SearchUsername')}
-                  name="user-search"
-                />
-              </div>
-            </div>
-
-            <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
-              <div className="min-w-[200px]">
-                <select
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-                  disabled={isLoadingRoles}
-                >
-                  <option value="">
-                    {isLoadingRoles ? t('common.loading') : t('rolesManagement.role')}
-                  </option>
-                  {roles.map((role) => (
-                    <option key={role.id} value={role.id}>
-                      {role.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-          {/* Reset Button */}
-          <button
-            onClick={() => {
-              setSearchTerm('');
-              setSelectedRole('');
-            }}
-            className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-            title={t('actions.clearFilter')}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                d="M21 12a9 9 0 1 0-3.46 6.54"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M21 3v6h-6"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Table and Pagination */}
-        <SystemUsersTable
-          filters={filters}
-          isDeleting={isDeleting}
-          onDeleteClick={handleDeleteClick}
+        <DataTable
+          data={users}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          filters={filterConfigs}
+          showFilters={true}
+          onResetFilters={handleResetFilters}
+          isLoading={isLoading}
+          emptyMessage={t('rolesManagement.noUsersFound')}
+          t={t}
         />
 
         {/* Delete Popup */}
