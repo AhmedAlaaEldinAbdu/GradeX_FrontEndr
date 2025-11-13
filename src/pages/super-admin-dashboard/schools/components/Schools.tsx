@@ -79,7 +79,7 @@ export default function Schools() {
   // Build a reusable filter component to pass into each tab (so filters are defined once)
   const filterComponent = (
     <div className="flex justify-between">
-      <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
+      <div className="flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
         <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[60%]">
           <div className="relative">
             <SearchInput
@@ -210,9 +210,7 @@ export default function Schools() {
           />
         ) : (
           <div>
-            {filterComponent}
-
-            <div className="overflow-x-auto">
+            <div className="">
               {activeTab === 'RegisteredSchools' && (
                 <RegisteredSchoolsTab
                   filters={{
