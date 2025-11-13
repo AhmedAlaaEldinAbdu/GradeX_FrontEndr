@@ -1,43 +1,55 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
-import Card from '@gradex/shared/components/Card';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import Card from '@gradex/shared/components/Card';
+import DataTable, {
+  type FilterConfig,
+  type DataTableColumn,
+} from '@gradex/shared/components/DataTable';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import EditIcon from '@gradex/assets/icons/Edit.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
-import RolesPermissionsTable from './RolesPermissionsTable';
-import { fetchRoles, deleteRole, selectPagination } from '@gradex/redux/features/roles';
-import SearchInput from '@/shared/components/SearchInput';
+import type { Role } from '@gradex/services/api/types/roles.types';
+import {
+  fetchRoles,
+  deleteRole,
+  selectRoles,
+  selectIsLoading,
+  selectPagination,
+} from '@gradex/redux/features/roles';
 
 export default function RolesPermissions() {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
 
+  const roles = useSelector(selectRoles) || [];
+  const isLoading = useSelector(selectIsLoading);
   const pagination = useSelector(selectPagination);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [filters, setFilters] = useState<{ searchTerm?: string }>({});
 
-  // Handle search with debounce
+  // Fetch roles with debounce when search changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const newFilters: { searchTerm?: string } = {};
-      if (searchTerm) newFilters.searchTerm = searchTerm;
-      setFilters(newFilters);
+      dispatch(
+        fetchRoles({
+          page: 1,
+          limit: 10,
+          filters: searchTerm ? { searchTerm } : undefined,
+        })
+      );
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
-
-  const handleDeleteClick = (roleId: string) => {
-    setSelectedRoleId(roleId);
-    setShowDeletePopup(true);
-  };
+  }, [searchTerm, dispatch]);
 
   const handleDeleteConfirm = async () => {
     if (!selectedRoleId) return;
@@ -74,64 +86,95 @@ export default function RolesPermissions() {
     }
   };
 
+  const handleResetFilters = () => {
+    setSearchTerm('');
+  };
+
+  const handlePageChange = (page: number) => {
+    dispatch(
+      fetchRoles({
+        page,
+        limit: 10,
+        filters: searchTerm ? { searchTerm } : undefined,
+      })
+    );
+  };
+
+  // Define table columns
+  const columns: DataTableColumn<Role>[] = [
+    {
+      header: '#',
+      accessor: (_row) => {
+        if (!_row || !Array.isArray(roles) || !pagination) return '-';
+        const rowIndex = roles.findIndex((r) => r?.id === _row?.id);
+        return (pagination.page - 1) * pagination.limit + rowIndex + 1;
+      },
+      headerClassName: 'w-16',
+      className: 'text-center',
+    },
+    {
+      header: 'rolesManagement.roleName',
+      accessor: (row) => row.name,
+      headerClassName: 'min-w-[100px]',
+    },
+    {
+      header: 'rolesManagement.description',
+      accessor: (row) => row.description || '-',
+      headerClassName: 'min-w-[200px]',
+    },
+    {
+      header: 'common.actions',
+      accessor: (row) => (
+        <div className="flex items-center gap-2">
+          <Link
+            to={`edit-role/${row.id}`}
+            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
+          >
+            <img src={EditIcon} alt="Edit" />
+          </Link>
+          <button
+            onClick={() => {
+              setSelectedRoleId(row.id);
+              setShowDeletePopup(true);
+            }}
+            disabled={isDeleting}
+            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
+          >
+            <img src={TrashIcon} alt="Delete" />
+          </button>
+        </div>
+      ),
+      headerClassName: 'min-w-[100px]',
+    },
+  ];
+
+  // Define filters configuration
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'search',
+      name: 'role-search',
+      placeholder: t('rolesManagement.searchRole'),
+      value: searchTerm,
+      onChange: (value) => setSearchTerm(value as string),
+      width: '40%',
+    },
+  ];
+
   return (
     <Card>
       <div>
-        {/* Filters */}
-        <div className="flex justify-between">
-          <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
-            <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[60%]">
-              <div className="relative">
-                <SearchInput
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder={t('rolesManagement.searchRole')}
-                  name="role-search"
-                />
-              </div>
-            </div>
-
-            <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3"></div>
-          </div>
-          {/* Reset Button */}
-          <button
-            onClick={() => {
-              setSearchTerm('');
-            }}
-            className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-            title={t('actions.clearFilter')}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                d="M21 12a9 9 0 1 0-3.46 6.54"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M21 3v6h-6"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Table and Pagination */}
-        <RolesPermissionsTable
-          filters={filters}
-          isDeleting={isDeleting}
-          onDeleteClick={handleDeleteClick}
+        <DataTable
+          data={roles}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          filters={filterConfigs}
+          showFilters={true}
+          onResetFilters={handleResetFilters}
+          isLoading={isLoading}
+          emptyMessage={t('rolesManagement.noRolesFound')}
+          t={t}
         />
 
         {/* Delete Popup */}
