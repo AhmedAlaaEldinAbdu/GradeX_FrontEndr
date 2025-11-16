@@ -184,7 +184,7 @@ export default function RolesPermissions() {
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
-            deleteDisabled={isDeleting}
+            isDeleting={isDeleting}
           />
         )}
       </div>
