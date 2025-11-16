@@ -181,7 +181,7 @@ export default function EditAcademicSystem() {
                 <div className="flex-grow">
                   <FormField
                     label={t('academicSystem.systemType')}
-                    optional
+                    required
                     error={errors.subSystemIds?.message && t(errors.subSystemIds.message)}
                   >
                     <Controller

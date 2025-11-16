@@ -90,6 +90,7 @@ export default function AddAcademicSystem() {
     setNumOfAcademic((prev) => prev.filter((_, i) => i !== selectedIdx));
   };
 
+  console.log("errors.academicSystems", errors.academicSystems)
   return (
     <Card>
       <div className="rounded-md border p-4">
@@ -173,7 +174,7 @@ export default function AddAcademicSystem() {
                 <div className="flex-grow">
                   <FormField
                     label={t('academicSystem.systemType')}
-                    optional
+                    required
                     error={
                       errors.academicSystems?.[index]?.subSystemIds?.message &&
                       t(errors.academicSystems[index]?.subSystemIds.message)
