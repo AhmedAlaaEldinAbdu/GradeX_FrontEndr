@@ -20,6 +20,7 @@ import {
   selectRoles,
   selectIsLoading,
   selectPagination,
+  selectIsDeleting,
 } from '@gradex/redux/features/roles';
 
 export default function RolesPermissions() {
@@ -34,7 +35,7 @@ export default function RolesPermissions() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const isDeleting = useSelector(selectIsDeleting);
 
   // Fetch roles with debounce when search changes
   useEffect(() => {
@@ -55,7 +56,6 @@ export default function RolesPermissions() {
     if (!selectedRoleId) return;
 
     try {
-      setIsDeleting(true);
       await dispatch(deleteRole(selectedRoleId)).unwrap();
       setShowDeletePopup(false);
       setSelectedRoleId(null);
@@ -81,8 +81,6 @@ export default function RolesPermissions() {
         type: 'error',
         duration: 3000,
       });
-    } finally {
-      setIsDeleting(false);
     }
   };
 

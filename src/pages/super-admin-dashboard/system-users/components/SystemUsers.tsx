@@ -20,6 +20,7 @@ import {
   selectUsers,
   selectIsLoading,
   selectPagination,
+  selectIsDeleting,
 } from '@gradex/redux/features/user-management';
 import {
   fetchRoles,
@@ -38,12 +39,12 @@ export default function SystemUsers() {
   const pagination = useSelector(selectPagination);
   const roles = useSelector(selectRoles) || [];
   const isLoadingRoles = useSelector(selectIsLoadingRoles);
+  const isDeleting = useSelector(selectIsDeleting);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch roles and countries on mount
   useEffect(() => {
@@ -79,7 +80,6 @@ export default function SystemUsers() {
     if (!selectedUserId) return;
 
     try {
-      setIsDeleting(true);
       await dispatch(deleteUser(selectedUserId)).unwrap();
       setShowDeletePopup(false);
       setSelectedUserId(null);
@@ -109,8 +109,6 @@ export default function SystemUsers() {
         type: 'error',
         duration: 3000,
       });
-    } finally {
-      setIsDeleting(false);
     }
   };
 
