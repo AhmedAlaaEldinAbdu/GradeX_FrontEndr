@@ -176,6 +176,7 @@ export default function DropdownMenuSchoolsAction({
         <RejectSchoolPopup
           onCancel={() => setShowRejectPopup(false)}
           onConfirm={handleRejectSchool}
+          isRejecting={isProcessing}
         />
       )}
     </div>
