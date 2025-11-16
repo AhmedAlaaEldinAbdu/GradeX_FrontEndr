@@ -6,7 +6,7 @@ interface DeletePopupProps {
   onConfirm: () => void;
   onCancel: () => void;
   iconSrc: string;
-  deleteDisabled?: boolean;
+  isDeleting?: boolean;
 }
 
 export default function DeletePopup({
@@ -14,7 +14,7 @@ export default function DeletePopup({
   onConfirm,
   onCancel,
   iconSrc,
-  deleteDisabled,
+  isDeleting,
 }: DeletePopupProps) {
   const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
@@ -75,10 +75,10 @@ export default function DeletePopup({
           </button>
           <button
             onClick={onConfirm}
-            disabled={deleteDisabled}
+            disabled={isDeleting}
             className="flex-grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {t('common.delete')}
+            {isDeleting ? t('common.deleting') : t('common.delete')}
           </button>
         </div>
       </div>
