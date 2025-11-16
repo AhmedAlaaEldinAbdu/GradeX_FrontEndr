@@ -140,7 +140,7 @@ export default function EducationalStagesTab() {
     {
       header: 'academicSystem.addedDate',
       accessor: (row: EducationalStageResponse) => (
-        <div>{row.created ? new Date(row.created).toLocaleDateString() : '-'}</div>
+        <div>{row.createdDate ? new Date(row.createdDate).toLocaleDateString() : '-'}</div>
       ),
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
@@ -345,7 +345,6 @@ export default function EducationalStagesTab() {
               message="academicSystem.systemDeletedSuccessfully"
               iconSrc={BigSuccessIcon}
               autoClose={true}
-              duration={2000}
               onClose={() => setShowPopupMessage(false)}
             />
           )}
