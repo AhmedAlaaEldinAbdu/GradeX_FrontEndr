@@ -6,9 +6,16 @@ interface DeletePopupProps {
   onConfirm: () => void;
   onCancel: () => void;
   iconSrc: string;
+  deleteDisabled?: boolean;
 }
 
-export default function DeletePopup({ message, onConfirm, onCancel, iconSrc }: DeletePopupProps) {
+export default function DeletePopup({
+  message,
+  onConfirm,
+  onCancel,
+  iconSrc,
+  deleteDisabled,
+}: DeletePopupProps) {
   const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -68,7 +75,8 @@ export default function DeletePopup({ message, onConfirm, onCancel, iconSrc }: D
           </button>
           <button
             onClick={onConfirm}
-            className="flex-grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700"
+            disabled={deleteDisabled}
+            className="flex-grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('common.delete')}
           </button>
