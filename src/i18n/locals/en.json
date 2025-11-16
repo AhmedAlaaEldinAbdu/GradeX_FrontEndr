@@ -224,6 +224,7 @@
       "countryRequired": "Country is required",
       "educationalStagesNameRequired": "Educational stage name is required",
       "academicSystemRequired": "Educational system is required",
+      "systemTypeRequired": "System type is required",
       "atLeastOne": "You must select at least one item",
       "requiredList": "This list is required"
     }
