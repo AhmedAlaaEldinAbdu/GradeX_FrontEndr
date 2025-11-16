@@ -72,6 +72,7 @@
     "rejected": "Rejected",
     "approved": "Approved",
     "errorOccurred": "An error occurred",
+    "error": "Error",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
