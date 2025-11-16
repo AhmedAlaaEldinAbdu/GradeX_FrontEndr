@@ -30,7 +30,11 @@ export default function AddAcademicSystem() {
   const currentLang = i18n.language as 'ar' | 'en';
   const [numOfAcademic, setNumOfAcademic] = useState<number[]>([1]);
   const [showAddSystemTypePopup, setShowAddSystemTypePopup] = useState(false);
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
   const countries = useAppSelector((state) => {
     return state.lookups.countries;
@@ -46,9 +50,13 @@ export default function AddAcademicSystem() {
     return state.academicSubSystems.isLoading;
   });
 
+  const academicErrors = useAppSelector((state) => {
+    return state.academicSystems.validationErrors;
+  });
+
   useEffect(() => {
     dispatch(fetchCountries());
-    dispatch(getAcademicSubSystems({pageIndex: 1, pageSize: 1000}));
+    dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
   }, [dispatch]);
 
   const {
@@ -74,11 +82,21 @@ export default function AddAcademicSystem() {
       .unwrap()
       .then((res) => {
         if (res.isSuccess) {
-          setShowPopupMessage(true);
+          setShowPopupMessage({
+            show: true,
+            type: 'success',
+            message: t('academicSystem.academicSystemAddedSuccessfully'),
+          });
+        } else {
+          const firstError = academicErrors?.[0];
+          const errorMessage =
+            typeof firstError === 'string' ? firstError : (firstError?.errorMessage ?? '');
+          setShowPopupMessage({
+            show: true,
+            type: 'error',
+            message: errorMessage || t('common.errorOccurred'),
+          });
         }
-      })
-      .catch((err) => {
-        console.error('Error creating academic system:', err);
       });
   };
 
@@ -90,7 +108,7 @@ export default function AddAcademicSystem() {
     setNumOfAcademic((prev) => prev.filter((_, i) => i !== selectedIdx));
   };
 
-  console.log("errors.academicSystems", errors.academicSystems)
+  console.log('errors.academicSystems', errors.academicSystems);
   return (
     <Card>
       <div className="rounded-md border p-4">
@@ -164,7 +182,7 @@ export default function AddAcademicSystem() {
                     </>
                   ) : (
                     <>
-                      <div className="h-8 w-8"></div>
+                      <div aria-hidden="true" className="h-8 w-8"></div>
                     </>
                   )}
                 </div>
@@ -259,7 +277,7 @@ export default function AddAcademicSystem() {
                     />
                   </FormField>
                 </div>
-                <div>
+                <div aria-hidden="true">
                   <div className="h-8 w-8"></div>
                 </div>
               </div>
@@ -287,28 +305,16 @@ export default function AddAcademicSystem() {
         {showAddSystemTypePopup && (
           <AddSystemTypePopup onCancel={() => setShowAddSystemTypePopup(false)} />
         )}
-        {showPopupMessage && (
+        {showPopupMessage.show && (
           <PopupMessage
-            type="success"
-            message="academicSystem.systemAddedSuccessfully"
+            type={showPopupMessage.type}
+            message={showPopupMessage.message}
             iconSrc={BigSuccessIcon}
             autoClose={true}
-            duration={2000}
-            onClose={() => setShowPopupMessage(false)}
+            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
             navigateAfterClose={-1}
           />
         )}
-
-        {/* {showPopupMessage && (
-          <PopupMessage
-            type="success"
-            message="academicSystem.systemTypeAddedSuccessfully"
-            iconSrc={BigSuccessIcon}
-            autoClose={true}
-            duration={2000}
-            onClose={() => setShowPopupMessage(false)}
-          />
-        )} */}
       </div>
     </Card>
   );

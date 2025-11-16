@@ -31,11 +31,18 @@ export default function EditAcademicSystem() {
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
   const [showAddSystemTypePopup, setShowAddSystemTypePopup] = useState(false);
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   const academicSystem = useAppSelector((state) => {
     return state.academicSystems.academicSystemDetails;
+  });
+  const academicErrors = useAppSelector((state) => {
+    return state.academicSystems.validationErrors;
   });
   const countries = useAppSelector((state) => {
     return state.lookups.countries;
@@ -109,11 +116,21 @@ export default function EditAcademicSystem() {
       .unwrap()
       .then((res) => {
         if (res.isSuccess) {
-          setShowPopupMessage(true);
+          setShowPopupMessage({
+            show: true,
+            type: 'success',
+            message: t('academicSystem.systemEditedSuccessfully'),
+          });
+        } else {
+          const firstError = academicErrors?.[0];
+          const errorMessage =
+            typeof firstError === 'string' ? firstError : (firstError?.errorMessage ?? '');
+          setShowPopupMessage({
+            show: true,
+            type: 'error',
+            message: errorMessage || t('common.errorOccurred'),
+          });
         }
-      })
-      .catch((err) => {
-        console.error('Error updating academic system:', err);
       });
   };
 
@@ -258,7 +275,7 @@ export default function EditAcademicSystem() {
                     />
                   </FormField>
                 </div>
-                <div>
+                <div aria-hidden="true">
                   <div className="h-8 w-8"></div>
                 </div>
               </div>
@@ -287,14 +304,13 @@ export default function EditAcademicSystem() {
         {showAddSystemTypePopup && (
           <AddSystemTypePopup onCancel={() => setShowAddSystemTypePopup(false)} />
         )}
-        {showPopupMessage && (
+        {showPopupMessage.show && (
           <PopupMessage
-            type="success"
-            message="academicSystem.systemEditedSuccessfully"
+            type={showPopupMessage.type}
+            message={showPopupMessage.message}
             iconSrc={BigSuccessIcon}
             autoClose={true}
-            duration={2000}
-            onClose={() => setShowPopupMessage(false)}
+            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
             navigateAfterClose={-1}
           />
         )}
