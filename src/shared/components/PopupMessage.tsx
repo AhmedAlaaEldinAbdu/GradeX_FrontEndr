@@ -17,7 +17,7 @@ export default function PopupMessage({
   message,
   iconSrc,
   autoClose = false,
-  duration = 1000,
+  duration = 1500,
   onClose,
   navigateAfterClose,
 }: PopupMessageProps) {
