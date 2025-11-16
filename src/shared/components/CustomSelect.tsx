@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import FormErrorMessage from './FormErrorMessage';
 
 export interface CustomSelectOption {
   value: string;
@@ -15,6 +16,7 @@ interface CustomSelectProps {
   className?: string;
   maxHeight?: string;
   isMulti?: boolean;
+  error?: boolean;
   showSearch?: boolean;
 }
 
@@ -27,6 +29,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   className = '',
   maxHeight = '250px',
   isMulti = false,
+  error = false,
   showSearch = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -110,8 +113,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={`min-h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50 ${
-          isOpen ? 'ring-2 ring-green-500' : ''
-        } ${isRTL ? 'text-right' : 'text-left'}`}
+          error
+            ? 'border-red-500 focus-within:ring-2 focus-within:ring-red-500'
+            : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-500'
+        } ${isOpen ? 'ring-2 ring-green-500' : ''} ${isRTL ? 'text-right' : 'text-left'} ${disabled ? 'cursor-not-allowed bg-gray-50 opacity-60' : 'bg-white hover:border-gray-400'}`}
       >
         <div className="flex flex-row-reverse items-center justify-between gap-2">
           {/* Display selected items */}
@@ -152,7 +157,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 <span className="text-gray-800">{placeholder}</span>
               )
             ) : (
-              <span className={selectedOption ? 'text-gray-900' : 'text-gray-800'}>
+              <span className={selectedOption ? 'text-gray-900' : 'text-gray-400'}>
                 {selectedOption ? selectedOption.label : placeholder}
               </span>
             )}
