@@ -170,13 +170,14 @@ export default function DropdownMenuSchoolsAction({
         <EditRequestPopup
           onCancel={() => setShowEditRequestPopup(false)}
           onConfirm={handleConfirmEditRequest}
+          isProcessing={isProcessing}
         />
       )}
       {showRejectPopup && (
         <RejectSchoolPopup
           onCancel={() => setShowRejectPopup(false)}
           onConfirm={handleRejectSchool}
-          isRejecting={isProcessing}
+          isProcessing={isProcessing}
         />
       )}
     </div>

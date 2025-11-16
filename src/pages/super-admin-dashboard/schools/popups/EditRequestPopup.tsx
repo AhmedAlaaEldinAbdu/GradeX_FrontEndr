@@ -5,9 +5,14 @@ import { useTranslation } from 'react-i18next';
 interface EditRequestPopupProps {
   onConfirm: (message: string) => void;
   onCancel: () => void;
+  isProcessing?: boolean;
 }
 
-export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPopupProps) {
+export default function EditRequestPopup({
+  onConfirm,
+  onCancel,
+  isProcessing,
+}: EditRequestPopupProps) {
   const { t } = useTranslation();
   const { showToast } = useToast();
 
@@ -83,9 +88,10 @@ export default function EditRequestPopup({ onConfirm, onCancel }: EditRequestPop
             </button>
             <button
               onClick={handleSubmit}
-              className="flex-grow rounded-xl bg-green-700 px-5 py-2 text-white transition-colors duration-200 hover:bg-green-800"
+              disabled={isProcessing}
+              className="flex-grow rounded-xl bg-green-700 px-5 py-2 text-white transition-colors duration-200 hover:bg-green-800 disabled:opacity-50"
             >
-              {t('common.send')}
+              {isProcessing ? t('common.sending') : t('common.send')}
             </button>
           </div>
         </div>

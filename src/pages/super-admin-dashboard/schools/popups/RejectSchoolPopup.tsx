@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 interface RejectSchoolPopupProps {
   onConfirm: (reason: string) => void;
   onCancel: () => void;
-  isRejecting?: boolean;
+  isProcessing?: boolean;
 }
 
 export default function RejectSchoolPopup({
   onConfirm,
   onCancel,
-  isRejecting,
+  isProcessing,
 }: RejectSchoolPopupProps) {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
@@ -79,10 +79,10 @@ export default function RejectSchoolPopup({
             </button>
             <button
               onClick={handleConfirm}
-              disabled={isRejecting}
+              disabled={isProcessing}
               className="flex-grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:opacity-50"
             >
-              {isRejecting ? t('common.rejecting') : t('actions.reject')}
+              {isProcessing ? t('common.rejecting') : t('actions.reject')}
             </button>
           </div>
         </div>
