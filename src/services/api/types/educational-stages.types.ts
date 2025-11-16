@@ -23,7 +23,7 @@ export interface EducationalStageResponse {
   academicSubSystemGradeDto?: AcademicSubSystemGradeDto;
   academicSystemsDto?: AcademicSystemRefDto[];
   academicSubSystemId?: string;
-  created?: string;
+  createdDate?: string;
 }
 
 export interface EducationalStagesListValue extends Pagination {
@@ -44,7 +44,7 @@ export interface CreateEducationalStageRequest {
   nameAr: string;
   nameEn: string;
   age?: number;
-  academicSubSystemId: string[];
+  academicSubSystemId: string;
 }
 
 export interface UpdateEducationalStageRequest extends CreateEducationalStageRequest {

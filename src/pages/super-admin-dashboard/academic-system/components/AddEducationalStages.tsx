@@ -4,8 +4,8 @@ import Card from '@/shared/components/Card';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
-import MultiSelectTagInput from '@/shared/components/MultiSelectTagInput';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';
 import Input from '@/shared/components/Input';
@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import { addEducationalStage } from '@/redux/features/educational-stages/educationalStagesSlice';
 import type { CreateEducationalStageRequest } from '@/services/api/types/educational-stages.types';
+import CustomSelect from '@/shared/components/CustomSelect';
 
 export default function AddEducationalStages() {
   const { t, i18n } = useTranslation();
@@ -26,10 +27,14 @@ export default function AddEducationalStages() {
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
   const [numOfStages, setNumOfStages] = useState<number[]>([1]);
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
-
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
   const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
+  const stagesErrors = useAppSelector((state) => state.educationalStages.validationErrors);
 
   useEffect(() => {
     dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
@@ -42,7 +47,7 @@ export default function AddEducationalStages() {
   } = useForm<EducationalStagesProps>({
     resolver: yupResolver(EducationalStagesSchema),
     defaultValues: {
-      educationalStages: [{ nameAr: '', nameEn: '', academicSystem: [] }],
+      educationalStages: [{ nameAr: '', nameEn: '', academicSystem: '' }],
     },
   });
 
@@ -52,7 +57,7 @@ export default function AddEducationalStages() {
         nameAr: educational.nameAr,
         nameEn: educational.nameEn,
         age: 0,
-        academicSubSystemId: (educational.academicSystem || []).filter(Boolean) as string[],
+        academicSubSystemId: educational.academicSystem,
       } as CreateEducationalStageRequest;
     });
 
@@ -60,12 +65,21 @@ export default function AddEducationalStages() {
       .unwrap()
       .then((res) => {
         if (res.isSuccess) {
-          setShowPopupMessage(true);
-          navigate(-1);
+          setShowPopupMessage({
+            show: true,
+            type: 'success',
+            message: t('academicSystem.educationalStageAddedSuccessfully'),
+          });
+        } else {
+          const firstError = stagesErrors?.[0];
+          const errorMessage =
+            typeof firstError === 'string' ? firstError : (firstError?.errorMessage ?? '');
+          setShowPopupMessage({
+            show: true,
+            type: 'error',
+            message: errorMessage || t('common.errorOccurred'),
+          });
         }
-      })
-      .catch((err) => {
-        console.error('Error creating Educational stage:', err);
       });
   };
 
@@ -173,13 +187,10 @@ export default function AddEducationalStages() {
                       control={control}
                       render={({ field }) => {
                         return (
-                          <MultiSelectTagInput
-                            value={
-                              Array.isArray(field.value) ? field.value.join(',') : field.value || ''
-                            }
+                          <CustomSelect
+                            value={field.value}
                             onChange={(value) => {
-                              const parsedValue = value.split(',').filter((v) => v.trim());
-                              field.onChange(parsedValue);
+                              field.onChange(value);
                             }}
                             options={
                               Array.isArray(academicSubSystems)
@@ -202,7 +213,7 @@ export default function AddEducationalStages() {
                     />
                   </FormField>
                 </div>
-                <div>
+                <div aria-hidden="true">
                   <div className="h-8 w-8"></div>
                 </div>
               </div>
@@ -227,15 +238,14 @@ export default function AddEducationalStages() {
         </form>
 
         {/* Popups */}
-        {showPopupMessage && (
+        {showPopupMessage.show && (
           <PopupMessage
-            type="success"
-            message="academicSystem.educationalStagesAddedSuccessfully"
-            iconSrc={BigSuccessIcon}
+            type={showPopupMessage.type}
+            message={showPopupMessage.message}
+            iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
             autoClose={true}
-            duration={2000}
-            onClose={() => setShowPopupMessage(false)}
-            navigateAfterClose={-1}
+            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+            navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
           />
         )}
       </div>

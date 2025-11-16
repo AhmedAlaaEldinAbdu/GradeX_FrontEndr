@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
-import MultiSelectTagInput from '@/shared/components/MultiSelectTagInput';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';
 import Input from '@/shared/components/Input';
@@ -20,6 +20,7 @@ import {
 } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import type { UpdateEducationalStageRequest } from '@/services/api/types/educational-stages.types';
+import CustomSelect from '@/shared/components/CustomSelect';
 
 export default function EditEducationalStages() {
   const { t, i18n } = useTranslation();
@@ -27,13 +28,18 @@ export default function EditEducationalStages() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
   const [isLoadingData, setIsLoadingData] = useState(true);
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
   const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
   const educationalStageDetails = useAppSelector(
     (state) => state.educationalStages.educationalStageDetails
   );
+  const stagesErrors = useAppSelector((state) => state.educationalStages.validationErrors);
 
   const {
     control,
@@ -45,7 +51,7 @@ export default function EditEducationalStages() {
     defaultValues: {
       nameAr: '',
       nameEn: '',
-      academicSystem: [],
+      academicSystem: '',
     },
   });
 
@@ -68,28 +74,44 @@ export default function EditEducationalStages() {
       reset({
         nameAr: educationalStageDetails.nameAr,
         nameEn: educationalStageDetails.nameEn,
-        academicSystem: [
+        academicSystem:
           educationalStageDetails.academicSubSystemId ||
-            (educationalStageDetails as any).academicSubSystemGradeId ||
-            '',
-        ],
+          (educationalStageDetails as any).academicSubSystemGradeId ||
+          '',
       });
     }
   }, [educationalStageDetails, isLoadingData, reset]);
 
-  const onSubmit = async (data: EditEducationalStagesProps) => {
+  const onSubmit = (data: EditEducationalStagesProps) => {
     if (!id) return;
-    try {
-      const payload: UpdateEducationalStageRequest = {
-        id,
-        nameAr: data.nameAr,
-        nameEn: data.nameEn,
-        age: 0,
-        academicSubSystemId: (data.academicSystem || []).filter(Boolean) as string[],
-      };
-      const res = await dispatch(editEducationalStage(payload)).unwrap();
-      if (res.isSuccess) setShowPopupMessage(true);
-    } catch (e) {}
+
+    const payload: UpdateEducationalStageRequest = {
+      id,
+      nameAr: data.nameAr,
+      nameEn: data.nameEn,
+      age: educationalStageDetails?.age,
+      academicSubSystemId: data.academicSystem,
+    };
+    dispatch(editEducationalStage(payload))
+      .unwrap()
+      .then((res) => {
+        if (res.isSuccess) {
+          setShowPopupMessage({
+            show: true,
+            type: 'success',
+            message: t('academicSystem.educationalStageEditedSuccessfully'),
+          });
+        } else {
+          const firstError = stagesErrors?.[0];
+          const errorMessage =
+            typeof firstError === 'string' ? firstError : (firstError?.errorMessage ?? '');
+          setShowPopupMessage({
+            show: true,
+            type: 'error',
+            message: errorMessage || t('common.errorOccurred'),
+          });
+        }
+      });
   };
 
   return (
@@ -160,13 +182,10 @@ export default function EditEducationalStages() {
                     control={control}
                     render={({ field }) => {
                       return (
-                        <MultiSelectTagInput
-                          value={
-                            Array.isArray(field.value) ? field.value.join(',') : field.value || ''
-                          }
+                        <CustomSelect
+                          value={field.value}
                           onChange={(value) => {
-                            const parsedValue = value.split(',').filter((v) => v.trim());
-                            field.onChange(parsedValue);
+                            field.onChange(value);
                           }}
                           options={
                             Array.isArray(academicSubSystems)
@@ -189,7 +208,7 @@ export default function EditEducationalStages() {
                   />
                 </FormField>
               </div>
-              <div>
+              <div aria-hidden="true">
                 <div className="h-8 w-8"></div>
               </div>
             </div>
@@ -213,15 +232,15 @@ export default function EditEducationalStages() {
         </form>
 
         {/* Popups */}
-        {showPopupMessage && (
+
+        {showPopupMessage.show && (
           <PopupMessage
-            type="success"
-            message="academicSystem.educationalStageEditedSuccessfully"
-            iconSrc={BigSuccessIcon}
+            type={showPopupMessage.type}
+            message={showPopupMessage.message}
+            iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
             autoClose={true}
-            duration={2000}
-            onClose={() => setShowPopupMessage(false)}
-            navigateAfterClose={-1}
+            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+            navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
           />
         )}
       </div>
