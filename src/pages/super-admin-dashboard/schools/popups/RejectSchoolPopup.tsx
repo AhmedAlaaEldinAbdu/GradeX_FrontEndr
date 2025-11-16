@@ -4,9 +4,14 @@ import { useTranslation } from 'react-i18next';
 interface RejectSchoolPopupProps {
   onConfirm: (reason: string) => void;
   onCancel: () => void;
+  isRejecting?: boolean;
 }
 
-export default function RejectSchoolPopup({ onConfirm, onCancel }: RejectSchoolPopupProps) {
+export default function RejectSchoolPopup({
+  onConfirm,
+  onCancel,
+  isRejecting,
+}: RejectSchoolPopupProps) {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [reason, setReason] = useState('');
@@ -52,7 +57,7 @@ export default function RejectSchoolPopup({ onConfirm, onCancel }: RejectSchoolP
             </p>
           </div>
 
-          <div className="w-full text-right mb-4">
+          <div className="mb-4 w-full text-right">
             <label className="required mb-2 block font-medium text-gray-700">
               {t('schools.rejectionReason')}
             </label>
@@ -61,7 +66,7 @@ export default function RejectSchoolPopup({ onConfirm, onCancel }: RejectSchoolP
               onChange={(e) => setReason(e.target.value)}
               placeholder={t('schools.enterRejectionReason')}
               rows={3}
-              className="w-full rounded-lg border px-4 py-2 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 resize-none text-gray-700 focus:border-green-500"
+              className="w-full resize-none rounded-lg border px-4 py-2 text-gray-700 transition-all focus:border-green-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
@@ -74,9 +79,10 @@ export default function RejectSchoolPopup({ onConfirm, onCancel }: RejectSchoolP
             </button>
             <button
               onClick={handleConfirm}
-              className="flex-grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700"
+              disabled={isRejecting}
+              className="flex-grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:opacity-50"
             >
-              {t('actions.reject')}
+              {isRejecting ? t('common.rejecting') : t('actions.reject')}
             </button>
           </div>
         </div>
