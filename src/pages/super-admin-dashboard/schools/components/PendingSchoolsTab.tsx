@@ -18,6 +18,7 @@ import { selectCountries } from '@gradex/redux/features/lookups';
 import { selectAcademicSystems } from '@gradex/redux/features/academic-system';
 import type { School } from '@gradex/services/api/types/school.types';
 import { Link } from 'react-router-dom';
+import Card from '@/shared/components/Card';
 
 interface PendingSchoolsTabProps {
   filters?: {
@@ -26,9 +27,14 @@ interface PendingSchoolsTabProps {
     lKCountryId?: string;
   };
   filterComponent?: ReactNode;
+  isActive?: boolean;
 }
 
-export default function PendingSchoolsTab({ filters, filterComponent }: PendingSchoolsTabProps) {
+export default function PendingSchoolsTab({
+  filters,
+  filterComponent,
+  isActive = true,
+}: PendingSchoolsTabProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -56,6 +62,8 @@ export default function PendingSchoolsTab({ filters, filterComponent }: PendingS
   };
 
   useEffect(() => {
+    if (!isActive) return;
+
     dispatch(
       fetchPendingSchools({
         page: pagination.page,
@@ -63,7 +71,7 @@ export default function PendingSchoolsTab({ filters, filterComponent }: PendingS
         filters,
       })
     );
-  }, [dispatch, filters, pagination.page, pagination.limit]);
+  }, [dispatch, filters, pagination.page, pagination.limit, isActive]);
 
   const handlePageChange = (page: number) => {
     dispatch(
@@ -222,17 +230,19 @@ export default function PendingSchoolsTab({ filters, filterComponent }: PendingS
   ];
 
   return (
-    <DataTable
-      data={schools}
-      columns={columns}
-      keyExtractor={(row) => row?.id || ''}
-      pagination={pagination}
-      onPageChange={handlePageChange}
-      showFilters={true}
-      filterComponent={filterComponent}
-      isLoading={isLoading}
-      emptyMessage={t('schools.noSchoolsFound')}
-      t={t}
-    />
+    <Card>
+      <DataTable
+        data={schools}
+        columns={columns}
+        keyExtractor={(row) => row?.id || ''}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        showFilters={true}
+        filterComponent={filterComponent}
+        isLoading={isLoading}
+        emptyMessage={t('schools.noSchoolsFound')}
+        t={t}
+      />
+    </Card>
   );
 }

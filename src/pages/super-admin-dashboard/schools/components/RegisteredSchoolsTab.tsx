@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import DataTable, { type DataTableColumn } from '@gradex/shared/components/DataTable';
@@ -18,6 +18,9 @@ import { selectCountries } from '@gradex/redux/features/lookups';
 import { selectAcademicSystems } from '@gradex/redux/features/academic-system';
 import type { School } from '@gradex/services/api/types/school.types';
 import { Link } from 'react-router-dom';
+import Card from '@/shared/components/Card';
+import EmptyState from '@gradex/shared/components/EmptyState';
+import schoolIcon from '@gradex/assets/icons/School.svg';
 
 interface RegisteredSchoolsTabProps {
   filters?: {
@@ -26,16 +29,19 @@ interface RegisteredSchoolsTabProps {
     lKCountryId?: string;
   };
   filterComponent?: ReactNode;
+  isActive?: boolean;
 }
 
 export default function RegisteredSchoolsTab({
   filters,
   filterComponent,
+  isActive = true,
 }: RegisteredSchoolsTabProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
   const schools = useSelector(selectSchools) || [];
+  const [hasSchools] = useState(true); // TODO Need to implement actual check
   const isLoading = useSelector(selectIsLoading);
   const pagination = useSelector(selectPagination);
   const error = useSelector(selectError);
@@ -62,6 +68,8 @@ export default function RegisteredSchoolsTab({
 
   // Fetch schools on mount and when filters change
   useEffect(() => {
+    if (!isActive) return;
+
     dispatch(
       fetchRegisteredSchools({
         page: pagination.page,
@@ -69,7 +77,7 @@ export default function RegisteredSchoolsTab({
         filters,
       })
     );
-  }, [dispatch, filters, pagination.page, pagination.limit]);
+  }, [dispatch, filters, pagination.page, pagination.limit, isActive]);
 
   const handlePageChange = (page: number) => {
     dispatch(
@@ -239,18 +247,28 @@ export default function RegisteredSchoolsTab({
     },
   ];
 
+  if (!hasSchools) {
+    return (
+      <Card>
+        <EmptyState imgSrc={schoolIcon} description={t('schools.noSchoolsMessage')} blend={true} />
+      </Card>
+    );
+  }
+
   return (
-    <DataTable
-      data={schools}
-      columns={columns}
-      keyExtractor={(row) => row?.id || ''}
-      pagination={pagination}
-      onPageChange={handlePageChange}
-      showFilters={true}
-      isLoading={isLoading}
-      emptyMessage={t('schools.noSchoolsFound')}
-      filterComponent={filterComponent}
-      t={t}
-    />
+    <Card>
+      <DataTable
+        data={schools}
+        columns={columns}
+        keyExtractor={(row) => row?.id || ''}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        showFilters={true}
+        isLoading={isLoading}
+        emptyMessage={t('schools.noSchoolsFound')}
+        filterComponent={filterComponent}
+        t={t}
+      />
+    </Card>
   );
 }
