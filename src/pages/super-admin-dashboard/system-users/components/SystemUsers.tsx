@@ -238,7 +238,7 @@ export default function SystemUsers() {
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
-            isDeleting={isDeleting}
+            isProcessing={isDeleting}
           />
         )}
       </div>
