@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
-import Card from '@gradex/shared/components/Card';
-import EmptyState from '@gradex/shared/components/EmptyState';
 import CustomSelect from '@gradex/shared/components/CustomSelect';
 import { useTranslation } from 'react-i18next';
 import { logger } from '@/lib/utils/logger';
-import schoolIcon from '@gradex/assets/icons/School.svg';
 import RegisteredSchoolsTab from './RegisteredSchoolsTab';
 import PendingSchoolsTab from './PendingSchoolsTab';
 import DeletedSchoolsTab from './DeletedSchoolsTab';
@@ -22,13 +19,13 @@ import {
 } from '@gradex/redux/features/academic-system';
 import { resetPagination } from '@gradex/redux/features/schools';
 import SearchInput from '@/shared/components/SearchInput';
+import Tabs from '@/shared/components/Tabs';
 
 export default function Schools() {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
   const [activeTab, setActiveTab] = useState('RegisteredSchools');
-  const [hasSchools] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [academicSystem, setAcademicSystem] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
@@ -175,76 +172,67 @@ export default function Schools() {
   );
 
   const tabs = [
-    { id: 'RegisteredSchools', label: 'schools.registeredSchools' },
-    { id: 'PendingSchools', label: 'schools.pendingSchools' },
-    { id: 'DeletedSchools', label: 'schools.deletedSchools' },
+    {
+      id: 'RegisteredSchools',
+      label: t('schools.registeredSchools'),
+      content: (
+        <RegisteredSchoolsTab
+          filters={{
+            searchTerm: searchTerm || undefined,
+            academicSystemId: academicSystem || undefined,
+            lKCountryId: selectedCountry || undefined,
+          }}
+          filterComponent={filterComponent}
+          isActive={activeTab === 'RegisteredSchools'}
+        />
+      ),
+    },
+    {
+      id: 'PendingSchools',
+      label: t('schools.pendingSchools'),
+      content: (
+        <PendingSchoolsTab
+          filters={{
+            searchTerm: searchTerm || undefined,
+            academicSystemId: academicSystem || undefined,
+            lKCountryId: selectedCountry || undefined,
+          }}
+          filterComponent={filterComponent}
+          isActive={activeTab === 'PendingSchools'}
+        />
+      ),
+    },
+    {
+      id: 'DeletedSchools',
+      label: t('schools.deletedSchools'),
+      content: (
+        <DeletedSchoolsTab
+          filters={{
+            searchTerm: searchTerm || undefined,
+            academicSystemId: academicSystem || undefined,
+            lKCountryId: selectedCountry || undefined,
+          }}
+          filterComponent={filterComponent}
+          isActive={activeTab === 'DeletedSchools'}
+        />
+      ),
+    },
   ];
 
   return (
-    <>
-      {hasSchools && (
-        <div className="mb-5 w-full max-w-lg px-1">
-          <div className="flex">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`flex-1 py-2 text-center font-medium transition-colors duration-200 ${
-                  activeTab === tab.id
-                    ? 'border-b-2 border-green-500 text-green-600'
-                    : 'text-gray-500 hover:text-green-500'
-                }`}
-              >
-                {t(tab.label)}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      <Card>
-        {!hasSchools ? (
-          <EmptyState
-            imgSrc={schoolIcon}
-            description={t('schools.noSchoolsMessage')}
-            blend={true}
+    <div>
+      <div className="mb-5 w-full px-1">
+        <div>
+          <Tabs
+            items={tabs}
+            value={activeTab}
+            onChange={handleTabChange}
+            variant="underline"
+            listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+            lazy={true}
           />
-        ) : (
-          <div>
-            <div className="">
-              {activeTab === 'RegisteredSchools' && (
-                <RegisteredSchoolsTab
-                  filters={{
-                    searchTerm: searchTerm || undefined,
-                    academicSystemId: academicSystem || undefined,
-                    lKCountryId: selectedCountry || undefined,
-                  }}
-                  filterComponent={filterComponent}
-                />
-              )}
-              {activeTab === 'PendingSchools' && (
-                <PendingSchoolsTab
-                  filters={{
-                    searchTerm: searchTerm || undefined,
-                    academicSystemId: academicSystem || undefined,
-                    lKCountryId: selectedCountry || undefined,
-                  }}
-                  filterComponent={filterComponent}
-                />
-              )}
-              {activeTab === 'DeletedSchools' && (
-                <DeletedSchoolsTab
-                  filters={{
-                    searchTerm: searchTerm || undefined,
-                    academicSystemId: academicSystem || undefined,
-                    lKCountryId: selectedCountry || undefined,
-                  }}
-                  filterComponent={filterComponent}
-                />
-              )}
-            </div>
-          </div>
-        )}
-      </Card>
-    </>
+        </div>
+      </div>
+    </div>
   );
 }
