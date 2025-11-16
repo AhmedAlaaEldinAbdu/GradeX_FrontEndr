@@ -18,6 +18,7 @@ import { selectCountries } from '@gradex/redux/features/lookups';
 import { selectAcademicSystems } from '@gradex/redux/features/academic-system';
 import type { School } from '@gradex/services/api/types/school.types';
 import { Link } from 'react-router-dom';
+import Card from '@/shared/components/Card';
 
 interface DeletedSchoolsTabProps {
   filters?: {
@@ -26,9 +27,14 @@ interface DeletedSchoolsTabProps {
     lKCountryId?: string;
   };
   filterComponent?: ReactNode;
+  isActive?: boolean;
 }
 
-export default function DeletedSchoolsTab({ filters, filterComponent }: DeletedSchoolsTabProps) {
+export default function DeletedSchoolsTab({
+  filters,
+  filterComponent,
+  isActive = true,
+}: DeletedSchoolsTabProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -58,6 +64,8 @@ export default function DeletedSchoolsTab({ filters, filterComponent }: DeletedS
 
   // Fetch schools on mount and when filters change
   useEffect(() => {
+    if (!isActive) return;
+
     dispatch(
       fetchDeletedSchools({
         page: pagination.page,
@@ -65,7 +73,7 @@ export default function DeletedSchoolsTab({ filters, filterComponent }: DeletedS
         filters,
       })
     );
-  }, [dispatch, filters, pagination.page, pagination.limit]);
+  }, [dispatch, filters, pagination.page, pagination.limit, isActive]);
 
   const handlePageChange = (page: number) => {
     dispatch(
@@ -220,17 +228,19 @@ export default function DeletedSchoolsTab({ filters, filterComponent }: DeletedS
   ];
 
   return (
-    <DataTable
-      data={schools}
-      columns={columns}
-      keyExtractor={(row) => row?.id || ''}
-      pagination={pagination}
-      onPageChange={handlePageChange}
-      showFilters={true}
-      filterComponent={filterComponent}
-      isLoading={isLoading}
-      emptyMessage={t('schools.noSchoolsFound')}
-      t={t}
-    />
+    <Card>
+      <DataTable
+        data={schools}
+        columns={columns}
+        keyExtractor={(row) => row?.id || ''}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        showFilters={true}
+        filterComponent={filterComponent}
+        isLoading={isLoading}
+        emptyMessage={t('schools.noSchoolsFound')}
+        t={t}
+      />
+    </Card>
   );
 }
