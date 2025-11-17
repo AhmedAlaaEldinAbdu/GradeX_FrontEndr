@@ -118,13 +118,25 @@ const academicSystemsSlice = createSlice({
       })
       .addCase(getAcademicSystems.fulfilled, (state, action: PayloadAction<AcademicSystemListValue>) => {
         state.isLoading = false;
-        state.academicSystems = action.payload.academicSubSystemResponse as AcademicSubSystemResponse[];
-        state.pagination = {
-          pageIndex: action.payload.pageIndex,
-          pageSize: action.payload.pageSize,
-          totalItems: action.payload.totalItems,
-          totalPages: action.payload.totalPages,
-        };
+        if (action.payload && action.payload.academicSubSystemResponse) {
+          state.academicSystems = Array.isArray(action.payload.academicSubSystemResponse) 
+            ? action.payload.academicSubSystemResponse 
+            : [];
+          state.pagination = {
+            pageIndex: action.payload.pageIndex || 1,
+            pageSize: action.payload.pageSize || 10,
+            totalItems: action.payload.totalItems || 0,
+            totalPages: action.payload.totalPages || 0,
+          };
+        } else {
+          state.academicSystems = [];
+          state.pagination = {
+            pageIndex: 1,
+            pageSize: 10,
+            totalItems: 0,
+            totalPages: 0,
+          };
+        }
 
       })
       .addCase(getAcademicSystems.rejected, (state, action) => {

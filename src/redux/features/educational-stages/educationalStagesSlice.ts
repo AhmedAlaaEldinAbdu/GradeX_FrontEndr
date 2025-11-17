@@ -112,13 +112,25 @@ const educationalStagesSlice = createSlice({
       })
       .addCase(getEducationalStages.fulfilled, (state, action: PayloadAction<EducationalStagesListValue>) => {
         state.isLoading = false;
-        state.educationalStages = action.payload.gradeDtos as EducationalStageResponse[];
-        state.pagination = {
-          pageIndex: action.payload.pageIndex,
-          pageSize: action.payload.pageSize,
-          totalItems: action.payload.totalItems,
-          totalPages: action.payload.totalPages,
-        };
+        if (action.payload && action.payload.gradeDtos) {
+          state.educationalStages = Array.isArray(action.payload.gradeDtos) 
+            ? action.payload.gradeDtos 
+            : [];
+          state.pagination = {
+            pageIndex: action.payload.pageIndex || 1,
+            pageSize: action.payload.pageSize || 10,
+            totalItems: action.payload.totalItems || 0,
+            totalPages: action.payload.totalPages || 0,
+          };
+        } else {
+          state.educationalStages = [];
+          state.pagination = {
+            pageIndex: 1,
+            pageSize: 10,
+            totalItems: 0,
+            totalPages: 0,
+          };
+        }
       })
       .addCase(getEducationalStages.rejected, (state, action) => {
         state.isLoading = false;
