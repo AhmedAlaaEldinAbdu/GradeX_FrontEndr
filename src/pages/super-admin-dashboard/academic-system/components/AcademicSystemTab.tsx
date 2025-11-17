@@ -1,6 +1,4 @@
-import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
-import Pagination from '@gradex/shared/components/Pagination';
 import DropdownMenuAcademicSystemAction from './DropdownMenuAcademicSystemAction';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
@@ -13,10 +11,7 @@ import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/acade
 import { fetchCountries } from '@/redux/features/lookups';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
 import CustomSelect from '@/shared/components/CustomSelect';
-import SearchInput from '@/shared/components/SearchInput';
-import Loading from '@/shared/components/Loading';
-import NotFoundMessage from '@/shared/components/NotFoundMessage';
-import ErrorMessage from '@/shared/components/ErrorMessage';
+import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 
 export default function AcademicSystemTab() {
   const { t, i18n } = useTranslation();
@@ -85,18 +80,20 @@ export default function AcademicSystemTab() {
   // Show content when: loading OR has data OR has active filters
   const shouldShowContent = isLoading || academicSystems.length > 0 || hasActiveFilters;
 
-  const columns = [
+  const columns: DataTableColumn<AcademicSubSystemResponse>[] = [
     {
       header: '#',
-      accessor: (_row: AcademicSubSystemResponse) => {
+      accessor: (_row) => {
         if (!_row || !Array.isArray(academicSystems) || !pagination) return '-';
         const index = academicSystems?.findIndex((s) => s?.id === _row?.id);
         return (pagination.pageIndex - 1) * pagination.pageSize + (index + 1);
       },
+      headerClassName: 'w-16',
+      className: 'text-center',
     },
     {
       header: 'academicSystem.systemName',
-      accessor: (row: AcademicSubSystemResponse) => (
+      accessor: (row) => (
         <div onClick={() => handleSystemClick(row)} className="cursor-pointer hover:text-green-600">
           {currentLang === 'ar' ? row.nameAr : row.nameEn}
         </div>
@@ -105,7 +102,7 @@ export default function AcademicSystemTab() {
     },
     {
       header: 'academicSystem.systemType',
-      accessor: (row: AcademicSubSystemResponse) => {
+      accessor: (row) => {
         const subSystemNames = row.academicSubSystemDto?.map((subSystem) =>
           currentLang === 'ar' ? subSystem.nameAr : subSystem.nameEn
         );
@@ -116,12 +113,11 @@ export default function AcademicSystemTab() {
           </div>
         );
       },
-
       headerClassName: 'w-[250px]',
     },
     {
       header: 'academicSystem.countryName',
-      accessor: (row: AcademicSubSystemResponse) => {
+      accessor: (row) => {
         const countries = row.lkCountriesDto?.map((country) =>
           currentLang === 'ar' ? country.arabicName : country.englishName
         );
@@ -136,21 +132,19 @@ export default function AcademicSystemTab() {
     },
     {
       header: 'academicSystem.educationalStagesCount',
-      accessor: (row: AcademicSubSystemResponse) => row.gradeCount,
+      accessor: (row) => row.gradeCount,
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
       header: 'academicSystem.addedDate',
-      accessor: (row: AcademicSubSystemResponse) => (
-        <div>{new Date(row.created).toLocaleDateString()}</div>
-      ),
+      accessor: (row) => <div>{new Date(row.created).toLocaleDateString()}</div>,
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: 'common.actions',
-      accessor: (row: AcademicSubSystemResponse) => (
+      accessor: (row) => (
         <div className="flex items-center justify-center">
           <DropdownMenuAcademicSystemAction id={row.id} onActionComplete={fetchAcademicSystems} />
         </div>
@@ -159,6 +153,76 @@ export default function AcademicSystemTab() {
       className: 'text-center',
     },
   ];
+
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'search',
+      name: 'searchBySystemName',
+      placeholder: t('academicSystem.searchBySystemName'),
+      value: searchTerm,
+      onChange: (value) => setSearchTerm(value as string),
+      width: '40%',
+    },
+    {
+      type: 'custom',
+      name: 'subsystem-filter',
+      placeholder: '',
+      value: selectedSubSystemId,
+      onChange: () => {},
+      customComponent: (
+        <CustomSelect
+          value={selectedSubSystemId}
+          onChange={(value) =>
+            setSelectedSubSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
+          }
+          options={
+            Array.isArray(academicSubSystems)
+              ? academicSubSystems.map((subSystem) => ({
+                  value: subSystem?.id || '',
+                  label: currentLang === 'ar' ? subSystem?.nameAr || '' : subSystem?.nameEn || '',
+                }))
+              : []
+          }
+          placeholder={isLoadingSubSystems ? t('common.loading') : t('academicSystem.systemType')}
+          disabled={isLoadingSubSystems}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'country-filter',
+      placeholder: '',
+      value: selectedCountryId,
+      onChange: () => {},
+      customComponent: (
+        <CustomSelect
+          value={selectedCountryId}
+          onChange={(value) =>
+            setSelectedCountryId(Array.isArray(value) ? (value[0] ?? '') : value)
+          }
+          options={
+            Array.isArray(countries)
+              ? countries.map((country) => ({
+                  value: country?.id || '',
+                  label:
+                    currentLang === 'ar' ? country?.arabicName || '' : country?.englishName || '',
+                }))
+              : []
+          }
+          placeholder={isLoadingCountries ? t('common.loading') : t('academicSystem.country')}
+          disabled={isLoadingCountries}
+          maxHeight="200px"
+        />
+      ),
+    },
+  ];
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedSubSystemId('');
+    setSelectedCountryId('');
+  };
 
   return (
     <Card>
@@ -170,132 +234,24 @@ export default function AcademicSystemTab() {
         />
       ) : shouldShowContent ? (
         <div>
-          <div className="flex justify-between">
-            <div className="mb-6 flex flex-grow flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-              <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[40%]">
-                <SearchInput
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder={t('academicSystem.searchBySystemName')}
-                  name="searchBySystemName"
-                />
-              </div>
-              <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
-                <div>
-                  <CustomSelect
-                    value={selectedSubSystemId}
-                    onChange={(value) =>
-                      setSelectedSubSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
-                    }
-                    options={
-                      Array.isArray(academicSubSystems)
-                        ? academicSubSystems.map((subSystem) => ({
-                            value: subSystem?.id || '',
-                            label:
-                              currentLang === 'ar'
-                                ? subSystem?.nameAr || ''
-                                : subSystem?.nameEn || '',
-                          }))
-                        : []
-                    }
-                    placeholder={
-                      isLoadingSubSystems ? t('common.loading') : t('academicSystem.systemType')
-                    }
-                    disabled={isLoadingSubSystems}
-                    maxHeight="200px"
-                  />
-                </div>
-
-                <div>
-                  <CustomSelect
-                    value={selectedCountryId}
-                    onChange={(value) =>
-                      setSelectedCountryId(Array.isArray(value) ? (value[0] ?? '') : value)
-                    }
-                    options={
-                      Array.isArray(countries)
-                        ? countries.map((country) => ({
-                            value: country?.id || '',
-                            label:
-                              currentLang === 'ar'
-                                ? country?.arabicName || ''
-                                : country?.englishName || '',
-                          }))
-                        : []
-                    }
-                    placeholder={
-                      isLoadingCountries ? t('common.loading') : t('academicSystem.country')
-                    }
-                    disabled={isLoadingCountries}
-                    maxHeight="200px"
-                  />
-                </div>
-              </div>
-            </div>
-            <div>
-              {/* Reset Button */}
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setSelectedSubSystemId('');
-                  setSelectedCountryId('');
-                }}
-                className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-                title={t('actions.clearFilter')}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className=""
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M21 12a9 9 0 1 0-3.46 6.54"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M21 3v6h-6"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            {isLoading ? (
-              <div className="flex justify-center py-10">
-                <Loading />
-              </div>
-            ) : academicSystems?.length === 0 ? (
-              <NotFoundMessage message="common.noResults" />
-            ) : error ? (
-              <ErrorMessage message="common.errorOccurred" />
-            ) : (
-              <Table columns={columns} data={academicSystems} keyExtractor={(row) => row.id} />
-            )}
-          </div>
-
-          {/* Pagination */}
-          {academicSystems.length > 0 && (
-            <Pagination
-              currentPage={pagination.pageIndex}
-              totalPages={pagination.totalPages}
-              to={Math.min(pagination.pageIndex * pagination.pageSize, pagination.totalItems)}
-              from={pagination.totalItems}
-              onPageChange={handlePageChange}
-            />
-          )}
+          <DataTable
+            data={academicSystems}
+            columns={columns}
+            keyExtractor={(row) => row.id}
+            pagination={{
+              page: pagination.pageIndex,
+              limit: pagination.pageSize,
+              total: pagination.totalItems,
+              totalPages: pagination.totalPages,
+            }}
+            onPageChange={handlePageChange}
+            filters={filterConfigs}
+            showFilters={true}
+            onResetFilters={handleResetFilters}
+            isLoading={isLoading}
+            emptyMessage={t('common.noResults')}
+            t={t}
+          />
 
           {showAcademicDetails && selectedSystem && (
             <AcademicDetailsPopup

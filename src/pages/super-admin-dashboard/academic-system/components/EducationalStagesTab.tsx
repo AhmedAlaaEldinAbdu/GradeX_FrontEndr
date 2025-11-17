@@ -1,6 +1,4 @@
-import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
-import Pagination from '@gradex/shared/components/Pagination';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import DeletePopup from '@/shared/components/DeletePopup';
@@ -22,10 +20,7 @@ import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/acade
 import { fetchCountries } from '@/redux/features/lookups';
 import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
 import CustomSelect from '@/shared/components/CustomSelect';
-import SearchInput from '@/shared/components/SearchInput';
-import Loading from '@/shared/components/Loading';
-import NotFoundMessage from '@/shared/components/NotFoundMessage';
-import ErrorMessage from '@/shared/components/ErrorMessage';
+import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 
 export default function EducationalStagesTab() {
   const { t, i18n } = useTranslation();
@@ -47,7 +42,6 @@ export default function EducationalStagesTab() {
   const pagination = useAppSelector((state) => state.educationalStages.pagination);
   const isLoading = useAppSelector((state) => state.educationalStages.isLoading);
   const isDeleting = useAppSelector((state) => state.educationalStages.isDeleting);
-  const error = useAppSelector((state) => state.educationalStages.error);
   const { showToast } = useToast();
 
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
@@ -92,25 +86,25 @@ export default function EducationalStagesTab() {
   // Show content when: loading OR has data OR has active filters
   const shouldShowContent = isLoading || educationalStages.length > 0 || hasActiveFilters;
 
-  const columns = [
+  const columns: DataTableColumn<EducationalStageResponse>[] = [
     {
       header: '#',
-      accessor: (_row: EducationalStageResponse) => {
+      accessor: (_row) => {
         if (!_row || !Array.isArray(educationalStages) || !pagination) return '-';
         const index = educationalStages?.findIndex((s) => s?.id === _row?.id);
         return (pagination.pageIndex - 1) * pagination.pageSize + (index + 1);
       },
+      headerClassName: 'w-16',
+      className: 'text-center',
     },
     {
       header: 'academicSystem.educationalStageName',
-      accessor: (row: EducationalStageResponse) => (
-        <div>{currentLang === 'ar' ? row.nameAr : row.nameEn}</div>
-      ),
+      accessor: (row) => <div>{currentLang === 'ar' ? row.nameAr : row.nameEn}</div>,
       headerClassName: 'min-w-[150px]',
     },
     {
       header: 'academicSystem.title',
-      accessor: (row: EducationalStageResponse) => {
+      accessor: (row) => {
         const academicSystemNames = row.academicSystemsDto?.map((academicSys) =>
           currentLang === 'ar' ? academicSys.nameAr : academicSys.nameEn
         );
@@ -124,7 +118,7 @@ export default function EducationalStagesTab() {
     },
     {
       header: 'academicSystem.systemType',
-      accessor: (row: EducationalStageResponse) => {
+      accessor: (row) => {
         return (
           <div className="flex flex-wrap gap-1">
             <span className="text-sm">
@@ -139,7 +133,7 @@ export default function EducationalStagesTab() {
     },
     {
       header: 'academicSystem.addedDate',
-      accessor: (row: EducationalStageResponse) => (
+      accessor: (row) => (
         <div>{row.createdDate ? new Date(row.createdDate).toLocaleDateString() : '-'}</div>
       ),
       headerClassName: 'min-w-[120px]',
@@ -147,8 +141,8 @@ export default function EducationalStagesTab() {
     },
     {
       header: 'common.actions',
-      accessor: (row: EducationalStageResponse) => (
-        <div className="flex items-center justify-center gap-2">
+      accessor: (row) => (
+        <div className="flex items-center gap-2">
           <button
             onClick={() => navigate(`/academic-system/edit-educational-stages/${row.id}`)}
             className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
@@ -171,6 +165,75 @@ export default function EducationalStagesTab() {
       className: 'text-center',
     },
   ];
+
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'search',
+      name: 'searchEducationalStage',
+      placeholder: t('academicSystem.searchEducationalStage'),
+      value: searchTerm,
+      onChange: (value) => setSearchTerm(value as string),
+      width: '40%',
+    },
+    {
+      type: 'custom',
+      name: 'academic-system-filter',
+      placeholder: '',
+      value: selectedAcademicSystemId,
+      onChange: () => {},
+      customComponent: (
+        <CustomSelect
+          value={selectedAcademicSystemId}
+          onChange={(value) =>
+            setSelectedAcademicSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
+          }
+          options={
+            Array.isArray(academicSystems)
+              ? academicSystems.map((system) => ({
+                  value: system?.id || '',
+                  label: currentLang === 'ar' ? system?.nameAr || '' : system?.nameEn || '',
+                }))
+              : []
+          }
+          placeholder={isLoadingAcademicSystems ? t('common.loading') : t('academicSystem.title')}
+          disabled={isLoadingAcademicSystems}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'subsystem-filter',
+      placeholder: '',
+      value: selectedSubSystemId,
+      onChange: () => {},
+      customComponent: (
+        <CustomSelect
+          value={selectedSubSystemId}
+          onChange={(value) =>
+            setSelectedSubSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
+          }
+          options={
+            Array.isArray(academicSubSystems)
+              ? academicSubSystems.map((subSystem) => ({
+                  value: subSystem?.id || '',
+                  label: currentLang === 'ar' ? subSystem?.nameAr || '' : subSystem?.nameEn || '',
+                }))
+              : []
+          }
+          placeholder={isLoadingSubSystems ? t('common.loading') : t('academicSystem.systemType')}
+          disabled={isLoadingSubSystems}
+          maxHeight="200px"
+        />
+      ),
+    },
+  ];
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedSubSystemId('');
+    setSelectedAcademicSystemId('');
+  };
 
   const handleDeleteConfirm = () => {
     if (!selectedStageId) return;
@@ -205,130 +268,24 @@ export default function EducationalStagesTab() {
         />
       ) : shouldShowContent ? (
         <div>
-          <div className="flex justify-between">
-            <div className="mb-6 flex flex-grow flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-              <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg xl:w-[40%]">
-                <SearchInput
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder={t('academicSystem.searchEducationalStage')}
-                  name="searchEducationalStage"
-                />
-              </div>
-              <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-3">
-                <div>
-                  <CustomSelect
-                    value={selectedAcademicSystemId}
-                    onChange={(value) =>
-                      setSelectedAcademicSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
-                    }
-                    options={
-                      Array.isArray(academicSystems)
-                        ? academicSystems.map((system) => ({
-                            value: system?.id || '',
-                            label:
-                              currentLang === 'ar' ? system?.nameAr || '' : system?.nameEn || '',
-                          }))
-                        : []
-                    }
-                    placeholder={
-                      isLoadingAcademicSystems ? t('common.loading') : t('academicSystem.title')
-                    }
-                    disabled={isLoadingAcademicSystems}
-                    maxHeight="200px"
-                  />
-                </div>
-
-                <div>
-                  <CustomSelect
-                    value={selectedSubSystemId}
-                    onChange={(value) =>
-                      setSelectedSubSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
-                    }
-                    options={
-                      Array.isArray(academicSubSystems)
-                        ? academicSubSystems.map((subSystem) => ({
-                            value: subSystem?.id || '',
-                            label:
-                              currentLang === 'ar'
-                                ? subSystem?.nameAr || ''
-                                : subSystem?.nameEn || '',
-                          }))
-                        : []
-                    }
-                    placeholder={
-                      isLoadingSubSystems ? t('common.loading') : t('academicSystem.systemType')
-                    }
-                    disabled={isLoadingSubSystems}
-                    maxHeight="200px"
-                  />
-                </div>
-              </div>
-            </div>
-            <div>
-              {/* Reset Button */}
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setSelectedSubSystemId('');
-                  setSelectedAcademicSystemId('');
-                }}
-                className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-                title={t('actions.clearFilter')}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className=""
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M21 12a9 9 0 1 0-3.46 6.54"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M21 3v6h-6"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            {isLoading ? (
-              <div className="flex justify-center py-10">
-                <Loading />
-              </div>
-            ) : educationalStages?.length === 0 ? (
-              <NotFoundMessage message="common.noResults" />
-            ) : error ? (
-              <ErrorMessage message="common.errorOccurred" />
-            ) : (
-              <Table columns={columns} data={educationalStages} keyExtractor={(row) => row.id} />
-            )}
-          </div>
-
-          {/* Pagination */}
-          {educationalStages.length > 0 && (
-            <Pagination
-              currentPage={pagination.pageIndex}
-              totalPages={pagination.totalPages}
-              to={Math.min(pagination.pageIndex * pagination.pageSize, pagination.totalItems)}
-              from={pagination.totalItems}
-              onPageChange={handlePageChange}
-            />
-          )}
+          <DataTable
+            data={educationalStages}
+            columns={columns}
+            keyExtractor={(row) => row.id}
+            pagination={{
+              page: pagination.pageIndex,
+              limit: pagination.pageSize,
+              total: pagination.totalItems,
+              totalPages: pagination.totalPages,
+            }}
+            onPageChange={handlePageChange}
+            filters={filterConfigs}
+            showFilters={true}
+            onResetFilters={handleResetFilters}
+            isLoading={isLoading}
+            emptyMessage={t('common.noResults')}
+            t={t}
+          />
 
           {/* Popups */}
           {showDelete && (

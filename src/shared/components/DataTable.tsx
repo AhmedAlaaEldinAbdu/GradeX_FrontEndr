@@ -240,7 +240,7 @@ export default function DataTable<T>({
                 currentPage={pagination.page}
                 totalPages={pagination.totalPages}
                 to={Math.min(pagination.page * pagination.limit, pagination.total)}
-                from={(pagination.page - 1) * pagination.limit + 1}
+                from={pagination.total}
                 onPageChange={onPageChange}
               />
             )}
