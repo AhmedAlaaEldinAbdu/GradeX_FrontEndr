@@ -14,7 +14,7 @@ export interface FilterConfig {
   disabled?: boolean;
   loading?: boolean;
   customComponent?: ReactNode;
-  width?: 'full' | '60%' | '40%' | 'auto';
+  width?: 'full' | '60%' | '40%' | '30%' | '20%' | 'auto';
 }
 
 export interface DataTableColumn<T> {
@@ -117,14 +117,19 @@ export default function DataTable<T>({
   const getFilterWidth = (filter: FilterConfig) => {
     switch (filter.width) {
       case 'full':
-        return 'w-[100%]';
+        return 'w-full';
       case '60%':
-        return 'w-[100%] xl:w-[60%]';
+        return 'w-full xl:w-[60%]';
       case '40%':
-        return 'w-[100%] xl:w-[40%]';
+        return 'w-full xl:w-[40%]';
+      case '30%':
+        return 'w-full xl:w-[30%]';
+      case '20%':
+        return 'w-full xl:w-[20%]';
       case 'auto':
+        return 'w-auto min-w-[200px]';
       default:
-        return 'min-w-[200px]';
+        return 'flex-1 min-w-[200px]';
     }
   };
 
@@ -163,9 +168,7 @@ export default function DataTable<T>({
 
                 {/* Other Filters (Select, Custom) */}
                 {otherFilters.length > 0 && (
-                  <div
-                    className={`grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:grid-cols-2 xl:grid-cols-${Math.min(otherFilters.length, 3)}`}
-                  >
+                  <div className="flex w-[100%] flex-wrap gap-4 rounded-lg">
                     {otherFilters.map((filter, index) => (
                       <div key={`other-${index}`} className={getFilterWidth(filter)}>
                         {renderFilter(filter, searchFilters.length + index)}
