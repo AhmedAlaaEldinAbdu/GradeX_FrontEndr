@@ -58,21 +58,25 @@ const Tabs: React.FC<TabsProps> = ({
 
   // Sync with URL search params when they change
   useEffect(() => {
-    if (searchParamKey) {
-      const tabFromUrl = searchParams.get(searchParamKey);
-      // If tab param exists in URL and is valid
-      if (tabFromUrl && ids.includes(tabFromUrl) && tabFromUrl !== active) {
+    if (!searchParamKey) return;
+    
+    const tabFromUrl = searchParams.get(searchParamKey);
+    const defaultTab = defaultValue ?? ids[0];
+    
+    // If tab param exists in URL and is valid
+    if (tabFromUrl && ids.includes(tabFromUrl)) {
+      if (tabFromUrl !== active) {
         setActive(tabFromUrl);
         onChange?.(tabFromUrl);
       }
-      // If tab param is missing from URL, reset to default
-      else if (!tabFromUrl && active !== (defaultValue ?? ids[0])) {
-        const defaultTab = defaultValue ?? ids[0];
-        setActive(defaultTab);
-        onChange?.(defaultTab);
-      }
     }
-  }, [searchParams, searchParamKey, ids, active, defaultValue, onChange]);
+    // If tab param is missing from URL, reset to default
+    else if (!tabFromUrl && active !== defaultTab) {
+      setActive(defaultTab);
+      onChange?.(defaultTab);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // Controlled mode sync
   useEffect(() => {
