@@ -181,6 +181,7 @@ export default function EducationalStagesTab() {
       placeholder: '',
       value: selectedAcademicSystemId,
       onChange: () => {},
+      width: '30%',
       customComponent: (
         <CustomSelect
           value={selectedAcademicSystemId}
@@ -207,6 +208,7 @@ export default function EducationalStagesTab() {
       placeholder: '',
       value: selectedSubSystemId,
       onChange: () => {},
+      width: '30%',
       customComponent: (
         <CustomSelect
           value={selectedSubSystemId}

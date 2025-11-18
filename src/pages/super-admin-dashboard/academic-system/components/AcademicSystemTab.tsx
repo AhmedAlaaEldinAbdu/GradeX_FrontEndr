@@ -161,7 +161,7 @@ export default function AcademicSystemTab() {
       placeholder: t('academicSystem.searchBySystemName'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
-      width: '40%',
+      width: '60%',
     },
     {
       type: 'custom',
@@ -169,6 +169,7 @@ export default function AcademicSystemTab() {
       placeholder: '',
       value: selectedSubSystemId,
       onChange: () => {},
+      width: '30%',
       customComponent: (
         <CustomSelect
           value={selectedSubSystemId}
@@ -195,6 +196,7 @@ export default function AcademicSystemTab() {
       placeholder: '',
       value: selectedCountryId,
       onChange: () => {},
+      width: '30%',
       customComponent: (
         <CustomSelect
           value={selectedCountryId}
