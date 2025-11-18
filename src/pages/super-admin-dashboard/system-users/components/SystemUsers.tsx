@@ -211,6 +211,7 @@ export default function SystemUsers() {
       ],
       disabled: isLoadingRoles,
       loading: isLoadingRoles,
+      width: '30%',
     },
   ];
 
