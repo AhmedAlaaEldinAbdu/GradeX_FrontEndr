@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export type TabItem = {
   id: string;
@@ -19,6 +20,7 @@ type TabsProps = {
   panelClassName?: string;
   variant?: 'underline' | 'pills';
   lazy?: boolean; // mount panels lazily
+  searchParamKey?: string; // URL search param key to persist selected tab
 };
 
 /**
@@ -36,10 +38,41 @@ const Tabs: React.FC<TabsProps> = ({
   panelClassName,
   variant = 'underline',
   lazy = false,
+  searchParamKey,
 }) => {
   const internalId = useId();
   const ids = useMemo(() => items.map((i) => i.id), [items]);
-  const [active, setActive] = useState<string>(value ?? defaultValue ?? ids[0]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Get initial value from URL search params if searchParamKey is provided
+  const getInitialValue = () => {
+    if (value !== undefined) return value;
+    if (searchParamKey) {
+      const tabFromUrl = searchParams.get(searchParamKey);
+      if (tabFromUrl && ids.includes(tabFromUrl)) return tabFromUrl;
+    }
+    return defaultValue ?? ids[0];
+  };
+
+  const [active, setActive] = useState<string>(getInitialValue);
+
+  // Sync with URL search params when they change
+  useEffect(() => {
+    if (searchParamKey) {
+      const tabFromUrl = searchParams.get(searchParamKey);
+      // If tab param exists in URL and is valid
+      if (tabFromUrl && ids.includes(tabFromUrl) && tabFromUrl !== active) {
+        setActive(tabFromUrl);
+        onChange?.(tabFromUrl);
+      }
+      // If tab param is missing from URL, reset to default
+      else if (!tabFromUrl && active !== (defaultValue ?? ids[0])) {
+        const defaultTab = defaultValue ?? ids[0];
+        setActive(defaultTab);
+        onChange?.(defaultTab);
+      }
+    }
+  }, [searchParams, searchParamKey, ids, active, defaultValue, onChange]);
 
   // Controlled mode sync
   useEffect(() => {
@@ -55,6 +88,14 @@ const Tabs: React.FC<TabsProps> = ({
 
   const handleChange = (id: string) => {
     if (!isControlled) setActive(id);
+    // Update URL search params if searchParamKey is provided
+    if (searchParamKey) {
+      setSearchParams((prev) => {
+        const newParams = new URLSearchParams(prev);
+        newParams.set(searchParamKey, id);
+        return newParams;
+      });
+    }
     onChange?.(id);
   };
 
@@ -67,8 +108,7 @@ const Tabs: React.FC<TabsProps> = ({
       ? 'border-b-2 border-green-500 text-green-600'
       : 'bg-green-100 text-green-700 rounded-md');
 
-  const listCls =
-    listClassName ?? (variant === 'underline' ? 'flex w-full' : 'flex w-full gap-2');
+  const listCls = listClassName ?? (variant === 'underline' ? 'flex w-full' : 'flex w-full gap-2');
 
   // Keyboard navigation
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -94,12 +134,7 @@ const Tabs: React.FC<TabsProps> = ({
 
   return (
     <div className={className}>
-      <div
-        role="tablist"
-        aria-label="tabs"
-        className={listCls}
-        onKeyDown={onKeyDown}
-      >
+      <div role="tablist" aria-label="tabs" className={listCls} onKeyDown={onKeyDown}>
         {items.map((item) => {
           const activeNow = item.id === active;
           return (
