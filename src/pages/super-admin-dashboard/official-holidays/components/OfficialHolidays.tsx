@@ -1,59 +1,59 @@
 import Card from '@/shared/components/Card';
 import EmptyState from '@/shared/components/EmptyState';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import HolidayIcon from '@gradex/assets/icons/Holiday.svg';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
-
-interface OfficialHoliday {
-  id: number;
-  country: string;
-  officialDatesCount: number;
-}
+import {
+  fetchOfficialHolidays,
+  selectOfficialHolidays,
+  selectIsLoading,
+  selectError,
+} from '@gradex/redux/features/official-holidays';
+import Loading from '@/shared/components/Loading';
+import { groupHolidaysByCountry, filterCountriesBySearch } from '../utils/holiday.utils';
 
 export default function OfficialHolidays() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [hasHolidays] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+
   const [searchTerm, setSearchTerm] = useState('');
 
-  const holidays: OfficialHoliday[] = [
-    {
-      id: 1,
-      country: 'لبنان',
-      officialDatesCount: 16,
-    },
-    {
-      id: 2,
-      country: 'الإمارات',
-      officialDatesCount: 16,
-    },
-    {
-      id: 3,
-      country: 'قطر',
-      officialDatesCount: 16,
-    },
-    {
-      id: 4,
-      country: 'السعودية',
-      officialDatesCount: 16,
-    },
-    {
-      id: 5,
-      country: 'قطر',
-      officialDatesCount: 16,
-    },
-    {
-      id: 6,
-      country: 'مصر',
-      officialDatesCount: 16,
-    },
-  ];
+  const holidays = useSelector(selectOfficialHolidays) || [];
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
+
+  const currentLang = i18n.language as 'ar' | 'en';
+
+  useEffect(() => {
+    dispatch(
+      fetchOfficialHolidays({
+        page: 1,
+        limit: 100,
+      })
+    );
+  }, [dispatch]);
+
+  const countriesWithHolidays = groupHolidaysByCountry(holidays);
+  const filteredCountries = filterCountriesBySearch(countriesWithHolidays, searchTerm);
+
+  if (error) {
+    return (
+      <Card>
+        <div className="py-10 text-center text-red-600">
+          {t('common.error')}: {error}
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card>
-      {!hasHolidays ? (
+      {holidays.length === 0 && !isLoading ? (
         <EmptyState
           imgSrc={HolidayIcon}
           description={t('officialHolidays.noOfficialHolidays')}
@@ -89,29 +89,47 @@ export default function OfficialHolidays() {
             </div>
           </div>
 
-          {/* Holiday Cards Grid */}
-          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {holidays.map((holiday) => (
-              <div
-                key={holiday.id}
-                onClick={() => navigate(`/official-holidays/country/${holiday.id}`)}
-                className="flex cursor-pointer flex-col items-start justify-center rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-green-300 hover:shadow-md"
-              >
-                {/* Country Name */}
-                <h3 className="mb-4 text-center text-lg font-semibold text-gray-800">
-                  {holiday.country}
-                </h3>
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center py-10">
+              <Loading />
+            </div>
+          )}
 
-                {/* Official Dates Count with Checkmark */}
-                <div className="flex items-center gap-2">
-                  <img src={CheckIcon} alt="Check Icon" className="h-5 w-5" />
-                  <span className="text-sm text-gray-600">
-                    {holiday.officialDatesCount} {t('officialHolidays.officialHoliday')}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Holiday Cards Grid */}
+          {!isLoading && filteredCountries.length > 0 && (
+            <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {filteredCountries.map((country, index) => {
+                const countryName = currentLang === 'ar' ? country.countryAR : country.countryEN;
+
+                return (
+                  <div
+                    key={`${country.firstHolidayId}-${index}`}
+                    onClick={() => navigate(`/official-holidays/country/${country.firstHolidayId}`)}
+                    className="flex cursor-pointer flex-col items-start justify-center rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-green-300 hover:shadow-md"
+                  >
+                    {/* Country Name */}
+                    <h3 className="mb-4 text-center text-lg font-semibold text-gray-800">
+                      {countryName}
+                    </h3>
+
+                    {/* Official Dates Count with Checkmark */}
+                    <div className="flex items-center gap-2">
+                      <img src={CheckIcon} alt="Check Icon" className="h-5 w-5" />
+                      <span className="text-sm text-gray-600">
+                        {country.count} {t('officialHolidays.officialHoliday')}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* No Results */}
+          {!isLoading && filteredCountries.length === 0 && searchTerm && (
+            <div className="py-12 text-center text-gray-500">{t('common.noResults')}</div>
+          )}
         </div>
       )}
     </Card>
