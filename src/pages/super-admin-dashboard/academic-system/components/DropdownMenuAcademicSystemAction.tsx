@@ -9,6 +9,7 @@ import EditIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import { deleteAcademicSystem } from '@/redux/features/academic-system/academicSystemSlice';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import { useAppSelector } from '@/hooks/useRedux';
 
 interface ActionProps {
   id: string;
@@ -22,6 +23,7 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
   const { showToast } = useToast();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const isDeleting = useAppSelector((state) => state.academicSystems.isDeleting);
 
   const handleEdit = () => {
     navigate(`/academic-system/edit-academic-system/${id}`);
@@ -38,9 +40,16 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
           type: 'success',
         });
         onActionComplete?.();
+      } else {
+        showToast({
+          message: res?.errors?.[0] || t('common.errorOccurred'),
+          type: 'error',
+        });
+        setShowDeletePopup(false);
       }
     } catch (error) {
       showToast({ message: t('common.errorOccurred'), type: 'error' });
+      setShowDeletePopup(false);
     } finally {
       setIsProcessing(false);
     }
@@ -69,6 +78,7 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
           onConfirm={handleConfirmDelete}
           onCancel={() => setShowDeletePopup(false)}
           iconSrc={BigTrashIcon}
+          isProcessing={isDeleting}
         />
       )}
     </div>

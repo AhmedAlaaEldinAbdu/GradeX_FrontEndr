@@ -30,7 +30,6 @@ export default function AcademicSystemTab() {
   const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
   const pagination = useAppSelector((state) => state.academicSystems.pagination);
   const isLoading = useAppSelector((state) => state.academicSystems.isLoading);
-  const error = useAppSelector((state) => state.academicSystems.error);
 
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
   const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
