@@ -68,7 +68,7 @@ export default function AddEducationalStages() {
           setShowPopupMessage({
             show: true,
             type: 'success',
-            message: t('academicSystem.educationalStageAddedSuccessfully'),
+            message: t('academicSystem.educationalStagesAddedSuccessfully'),
           });
         } else {
           const firstError = stagesErrors?.[0];
