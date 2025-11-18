@@ -29,7 +29,7 @@ export default function EducationalStagesTab() {
   const currentLang = i18n.language as 'ar' | 'en';
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [showDelete, setShowDelete] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [selectedStageId, setSelectedStageId] = useState<string>('');
   const [selectedSubSystemId, setSelectedSubSystemId] = useState('');
@@ -152,7 +152,7 @@ export default function EducationalStagesTab() {
           <button
             onClick={() => {
               setSelectedStageId(row.id);
-              setShowDelete(true);
+              setShowDeletePopup(true);
             }}
             className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
             disabled={isDeleting}
@@ -243,13 +243,19 @@ export default function EducationalStagesTab() {
       .unwrap()
       .then((res) => {
         if (res?.isSuccess) {
-          setShowDelete(false);
+          setShowDeletePopup(false);
           setShowPopupMessage(true);
           showToast({
             message: 'academicSystem.systemDeletedSuccessfully',
             type: 'success',
           });
           dispatch(getEducationalStages({ pageIndex: currentPage, pageSize }));
+        } else {
+          showToast({
+            message: res?.errors?.[0] || t('common.errorOccurred'),
+            type: 'error',
+          });
+          setShowDeletePopup(false);
         }
       })
       .catch(() => {
@@ -257,6 +263,7 @@ export default function EducationalStagesTab() {
           message: 'common.errorOccurred',
           type: 'error',
         });
+        setShowDeletePopup(false);
       });
   };
 
@@ -290,12 +297,13 @@ export default function EducationalStagesTab() {
           />
 
           {/* Popups */}
-          {showDelete && (
+          {showDeletePopup && (
             <DeletePopup
               message="academicSystem.confirmDeleteSystem"
               onConfirm={handleDeleteConfirm}
-              onCancel={() => setShowDelete(false)}
+              onCancel={() => setShowDeletePopup(false)}
               iconSrc={BigTrashIcon}
+              isProcessing={isDeleting}
             />
           )}
           {showPopupMessage && (
