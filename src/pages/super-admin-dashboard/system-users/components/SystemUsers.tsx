@@ -233,15 +233,14 @@ export default function SystemUsers() {
         />
 
         {/* Delete Popup */}
-        {showDeletePopup && (
-          <DeletePopup
-            message="rolesManagement.confirmDeleteUser"
-            onConfirm={handleDeleteConfirm}
-            onCancel={() => setShowDeletePopup(false)}
-            iconSrc={BigTrashIcon}
-            isProcessing={isDeleting}
-          />
-        )}
+        <DeletePopup
+          open={showDeletePopup}
+          message="rolesManagement.confirmDeleteUser"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setShowDeletePopup(false)}
+          iconSrc={BigTrashIcon}
+          isProcessing={isDeleting}
+        />
       </div>
     </Card>
   );
