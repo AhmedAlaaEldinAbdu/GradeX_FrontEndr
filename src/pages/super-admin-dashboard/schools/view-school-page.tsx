@@ -253,12 +253,11 @@ const ViewSchoolPage: React.FC = () => {
         showPendingLabel={isPending}
       />
 
-      {showEditRequestPopup && (
-        <EditRequestPopup
-          onCancel={() => setShowEditRequestPopup(false)}
-          onConfirm={handleConfirmEditRequest}
-        />
-      )}
+      <EditRequestPopup
+        open={showEditRequestPopup}
+        onCancel={() => setShowEditRequestPopup(false)}
+        onConfirm={handleConfirmEditRequest}
+      />
       <RejectSchoolPopup
         open={showRejectPopup}
         onCancel={() => setShowRejectPopup(false)}

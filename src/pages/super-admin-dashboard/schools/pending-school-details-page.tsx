@@ -150,12 +150,11 @@ const PendingSchoolDetailsPage: React.FC = () => {
       )}
 
       {/* Edit Request Popup */}
-      {showEditRequestPopup && (
-        <EditRequestPopup
-          onCancel={() => setShowEditRequestPopup(false)}
-          onConfirm={handleEditRequest}
-        />
-      )}
+      <EditRequestPopup
+        open={showEditRequestPopup}
+        onCancel={() => setShowEditRequestPopup(false)}
+        onConfirm={handleEditRequest}
+      />
 
       {/* Reject Popup */}
       <RejectSchoolPopup

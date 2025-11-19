@@ -166,13 +166,12 @@ export default function DropdownMenuSchoolsAction({
         actions={actions.filter((action) => action?.visible?.includes(selectedTab))}
         dropdownClassName="absolute left-0 z-10 mt-2 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
       />
-      {showEditRequestPopup && (
-        <EditRequestPopup
-          onCancel={() => setShowEditRequestPopup(false)}
-          onConfirm={handleConfirmEditRequest}
-          isProcessing={isProcessing}
-        />
-      )}
+      <EditRequestPopup
+        open={showEditRequestPopup}
+        onCancel={() => setShowEditRequestPopup(false)}
+        onConfirm={handleConfirmEditRequest}
+        isProcessing={isProcessing}
+      />
       <RejectSchoolPopup
         open={showRejectPopup}
         onCancel={() => setShowRejectPopup(false)}
