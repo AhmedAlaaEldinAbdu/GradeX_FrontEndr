@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface DeletePopupProps {
+  open: boolean;
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
@@ -10,6 +11,7 @@ interface DeletePopupProps {
 }
 
 export default function DeletePopup({
+  open,
   message,
   onConfirm,
   onCancel,
@@ -21,7 +23,15 @@ export default function DeletePopup({
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 10);
+    if (open) {
+      setTimeout(() => setIsVisible(true), 10);
+    } else {
+      setIsVisible(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
@@ -30,12 +40,14 @@ export default function DeletePopup({
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [open]);
 
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(onCancel, 200);
   };
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
