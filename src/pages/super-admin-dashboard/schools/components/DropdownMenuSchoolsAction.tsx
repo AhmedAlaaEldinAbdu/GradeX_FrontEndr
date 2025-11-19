@@ -173,13 +173,12 @@ export default function DropdownMenuSchoolsAction({
           isProcessing={isProcessing}
         />
       )}
-      {showRejectPopup && (
-        <RejectSchoolPopup
-          onCancel={() => setShowRejectPopup(false)}
-          onConfirm={handleRejectSchool}
-          isProcessing={isProcessing}
-        />
-      )}
+      <RejectSchoolPopup
+        open={showRejectPopup}
+        onCancel={() => setShowRejectPopup(false)}
+        onConfirm={handleRejectSchool}
+        isProcessing={isProcessing}
+      />
     </div>
   );
 }

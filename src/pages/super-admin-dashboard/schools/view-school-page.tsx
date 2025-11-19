@@ -259,12 +259,11 @@ const ViewSchoolPage: React.FC = () => {
           onConfirm={handleConfirmEditRequest}
         />
       )}
-      {showRejectPopup && (
-        <RejectSchoolPopup
-          onCancel={() => setShowRejectPopup(false)}
-          onConfirm={handleRejectSchool}
-        />
-      )}
+      <RejectSchoolPopup
+        open={showRejectPopup}
+        onCancel={() => setShowRejectPopup(false)}
+        onConfirm={handleRejectSchool}
+      />
     </div>
   );
 };

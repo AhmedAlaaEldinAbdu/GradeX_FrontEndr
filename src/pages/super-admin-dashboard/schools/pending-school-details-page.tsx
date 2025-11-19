@@ -158,9 +158,11 @@ const PendingSchoolDetailsPage: React.FC = () => {
       )}
 
       {/* Reject Popup */}
-      {showRejectPopup && (
-        <RejectSchoolPopup onCancel={() => setShowRejectPopup(false)} onConfirm={handleReject} />
-      )}
+      <RejectSchoolPopup
+        open={showRejectPopup}
+        onCancel={() => setShowRejectPopup(false)}
+        onConfirm={handleReject}
+      />
 
       <div dir="rtl" className="pb-8">
         <Breadcrumb items={breadcrumbItems} />
