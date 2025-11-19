@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 interface PopupMessageProps {
+  open: boolean;
   type?: 'success' | 'error' | 'warning' | 'info';
   message: string;
   iconSrc?: string;
@@ -13,6 +14,7 @@ interface PopupMessageProps {
 }
 
 export default function PopupMessage({
+  open,
   type = 'info',
   message,
   iconSrc,
@@ -27,7 +29,15 @@ export default function PopupMessage({
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 10);
+    if (open) {
+      setTimeout(() => setIsVisible(true), 10);
+    } else {
+      setIsVisible(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
@@ -45,8 +55,7 @@ export default function PopupMessage({
     }
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoClose, duration]);
+  }, [open, autoClose, duration]);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -68,6 +77,8 @@ export default function PopupMessage({
     warning: 'bg-yellow-500',
     info: 'bg-blue-600',
   }[type];
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
