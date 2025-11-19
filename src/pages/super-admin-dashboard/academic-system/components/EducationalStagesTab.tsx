@@ -297,15 +297,14 @@ export default function EducationalStagesTab() {
           />
 
           {/* Popups */}
-          {showDeletePopup && (
-            <DeletePopup
-              message="academicSystem.confirmDeleteSystem"
-              onConfirm={handleDeleteConfirm}
-              onCancel={() => setShowDeletePopup(false)}
-              iconSrc={BigTrashIcon}
-              isProcessing={isDeleting}
-            />
-          )}
+          <DeletePopup
+            open={showDeletePopup}
+            message="academicSystem.confirmDeleteSystem"
+            onConfirm={handleDeleteConfirm}
+            onCancel={() => setShowDeletePopup(false)}
+            iconSrc={BigTrashIcon}
+            isProcessing={isDeleting}
+          />
           {showPopupMessage && (
             <PopupMessage
               type="success"
