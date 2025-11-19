@@ -72,15 +72,14 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
           <img src={TrashIcon} alt="Delete" className="h-4 w-4" />
         </button>
       </div>
-      {showDeletePopup && (
-        <DeletePopup
-          message="academicSystem.confirmDeleteSystem"
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setShowDeletePopup(false)}
-          iconSrc={BigTrashIcon}
-          isProcessing={isDeleting}
-        />
-      )}
+      <DeletePopup
+        open={showDeletePopup}
+        message="academicSystem.confirmDeleteSystem"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeletePopup(false)}
+        iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
+      />
     </div>
   );
 }
