@@ -40,6 +40,8 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
     setTimeout(onClose, 200);
   };
 
+  if (!open) return null;
+
   // Extract data from system object
   const systemName = currentLang === 'ar' ? system.nameAr : system.nameEn;
   const systemTypes = system.academicSubSystemDto?.map((sub) =>
@@ -49,8 +51,6 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
     currentLang === 'ar' ? country.arabicName : country.englishName
   );
   const gradeCount = system.gradeCount;
-
-  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
