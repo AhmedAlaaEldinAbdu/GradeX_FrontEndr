@@ -108,7 +108,6 @@ export default function AddAcademicSystem() {
     setNumOfAcademic((prev) => prev.filter((_, i) => i !== selectedIdx));
   };
 
-  console.log('errors.academicSystems', errors.academicSystems);
   return (
     <Card>
       <div className="rounded-md border p-4">
@@ -122,7 +121,10 @@ export default function AddAcademicSystem() {
         </div>
         <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
           {numOfAcademic.map((_, index) => (
-            <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
+            <div
+              key={`add-academic-${index + 1}`}
+              className="grid grid-cols-1 gap-6 rounded-md border p-4"
+            >
               <div className="flex">
                 <div className="flex flex-grow flex-col gap-5 md:flex-row">
                   <div className="flex-grow">
@@ -143,6 +145,7 @@ export default function AddAcademicSystem() {
                             {...field}
                             placeholder={t('academicSystem.enterAcademicSystemAr')}
                             required
+                            id={`academicSystems.${index}.nameAr`}
                           />
                         )}
                       />
@@ -166,6 +169,7 @@ export default function AddAcademicSystem() {
                             {...field}
                             placeholder={t('academicSystem.enterAcademicSystemEn')}
                             required
+                            id={`academicSystems.${index}.nameEn`}
                           />
                         )}
                       />

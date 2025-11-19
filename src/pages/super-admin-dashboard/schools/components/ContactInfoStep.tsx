@@ -40,6 +40,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
                 placeholder={t('schools.enterEmail')}
                 type="email"
                 disabled={readOnly}
+                id="email"
               />
             )}
           />
@@ -60,6 +61,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
                 placeholder={t('schools.enterWebsite')}
                 type="url"
                 disabled={readOnly}
+                id="website"
               />
             )}
           />
@@ -120,7 +122,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
             name="contactPerson"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterContactPerson')} disabled={readOnly} />
+              <Input {...field} placeholder={t('schools.enterContactPerson')} disabled={readOnly} id="contactPerson" />
             )}
           />
         </FormField>

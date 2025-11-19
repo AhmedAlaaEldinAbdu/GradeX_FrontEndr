@@ -211,7 +211,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="region"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterRegion')} disabled={readOnly} />
+              <Input {...field} placeholder={t('schools.enterRegion')} disabled={readOnly} id="region" />
             )}
           />
         </FormField>
@@ -229,7 +229,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="city"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterCity')} disabled={readOnly} />
+              <Input {...field} placeholder={t('schools.enterCity')} disabled={readOnly} id="city" />
             )}
           />
         </FormField>
@@ -244,7 +244,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="district"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterDistrict')} disabled={readOnly} />
+              <Input {...field} placeholder={t('schools.enterDistrict')} disabled={readOnly} id="district" />
             )}
           />
         </FormField>
@@ -262,7 +262,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="street"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterStreet')} disabled={readOnly} />
+              <Input {...field} placeholder={t('schools.enterStreet')} disabled={readOnly} id="street" />
             )}
           />
         </FormField>
@@ -281,6 +281,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
                 {...field}
                 placeholder={t('schools.enterBuildingNumber')}
                 disabled={readOnly}
+                id="buildingNumber"
               />
             )}
           />
@@ -299,7 +300,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="postalCode"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterPostalCode')} disabled={readOnly} />
+              <Input {...field} placeholder={t('schools.enterPostalCode')} disabled={readOnly} id="postalCode" />
             )}
           />
         </FormField>

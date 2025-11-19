@@ -131,6 +131,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   placeholder={t('schools.enterSchoolNameAr')}
                   required
                   disabled={readOnly}
+                  id="schoolNameAr"
                 />
               )}
             />
@@ -151,6 +152,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   placeholder={t('schools.enterSchoolNameEn')}
                   required
                   disabled={readOnly}
+                  id="schoolNameEn"
                 />
               )}
             />
@@ -246,6 +248,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   icon={<img src={calendarIcon} alt="calendar" className="h-5 w-5" />}
                   disabled={readOnly}
                   className={'text-end'}
+                  id="foundationDate"
                 />
               </div>
             )}
@@ -268,6 +271,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                 placeholder={t('schools.writeAboutSchool')}
                 rows={4}
                 disabled={readOnly}
+                id="aboutSchool"
               />
             )}
           />
@@ -324,6 +328,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   placeholder={t('schools.writeCurrentSystem')}
                   rows={4}
                   disabled={readOnly}
+                  id="currentSystem"
                 />
               )}
             />
@@ -418,6 +423,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                     placeholder={t('schools.enterBankName')}
                     required
                     disabled={readOnly}
+                    id="bankName"
                   />
                 )}
               />
@@ -438,6 +444,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                     placeholder={t('schools.enterAccountNumber')}
                     required
                     disabled={readOnly}
+                    id="accountNumber"
                   />
                 )}
               />
@@ -460,6 +467,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                     placeholder={t('schools.enterIbanNumber')}
                     required
                     disabled={readOnly}
+                    id="ibanNumber"
                   />
                 )}
               />

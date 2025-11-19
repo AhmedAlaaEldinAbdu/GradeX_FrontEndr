@@ -165,6 +165,7 @@ export default function EditAcademicSystem() {
                             {...field}
                             placeholder={t('academicSystem.enterAcademicSystemAr')}
                             required
+                            id="nameAr"
                           />
                         )}
                       />
@@ -185,6 +186,7 @@ export default function EditAcademicSystem() {
                             {...field}
                             placeholder={t('academicSystem.enterAcademicSystemEn')}
                             required
+                            id="nameEn"
                           />
                         )}
                       />

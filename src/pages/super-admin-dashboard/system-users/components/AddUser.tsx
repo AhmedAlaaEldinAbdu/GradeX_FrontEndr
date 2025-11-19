@@ -183,6 +183,7 @@ export default function AddUser() {
                     type="text"
                     placeholder={t('rolesManagement.enterFullUserName')}
                     required
+                    id="fullName"
                   />
                 )}
               />
@@ -240,6 +241,7 @@ export default function AddUser() {
                     type="email"
                     placeholder={t('rolesManagement.enterEmail')}
                     required
+                    id="email"
                   />
                 )}
               />

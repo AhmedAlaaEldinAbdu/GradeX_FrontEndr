@@ -238,6 +238,7 @@ export default function AddRole() {
                   type="text"
                   placeholder={t('rolesManagement.enterRoleName')}
                   required
+                  id="roleName"
                 />
               )}
             />
@@ -260,6 +261,7 @@ export default function AddRole() {
                   {...field}
                   placeholder={t('rolesManagement.enterRoleDescription')}
                   rows={3}
+                  id="description"
                 />
               )}
             />

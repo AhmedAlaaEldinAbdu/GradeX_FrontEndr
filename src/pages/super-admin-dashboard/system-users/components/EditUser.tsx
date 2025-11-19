@@ -249,6 +249,7 @@ export default function EditUser() {
                     type="text"
                     placeholder={t('rolesManagement.enterFullUserName')}
                     required
+                    id="fullName"
                   />
                 )}
               />
@@ -306,6 +307,7 @@ export default function EditUser() {
                     type="email"
                     placeholder={t('rolesManagement.enterEmail')}
                     required
+                    id="email"
                   />
                 )}
               />

@@ -141,6 +141,7 @@ export default function EditEducationalStages() {
                           {...field}
                           placeholder={t('academicSystem.enterEducationalStageAr')}
                           required
+                          id={`nameAr`}
                         />
                       )}
                     />
@@ -161,6 +162,7 @@ export default function EditEducationalStages() {
                           {...field}
                           placeholder={t('academicSystem.enterEducationalStageEn')}
                           required
+                          id={`nameEn`}
                         />
                       )}
                     />
