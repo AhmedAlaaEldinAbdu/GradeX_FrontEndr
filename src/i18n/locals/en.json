@@ -170,6 +170,7 @@
     "title": "Academic System",
     "addAcademicSystem": "Add Academic System",
     "addEducationalStages": "Add Educational Stages",
+    "academicSystemAddedSuccessfully": "The academic system has been added successfully",
     "noAcademicSystemMessage": "No academic system has been added yet. You can start by adding your educational system to better organize curricula and manage subjects.",
     "searchBySystemName": "Search by system name",
     "educationSystem": "Education System",
