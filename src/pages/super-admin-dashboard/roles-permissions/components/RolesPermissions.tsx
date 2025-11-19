@@ -176,15 +176,14 @@ export default function RolesPermissions() {
         />
 
         {/* Delete Popup */}
-        {showDeletePopup && (
-          <DeletePopup
-            message="rolesManagement.confirmDeleteRole"
-            onConfirm={handleDeleteConfirm}
-            onCancel={() => setShowDeletePopup(false)}
-            iconSrc={BigTrashIcon}
-            isProcessing={isDeleting}
-          />
-        )}
+        <DeletePopup
+          open={showDeletePopup}
+          message="rolesManagement.confirmDeleteRole"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setShowDeletePopup(false)}
+          iconSrc={BigTrashIcon}
+          isProcessing={isDeleting}
+        />
       </div>
     </Card>
   );
