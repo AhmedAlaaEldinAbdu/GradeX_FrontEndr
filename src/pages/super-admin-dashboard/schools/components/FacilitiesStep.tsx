@@ -491,27 +491,29 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
       )}
 
       {/* Add Facility Details Popup (Edit Mode) */}
-      {showAddDetailsPopup && selectedFacilityForDetails && (
-        <AddFacilityDetailsPopup
-          facilityId={selectedFacilityForDetails.id}
-          facilityName={selectedFacilityForDetails.name}
-          existingDetails={facilityDetails[selectedFacilityForDetails.id]}
-          onConfirm={handleSaveFacilityDetails}
-          onCancel={handleCancelAddDetails}
-        />
-      )}
+      <AddFacilityDetailsPopup
+        open={showAddDetailsPopup && !!selectedFacilityForDetails}
+        facilityId={selectedFacilityForDetails?.id || ''}
+        facilityName={selectedFacilityForDetails?.name || ''}
+        existingDetails={
+          selectedFacilityForDetails ? facilityDetails[selectedFacilityForDetails.id] : undefined
+        }
+        onConfirm={handleSaveFacilityDetails}
+        onCancel={handleCancelAddDetails}
+      />
 
       {/* View Facility Details Popup (View Mode) */}
-      {showViewDetailsPopup && selectedFacilityForDetails && (
-        <AddFacilityDetailsPopup
-          facilityId={selectedFacilityForDetails.id}
-          facilityName={selectedFacilityForDetails.name}
-          existingDetails={facilityDetails[selectedFacilityForDetails.id]}
-          onConfirm={handleSaveFacilityDetails}
-          onCancel={handleCancelViewDetails}
-          readOnly={true}
-        />
-      )}
+      <AddFacilityDetailsPopup
+        open={showViewDetailsPopup && !!selectedFacilityForDetails}
+        facilityId={selectedFacilityForDetails?.id || ''}
+        facilityName={selectedFacilityForDetails?.name || ''}
+        existingDetails={
+          selectedFacilityForDetails ? facilityDetails[selectedFacilityForDetails.id] : undefined
+        }
+        onConfirm={handleSaveFacilityDetails}
+        onCancel={handleCancelViewDetails}
+        readOnly={true}
+      />
     </div>
   );
 };
