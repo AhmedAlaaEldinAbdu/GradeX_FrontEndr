@@ -254,12 +254,11 @@ export default function AcademicSystemTab() {
             t={t}
           />
 
-          {showAcademicDetails && selectedSystem && (
-            <AcademicDetailsPopup
-              system={selectedSystem}
-              onClose={() => setShowAcademicDetails(false)}
-            />
-          )}
+          <AcademicDetailsPopup
+            open={showAcademicDetails && !!selectedSystem}
+            system={selectedSystem!}
+            onClose={() => setShowAcademicDetails(false)}
+          />
         </div>
       ) : null}
     </Card>
