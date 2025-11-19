@@ -200,14 +200,13 @@ export default function Notifications() {
           />
 
           {/* Popups */}
-          {showDelete && (
-            <DeletePopup
-              message="notifications.confirmDelete"
-              onConfirm={handleDeleteConfirm}
-              onCancel={() => setShowDelete(false)}
-              iconSrc={BigTrashIcon}
-            />
-          )}
+          <DeletePopup
+            open={showDelete}
+            message="notifications.confirmDelete"
+            onConfirm={handleDeleteConfirm}
+            onCancel={() => setShowDelete(false)}
+            iconSrc={BigTrashIcon}
+          />
           {showPopupMessage && (
             <PopupMessage
               type="success"
