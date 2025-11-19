@@ -3,18 +3,27 @@ import { useTranslation } from 'react-i18next';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
 
 interface AcademicDetailsPopupProps {
+  open: boolean;
   system: AcademicSubSystemResponse;
   onClose: () => void;
 }
 
-export default function AcademicDetailsPopup({ system, onClose }: AcademicDetailsPopupProps) {
+export default function AcademicDetailsPopup({ open, system, onClose }: AcademicDetailsPopupProps) {
   const { t, i18n } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const currentLang = i18n.language as 'ar' | 'en';
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 10);
+    if (open) {
+      setTimeout(() => setIsVisible(true), 10);
+    } else {
+      setIsVisible(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
@@ -24,7 +33,7 @@ export default function AcademicDetailsPopup({ system, onClose }: AcademicDetail
     document.addEventListener('mousedown', handleClickOutside);
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [open]);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -40,6 +49,8 @@ export default function AcademicDetailsPopup({ system, onClose }: AcademicDetail
     currentLang === 'ar' ? country.arabicName : country.englishName
   );
   const gradeCount = system.gradeCount;
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
@@ -61,7 +72,9 @@ export default function AcademicDetailsPopup({ system, onClose }: AcademicDetail
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3 font-semibold text-gray-800">
               <span className="flex flex-shrink-0">{t('academicSystem.academicSystemName')}:</span>
-              <span className="py-1 text-sm text-gray-700">{currentLang === 'ar' ? system.nameAr : system.nameEn}</span>
+              <span className="py-1 text-sm text-gray-700">
+                {currentLang === 'ar' ? system.nameAr : system.nameEn}
+              </span>
             </div>
             <div className="flex items-start gap-3 font-semibold text-gray-800">
               <span className="flex flex-shrink-0">{t('academicSystem.systemType')}:</span>{' '}
