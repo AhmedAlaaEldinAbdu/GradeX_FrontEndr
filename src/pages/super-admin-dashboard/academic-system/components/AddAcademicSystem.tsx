@@ -22,6 +22,7 @@ import { addAcademicSystem } from '@/redux/features/academic-system/academicSyst
 import type { CreateAcademicSystem } from '@/services/api/types/academic-system.types';
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import AddSystemTypePopup from '../popups/AddSystemTypePopup';
+import { selectIsCreatingAcademicSystem } from '@/redux/features/academic-system';
 
 export default function AddAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -54,6 +55,8 @@ export default function AddAcademicSystem() {
     return state.academicSystems.validationErrors;
   });
 
+  const isCreating = useAppSelector(selectIsCreatingAcademicSystem);
+
   useEffect(() => {
     dispatch(fetchCountries());
     dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
@@ -62,7 +65,7 @@ export default function AddAcademicSystem() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<AcademicSystemProps>({
     resolver: yupResolver(AcademicSystemSchema),
     defaultValues: {
@@ -293,10 +296,10 @@ export default function AddAcademicSystem() {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800"
+              disabled={isCreating}
+              className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isSubmitting ? t('common.loading') : t('common.add')}
+              {isCreating ? t('common.saving') : t('common.add')}
             </button>
           </div>
         </form>
