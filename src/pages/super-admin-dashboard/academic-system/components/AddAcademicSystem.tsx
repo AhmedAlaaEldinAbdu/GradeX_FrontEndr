@@ -302,9 +302,10 @@ export default function AddAcademicSystem() {
         </form>
 
         {/* Popups */}
-        {showAddSystemTypePopup && (
-          <AddSystemTypePopup onCancel={() => setShowAddSystemTypePopup(false)} />
-        )}
+        <AddSystemTypePopup
+          open={showAddSystemTypePopup}
+          onCancel={() => setShowAddSystemTypePopup(false)}
+        />
 
         <PopupMessage
           open={showPopupMessage.show}
