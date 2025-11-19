@@ -1,5 +1,5 @@
 import React from 'react';
-import StudentManagement from './components/Schools';
+import Schools from './components/Schools';
 import PageHeader from '@gradex/shared/components/PageHeader';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
@@ -27,7 +27,7 @@ const SchoolsPage: React.FC = () => {
       />
 
       {/* Main Content */}
-      <StudentManagement />
+      <Schools />
     </div>
   );
 };
