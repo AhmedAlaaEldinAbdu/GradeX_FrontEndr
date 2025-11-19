@@ -154,14 +154,13 @@ export default function CountryHolidays() {
         )}
       </Card>
 
-      {showDeletePopup && (
-        <DeletePopup
-          message={t('officialHolidays.confirmDeleteHoliday')}
-          iconSrc={BigTrashIcon}
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => setShowDeletePopup(false)}
-        />
-      )}
+      <DeletePopup
+        open={showDeletePopup}
+        message={t('officialHolidays.confirmDeleteHoliday')}
+        iconSrc={BigTrashIcon}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setShowDeletePopup(false)}
+      />
 
       {showSuccessMessage && (
         <PopupMessage
