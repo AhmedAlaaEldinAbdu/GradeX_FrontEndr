@@ -162,16 +162,15 @@ export default function CountryHolidays() {
         onCancel={() => setShowDeletePopup(false)}
       />
 
-      {showSuccessMessage && (
-        <PopupMessage
-          type="success"
-          message={t('officialHolidays.holidayDeletedSuccessfully')}
-          autoClose={true}
-          iconSrc={BigSuccessIcon}
-          duration={3000}
-          onClose={() => setShowSuccessMessage(false)}
-        />
-      )}
+      <PopupMessage
+        open={showSuccessMessage}
+        type="success"
+        message={t('officialHolidays.holidayDeletedSuccessfully')}
+        autoClose={true}
+        iconSrc={BigSuccessIcon}
+        duration={3000}
+        onClose={() => setShowSuccessMessage(false)}
+      />
     </div>
   );
 }

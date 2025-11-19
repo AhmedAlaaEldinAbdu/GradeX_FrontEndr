@@ -265,16 +265,15 @@ export default function NotificationForm({ mode, initialData }: NotificationForm
       </form>
 
       {/* Success Popup */}
-      {showPopupMessage && (
-        <PopupMessage
-          type="success"
-          message={successMessage}
-          iconSrc={BigSuccessIcon}
-          autoClose={true}
-          duration={1000}
-          onClose={handleClosePopup}
-        />
-      )}
+      <PopupMessage
+        open={showPopupMessage}
+        type="success"
+        message={successMessage}
+        iconSrc={BigSuccessIcon}
+        autoClose={true}
+        duration={1000}
+        onClose={handleClosePopup}
+      />
     </>
   );
 }

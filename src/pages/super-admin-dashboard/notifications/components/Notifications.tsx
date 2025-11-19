@@ -207,15 +207,14 @@ export default function Notifications() {
             onCancel={() => setShowDelete(false)}
             iconSrc={BigTrashIcon}
           />
-          {showPopupMessage && (
-            <PopupMessage
-              type="success"
-              message="notifications.notificationDeleted"
-              iconSrc={BigSuccessIcon}
-              autoClose={true}
-              onClose={() => setShowPopupMessage(false)}
-            />
-          )}
+          <PopupMessage
+            open={showPopupMessage}
+            type="success"
+            message="notifications.notificationDeleted"
+            iconSrc={BigSuccessIcon}
+            autoClose={true}
+            onClose={() => setShowPopupMessage(false)}
+          />
         </div>
       )}
     </Card>

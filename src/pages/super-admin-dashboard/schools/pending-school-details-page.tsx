@@ -136,18 +136,17 @@ const PendingSchoolDetailsPage: React.FC = () => {
   return (
     <>
       {/* Success Popup */}
-      {showSuccessPopup && (
-        <PopupMessage
-          type="success"
-          message="schools.schoolAcceptedSuccessfully"
-          iconSrc={BigSuccessIcon}
-          autoClose={true}
-          onClose={() => {
-            setShowSuccessPopup(false);
-            navigate('/schools');
-          }}
-        />
-      )}
+      <PopupMessage
+        open={showSuccessPopup}
+        type="success"
+        message="schools.schoolAcceptedSuccessfully"
+        iconSrc={BigSuccessIcon}
+        autoClose={true}
+        onClose={() => {
+          setShowSuccessPopup(false);
+          navigate('/schools');
+        }}
+      />
 
       {/* Edit Request Popup */}
       <EditRequestPopup

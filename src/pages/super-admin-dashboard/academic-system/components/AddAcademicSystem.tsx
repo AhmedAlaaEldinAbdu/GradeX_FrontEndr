@@ -305,16 +305,16 @@ export default function AddAcademicSystem() {
         {showAddSystemTypePopup && (
           <AddSystemTypePopup onCancel={() => setShowAddSystemTypePopup(false)} />
         )}
-        {showPopupMessage.show && (
-          <PopupMessage
-            type={showPopupMessage.type}
-            message={showPopupMessage.message}
-            iconSrc={BigSuccessIcon}
-            autoClose={true}
-            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-            navigateAfterClose={-1}
-          />
-        )}
+
+        <PopupMessage
+          open={showPopupMessage.show}
+          type={showPopupMessage.type}
+          message={showPopupMessage.message}
+          iconSrc={BigSuccessIcon}
+          autoClose={true}
+          onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+          navigateAfterClose={-1}
+        />
       </div>
     </Card>
   );

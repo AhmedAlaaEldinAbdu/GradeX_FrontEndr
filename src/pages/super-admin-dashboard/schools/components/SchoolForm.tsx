@@ -256,15 +256,14 @@ const SchoolForm = ({
   return (
     <FormProvider {...form}>
       {/* Success Popup */}
-      {showSuccessPopup && (
-        <PopupMessage
-          type="success"
-          message={mode === 'add' ? 'schools.schoolAdded' : 'schools.schoolUpdated'}
-          iconSrc={BigSuccessIcon}
-          autoClose={false}
-          onClose={handleCloseSuccessPopup}
-        />
-      )}
+      <PopupMessage
+        open={showSuccessPopup}
+        type="success"
+        message={mode === 'add' ? 'schools.schoolAdded' : 'schools.schoolUpdated'}
+        iconSrc={BigSuccessIcon}
+        autoClose={false}
+        onClose={handleCloseSuccessPopup}
+      />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Step Indicator */}

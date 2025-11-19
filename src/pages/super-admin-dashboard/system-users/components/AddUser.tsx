@@ -340,15 +340,14 @@ export default function AddUser() {
       </form>
 
       {/* Popups */}
-      {showPopupMessage.show && (
-        <PopupMessage
-          type={showPopupMessage.type}
-          message={showPopupMessage.message}
-          iconSrc={BigSuccessIcon}
-          autoClose={false}
-          onClose={handleCloseSuccessPopup}
-        />
-      )}
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        iconSrc={BigSuccessIcon}
+        autoClose={false}
+        onClose={handleCloseSuccessPopup}
+      />
     </FormProvider>
   );
 }

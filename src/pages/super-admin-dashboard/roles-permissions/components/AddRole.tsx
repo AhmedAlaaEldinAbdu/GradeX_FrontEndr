@@ -342,16 +342,15 @@ export default function AddRole() {
       </form>
 
       {/* Popups */}
-      {showPopupMessage.show && (
-        <PopupMessage
-          type={showPopupMessage.type}
-          message={showPopupMessage.message}
-          iconSrc={BigSuccessIcon}
-          autoClose={false}
-          onClose={handleCloseSuccessPopup}
-          navigateAfterClose={-1}
-        />
-      )}
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        iconSrc={BigSuccessIcon}
+        autoClose={false}
+        onClose={handleCloseSuccessPopup}
+        navigateAfterClose={-1}
+      />
     </FormProvider>
   );
 }

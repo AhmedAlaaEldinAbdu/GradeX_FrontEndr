@@ -238,16 +238,15 @@ export default function AddEducationalStages() {
         </form>
 
         {/* Popups */}
-        {showPopupMessage.show && (
-          <PopupMessage
-            type={showPopupMessage.type}
-            message={showPopupMessage.message}
-            iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-            autoClose={true}
-            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-            navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
-          />
-        )}
+        <PopupMessage
+          open={showPopupMessage.show}
+          type={showPopupMessage.type}
+          message={showPopupMessage.message}
+          iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+          autoClose={true}
+          onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+          navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
+        />
       </div>
     </Card>
   );

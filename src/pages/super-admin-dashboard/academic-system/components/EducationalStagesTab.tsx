@@ -305,15 +305,14 @@ export default function EducationalStagesTab() {
             iconSrc={BigTrashIcon}
             isProcessing={isDeleting}
           />
-          {showPopupMessage && (
-            <PopupMessage
-              type="success"
-              message="academicSystem.systemDeletedSuccessfully"
-              iconSrc={BigSuccessIcon}
-              autoClose={true}
-              onClose={() => setShowPopupMessage(false)}
-            />
-          )}
+          <PopupMessage
+            open={showPopupMessage}
+            type="success"
+            message="academicSystem.systemDeletedSuccessfully"
+            iconSrc={BigSuccessIcon}
+            autoClose={true}
+            onClose={() => setShowPopupMessage(false)}
+          />
         </div>
       ) : null}
     </Card>

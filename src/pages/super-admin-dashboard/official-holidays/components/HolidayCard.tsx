@@ -158,15 +158,14 @@ export default function HolidayCard({
         onCancel={() => setShowDeletePopup(false)}
         iconSrc={BigTrashIcon}
       />
-      {showPopupMessage && (
-        <PopupMessage
-          type="success"
-          message="officialHolidays.holidayDeletedSuccessfully"
-          iconSrc={BigSuccessIcon}
-          autoClose={true}
-          onClose={() => setShowPopupMessage(false)}
-        />
-      )}
+      <PopupMessage
+        open={showPopupMessage}
+        type="success"
+        message="officialHolidays.holidayDeletedSuccessfully"
+        iconSrc={BigSuccessIcon}
+        autoClose={true}
+        onClose={() => setShowPopupMessage(false)}
+      />
     </div>
   );
 }
