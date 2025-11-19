@@ -151,14 +151,13 @@ export default function HolidayCard({
         </div>
       </div>
       {/* Popups */}
-      {showDeletePopup && (
-        <DeletePopup
-          message="officialHolidays.confirmDeleteHoliday"
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => setShowDeletePopup(false)}
-          iconSrc={BigTrashIcon}
-        />
-      )}
+      <DeletePopup
+        open={showDeletePopup}
+        message="officialHolidays.confirmDeleteHoliday"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setShowDeletePopup(false)}
+        iconSrc={BigTrashIcon}
+      />
       {showPopupMessage && (
         <PopupMessage
           type="success"
