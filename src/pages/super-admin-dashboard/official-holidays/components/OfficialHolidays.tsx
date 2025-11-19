@@ -15,6 +15,7 @@ import {
 } from '@gradex/redux/features/official-holidays';
 import Loading from '@/shared/components/Loading';
 import { groupHolidaysByCountry, filterCountriesBySearch } from '../utils/holiday.utils';
+import NotFoundMessage from '@/shared/components/NotFoundMessage';
 
 export default function OfficialHolidays() {
   const { t, i18n } = useTranslation();
@@ -128,7 +129,7 @@ export default function OfficialHolidays() {
 
           {/* No Results */}
           {!isLoading && filteredCountries.length === 0 && searchTerm && (
-            <div className="py-12 text-center text-gray-500">{t('common.noResults')}</div>
+            <NotFoundMessage message={'common.noResults'} />
           )}
         </div>
       )}
