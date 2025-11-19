@@ -3,12 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface EditRequestPopupProps {
+  open: boolean;
   onConfirm: (message: string) => void;
   onCancel: () => void;
   isProcessing?: boolean;
 }
 
 export default function EditRequestPopup({
+  open,
   onConfirm,
   onCancel,
   isProcessing,
@@ -21,13 +23,23 @@ export default function EditRequestPopup({
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 10);
+    if (open) {
+      setTimeout(() => setIsVisible(true), 10);
+      setMessage('');
+    } else {
+      setIsVisible(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
     const handleClickOutside = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) handleClose();
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [open]);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -45,6 +57,8 @@ export default function EditRequestPopup({
     }
     onConfirm(message);
   };
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
