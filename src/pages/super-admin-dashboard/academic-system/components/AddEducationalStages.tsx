@@ -113,6 +113,7 @@ export default function AddEducationalStages() {
                     <FormField
                       label={t('academicSystem.educationalStageAr')}
                       required
+                      htmlFor={`educationalStages.${index}.nameAr`}
                       error={
                         errors.educationalStages?.[index]?.nameAr?.message &&
                         t(errors.educationalStages?.[index]?.nameAr.message)
@@ -135,6 +136,7 @@ export default function AddEducationalStages() {
                     <FormField
                       label={t('academicSystem.educationalStageEn')}
                       required
+                      htmlFor={`educationalStages.${index}.nameEn`}
                       error={
                         errors.educationalStages?.[index]?.nameEn?.message &&
                         t(errors.educationalStages?.[index]?.nameEn.message)
@@ -177,6 +179,7 @@ export default function AddEducationalStages() {
                   <FormField
                     label={t('academicSystem.academicSystemName')}
                     required
+                    htmlFor={`educationalStages.${index}.academicSystem`}
                     error={
                       errors.educationalStages?.[index]?.academicSystem?.message &&
                       t(errors.educationalStages[index]?.academicSystem.message)

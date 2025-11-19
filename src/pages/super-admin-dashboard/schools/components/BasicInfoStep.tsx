@@ -119,6 +119,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <FormField
             label={t('schools.schoolNameAr')}
             required
+            htmlFor="schoolNameAr"
             error={errors.schoolNameAr?.message && t(errors.schoolNameAr.message)}
           >
             <Controller
@@ -138,6 +139,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <FormField
             label={t('schools.schoolNameEn')}
             required
+            htmlFor="schoolNameEn"
             error={errors.schoolNameEn?.message && t(errors.schoolNameEn.message)}
           >
             <Controller
@@ -160,6 +162,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <FormField
             label={t('schools.academicSystem')}
             required
+            htmlFor="academicSystem"
             error={errors.academicSystem?.message && t(errors.academicSystem.message)}
           >
             <Controller
@@ -198,6 +201,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <FormField
             label={t('schools.countryWithAl')}
             required
+            htmlFor="country"
             error={errors.country?.message && t(errors.country.message)}
           >
             <Controller
@@ -227,6 +231,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         <FormField
           label={t('schools.foundationDate')}
           required
+          htmlFor="foundationDate"
           error={errors.foundationDate?.message && t(errors.foundationDate.message)}
         >
           <Controller
@@ -251,6 +256,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         <FormField
           label={t('schools.aboutSchool')}
           optional
+          htmlFor="aboutSchool"
           error={errors.aboutSchool?.message && t(errors.aboutSchool.message)}
         >
           <Controller
@@ -306,6 +312,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <FormField
             label={t('schools.currentSystem')}
             required
+            htmlFor="currentSystem"
             error={errors.currentSystem?.message && t(errors.currentSystem.message)}
           >
             <Controller
@@ -399,6 +406,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <FormField
               label={t('schools.bankName')}
               required
+              htmlFor="bankName"
               error={errors.bankName?.message && t(errors.bankName.message)}
             >
               <Controller
@@ -418,6 +426,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <FormField
               label={t('schools.accountNumber')}
               required
+              htmlFor="accountNumber"
               error={errors.accountNumber?.message && t(errors.accountNumber.message)}
             >
               <Controller
@@ -439,6 +448,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <FormField
               label={t('schools.ibanNumber')}
               required
+              htmlFor="ibanNumber"
               error={errors.ibanNumber?.message && t(errors.ibanNumber.message)}
             >
               <Controller

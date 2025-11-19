@@ -176,6 +176,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
         <FormField
           label={t('schools.countryWithAl')}
           required
+          htmlFor="addressCountry"
           error={errors.addressCountry?.message && t(errors.addressCountry.message)}
         >
           <Controller
@@ -203,6 +204,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
         <FormField
           label={t('schools.region')}
           required
+          htmlFor="region"
           error={errors.region?.message && t(errors.region.message)}
         >
           <Controller
@@ -220,6 +222,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
         <FormField
           label={t('schools.city')}
           required
+          htmlFor="city"
           error={errors.city?.message && t(errors.city.message)}
         >
           <Controller
@@ -234,6 +237,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
         <FormField
           label={t('schools.district')}
           required
+          htmlFor="district"
           error={errors.district?.message && t(errors.district.message)}
         >
           <Controller
@@ -251,6 +255,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
         <FormField
           label={t('schools.street')}
           required
+          htmlFor="street"
           error={errors.street?.message && t(errors.street.message)}
         >
           <Controller
@@ -265,6 +270,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
         <FormField
           label={t('schools.buildingNumber')}
           required
+          htmlFor="buildingNumber"
           error={errors.buildingNumber?.message && t(errors.buildingNumber.message)}
         >
           <Controller
@@ -286,6 +292,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
         <FormField
           label={t('schools.postalCode')}
           required
+          htmlFor="postalCode"
           error={errors.postalCode?.message && t(errors.postalCode.message)}
         >
           <Controller

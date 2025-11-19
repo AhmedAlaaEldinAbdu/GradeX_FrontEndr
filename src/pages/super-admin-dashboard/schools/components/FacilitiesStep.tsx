@@ -123,6 +123,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
         <FormField
           label={t('schools.facilitiesSection')}
           required
+          htmlFor="facilities"
           error={errors.facilities?.message ? t(errors.facilities.message) : undefined}
         >
           <Controller

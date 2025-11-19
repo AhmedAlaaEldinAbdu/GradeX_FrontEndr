@@ -8,6 +8,7 @@ interface FormFieldProps {
   optional?: boolean;
   error?: string;
   children: React.ReactNode;
+  htmlFor?: string;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -16,6 +17,7 @@ const FormField: React.FC<FormFieldProps> = ({
   optional = false,
   error,
   children,
+  htmlFor,
 }) => {
   const { t } = useTranslation();
 
@@ -23,6 +25,7 @@ const FormField: React.FC<FormFieldProps> = ({
     <div>
       <label
         className={`mb-2 block text-right text-sm font-medium text-gray-700 ${required && 'required'}`}
+        htmlFor={htmlFor}
       >
         {label}
         {/* {required && <span className="text-red-500">*</span>} */}

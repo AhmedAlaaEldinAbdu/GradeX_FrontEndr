@@ -226,6 +226,7 @@ export default function AddRole() {
           <FormField
             label={t('rolesManagement.roleName')}
             required
+            htmlFor="roleName"
             error={errors.roleName?.message && t(errors.roleName.message)}
           >
             <Controller
@@ -248,6 +249,7 @@ export default function AddRole() {
           <FormField
             label={t('rolesManagement.description')}
             optional
+            htmlFor="description"
             error={errors.description?.message && t(errors.description.message)}
           >
             <Controller

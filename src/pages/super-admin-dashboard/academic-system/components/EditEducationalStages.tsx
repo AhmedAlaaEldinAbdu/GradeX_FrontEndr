@@ -130,6 +130,7 @@ export default function EditEducationalStages() {
                   <FormField
                     label={t('academicSystem.educationalStageAr')}
                     required
+                    htmlFor={`nameAr`}
                     error={errors.nameAr?.message && t(errors.nameAr.message)}
                   >
                     <Controller
@@ -149,6 +150,7 @@ export default function EditEducationalStages() {
                   <FormField
                     label={t('academicSystem.educationalStageEn')}
                     required
+                    htmlFor={`nameEn`}
                     error={errors.nameEn?.message && t(errors.nameEn.message)}
                   >
                     <Controller
@@ -175,6 +177,7 @@ export default function EditEducationalStages() {
                 <FormField
                   label={t('academicSystem.academicSystemName')}
                   required
+                  htmlFor={`academicSystem`}
                   error={errors.academicSystem?.message && t(errors.academicSystem.message)}
                 >
                   <Controller

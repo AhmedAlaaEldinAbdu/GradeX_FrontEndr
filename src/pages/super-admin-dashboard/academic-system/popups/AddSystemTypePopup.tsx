@@ -106,6 +106,7 @@ export default function AddSystemTypePopup({ onConfirm, onCancel }: AddSystemTyp
               <FormField
                 label={t('academicSystem.systemTypeAr')}
                 required
+                htmlFor="systemTypeAr"
                 error={errors.nameAr?.message && t(errors.nameAr.message)}
               >
                 <Controller
@@ -127,6 +128,7 @@ export default function AddSystemTypePopup({ onConfirm, onCancel }: AddSystemTyp
               <FormField
                 label={t('academicSystem.systemTypeEn')}
                 required
+                htmlFor="systemTypeEn"
                 error={errors.nameEn?.message && t(errors.nameEn.message)}
               >
                 <Controller

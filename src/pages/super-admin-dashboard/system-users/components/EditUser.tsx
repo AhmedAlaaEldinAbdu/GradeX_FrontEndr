@@ -233,6 +233,7 @@ export default function EditUser() {
             <FormField
               label={t('rolesManagement.fullUserName')}
               required
+              htmlFor="fullName"
               error={
                 showValidationErrors && errors.fullName?.message
                   ? t(errors.fullName.message)
@@ -259,6 +260,7 @@ export default function EditUser() {
             <FormField
               label={t('rolesManagement.phoneNumber')}
               required
+              htmlFor="phoneNumber"
               error={
                 showValidationErrors && errors.phoneNumber?.message
                   ? t(errors.phoneNumber.message)
@@ -290,6 +292,7 @@ export default function EditUser() {
             <FormField
               label={t('rolesManagement.email')}
               required
+              htmlFor="email"
               error={
                 showValidationErrors && errors.email?.message ? t(errors.email.message) : undefined
               }
@@ -314,6 +317,7 @@ export default function EditUser() {
             <FormField
               label={t('rolesManagement.roleName')}
               required
+              htmlFor="roleId"
               error={
                 showValidationErrors && errors.roleId?.message
                   ? t(errors.roleId.message)
@@ -361,6 +365,7 @@ export default function EditUser() {
             <FormField
               label={t('rolesManagement.country')}
               required
+              htmlFor="lkCountryId"
               error={
                 showValidationErrors && errors.lkCountryId?.message
                   ? t(errors.lkCountryId.message)

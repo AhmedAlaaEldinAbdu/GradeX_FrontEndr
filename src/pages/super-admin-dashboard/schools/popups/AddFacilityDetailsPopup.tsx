@@ -101,8 +101,9 @@ export default function AddFacilityDetailsPopup({
 
           {/* Description Field */}
           <div className="w-full text-right">
-            <FormField label={t('schools.facilityDescription')} optional>
+            <FormField htmlFor="description" label={t('schools.facilityDescription')} optional>
               <textarea
+                id="description"
                 value={description}
                 onChange={(e) => !readOnly && setDescription(e.target.value)}
                 placeholder={readOnly ? '' : t('schools.enterFacilityDescription')}

@@ -129,6 +129,7 @@ export default function AddAcademicSystem() {
                     <FormField
                       label={t('academicSystem.academicSystemAr')}
                       required
+                      htmlFor={`academicSystems.${index}.nameAr`}
                       error={
                         errors.academicSystems?.[index]?.nameAr?.message &&
                         t(errors.academicSystems[index].nameAr.message)
@@ -151,6 +152,7 @@ export default function AddAcademicSystem() {
                     <FormField
                       label={t('academicSystem.academicSystemEn')}
                       required
+                      htmlFor={`academicSystems.${index}.nameEn`}
                       error={
                         errors.academicSystems?.[index]?.nameEn?.message &&
                         t(errors.academicSystems[index].nameEn.message)
@@ -193,6 +195,7 @@ export default function AddAcademicSystem() {
                   <FormField
                     label={t('academicSystem.systemType')}
                     required
+                    htmlFor={`academicSystems.${index}.subSystemIds`}
                     error={
                       errors.academicSystems?.[index]?.subSystemIds?.message &&
                       t(errors.academicSystems[index]?.subSystemIds.message)
@@ -244,6 +247,7 @@ export default function AddAcademicSystem() {
                   <FormField
                     label={t('academicSystem.countryName')}
                     required
+                    htmlFor={`academicSystems.${index}.countryIds`}
                     error={
                       errors.academicSystems?.[index]?.countryIds?.message &&
                       t(errors.academicSystems[index].countryIds.message)

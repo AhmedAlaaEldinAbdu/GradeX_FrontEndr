@@ -28,6 +28,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
         <FormField
           label={t('schools.email')}
           required
+          htmlFor="email"
           error={errors.email?.message && t(errors.email.message)}
         >
           <Controller
@@ -47,6 +48,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
         <FormField
           label={t('schools.website')}
           optional
+          htmlFor="website"
           error={errors.website?.message && t(errors.website.message)}
         >
           <Controller
@@ -69,6 +71,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
         <FormField
           label={t('schools.landline')}
           required
+          htmlFor="landline"
           error={errors.landline?.message && t(errors.landline.message)}
         >
           <Controller
@@ -87,6 +90,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
         <FormField
           label={t('schools.mobile')}
           required
+          htmlFor="phoneNumber"
           error={errors.phoneNumber?.message && t(errors.phoneNumber.message)}
         >
           <Controller
@@ -109,6 +113,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
         <FormField
           label={t('schools.contactPerson')}
           required
+          htmlFor="contactPerson"
           error={errors.contactPerson?.message && t(errors.contactPerson.message)}
         >
           <Controller

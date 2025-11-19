@@ -153,6 +153,7 @@ export default function EditAcademicSystem() {
                   <div className="flex-grow">
                     <FormField
                       label={t('academicSystem.academicSystemAr')}
+                      htmlFor="nameAr"
                       required
                       error={errors.nameAr?.message && t(errors.nameAr.message)}
                     >
@@ -173,6 +174,7 @@ export default function EditAcademicSystem() {
                     <FormField
                       label={t('academicSystem.academicSystemEn')}
                       required
+                      htmlFor="nameEn"
                       error={errors.nameEn?.message && t(errors.nameEn.message)}
                     >
                       <Controller
@@ -199,6 +201,7 @@ export default function EditAcademicSystem() {
                   <FormField
                     label={t('academicSystem.systemType')}
                     required
+                    htmlFor="subSystemIds"
                     error={errors.subSystemIds?.message && t(errors.subSystemIds.message)}
                   >
                     <Controller
@@ -245,6 +248,7 @@ export default function EditAcademicSystem() {
                   <FormField
                     label={t('academicSystem.countryName')}
                     required
+                    htmlFor="countryIds"
                     error={errors.countryIds?.message && t(errors.countryIds.message)}
                   >
                     <Controller
