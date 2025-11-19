@@ -170,6 +170,7 @@
     "title": "النظام الأكاديمي",
     "addAcademicSystem": "إضافة نظام أكاديمي",
     "addEducationalStages": "إضافة مراحل تعليمية",
+    "academicSystemAddedSuccessfully": "تم إضافة النظام الأكاديمي بنجاح",
     "noAcademicSystemMessage": "لم يتم إضافة أي نظام تعليمي حتى الآن. يمكنك البدء بإضافة نظامك التعليمي لتنظيم المناهج وإدارة المواد بشكل أفضل.",
     "searchBySystemName": "بحث عن اسم النظام",
     "educationSystem": "نظام التعليم",

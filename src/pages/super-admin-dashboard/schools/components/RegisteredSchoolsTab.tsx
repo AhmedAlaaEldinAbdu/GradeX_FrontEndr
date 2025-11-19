@@ -129,7 +129,14 @@ export default function RegisteredSchoolsTab({
       accessor: (row: School) => {
         const schoolName =
           currentLang === 'ar' ? row?.nameAr || row?.name || '-' : row?.nameEn || row?.name || '-';
-        return <Link to={`/schools/view-school/${row?.id}`}>{schoolName}</Link>;
+        return (
+          <Link
+            to={`/schools/view-school/${row?.id}`}
+            className="cursor-pointer hover:text-green-600"
+          >
+            {schoolName}
+          </Link>
+        );
       },
       headerClassName: 'min-w-[150px]',
     },

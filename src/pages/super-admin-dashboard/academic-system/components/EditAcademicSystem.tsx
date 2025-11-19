@@ -307,9 +307,10 @@ export default function EditAcademicSystem() {
         )}
 
         {/* Popups */}
-        {showAddSystemTypePopup && (
-          <AddSystemTypePopup onCancel={() => setShowAddSystemTypePopup(false)} />
-        )}
+        <AddSystemTypePopup
+          open={showAddSystemTypePopup}
+          onCancel={() => setShowAddSystemTypePopup(false)}
+        />
         <PopupMessage
           open={showPopupMessage.show}
           type={showPopupMessage.type}

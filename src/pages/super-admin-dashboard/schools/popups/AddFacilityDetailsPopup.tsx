@@ -4,6 +4,7 @@ import type { FacilityDetails } from '../types/school.types';
 import FormField from '@/shared/components/FormField';
 
 interface AddFacilityDetailsPopupProps {
+  open: boolean;
   facilityId: string;
   facilityName: string;
   existingDetails?: FacilityDetails;
@@ -13,6 +14,7 @@ interface AddFacilityDetailsPopupProps {
 }
 
 export default function AddFacilityDetailsPopup({
+  open,
   facilityId,
   facilityName,
   existingDetails,
@@ -41,13 +43,29 @@ export default function AddFacilityDetailsPopup({
   }, [onCancel]);
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 10);
+    if (open) {
+      setTimeout(() => setIsVisible(true), 10);
+      setDescription(existingDetails?.description || '');
+      setImageFile(existingDetails?.imageFile || null);
+      setImageFileName(
+        existingDetails?.imageFile?.name ||
+          (existingDetails?.imageUrl ? existingDetails.imageUrl.split('/').pop() : undefined)
+      );
+      setHasExistingImage(!!(existingDetails?.imageFile || existingDetails?.imageUrl));
+    } else {
+      setIsVisible(false);
+    }
+  }, [open, existingDetails]);
+
+  useEffect(() => {
+    if (!open) return;
+
     const handleClickOutside = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) handleClose();
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [handleClose]);
+  }, [open, handleClose]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -75,6 +93,8 @@ export default function AddFacilityDetailsPopup({
 
     onConfirm(facilityDetails);
   };
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">

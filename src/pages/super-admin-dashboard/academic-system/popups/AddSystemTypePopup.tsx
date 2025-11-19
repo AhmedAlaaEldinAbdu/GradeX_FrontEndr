@@ -5,7 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { addAcademicSubSystem, getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
+import {
+  addAcademicSubSystem,
+  getAcademicSubSystems,
+} from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import { useToast } from '@/shared/context/ToastContext';
 import {
   AcademicSubsystemSchema,
@@ -13,6 +16,7 @@ import {
 } from '@/validations/academic-subsystem-validations';
 
 interface AddSystemTypePopupProps {
+  open: boolean;
   onConfirm?: (isSuccess: boolean) => void;
   onCancel: () => void;
 }
@@ -22,7 +26,7 @@ interface AddSystemTypeForm {
   nameEn: string;
 }
 
-export default function AddSystemTypePopup({ onConfirm, onCancel }: AddSystemTypePopupProps) {
+export default function AddSystemTypePopup({ open, onConfirm, onCancel }: AddSystemTypePopupProps) {
   const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -41,7 +45,16 @@ export default function AddSystemTypePopup({ onConfirm, onCancel }: AddSystemTyp
   });
 
   useEffect(() => {
-    setTimeout(() => setIsVisible(true), 10);
+    if (open) {
+      setTimeout(() => setIsVisible(true), 10);
+      reset();
+    } else {
+      setIsVisible(false);
+    }
+  }, [open, reset]);
+
+  useEffect(() => {
+    if (!open) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
@@ -50,7 +63,7 @@ export default function AddSystemTypePopup({ onConfirm, onCancel }: AddSystemTyp
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [open]);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -62,7 +75,7 @@ export default function AddSystemTypePopup({ onConfirm, onCancel }: AddSystemTyp
       .unwrap()
       .then((res) => {
         if (res.isSuccess) {
-          dispatch(getAcademicSubSystems({pageIndex: 1, pageSize: 1000}));
+          dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
           handleClose();
           reset();
           onConfirm?.(true);
@@ -80,6 +93,8 @@ export default function AddSystemTypePopup({ onConfirm, onCancel }: AddSystemTyp
         });
       });
   });
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
