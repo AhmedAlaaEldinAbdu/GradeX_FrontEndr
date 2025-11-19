@@ -67,7 +67,7 @@ const Pagination: React.FC<PaginationProps> = ({
           }`}
         >
           <span className="flex items-center gap-1 text-center">
-            <img src={ArrowRightIcon} alt="ArrowIcon" className="" />
+            <img src={ArrowRightIcon} alt="ArrowIcon" className={currentPage === 1 ? 'opacity-50' : ''} />
             <span>{t('actions.previous')}</span>
           </span>
         </button>
@@ -104,7 +104,7 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           <span className="flex items-center gap-1 text-center">
             <span>{t('actions.next')}</span>
-            <img src={ArrowLeftIcon} alt="ArrowIcon" className="" />
+            <img src={ArrowLeftIcon} alt="ArrowIcon" className={currentPage === totalPages ? 'opacity-50' : ''} />
           </span>
         </button>
       </div>

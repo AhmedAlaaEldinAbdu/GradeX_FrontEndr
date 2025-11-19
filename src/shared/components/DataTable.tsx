@@ -3,6 +3,7 @@ import Table from './Table';
 import Pagination from './Pagination';
 import Loading from './Loading';
 import SearchInput from './SearchInput';
+import NotFoundMessage from './NotFoundMessage';
 
 export interface FilterConfig {
   type: 'search' | 'select' | 'custom';
@@ -225,9 +226,7 @@ export default function DataTable<T>({
           {/* Table */}
           <div className="overflow-x-auto">
             {!Array.isArray(data) || data.length === 0 ? (
-              <div className="py-10 text-center text-gray-500">
-                {emptyMessage || t('common.noDataFound')}
-              </div>
+              <NotFoundMessage message={emptyMessage} />
             ) : (
               <Table columns={columns} data={data} keyExtractor={keyExtractor} />
             )}
