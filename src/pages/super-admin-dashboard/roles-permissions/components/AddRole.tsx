@@ -22,14 +22,17 @@ export default function AddRole() {
   const [selectAll, setSelectAll] = useState(false);
   const [permissionGroups, setPermissionGroups] = useState<APIPermissionGroup[]>([]);
   const [isLoadingPermissions, setIsLoadingPermissions] = useState(true);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
 
-  // Initialize form with custom hook
   const { form, validateForm } = useRoleForm();
   const {
     control,
@@ -163,7 +166,11 @@ export default function AddRole() {
         })
       ).unwrap();
 
-      setShowSuccessPopup(true);
+      setShowPopupMessage({
+        show: true,
+        type: 'success',
+        message: t('rolesManagement.roleCreatedSuccessfully'),
+      });
       setTimeout(() => {
         navigate('/employees-administration/roles-permissions');
       }, 1500);
@@ -192,12 +199,11 @@ export default function AddRole() {
       return;
     }
 
-    // Use react-hook-form's handleSubmit
     form.handleSubmit(onFormSubmit)(e);
   };
 
   const handleCloseSuccessPopup = () => {
-    setShowSuccessPopup(false);
+    setShowPopupMessage({ ...showPopupMessage, show: false });
     navigate('/employees-administration/roles-permissions');
   };
 
@@ -211,17 +217,6 @@ export default function AddRole() {
 
   return (
     <FormProvider {...form}>
-      {/* Success Popup */}
-      {showSuccessPopup && (
-        <PopupMessage
-          type="success"
-          message="rolesManagement.roleCreatedSuccessfully"
-          iconSrc={BigSuccessIcon}
-          autoClose={false}
-          onClose={handleCloseSuccessPopup}
-        />
-      )}
-
       <form
         onSubmit={handleSubmit}
         className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
@@ -345,6 +340,18 @@ export default function AddRole() {
           </button>
         </div>
       </form>
+
+      {/* Popups */}
+      {showPopupMessage.show && (
+        <PopupMessage
+          type={showPopupMessage.type}
+          message={showPopupMessage.message}
+          iconSrc={BigSuccessIcon}
+          autoClose={false}
+          onClose={handleCloseSuccessPopup}
+          navigateAfterClose={-1}
+        />
+      )}
     </FormProvider>
   );
 }

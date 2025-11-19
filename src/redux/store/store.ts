@@ -8,6 +8,7 @@ import academicSubSystemsReducer from '../features/academic-subsystem/academicSu
 import educationalStagesReducer from '../features/educational-stages/educationalStagesSlice';
 import rolesReducer from '../features/roles/rolesSlice';
 import userManagementReducer from '../features/user-management/userManagementSlice';
+import officialHolidaysReducer from '../features/official-holidays';
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     educationalStages: educationalStagesReducer,
     roles: rolesReducer,
     userManagement: userManagementReducer,
+    officialHolidays: officialHolidaysReducer,
   },
 });
 

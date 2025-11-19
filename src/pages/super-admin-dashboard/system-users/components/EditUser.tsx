@@ -53,7 +53,11 @@ export default function EditUser() {
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
   // Initialize form with custom hook
   const { form } = useUserForm();
@@ -179,7 +183,11 @@ export default function EditUser() {
 
       if (updateUser.fulfilled.match(resultAction)) {
         console.log('Update successful, showing popup');
-        setShowSuccessPopup(true);
+        setShowPopupMessage({
+          show: true,
+          type: 'success',
+          message: t('rolesManagement.userUpdatedSuccessfully'),
+        });
       } else if (updateUser.rejected.match(resultAction)) {
         console.error('Update rejected:', resultAction.payload);
         showToast({
@@ -201,7 +209,7 @@ export default function EditUser() {
   };
 
   const handleCloseSuccessPopup = () => {
-    setShowSuccessPopup(false);
+    setShowPopupMessage({ ...showPopupMessage, show: false });
     navigate('/employees-administration/system-users');
   };
 
@@ -215,16 +223,6 @@ export default function EditUser() {
 
   return (
     <FormProvider {...form}>
-      {showSuccessPopup && (
-        <PopupMessage
-          type="success"
-          message="rolesManagement.userUpdatedSuccessfully"
-          iconSrc={BigSuccessIcon}
-          autoClose={false}
-          onClose={handleCloseSuccessPopup}
-        />
-      )}
-
       <form
         onSubmit={handleSubmit}
         className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
@@ -414,6 +412,18 @@ export default function EditUser() {
           </button>
         </div>
       </form>
+
+      {/* Popups */}
+      {showPopupMessage.show && (
+        <PopupMessage
+          type={showPopupMessage.type}
+          message={showPopupMessage.message}
+          iconSrc={BigSuccessIcon}
+          autoClose={false}
+          onClose={handleCloseSuccessPopup}
+          navigateAfterClose={-1}
+        />
+      )}
     </FormProvider>
   );
 }
