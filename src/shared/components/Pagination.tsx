@@ -67,7 +67,11 @@ const Pagination: React.FC<PaginationProps> = ({
           }`}
         >
           <span className="flex items-center gap-1 text-center">
-            <img src={ArrowRightIcon} alt="ArrowIcon" className={currentPage === 1 ? 'opacity-50' : ''} />
+            <img
+              src={ArrowRightIcon}
+              alt="ArrowIcon"
+              className={currentPage === 1 ? 'opacity-50' : ''}
+            />
             <span>{t('actions.previous')}</span>
           </span>
         </button>
@@ -83,10 +87,11 @@ const Pagination: React.FC<PaginationProps> = ({
               <button
                 key={page}
                 onClick={() => onPageChange(page as number)}
+                disabled={currentPage === page}
                 className={`rounded border px-3 py-1 transition-colors ${
                   currentPage === page
-                    ? 'border-green-600 bg-green-600 text-white'
-                    : 'border-gray-300 hover:bg-gray-50'
+                    ? 'cursor-default border-green-600 bg-green-600 text-white'
+                    : 'cursor-pointer border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 {page}
@@ -104,7 +109,11 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           <span className="flex items-center gap-1 text-center">
             <span>{t('actions.next')}</span>
-            <img src={ArrowLeftIcon} alt="ArrowIcon" className={currentPage === totalPages ? 'opacity-50' : ''} />
+            <img
+              src={ArrowLeftIcon}
+              alt="ArrowIcon"
+              className={currentPage === totalPages ? 'opacity-50' : ''}
+            />
           </span>
         </button>
       </div>
