@@ -8,6 +8,7 @@ export interface Action {
   color?: string;
   onClick: () => void;
   hidden?: boolean;
+  disabled?: boolean;
 }
 
 interface ActionsDropdownProps {
@@ -93,7 +94,8 @@ export default function ActionsDropdown({
             <button
               key={action.id}
               onClick={() => handleActionClick(action)}
-              className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-right transition-colors ${
+              disabled={action.disabled}
+              className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-right transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                 action.color || 'text-gray-700 hover:bg-gray-100'
               }`}
               type="button"
