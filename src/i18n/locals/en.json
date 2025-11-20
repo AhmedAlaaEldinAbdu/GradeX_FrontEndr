@@ -588,6 +588,7 @@
     }
   },
   "officialHolidays": {
+    "title": "Official Holidays",
     "addHoliday": "Add Holiday",
     "noOfficialHolidays": "No official holidays have been added yet. You can start by adding official holidays to manage and organize them effectively.",
     "searchByCountryName": "Search by country name",
