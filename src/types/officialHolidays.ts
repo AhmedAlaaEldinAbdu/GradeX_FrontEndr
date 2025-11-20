@@ -1,5 +1,5 @@
 export interface FixedHoliday {
-  id: number;
+  id: string;
   date: string;
   dayName: string;
   reason: string;
@@ -7,7 +7,7 @@ export interface FixedHoliday {
 }
 
 export interface OfficialHoliday {
-  id: number;
+  id: string;
   dateRange: string;
   arabicDateRange?: string;
   reason: string;
