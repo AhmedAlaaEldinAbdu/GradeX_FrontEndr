@@ -20,6 +20,7 @@ export interface OfficialHolidaysState {
 
   // Loading States
   isLoading: boolean;
+  isDeleting: boolean;
 
   // Error States
   error: string | null;
