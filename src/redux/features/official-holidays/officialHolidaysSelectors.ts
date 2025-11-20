@@ -42,6 +42,14 @@ export const selectIsLoading = createSelector(
   (officialHolidaysState) => officialHolidaysState.isLoading
 );
 
+/**
+ * Select deleting state
+ */
+export const selectIsDeleting = createSelector(
+  [selectOfficialHolidaysState],
+  (officialHolidaysState) => officialHolidaysState.isDeleting
+);
+
 // ============================================================================
 // Error State Selectors
 // ============================================================================
