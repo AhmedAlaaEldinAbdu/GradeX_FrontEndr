@@ -29,6 +29,7 @@ const initialState: OfficialHolidaysState = {
 
   // Loading States
   isLoading: false,
+  isDeleting: false,
 
   // Error States
   error: null,
@@ -90,6 +91,18 @@ export const fetchOfficialHolidays = createAsyncThunk<
   }
 });
 
+export const deleteHoliday = createAsyncThunk<string, string>(
+  'officialHolidays/deleteHoliday',
+  async (id, { rejectWithValue }) => {
+    try {
+      await officialHolidaysApiService.deleteHoliday(id);
+      return id;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const officialHolidaysSlice = createSlice({
   name: 'officialHolidays',
   initialState,
@@ -138,6 +151,22 @@ const officialHolidaysSlice = createSlice({
       })
       .addCase(fetchOfficialHolidays.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Delete Holiday
+    builder
+      .addCase(deleteHoliday.pending, (state) => {
+        state.isDeleting = true;
+        state.error = null;
+      })
+      .addCase(deleteHoliday.fulfilled, (state, action) => {
+        state.isDeleting = false;
+        state.holidays = state.holidays.filter((h) => h.id !== action.payload);
+        state.error = null;
+      })
+      .addCase(deleteHoliday.rejected, (state, action) => {
+        state.isDeleting = false;
         state.error = action.payload as string;
       });
   },
