@@ -48,8 +48,20 @@ export async function getOfficialHolidays(
   return response.data.value;
 }
 
+/**
+ * Delete a holiday
+ */
+export async function deleteHoliday(id: string): Promise<{ success: boolean }> {
+  const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.delete(
+    OfficialHolidaysEndpoints.deleteHoliday(id)
+  );
+
+  return { success: response.data.isSuccess };
+}
+
 export const officialHolidaysApiService = {
   getOfficialHolidays,
+  deleteHoliday,
 };
 
 export default officialHolidaysApiService;
