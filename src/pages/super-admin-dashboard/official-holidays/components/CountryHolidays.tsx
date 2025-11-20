@@ -18,6 +18,7 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { ActionsDropdown, type Action } from '@/shared/components/components';
 import { fetchOfficialHolidays, selectOfficialHolidays } from '@/redux/features/official-holidays';
 import { LeaveCategoryEnum } from '@/services/api';
+import Breadcrumb from '@/shared/layout/Breadcrumb';
 
 export default function CountryHolidays() {
   const { t } = useTranslation();
@@ -136,8 +137,15 @@ export default function CountryHolidays() {
     },
   ];
 
+  const breadcrumbItems = [
+    { label: t('officialHolidays.title'), path: '/official-holidays' },
+    { label: countryName },
+  ];
+
   return (
     <div className="space-y-6">
+      {<Breadcrumb items={breadcrumbItems} />}
+
       {/* Country Name Header with Search */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">{countryName}</h1>
