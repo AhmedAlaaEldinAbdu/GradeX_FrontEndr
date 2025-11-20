@@ -1,15 +1,21 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '@gradex/redux/store/store';
 import type { OfficialHoliday } from '@/types/officialHolidays';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import PopupMessage from '@/shared/components/PopupMessage';
-import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { ActionsDropdown, type Action } from '@/shared/components/components';
+import {
+  deleteHoliday,
+  fetchOfficialHolidays,
+  selectIsDeleting,
+} from '@/redux/features/official-holidays';
+import { useToast } from '@/shared/context/ToastContext';
 
 interface HolidayCardProps {
   holiday: OfficialHoliday;
@@ -26,13 +32,41 @@ export default function HolidayCard({
 }: HolidayCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { countryId } = useParams<{ countryId: string }>();
+  const { showToast } = useToast();
 
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const isDeleting = useSelector(selectIsDeleting);
 
-  const handleDeleteConfirm = () => {
-    setShowDeletePopup(false);
-    setShowPopupMessage(true);
+  const handleDeleteConfirm = async () => {
+    try {
+      await dispatch(deleteHoliday(holiday.id)).unwrap();
+      setShowDeletePopup(false);
+
+      showToast({
+        message: t('officialHolidays.holidayDeletedSuccessfully'),
+        type: 'success',
+      });
+
+      if (countryId) {
+        dispatch(
+          fetchOfficialHolidays({
+            page: 1,
+            limit: 100,
+            filters: {
+              countryId,
+            },
+          })
+        );
+      }
+    } catch (error) {
+      console.error('Failed to delete holiday:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    }
   };
 
   const actions: Action[] = [
@@ -51,6 +85,7 @@ export default function HolidayCard({
       onClick: () => {
         setShowDeletePopup(true);
       },
+      disabled: isDeleting,
     },
   ];
 
@@ -153,18 +188,11 @@ export default function HolidayCard({
       {/* Popups */}
       <DeletePopup
         open={showDeletePopup}
-        message="officialHolidays.confirmDeleteHoliday"
+        message={t('officialHolidays.confirmDeleteHoliday')}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setShowDeletePopup(false)}
         iconSrc={BigTrashIcon}
-      />
-      <PopupMessage
-        open={showPopupMessage}
-        type="success"
-        message="officialHolidays.holidayDeletedSuccessfully"
-        iconSrc={BigSuccessIcon}
-        autoClose={true}
-        onClose={() => setShowPopupMessage(false)}
+        isProcessing={isDeleting}
       />
     </div>
   );
