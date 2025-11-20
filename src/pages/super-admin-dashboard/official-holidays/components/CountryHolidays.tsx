@@ -7,31 +7,37 @@ import i18n from '@/i18n';
 import Card from '@/shared/components/Card';
 import EmptyState from '@/shared/components/EmptyState';
 import DeletePopup from '@/shared/components/DeletePopup';
-import PopupMessage from '@/shared/components/PopupMessage';
 import HolidayTimeline from './HolidayTimeline';
 import type { FixedHoliday, OfficialHoliday } from '@/types/officialHolidays';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
-import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { ActionsDropdown, type Action } from '@/shared/components/components';
-import { fetchOfficialHolidays, selectOfficialHolidays } from '@/redux/features/official-holidays';
+import {
+  fetchOfficialHolidays,
+  deleteHoliday,
+  selectOfficialHolidays,
+  selectIsDeleting,
+} from '@/redux/features/official-holidays';
 import { LeaveCategoryEnum } from '@/services/api';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
+import { useToast } from '@/shared/context/ToastContext';
 
 export default function CountryHolidays() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { countryId } = useParams<{ countryId: string }>();
+  const { showToast } = useToast();
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [selectedHolidayId, setSelectedHolidayId] = useState<string | null>(null);
 
   const currentLang = i18n.language as 'ar' | 'en';
 
   const holidays = useSelector(selectOfficialHolidays);
+  const isDeleting = useSelector(selectIsDeleting);
 
   useEffect(() => {
     if (countryId) {
@@ -58,7 +64,7 @@ export default function CountryHolidays() {
     return holidays
       .filter((holiday) => holiday?.leaveCategory?.toLowerCase() === LeaveCategoryEnum.STATIC)
       .map((holiday) => ({
-        id: parseInt(holiday.id) || 0,
+        id: holiday.id,
         date: holiday.startDate,
         dayName: new Date(holiday.startDate).toLocaleDateString(currentLang, { weekday: 'long' }),
         reason: holiday.reason,
@@ -95,7 +101,7 @@ export default function CountryHolidays() {
             })}`;
 
         return {
-          id: parseInt(holiday.id) || 0,
+          id: holiday.id,
           dateRange,
           arabicDateRange: dateRange,
           reason: holiday.reason,
@@ -113,9 +119,39 @@ export default function CountryHolidays() {
     return holidayDate >= today;
   };
 
-  const handleDeleteConfirm = () => {
-    setShowDeletePopup(false);
-    setShowSuccessMessage(true);
+  const handleDeleteConfirm = async () => {
+    if (!selectedHolidayId) return;
+
+    try {
+      await dispatch(deleteHoliday(selectedHolidayId)).unwrap();
+      setShowDeletePopup(false);
+      setSelectedHolidayId(null);
+
+      showToast({
+        message: t('officialHolidays.holidayDeletedSuccessfully'),
+        type: 'success',
+        duration: 3000,
+      });
+
+      if (countryId) {
+        dispatch(
+          fetchOfficialHolidays({
+            page: 1,
+            limit: 100,
+            filters: {
+              countryId,
+            },
+          })
+        );
+      }
+    } catch (error) {
+      console.error('Failed to delete holiday:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    }
   };
 
   const actions: Action[] = [
@@ -132,8 +168,12 @@ export default function CountryHolidays() {
       icon: TrashIcon,
       color: 'text-red-600 hover:bg-red-50',
       onClick: () => {
-        setShowDeletePopup(true);
+        if (fixedHolidays.length > 0) {
+          setSelectedHolidayId(fixedHolidays[0].id);
+          setShowDeletePopup(true);
+        }
       },
+      disabled: isDeleting,
     },
   ];
 
@@ -211,16 +251,7 @@ export default function CountryHolidays() {
         iconSrc={BigTrashIcon}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setShowDeletePopup(false)}
-      />
-
-      <PopupMessage
-        open={showSuccessMessage}
-        type="success"
-        message={t('officialHolidays.holidayDeletedSuccessfully')}
-        autoClose={true}
-        iconSrc={BigSuccessIcon}
-        duration={3000}
-        onClose={() => setShowSuccessMessage(false)}
+        isProcessing={isDeleting}
       />
     </div>
   );
