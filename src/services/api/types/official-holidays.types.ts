@@ -8,8 +8,8 @@
 // ============================================================================
 
 export const LeaveCategoryEnum = {
-  STATIC: 'Static',
-  DYNAMIC: 'Dynamic',
+  STATIC: 'static',
+  OFFICIAL: 'official',
 } as const;
 
 export type LeaveCategory = (typeof LeaveCategoryEnum)[keyof typeof LeaveCategoryEnum];
