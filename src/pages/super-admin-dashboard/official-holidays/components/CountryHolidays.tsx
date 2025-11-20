@@ -139,7 +139,7 @@ export default function CountryHolidays() {
 
       {/* Official Holidays Card */}
       <Card>
-        <h2 className="mb-6 text-lg font-semibold text-gray-800">
+        <h2 className="mb-6 text-start text-lg font-semibold text-gray-800">
           {t('officialHolidays.officialHolidays')}
         </h2>
 
