@@ -49,6 +49,92 @@ export async function getOfficialHolidays(
 }
 
 /**
+ * Create a new holiday
+ */
+export async function createHoliday(
+  data: import('@/services/api/types/official-holidays.types').CreateOfficialHolidayRequest
+): Promise<{ success: boolean; id?: string }> {
+  const formData = new FormData();
+
+  // Append required fields
+  formData.append('StartDate', data.StartDate);
+  formData.append('EndDate', data.EndDate);
+  formData.append('LeaveCategory', data.LeaveCategory.toString());
+  formData.append('Reason', data.Reason);
+  formData.append('LKCountryId', data.LKCountryId);
+
+  // Append optional file and metadata
+  if (data.File) {
+    formData.append('File', data.File);
+    
+    if (data.FileName) {
+      formData.append('FileName', data.FileName);
+    }
+    
+    if (data.FilePath) {
+      formData.append('FilePath', data.FilePath);
+    }
+  }
+
+  const response: AxiosResponse<ApiResponseModel<any>> = await axiosClient.post(
+    OfficialHolidaysEndpoints.createHoliday,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+
+  return {
+    success: response.data.isSuccess,
+    id: response.data.value?.id,
+  };
+}
+
+/**
+ * Update an existing holiday
+ */
+export async function updateHoliday(
+  id: string,
+  data: import('@/services/api/types/official-holidays.types').UpdateOfficialHolidayRequest
+): Promise<{ success: boolean }> {
+  const formData = new FormData();
+
+  // Append required fields
+  formData.append('StartDate', data.StartDate);
+  formData.append('EndDate', data.EndDate);
+  formData.append('LeaveCategory', data.LeaveCategory.toString());
+  formData.append('Reason', data.Reason);
+  formData.append('LKCountryId', data.LKCountryId);
+
+  // Append optional file and metadata
+  if (data.File) {
+    formData.append('File', data.File);
+    
+    if (data.FileName) {
+      formData.append('FileName', data.FileName);
+    }
+    
+    if (data.FilePath) {
+      formData.append('FilePath', data.FilePath);
+    }
+  }
+
+  const response: AxiosResponse<ApiResponseModel<any>> = await axiosClient.put(
+    OfficialHolidaysEndpoints.updateHoliday(id),
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+
+  return { success: response.data.isSuccess };
+}
+
+/**
  * Delete a holiday
  */
 export async function deleteHoliday(id: string): Promise<{ success: boolean }> {
@@ -61,6 +147,8 @@ export async function deleteHoliday(id: string): Promise<{ success: boolean }> {
 
 export const officialHolidaysApiService = {
   getOfficialHolidays,
+  createHoliday,
+  updateHoliday,
   deleteHoliday,
 };
 

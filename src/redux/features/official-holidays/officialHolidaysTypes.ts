@@ -20,6 +20,8 @@ export interface OfficialHolidaysState {
 
   // Loading States
   isLoading: boolean;
+  isCreating: boolean;
+  isUpdating: boolean;
   isDeleting: boolean;
 
   // Error States

@@ -6,7 +6,7 @@ const AddHolidayPage: React.FC = () => {
   return (
     <div dir="rtl">
       {/* Page Header */}
-      <PageHeader title="officialHolidays.addHoliday" />
+      <PageHeader title="officialHolidays.addTheHoliday" />
 
       {/* Main Content */}
       <AddHolidayForm />

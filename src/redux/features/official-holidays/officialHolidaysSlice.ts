@@ -29,6 +29,8 @@ const initialState: OfficialHolidaysState = {
 
   // Loading States
   isLoading: false,
+  isCreating: false,
+  isUpdating: false,
   isDeleting: false,
 
   // Error States
@@ -86,6 +88,30 @@ export const fetchOfficialHolidays = createAsyncThunk<
         totalPages: response.totalPages || 0,
       },
     };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const createHoliday = createAsyncThunk<
+  { success: boolean; id?: string },
+  import('@/services/api/types/official-holidays.types').CreateOfficialHolidayRequest
+>('officialHolidays/createHoliday', async (data, { rejectWithValue }) => {
+  try {
+    const result = await officialHolidaysApiService.createHoliday(data);
+    return result;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const updateHoliday = createAsyncThunk<
+  { success: boolean },
+  { id: string; data: import('@/services/api/types/official-holidays.types').UpdateOfficialHolidayRequest }
+>('officialHolidays/updateHoliday', async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const result = await officialHolidaysApiService.updateHoliday(id, data);
+    return result;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }
@@ -151,6 +177,38 @@ const officialHolidaysSlice = createSlice({
       })
       .addCase(fetchOfficialHolidays.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Create Holiday
+    builder
+      .addCase(createHoliday.pending, (state) => {
+        state.isCreating = true;
+        state.error = null;
+      })
+      .addCase(createHoliday.fulfilled, (state) => {
+        state.isCreating = false;
+        state.error = null;
+        // Optionally refresh the list after creation
+      })
+      .addCase(createHoliday.rejected, (state, action) => {
+        state.isCreating = false;
+        state.error = action.payload as string;
+      });
+
+    // Update Holiday
+    builder
+      .addCase(updateHoliday.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(updateHoliday.fulfilled, (state) => {
+        state.isUpdating = false;
+        state.error = null;
+        // Optionally refresh the list after update
+      })
+      .addCase(updateHoliday.rejected, (state, action) => {
+        state.isUpdating = false;
         state.error = action.payload as string;
       });
 

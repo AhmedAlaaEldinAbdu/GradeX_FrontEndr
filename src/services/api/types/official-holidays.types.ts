@@ -67,21 +67,25 @@ export interface OfficialHolidayDetailResponse {
 // ============================================================================
 
 export interface CreateOfficialHolidayRequest {
-  startDate: string;
-  endDate: string;
-  leaveCategory: LeaveCategory | string;
-  reason: string;
-  countryId?: string;
-  file?: File;
+  StartDate: string; // ISO date-time string
+  EndDate: string; // ISO date-time string
+  LeaveCategory: number; // 0 for static, 1 for official
+  Reason: string;
+  FileName?: string;
+  FilePath?: string;
+  File?: File; // binary file
+  LKCountryId: string; // UUID
 }
 
 export interface UpdateOfficialHolidayRequest {
-  startDate?: string;
-  endDate?: string;
-  leaveCategory?: LeaveCategory | string;
-  reason?: string;
-  countryId?: string;
-  file?: File;
+  StartDate: string; // ISO date-time string
+  EndDate: string; // ISO date-time string
+  LeaveCategory: number; // 0 for static, 1 for official
+  Reason: string;
+  FileName?: string;
+  FilePath?: string;
+  File?: File; // binary file
+  LKCountryId: string; // UUID
 }
 
 // ============================================================================
