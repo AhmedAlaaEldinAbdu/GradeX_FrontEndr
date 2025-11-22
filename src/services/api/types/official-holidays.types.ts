@@ -8,8 +8,8 @@
 // ============================================================================
 
 export const LeaveCategoryEnum = {
-  STATIC: 'static',
-  OFFICIAL: 'official',
+  FIXED: 1,
+  OFFICIAL: 2,
 } as const;
 
 export type LeaveCategory = (typeof LeaveCategoryEnum)[keyof typeof LeaveCategoryEnum];
@@ -69,7 +69,7 @@ export interface OfficialHolidayDetailResponse {
 export interface CreateOfficialHolidayRequest {
   StartDate: string; // ISO date-time string
   EndDate: string; // ISO date-time string
-  LeaveCategory: number; // 0 for static, 1 for official
+  LeaveCategory: number; // 1 for fixed, 2 for official
   Reason: string;
   FileName?: string;
   FilePath?: string;
@@ -80,7 +80,7 @@ export interface CreateOfficialHolidayRequest {
 export interface UpdateOfficialHolidayRequest {
   StartDate: string; // ISO date-time string
   EndDate: string; // ISO date-time string
-  LeaveCategory: number; // 0 for static, 1 for official
+  LeaveCategory: number; // 1 for fixed, 2 for official
   Reason: string;
   FileName?: string;
   FilePath?: string;

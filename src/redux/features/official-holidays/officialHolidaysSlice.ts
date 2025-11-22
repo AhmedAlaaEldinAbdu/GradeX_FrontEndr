@@ -10,6 +10,8 @@ import type {
   OfficialHolidaysState,
 } from './officialHolidaysTypes';
 import { officialHolidaysApiService, type OfficialHolidaysQueryParams } from '@/services/api';
+import type { CreateOfficialHolidayRequest, UpdateOfficialHolidayRequest } from '@/services/api/types/official-holidays.types';
+import type { ApiResponseModel } from '@/services/api/config';
 import { getErrorMessage } from '@/lib/http';
 
 const initialState: OfficialHolidaysState = {
@@ -94,8 +96,8 @@ export const fetchOfficialHolidays = createAsyncThunk<
 });
 
 export const createHoliday = createAsyncThunk<
-  { success: boolean; id?: string },
-  import('@/services/api/types/official-holidays.types').CreateOfficialHolidayRequest
+  ApiResponseModel<any>,
+  CreateOfficialHolidayRequest
 >('officialHolidays/createHoliday', async (data, { rejectWithValue }) => {
   try {
     const result = await officialHolidaysApiService.createHoliday(data);
@@ -106,8 +108,8 @@ export const createHoliday = createAsyncThunk<
 });
 
 export const updateHoliday = createAsyncThunk<
-  { success: boolean },
-  { id: string; data: import('@/services/api/types/official-holidays.types').UpdateOfficialHolidayRequest }
+  ApiResponseModel<any>,
+  { id: string; data: UpdateOfficialHolidayRequest }
 >('officialHolidays/updateHoliday', async ({ id, data }, { rejectWithValue }) => {
   try {
     const result = await officialHolidaysApiService.updateHoliday(id, data);

@@ -4,6 +4,8 @@ import { OfficialHolidaysEndpoints } from '../endpoints/official-holidays-endpoi
 import type {
   OfficialHolidaysListResponse,
   OfficialHolidaysQueryParams,
+  CreateOfficialHolidayRequest,
+  UpdateOfficialHolidayRequest,
 } from '@/services/api/types/official-holidays.types';
 import type { ApiResponseModel } from '../config';
 
@@ -52,8 +54,8 @@ export async function getOfficialHolidays(
  * Create a new holiday
  */
 export async function createHoliday(
-  data: import('@/services/api/types/official-holidays.types').CreateOfficialHolidayRequest
-): Promise<{ success: boolean; id?: string }> {
+  data: CreateOfficialHolidayRequest
+): Promise<ApiResponseModel<any>> {
   const formData = new FormData();
 
   // Append required fields
@@ -66,11 +68,11 @@ export async function createHoliday(
   // Append optional file and metadata
   if (data.File) {
     formData.append('File', data.File);
-    
+
     if (data.FileName) {
       formData.append('FileName', data.FileName);
     }
-    
+
     if (data.FilePath) {
       formData.append('FilePath', data.FilePath);
     }
@@ -86,10 +88,14 @@ export async function createHoliday(
     }
   );
 
-  return {
-    success: response.data.isSuccess,
-    id: response.data.value?.id,
-  };
+  // Check if the request was successful
+  if (!response.data.isSuccess) {
+    // Throw error with the API error messages
+    const errorMessage = response.data.errors?.join(', ') || 'Failed to create holiday';
+    throw new Error(errorMessage);
+  }
+
+  return response.data;
 }
 
 /**
@@ -97,8 +103,8 @@ export async function createHoliday(
  */
 export async function updateHoliday(
   id: string,
-  data: import('@/services/api/types/official-holidays.types').UpdateOfficialHolidayRequest
-): Promise<{ success: boolean }> {
+  data: UpdateOfficialHolidayRequest
+): Promise<ApiResponseModel<any>> {
   const formData = new FormData();
 
   // Append required fields
@@ -111,11 +117,11 @@ export async function updateHoliday(
   // Append optional file and metadata
   if (data.File) {
     formData.append('File', data.File);
-    
+
     if (data.FileName) {
       formData.append('FileName', data.FileName);
     }
-    
+
     if (data.FilePath) {
       formData.append('FilePath', data.FilePath);
     }
@@ -131,7 +137,12 @@ export async function updateHoliday(
     }
   );
 
-  return { success: response.data.isSuccess };
+  if (!response.data.isSuccess) {
+    const errorMessage = response.data.errors?.join(', ') || 'Failed to update holiday';
+    throw new Error(errorMessage);
+  }
+
+  return response.data;
 }
 
 /**
