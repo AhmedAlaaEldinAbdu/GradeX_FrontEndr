@@ -20,6 +20,7 @@ interface FileUploadProps {
   optional?: boolean;
   multiple?: boolean;
   error?: boolean;
+  id?: string;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -35,6 +36,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   optional = false,
   multiple = false,
   error = false,
+  id = "",
 }) => {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -158,6 +160,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         }`}
       >
         <input
+          id={id}
           ref={fileInputRef}
           type="file"
           accept={accept}
