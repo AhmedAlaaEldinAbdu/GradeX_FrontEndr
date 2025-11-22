@@ -632,6 +632,28 @@
     "selectDay": "Select Day",
     "enterReason": "Enter reason",
     "addHolidays": "Add Holidays",
-    "addAnother": "Add Another"
+    "addAnother": "Add Another",
+    "holidayAddedSuccessfully": "Holiday added successfully",
+    "holidayUpdatedSuccessfully": "Holiday updated successfully",
+    "daysOfWeek": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "validation": {
+      "holidayTypeRequired": "Holiday type is required",
+      "reasonRequired": "Reason is required",
+      "startDateRequired": "Start date is required",
+      "endDateRequired": "End date is required",
+      "endDateAfterStart": "End date must be after or equal to start date",
+      "countryRequired": "Country is required",
+      "dayRequired": "Day is required",
+      "requiredList": "This list is required",
+      "atLeastOneHoliday": "At least one holiday is required"
+    }
   }
 }

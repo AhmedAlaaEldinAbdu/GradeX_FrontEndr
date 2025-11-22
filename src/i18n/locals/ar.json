@@ -630,6 +630,28 @@
     "selectDay": "اختر اليوم",
     "enterReason": "أدخل سبب الإجازة",
     "addHolidays": "إضافة الإجازات",
-    "addAnother": "إضافة أخرى"
+    "addAnother": "إضافة أخرى",
+    "holidayAddedSuccessfully": "تم إضافة الإجازة بنجاح",
+    "holidayUpdatedSuccessfully": "تم تعديل الإجازة بنجاح",
+    "daysOfWeek": {
+      "sunday": "الأحد",
+      "monday": "الإثنين",
+      "tuesday": "الثلاثاء",
+      "wednesday": "الأربعاء",
+      "thursday": "الخميس",
+      "friday": "الجمعة",
+      "saturday": "السبت"
+    },
+    "validation": {
+      "holidayTypeRequired": "نوع الإجازة مطلوب",
+      "reasonRequired": "سبب الإجازة مطلوب",
+      "startDateRequired": "تاريخ البداية مطلوب",
+      "endDateRequired": "تاريخ النهاية مطلوب",
+      "endDateAfterStart": "تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية",
+      "countryRequired": "الدولة مطلوبة",
+      "dayRequired": "اليوم مطلوب",
+      "requiredList": "هذه القائمة مطلوبة",
+      "atLeastOneHoliday": "يجب إضافة إجازة واحدة على الأقل"
+    }
   }
 }
