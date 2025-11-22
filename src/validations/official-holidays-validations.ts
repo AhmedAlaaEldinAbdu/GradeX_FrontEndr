@@ -1,6 +1,6 @@
 import { array, object, string, mixed, type InferType } from 'yup';
 
-// Schema for adding a single dynamic holiday
+// Schema for adding a single official holiday
 export const AddHolidaysSchema = object({
   holidayType: string()
     .required('officialHolidays.validation.holidayTypeRequired')
@@ -25,8 +25,8 @@ export const AddHolidaysSchema = object({
   officialDocuments: array().of(mixed()).optional(),
 });
 
-// Schema for adding a single static holiday (or multiple)
-export const AddStaticHolidaySchema = object({
+// Schema for adding a single fixed holiday (or multiple)
+export const AddFixedHolidaySchema = object({
   holidayType: string()
     .required('officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
@@ -76,5 +76,5 @@ export const EditHolidaySchema = object({
 });
 
 export type AddHolidaysProps = InferType<typeof AddHolidaysSchema>;
-export type AddStaticHolidayProps = InferType<typeof AddStaticHolidaySchema>;
+export type AddFixedHolidayProps = InferType<typeof AddFixedHolidaySchema>;
 export type EditHolidayProps = InferType<typeof EditHolidaySchema>;
