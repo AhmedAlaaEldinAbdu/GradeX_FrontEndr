@@ -18,6 +18,7 @@ interface CustomSelectProps {
   isMulti?: boolean;
   error?: boolean;
   showSearch?: boolean;
+  id?: string;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -31,6 +32,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   isMulti = false,
   error = false,
   showSearch = true,
+  id = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,7 +108,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   return (
-    <div ref={selectRef} className={`relative ${className}`}>
+    <div id={id} ref={selectRef} className={`relative ${className}`}>
       {/* Select Button */}
       <button
         type="button"
