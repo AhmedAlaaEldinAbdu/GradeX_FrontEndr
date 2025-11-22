@@ -1,16 +1,16 @@
 import type {
   CreateOfficialHolidayRequest,
 } from '@/services/api/types/official-holidays.types';
-import type { AddHolidaysProps, AddStaticHolidayProps } from '@/validations/official-holidays-validations';
+import type { AddHolidaysProps, AddFixedHolidayProps } from '@/validations/official-holidays-validations';
 
 // ============================================================================
 // Main Transform Functions
 // ============================================================================
 
 /**
- * Transform dynamic holiday form data to FormData for API request
+ * Transform official holiday form data to FormData for API request
  */
-export function transformDynamicHolidayToFormData(
+export function transformOfficialHolidayToFormData(
   formData: AddHolidaysProps,
   files?: File[]
 ): FormData {
@@ -19,7 +19,7 @@ export function transformDynamicHolidayToFormData(
   // Append basic fields
   backendFormData.append('StartDate', new Date(formData.startDate).toISOString());
   backendFormData.append('EndDate', new Date(formData.endDate).toISOString());
-  backendFormData.append('LeaveCategory', '1'); // 1 = official/dynamic holiday
+  backendFormData.append('LeaveCategory', '2'); // 2 = official holiday
   backendFormData.append('Reason', formData.reason);
   backendFormData.append('LKCountryId', formData.country);
 
@@ -28,7 +28,7 @@ export function transformDynamicHolidayToFormData(
     files.forEach((file) => {
       backendFormData.append('File', file);
       backendFormData.append('FileName', file.name);
-      
+
       // If multiple files, only the last one will be used by the API
       // Consider uploading them separately or handling differently based on API requirements
     });
@@ -44,20 +44,20 @@ export function transformDynamicHolidayToFormData(
 }
 
 /**
- * Transform static holiday form data to FormData for API request
- * Note: Static holidays are individual holidays, so we need to create separate requests
+ * Transform fixed holiday form data to FormData for API request
+ * Note: Fixed holidays are individual holidays, so we need to create separate requests
  */
-export function transformStaticHolidayToFormData(
-  holiday: AddStaticHolidayProps['holidays'][0],
+export function transformFixedHolidayToFormData(
+  holiday: AddFixedHolidayProps['holidays'][0],
   files?: File[]
 ): FormData {
   const backendFormData = new FormData();
 
   // Append basic fields
-  // For static holidays, the day field should be converted to a date
+  // For fixed holidays, the day field should be converted to a date
   backendFormData.append('StartDate', new Date(holiday.day).toISOString());
   backendFormData.append('EndDate', new Date(holiday.day).toISOString()); // Same day
-  backendFormData.append('LeaveCategory', '0'); // 0 = static holiday
+  backendFormData.append('LeaveCategory', '1'); // 1 = fixed holiday
   backendFormData.append('Reason', holiday.reason);
   backendFormData.append('LKCountryId', holiday.country);
 
@@ -128,12 +128,12 @@ function formatDateToISO(dateString: string): string {
  */
 function extractFirstFile(files?: File[] | unknown[]): File | undefined {
   if (!files || files.length === 0) return undefined;
-  
+
   const firstFile = files[0];
   if (firstFile instanceof File) {
     return firstFile;
   }
-  
+
   return undefined;
 }
 
@@ -156,15 +156,15 @@ export function createHolidayRequest(
 }
 
 /**
- * Create static holiday request object
+ * Create fixed holiday request object
  */
-export function createStaticHolidayRequest(
-  holiday: AddStaticHolidayProps['holidays'][0]
+export function createFixedHolidayRequest(
+  holiday: AddFixedHolidayProps['holidays'][0]
 ): CreateOfficialHolidayRequest {
   return {
     StartDate: formatDateToISO(holiday.day),
     EndDate: formatDateToISO(holiday.day),
-    LeaveCategory: 0, // Static holiday
+    LeaveCategory: 1, // fixed holiday
     Reason: holiday.reason,
     LKCountryId: holiday.country,
     File: extractFirstFile(holiday.officialDocuments),
@@ -173,12 +173,12 @@ export function createStaticHolidayRequest(
 }
 
 /**
- * Batch create multiple static holidays
+ * Batch create multiple fixed holidays
  */
-export function createStaticHolidayRequests(
-  formData: AddStaticHolidayProps
+export function createFixedHolidayRequests(
+  formData: AddFixedHolidayProps
 ): CreateOfficialHolidayRequest[] {
-  return formData.holidays.map((holiday) => createStaticHolidayRequest(holiday));
+  return formData.holidays.map((holiday) => createFixedHolidayRequest(holiday));
 }
 
 // ============================================================================
@@ -213,12 +213,12 @@ export function transformBackendToHolidayForm(
     }
   };
 
-  const leaveCategory = typeof backendData.leaveCategory === 'string' 
-    ? parseInt(backendData.leaveCategory) 
+  const leaveCategory = typeof backendData.leaveCategory === 'string'
+    ? parseInt(backendData.leaveCategory)
     : backendData.leaveCategory;
 
   return {
-    holidayType: leaveCategory === 0 ? 'static' : 'official',
+    holidayType: leaveCategory === 1 ? 'fixed' : 'official',
     startDate: formatDateForInput(backendData.startDate),
     endDate: formatDateForInput(backendData.endDate),
     reason: backendData.reason,
@@ -228,11 +228,11 @@ export function transformBackendToHolidayForm(
 }
 
 /**
- * Transform backend holiday to static form format
+ * Transform backend holiday to fixed form format
  */
-export function transformBackendToStaticHolidayForm(
+export function transformBackendToFixedHolidayForm(
   backendData: BackendHolidayResponse
-): AddStaticHolidayProps['holidays'][0] {
+): AddFixedHolidayProps['holidays'][0] {
   const formatDateForInput = (dateString: string): string => {
     try {
       const date = new Date(dateString);
