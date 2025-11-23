@@ -27,6 +27,7 @@ import PhoneIcon from '@gradex/assets/icons/phone-fill.svg';
 import DiamondIcon from '@gradex/assets/icons/Diamond.svg';
 import FileIcon from '@gradex/assets/icons/File.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 interface SchoolFormProps {
   mode: 'add' | 'edit' | 'view';
@@ -63,7 +64,12 @@ const SchoolForm = ({
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
+
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [branches, setBranches] = useState<
     Array<{
@@ -218,11 +224,19 @@ const SchoolForm = ({
 
         if (createSchoolWithFormData.fulfilled.match(resultAction)) {
           // Success - show popup
-          setShowSuccessPopup(true);
+          setShowPopupMessage({
+            show: true,
+            type: 'success',
+            message: t('schools.schoolAdded'),
+          });
         }
       } else if (mode === 'edit' && schoolId) {
         console.log('Update school:', schoolId, backendFormData);
-        setShowSuccessPopup(true);
+        setShowPopupMessage({
+          show: true,
+          type: 'success',
+          message: t('schools.schoolUpdated'),
+        });
       }
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -249,7 +263,7 @@ const SchoolForm = ({
   };
 
   const handleCloseSuccessPopup = () => {
-    setShowSuccessPopup(false);
+    setShowPopupMessage({ ...showPopupMessage, show: false });
     navigate('/schools');
   };
 
@@ -257,10 +271,10 @@ const SchoolForm = ({
     <FormProvider {...form}>
       {/* Success Popup */}
       <PopupMessage
-        open={showSuccessPopup}
-        type="success"
-        message={mode === 'add' ? 'schools.schoolAdded' : 'schools.schoolUpdated'}
-        iconSrc={BigSuccessIcon}
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={false}
         onClose={handleCloseSuccessPopup}
       />
