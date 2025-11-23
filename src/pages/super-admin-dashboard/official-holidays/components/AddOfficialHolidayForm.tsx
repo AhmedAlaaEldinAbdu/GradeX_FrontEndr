@@ -178,7 +178,6 @@ const AddOfficialHolidayForm = ({
                 fileNames={getFileNames(0)}
                 uploadText={t('officialHolidays.uploadAttachments')}
                 formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
-                multiple
                 id="officialDocument"
               />
             </FormField>
