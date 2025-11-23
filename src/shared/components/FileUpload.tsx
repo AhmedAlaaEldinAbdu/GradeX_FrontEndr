@@ -86,28 +86,37 @@ const FileUpload: React.FC<FileUploadProps> = ({
     } else {
       const file = files[0];
       if (file) {
-        // Simulate upload progress
-        setUploadProgress(0);
-        const interval = setInterval(() => {
-          setUploadProgress((prev) => {
-            if (prev >= 100) {
-              clearInterval(interval);
-              return 100;
-            }
-            return prev + 10;
-          });
-        }, 100);
+        const fileInfo: FileInfo = {
+          file,
+          progress: 0,
+        };
 
         // Create preview for images
         if (file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onloadend = () => {
-            setFilePreview(reader.result as string);
+            fileInfo.preview = reader.result as string;
+            setFileInfoList([fileInfo]);
           };
           reader.readAsDataURL(file);
-        } else {
-          setFilePreview(null);
         }
+
+        setFileInfoList([fileInfo]);
+
+        // Simulate upload progress
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += 10;
+          if (progress >= 100) {
+            clearInterval(interval);
+            progress = 100;
+          }
+          setFileInfoList([{ ...fileInfo, progress }]);
+        }, 100);
+
+        // Legacy support - keep these for backward compatibility
+        setUploadProgress(100);
+        setFilePreview(fileInfo.preview || null);
       }
     }
 
@@ -143,7 +152,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const displayFiles = multiple && fileNames ? fileNames : fileName ? [fileName] : [];
   const hasFiles = multiple
     ? fileInfoList.length > 0 || displayFiles.length > 0
-    : fileName && uploadProgress > 0;
+    : (fileName && uploadProgress > 0) || fileInfoList.length > 0;
 
   return (
     <div className="space-y-3">
@@ -192,8 +201,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
         </div>
       </div>
 
-      {/* Multiple Files Preview Section */}
-      {multiple && hasFiles && (
+      {/* Files Preview Section (works for both single and multiple) */}
+      {hasFiles && (
         <div className="space-y-2">
           {fileInfoList.map((fileInfo, index) => (
             <div
@@ -237,7 +246,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 {/* Delete Button */}
                 <button
                   type="button"
-                  onClick={() => handleDelete(index)}
+                  onClick={() => handleDelete(multiple ? index : undefined)}
                   className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
                   title={t('common.delete')}
                 >
