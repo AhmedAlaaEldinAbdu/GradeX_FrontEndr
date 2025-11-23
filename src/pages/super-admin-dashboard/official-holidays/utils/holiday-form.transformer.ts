@@ -20,7 +20,8 @@ export function transformOfficialHolidayToFormData(
   backendFormData.append('StartDate', new Date(formData.startDate).toISOString());
   backendFormData.append('EndDate', new Date(formData.endDate).toISOString());
   backendFormData.append('LeaveCategory', '2'); // 2 = official holiday
-  backendFormData.append('Reason', formData.reason);
+  backendFormData.append('ReasonInAr', formData.reasonInAr);
+  backendFormData.append('ReasonInEn', formData.reasonInEn);
   backendFormData.append('LKCountryId', formData.country);
 
   // Append files if available
@@ -58,7 +59,8 @@ export function transformFixedHolidayToFormData(
   backendFormData.append('StartDate', new Date(holiday.day).toISOString());
   backendFormData.append('EndDate', new Date(holiday.day).toISOString()); // Same day
   backendFormData.append('LeaveCategory', '1'); // 1 = fixed holiday
-  backendFormData.append('Reason', holiday.reason);
+  backendFormData.append('ReasonInAr', holiday.reasonInAr);
+  backendFormData.append('ReasonInEn', holiday.reasonInEn);
   backendFormData.append('LKCountryId', holiday.country);
 
   // Append files if available
@@ -148,7 +150,8 @@ export function createHolidayRequest(
     StartDate: formatDateToISO(formData.startDate),
     EndDate: formatDateToISO(formData.endDate),
     LeaveCategory: leaveCategory,
-    Reason: formData.reason,
+    ReasonInAr: formData.reasonInAr,
+    ReasonInEn: formData.reasonInEn,
     LKCountryId: formData.country,
     File: extractFirstFile(formData.officialDocuments),
     FileName: extractFirstFile(formData.officialDocuments)?.name,
@@ -165,7 +168,8 @@ export function createFixedHolidayRequest(
     StartDate: formatDateToISO(holiday.day),
     EndDate: formatDateToISO(holiday.day),
     LeaveCategory: 1, // fixed holiday
-    Reason: holiday.reason,
+    ReasonInAr: holiday.reasonInAr,
+    ReasonInEn: holiday.reasonInEn,
     LKCountryId: holiday.country,
     File: extractFirstFile(holiday.officialDocuments),
     FileName: extractFirstFile(holiday.officialDocuments)?.name,
@@ -190,7 +194,8 @@ interface BackendHolidayResponse {
   startDate: string;
   endDate: string;
   leaveCategory: string | number;
-  reason: string;
+  reasonInAr: string;
+  reasonInEn: string;
   fileName?: string;
   filePath?: string;
   countryNameAR?: string;
@@ -221,7 +226,8 @@ export function transformBackendToHolidayForm(
     holidayType: leaveCategory === 1 ? 'fixed' : 'official',
     startDate: formatDateForInput(backendData.startDate),
     endDate: formatDateForInput(backendData.endDate),
-    reason: backendData.reason,
+    reasonInAr: backendData.reasonInAr,
+    reasonInEn: backendData.reasonInEn,
     country: backendData.lkCountryId || '',
     officialDocuments: [], // Files can't be pre-populated in forms
   };
@@ -244,7 +250,8 @@ export function transformBackendToFixedHolidayForm(
 
   return {
     day: formatDateForInput(backendData.startDate),
-    reason: backendData.reason,
+    reasonInAr: backendData.reasonInAr,
+    reasonInEn: backendData.reasonInEn,
     country: backendData.lkCountryId || '',
     officialDocuments: [],
   };

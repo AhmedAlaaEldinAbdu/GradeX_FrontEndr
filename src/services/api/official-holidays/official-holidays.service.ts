@@ -62,7 +62,8 @@ export async function createHoliday(
   formData.append('StartDate', data.StartDate);
   formData.append('EndDate', data.EndDate);
   formData.append('LeaveCategory', data.LeaveCategory.toString());
-  formData.append('Reason', data.Reason);
+  formData.append('ReasonInAr', data.ReasonInAr);
+  formData.append('ReasonInEn', data.ReasonInEn);
   formData.append('LKCountryId', data.LKCountryId);
 
   // Append optional file and metadata
@@ -111,7 +112,8 @@ export async function updateHoliday(
   formData.append('StartDate', data.StartDate);
   formData.append('EndDate', data.EndDate);
   formData.append('LeaveCategory', data.LeaveCategory.toString());
-  formData.append('Reason', data.Reason);
+  formData.append('ReasonInAr', data.ReasonInAr);
+  formData.append('ReasonInEn', data.ReasonInEn);
   formData.append('LKCountryId', data.LKCountryId);
 
   // Append optional file and metadata

@@ -7,9 +7,14 @@
 // Constants
 // ============================================================================
 
-export const LeaveCategoryEnum = {
+export const LeaveCategoryEnumNumber = {
   FIXED: 1,
   OFFICIAL: 2,
+} as const;
+
+export const LeaveCategoryEnum = {
+  STATIC: 'static',
+  OFFICIAL: 'official',
 } as const;
 
 export type LeaveCategory = (typeof LeaveCategoryEnum)[keyof typeof LeaveCategoryEnum];
@@ -70,7 +75,8 @@ export interface CreateOfficialHolidayRequest {
   StartDate: string; // ISO date-time string
   EndDate: string; // ISO date-time string
   LeaveCategory: number; // 1 for fixed, 2 for official
-  Reason: string;
+  ReasonInAr: string;
+  ReasonInEn: string;
   FileName?: string;
   FilePath?: string;
   File?: File; // binary file
@@ -81,7 +87,8 @@ export interface UpdateOfficialHolidayRequest {
   StartDate: string; // ISO date-time string
   EndDate: string; // ISO date-time string
   LeaveCategory: number; // 1 for fixed, 2 for official
-  Reason: string;
+  ReasonInAr: string;
+  ReasonInEn: string;
   FileName?: string;
   FilePath?: string;
   File?: File; // binary file
