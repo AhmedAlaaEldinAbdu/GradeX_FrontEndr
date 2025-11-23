@@ -80,6 +80,7 @@ const AddFixedHolidayForm = ({
                     placeholder={t('officialHolidays.selectDay')}
                     id="day"
                     showSearch={false}
+                    error={!!errors.day}
                   />
                 )}
               />
@@ -103,6 +104,7 @@ const AddFixedHolidayForm = ({
                     placeholder={t('officialHolidays.selectCountry')}
                     disabled={isLoadingCountries}
                     id="country"
+                    error={!!errors.country}
                   />
                 )}
               />

@@ -4,6 +4,7 @@ import { array, object, string, mixed, type InferType, number } from 'yup';
 export const AddHolidaysSchema = object({
   holidayType: number()
     .required('officialHolidays.validation.holidayTypeRequired')
+    .oneOf([1, 2], 'officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
   reasonAr: string()
     .required('officialHolidays.validation.reasonRequired')
@@ -32,6 +33,7 @@ export const AddHolidaysSchema = object({
 export const AddFixedHolidaySchema = object({
   holidayType: number()
     .required('officialHolidays.validation.holidayTypeRequired')
+    .oneOf([1, 2], 'officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
   day: number()
     .required('officialHolidays.validation.dayRequired')
@@ -52,6 +54,7 @@ export const AddFixedHolidaySchema = object({
 export const EditHolidaySchema = object({
   holidayType: number()
     .required('officialHolidays.validation.holidayTypeRequired')
+    .oneOf([1, 2], 'officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
   reasonAr: string()
     .required('officialHolidays.validation.reasonRequired')

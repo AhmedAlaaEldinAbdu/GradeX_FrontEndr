@@ -188,6 +188,7 @@ const AddHolidayForm = () => {
                     onChange={(value) => handleHolidayTypeChange(field, value)}
                     options={holidayTypeOptions}
                     placeholder={t('officialHolidays.selectHolidayType')}
+                    error={!!officialErrors.holidayType}
                     showSearch={false}
                   />
                 )}
@@ -202,6 +203,7 @@ const AddHolidayForm = () => {
                     onChange={(value) => handleHolidayTypeChange(field, value)}
                     options={holidayTypeOptions}
                     placeholder={t('officialHolidays.selectHolidayType')}
+                    error={!!fixedErrors.holidayType}
                     showSearch={false}
                   />
                 )}

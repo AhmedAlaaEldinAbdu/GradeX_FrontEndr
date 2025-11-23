@@ -113,6 +113,7 @@ const AddOfficialHolidayForm = ({
                       placeholder={t('officialHolidays.selectCountry')}
                       disabled={isLoadingCountries}
                       id="country"
+                      error={!!errors.country}
                     />
                   )}
                 />
