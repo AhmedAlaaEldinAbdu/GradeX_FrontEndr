@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import AcademicSystem from './components/AcademicSystem';
-import { useTranslation } from 'react-i18next';
 import PageHeader from '@/shared/components/PageHeader';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
 const AcademicSystemPage: React.FC = () => {
-  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState('AcademicSystem');
 
   return (
