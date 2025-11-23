@@ -6,8 +6,34 @@ import type {
   OfficialHolidaysQueryParams,
   CreateOfficialHolidayRequest,
   UpdateOfficialHolidayRequest,
+  CountriesWithLeaveResponse,
+  CountriesWithLeaveQueryParams,
 } from '@/services/api/types/official-holidays.types';
 import type { ApiResponseModel } from '../config';
+
+/**
+ * Get list of countries with leave count
+ */
+export async function getCountriesWithLeave(
+  params?: CountriesWithLeaveQueryParams
+): Promise<CountriesWithLeaveResponse> {
+  const response: AxiosResponse<ApiResponseModel<CountriesWithLeaveResponse>> =
+    await axiosClient.get(OfficialHolidaysEndpoints.getCountriesWithLeave, {
+      params,
+    });
+
+  if (!response?.data?.data) {
+    return {
+      countriesWithLeaves: [],
+      totalItems: 0,
+      totalPages: 0,
+      pageIndex: params?.PageIndex || 1,
+      pageSize: params?.PageSize || 10,
+    };
+  }
+
+  return response.data.data;
+}
 
 /**
  * Get list of official holidays with pagination and filters
@@ -178,6 +204,7 @@ export async function deleteHoliday(id: string): Promise<{ success: boolean }> {
 
 export const officialHolidaysApiService = {
   getOfficialHolidays,
+  getCountriesWithLeave,
   createHoliday,
   updateHoliday,
   deleteHoliday,

@@ -9,10 +9,15 @@ import type {
   FetchOfficialHolidaysResponse,
   OfficialHolidaysState,
 } from './officialHolidaysTypes';
-import { officialHolidaysApiService, type OfficialHolidaysQueryParams } from '@/services/api';
+import {
+  officialHolidaysApiService,
+  type OfficialHolidaysQueryParams,
+  type CountriesWithLeaveQueryParams,
+} from '@/services/api';
 import type {
   CreateOfficialHolidayRequest,
   UpdateOfficialHolidayRequest,
+  CountryWithLeave,
 } from '@/services/api/types/official-holidays.types';
 import type { ApiResponseModel } from '@/services/api/config';
 import { getErrorMessage } from '@/lib/http';
@@ -20,6 +25,7 @@ import { getErrorMessage } from '@/lib/http';
 const initialState: OfficialHolidaysState = {
   // Data
   holidays: [],
+  countries: [],
 
   // Pagination
   pagination: {
@@ -44,6 +50,24 @@ const initialState: OfficialHolidaysState = {
   // UI States
   isInitialized: false,
 };
+
+export const fetchCountriesWithLeave = createAsyncThunk<
+  CountryWithLeave[],
+  { page?: number; limit?: number } | void
+>('officialHolidays/fetchCountriesWithLeave', async (payload, { rejectWithValue }) => {
+  try {
+    const params: CountriesWithLeaveQueryParams = {
+      PageIndex: payload?.page || 1,
+      PageSize: payload?.limit || 100,
+    };
+
+    const response = await officialHolidaysApiService.getCountriesWithLeave(params);
+
+    return response.countriesWithLeaves || [];
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const fetchOfficialHolidays = createAsyncThunk<
   FetchOfficialHolidaysResponse,
@@ -163,6 +187,22 @@ const officialHolidaysSlice = createSlice({
   },
 
   extraReducers: (builder: ActionReducerMapBuilder<OfficialHolidaysState>) => {
+    builder
+      .addCase(fetchCountriesWithLeave.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchCountriesWithLeave.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.countries = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchCountriesWithLeave.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
     builder
       .addCase(fetchOfficialHolidays.pending, (state) => {
         state.isLoading = true;

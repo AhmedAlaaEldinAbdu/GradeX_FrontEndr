@@ -6,7 +6,10 @@
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '@/redux/store/store';
 import type { OfficialHolidaysState } from './officialHolidaysTypes';
-import type { OfficialHoliday } from '@/services/api/types/official-holidays.types';
+import type {
+  OfficialHoliday,
+  CountryWithLeave,
+} from '@/services/api/types/official-holidays.types';
 
 // ============================================================================
 // Base Selectors
@@ -28,6 +31,14 @@ export const selectOfficialHolidaysState = (state: RootState): OfficialHolidaysS
 export const selectOfficialHolidays = createSelector(
   [selectOfficialHolidaysState],
   (officialHolidaysState): OfficialHoliday[] => officialHolidaysState.holidays
+);
+
+/**
+ * Select all countries with leave count
+ */
+export const selectCountriesWithLeave = createSelector(
+  [selectOfficialHolidaysState],
+  (officialHolidaysState): CountryWithLeave[] => officialHolidaysState.countries
 );
 
 // ============================================================================

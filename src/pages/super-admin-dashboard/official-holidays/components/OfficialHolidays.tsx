@@ -8,13 +8,12 @@ import type { AppDispatch } from '@gradex/redux/store/store';
 import HolidayIcon from '@gradex/assets/icons/Holiday.svg';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import {
-  fetchOfficialHolidays,
-  selectOfficialHolidays,
+  fetchCountriesWithLeave,
+  selectCountriesWithLeave,
   selectIsLoading,
   selectError,
 } from '@gradex/redux/features/official-holidays';
 import Loading from '@/shared/components/Loading';
-import { groupHolidaysByCountry, filterCountriesBySearch } from '../utils/holiday.utils';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
 
 export default function OfficialHolidays() {
@@ -24,7 +23,7 @@ export default function OfficialHolidays() {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const holidays = useSelector(selectOfficialHolidays) || [];
+  const countries = useSelector(selectCountriesWithLeave) || [];
   const isLoading = useSelector(selectIsLoading);
   const error = useSelector(selectError);
 
@@ -32,15 +31,24 @@ export default function OfficialHolidays() {
 
   useEffect(() => {
     dispatch(
-      fetchOfficialHolidays({
+      fetchCountriesWithLeave({
         page: 1,
         limit: 100,
       })
     );
   }, [dispatch]);
 
-  const countriesWithHolidays = groupHolidaysByCountry(holidays);
-  const filteredCountries = filterCountriesBySearch(countriesWithHolidays, searchTerm);
+  // Filter countries: exclude those with leaveCount === 0 and apply search
+  const filteredCountries = countries
+    .filter((country) => country.leaveCount > 0)
+    .filter((country) => {
+      if (!searchTerm) return true;
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        country.nameAr.toLowerCase().includes(searchLower) ||
+        country.nameEn.toLowerCase().includes(searchLower)
+      );
+    });
 
   if (error) {
     return (
@@ -54,7 +62,7 @@ export default function OfficialHolidays() {
 
   return (
     <Card>
-      {holidays.length === 0 && !isLoading ? (
+      {countries.filter((c) => c.leaveCount > 0).length === 0 && !isLoading ? (
         <EmptyState
           imgSrc={HolidayIcon}
           description={t('officialHolidays.noOfficialHolidays')}
@@ -101,12 +109,12 @@ export default function OfficialHolidays() {
           {!isLoading && filteredCountries.length > 0 && (
             <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
               {filteredCountries.map((country, index) => {
-                const countryName = currentLang === 'ar' ? country.countryAR : country.countryEN;
+                const countryName = currentLang === 'ar' ? country.nameAr : country.nameEn;
 
                 return (
                   <div
-                    key={`${country.firstHolidayId}-${index}`}
-                    onClick={() => navigate(`/official-holidays/country/${country.firstHolidayId}`)}
+                    key={`${country.id}-${index}`}
+                    onClick={() => navigate(`/official-holidays/country/${country.id}`)}
                     className="flex cursor-pointer flex-col items-start justify-center rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-green-300 hover:shadow-md"
                   >
                     {/* Country Name */}
@@ -118,7 +126,7 @@ export default function OfficialHolidays() {
                     <div className="flex items-center gap-2">
                       <img src={CheckIcon} alt="Check Icon" className="h-5 w-5" />
                       <span className="text-sm text-gray-600">
-                        {country.count} {t('officialHolidays.officialHoliday')}
+                        {country.leaveCount} {t('officialHolidays.officialHoliday')}
                       </span>
                     </div>
                   </div>

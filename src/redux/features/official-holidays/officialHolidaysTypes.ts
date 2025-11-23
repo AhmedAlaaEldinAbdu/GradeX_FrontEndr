@@ -1,11 +1,13 @@
 import type {
   OfficialHoliday,
   OfficialHolidaysFilters,
+  CountryWithLeave,
 } from '@/services/api/types/official-holidays.types';
 
 export interface OfficialHolidaysState {
   // Data
   holidays: OfficialHoliday[];
+  countries: CountryWithLeave[];
 
   // Pagination
   pagination: {

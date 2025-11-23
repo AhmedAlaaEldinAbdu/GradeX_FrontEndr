@@ -112,6 +112,30 @@ export interface OfficialHolidaysFilters {
 }
 
 // ============================================================================
+// Countries with Leave Types
+// ============================================================================
+
+export interface CountryWithLeave {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  leaveCount: number;
+}
+
+export interface CountriesWithLeaveResponse {
+  countriesWithLeaves: CountryWithLeave[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface CountriesWithLeaveQueryParams {
+  PageIndex?: number;
+  PageSize?: number;
+}
+
+// ============================================================================
 // Statistics Types
 // ============================================================================
 
