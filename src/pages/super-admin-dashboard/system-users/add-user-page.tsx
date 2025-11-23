@@ -1,12 +1,9 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import PageHeader from '@gradex/shared/components/PageHeader';
 import Breadcrumb from '@gradex/shared/layout/Breadcrumb';
 import AddUser from './components/AddUser';
 
 const AddUserPage: React.FC = () => {
-  const { t } = useTranslation();
-
   return (
     <div dir="rtl">
       {/* Breadcrumb */}

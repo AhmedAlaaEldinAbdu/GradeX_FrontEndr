@@ -55,7 +55,7 @@ export interface SchoolFormData {
 
   // Facilities
   hasOtherBranches: boolean;
-  facilities: string[];
+  facilities: SchoolFormData[];
   facilityDetails?: Record<string, FacilityDetails>;
   hasOtherFacility: boolean;
   otherFacilityName?: string; // Deprecated - kept for backward compatibility

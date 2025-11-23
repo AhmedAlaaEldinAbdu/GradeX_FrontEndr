@@ -27,10 +27,12 @@ export interface OfficialHoliday {
   id: string;
   startDate: string;
   endDate: string;
-  leaveCategory: number; // 1 for fixed, 2 for official
-  reason: string;
+  leaveCategory: LeaveCategory | string;
+  reasonAR: string;
+  reasonEN: string;
   fileName: string;
   filePath: string;
+  lkCountryId: string;
   countryNameAR: string;
   countryNameEN: string;
 }
@@ -43,8 +45,8 @@ export interface OfficialHolidaysQueryParams {
   PageIndex?: number;
   PageSize?: number;
   searchTerm?: string;
-  countryId?: string;
-  leaveCategory?: number; // 1 for fixed, 2 for official
+  LKCountryId?: string;
+  leaveCategory?: LeaveCategory | string;
   startDate?: string;
   endDate?: string;
   sortBy?: 'startDate' | 'endDate' | 'countryNameAR' | 'countryNameEN';

@@ -57,14 +57,7 @@ const RejectedSchoolDetailsPage: React.FC = () => {
           buyBooksFeature: false,
           payCashFeature: true,
           payInstallmentFeature: true,
-          facilities: {
-            playground: true,
-            library: true,
-            laboratory: false,
-            sportField: true,
-            canteen: false,
-            busService: true,
-          },
+          facilities: ['library', 'laboratory', 'sportField', 'canteen', 'busService'],
         };
 
         setSchoolData(mockData);

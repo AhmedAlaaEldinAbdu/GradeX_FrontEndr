@@ -10,7 +10,10 @@ import type {
   OfficialHolidaysState,
 } from './officialHolidaysTypes';
 import { officialHolidaysApiService, type OfficialHolidaysQueryParams } from '@/services/api';
-import type { CreateOfficialHolidayRequest, UpdateOfficialHolidayRequest } from '@/services/api/types/official-holidays.types';
+import type {
+  CreateOfficialHolidayRequest,
+  UpdateOfficialHolidayRequest,
+} from '@/services/api/types/official-holidays.types';
 import type { ApiResponseModel } from '@/services/api/config';
 import { getErrorMessage } from '@/lib/http';
 
@@ -57,7 +60,7 @@ export const fetchOfficialHolidays = createAsyncThunk<
 
       if (payload.filters) {
         if (payload.filters.searchTerm) params.searchTerm = payload.filters.searchTerm;
-        if (payload.filters.countryId) params.countryId = payload.filters.countryId;
+        if (payload.filters.countryId) params.LKCountryId = payload.filters.countryId;
         if (payload.filters.leaveCategory) params.leaveCategory = payload.filters.leaveCategory;
         if (payload.filters.startDate) params.startDate = payload.filters.startDate;
         if (payload.filters.endDate) params.endDate = payload.filters.endDate;
@@ -95,17 +98,17 @@ export const fetchOfficialHolidays = createAsyncThunk<
   }
 });
 
-export const createHoliday = createAsyncThunk<
-  ApiResponseModel<any>,
-  CreateOfficialHolidayRequest
->('officialHolidays/createHoliday', async (data, { rejectWithValue }) => {
-  try {
-    const result = await officialHolidaysApiService.createHoliday(data);
-    return result;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+export const createHoliday = createAsyncThunk<ApiResponseModel<any>, CreateOfficialHolidayRequest>(
+  'officialHolidays/createHoliday',
+  async (data, { rejectWithValue }) => {
+    try {
+      const result = await officialHolidaysApiService.createHoliday(data);
+      return result;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 export const updateHoliday = createAsyncThunk<
   ApiResponseModel<any>,
