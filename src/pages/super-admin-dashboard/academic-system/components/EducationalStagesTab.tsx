@@ -21,6 +21,7 @@ import { fetchCountries } from '@/redux/features/lookups';
 import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 export default function EducationalStagesTab() {
   const { t, i18n } = useTranslation();
@@ -30,7 +31,11 @@ export default function EducationalStagesTab() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
   const [selectedStageId, setSelectedStageId] = useState<string>('');
   const [selectedSubSystemId, setSelectedSubSystemId] = useState('');
   const [selectedAcademicSystemId, setSelectedAcademicSystemId] = useState('');
@@ -244,7 +249,6 @@ export default function EducationalStagesTab() {
       .then((res) => {
         if (res?.isSuccess) {
           setShowDeletePopup(false);
-          setShowPopupMessage(true);
           showToast({
             message: 'academicSystem.systemDeletedSuccessfully',
             type: 'success',
@@ -306,12 +310,12 @@ export default function EducationalStagesTab() {
             isProcessing={isDeleting}
           />
           <PopupMessage
-            open={showPopupMessage}
-            type="success"
-            message="academicSystem.systemDeletedSuccessfully"
-            iconSrc={BigSuccessIcon}
+            open={showPopupMessage.show}
+            type={showPopupMessage.type}
+            message={showPopupMessage.message}
+            iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
             autoClose={true}
-            onClose={() => setShowPopupMessage(false)}
+            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
           />
         </div>
       ) : null}

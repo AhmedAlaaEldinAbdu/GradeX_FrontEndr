@@ -23,6 +23,7 @@ import type { CreateAcademicSystem } from '@/services/api/types/academic-system.
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import AddSystemTypePopup from '../popups/AddSystemTypePopup';
 import { selectIsCreatingAcademicSystem } from '@/redux/features/academic-system';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 export default function AddAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -322,10 +323,10 @@ export default function AddAcademicSystem() {
           open={showPopupMessage.show}
           type={showPopupMessage.type}
           message={showPopupMessage.message}
-          iconSrc={BigSuccessIcon}
+          iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
           autoClose={true}
           onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-          navigateAfterClose={-1}
+          navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
         />
       </div>
     </Card>

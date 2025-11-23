@@ -10,6 +10,7 @@ import RejectSchoolPopup from './popups/RejectSchoolPopup';
 import PopupMessage from '@gradex/shared/components/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import type { SchoolFormData } from './types/school.types';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 const PendingSchoolDetailsPage: React.FC = () => {
   const { t } = useTranslation();

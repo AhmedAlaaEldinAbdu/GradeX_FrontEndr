@@ -10,6 +10,7 @@ import PopupMessage from '@gradex/shared/components/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import type { MultiSelectOption } from '@gradex/shared/components/MultiSelectTagInput';
 import { NotificationSchema } from '@gradex/validations/notifications-validations';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 interface NotificationFormProps {
   mode: 'add' | 'edit';
@@ -25,7 +26,11 @@ interface NotificationFormProps {
 
 export default function NotificationForm({ mode, initialData }: NotificationFormProps) {
   const navigate = useNavigate();
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
   const {
     control,
@@ -89,11 +94,11 @@ export default function NotificationForm({ mode, initialData }: NotificationForm
   const onSubmit = (data: Record<string, unknown>) => {
     console.log(data);
     // TODO: Add API call here
-    setShowPopupMessage(true);
+    setShowPopupMessage({ show: true, type: 'success', message: t(successMessage) });
   };
 
   const handleClosePopup = () => {
-    setShowPopupMessage(false);
+    setShowPopupMessage({ show: false, type: 'success', message: '' });
     navigate('/notifications');
   };
 
@@ -266,10 +271,10 @@ export default function NotificationForm({ mode, initialData }: NotificationForm
 
       {/* Success Popup */}
       <PopupMessage
-        open={showPopupMessage}
-        type="success"
-        message={successMessage}
-        iconSrc={BigSuccessIcon}
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={true}
         duration={1000}
         onClose={handleClosePopup}

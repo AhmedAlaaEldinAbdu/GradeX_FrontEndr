@@ -32,6 +32,7 @@ import { useToast } from '@/shared/context/ToastContext';
 import type { ValidationErrorResponse } from '@/services/api/config';
 import { useUserForm } from '../hooks/useUserForm';
 import i18n from '@/i18n';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 export default function EditUser() {
   const { t } = useTranslation();
@@ -425,10 +426,10 @@ export default function EditUser() {
         open={showPopupMessage.show}
         type={showPopupMessage.type}
         message={showPopupMessage.message}
-        iconSrc={BigSuccessIcon}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={false}
         onClose={handleCloseSuccessPopup}
-        navigateAfterClose={-1}
+        navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </FormProvider>
   );

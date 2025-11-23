@@ -17,6 +17,7 @@ import { useRoleForm, type RoleFormData } from '../hooks/useRoleForm';
 import FormField from '@gradex/shared/components/FormField';
 import Input from '@gradex/shared/components/Input';
 import TextArea from '@gradex/shared/components/TextArea';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 export default function AddRole() {
   const [selectAll, setSelectAll] = useState(false);
@@ -350,10 +351,10 @@ export default function AddRole() {
         open={showPopupMessage.show}
         type={showPopupMessage.type}
         message={showPopupMessage.message}
-        iconSrc={BigSuccessIcon}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={false}
         onClose={handleCloseSuccessPopup}
-        navigateAfterClose={-1}
+        navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </FormProvider>
   );

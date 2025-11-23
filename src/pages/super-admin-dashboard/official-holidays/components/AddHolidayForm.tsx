@@ -239,7 +239,7 @@ const AddHolidayForm = () => {
           iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
           autoClose={true}
           onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-          navigateAfterClose={showPopupMessage.type === 'error' ? undefined : -1}
+          navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
         />
       </div>
     </Card>

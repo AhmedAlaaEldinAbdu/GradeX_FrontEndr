@@ -13,6 +13,7 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
 import PopupMessage from '@gradex/shared/components/PopupMessage';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 interface NotificationItem {
   id: number;
@@ -28,13 +29,21 @@ export default function Notifications() {
   const [hasNotifications] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRecipient, setSelectedRecipient] = useState('');
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
-  const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
   const handleDeleteConfirm = () => {
     setShowDelete(false);
-    setShowPopupMessage(true);
+    setShowPopupMessage({
+      show: true,
+      type: 'success',
+      message: t('notifications.notificationDeleted'),
+    });
   };
 
   const notifications: NotificationItem[] = [
@@ -208,12 +217,12 @@ export default function Notifications() {
             iconSrc={BigTrashIcon}
           />
           <PopupMessage
-            open={showPopupMessage}
+            open={showPopupMessage.show}
             type="success"
             message="notifications.notificationDeleted"
-            iconSrc={BigSuccessIcon}
+            iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
             autoClose={true}
-            onClose={() => setShowPopupMessage(false)}
+            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
           />
         </div>
       )}
