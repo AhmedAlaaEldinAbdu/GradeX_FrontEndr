@@ -13,12 +13,13 @@ import CheckIcon from '@gradex/assets/icons/Check.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
-import { ActionsDropdown, type Action } from '@/shared/components/components';
+import { ActionsDropdown, Loading, type Action } from '@/shared/components/components';
 import {
   fetchOfficialHolidays,
   deleteHoliday,
   selectOfficialHolidays,
   selectIsDeleting,
+  selectIsLoading,
 } from '@/redux/features/official-holidays';
 import { LeaveCategoryEnum } from '@/services/api';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
@@ -38,6 +39,7 @@ export default function CountryHolidays() {
 
   const holidays = useSelector(selectOfficialHolidays);
   const isDeleting = useSelector(selectIsDeleting);
+  const isLoading = useSelector(selectIsLoading);
 
   useEffect(() => {
     if (countryId) {
@@ -181,6 +183,14 @@ export default function CountryHolidays() {
     { label: t('officialHolidays.title'), path: '/official-holidays' },
     { label: countryName },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
