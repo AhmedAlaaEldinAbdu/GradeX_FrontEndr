@@ -2,7 +2,11 @@
 export { default } from './officialHolidaysSlice';
 
 // Async thunks
-export { fetchOfficialHolidays, deleteHoliday } from './officialHolidaysSlice';
+export {
+  fetchOfficialHolidays,
+  fetchCountriesWithLeave,
+  deleteHoliday,
+} from './officialHolidaysSlice';
 
 // Actions
 export { setPagination, resetPagination } from './officialHolidaysSlice';
@@ -10,6 +14,7 @@ export { setPagination, resetPagination } from './officialHolidaysSlice';
 // Selectors
 export {
   selectOfficialHolidays,
+  selectCountriesWithLeave,
   selectIsLoading,
   selectIsDeleting,
   selectError,
