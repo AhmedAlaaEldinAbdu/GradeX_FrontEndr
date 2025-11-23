@@ -28,7 +28,8 @@ export interface OfficialHoliday {
   startDate: string;
   endDate: string;
   leaveCategory: LeaveCategory | string;
-  reason: string;
+  reasonAR: string;
+  reasonEN: string;
   fileName: string;
   filePath: string;
   lkCountryId: string;
