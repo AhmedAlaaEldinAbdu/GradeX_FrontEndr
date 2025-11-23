@@ -117,6 +117,7 @@ export interface ApiSuccessResponse<T = unknown> {
 
 export interface ApiResponseModel<T = unknown> {
   value: T;
+  data?: T;
   status: number;
   isSuccess: boolean;
   successMessage: string;
