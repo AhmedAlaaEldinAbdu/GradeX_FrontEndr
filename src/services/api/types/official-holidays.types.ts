@@ -31,6 +31,7 @@ export interface OfficialHoliday {
   reason: string;
   fileName: string;
   filePath: string;
+  lkCountryId: string;
   countryNameAR: string;
   countryNameEN: string;
 }
@@ -43,7 +44,7 @@ export interface OfficialHolidaysQueryParams {
   PageIndex?: number;
   PageSize?: number;
   searchTerm?: string;
-  countryId?: string;
+  LKCountryId?: string;
   leaveCategory?: LeaveCategory | string;
   startDate?: string;
   endDate?: string;
