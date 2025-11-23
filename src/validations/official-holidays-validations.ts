@@ -1,14 +1,14 @@
-import { array, object, string, mixed, type InferType } from 'yup';
+import { array, object, string, mixed, type InferType, number } from 'yup';
 
 // Schema for adding a single official holiday
 export const AddHolidaysSchema = object({
-  holidayType: string()
+  holidayType: number()
     .required('officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
-  reasonInAr: string()
+  reasonAr: string()
     .required('officialHolidays.validation.reasonRequired')
     .typeError('officialHolidays.validation.reasonRequired'),
-  reasonInEn: string()
+  reasonEn: string()
     .required('officialHolidays.validation.reasonRequired')
     .typeError('officialHolidays.validation.reasonRequired'),
   startDate: string()
@@ -28,45 +28,40 @@ export const AddHolidaysSchema = object({
   officialDocuments: array().of(mixed()).optional(),
 });
 
-// Schema for adding a single fixed holiday (or multiple)
+// Schema for adding a single fixed holiday
 export const AddFixedHolidaySchema = object({
-  holidayType: string()
+  holidayType: number()
     .required('officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
-  holidays: array()
-    .of(
-      object({
-        day: string()
-          .required('officialHolidays.validation.dayRequired')
-          .typeError('officialHolidays.validation.dayRequired'),
-        country: string()
-          .required('officialHolidays.validation.countryRequired')
-          .typeError('officialHolidays.validation.countryRequired'),
-        reasonInAr: string()
-          .required('officialHolidays.validation.reasonRequired')
-          .typeError('officialHolidays.validation.reasonRequired'),
-        reasonInEn: string()
-          .required('officialHolidays.validation.reasonRequired')
-          .typeError('officialHolidays.validation.reasonRequired'),
-        officialDocuments: array().of(mixed()).optional(),
-      })
-    )
-    .required('officialHolidays.validation.requiredList')
-    .min(1, 'officialHolidays.validation.atLeastOneHoliday')
-    .typeError('officialHolidays.validation.requiredList'),
+  day: number()
+    .required('officialHolidays.validation.dayRequired')
+    .typeError('officialHolidays.validation.dayRequired'),
+  country: string()
+    .required('officialHolidays.validation.countryRequired')
+    .typeError('officialHolidays.validation.countryRequired'),
+  reasonAr: string()
+    .required('officialHolidays.validation.reasonRequired')
+    .typeError('officialHolidays.validation.reasonRequired'),
+  reasonEn: string()
+    .required('officialHolidays.validation.reasonRequired')
+    .typeError('officialHolidays.validation.reasonRequired'),
+  officialDocuments: array().of(mixed()).optional(),
 });
 
 // Schema for editing a holiday
 export const EditHolidaySchema = object({
-  holidayType: string()
+  holidayType: number()
     .required('officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
-  reasonInAr: string()
+  reasonAr: string()
     .required('officialHolidays.validation.reasonRequired')
     .typeError('officialHolidays.validation.reasonRequired'),
-  reasonInEn: string()
+  reasonEn: string()
     .required('officialHolidays.validation.reasonRequired')
     .typeError('officialHolidays.validation.reasonRequired'),
+  day: number()
+    .required('officialHolidays.validation.dayRequired')
+    .typeError('officialHolidays.validation.dayRequired'),
   startDate: string()
     .required('officialHolidays.validation.startDateRequired')
     .typeError('officialHolidays.validation.startDateRequired'),

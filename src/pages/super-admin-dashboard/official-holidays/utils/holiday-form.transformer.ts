@@ -20,8 +20,8 @@ export function transformOfficialHolidayToFormData(
   backendFormData.append('StartDate', new Date(formData.startDate).toISOString());
   backendFormData.append('EndDate', new Date(formData.endDate).toISOString());
   backendFormData.append('LeaveCategory', '2'); // 2 = official holiday
-  backendFormData.append('ReasonInAr', formData.reasonInAr);
-  backendFormData.append('ReasonInEn', formData.reasonInEn);
+  backendFormData.append('ReasonAr', formData.reasonAr);
+  backendFormData.append('ReasonEn', formData.reasonEn);
   backendFormData.append('LKCountryId', formData.country);
 
   // Append files if available
@@ -29,9 +29,6 @@ export function transformOfficialHolidayToFormData(
     files.forEach((file) => {
       backendFormData.append('File', file);
       backendFormData.append('FileName', file.name);
-
-      // If multiple files, only the last one will be used by the API
-      // Consider uploading them separately or handling differently based on API requirements
     });
   } else if (formData.officialDocuments && formData.officialDocuments.length > 0) {
     const file = formData.officialDocuments[0] as File;
@@ -46,31 +43,26 @@ export function transformOfficialHolidayToFormData(
 
 /**
  * Transform fixed holiday form data to FormData for API request
- * Note: Fixed holidays are individual holidays, so we need to create separate requests
  */
 export function transformFixedHolidayToFormData(
-  holiday: AddFixedHolidayProps['holidays'][0],
+  formData: AddFixedHolidayProps,
   files?: File[]
 ): FormData {
   const backendFormData = new FormData();
 
-  // Append basic fields
   // For fixed holidays, the day field should be converted to a date
-  backendFormData.append('StartDate', new Date(holiday.day).toISOString());
-  backendFormData.append('EndDate', new Date(holiday.day).toISOString()); // Same day
+  backendFormData.append('day', formData.day.toString());
   backendFormData.append('LeaveCategory', '1'); // 1 = fixed holiday
-  backendFormData.append('ReasonInAr', holiday.reasonInAr);
-  backendFormData.append('ReasonInEn', holiday.reasonInEn);
-  backendFormData.append('LKCountryId', holiday.country);
-
-  // Append files if available
+  backendFormData.append('ReasonAr', formData.reasonAr);
+  backendFormData.append('ReasonEn', formData.reasonEn);
+  backendFormData.append('LKCountryId', formData.country);
   if (files && files.length > 0) {
     files.forEach((file) => {
       backendFormData.append('File', file);
       backendFormData.append('FileName', file.name);
     });
-  } else if (holiday.officialDocuments && holiday.officialDocuments.length > 0) {
-    const file = holiday.officialDocuments[0] as File;
+  } else if (formData.officialDocuments && formData.officialDocuments.length > 0) {
+    const file = formData.officialDocuments[0] as File;
     if (file) {
       backendFormData.append('File', file);
       backendFormData.append('FileName', file.name);
@@ -85,8 +77,9 @@ export function transformFixedHolidayToFormData(
  */
 export function transformUpdateHolidayToFormData(
   data: {
-    startDate: string;
-    endDate: string;
+    startDate?: string;
+    endDate?: string;
+    day?: number;
     leaveCategory: number;
     reason: string;
     countryId: string;
@@ -94,9 +87,15 @@ export function transformUpdateHolidayToFormData(
   }
 ): FormData {
   const backendFormData = new FormData();
-
-  backendFormData.append('StartDate', new Date(data.startDate).toISOString());
-  backendFormData.append('EndDate', new Date(data.endDate).toISOString());
+  if (data.startDate !== undefined) {
+    backendFormData.append('StartDate', new Date(data.startDate).toISOString());
+  }
+  if (data.endDate !== undefined) {
+    backendFormData.append('EndDate', new Date(data.endDate).toISOString());
+  }
+  if (data.day !== undefined) {
+    backendFormData.append('day', data.day.toString());
+  }
   backendFormData.append('LeaveCategory', data.leaveCategory.toString());
   backendFormData.append('Reason', data.reason);
   backendFormData.append('LKCountryId', data.countryId);
@@ -144,14 +143,14 @@ function extractFirstFile(files?: File[] | unknown[]): File | undefined {
  */
 export function createHolidayRequest(
   formData: AddHolidaysProps,
-  leaveCategory: number = 1
+  leaveCategory: number = 2
 ): CreateOfficialHolidayRequest {
   return {
     StartDate: formatDateToISO(formData.startDate),
     EndDate: formatDateToISO(formData.endDate),
     LeaveCategory: leaveCategory,
-    ReasonInAr: formData.reasonInAr,
-    ReasonInEn: formData.reasonInEn,
+    ReasonAr: formData.reasonAr,
+    ReasonEN: formData.reasonEn,
     LKCountryId: formData.country,
     File: extractFirstFile(formData.officialDocuments),
     FileName: extractFirstFile(formData.officialDocuments)?.name,
@@ -159,30 +158,32 @@ export function createHolidayRequest(
 }
 
 /**
+ * Create official holiday request object (alias for clarity)
+ */
+export function createOfficialHolidayRequest(
+  formData: AddHolidaysProps
+): CreateOfficialHolidayRequest {
+  return createHolidayRequest(formData, 2); // LeaveCategory = 2 for official
+}
+
+/**
  * Create fixed holiday request object
  */
 export function createFixedHolidayRequest(
-  holiday: AddFixedHolidayProps['holidays'][0]
+  holiday: AddFixedHolidayProps
 ): CreateOfficialHolidayRequest {
+  // Convert day enum to integer
+  const dayValue = typeof holiday.day === 'string' ? parseInt(holiday.day) : holiday.day;
+
   return {
-    StartDate: formatDateToISO(holiday.day),
-    EndDate: formatDateToISO(holiday.day),
+    Day: dayValue, // Send day as integer (1-7) for fixed holidays
     LeaveCategory: 1, // fixed holiday
-    ReasonInAr: holiday.reasonInAr,
-    ReasonInEn: holiday.reasonInEn,
+    ReasonAr: holiday.reasonAr,
+    ReasonEN: holiday.reasonEn,
     LKCountryId: holiday.country,
     File: extractFirstFile(holiday.officialDocuments),
     FileName: extractFirstFile(holiday.officialDocuments)?.name,
   };
-}
-
-/**
- * Batch create multiple fixed holidays
- */
-export function createFixedHolidayRequests(
-  formData: AddFixedHolidayProps
-): CreateOfficialHolidayRequest[] {
-  return formData.holidays.map((holiday) => createFixedHolidayRequest(holiday));
 }
 
 // ============================================================================
@@ -193,9 +194,10 @@ interface BackendHolidayResponse {
   id: string;
   startDate: string;
   endDate: string;
+  day: number;
   leaveCategory: string | number;
-  reasonInAr: string;
-  reasonInEn: string;
+  reasonAr: string;
+  reasonEn: string;
   fileName?: string;
   filePath?: string;
   countryNameAR?: string;
@@ -223,11 +225,11 @@ export function transformBackendToHolidayForm(
     : backendData.leaveCategory;
 
   return {
-    holidayType: leaveCategory === 1 ? 'fixed' : 'official',
+    holidayType: leaveCategory,
     startDate: formatDateForInput(backendData.startDate),
     endDate: formatDateForInput(backendData.endDate),
-    reasonInAr: backendData.reasonInAr,
-    reasonInEn: backendData.reasonInEn,
+    reasonAr: backendData.reasonAr,
+    reasonEn: backendData.reasonEn,
     country: backendData.lkCountryId || '',
     officialDocuments: [], // Files can't be pre-populated in forms
   };
@@ -238,20 +240,16 @@ export function transformBackendToHolidayForm(
  */
 export function transformBackendToFixedHolidayForm(
   backendData: BackendHolidayResponse
-): AddFixedHolidayProps['holidays'][0] {
-  const formatDateForInput = (dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      return date.toISOString().split('T')[0];
-    } catch {
-      return '';
-    }
-  };
+): AddFixedHolidayProps {
+  const leaveCategory = typeof backendData.leaveCategory === 'string'
+    ? parseInt(backendData.leaveCategory)
+    : backendData.leaveCategory;
 
   return {
-    day: formatDateForInput(backendData.startDate),
-    reasonInAr: backendData.reasonInAr,
-    reasonInEn: backendData.reasonInEn,
+    holidayType: leaveCategory,
+    day: backendData.day || 0, // Use day field directly from backend
+    reasonAr: backendData.reasonAr,
+    reasonEn: backendData.reasonEn,
     country: backendData.lkCountryId || '',
     officialDocuments: [],
   };

@@ -27,7 +27,7 @@ export interface OfficialHoliday {
   id: string;
   startDate: string;
   endDate: string;
-  leaveCategory: LeaveCategory | string;
+  leaveCategory: number; // 1 for fixed, 2 for official
   reason: string;
   fileName: string;
   filePath: string;
@@ -44,7 +44,7 @@ export interface OfficialHolidaysQueryParams {
   PageSize?: number;
   searchTerm?: string;
   countryId?: string;
-  leaveCategory?: LeaveCategory | string;
+  leaveCategory?: number; // 1 for fixed, 2 for official
   startDate?: string;
   endDate?: string;
   sortBy?: 'startDate' | 'endDate' | 'countryNameAR' | 'countryNameEN';
@@ -72,11 +72,12 @@ export interface OfficialHolidayDetailResponse {
 // ============================================================================
 
 export interface CreateOfficialHolidayRequest {
-  StartDate: string; // ISO date-time string
-  EndDate: string; // ISO date-time string
+  StartDate?: string; // ISO date-time string (for official holidays)
+  EndDate?: string; // ISO date-time string (for official holidays)
+  Day?: number; // Day enum value 1-7 (for fixed holidays)
   LeaveCategory: number; // 1 for fixed, 2 for official
-  ReasonInAr: string;
-  ReasonInEn: string;
+  ReasonAr: string;
+  ReasonEN: string; // Note: uppercase EN
   FileName?: string;
   FilePath?: string;
   File?: File; // binary file
@@ -84,11 +85,12 @@ export interface CreateOfficialHolidayRequest {
 }
 
 export interface UpdateOfficialHolidayRequest {
-  StartDate: string; // ISO date-time string
-  EndDate: string; // ISO date-time string
+  StartDate?: string; // ISO date-time string (for official holidays)
+  EndDate?: string; // ISO date-time string (for official holidays)
+  Day?: number; // Day enum value 1-7 (for fixed holidays)
   LeaveCategory: number; // 1 for fixed, 2 for official
-  ReasonInAr: string;
-  ReasonInEn: string;
+  ReasonAr: string;
+  ReasonEN: string; // Note: uppercase EN
   FileName?: string;
   FilePath?: string;
   File?: File; // binary file
@@ -102,7 +104,7 @@ export interface UpdateOfficialHolidayRequest {
 export interface OfficialHolidaysFilters {
   searchTerm?: string;
   countryId?: string;
-  leaveCategory?: LeaveCategory | string;
+  leaveCategory?: number; // 1 for fixed, 2 for official
   startDate?: string;
   endDate?: string;
 }

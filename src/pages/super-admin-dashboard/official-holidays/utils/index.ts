@@ -2,9 +2,8 @@ export {
   transformOfficialHolidayToFormData,
   transformFixedHolidayToFormData,
   transformUpdateHolidayToFormData,
-  createHolidayRequest,
+  createOfficialHolidayRequest,
   createFixedHolidayRequest,
-  createFixedHolidayRequests,
   transformBackendToHolidayForm,
   transformBackendToFixedHolidayForm,
 } from './holiday-form.transformer';

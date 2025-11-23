@@ -1,17 +1,16 @@
 import { useTranslation } from 'react-i18next';
-import { Controller, useFieldArray } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import type { UseFormReturn } from 'react-hook-form';
 import { useAppSelector } from '@/hooks/useRedux';
 import type { Country } from '@/services/api/types/lookup.types';
 import type { AddFixedHolidayProps } from '@/validations/official-holidays-validations';
+import { Days } from '@/shared/enums/enums';
 import Card from '@/shared/components/Card';
 import Button from '@/shared/components/Button';
 import FormField from '@/shared/components/FormField';
 import FileUpload from '@/shared/components/FileUpload';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
-import TrashIcon from '@/assets/icons/Trash.svg';
-import GreenPlusIcon from '@/assets/icons/GreenPlus.svg';
 
 interface AddFixedHolidayFormProps {
   control: UseFormReturn<AddFixedHolidayProps, any, AddFixedHolidayProps>;
@@ -42,199 +41,139 @@ const AddFixedHolidayForm = ({
     formState: { errors },
   } = control;
 
-  const {
-    fields: fixedFields,
-    append: appendFixed,
-    remove: removeFixed,
-  } = useFieldArray({
-    control: control.control,
-    name: 'holidays',
-  });
-
   const countryOptions = countries.map((country: Country) => ({
     value: country.id.toString(),
     label: i18n.language === 'ar' ? country.arabicName : country.englishName,
   }));
 
-  const handleAddFixedHoliday = () => {
-    appendFixed({
-      day: '',
-      country: '',
-      reasonInAr: '',
-      reasonInEn: '',
-    });
-  };
-
-  const handleDeleteFixedHoliday = (index: number) => {
-    if (fixedFields.length > 1) {
-      removeFixed(index);
-      // Clear files for this index
-      handleFileDelete(index)();
-    }
-  };
+  const dayOptions = [
+    { value: Days.Sunday.toString(), label: t('officialHolidays.daysOfWeek.sunday') },
+    { value: Days.Monday.toString(), label: t('officialHolidays.daysOfWeek.monday') },
+    { value: Days.Tuesday.toString(), label: t('officialHolidays.daysOfWeek.tuesday') },
+    { value: Days.Wednesday.toString(), label: t('officialHolidays.daysOfWeek.wednesday') },
+    { value: Days.Thursday.toString(), label: t('officialHolidays.daysOfWeek.thursday') },
+    { value: Days.Friday.toString(), label: t('officialHolidays.daysOfWeek.friday') },
+    { value: Days.Saturday.toString(), label: t('officialHolidays.daysOfWeek.saturday') },
+  ];
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-5">
-        <div className="flex flex-wrap items-center justify-between">
-          <div className="text-xl font-bold text-gray-700">
-            {t('officialHolidays.fixedHolidays')}
-          </div>
-          <div className="flex items-center gap-3">
-            <button type="button" onClick={handleAddFixedHoliday}>
-              <img src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
-            </button>
+      <Card>
+        <div className="space-y-6">
+          {/* Single Fixed Holiday */}
+          <div className="space-y-4">
+            {/* Day */}
+            <FormField
+              label={t('officialHolidays.day')}
+              required
+              error={errors.day?.message}
+              htmlFor="day"
+            >
+              <Controller
+                name="day"
+                control={control.control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value.toString()}
+                    onChange={(value) => field.onChange(value)}
+                    options={dayOptions}
+                    placeholder={t('officialHolidays.selectDay')}
+                    id="day"
+                    showSearch={false}
+                  />
+                )}
+              />
+            </FormField>
+
+            {/* Country */}
+            <FormField
+              label={t('officialHolidays.country')}
+              required
+              error={errors.country?.message}
+              htmlFor="country"
+            >
+              <Controller
+                name="country"
+                control={control.control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    options={countryOptions}
+                    placeholder={t('officialHolidays.selectCountry')}
+                    disabled={isLoadingCountries}
+                    id="country"
+                  />
+                )}
+              />
+            </FormField>
+
+            {/* Reasons */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* Reason Ar */}
+              <FormField
+                label={t('officialHolidays.reasonInAr')}
+                required
+                error={errors.reasonAr?.message}
+                htmlFor="reasonAr"
+              >
+                <Controller
+                  name="reasonAr"
+                  control={control.control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={t('officialHolidays.enterReasonInAr')}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      id="reasonAr"
+                    />
+                  )}
+                />
+              </FormField>
+              {/* Reason En */}
+              <FormField
+                label={t('officialHolidays.reasonInEn')}
+                required
+                error={errors.reasonEn?.message}
+                htmlFor="reasonEn"
+              >
+                <Controller
+                  name="reasonEn"
+                  control={control.control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={t('officialHolidays.enterReasonInEn')}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      id="reasonEn"
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+
+            {/* Official Document Upload */}
+            <FormField
+              label={t('officialHolidays.officialDocument')}
+              optional
+              htmlFor="officialDocument"
+            >
+              <FileUpload
+                label=""
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.svg"
+                onChange={handleFileUpload(0)}
+                onDelete={(fileIndex) => handleFileDelete(0, getFileNames(0)?.[fileIndex || 0])()}
+                fileNames={getFileNames(0)}
+                uploadText={t('officialHolidays.uploadAttachments')}
+                formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
+                multiple
+                id="officialDocument"
+              />
+            </FormField>
           </div>
         </div>
-      </div>
-      <div className="space-y-6">
-        {fixedFields.map((field, index) => (
-          <Card key={field.id}>
-            <div className="flex">
-              <div className="w-full space-y-6">
-                <div className="flex gap-1">
-                  <div className="w-full">
-                    {/* Day */}
-                    <FormField
-                      label={t('officialHolidays.day')}
-                      required
-                      error={errors.holidays?.[index]?.day?.message}
-                      htmlFor={`holidays.${index}.day`}
-                    >
-                      <Controller
-                        name={`holidays.${index}.day`}
-                        control={control.control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            type="text"
-                            placeholder={t('officialHolidays.selectDay')}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                            id={`holidays.${index}.day`}
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                </div>
-
-                <div className="flex w-full flex-wrap gap-3">
-                  <div className="flex-1">
-                    {/* Country */}
-                    <FormField
-                      label={t('officialHolidays.country')}
-                      required
-                      error={errors.holidays?.[index]?.country?.message}
-                      htmlFor={`holidays.${index}.country`}
-                    >
-                      <Controller
-                        name={`holidays.${index}.country`}
-                        control={control.control}
-                        render={({ field }) => (
-                          <CustomSelect
-                            value={field.value}
-                            onChange={(value) => field.onChange(value)}
-                            options={countryOptions}
-                            placeholder={t('officialHolidays.selectCountry')}
-                            disabled={isLoadingCountries}
-                            error={!!errors.holidays?.[index]?.country?.message}
-                            id={`holidays.${index}.country`}
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                </div>
-
-                <div className="flex w-full flex-wrap gap-3">
-                  <div className="flex-1">
-                    {/* Reason */}
-                    <FormField
-                      label={t('officialHolidays.reasonInAr')}
-                      required
-                      error={errors.holidays?.[index]?.reasonInAr?.message}
-                      htmlFor={`holidays.${index}.reasonInAr`}
-                    >
-                      <Controller
-                        name={`holidays.${index}.reasonInAr`}
-                        control={control.control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            type="text"
-                            placeholder={t('officialHolidays.enterReasonInAr')}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                            id={`holidays.${index}.reasonInAr`}
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                  <div className="flex-1">
-                    {/* Reason */}
-                    <FormField
-                      label={t('officialHolidays.reasonInEn')}
-                      required
-                      error={errors.holidays?.[index]?.reasonInEn?.message}
-                      htmlFor={`holidays.${index}.reasonInEn`}
-                    >
-                      <Controller
-                        name={`holidays.${index}.reasonInEn`}
-                        control={control.control}
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            type="text"
-                            placeholder={t('officialHolidays.enterReasonInEn')}
-                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                            id={`holidays.${index}.reasonInEn`}
-                          />
-                        )}
-                      />
-                    </FormField>
-                  </div>
-                </div>
-
-                <div className="w-full">
-                  {/* Official Document Upload */}
-                  <FormField
-                    label={t('officialHolidays.officialDocument')}
-                    optional
-                    htmlFor={`holidays.${index}.officialDocument`}
-                  >
-                    <FileUpload
-                      label=""
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.svg"
-                      onChange={handleFileUpload(index)}
-                      onDelete={(fileIndex) =>
-                        handleFileDelete(index, getFileNames(index)?.[fileIndex || 0])()
-                      }
-                      fileNames={getFileNames(index)}
-                      uploadText={t('officialHolidays.uploadAttachments')}
-                      formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
-                      multiple
-                      id={`holidays.${index}.officialDocument`}
-                    />
-                  </FormField>
-                </div>
-              </div>
-              <div className="w-8">
-                {/* Delete Button (only show if more than 1 item) */}
-                {fixedFields.length > 1 && (
-                  <div className="mb-4 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteFixedHoliday(index)}
-                      className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
-                    >
-                      <img src={TrashIcon} alt="Trash" className="h-4 w-4" />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Card>
-        ))}
 
         {/* Action Buttons */}
         <div className="mt-6 flex items-center justify-end gap-3">
@@ -245,7 +184,7 @@ const AddFixedHolidayForm = ({
             {isCreating ? t('common.saving') : t('common.add')}
           </Button>
         </div>
-      </div>
+      </Card>
     </form>
   );
 };
