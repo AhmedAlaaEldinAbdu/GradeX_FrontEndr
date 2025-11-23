@@ -5,7 +5,10 @@ export const AddHolidaysSchema = object({
   holidayType: string()
     .required('officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
-  reason: string()
+  reasonInAr: string()
+    .required('officialHolidays.validation.reasonRequired')
+    .typeError('officialHolidays.validation.reasonRequired'),
+  reasonInEn: string()
     .required('officialHolidays.validation.reasonRequired')
     .typeError('officialHolidays.validation.reasonRequired'),
   startDate: string()
@@ -39,7 +42,10 @@ export const AddFixedHolidaySchema = object({
         country: string()
           .required('officialHolidays.validation.countryRequired')
           .typeError('officialHolidays.validation.countryRequired'),
-        reason: string()
+        reasonInAr: string()
+          .required('officialHolidays.validation.reasonRequired')
+          .typeError('officialHolidays.validation.reasonRequired'),
+        reasonInEn: string()
           .required('officialHolidays.validation.reasonRequired')
           .typeError('officialHolidays.validation.reasonRequired'),
         officialDocuments: array().of(mixed()).optional(),
@@ -55,7 +61,10 @@ export const EditHolidaySchema = object({
   holidayType: string()
     .required('officialHolidays.validation.holidayTypeRequired')
     .typeError('officialHolidays.validation.holidayTypeRequired'),
-  reason: string()
+  reasonInAr: string()
+    .required('officialHolidays.validation.reasonRequired')
+    .typeError('officialHolidays.validation.reasonRequired'),
+  reasonInEn: string()
     .required('officialHolidays.validation.reasonRequired')
     .typeError('officialHolidays.validation.reasonRequired'),
   startDate: string()

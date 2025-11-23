@@ -44,7 +44,8 @@ export const useHolidayForm = (
       startDate: '',
       endDate: '',
       country: '',
-      reason: '',
+      reasonInAr: '',
+      reasonInEn: '',
       officialDocuments: [],
     },
     mode: 'onTouched',
@@ -61,7 +62,8 @@ export const useHolidayForm = (
         {
           day: '',
           country: '',
-          reason: '',
+          reasonInAr: '',
+          reasonInEn: '',
           officialDocuments: [],
         },
       ],
@@ -185,7 +187,8 @@ export const useHolidayForm = (
       startDate: '',
       endDate: '',
       country: '',
-      reason: '',
+      reasonInAr: '',
+      reasonInEn: '',
       officialDocuments: [],
     });
     fixedControl.reset({
@@ -194,7 +197,8 @@ export const useHolidayForm = (
         {
           day: '',
           country: '',
-          reason: '',
+          reasonInAr: '',
+          reasonInEn: '',
           officialDocuments: [],
         },
       ],

@@ -52,7 +52,7 @@ const AddOfficialHolidayForm = ({
           {/* Single Official Holiday */}
           <div className="space-y-4">
             {/* Date Range and Fields */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
               {/* Start Date */}
               <FormField
                 label={t('officialHolidays.startDate')}
@@ -117,24 +117,46 @@ const AddOfficialHolidayForm = ({
                   )}
                 />
               </FormField>
-
-              {/* Reason */}
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* Reason Ar */}
               <FormField
-                label={t('officialHolidays.reason')}
+                label={t('officialHolidays.reasonInAr')}
                 required
-                error={errors.reason?.message}
-                htmlFor="reason"
+                error={errors.reasonInAr?.message}
+                htmlFor="reasonInAr"
               >
                 <Controller
-                  name="reason"
+                  name="reasonInAr"
                   control={control.control}
                   render={({ field }) => (
                     <Input
                       {...field}
                       type="text"
-                      placeholder={t('officialHolidays.enterReason')}
+                      placeholder={t('officialHolidays.enterReasonInAr')}
                       className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      id="reason"
+                      id="reasonInAr"
+                    />
+                  )}
+                />
+              </FormField>
+              {/* Reason En */}
+              <FormField
+                label={t('officialHolidays.reasonInEn')}
+                required
+                error={errors.reasonInEn?.message}
+                htmlFor="reasonInEn"
+              >
+                <Controller
+                  name="reasonInEn"
+                  control={control.control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={t('officialHolidays.enterReasonInEn')}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      id="reasonInEn"
                     />
                   )}
                 />

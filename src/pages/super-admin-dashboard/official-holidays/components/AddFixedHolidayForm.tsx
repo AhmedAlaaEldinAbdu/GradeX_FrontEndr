@@ -60,7 +60,8 @@ const AddFixedHolidayForm = ({
     appendFixed({
       day: '',
       country: '',
-      reason: '',
+      reasonInAr: '',
+      reasonInEn: '',
     });
   };
 
@@ -89,48 +90,34 @@ const AddFixedHolidayForm = ({
       <div className="space-y-6">
         {fixedFields.map((field, index) => (
           <Card key={field.id}>
-            <div className="space-y-6">
-              <div className="flex gap-1">
-                <div className="w-full">
-                  {/* Day */}
-                  <FormField
-                    label={t('officialHolidays.day')}
-                    required
-                    error={errors.holidays?.[index]?.day?.message}
-                    htmlFor={`holidays.${index}.day`}
-                  >
-                    <Controller
-                      name={`holidays.${index}.day`}
-                      control={control.control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          type="text"
-                          placeholder={t('officialHolidays.selectDay')}
-                          className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                          id={`holidays.${index}.day`}
-                        />
-                      )}
-                    />
-                  </FormField>
+            <div className="flex">
+              <div className="w-full space-y-6">
+                <div className="flex gap-1">
+                  <div className="w-full">
+                    {/* Day */}
+                    <FormField
+                      label={t('officialHolidays.day')}
+                      required
+                      error={errors.holidays?.[index]?.day?.message}
+                      htmlFor={`holidays.${index}.day`}
+                    >
+                      <Controller
+                        name={`holidays.${index}.day`}
+                        control={control.control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            type="text"
+                            placeholder={t('officialHolidays.selectDay')}
+                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            id={`holidays.${index}.day`}
+                          />
+                        )}
+                      />
+                    </FormField>
+                  </div>
                 </div>
-                <div className="w-8">
-                  {/* Delete Button (only show if more than 1 item) */}
-                  {fixedFields.length > 1 && (
-                    <div className="mb-4 flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteFixedHoliday(index)}
-                        className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
-                      >
-                        <img src={TrashIcon} alt="Trash" className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              <div className="flex gap-1">
                 <div className="flex w-full flex-wrap gap-3">
                   <div className="flex-1">
                     {/* Country */}
@@ -157,36 +144,57 @@ const AddFixedHolidayForm = ({
                       />
                     </FormField>
                   </div>
+                </div>
+
+                <div className="flex w-full flex-wrap gap-3">
                   <div className="flex-1">
                     {/* Reason */}
                     <FormField
-                      label={t('officialHolidays.reason')}
+                      label={t('officialHolidays.reasonInAr')}
                       required
-                      error={errors.holidays?.[index]?.reason?.message}
-                      htmlFor={`holidays.${index}.reason`}
+                      error={errors.holidays?.[index]?.reasonInAr?.message}
+                      htmlFor={`holidays.${index}.reasonInAr`}
                     >
                       <Controller
-                        name={`holidays.${index}.reason`}
+                        name={`holidays.${index}.reasonInAr`}
                         control={control.control}
                         render={({ field }) => (
                           <Input
                             {...field}
                             type="text"
-                            placeholder={t('officialHolidays.enterReason')}
+                            placeholder={t('officialHolidays.enterReasonInAr')}
                             className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                            id={`holidays.${index}.reason`}
+                            id={`holidays.${index}.reasonInAr`}
+                          />
+                        )}
+                      />
+                    </FormField>
+                  </div>
+                  <div className="flex-1">
+                    {/* Reason */}
+                    <FormField
+                      label={t('officialHolidays.reasonInEn')}
+                      required
+                      error={errors.holidays?.[index]?.reasonInEn?.message}
+                      htmlFor={`holidays.${index}.reasonInEn`}
+                    >
+                      <Controller
+                        name={`holidays.${index}.reasonInEn`}
+                        control={control.control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            type="text"
+                            placeholder={t('officialHolidays.enterReasonInEn')}
+                            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            id={`holidays.${index}.reasonInEn`}
                           />
                         )}
                       />
                     </FormField>
                   </div>
                 </div>
-                <div aria-hidden="true">
-                  <div className="h-8 w-8"></div>
-                </div>
-              </div>
 
-              <div className="flex gap-1">
                 <div className="w-full">
                   {/* Official Document Upload */}
                   <FormField
@@ -209,9 +217,20 @@ const AddFixedHolidayForm = ({
                     />
                   </FormField>
                 </div>
-                <div aria-hidden="true">
-                  <div className="h-8 w-8"></div>
-                </div>
+              </div>
+              <div className="w-8">
+                {/* Delete Button (only show if more than 1 item) */}
+                {fixedFields.length > 1 && (
+                  <div className="mb-4 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteFixedHoliday(index)}
+                      className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+                    >
+                      <img src={TrashIcon} alt="Trash" className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
