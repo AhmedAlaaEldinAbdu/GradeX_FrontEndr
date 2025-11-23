@@ -69,7 +69,7 @@ export default function CountryHolidays() {
         id: holiday.id,
         date: holiday.startDate,
         dayName: new Date(holiday.startDate).toLocaleDateString(currentLang, { weekday: 'long' }),
-        reason: holiday.reason,
+        reason: (currentLang === 'ar' && holiday.reasonAR) || holiday.reasonEN,
         isEditable: true,
       }));
   }, [holidays, currentLang]);
@@ -106,7 +106,7 @@ export default function CountryHolidays() {
           id: holiday.id,
           dateRange,
           arabicDateRange: dateRange,
-          reason: holiday.reason,
+          reason: (currentLang === 'ar' && holiday.reasonAR) || holiday.reasonEN,
           hasOfficialDocument: !!holiday.filePath && holiday.filePath !== 'string',
           date: holiday.startDate,
         };
