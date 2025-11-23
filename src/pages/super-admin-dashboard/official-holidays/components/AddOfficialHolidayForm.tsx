@@ -123,11 +123,11 @@ const AddOfficialHolidayForm = ({
               <FormField
                 label={t('officialHolidays.reasonInAr')}
                 required
-                error={errors.reasonInAr?.message}
-                htmlFor="reasonInAr"
+                error={errors.reasonAr?.message}
+                htmlFor="reasonAr"
               >
                 <Controller
-                  name="reasonInAr"
+                  name="reasonAr"
                   control={control.control}
                   render={({ field }) => (
                     <Input
@@ -135,7 +135,7 @@ const AddOfficialHolidayForm = ({
                       type="text"
                       placeholder={t('officialHolidays.enterReasonInAr')}
                       className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      id="reasonInAr"
+                      id="reasonAr"
                     />
                   )}
                 />
@@ -144,11 +144,11 @@ const AddOfficialHolidayForm = ({
               <FormField
                 label={t('officialHolidays.reasonInEn')}
                 required
-                error={errors.reasonInEn?.message}
-                htmlFor="reasonInEn"
+                error={errors.reasonEn?.message}
+                htmlFor="reasonEn"
               >
                 <Controller
-                  name="reasonInEn"
+                  name="reasonEn"
                   control={control.control}
                   render={({ field }) => (
                     <Input
@@ -156,7 +156,7 @@ const AddOfficialHolidayForm = ({
                       type="text"
                       placeholder={t('officialHolidays.enterReasonInEn')}
                       className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      id="reasonInEn"
+                      id="reasonEn"
                     />
                   )}
                 />

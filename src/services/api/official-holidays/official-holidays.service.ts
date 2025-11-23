@@ -85,11 +85,20 @@ export async function createHoliday(
   const formData = new FormData();
 
   // Append required fields
-  formData.append('StartDate', data.StartDate);
-  formData.append('EndDate', data.EndDate);
+  // For fixed holidays (LeaveCategory = 1), send Day field
+  // For official holidays (LeaveCategory = 2), send StartDate and EndDate
+  if (data.Day !== undefined) {
+    formData.append('Day', data.Day.toString());
+  }
+  if (data.StartDate) {
+    formData.append('StartDate', data.StartDate);
+  }
+  if (data.EndDate) {
+    formData.append('EndDate', data.EndDate);
+  }
   formData.append('LeaveCategory', data.LeaveCategory.toString());
-  formData.append('ReasonInAr', data.ReasonInAr);
-  formData.append('ReasonInEn', data.ReasonInEn);
+  formData.append('ReasonAr', data.ReasonAr);
+  formData.append('ReasonEN', data.ReasonEN);
   formData.append('LKCountryId', data.LKCountryId);
 
   // Append optional file and metadata
@@ -135,11 +144,20 @@ export async function updateHoliday(
   const formData = new FormData();
 
   // Append required fields
-  formData.append('StartDate', data.StartDate);
-  formData.append('EndDate', data.EndDate);
+  // For fixed holidays (LeaveCategory = 1), send Day field
+  // For official holidays (LeaveCategory = 2), send StartDate and EndDate
+  if (data.Day !== undefined) {
+    formData.append('Day', data.Day.toString());
+  }
+  if (data.StartDate) {
+    formData.append('StartDate', data.StartDate);
+  }
+  if (data.EndDate) {
+    formData.append('EndDate', data.EndDate);
+  }
   formData.append('LeaveCategory', data.LeaveCategory.toString());
-  formData.append('ReasonInAr', data.ReasonInAr);
-  formData.append('ReasonInEn', data.ReasonInEn);
+  formData.append('ReasonAr', data.ReasonAr);
+  formData.append('ReasonEN', data.ReasonEN);
   formData.append('LKCountryId', data.LKCountryId);
 
   // Append optional file and metadata

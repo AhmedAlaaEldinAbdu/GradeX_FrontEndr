@@ -40,12 +40,12 @@ export const useHolidayForm = (
   const officialControl = useForm<AddHolidaysProps>({
     resolver: yupResolver(AddHolidaysSchema) as any,
     defaultValues: initialOfficialData || {
-      holidayType: '',
+      holidayType: 0,
       startDate: '',
       endDate: '',
       country: '',
-      reasonInAr: '',
-      reasonInEn: '',
+      reasonAr: '',
+      reasonEn: '',
       officialDocuments: [],
     },
     mode: 'onTouched',
@@ -53,20 +53,16 @@ export const useHolidayForm = (
     criteriaMode: 'firstError',
   });
 
-  // Initialize fixed holidays form (multiple holidays)
+  // Initialize fixed holidays form (single holiday)
   const fixedControl = useForm<AddFixedHolidayProps>({
     resolver: yupResolver(AddFixedHolidaySchema) as any,
     defaultValues: initialFixedData || {
-      holidayType: '',
-      holidays: [
-        {
-          day: '',
-          country: '',
-          reasonInAr: '',
-          reasonInEn: '',
-          officialDocuments: [],
-        },
-      ],
+      holidayType: 0,
+      day: 0,
+      country: '',
+      reasonAr: '',
+      reasonEn: '',
+      officialDocuments: [],
     },
     mode: 'onTouched',
     reValidateMode: 'onChange',
@@ -183,25 +179,21 @@ export const useHolidayForm = (
    */
   const resetForm = () => {
     officialControl.reset({
-      holidayType: '',
+      holidayType: 0,
       startDate: '',
       endDate: '',
       country: '',
-      reasonInAr: '',
-      reasonInEn: '',
+      reasonAr: '',
+      reasonEn: '',
       officialDocuments: [],
     });
     fixedControl.reset({
-      holidayType: '',
-      holidays: [
-        {
-          day: '',
-          country: '',
-          reasonInAr: '',
-          reasonInEn: '',
-          officialDocuments: [],
-        },
-      ],
+      holidayType: 0,
+      day: 0,
+      country: '',
+      reasonAr: '',
+      reasonEn: '',
+      officialDocuments: [],
     });
     setFiles({});
     setFileErrors({});

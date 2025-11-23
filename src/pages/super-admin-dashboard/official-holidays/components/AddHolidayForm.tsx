@@ -5,7 +5,10 @@ import { Controller } from 'react-hook-form';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { fetchCountries } from '@/redux/features/lookups/lookupsSlice';
 import { createHoliday } from '@/redux/features/official-holidays/officialHolidaysSlice';
-import { createHolidayRequest, createFixedHolidayRequest } from '../utils/holiday-form.transformer';
+import {
+  createOfficialHolidayRequest,
+  createFixedHolidayRequest,
+} from '../utils/holiday-form.transformer';
 import { useHolidayForm } from '../hooks/useHolidayForm';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
@@ -59,15 +62,15 @@ const AddHolidayForm = () => {
   useEffect(() => {
     const holidayType = isFixedHoliday ? watchFixedHolidayType : watchOfficialHolidayType;
 
-    if (holidayType === 'fixed') {
+    if (holidayType === 1) {
       setIsFixedHoliday(true);
       if (!isFixedHoliday) {
-        setFixedValue('holidayType', 'fixed');
+        setFixedValue('holidayType', 1);
       }
-    } else if (holidayType === 'official') {
+    } else if (holidayType === 2) {
       setIsFixedHoliday(false);
       if (isFixedHoliday) {
-        setOfficialValue('holidayType', 'official');
+        setOfficialValue('holidayType', 2);
       }
     }
   }, [
@@ -79,19 +82,17 @@ const AddHolidayForm = () => {
   ]);
 
   const holidayTypeOptions = [
-    { value: 'fixed', label: t('officialHolidays.fixedHoliday') },
-    { value: 'official', label: t('officialHolidays.officialHoliday') },
+    { value: '1', label: t('officialHolidays.fixedHoliday') },
+    { value: '2', label: t('officialHolidays.officialHoliday') },
   ];
 
   const onOfficialSubmit = async (data: AddHolidaysProps) => {
     try {
-      // Update data with actual files from hook state
       const dataWithFiles = {
         ...data,
         officialDocuments: files[0] || [],
       };
-
-      const requestData = createHolidayRequest(dataWithFiles, 1);
+      const requestData = createOfficialHolidayRequest(dataWithFiles);
       const result = await dispatch(createHoliday(requestData)).unwrap();
       if (result.isSuccess) {
         setShowPopupMessage({
@@ -103,7 +104,7 @@ const AddHolidayForm = () => {
         setShowPopupMessage({
           show: true,
           type: 'error',
-          message: result.errors?.join(', ') || t('common.errorOccurred'),
+          message: result.errors?.[0] || t('common.errorOccurred'),
         });
       }
     } catch (error: any) {
@@ -117,30 +118,23 @@ const AddHolidayForm = () => {
 
   const onFixedSubmit = async (data: AddFixedHolidayProps) => {
     try {
-      const promises = data.holidays.map(async (holiday, index) => {
-        const holidayWithFiles = {
-          ...holiday,
-          officialDocuments: files[index] || [],
-        };
-        const requestData = createFixedHolidayRequest(holidayWithFiles);
-        return dispatch(createHoliday(requestData)).unwrap();
-      });
-      const results = await Promise.all(promises);
-      if (results.every((result) => result.isSuccess)) {
+      const dataWithFiles = {
+        ...data,
+        officialDocuments: files[0] || [],
+      };
+      const requestData = createFixedHolidayRequest(dataWithFiles);
+      const result = await dispatch(createHoliday(requestData)).unwrap();
+      if (result.isSuccess) {
         setShowPopupMessage({
           show: true,
           type: 'success',
-          message: t('officialHolidays.holidayAddedSuccessfully'),
+          message: result.successMessage || t('officialHolidays.holidayAddedSuccessfully'),
         });
       } else {
         setShowPopupMessage({
           show: true,
           type: 'error',
-          message:
-            results
-              .map((r) => r.errors)
-              .flat()
-              .join(', ') || t('common.errorOccurred'),
+          message: result.errors?.[0] || t('common.errorOccurred'),
         });
       }
     } catch (error: any) {
@@ -158,10 +152,16 @@ const AddHolidayForm = () => {
 
   const handleHolidayTypeChange = (field: any, value: string | string[]) => {
     const selectedValue = Array.isArray(value) ? value[0] : value;
-    field.onChange(selectedValue);
-    setOfficialValue('holidayType', selectedValue);
-    setFixedValue('holidayType', selectedValue);
-    setIsFixedHoliday(selectedValue === 'fixed');
+    const numericValue = parseInt(selectedValue);
+    field.onChange(numericValue);
+
+    if (numericValue === 1) {
+      setFixedValue('holidayType', 1);
+      setIsFixedHoliday(true);
+    } else if (numericValue === 2) {
+      setOfficialValue('holidayType', 2);
+      setIsFixedHoliday(false);
+    }
   };
 
   return (
@@ -184,10 +184,11 @@ const AddHolidayForm = () => {
                 control={officialControl.control}
                 render={({ field }) => (
                   <CustomSelect
-                    value={field.value}
+                    value={field.value.toString()}
                     onChange={(value) => handleHolidayTypeChange(field, value)}
                     options={holidayTypeOptions}
                     placeholder={t('officialHolidays.selectHolidayType')}
+                    showSearch={false}
                   />
                 )}
               />
@@ -197,10 +198,11 @@ const AddHolidayForm = () => {
                 control={fixedControl.control}
                 render={({ field }) => (
                   <CustomSelect
-                    value={field.value}
+                    value={field.value.toString()}
                     onChange={(value) => handleHolidayTypeChange(field, value)}
                     options={holidayTypeOptions}
                     placeholder={t('officialHolidays.selectHolidayType')}
+                    showSearch={false}
                   />
                 )}
               />
