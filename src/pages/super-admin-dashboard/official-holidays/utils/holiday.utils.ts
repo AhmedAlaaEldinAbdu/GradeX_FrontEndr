@@ -30,7 +30,7 @@ export function groupHolidaysByCountry(holidays: OfficialHoliday[]): CountryHoli
         countryAR: holiday.countryNameAR,
         countryEN: holiday.countryNameEN,
         count: 0,
-        firstHolidayId: holiday.id,
+        firstHolidayId: holiday.lkCountryId,
       };
     }
     groupedByCountry[key].count++;
