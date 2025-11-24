@@ -162,6 +162,7 @@ export default function CountryHolidays() {
       label: t('actions.edit'),
       icon: EditFilledIcon,
       color: 'text-gray-700 hover:bg-gray-100',
+      // onClick: () => navigate(`/official-holidays/edit-holiday/${holiday.id}`),
       onClick: () => navigate(`/official-holidays/edit/1`),
     },
     {
