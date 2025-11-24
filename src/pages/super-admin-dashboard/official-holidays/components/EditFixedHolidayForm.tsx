@@ -1,0 +1,193 @@
+import { useTranslation } from 'react-i18next';
+import { Controller } from 'react-hook-form';
+import type { UseFormReturn } from 'react-hook-form';
+import { useAppSelector } from '@/hooks/useRedux';
+import type { Country } from '@/services/api/types/lookup.types';
+import type { AddFixedHolidayProps } from '@/validations/official-holidays-validations';
+import { Days } from '@/shared/enums/enums';
+import Card from '@/shared/components/Card';
+import Button from '@/shared/components/Button';
+import FormField from '@/shared/components/FormField';
+import FileUpload from '@/shared/components/FileUpload';
+import CustomSelect from '@/shared/components/CustomSelect';
+import Input from '@/shared/components/Input';
+
+interface EditFixedHolidayFormProps {
+  control: UseFormReturn<AddFixedHolidayProps, any, AddFixedHolidayProps>;
+  onSubmit: (data: AddFixedHolidayProps) => Promise<void>;
+  onCancel: () => void;
+  handleFileUpload: (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFileDelete: (index: number, fileName?: string) => () => void;
+  getFileNames: (index: number) => string[];
+  isSubmitting: boolean;
+}
+
+const EditFixedHolidayForm = ({
+  control,
+  onSubmit,
+  onCancel,
+  handleFileUpload,
+  handleFileDelete,
+  getFileNames,
+  isSubmitting,
+}: EditFixedHolidayFormProps) => {
+  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const { countries, isLoadingCountries } = useAppSelector((state) => state.lookups);
+  const { isUpdating } = useAppSelector((state) => state.officialHolidays);
+
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = control;
+
+  const countryOptions = countries.map((country: Country) => ({
+    value: country.id.toString(),
+    label: i18n.language === 'ar' ? country.arabicName : country.englishName,
+  }));
+
+  const dayOptions = [
+    { value: Days.Sunday.toString(), label: t('officialHolidays.daysOfWeek.sunday') },
+    { value: Days.Monday.toString(), label: t('officialHolidays.daysOfWeek.monday') },
+    { value: Days.Tuesday.toString(), label: t('officialHolidays.daysOfWeek.tuesday') },
+    { value: Days.Wednesday.toString(), label: t('officialHolidays.daysOfWeek.wednesday') },
+    { value: Days.Thursday.toString(), label: t('officialHolidays.daysOfWeek.thursday') },
+    { value: Days.Friday.toString(), label: t('officialHolidays.daysOfWeek.friday') },
+    { value: Days.Saturday.toString(), label: t('officialHolidays.daysOfWeek.saturday') },
+  ];
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Card>
+        <div className="space-y-6">
+          {/* Single Fixed Holiday */}
+          <div className="space-y-4">
+            {/* Day */}
+            <FormField
+              label={t('officialHolidays.day')}
+              required
+              error={errors.day?.message}
+              htmlFor="day"
+            >
+              <Controller
+                name="day"
+                control={control.control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value.toString()}
+                    onChange={(value) => field.onChange(parseInt(value as string))}
+                    options={dayOptions}
+                    placeholder={t('officialHolidays.selectDay')}
+                    id="day"
+                    showSearch={false}
+                    error={!!errors.day}
+                  />
+                )}
+              />
+            </FormField>
+
+            {/* Country */}
+            <FormField
+              label={t('officialHolidays.country')}
+              required
+              error={errors.country?.message}
+              htmlFor="country"
+            >
+              <Controller
+                name="country"
+                control={control.control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    options={countryOptions}
+                    placeholder={t('officialHolidays.selectCountry')}
+                    disabled={isLoadingCountries}
+                    id="country"
+                    error={!!errors.country}
+                  />
+                )}
+              />
+            </FormField>
+
+            {/* Reasons */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* Reason Ar */}
+              <FormField
+                label={t('officialHolidays.reasonInAr')}
+                required
+                error={errors.reasonAr?.message}
+                htmlFor="reasonAr"
+              >
+                <Controller
+                  name="reasonAr"
+                  control={control.control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={t('officialHolidays.enterReasonInAr')}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      id="reasonAr"
+                    />
+                  )}
+                />
+              </FormField>
+              {/* Reason En */}
+              <FormField
+                label={t('officialHolidays.reasonInEn')}
+                required
+                error={errors.reasonEn?.message}
+                htmlFor="reasonEn"
+              >
+                <Controller
+                  name="reasonEn"
+                  control={control.control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={t('officialHolidays.enterReasonInEn')}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      id="reasonEn"
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+
+            {/* Official Document Upload */}
+            <FormField
+              label={t('officialHolidays.officialDocument')}
+              optional
+              htmlFor="officialDocument"
+            >
+              <FileUpload
+                label=""
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.svg"
+                onChange={handleFileUpload(0)}
+                onDelete={(fileIndex) => handleFileDelete(0, getFileNames(0)?.[fileIndex || 0])()}
+                fileNames={getFileNames(0)}
+                uploadText={t('officialHolidays.uploadAttachments')}
+                formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
+                id="officialDocument"
+              />
+            </FormField>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-6 flex items-center justify-end gap-3">
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" variant="primary" disabled={isSubmitting || isUpdating}>
+            {isUpdating ? t('common.saving') : t('common.save')}
+          </Button>
+        </div>
+      </Card>
+    </form>
+  );
+};
+
+export default EditFixedHolidayForm;
