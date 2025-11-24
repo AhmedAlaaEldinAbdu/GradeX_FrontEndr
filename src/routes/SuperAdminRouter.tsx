@@ -27,6 +27,7 @@ import EditNotificationPage from '@gradex/pages/super-admin-dashboard/notificati
 import OfficialHolidaysPage from './../pages/super-admin-dashboard/official-holidays/official-holidays-page';
 import CountryHolidaysPage from './../pages/super-admin-dashboard/official-holidays/country-holidays-page';
 import AddHolidayPage from '@/pages/super-admin-dashboard/official-holidays/add-holiday-page';
+import EditHolidayPage from '@/pages/super-admin-dashboard/official-holidays/edit-holiday-page';
 
 const SuperAdminRouter: React.FC = () => {
   return (
@@ -312,6 +313,16 @@ const SuperAdminRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
             <MainLayout>
               <AddHolidayPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/official-holidays/edit-holiday/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
+            <MainLayout>
+              <EditHolidayPage />
             </MainLayout>
           </ProtectedRoute>
         }
