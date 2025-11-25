@@ -109,6 +109,7 @@ export default function CountryHolidays() {
           reason: (currentLang === 'ar' && holiday.reasonAR) || holiday.reasonEN,
           hasOfficialDocument: !!holiday.filePath && holiday.filePath !== 'string',
           date: holiday.startDate,
+          filePath: holiday.filePath,
         };
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
