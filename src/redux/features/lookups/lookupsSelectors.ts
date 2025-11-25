@@ -10,6 +10,8 @@ import type {
   ApplicationFeature,
   Country,
   Facility,
+  Region,
+  City,
   LookupOption,
 } from '@/services/api/types/lookup.types';
 import {
@@ -236,6 +238,62 @@ export const selectCountriesGrouped = (language: 'ar' | 'en' = 'en') =>
 
     return grouped;
   });
+
+// ============================================================================
+// Regions Selectors
+// ============================================================================
+
+/**
+ * Select all regions
+ */
+export const selectRegions = createSelector(
+  [selectLookupsState],
+  (lookupsState): Region[] => lookupsState.regions
+);
+
+/**
+ * Select regions loading state
+ */
+export const selectIsLoadingRegions = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.isLoadingRegions
+);
+
+/**
+ * Select regions error
+ */
+export const selectRegionsError = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.regionsError
+);
+
+// ============================================================================
+// Cities Selectors
+// ============================================================================
+
+/**
+ * Select all cities
+ */
+export const selectCities = createSelector(
+  [selectLookupsState],
+  (lookupsState): City[] => lookupsState.cities
+);
+
+/**
+ * Select cities loading state
+ */
+export const selectIsLoadingCities = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.isLoadingCities
+);
+
+/**
+ * Select cities error
+ */
+export const selectCitiesError = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.citiesError
+);
 
 // ============================================================================
 // Combined Selectors
