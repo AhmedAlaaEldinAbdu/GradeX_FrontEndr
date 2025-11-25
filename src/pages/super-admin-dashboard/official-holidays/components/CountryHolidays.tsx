@@ -110,7 +110,8 @@ export default function CountryHolidays() {
           hasOfficialDocument: !!holiday.filePath && holiday.filePath !== 'string',
           date: holiday.startDate,
         };
-      });
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [holidays, currentLang]);
 
   const isUpcomingHoliday = (dateString?: string): boolean => {
