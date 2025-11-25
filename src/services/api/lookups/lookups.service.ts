@@ -13,6 +13,12 @@ import type {
   CountriesResponse,
   Facility,
   FacilitiesResponse,
+  Region,
+  RegionsResponse,
+  RegionQueryParams,
+  City,
+  CitiesResponse,
+  CityQueryParams,
 } from '../types/lookup.types';
 
 // ============================================================================
@@ -107,6 +113,96 @@ export function searchCountries(
 }
 
 // ============================================================================
+// Regions
+// ============================================================================
+
+/**
+ * Get all regions
+ */
+export async function getAllRegions(): Promise<Region[]> {
+  const params = {
+    PageIndex: 1,
+    PageSize: 1000,
+  };
+
+  const response: AxiosResponse<RegionsResponse> = await axiosClient.get(LookupsEndpoints.regions, {
+    params,
+  });
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.successMessage || 'Failed to fetch regions');
+  }
+
+  return response.data.value.regionDto || [];
+}
+
+/**
+ * Get regions by country ID
+ */
+export async function getRegionsByCountry(countryId: string): Promise<Region[]> {
+  const params: RegionQueryParams = {
+    PageIndex: 1,
+    PageSize: 100,
+    CountryId: countryId,
+  };
+
+  const response: AxiosResponse<RegionsResponse> = await axiosClient.get(LookupsEndpoints.regions, {
+    params,
+  });
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.successMessage || 'Failed to fetch regions');
+  }
+
+  return response.data.value.regionDto || [];
+}
+
+// ============================================================================
+// Cities (Neighborhoods)
+// ============================================================================
+
+/**
+ * Get all cities
+ */
+export async function getAllCities(): Promise<City[]> {
+  const params = {
+    PageIndex: 1,
+    PageSize: 1000,
+  };
+
+  const response: AxiosResponse<CitiesResponse> = await axiosClient.get(LookupsEndpoints.cities, {
+    params,
+  });
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.successMessage || 'Failed to fetch cities');
+  }
+
+  return response.data.value.cityDto || [];
+}
+
+/**
+ * Get cities by region ID
+ */
+export async function getCitiesByRegion(regionId: string): Promise<City[]> {
+  const params: CityQueryParams = {
+    PageIndex: 1,
+    PageSize: 100,
+    RegionId: regionId,
+  };
+
+  const response: AxiosResponse<CitiesResponse> = await axiosClient.get(LookupsEndpoints.cities, {
+    params,
+  });
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.successMessage || 'Failed to fetch cities');
+  }
+
+  return response.data.value.cityDto || [];
+}
+
+// ============================================================================
 // Export All Services
 // ============================================================================
 
@@ -122,6 +218,14 @@ export const lookupsApiService = {
   getCountryById,
   getCountryByCode,
   searchCountries,
+
+  // Regions
+  getAllRegions,
+  getRegionsByCountry,
+
+  // Cities
+  getAllCities,
+  getCitiesByRegion,
 };
 
 export default lookupsApiService;
