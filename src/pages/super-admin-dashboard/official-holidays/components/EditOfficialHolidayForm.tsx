@@ -10,6 +10,7 @@ import FormField from '@/shared/components/FormField';
 import FileUpload from '@/shared/components/FileUpload';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
+import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 
 interface EditOfficialHolidayFormProps {
   control: UseFormReturn<AddHolidaysProps, any, AddHolidaysProps>;
@@ -19,6 +20,8 @@ interface EditOfficialHolidayFormProps {
   handleFileDelete: (index: number, fileName?: string) => () => void;
   getFileNames: (index: number) => string[];
   isSubmitting: boolean;
+  existingFilePath?: string | null;
+  existingFileName?: string | null;
 }
 
 const EditOfficialHolidayForm = ({
@@ -29,6 +32,8 @@ const EditOfficialHolidayForm = ({
   handleFileDelete,
   getFileNames,
   isSubmitting,
+  existingFilePath,
+  existingFileName,
 }: EditOfficialHolidayFormProps) => {
   const { t } = useTranslation();
   const { i18n } = useTranslation();
@@ -170,6 +175,9 @@ const EditOfficialHolidayForm = ({
               optional
               htmlFor="officialDocument"
             >
+              {existingFilePath && existingFileName && getFileNames(0).length === 0 && (
+                <ExistingFileDisplay filePath={existingFilePath} fileName={existingFileName} />
+              )}
               <FileUpload
                 label=""
                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.svg"

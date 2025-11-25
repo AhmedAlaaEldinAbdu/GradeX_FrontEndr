@@ -4,7 +4,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Controller } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchCountries } from '@/redux/features/lookups/lookupsSlice';
-import { updateHoliday, fetchOfficialHolidays } from '@/redux/features/official-holidays/officialHolidaysSlice';
+import {
+  updateHoliday,
+  getHolidayById,
+} from '@/redux/features/official-holidays/officialHolidaysSlice';
 import {
   createOfficialHolidayRequest,
   createFixedHolidayRequest,
@@ -28,15 +31,15 @@ const EditHolidayForm = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
+  const { selectedHoliday, isLoadingHoliday } = useAppSelector((state) => state.officialHolidays);
   const [isFixedHoliday, setIsFixedHoliday] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [existingFilePath, setExistingFilePath] = useState<string | null>(null);
+  const [existingFileName, setExistingFileName] = useState<string | null>(null);
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
     type: 'success' | 'error';
     message: string;
   }>({ show: false, type: 'success', message: '' });
-
-  const { holidays } = useAppSelector((state) => state.officialHolidays);
 
   // Use custom holiday form hook
   const { officialControl, fixedControl, handleFileUpload, handleFileDelete, getFileNames, files } =
@@ -57,63 +60,86 @@ const EditHolidayForm = () => {
     formState: { errors: fixedErrors },
   } = fixedControl;
 
-  // Fetch countries and holiday data on component mount
+  // Fetch countries on component mount
   useEffect(() => {
     dispatch(fetchCountries());
-    if (!holidays || holidays.length === 0) {
-      dispatch(fetchOfficialHolidays());
-    }
   }, [dispatch]);
 
-  // Load holiday data when available
+  // Load holiday data by ID
   useEffect(() => {
-    if (id && holidays && holidays.length > 0) {
-      const holiday = holidays.find((h) => h.id === id);
-      
-      if (holiday) {
-        const leaveCategory = typeof holiday.leaveCategory === 'string' 
-          ? parseInt(holiday.leaveCategory) 
+    if (id) {
+      dispatch(getHolidayById(id));
+    }
+  }, [id, dispatch]);
+
+  // Populate form when selectedHoliday changes
+  useEffect(() => {
+    if (!selectedHoliday) return;
+
+    const holiday = selectedHoliday;
+
+    try {
+      // Map backend leaveCategory to numeric value
+      // Backend returns: "Static" for fixed (1) or "Official" for official (2)
+      const leaveCategoryMap: Record<string, number> = {
+        Static: 1,
+        static: 1,
+        Official: 2,
+        official: 2,
+      };
+
+      const leaveCategory =
+        typeof holiday.leaveCategory === 'string'
+          ? leaveCategoryMap[holiday.leaveCategory] || 1
           : holiday.leaveCategory;
 
-        const isFixed = leaveCategory === 1;
-        setIsFixedHoliday(isFixed);
+      const isFixed = leaveCategory === 1;
+      setIsFixedHoliday(isFixed);
 
-        if (isFixed) {
-          // Load fixed holiday data
-          resetFixed({
-            holidayType: 1,
-            day: (holiday as any).day || 0,
-            country: holiday.lkCountryId || '',
-            reasonAr: holiday.reasonAR || '',
-            reasonEn: holiday.reasonEN || '',
-            officialDocuments: [],
-          });
-        } else {
-          // Load official holiday data
-          const formatDateForInput = (dateString: string): string => {
-            try {
-              const date = new Date(dateString);
-              return date.toISOString().split('T')[0];
-            } catch {
-              return '';
-            }
-          };
-
-          resetOfficial({
-            holidayType: 2,
-            startDate: formatDateForInput(holiday.startDate),
-            endDate: formatDateForInput(holiday.endDate),
-            country: holiday.lkCountryId || '',
-            reasonAr: holiday.reasonAR || '',
-            reasonEn: holiday.reasonEN || '',
-            officialDocuments: [],
-          });
-        }
-
-        setIsLoading(false);
+      // Store existing file information or reset if no file
+      if (holiday.filePath) {
+        setExistingFilePath(holiday.filePath);
+        setExistingFileName(holiday.fileName || holiday.filePath.split('/').pop() || 'document');
+      } else {
+        setExistingFilePath(null);
+        setExistingFileName(null);
       }
+
+      if (isFixed) {
+        // Load fixed holiday data
+        resetFixed({
+          holidayType: 1,
+          day: holiday.day || 0,
+          country: holiday.lkCountryId || '',
+          reasonAr: holiday.reasonAr || '',
+          reasonEn: holiday.reasonEN || '',
+          officialDocuments: [],
+        });
+      } else {
+        // Load official holiday data
+        const formatDateForInput = (dateString: string): string => {
+          try {
+            const date = new Date(dateString);
+            return date.toISOString().split('T')[0];
+          } catch {
+            return '';
+          }
+        };
+
+        resetOfficial({
+          holidayType: 2,
+          startDate: formatDateForInput(holiday.startDate),
+          endDate: formatDateForInput(holiday.endDate),
+          country: holiday.lkCountryId || '',
+          reasonAr: holiday.reasonAr || '',
+          reasonEn: holiday.reasonEN || '',
+          officialDocuments: [],
+        });
+      }
+    } catch (error: any) {
+      console.error('Failed to populate form:', error);
     }
-  }, [id, holidays, resetFixed, resetOfficial]);
+  }, [selectedHoliday, resetFixed, resetOfficial]);
 
   const watchOfficialHolidayType = watchOfficial('holidayType');
   const watchFixedHolidayType = watchFixed('holidayType');
@@ -155,7 +181,7 @@ const EditHolidayForm = () => {
       };
       const requestData = createOfficialHolidayRequest(dataWithFiles);
       const result = await dispatch(updateHoliday({ id, data: requestData })).unwrap();
-      
+
       if (result.isSuccess) {
         setShowPopupMessage({
           show: true,
@@ -188,7 +214,7 @@ const EditHolidayForm = () => {
       };
       const requestData = createFixedHolidayRequest(dataWithFiles);
       const result = await dispatch(updateHoliday({ id, data: requestData })).unwrap();
-      
+
       if (result.isSuccess) {
         setShowPopupMessage({
           show: true,
@@ -229,7 +255,7 @@ const EditHolidayForm = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoadingHoliday || !selectedHoliday) {
     return (
       <Card>
         <div className="flex items-center justify-center py-8">
@@ -297,6 +323,8 @@ const EditHolidayForm = () => {
             handleFileDelete={handleFileDelete}
             getFileNames={getFileNames}
             isSubmitting={fixedControl.formState.isSubmitting}
+            existingFilePath={existingFilePath}
+            existingFileName={existingFileName}
           />
         ) : (
           /* Official Holiday Form */
@@ -308,6 +336,8 @@ const EditHolidayForm = () => {
             handleFileDelete={handleFileDelete}
             getFileNames={getFileNames}
             isSubmitting={officialControl.formState.isSubmitting}
+            existingFilePath={existingFilePath}
+            existingFileName={existingFileName}
           />
         )}
         {/* Popups */}
