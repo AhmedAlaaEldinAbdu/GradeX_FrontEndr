@@ -216,11 +216,17 @@ export default function CountryHolidays() {
                 key={holiday.id}
                 className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all hover:border-green-300"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 text-start">
                   <img src={CheckIcon} alt="Check" className="h-5 w-5" />
                   <div>
-                    <p className="text-sm font-medium text-gray-800">{holiday.dayName}</p>
-                    <p className="text-xs text-gray-600">{holiday.reason}</p>
+                    <p className="text-sm font-medium text-gray-800">
+                      <span className="me-2 font-semibold">{t('officialHolidays.day')}:</span>
+                      {holiday.dayName}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      <span className="me-2 font-semibold">{t('officialHolidays.reason')}:</span>
+                      {holiday.reason}
+                    </p>
                   </div>
                 </div>
                 <ActionsDropdown actions={getHolidayActions(holiday.id)} />
