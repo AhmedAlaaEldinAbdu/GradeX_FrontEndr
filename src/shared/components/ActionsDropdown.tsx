@@ -25,7 +25,7 @@ export default function ActionsDropdown({
   actions,
   triggerIcon = DotsIcon,
   triggerClassName = 'rounded p-1 hover:bg-gray-100',
-  dropdownClassName = 'absolute left-0 z-10 mt-2 w-28 rounded-lg border border-gray-200 bg-white p-1 shadow-lg',
+  dropdownClassName = 'absolute left-0 z-10 mt-2 w-max min-w-[7rem] max-w-[10rem] rounded-lg border border-gray-200 bg-white p-1 shadow-lg',
   position = 'left',
   onOpen,
   onClose,
