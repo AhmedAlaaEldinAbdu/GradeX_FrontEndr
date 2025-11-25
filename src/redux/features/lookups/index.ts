@@ -7,13 +7,23 @@
 export { default as lookupsReducer } from './lookupsSlice';
 
 // Actions from Slice (Sync)
-export { clearLookupsData, clearLookupsErrors, resetLookupsState } from './lookupsSlice';
+export {
+  clearLookupsData,
+  clearLookupsErrors,
+  clearRegions,
+  clearCities,
+  resetLookupsState,
+} from './lookupsSlice';
 
 // Actions (Async Thunks)
 export {
   fetchApplicationFeatures,
   fetchFacilities,
   fetchCountries,
+  fetchAllRegions,
+  fetchRegionsByCountry,
+  fetchAllCities,
+  fetchCitiesByRegion,
   fetchAllLookups,
 } from './lookupsSlice';
 
