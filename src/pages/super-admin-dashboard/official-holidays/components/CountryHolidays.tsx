@@ -156,14 +156,13 @@ export default function CountryHolidays() {
     }
   };
 
-  const actions: Action[] = [
+  const getHolidayActions = (holidayId: string): Action[] => [
     {
       id: 'edit',
       label: t('actions.edit'),
       icon: EditFilledIcon,
       color: 'text-gray-700 hover:bg-gray-100',
-      // onClick: () => navigate(`/official-holidays/edit-holiday/${holiday.id}`),
-      onClick: () => navigate(`/official-holidays/edit/1`),
+      onClick: () => navigate(`/official-holidays/edit/${holidayId}`),
     },
     {
       id: 'delete',
@@ -171,10 +170,8 @@ export default function CountryHolidays() {
       icon: TrashIcon,
       color: 'text-red-600 hover:bg-red-50',
       onClick: () => {
-        if (fixedHolidays.length > 0) {
-          setSelectedHolidayId(fixedHolidays[0].id);
-          setShowDeletePopup(true);
-        }
+        setSelectedHolidayId(holidayId);
+        setShowDeletePopup(true);
       },
       disabled: isDeleting,
     },
@@ -208,27 +205,25 @@ export default function CountryHolidays() {
           <h2 className="text-start text-lg font-semibold text-gray-800">
             {t('officialHolidays.fixedHolidays')}
           </h2>
-          {fixedHolidays.length > 0 && <ActionsDropdown actions={actions} />}
         </div>
 
         {fixedHolidays.length > 0 ? (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <img src={CheckIcon} alt="Check" className="h-4 w-4" />
-            <div>
-              <span className="ml-1 inline-block">{currentLang === 'ar' ? 'يوم' : 'Day'}</span>
-              <span>
-                {fixedHolidays.map((holiday, index) => (
-                  <span key={holiday.id}>
-                    {holiday.dayName}
-                    {index < fixedHolidays.length - 1
-                      ? currentLang === 'ar'
-                        ? ' و '
-                        : ' and '
-                      : ''}
-                  </span>
-                ))}
-              </span>
-            </div>
+          <div className="space-y-3">
+            {fixedHolidays.map((holiday) => (
+              <div
+                key={holiday.id}
+                className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all hover:border-green-300"
+              >
+                <div className="flex items-center gap-3">
+                  <img src={CheckIcon} alt="Check" className="h-5 w-5" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">{holiday.dayName}</p>
+                    <p className="text-xs text-gray-600">{holiday.reason}</p>
+                  </div>
+                </div>
+                <ActionsDropdown actions={getHolidayActions(holiday.id)} />
+              </div>
+            ))}
           </div>
         ) : (
           <EmptyState
