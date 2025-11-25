@@ -8,6 +8,7 @@ export interface OfficialHolidaysState {
   // Data
   holidays: OfficialHoliday[];
   countries: CountryWithLeave[];
+  selectedHoliday: OfficialHoliday | null;
 
   // Pagination
   pagination: {
@@ -22,6 +23,7 @@ export interface OfficialHolidaysState {
 
   // Loading States
   isLoading: boolean;
+  isLoadingHoliday: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;

@@ -27,8 +27,9 @@ export interface OfficialHoliday {
   id: string;
   startDate: string;
   endDate: string;
+  day?: number;
   leaveCategory: LeaveCategory | string;
-  reasonAR: string;
+  reasonAr: string;
   reasonEN: string;
   fileName: string;
   filePath: string;
