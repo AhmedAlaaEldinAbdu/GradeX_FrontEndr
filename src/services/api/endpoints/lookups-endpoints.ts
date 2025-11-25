@@ -7,4 +7,6 @@ export const LookupsEndpoints = {
   applicationFeatures: '/LKApplicationFeatures',
   facilities: '/LKFacalities',
   countries: '/LKCountries/GetAllCountries',
+  regions: '/Region',
+  cities: '/City',
 } as const;
