@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import i18n from '@/i18n';
@@ -8,12 +8,10 @@ import Card from '@/shared/components/Card';
 import EmptyState from '@/shared/components/EmptyState';
 import DeletePopup from '@/shared/components/DeletePopup';
 import HolidayTimeline from './HolidayTimeline';
+import FixedHolidayCard from './FixedHolidayCard';
 import type { FixedHoliday, OfficialHoliday } from '@/types/officialHolidays';
-import CheckIcon from '@gradex/assets/icons/Check.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
-import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
-import { ActionsDropdown, Loading, type Action } from '@/shared/components/components';
+import { Loading } from '@/shared/components/components';
 import {
   fetchOfficialHolidays,
   deleteHoliday,
@@ -27,14 +25,12 @@ import { useToast } from '@/shared/context/ToastContext';
 
 export default function CountryHolidays() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { countryId } = useParams<{ countryId: string }>();
   const { showToast } = useToast();
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedHolidayId, setSelectedHolidayId] = useState<string | null>(null);
-
   const currentLang = i18n.language as 'ar' | 'en';
 
   const holidays = useSelector(selectOfficialHolidays);
@@ -69,8 +65,11 @@ export default function CountryHolidays() {
         id: holiday.id,
         date: holiday.startDate,
         dayName: new Date(holiday.startDate).toLocaleDateString(currentLang, { weekday: 'long' }),
-        reason: (currentLang === 'ar' && holiday.reasonAR) || holiday.reasonEN,
+        reason: (currentLang === 'ar' && holiday.reasonAr) || holiday.reasonEN,
         isEditable: true,
+        dateRange: '',
+        hasOfficialDocument: !!holiday.filePath && holiday.filePath !== 'string',
+        filePath: holiday.filePath,
       }));
   }, [holidays, currentLang]);
 
@@ -106,7 +105,7 @@ export default function CountryHolidays() {
           id: holiday.id,
           dateRange,
           arabicDateRange: dateRange,
-          reason: (currentLang === 'ar' && holiday.reasonAR) || holiday.reasonEN,
+          reason: (currentLang === 'ar' && holiday.reasonAr) || holiday.reasonEN,
           hasOfficialDocument: !!holiday.filePath && holiday.filePath !== 'string',
           date: holiday.startDate,
           filePath: holiday.filePath,
@@ -158,27 +157,6 @@ export default function CountryHolidays() {
     }
   };
 
-  const getHolidayActions = (holidayId: string): Action[] => [
-    {
-      id: 'edit',
-      label: t('actions.edit'),
-      icon: EditFilledIcon,
-      color: 'text-gray-700 hover:bg-gray-100',
-      onClick: () => navigate(`/official-holidays/edit/${holidayId}`),
-    },
-    {
-      id: 'delete',
-      label: t('actions.delete'),
-      icon: TrashIcon,
-      color: 'text-red-600 hover:bg-red-50',
-      onClick: () => {
-        setSelectedHolidayId(holidayId);
-        setShowDeletePopup(true);
-      },
-      disabled: isDeleting,
-    },
-  ];
-
   const breadcrumbItems = [
     { label: t('officialHolidays.title'), path: '/official-holidays' },
     { label: countryName },
@@ -210,27 +188,9 @@ export default function CountryHolidays() {
         </div>
 
         {fixedHolidays.length > 0 ? (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {fixedHolidays.map((holiday) => (
-              <div
-                key={holiday.id}
-                className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all hover:border-green-300"
-              >
-                <div className="flex items-center gap-3 text-start">
-                  <img src={CheckIcon} alt="Check" className="h-5 w-5" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">
-                      <span className="me-2 font-semibold">{t('officialHolidays.day')}:</span>
-                      {holiday.dayName}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      <span className="me-2 font-semibold">{t('officialHolidays.reason')}:</span>
-                      {holiday.reason}
-                    </p>
-                  </div>
-                </div>
-                <ActionsDropdown actions={getHolidayActions(holiday.id)} />
-              </div>
+              <FixedHolidayCard key={holiday.id} holiday={holiday} />
             ))}
           </div>
         ) : (

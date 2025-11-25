@@ -8,7 +8,7 @@ const OfficialHolidaysPage: React.FC = () => {
     <div dir="rtl">
       {/* Page Header */}
       <PageHeader
-        title="sidebar.officialHolidays"
+        title="officialHolidays.holidays"
         actions={[
           {
             label: 'officialHolidays.addHoliday',

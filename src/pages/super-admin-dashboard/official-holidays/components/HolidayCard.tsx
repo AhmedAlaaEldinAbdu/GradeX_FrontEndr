@@ -7,7 +7,7 @@ import type { OfficialHoliday } from '@/types/officialHolidays';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
-import FileIcon from '@gradex/assets/icons/File.svg';
+import EyeIcon from '@gradex/assets/icons/Eye.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
 import AttachmentViewerPopup from '../popups/AttachmentViewerPopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
@@ -73,19 +73,12 @@ export default function HolidayCard({
   };
 
   const actions: Action[] = [
-    {
-      id: 'edit',
-      label: t('actions.edit'),
-      icon: EditFilledIcon,
-      color: 'text-gray-700 hover:bg-gray-100',
-      onClick: () => navigate(`/official-holidays/edit-holiday/${holiday.id}`),
-    },
     ...(holiday.hasOfficialDocument
       ? [
           {
             id: 'view-attachment',
             label: t('actions.viewAttachment'),
-            icon: FileIcon,
+            icon: EyeIcon,
             color: 'text-blue-600 hover:bg-blue-50',
             onClick: () => {
               setShowAttachmentPopup(true);
@@ -93,6 +86,13 @@ export default function HolidayCard({
           } as Action,
         ]
       : []),
+    {
+      id: 'edit',
+      label: t('actions.edit'),
+      icon: EditFilledIcon,
+      color: 'text-gray-700 hover:bg-gray-100',
+      onClick: () => navigate(`/official-holidays/edit-holiday/${holiday.id}`),
+    },
     {
       id: 'delete',
       label: t('actions.delete'),

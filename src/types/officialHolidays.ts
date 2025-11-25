@@ -4,6 +4,10 @@ export interface FixedHoliday {
   dayName: string;
   reason: string;
   isEditable: boolean;
+  dateRange: string;
+  arabicDateRange?: string;
+  hasOfficialDocument: boolean;
+  filePath?: string;
 }
 
 export interface OfficialHoliday {
