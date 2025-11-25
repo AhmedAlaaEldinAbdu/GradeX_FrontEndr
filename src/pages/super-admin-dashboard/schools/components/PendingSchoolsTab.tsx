@@ -25,6 +25,8 @@ interface PendingSchoolsTabProps {
     searchTerm?: string;
     academicSystemId?: string;
     lKCountryId?: string;
+    region?: string;
+    neighborhood?: string;
   };
   filterComponent?: ReactNode;
   isActive?: boolean;
