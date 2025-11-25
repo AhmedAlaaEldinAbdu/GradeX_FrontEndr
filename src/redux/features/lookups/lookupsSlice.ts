@@ -6,7 +6,13 @@
 import { createSlice, createAsyncThunk, type ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { lookupsApiService } from '@/services/api/lookups/lookups.service';
 import { getErrorMessage } from '@/lib/http';
-import type { ApplicationFeature, Country, Facility } from '@/services/api/types/lookup.types';
+import type {
+  ApplicationFeature,
+  Country,
+  Facility,
+  Region,
+  City,
+} from '@/services/api/types/lookup.types';
 import type { RootState, AppDispatch } from '@/redux/store/store';
 import type { LookupsState } from './lookupsTypes';
 import { LOOKUP_CACHE_DURATION } from './lookupsTypes';
@@ -20,16 +26,22 @@ const initialState: LookupsState = {
   applicationFeatures: [],
   facilities: [],
   countries: [],
+  regions: [],
+  cities: [],
 
   // Loading States
   isLoadingFeatures: false,
   isLoadingFacilities: false,
   isLoadingCountries: false,
+  isLoadingRegions: false,
+  isLoadingCities: false,
 
   // Error States
   featuresError: null,
   facilitiesError: null,
   countriesError: null,
+  regionsError: null,
+  citiesError: null,
 
   // Initialization States
   isFeaturesInitialized: false,
@@ -167,6 +179,72 @@ export const fetchAllLookups = createAsyncThunk<
   }
 });
 
+/**
+ * Fetch all regions
+ */
+export const fetchAllRegions = createAsyncThunk<Region[], void, { state: RootState }>(
+  'lookups/fetchAllRegions',
+  async (_, { rejectWithValue }) => {
+    try {
+      const regions = await lookupsApiService.getAllRegions();
+      return regions;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+/**
+ * Fetch regions by country ID
+ */
+export const fetchRegionsByCountry = createAsyncThunk<Region[], string, { state: RootState }>(
+  'lookups/fetchRegionsByCountry',
+  async (countryId, { rejectWithValue }) => {
+    try {
+      if (!countryId) {
+        return [];
+      }
+      const regions = await lookupsApiService.getRegionsByCountry(countryId);
+      return regions;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+/**
+ * Fetch all cities
+ */
+export const fetchAllCities = createAsyncThunk<City[], void, { state: RootState }>(
+  'lookups/fetchAllCities',
+  async (_, { rejectWithValue }) => {
+    try {
+      const cities = await lookupsApiService.getAllCities();
+      return cities;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+/**
+ * Fetch cities by region ID
+ */
+export const fetchCitiesByRegion = createAsyncThunk<City[], string, { state: RootState }>(
+  'lookups/fetchCitiesByRegion',
+  async (regionId, { rejectWithValue }) => {
+    try {
+      if (!regionId) {
+        return [];
+      }
+      const cities = await lookupsApiService.getCitiesByRegion(regionId);
+      return cities;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 // ============================================================================
 // Slice Definition
 // ============================================================================
@@ -182,6 +260,8 @@ const lookupsSlice = createSlice({
       state.applicationFeatures = [];
       state.facilities = [];
       state.countries = [];
+      state.regions = [];
+      state.cities = [];
       state.isFeaturesInitialized = false;
       state.isFacilitiesInitialized = false;
       state.isCountriesInitialized = false;
@@ -197,6 +277,24 @@ const lookupsSlice = createSlice({
       state.featuresError = null;
       state.facilitiesError = null;
       state.countriesError = null;
+      state.regionsError = null;
+      state.citiesError = null;
+    },
+
+    /**
+     * Clear regions
+     */
+    clearRegions: (state) => {
+      state.regions = [];
+      state.regionsError = null;
+    },
+
+    /**
+     * Clear cities
+     */
+    clearCities: (state) => {
+      state.cities = [];
+      state.citiesError = null;
     },
 
     /**
@@ -305,6 +403,82 @@ const lookupsSlice = createSlice({
         state.facilitiesError = action.payload as string;
         state.countriesError = action.payload as string;
       });
+
+    // ========================================================================
+    // Fetch All Regions
+    // ========================================================================
+
+    builder
+      .addCase(fetchAllRegions.pending, (state) => {
+        state.isLoadingRegions = true;
+        state.regionsError = null;
+      })
+      .addCase(fetchAllRegions.fulfilled, (state, action) => {
+        state.isLoadingRegions = false;
+        state.regions = action.payload;
+        state.regionsError = null;
+      })
+      .addCase(fetchAllRegions.rejected, (state, action) => {
+        state.isLoadingRegions = false;
+        state.regionsError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch Regions by Country
+    // ========================================================================
+
+    builder
+      .addCase(fetchRegionsByCountry.pending, (state) => {
+        state.isLoadingRegions = true;
+        state.regionsError = null;
+      })
+      .addCase(fetchRegionsByCountry.fulfilled, (state, action) => {
+        state.isLoadingRegions = false;
+        state.regions = action.payload;
+        state.regionsError = null;
+      })
+      .addCase(fetchRegionsByCountry.rejected, (state, action) => {
+        state.isLoadingRegions = false;
+        state.regionsError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch All Cities
+    // ========================================================================
+
+    builder
+      .addCase(fetchAllCities.pending, (state) => {
+        state.isLoadingCities = true;
+        state.citiesError = null;
+      })
+      .addCase(fetchAllCities.fulfilled, (state, action) => {
+        state.isLoadingCities = false;
+        state.cities = action.payload;
+        state.citiesError = null;
+      })
+      .addCase(fetchAllCities.rejected, (state, action) => {
+        state.isLoadingCities = false;
+        state.citiesError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch Cities by Region
+    // ========================================================================
+
+    builder
+      .addCase(fetchCitiesByRegion.pending, (state) => {
+        state.isLoadingCities = true;
+        state.citiesError = null;
+      })
+      .addCase(fetchCitiesByRegion.fulfilled, (state, action) => {
+        state.isLoadingCities = false;
+        state.cities = action.payload;
+        state.citiesError = null;
+      })
+      .addCase(fetchCitiesByRegion.rejected, (state, action) => {
+        state.isLoadingCities = false;
+        state.citiesError = action.payload as string;
+      });
   },
 });
 
@@ -312,6 +486,12 @@ const lookupsSlice = createSlice({
 // Export Actions and Reducer
 // ============================================================================
 
-export const { clearLookupsData, clearLookupsErrors, resetLookupsState } = lookupsSlice.actions;
+export const {
+  clearLookupsData,
+  clearLookupsErrors,
+  clearRegions,
+  clearCities,
+  resetLookupsState,
+} = lookupsSlice.actions;
 
 export default lookupsSlice.reducer;
