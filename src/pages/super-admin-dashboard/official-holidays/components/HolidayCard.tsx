@@ -7,7 +7,9 @@ import type { OfficialHoliday } from '@/types/officialHolidays';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
+import FileIcon from '@gradex/assets/icons/File.svg';
 import DeletePopup from '@gradex/shared/components/DeletePopup';
+import AttachmentViewerPopup from '../popups/AttachmentViewerPopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { ActionsDropdown, type Action } from '@/shared/components/components';
 import {
@@ -37,6 +39,7 @@ export default function HolidayCard({
   const { showToast } = useToast();
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [showAttachmentPopup, setShowAttachmentPopup] = useState(false);
   const isDeleting = useSelector(selectIsDeleting);
 
   const handleDeleteConfirm = async () => {
@@ -77,6 +80,19 @@ export default function HolidayCard({
       color: 'text-gray-700 hover:bg-gray-100',
       onClick: () => navigate(`/official-holidays/edit-holiday/${holiday.id}`),
     },
+    ...(holiday.hasOfficialDocument
+      ? [
+          {
+            id: 'view-attachment',
+            label: t('actions.viewAttachment'),
+            icon: FileIcon,
+            color: 'text-blue-600 hover:bg-blue-50',
+            onClick: () => {
+              setShowAttachmentPopup(true);
+            },
+          } as Action,
+        ]
+      : []),
     {
       id: 'delete',
       label: t('actions.delete'),
@@ -194,6 +210,15 @@ export default function HolidayCard({
         iconSrc={BigTrashIcon}
         isProcessing={isDeleting}
       />
+
+      {holiday.filePath && (
+        <AttachmentViewerPopup
+          open={showAttachmentPopup}
+          filePath={holiday.filePath}
+          fileName={holiday.filePath.split('/').pop()}
+          onClose={() => setShowAttachmentPopup(false)}
+        />
+      )}
     </div>
   );
 }
