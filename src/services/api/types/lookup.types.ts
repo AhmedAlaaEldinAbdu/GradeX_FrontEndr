@@ -60,6 +60,85 @@ export interface Country {
 export type CountriesResponse = LookupApiResponse<Country>;
 
 // ============================================================================
+// Regions
+// ============================================================================
+
+export interface Region {
+  id: string;
+  arabicName: string;
+  englishName: string;
+  countryId: string;
+  countryArabicName: string;
+  countryEnglishName: string;
+  countryCode: string;
+  areaCode: string;
+  flag: string;
+}
+
+export interface RegionsApiResponse {
+  regionDto: Region[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface RegionsResponse {
+  value: RegionsApiResponse;
+  status: number;
+  isSuccess: boolean;
+  successMessage: string;
+  correlationId: string;
+  location: string;
+  errors: string[];
+  validationErrors: string[];
+}
+
+export interface RegionQueryParams {
+  PageIndex?: number;
+  PageSize?: number;
+  CountryId?: string;
+}
+
+// ============================================================================
+// Cities (Neighborhoods)
+// ============================================================================
+
+export interface City {
+  id: string;
+  arabicName: string;
+  englishName: string;
+  regionId: string;
+  regionArabicName: string;
+  regionEnglishName: string;
+}
+
+export interface CitiesApiResponse {
+  cityDto: City[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface CitiesResponse {
+  value: CitiesApiResponse;
+  status: number;
+  isSuccess: boolean;
+  successMessage: string;
+  correlationId: string;
+  location: string;
+  errors: string[];
+  validationErrors: string[];
+}
+
+export interface CityQueryParams {
+  PageIndex?: number;
+  PageSize?: number;
+  RegionId?: string;
+}
+
+// ============================================================================
 // Helper Types
 // ============================================================================
 
