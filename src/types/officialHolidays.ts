@@ -13,4 +13,5 @@ export interface OfficialHoliday {
   reason: string;
   hasOfficialDocument: boolean;
   date?: string;
+  filePath?: string;
 }
