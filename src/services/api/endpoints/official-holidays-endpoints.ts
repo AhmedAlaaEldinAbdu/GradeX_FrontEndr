@@ -6,5 +6,6 @@ export const OfficialHolidaysEndpoints = {
   createHoliday: LEAVE,
   updateHoliday: (id: string) => `${LEAVE}/${id}`,
   deleteHoliday: (id: string) => `${LEAVE}/${id}`,
+  getHolidayById: (id: string) => `${LEAVE}/${id}`,
   getCountriesWithLeave: `${LK_COUNTRIES}/GetAllCountriesWithLeave`,
 };

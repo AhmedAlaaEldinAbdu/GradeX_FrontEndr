@@ -192,6 +192,21 @@ export async function updateHoliday(
 }
 
 /**
+ * Get a holiday by ID
+ */
+export async function getHolidayById(id: string): Promise<any> {
+  const response: AxiosResponse<ApiResponseModel<any>> = await axiosClient.get(
+    OfficialHolidaysEndpoints.getHolidayById(id)
+  );
+
+  if (!response?.data?.value) {
+    throw new Error('Holiday not found');
+  }
+
+  return response.data.value;
+}
+
+/**
  * Delete a holiday
  */
 export async function deleteHoliday(id: string): Promise<{ success: boolean }> {
@@ -208,6 +223,7 @@ export const officialHolidaysApiService = {
   createHoliday,
   updateHoliday,
   deleteHoliday,
+  getHolidayById,
 };
 
 export default officialHolidaysApiService;

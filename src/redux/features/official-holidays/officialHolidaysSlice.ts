@@ -26,6 +26,7 @@ const initialState: OfficialHolidaysState = {
   // Data
   holidays: [],
   countries: [],
+  selectedHoliday: null,
 
   // Pagination
   pagination: {
@@ -40,6 +41,7 @@ const initialState: OfficialHolidaysState = {
 
   // Loading States
   isLoading: false,
+  isLoadingHoliday: false,
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
@@ -85,7 +87,7 @@ export const fetchOfficialHolidays = createAsyncThunk<
       if (payload.filters) {
         if (payload.filters.searchTerm) params.searchTerm = payload.filters.searchTerm;
         if (payload.filters.countryId) params.LKCountryId = payload.filters.countryId;
-        if (payload.filters.leaveCategory) params.leaveCategory = payload.filters.leaveCategory;
+        if (payload.filters.leaveCategory) params.leaveCategory = payload.filters.leaveCategory.toString();
         if (payload.filters.startDate) params.startDate = payload.filters.startDate;
         if (payload.filters.endDate) params.endDate = payload.filters.endDate;
       }
@@ -145,6 +147,18 @@ export const updateHoliday = createAsyncThunk<
     return rejectWithValue(getErrorMessage(error));
   }
 });
+
+export const getHolidayById = createAsyncThunk<any, string>(
+  'officialHolidays/getHolidayById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const result = await officialHolidaysApiService.getHolidayById(id);
+      return result;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
 
 export const deleteHoliday = createAsyncThunk<string, string>(
   'officialHolidays/deleteHoliday',
@@ -254,6 +268,23 @@ const officialHolidaysSlice = createSlice({
       })
       .addCase(updateHoliday.rejected, (state, action) => {
         state.isUpdating = false;
+        state.error = action.payload as string;
+      });
+
+    // Get Holiday By ID
+    builder
+      .addCase(getHolidayById.pending, (state) => {
+        state.isLoadingHoliday = true;
+        state.error = null;
+      })
+      .addCase(getHolidayById.fulfilled, (state, action) => {
+        state.isLoadingHoliday = false;
+        state.selectedHoliday = action.payload;
+        state.error = null;
+      })
+      .addCase(getHolidayById.rejected, (state, action) => {
+        state.isLoadingHoliday = false;
+        state.selectedHoliday = null;
         state.error = action.payload as string;
       });
 
