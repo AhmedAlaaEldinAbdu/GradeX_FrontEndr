@@ -24,6 +24,7 @@ import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/acade
 import AddSystemTypePopup from '../popups/AddSystemTypePopup';
 import { selectIsCreatingAcademicSystem } from '@/redux/features/academic-system';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import Button from '@/shared/components/Button';
 
 export default function AddAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -295,21 +296,20 @@ export default function AddAcademicSystem() {
               </div>
             </div>
           ))}
-          <div className="mt-6 flex justify-end gap-3">
-            <button
+
+          {/* Action Buttons */}
+          <div className="mt-6 flex items-center justify-end gap-3">
+            <Button
               type="button"
-              className="rounded-lg border border-green-700 px-6 py-2 text-green-700 hover:bg-green-50"
+              variant="outline"
               onClick={() => navigate(-1)}
+              disabled={isCreating}
             >
               {t('common.cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={isCreating}
-              className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
-            >
+            </Button>
+            <Button type="submit" variant="primary" disabled={isCreating}>
               {isCreating ? t('common.saving') : t('common.add')}
-            </button>
+            </Button>
           </div>
         </form>
 

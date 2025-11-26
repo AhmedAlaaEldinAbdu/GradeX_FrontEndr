@@ -21,6 +21,7 @@ import {
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import type { UpdateEducationalStageRequest } from '@/services/api/types/educational-stages.types';
 import CustomSelect from '@/shared/components/CustomSelect';
+import { Button } from '@/shared/components/components';
 
 export default function EditEducationalStages() {
   const { t, i18n } = useTranslation();
@@ -218,21 +219,20 @@ export default function EditEducationalStages() {
               </div>
             </div>
           </div>
-          <div className="mt-6 flex justify-end gap-3">
-            <button
+
+          {/* Action Buttons */}
+          <div className="mt-6 flex items-center justify-end gap-3">
+            <Button
               type="button"
-              className="rounded-lg border border-green-700 px-6 py-2 text-green-700 hover:bg-green-50"
+              variant="outline"
               onClick={() => navigate(-1)}
+              disabled={isSubmitting}
             >
               {t('common.cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-lg bg-green-700 px-6 py-2 text-white hover:bg-green-800 disabled:opacity-70"
-            >
-              {isSubmitting ? t('common.loading') : t('common.edit')}
-            </button>
+            </Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting}>
+              {isSubmitting ? t('common.saving') : t('common.edit')}
+            </Button>
           </div>
         </form>
 
