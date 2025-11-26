@@ -703,7 +703,7 @@
     "maxStudents": "العدد الأقصى لعدد الطلاب في الصف",
     "enterMaxStudents": "أدخل العدد الأقصى للطلاب",
     "addAnotherGrade": "إضافة صف آخر",
-    "searchGrade": "ابحث عن صف",
+    "searchGrade": "ابحث عن اسم الصف",
     "gradesAddedSuccessfully": "تم إضافة الصفوف بنجاح",
     "gradeUpdatedSuccessfully": "تم تحديث الصف بنجاح",
     "gradeDeletedSuccessfully": "تم حذف الصف بنجاح",

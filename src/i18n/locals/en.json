@@ -704,7 +704,7 @@
     "maxStudents": "Maximum Number of Students",
     "enterMaxStudents": "Enter maximum number of students",
     "addAnotherGrade": "Add Another Grade",
-    "searchGrade": "Search for grade",
+    "searchGrade": "Search for grade name",
     "gradesAddedSuccessfully": "Grades added successfully",
     "gradeUpdatedSuccessfully": "Grade updated successfully",
     "gradeDeletedSuccessfully": "Grade deleted successfully",
