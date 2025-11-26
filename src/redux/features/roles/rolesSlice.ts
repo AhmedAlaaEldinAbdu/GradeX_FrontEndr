@@ -18,6 +18,7 @@ import {
   type UpdateRoleRequest,
 } from '@/services/api';
 import { getErrorMessage } from '@/lib/http';
+import { ApiValidationError } from '@/lib/utils';
 
 const initialState: RolesState = {
   // Data
@@ -119,15 +120,10 @@ export const createRole = createAsyncThunk<Role, CreateRoleRequest>(
       const role = await rolesApiService.createRole(data);
       return role;
     } catch (error) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'isValidationError' in error &&
-        error.isValidationError
-      ) {
+      if (error instanceof ApiValidationError) {
         return rejectWithValue({
-          message: getErrorMessage(error),
-          validationErrors: (error as unknown as { validationErrors: unknown }).validationErrors,
+          message: error.message,
+          validationErrors: error.validationErrors,
         });
       }
       return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });
@@ -142,15 +138,10 @@ export const updateRole = createAsyncThunk<Role, UpdateRoleRequest>(
       const role = await rolesApiService.updateRole(data);
       return role;
     } catch (error) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'isValidationError' in error &&
-        error.isValidationError
-      ) {
+      if (error instanceof ApiValidationError) {
         return rejectWithValue({
-          message: getErrorMessage(error),
-          validationErrors: (error as unknown as { validationErrors: unknown }).validationErrors,
+          message: error.message,
+          validationErrors: error.validationErrors,
         });
       }
       return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });

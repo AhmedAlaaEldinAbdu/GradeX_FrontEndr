@@ -5,19 +5,24 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, FormProvider } from 'react-hook-form';
 import type { AppDispatch } from '@gradex/redux/store/store';
-import { createRole, selectValidationErrors, selectIsCreating } from '@gradex/redux/features/roles';
+import {
+  createRole,
+  selectValidationErrors,
+  selectIsCreating,
+  selectError,
+  clearError,
+} from '@gradex/redux/features/roles';
 import { permissionsApiService } from '@gradex/services/api';
 import type { PermissionGroup as APIPermissionGroup } from '@gradex/services/api/types/permissions.types';
 import Loading from '@gradex/shared/components/Loading';
 import PopupMessage from '@gradex/shared/components/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
-import { useToast } from '@/shared/context/ToastContext';
-import type { ValidationErrorResponse } from '@/services/api/config';
 import { useRoleForm, type RoleFormData } from '../hooks/useRoleForm';
 import FormField from '@gradex/shared/components/FormField';
 import Input from '@gradex/shared/components/Input';
 import TextArea from '@gradex/shared/components/TextArea';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import { extractErrorMessage } from '@/lib/utils';
 
 export default function AddRole() {
   const [selectAll, setSelectAll] = useState(false);
@@ -32,7 +37,6 @@ export default function AddRole() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { showToast } = useToast();
 
   const { form, validateForm } = useRoleForm();
   const {
@@ -48,37 +52,19 @@ export default function AddRole() {
 
   const isCreating = useSelector(selectIsCreating);
   const validationErrorsFromRedux = useSelector(selectValidationErrors);
+  const errorFromRedux = useSelector(selectError);
 
-  // Show validation errors in toast when they occur
   useEffect(() => {
-    if (validationErrorsFromRedux) {
-      // Handle array of validation errors
-      if (Array.isArray(validationErrorsFromRedux)) {
-        validationErrorsFromRedux.forEach((error: ValidationErrorResponse) => {
-          showToast({
-            message: error.errorMessage,
-            type: 'error',
-            duration: 5000,
-          });
-        });
-      }
-      // Handle object with error messages
-      else if (typeof validationErrorsFromRedux === 'object') {
-        const errorMessages = Object.values(validationErrorsFromRedux);
-        if (errorMessages.length > 0) {
-          errorMessages.forEach((errorMsg) => {
-            if (typeof errorMsg === 'string') {
-              showToast({
-                message: errorMsg,
-                type: 'error',
-                duration: 5000,
-              });
-            }
-          });
-        }
-      }
+    const errorMessage = extractErrorMessage(validationErrorsFromRedux) || errorFromRedux;
+
+    if (errorMessage) {
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: errorMessage || t('common.errorOccurred'),
+      });
     }
-  }, [validationErrorsFromRedux, showToast]);
+  }, [validationErrorsFromRedux, errorFromRedux]);
 
   // Fetch all permissions on component mount
   useEffect(() => {
@@ -92,10 +78,10 @@ export default function AddRole() {
         setPermissionGroups(response.permissionGroupDtos || []);
       } catch (error) {
         console.error('Failed to fetch permissions:', error);
-        showToast({
-          message: t('rolesManagement.failedToLoadPermissions'),
+        setShowPopupMessage({
+          show: true,
           type: 'error',
-          duration: 5000,
+          message: t('rolesManagement.failedToLoadPermissions'),
         });
       } finally {
         setIsLoadingPermissions(false);
@@ -103,7 +89,7 @@ export default function AddRole() {
     };
 
     fetchPermissions();
-  }, [showToast]);
+  }, []);
 
   const handlePermissionChange = (id: string) => {
     const currentPermissions = selectedPermissions || [];
@@ -172,16 +158,8 @@ export default function AddRole() {
         type: 'success',
         message: t('rolesManagement.roleCreatedSuccessfully'),
       });
-      setTimeout(() => {
-        navigate('/employees-administration/roles-permissions');
-      }, 1500);
     } catch (error) {
       console.error('Failed to create role:', error);
-      showToast({
-        message: error && typeof error === 'string' ? error : t('rolesManagement.createRoleFailed'),
-        type: 'error',
-        duration: 5000,
-      });
     }
   };
 
@@ -201,11 +179,6 @@ export default function AddRole() {
     }
 
     form.handleSubmit(onFormSubmit)(e);
-  };
-
-  const handleCloseSuccessPopup = () => {
-    setShowPopupMessage({ ...showPopupMessage, show: false });
-    navigate('/employees-administration/roles-permissions');
   };
 
   if (isLoadingPermissions) {
@@ -352,8 +325,11 @@ export default function AddRole() {
         type={showPopupMessage.type}
         message={showPopupMessage.message}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-        autoClose={false}
-        onClose={handleCloseSuccessPopup}
+        autoClose={true}
+        onClose={() => {
+          setShowPopupMessage({ ...showPopupMessage, show: false });
+          dispatch(clearError());
+        }}
         navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </FormProvider>

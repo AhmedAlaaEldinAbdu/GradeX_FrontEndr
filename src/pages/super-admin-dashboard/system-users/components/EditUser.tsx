@@ -180,8 +180,6 @@ export default function EditUser() {
         })
       );
 
-      console.log('Update result:', resultAction);
-
       if (updateUser.fulfilled.match(resultAction)) {
         console.log('Update successful, showing popup');
         setShowPopupMessage({
@@ -207,11 +205,6 @@ export default function EditUser() {
     } finally {
       setIsUpdating(false);
     }
-  };
-
-  const handleCloseSuccessPopup = () => {
-    setShowPopupMessage({ ...showPopupMessage, show: false });
-    navigate('/employees-administration/system-users');
   };
 
   if (isLoading || isLoadingRoles || isLoadingCountries) {
@@ -427,8 +420,8 @@ export default function EditUser() {
         type={showPopupMessage.type}
         message={showPopupMessage.message}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-        autoClose={false}
-        onClose={handleCloseSuccessPopup}
+        autoClose={true}
+        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
         navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </FormProvider>

@@ -28,6 +28,7 @@ import {
   selectIsLoading as selectIsLoadingRoles,
 } from '@gradex/redux/features/roles';
 import { fetchCountries } from '@gradex/redux/features/lookups';
+import CustomSelect from '@/shared/components/CustomSelect';
 
 export default function SystemUsers() {
   const { t } = useTranslation();
@@ -200,18 +201,29 @@ export default function SystemUsers() {
       width: '60%',
     },
     {
-      type: 'select',
+      type: 'custom',
       name: 'role-filter',
-      placeholder: t('rolesManagement.role'),
+      placeholder: '',
       value: selectedRole,
-      onChange: (value) => setSelectedRole(value as string),
-      options: [
-        { value: '', label: t('rolesManagement.all') },
-        ...roles.map((role) => ({ value: role.id, label: role.name })),
-      ],
-      disabled: isLoadingRoles,
-      loading: isLoadingRoles,
+      onChange: () => {},
       width: '30%',
+      customComponent: (
+        <CustomSelect
+          value={selectedRole}
+          onChange={(value) => setSelectedRole(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={
+            Array.isArray(roles)
+              ? roles.map((role) => ({
+                  value: role?.id || '',
+                  label: role?.name || '',
+                }))
+              : []
+          }
+          placeholder={isLoadingRoles ? t('common.loading') : t('rolesManagement.role')}
+          disabled={isLoadingRoles}
+          maxHeight="200px"
+        />
+      ),
     },
   ];
 
