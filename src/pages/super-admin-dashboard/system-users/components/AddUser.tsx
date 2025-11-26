@@ -10,8 +10,12 @@ import FormField from '@gradex/shared/components/FormField';
 import Input from '@gradex/shared/components/Input';
 import PhoneInput from '@gradex/shared/components/PhoneInput';
 import CustomSelect from '@gradex/shared/components/CustomSelect';
-import { useToast } from '@/shared/context/ToastContext';
-import { createUser, selectValidationErrors } from '@gradex/redux/features/user-management';
+import {
+  createUser,
+  selectValidationErrors,
+  selectError,
+  clearError,
+} from '@gradex/redux/features/user-management';
 import {
   fetchRoles,
   selectRoles,
@@ -22,22 +26,22 @@ import {
   selectCountries,
   selectIsLoadingCountries,
 } from '@gradex/redux/features/lookups';
-import type { ValidationErrorResponse } from '@/services/api/config';
 import { useUserForm, type UserFormData } from '../hooks/useUserForm';
 import i18n from '@/i18n';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import { extractErrorMessage } from '@/lib/utils';
 
 export default function AddUser() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { showToast } = useToast();
 
   const roles = useSelector(selectRoles) || [];
   const isLoadingRoles = useSelector(selectIsLoadingRoles);
   const countries = useSelector(selectCountries) || [];
   const isLoadingCountries = useSelector(selectIsLoadingCountries);
   const validationErrorsFromRedux = useSelector(selectValidationErrors);
+  const errorFromRedux = useSelector(selectError);
 
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
@@ -57,36 +61,17 @@ export default function AddUser() {
     trigger,
   } = form;
 
-  // Show validation errors in toast when they occur
   useEffect(() => {
-    if (validationErrorsFromRedux) {
-      // Handle array of validation errors
-      if (Array.isArray(validationErrorsFromRedux)) {
-        validationErrorsFromRedux.forEach((error: ValidationErrorResponse) => {
-          showToast({
-            message: error.errorMessage,
-            type: 'error',
-            duration: 5000,
-          });
-        });
-      }
-      // Handle object with error messages
-      else if (typeof validationErrorsFromRedux === 'object') {
-        const errorMessages = Object.values(validationErrorsFromRedux);
-        if (errorMessages.length > 0) {
-          errorMessages.forEach((errorMsg) => {
-            if (typeof errorMsg === 'string') {
-              showToast({
-                message: errorMsg,
-                type: 'error',
-                duration: 5000,
-              });
-            }
-          });
-        }
-      }
+    const errorMessage = extractErrorMessage(validationErrorsFromRedux) || errorFromRedux;
+
+    if (errorMessage) {
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: errorMessage || t('common.errorOccurred'),
+      });
     }
-  }, [validationErrorsFromRedux, showToast]);
+  }, [validationErrorsFromRedux, errorFromRedux, t]);
 
   // Fetch roles and countries on component mount
   useEffect(() => {
@@ -119,11 +104,7 @@ export default function AddUser() {
       }
     } catch (error) {
       console.error('Failed to create user:', error);
-      showToast({
-        message: error && typeof error === 'string' ? error : t('rolesManagement.createUserFailed'),
-        type: 'error',
-        duration: 5000,
-      });
+      // Error will be handled by useEffect via errorFromRedux
     } finally {
       setIsCreating(false);
     }
@@ -346,7 +327,10 @@ export default function AddUser() {
         message={showPopupMessage.message}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={true}
-        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+        onClose={() => {
+          setShowPopupMessage({ ...showPopupMessage, show: false });
+          dispatch(clearError());
+        }}
         navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </FormProvider>
