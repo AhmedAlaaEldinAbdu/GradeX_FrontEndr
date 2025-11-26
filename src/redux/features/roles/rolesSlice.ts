@@ -18,6 +18,7 @@ import {
   type UpdateRoleRequest,
 } from '@/services/api';
 import { getErrorMessage } from '@/lib/http';
+import { ApiValidationError } from '@/lib/utils';
 
 const initialState: RolesState = {
   // Data
@@ -119,32 +120,10 @@ export const createRole = createAsyncThunk<Role, CreateRoleRequest>(
       const role = await rolesApiService.createRole(data);
       return role;
     } catch (error) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'isValidationError' in error &&
-        error.isValidationError
-      ) {
-        const validationErrors = (error as unknown as { validationErrors: unknown })
-          .validationErrors;
-
-        let errorMessage = getErrorMessage(error);
-        if (Array.isArray(validationErrors) && validationErrors.length > 0) {
-          const firstError = validationErrors[0];
-          if (
-            typeof firstError === 'object' &&
-            firstError !== null &&
-            'errorMessage' in firstError
-          ) {
-            errorMessage = (firstError as { errorMessage: string }).errorMessage;
-          } else if (typeof firstError === 'string') {
-            errorMessage = firstError;
-          }
-        }
-
+      if (error instanceof ApiValidationError) {
         return rejectWithValue({
-          message: errorMessage,
-          validationErrors: validationErrors,
+          message: error.message,
+          validationErrors: error.validationErrors,
         });
       }
       return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });
@@ -159,32 +138,10 @@ export const updateRole = createAsyncThunk<Role, UpdateRoleRequest>(
       const role = await rolesApiService.updateRole(data);
       return role;
     } catch (error) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'isValidationError' in error &&
-        error.isValidationError
-      ) {
-        const validationErrors = (error as unknown as { validationErrors: unknown })
-          .validationErrors;
-
-        let errorMessage = getErrorMessage(error);
-        if (Array.isArray(validationErrors) && validationErrors.length > 0) {
-          const firstError = validationErrors[0];
-          if (
-            typeof firstError === 'object' &&
-            firstError !== null &&
-            'errorMessage' in firstError
-          ) {
-            errorMessage = (firstError as { errorMessage: string }).errorMessage;
-          } else if (typeof firstError === 'string') {
-            errorMessage = firstError;
-          }
-        }
-
+      if (error instanceof ApiValidationError) {
         return rejectWithValue({
-          message: errorMessage,
-          validationErrors: validationErrors,
+          message: error.message,
+          validationErrors: error.validationErrors,
         });
       }
       return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });
