@@ -5,6 +5,35 @@ interface ValidationError {
   severity?: number;
 }
 
+export class ApiValidationError extends Error {
+  validationErrors: unknown[];
+  isValidationError: boolean = true;
+
+  constructor(message: string, validationErrors: unknown[]) {
+    super(message);
+    this.name = 'ApiValidationError';
+    this.validationErrors = validationErrors;
+  }
+}
+
+export function throwIfApiError(response: {
+  isSuccess: boolean;
+  validationErrors?: unknown[] | null;
+  errors?: unknown[] | null;
+}): void {
+  if (response.isSuccess) return;
+
+  if (response.validationErrors && response.validationErrors.length > 0) {
+    const errorMessage = extractErrorMessage(response.validationErrors, 'Validation failed');
+    throw new ApiValidationError(errorMessage, response.validationErrors);
+  }
+
+  if (response.errors && response.errors.length > 0) {
+    const errorMessage = extractErrorMessage(response.errors, 'An error occurred');
+    throw new ApiValidationError(errorMessage, response.errors);
+  }
+}
+
 export function extractErrorMessage(
   errors: unknown,
   fallbackMessage: string = 'An error occurred'
