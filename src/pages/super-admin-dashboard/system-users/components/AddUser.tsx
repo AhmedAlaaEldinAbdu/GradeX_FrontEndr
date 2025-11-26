@@ -116,9 +116,6 @@ export default function AddUser() {
           type: 'success',
           message: t('rolesManagement.userCreatedSuccessfully'),
         });
-        setTimeout(() => {
-          navigate('/employees-administration/system-users');
-        }, 1500);
       }
     } catch (error) {
       console.error('Failed to create user:', error);
@@ -149,11 +146,6 @@ export default function AddUser() {
 
     // Use react-hook-form's handleSubmit
     form.handleSubmit(onFormSubmit)(e);
-  };
-
-  const handleCloseSuccessPopup = () => {
-    setShowPopupMessage({ ...showPopupMessage, show: false });
-    navigate('/employees-administration/system-users');
   };
 
   return (
@@ -353,8 +345,8 @@ export default function AddUser() {
         type={showPopupMessage.type}
         message={showPopupMessage.message}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-        autoClose={false}
-        onClose={handleCloseSuccessPopup}
+        autoClose={true}
+        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
         navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </FormProvider>
