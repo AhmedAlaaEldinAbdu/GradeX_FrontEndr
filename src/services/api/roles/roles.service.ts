@@ -1,4 +1,5 @@
 import { axiosClient } from '@/lib/http';
+import { throwIfApiError } from '@/lib/utils';
 import type { AxiosResponse } from 'axios';
 import { RolesEndpoints } from '../endpoints/roles-endpoints';
 import type {
@@ -77,26 +78,7 @@ export async function createRole(data: CreateRoleRequest): Promise<Role> {
     data
   );
 
-  if (!response.data.isSuccess) {
-    if (response.data.validationErrors && response.data.validationErrors.length > 0) {
-      const error = new Error('Validation failed') as Error & {
-        validationErrors: typeof response.data.validationErrors;
-        isValidationError: boolean;
-      };
-      error.validationErrors = response.data.validationErrors;
-      error.isValidationError = true;
-      throw error;
-    }
-    if (response.data.errors && response.data.errors.length > 0) {
-      const error = new Error('Validation failed') as Error & {
-        validationErrors: typeof response.data.errors;
-        isValidationError: boolean;
-      };
-      error.validationErrors = response.data.errors;
-      error.isValidationError = true;
-      throw error;
-    }
-  }
+  throwIfApiError(response.data);
 
   return response.data.value;
 }
@@ -110,28 +92,7 @@ export async function updateRole(data: UpdateRoleRequest): Promise<Role> {
     data
   );
 
-  if (!response.data.isSuccess) {
-    // Check validationErrors array first
-    if (response.data.validationErrors && response.data.validationErrors.length > 0) {
-      const error = new Error('Validation failed') as Error & {
-        validationErrors: typeof response.data.validationErrors;
-        isValidationError: boolean;
-      };
-      error.validationErrors = response.data.validationErrors;
-      error.isValidationError = true;
-      throw error;
-    }
-    // Then check errors array
-    if (response.data.errors && response.data.errors.length > 0) {
-      const error = new Error('Validation failed') as Error & {
-        validationErrors: typeof response.data.errors;
-        isValidationError: boolean;
-      };
-      error.validationErrors = response.data.errors;
-      error.isValidationError = true;
-      throw error;
-    }
-  }
+  throwIfApiError(response.data);
 
   return response.data.value;
 }
