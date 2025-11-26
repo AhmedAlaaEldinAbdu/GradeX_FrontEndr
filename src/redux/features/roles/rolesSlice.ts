@@ -125,9 +125,26 @@ export const createRole = createAsyncThunk<Role, CreateRoleRequest>(
         'isValidationError' in error &&
         error.isValidationError
       ) {
+        const validationErrors = (error as unknown as { validationErrors: unknown })
+          .validationErrors;
+
+        let errorMessage = getErrorMessage(error);
+        if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+          const firstError = validationErrors[0];
+          if (
+            typeof firstError === 'object' &&
+            firstError !== null &&
+            'errorMessage' in firstError
+          ) {
+            errorMessage = (firstError as { errorMessage: string }).errorMessage;
+          } else if (typeof firstError === 'string') {
+            errorMessage = firstError;
+          }
+        }
+
         return rejectWithValue({
-          message: getErrorMessage(error),
-          validationErrors: (error as unknown as { validationErrors: unknown }).validationErrors,
+          message: errorMessage,
+          validationErrors: validationErrors,
         });
       }
       return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });
@@ -148,9 +165,26 @@ export const updateRole = createAsyncThunk<Role, UpdateRoleRequest>(
         'isValidationError' in error &&
         error.isValidationError
       ) {
+        const validationErrors = (error as unknown as { validationErrors: unknown })
+          .validationErrors;
+
+        let errorMessage = getErrorMessage(error);
+        if (Array.isArray(validationErrors) && validationErrors.length > 0) {
+          const firstError = validationErrors[0];
+          if (
+            typeof firstError === 'object' &&
+            firstError !== null &&
+            'errorMessage' in firstError
+          ) {
+            errorMessage = (firstError as { errorMessage: string }).errorMessage;
+          } else if (typeof firstError === 'string') {
+            errorMessage = firstError;
+          }
+        }
+
         return rejectWithValue({
-          message: getErrorMessage(error),
-          validationErrors: (error as unknown as { validationErrors: unknown }).validationErrors,
+          message: errorMessage,
+          validationErrors: validationErrors,
         });
       }
       return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });
