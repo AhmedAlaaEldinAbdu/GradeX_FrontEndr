@@ -4,7 +4,7 @@ import { UserRole } from '@gradex/constants';
 import ProtectedRoute from './ProtectedRoutes';
 import MainLayout from '@gradex/shared/layout/MainLayout';
 
-import StudentManagementPage from '@gradex/pages/student-management/student-management-page';
+import StudentManagementPage from '@/pages/school-dashboard/student-management/student-management-page';
 import GradesPage from '@/pages/school-dashboard/grades/grades-page';
 import AddGradePage from '@/pages/school-dashboard/grades/add-grade-page';
 import EditGradePage from '@/pages/school-dashboard/grades/edit-grade-page';
