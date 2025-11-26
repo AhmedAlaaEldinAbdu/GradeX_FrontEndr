@@ -5,9 +5,9 @@ import ProtectedRoute from './ProtectedRoutes';
 import MainLayout from '@gradex/shared/layout/MainLayout';
 
 import StudentManagementPage from '@gradex/pages/student-management/student-management-page';
-import GradesPage from '@gradex/pages/school-admin/grades/grades-page';
-import AddGradePage from '@gradex/pages/school-admin/grades/add-grade-page';
-import EditGradePage from '@gradex/pages/school-admin/grades/edit-grade-page';
+import GradesPage from '@/pages/school-dashboard/grades/grades-page';
+import AddGradePage from '@/pages/school-dashboard/grades/add-grade-page';
+import EditGradePage from '@/pages/school-dashboard/grades/edit-grade-page';
 
 const SchoolRouter: React.FC = () => {
   return (
