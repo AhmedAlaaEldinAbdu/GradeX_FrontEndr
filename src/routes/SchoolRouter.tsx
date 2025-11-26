@@ -5,6 +5,9 @@ import ProtectedRoute from './ProtectedRoutes';
 import MainLayout from '@gradex/shared/layout/MainLayout';
 
 import StudentManagementPage from '@gradex/pages/student-management/student-management-page';
+import GradesPage from '@gradex/pages/school-admin/grades/grades-page';
+import AddGradePage from '@gradex/pages/school-admin/grades/add-grade-page';
+import EditGradePage from '@gradex/pages/school-admin/grades/edit-grade-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -41,6 +44,36 @@ const SchoolRouter: React.FC = () => {
                 <h2 className="text-2xl font-bold text-gray-800">المراحل التعليمية</h2>
                 <p className="mt-4 text-gray-600">قريباً...</p>
               </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/grades"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <GradesPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/grades/add-grade"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddGradePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/grades/edit-grade/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditGradePage />
             </MainLayout>
           </ProtectedRoute>
         }
