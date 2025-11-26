@@ -103,7 +103,7 @@ export default function AddRole() {
     };
 
     fetchPermissions();
-  }, [showToast]);
+  }, []);
 
   const handlePermissionChange = (id: string) => {
     const currentPermissions = selectedPermissions || [];
@@ -201,11 +201,6 @@ export default function AddRole() {
     }
 
     form.handleSubmit(onFormSubmit)(e);
-  };
-
-  const handleCloseSuccessPopup = () => {
-    setShowPopupMessage({ ...showPopupMessage, show: false });
-    navigate('/employees-administration/roles-permissions');
   };
 
   if (isLoadingPermissions) {
@@ -352,8 +347,8 @@ export default function AddRole() {
         type={showPopupMessage.type}
         message={showPopupMessage.message}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-        autoClose={false}
-        onClose={handleCloseSuccessPopup}
+        autoClose={true}
+        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
         navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </FormProvider>
