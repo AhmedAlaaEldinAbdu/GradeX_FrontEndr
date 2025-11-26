@@ -24,11 +24,6 @@ export default function GradesList() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [showPopupMessage, setShowPopupMessage] = useState<{
-    show: boolean;
-    type: 'success' | 'error';
-    message: string;
-  }>({ show: false, type: 'success', message: '' });
   const [selectedGradeId, setSelectedGradeId] = useState<string>('');
   const [selectedAcademicSystemId, setSelectedAcademicSystemId] = useState('');
   const [selectedEducationalStageId, setSelectedEducationalStageId] = useState('');
@@ -146,7 +141,7 @@ export default function GradesList() {
           )}
         </div>
       ),
-      headerClassName: 'w-[120px]',
+      headerClassName: 'w-[150px]',
       className: 'text-center',
     },
     {
@@ -158,7 +153,7 @@ export default function GradesList() {
           </span>
         </div>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[150px]',
     },
     {
       header: 'grades.educationalStage',
@@ -169,14 +164,14 @@ export default function GradesList() {
           </span>
         </div>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[250px]',
     },
     {
       header: 'common.actions',
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => navigate(`/educational-stages/grades/edit/${row.id}`)}
+            onClick={() => navigate(`/grades/edit-grade/${row.id}`)}
             className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
           >
             <img src={EditIcon} alt="Edit" className="h-4 w-4" />
@@ -315,14 +310,6 @@ export default function GradesList() {
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
             isProcessing={isDeleting}
-          />
-          <PopupMessage
-            open={showPopupMessage.show}
-            type={showPopupMessage.type}
-            message={showPopupMessage.message}
-            iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-            autoClose={true}
-            onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
           />
         </div>
       ) : null}

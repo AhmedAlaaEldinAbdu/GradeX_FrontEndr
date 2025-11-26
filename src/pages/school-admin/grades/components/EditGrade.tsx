@@ -15,7 +15,6 @@ import Button from '@/shared/components/Button';
 import FileUpload from '@/shared/components/FileUpload';
 import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import { EditGradeSchema, type EditGradeProps } from '@/validations/grades-validations';
-import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 
 export default function EditGrade() {
   const { t, i18n } = useTranslation();
@@ -34,9 +33,18 @@ export default function EditGrade() {
   }>({ show: false, type: 'success', message: '' });
 
   // TODO: Replace with actual Redux selectors when slice is created
-  const academicSystems: any[] = [];
+  const academicSystems: any[] = [
+    { id: 'sys1', nameAr: 'العالمي', nameEn: 'International' },
+    { id: 'sys2', nameAr: 'الأمريكي', nameEn: 'American' },
+    { id: 'sys3', nameAr: 'البريطاني', nameEn: 'British' },
+  ];
   const isLoadingAcademicSystems = false;
-  const educationalStages: any[] = [];
+
+  const educationalStages: any[] = [
+    { id: 'stage1', nameAr: 'المرحلة الابتدائية', nameEn: 'Primary School' },
+    { id: 'stage2', nameAr: 'المرحلة الإعدادية', nameEn: 'Middle School' },
+    { id: 'stage3', nameAr: 'المرحلة الثانوية', nameEn: 'High School' },
+  ];
   const isLoadingEducationalStages = false;
 
   const {
@@ -123,15 +131,7 @@ export default function EditGrade() {
 
   return (
     <Card>
-      <div className="rounded-md border p-4">
-        <div className="mb-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <div className="text-xl font-bold text-gray-700">{t('academicSystem.title')}</div>
-          <div className="flex items-center gap-3">
-            <button>
-              <img src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
-            </button>
-          </div>
-        </div>
+      <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Academic System and Educational Stage Selectors */}
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -203,148 +203,180 @@ export default function EditGrade() {
             </FormField>
           </div>
 
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {/* Grade Name Arabic */}
-              <FormField label={t('grades.gradeNameAr')} required error={errors.nameAr?.message}>
-                <Controller
-                  name="nameAr"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder={t('grades.enterGradeNameAr')}
-                      className="w-full"
+          <div className="rounded-md border p-4">
+            <div className="rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  {/* Grade Name Arabic */}
+                  <FormField
+                    label={t('grades.gradeNameAr')}
+                    required
+                    error={errors.nameAr?.message}
+                  >
+                    <Controller
+                      name="nameAr"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder={t('grades.enterGradeNameAr')}
+                          className="w-full"
+                          id="nameAr"
+                        />
+                      )}
                     />
-                  )}
-                />
-              </FormField>
+                  </FormField>
 
-              {/* Grade Name English */}
-              <FormField label={t('grades.gradeNameEn')} required error={errors.nameEn?.message}>
-                <Controller
-                  name="nameEn"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder={t('grades.enterGradeNameEn')}
-                      className="w-full"
+                  {/* Grade Name English */}
+                  <FormField
+                    label={t('grades.gradeNameEn')}
+                    required
+                    error={errors.nameEn?.message}
+                  >
+                    <Controller
+                      name="nameEn"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder={t('grades.enterGradeNameEn')}
+                          className="w-full"
+                          id="nameEn"
+                        />
+                      )}
                     />
-                  )}
-                />
-              </FormField>
+                  </FormField>
 
-              {/* Nickname Arabic */}
-              <FormField label={t('grades.nicknameAr')} optional error={errors.nicknameAr?.message}>
-                <Controller
-                  name="nicknameAr"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder={t('grades.enterNicknameAr')}
-                      className="w-full"
+                  {/* Nickname Arabic */}
+                  <FormField
+                    label={t('grades.nicknameAr')}
+                    optional
+                    error={errors.nicknameAr?.message}
+                  >
+                    <Controller
+                      name="nicknameAr"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder={t('grades.enterNicknameAr')}
+                          className="w-full"
+                          id="nicknameAr"
+                        />
+                      )}
                     />
-                  )}
-                />
-              </FormField>
+                  </FormField>
 
-              {/* Nickname English */}
-              <FormField label={t('grades.nicknameEn')} optional error={errors.nicknameEn?.message}>
-                <Controller
-                  name="nicknameEn"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder={t('grades.enterNicknameEn')}
-                      className="w-full"
+                  {/* Nickname English */}
+                  <FormField
+                    label={t('grades.nicknameEn')}
+                    optional
+                    error={errors.nicknameEn?.message}
+                  >
+                    <Controller
+                      name="nicknameEn"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder={t('grades.enterNicknameEn')}
+                          className="w-full"
+                          id="nicknameEn"
+                        />
+                      )}
                     />
-                  )}
-                />
-              </FormField>
+                  </FormField>
 
-              {/* Description Arabic */}
-              <FormField
-                label={t('grades.descriptionAr')}
-                optional
-                error={errors.descriptionAr?.message}
-              >
-                <Controller
-                  name="descriptionAr"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder={t('grades.enterDescriptionAr')}
-                      className="w-full"
+                  {/* Description Arabic */}
+                  <FormField
+                    label={t('grades.descriptionAr')}
+                    optional
+                    error={errors.descriptionAr?.message}
+                  >
+                    <Controller
+                      name="descriptionAr"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder={t('grades.enterDescriptionAr')}
+                          className="w-full"
+                          id="descriptionAr"
+                        />
+                      )}
                     />
-                  )}
-                />
-              </FormField>
+                  </FormField>
 
-              {/* Description English */}
-              <FormField
-                label={t('grades.descriptionEn')}
-                optional
-                error={errors.descriptionEn?.message}
-              >
-                <Controller
-                  name="descriptionEn"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder={t('grades.enterDescriptionEn')}
-                      className="w-full"
+                  {/* Description English */}
+                  <FormField
+                    label={t('grades.descriptionEn')}
+                    optional
+                    error={errors.descriptionEn?.message}
+                  >
+                    <Controller
+                      name="descriptionEn"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder={t('grades.enterDescriptionEn')}
+                          className="w-full"
+                          id="descriptionEn"
+                        />
+                      )}
                     />
-                  )}
-                />
-              </FormField>
+                  </FormField>
+                </div>
 
-              {/* Max Students */}
-              <FormField
-                label={t('grades.maxStudents')}
-                required
-                error={errors.maxStudents?.message}
-              >
-                <Controller
-                  name="maxStudents"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="number"
-                      placeholder={t('grades.enterMaxStudents')}
-                      className="w-full"
-                      min="1"
+                <div className="grid grid-cols-1 gap-4">
+                  {/* Max Students */}
+                  <FormField
+                    label={t('grades.maxStudents')}
+                    required
+                    error={errors.maxStudents?.message}
+                  >
+                    <Controller
+                      name="maxStudents"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          type="number"
+                          placeholder={t('grades.enterMaxStudents')}
+                          className="w-full"
+                          min="1"
+                          id="maxStudents"
+                        />
+                      )}
                     />
-                  )}
-                />
-              </FormField>
+                  </FormField>
 
-              {/* Class Image */}
-              <FormField label={t('grades.classImage')} optional>
-                {existingFilePath && existingFileName && getFileName().length === 0 && (
-                  <ExistingFileDisplay filePath={existingFilePath} fileName={existingFileName} />
-                )}
-                <FileUpload
-                  label=""
-                  accept=".jpg,.jpeg,.png,.gif,.svg"
-                  onChange={handleFileUpload}
-                  onDelete={handleFileDelete}
-                  fileNames={getFileName()}
-                  uploadText={t('grades.uploadClassImage')}
-                  formatHints={['JPG', 'PNG', 'GIF', 'SVG']}
-                />
-              </FormField>
+                  {/* Class Image */}
+                  <FormField label={t('grades.classImage')} optional>
+                    {existingFilePath && existingFileName && getFileName().length === 0 && (
+                      <ExistingFileDisplay
+                        filePath={existingFilePath}
+                        fileName={existingFileName}
+                      />
+                    )}
+                    <FileUpload
+                      label=""
+                      accept=".jpg,.jpeg,.png,.gif,.svg"
+                      onChange={handleFileUpload}
+                      onDelete={handleFileDelete}
+                      fileNames={getFileName()}
+                      uploadText={t('grades.uploadClassImage')}
+                      formatHints={['JPG', 'PNG', 'GIF', 'SVG']}
+                    />
+                  </FormField>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -353,7 +385,7 @@ export default function EditGrade() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate('/educational-stages/grades')}
+              onClick={() => navigate(-1)}
               disabled={isSubmitting}
             >
               {t('common.cancel')}
@@ -373,9 +405,7 @@ export default function EditGrade() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={true}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={
-          showPopupMessage.type === 'success' ? '/educational-stages/grades' : undefined
-        }
+        navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </Card>
   );

@@ -33,9 +33,19 @@ export default function AddGrade() {
   }>({ show: false, type: 'success', message: '' });
 
   // TODO: Replace with actual Redux selectors when slice is created
-  const academicSystems: any[] = [];
+
+  const academicSystems: any[] = [
+    { id: 'sys1', nameAr: 'العالمي', nameEn: 'International' },
+    { id: 'sys2', nameAr: 'الأمريكي', nameEn: 'American' },
+    { id: 'sys3', nameAr: 'البريطاني', nameEn: 'British' },
+  ];
   const isLoadingAcademicSystems = false;
-  const educationalStages: any[] = [];
+
+  const educationalStages: any[] = [
+    { id: 'stage1', nameAr: 'المرحلة الابتدائية', nameEn: 'Primary School' },
+    { id: 'stage2', nameAr: 'المرحلة الإعدادية', nameEn: 'Middle School' },
+    { id: 'stage3', nameAr: 'المرحلة الثانوية', nameEn: 'High School' },
+  ];
   const isLoadingEducationalStages = false;
 
   const {
@@ -412,9 +422,7 @@ export default function AddGrade() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={true}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={
-          showPopupMessage.type === 'success' ? '/educational-stages/grades' : undefined
-        }
+        navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
     </Card>
   );
