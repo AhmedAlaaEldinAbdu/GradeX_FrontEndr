@@ -16,6 +16,9 @@ import {
 import { permissionsApiService } from '@gradex/services/api/permissions/permissions.service';
 import type { PermissionGroup } from '@gradex/services/api/types/permissions.types';
 import { useToast } from '@/shared/context/ToastContext';
+import PopupMessage from '@/shared/components/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 export default function EditRole() {
   const { t } = useTranslation();
@@ -34,6 +37,11 @@ export default function EditRole() {
   const [selectAll, setSelectAll] = useState(false);
   const [roleName, setRoleName] = useState('');
   const [description, setDescription] = useState('');
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
   const { form } = useRoleForm();
 
@@ -54,10 +62,10 @@ export default function EditRole() {
         setPermissionGroups(response.permissionGroupDtos || []);
       } catch (error) {
         console.error('Failed to fetch permissions:', error);
-        showToast({
-          message: t('common.error'),
+        setShowPopupMessage({
+          show: true,
           type: 'error',
-          duration: 3000,
+          message: t('common.error'),
         });
       } finally {
         setIsLoadingPermissions(false);
@@ -118,28 +126,28 @@ export default function EditRole() {
     e.preventDefault();
 
     if (!id) {
-      showToast({
-        message: t('common.error'),
+      setShowPopupMessage({
+        show: true,
         type: 'error',
-        duration: 3000,
+        message: t('common.error'),
       });
       return;
     }
 
     if (!roleName.trim()) {
-      showToast({
-        message: t('rolesManagement.roleNameRequired'),
+      setShowPopupMessage({
+        show: true,
         type: 'error',
-        duration: 3000,
+        message: t('rolesManagement.roleNameRequired'),
       });
       return;
     }
 
     if (selectedPermissions.length === 0) {
-      showToast({
-        message: t('rolesManagement.permissionsRequired'),
+      setShowPopupMessage({
+        show: true,
         type: 'error',
-        duration: 3000,
+        message: t('rolesManagement.permissionsRequired'),
       });
       return;
     }
@@ -154,19 +162,19 @@ export default function EditRole() {
         })
       ).unwrap();
 
-      showToast({
-        message: t('rolesManagement.roleUpdatedSuccessfully'),
+      setShowPopupMessage({
+        show: true,
         type: 'success',
-        duration: 3000,
+        message: t('rolesManagement.roleUpdatedSuccessfully'),
       });
 
       navigate('/employees-administration/roles-permissions');
     } catch (error) {
       console.error('Failed to update role:', error);
-      showToast({
-        message: t('common.error'),
+      setShowPopupMessage({
+        show: true,
         type: 'error',
-        duration: 3000,
+        message: (error as { message?: string })?.message || t('common.errorOccurred'),
       });
     }
   };
@@ -274,6 +282,18 @@ export default function EditRole() {
           {isUpdating ? t('common.saving') : t('actions.saveChanges')}
         </button>
       </div>
+
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        autoClose={true}
+        onClose={() => {
+          setShowPopupMessage({ ...showPopupMessage, show: false });
+        }}
+        navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
+      />
     </form>
   );
 }
