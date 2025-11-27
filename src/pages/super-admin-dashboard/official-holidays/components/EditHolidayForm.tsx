@@ -25,6 +25,7 @@ import EditOfficialHolidayForm from './EditOfficialHolidayForm';
 import PopupMessage from '@/shared/components/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import Loading from '@/shared/components/Loading';
 
 const EditHolidayForm = () => {
   const { t } = useTranslation();
@@ -259,7 +260,7 @@ const EditHolidayForm = () => {
     return (
       <Card>
         <div className="flex items-center justify-center py-8">
-          <p className="text-gray-500">{t('common.loading')}</p>
+          <Loading />
         </div>
       </Card>
     );
