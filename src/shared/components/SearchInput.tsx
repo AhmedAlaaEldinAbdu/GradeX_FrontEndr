@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useLanguage } from '@/hooks/useLanguage';
 
 type SearchInputProps = {
   value: string;
@@ -25,6 +26,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
 }) => {
   const [localValue, setLocalValue] = useState<string>(value ?? '');
   const timerRef = useRef<number | null>(null);
+  const { isRTL } = useLanguage();
 
   useEffect(() => {
     setLocalValue(value ?? '');
@@ -45,8 +47,10 @@ const SearchInput: React.FC<SearchInputProps> = ({
   const inputClasses = useMemo(
     () =>
       className ??
-      'h-[40px] w-full rounded-lg border border-gray-300 pl-4 pr-10 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500',
-    [className]
+      `h-[40px] w-full rounded-lg border border-gray-300 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+        isRTL ? 'pl-4 pr-10' : 'pl-10 pr-4'
+      }`,
+    [className, isRTL]
   );
 
   return (
@@ -75,7 +79,9 @@ const SearchInput: React.FC<SearchInputProps> = ({
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 pointer-events-none"
+        className={`pointer-events-none absolute top-1/2 -translate-y-1/2 transform text-gray-400 ${
+          isRTL ? 'right-3' : 'left-3'
+        }`}
         aria-hidden="true"
         focusable="false"
       >
