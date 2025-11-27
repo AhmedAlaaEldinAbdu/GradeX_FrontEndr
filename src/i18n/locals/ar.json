@@ -285,6 +285,8 @@
     "phoneRequired": "رقم الهاتف مطلوب",
     "roleRequired": "الدور مطلوب",
     "countryRequired": "الدولة مطلوبة",
+    "roleNameRequired": "اسم الدور مطلوب",
+    "permissionsRequired": "الصلاحيات مطلوبة",
     "country": "الدولة",
     "selectCountry": "اختر الدولة",
     "validation": {

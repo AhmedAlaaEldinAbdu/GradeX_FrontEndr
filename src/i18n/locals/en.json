@@ -286,6 +286,8 @@
     "phoneRequired": "Phone number is required",
     "roleRequired": "Role is required",
     "countryRequired": "Country is required",
+    "roleNameRequired": "Role name is required",
+    "permissionsRequired": "Permissions are required",
     "country": "Country",
     "selectCountry": "Select Country",
     "validation": {
