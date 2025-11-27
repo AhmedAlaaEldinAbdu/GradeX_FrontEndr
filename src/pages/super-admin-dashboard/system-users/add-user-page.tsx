@@ -5,7 +5,7 @@ import AddUser from './components/AddUser';
 
 const AddUserPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

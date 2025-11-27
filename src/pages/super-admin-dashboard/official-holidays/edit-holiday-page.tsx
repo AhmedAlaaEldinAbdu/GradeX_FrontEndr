@@ -9,7 +9,7 @@ const EditHolidayPage = () => {
   const holiday = useAppSelector((state) => state.officialHolidays.selectedHoliday);
 
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

@@ -6,7 +6,7 @@ import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
 const RolesPermissionsPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

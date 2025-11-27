@@ -5,7 +5,7 @@ import OfficialHolidays from './components/OfficialHolidays';
 
 const OfficialHolidaysPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Page Header */}
       <PageHeader
         title="officialHolidays.holidays"

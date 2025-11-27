@@ -6,7 +6,7 @@ import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
 const SystemUsersPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[{ label: 'rolesManagement.title' }, { label: 'rolesManagement.systemUsers' }]}
