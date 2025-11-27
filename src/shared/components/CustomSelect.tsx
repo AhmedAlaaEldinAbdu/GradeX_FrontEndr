@@ -194,8 +194,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder={t('common.search') || 'Search...'}
-                  className={`w-full rounded-md border border-gray-300 py-2 pl-4 pr-7 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
-                    isRTL ? 'text-right' : 'text-left'
+                  className={`w-full rounded-md border border-gray-300 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                    isRTL ? 'pl-4 pr-7 text-right' : 'pl-7 pr-4 text-left'
                   }`}
                 />
                 <svg
