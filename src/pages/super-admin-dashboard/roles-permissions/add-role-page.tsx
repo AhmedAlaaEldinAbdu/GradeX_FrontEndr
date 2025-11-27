@@ -5,7 +5,7 @@ import AddRole from './components/AddRole';
 
 const AddRolePage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

@@ -5,7 +5,7 @@ import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
 const SchoolsPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       {/* <Breadcrumb
         items={[
