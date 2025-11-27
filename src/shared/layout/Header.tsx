@@ -6,6 +6,7 @@ import { FaBell, FaChevronDown, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { clearUser } from '@gradex/redux/features/auth/authSlice';
 import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import profileImage from '@gradex/assets/images/profile.png';
+import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -23,6 +24,9 @@ const Header: React.FC = () => {
     <header className="border-b border-gray-200 bg-white shadow-sm">
       <div className="flex flex-row-reverse items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
+          {/* Language Switcher */}
+          <LanguageSwitcher variant="icon-only" size="md" />
+
           {/* Notifications */}
           <div className="relative">
             <button className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 transition-colors hover:bg-gray-100">
