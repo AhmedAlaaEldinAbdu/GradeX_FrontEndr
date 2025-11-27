@@ -5,7 +5,7 @@ import AddNotification from './components/AddNotification';
 
 const AddNotificationPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

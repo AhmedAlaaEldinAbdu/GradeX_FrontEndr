@@ -3,7 +3,7 @@ import CountryHolidays from './components/CountryHolidays';
 
 const CountryHolidaysPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Main Content */}
       <CountryHolidays />
     </div>

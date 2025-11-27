@@ -4,9 +4,8 @@ import Breadcrumb from '@gradex/shared/layout/Breadcrumb';
 import AddAcademicSystem from './components/AddAcademicSystem';
 
 const AddAcademicSystemPage: React.FC = () => {
-
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

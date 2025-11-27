@@ -4,9 +4,8 @@ import Breadcrumb from '@gradex/shared/layout/Breadcrumb';
 import AddEducationalStages from './components/AddEducationalStages';
 
 const AddEducationalStagesPage: React.FC = () => {
-
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[
