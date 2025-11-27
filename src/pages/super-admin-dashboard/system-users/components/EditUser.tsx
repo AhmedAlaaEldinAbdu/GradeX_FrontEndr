@@ -28,7 +28,6 @@ import {
   selectCountries,
   selectIsLoadingCountries,
 } from '@gradex/redux/features/lookups';
-import { useToast } from '@/shared/context/ToastContext';
 import type { ValidationErrorResponse } from '@/services/api/config';
 import { useUserForm } from '../hooks/useUserForm';
 import i18n from '@/i18n';
@@ -39,7 +38,6 @@ export default function EditUser() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { showToast } = useToast();
 
   const currentUser = useSelector(selectCurrentUser);
   const isLoading = useSelector(selectIsLoading);
@@ -69,36 +67,33 @@ export default function EditUser() {
     trigger,
   } = form;
 
-  // Show validation errors in toast when they occur
   useEffect(() => {
     if (validationErrorsFromRedux) {
-      // Handle array of validation errors
       if (Array.isArray(validationErrorsFromRedux)) {
-        validationErrorsFromRedux.forEach((error: ValidationErrorResponse) => {
-          showToast({
-            message: error.errorMessage,
+        const errorMessages = validationErrorsFromRedux
+          .map((error: ValidationErrorResponse) => error.errorMessage)
+          .join('\n');
+        if (errorMessages) {
+          setShowPopupMessage({
+            show: true,
             type: 'error',
-            duration: 5000,
+            message: errorMessages,
           });
-        });
-      }
-      // Handle object with error messages
-      else if (typeof validationErrorsFromRedux === 'object') {
-        const errorMessages = Object.values(validationErrorsFromRedux);
-        if (errorMessages.length > 0) {
-          errorMessages.forEach((errorMsg) => {
-            if (typeof errorMsg === 'string') {
-              showToast({
-                message: errorMsg,
-                type: 'error',
-                duration: 5000,
-              });
-            }
+        }
+      } else if (typeof validationErrorsFromRedux === 'object') {
+        const errorMessages = Object.values(validationErrorsFromRedux)
+          .filter((msg) => typeof msg === 'string')
+          .join('\n');
+        if (errorMessages) {
+          setShowPopupMessage({
+            show: true,
+            type: 'error',
+            message: errorMessages,
           });
         }
       }
     }
-  }, [validationErrorsFromRedux, showToast]);
+  }, [validationErrorsFromRedux]);
 
   useEffect(() => {
     if (id) {
@@ -147,21 +142,17 @@ export default function EditUser() {
     setShowValidationErrors(true);
 
     if (!id) {
-      showToast({
-        message: t('common.error'),
+      setShowPopupMessage({
+        show: true,
         type: 'error',
-        duration: 3000,
+        message: t('common.error'),
       });
       return;
     }
 
-    // Trigger validation for all fields
     const isValid = await form.trigger();
 
     if (!isValid) {
-      console.error('Form validation failed');
-      console.error('Validation errors:', errors);
-      console.error('Form values:', form.getValues());
       return;
     }
 
@@ -189,18 +180,19 @@ export default function EditUser() {
         });
       } else if (updateUser.rejected.match(resultAction)) {
         console.error('Update rejected:', resultAction.payload);
-        showToast({
-          message: t('common.error'),
+        const errorPayload = resultAction.payload as { message?: string } | undefined;
+        setShowPopupMessage({
+          show: true,
           type: 'error',
-          duration: 3000,
+          message: errorPayload?.message || t('common.error'),
         });
       }
     } catch (error) {
       console.error('Failed to update user:', error);
-      showToast({
-        message: t('common.error'),
+      setShowPopupMessage({
+        show: true,
         type: 'error',
-        duration: 3000,
+        message: error instanceof Error ? error.message : t('common.error'),
       });
     } finally {
       setIsUpdating(false);
