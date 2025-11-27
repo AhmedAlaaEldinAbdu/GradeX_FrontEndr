@@ -7,9 +7,11 @@ import { clearUser } from '@gradex/redux/features/auth/authSlice';
 import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import profileImage from '@gradex/assets/images/profile.png';
 import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
@@ -90,7 +92,9 @@ const Header: React.FC = () => {
             <input
               type="text"
               placeholder={t('header.search')}
-              className="w-full rounded-lg border border-gray-300 bg-white py-3 pl-4 pr-10 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+              className={`w-full rounded-lg border border-gray-300 bg-white py-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                isRTL ? 'pl-4 pr-10' : 'pl-10 pr-4'
+              }`}
             />
             <svg
               width="24"
@@ -98,7 +102,9 @@ const Header: React.FC = () => {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400"
+              className={`absolute top-1/2 -translate-y-1/2 transform text-gray-400 ${
+                isRTL ? 'right-3' : 'left-3'
+              }`}
             >
               <path
                 d="M11 1.25C5.61522 1.25 1.25 5.61522 1.25 11C1.25 16.3848 5.61522 20.75 11 20.75C13.4226 20.75 15.6366 19.8638 17.3418 18.4014L21.4697 22.5303C21.7626 22.8232 22.2374 22.8232 22.5303 22.5303C22.8232 22.2374 22.8232 21.7626 22.5303 21.4697L18.4023 17.3408C19.8643 15.6358 20.75 13.4221 20.75 11C20.75 5.61522 16.3848 1.25 11 1.25ZM11 2.75C15.5563 2.75 19.25 6.44365 19.25 11C19.25 15.5563 15.5563 19.25 11 19.25C6.44365 19.25 2.75 15.5563 2.75 11C2.75 6.44365 6.44365 2.75 11 2.75Z"
