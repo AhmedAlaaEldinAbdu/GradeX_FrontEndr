@@ -167,7 +167,11 @@
     "securityMessage": "We care about the security and privacy of your data.",
     "enterFullCode": "Please enter the complete code.",
     "strongPassword": "Strong and Secure Password",
-    "createStrongPassword": "Create a strong password to protect your account."
+    "createStrongPassword": "Create a strong password to protect your account.",
+    "passwordResetSuccess": "Password Reset Successfully!",
+    "passwordResetSuccessMessage": "Your password has been successfully updated. You can now sign in with your new password.",
+    "redirectingToLogin": "Redirecting to login page in {{seconds}} seconds...",
+    "goToLogin": "Go to Login"
   },
   "academicSystem": {
     "title": "Academic System",
