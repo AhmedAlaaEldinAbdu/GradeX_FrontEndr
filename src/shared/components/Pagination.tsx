@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/hooks/useLanguage';
 import ArrowRightIcon from '@gradex/assets/icons/ArrowRight.svg';
 import ArrowLeftIcon from '@gradex/assets/icons/ArrowLeft.svg';
 
@@ -19,6 +20,7 @@ const Pagination: React.FC<PaginationProps> = ({
   to,
 }) => {
   const { t } = useTranslation();
+  const { isRTL } = useLanguage();
 
   const getPages = (): (number | string)[] => {
     const pages: (number | string)[] = [];
@@ -68,7 +70,7 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           <span className="flex items-center gap-1 text-center">
             <img
-              src={ArrowRightIcon}
+              src={isRTL ? ArrowRightIcon : ArrowLeftIcon}
               alt="ArrowIcon"
               className={currentPage === 1 ? 'opacity-50' : ''}
             />
@@ -110,7 +112,7 @@ const Pagination: React.FC<PaginationProps> = ({
           <span className="flex items-center gap-1 text-center">
             <span>{t('actions.next')}</span>
             <img
-              src={ArrowLeftIcon}
+              src={isRTL ? ArrowLeftIcon : ArrowRightIcon}
               alt="ArrowIcon"
               className={currentPage === totalPages ? 'opacity-50' : ''}
             />
