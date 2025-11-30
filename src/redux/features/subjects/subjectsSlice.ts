@@ -5,7 +5,12 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 import { subjectApiService } from '@/services/api/subjects/subjects.service';
-import type { Subject, SubjectQueryParams, CreateSubjectRequest } from '@/types/subjects';
+import type {
+  Subject,
+  SubjectQueryParams,
+  CreateSubjectRequest,
+  UpdateSubjectRequest,
+} from '@/types/subjects';
 import { getErrorMessage } from '@/lib/http';
 
 // ============================================================================
@@ -176,6 +181,23 @@ export const deleteSubject = createAsyncThunk<string, string>(
   }
 );
 
+export interface UpdateSubjectPayload {
+  id: string;
+  data: Omit<UpdateSubjectRequest, 'id'>;
+}
+
+export const updateSubject = createAsyncThunk<Subject, UpdateSubjectPayload>(
+  'subjects/updateSubject',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await subjectApiService.updateSubject(id, { ...data, id });
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const subjectsSlice = createSlice({
   name: 'subjects',
   initialState,
@@ -277,6 +299,28 @@ const subjectsSlice = createSlice({
       })
       .addCase(deleteSubject.rejected, (state, action) => {
         state.isDeleting = false;
+        state.error = action.payload as string;
+      });
+
+    // Update Subject
+    builder
+      .addCase(updateSubject.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+        state.validationErrors = null;
+      })
+      .addCase(updateSubject.fulfilled, (state, action: PayloadAction<Subject>) => {
+        state.isUpdating = false;
+        if (action.payload) {
+          const index = state.subjects.findIndex((s) => s.id === action.payload.id);
+          if (index !== -1) {
+            state.subjects[index] = action.payload;
+          }
+          state.currentSubject = action.payload;
+        }
+      })
+      .addCase(updateSubject.rejected, (state, action) => {
+        state.isUpdating = false;
         state.error = action.payload as string;
       });
   },
