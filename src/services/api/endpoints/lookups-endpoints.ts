@@ -9,4 +9,5 @@ export const LookupsEndpoints = {
   countries: '/LKCountries/GetAllCountries',
   regions: '/Region',
   cities: '/City',
+  schoolStages: '/LKSchoolStage',
 } as const;
