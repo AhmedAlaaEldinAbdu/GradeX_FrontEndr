@@ -5,9 +5,9 @@ import ProtectedRoute from './ProtectedRoutes';
 import MainLayout from '@gradex/shared/layout/MainLayout';
 
 import StudentManagementPage from '@/pages/school-dashboard/student-management/student-management-page';
-import GradesPage from '@/pages/school-dashboard/grades/grades-page';
-import AddGradePage from '@/pages/school-dashboard/grades/add-grade-page';
-import EditGradePage from '@/pages/school-dashboard/grades/edit-grade-page';
+import ClassroomsPage from '@/pages/school-dashboard/classrooms/classrooms-page';
+import AddClassroomPage from '@/pages/school-dashboard/classrooms/add-classroom-page';
+import EditClassroomPage from '@/pages/school-dashboard/classrooms/edit-classroom-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -49,31 +49,31 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/grades"
+        path="/classrooms"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <GradesPage />
+              <ClassroomsPage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
       <Route
-        path="/grades/add-grade"
+        path="/classrooms/add"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <AddGradePage />
+              <AddClassroomPage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
       <Route
-        path="/grades/edit-grade/:id"
+        path="/classrooms/edit/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <EditGradePage />
+              <EditClassroomPage />
             </MainLayout>
           </ProtectedRoute>
         }

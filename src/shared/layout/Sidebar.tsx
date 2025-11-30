@@ -120,7 +120,7 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
     key: 'educationalStages',
     icon: <img src={EducationIcon} className="h-5 w-5" alt="Education" />,
     subItems: [
-      { key: 'grades', path: '/grades' },
+      { key: 'classrooms', path: '/classrooms' },
       { key: 'subjects', path: '/subjects' }
     ],
   },
