@@ -1,0 +1,277 @@
+import {
+  createSlice,
+  type PayloadAction,
+  type ActionReducerMapBuilder,
+  createAsyncThunk,
+} from '@reduxjs/toolkit';
+import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
+import type { Classroom, ClassroomQueryParams } from '@/types/classrooms';
+import { getErrorMessage } from '@/lib/http';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+export interface ClassroomFilters {
+  name?: string;
+  academicSystemId?: string;
+  gradeId?: string;
+}
+
+export interface ClassroomsState {
+  // Data
+  classrooms: Classroom[];
+  currentClassroom: Classroom | null;
+
+  // Pagination
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+
+  // Filters
+  filters: ClassroomFilters;
+
+  // Loading States
+  isLoading: boolean;
+  isCreating: boolean;
+  isUpdating: boolean;
+  isDeleting: boolean;
+
+  // Error States
+  error: string | null;
+  validationErrors: Record<string, string> | null;
+
+  // UI States
+  selectedClassroomIds: string[];
+  isInitialized: boolean;
+}
+
+export interface FetchClassroomsPayload {
+  page?: number;
+  limit?: number;
+  filters?: ClassroomFilters;
+}
+
+export interface FetchClassroomsResponse {
+  data: Classroom[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+const initialState: ClassroomsState = {
+  // Data
+  classrooms: [],
+  currentClassroom: null,
+
+  // Pagination
+  pagination: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  },
+
+  // Filters
+  filters: {},
+
+  // Loading States
+  isLoading: false,
+  isCreating: false,
+  isUpdating: false,
+  isDeleting: false,
+
+  // Error States
+  error: null,
+  validationErrors: null,
+
+  // UI States
+  selectedClassroomIds: [],
+  isInitialized: false,
+};
+
+export const fetchClassrooms = createAsyncThunk<FetchClassroomsResponse, FetchClassroomsPayload | void>(
+  'classrooms/fetchClassrooms',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const params: Partial<ClassroomQueryParams> = {};
+
+      if (payload) {
+        if (payload.page) params.pageIndex = payload.page;
+        if (payload.limit) params.pageSize = payload.limit;
+
+        if (payload.filters) {
+          if (payload.filters.name) params.name = payload.filters.name;
+          if (payload.filters.academicSystemId) params.academicSystemId = payload.filters.academicSystemId;
+          if (payload.filters.gradeId) params.gradeId = payload.filters.gradeId;
+        }
+      }
+
+      const response = await classroomApiService.getClassrooms(params as ClassroomQueryParams);
+
+      if (!response?.isSuccess || !response.data) {
+        return {
+          data: [],
+          meta: {
+            total: 0,
+            page: 1,
+            limit: 10,
+            totalPages: 0,
+          },
+        };
+      }
+
+      return {
+        data: response.data.classroomDto || [],
+        meta: {
+          total: response.data.totalItems || 0,
+          page: response.data.pageIndex || 1,
+          limit: response.data.pageSize || 10,
+          totalPages: response.data.totalPages || 0,
+        },
+      };
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchClassroomById = createAsyncThunk<Classroom, string>(
+  'classrooms/fetchClassroomById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await classroomApiService.getClassroomById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const deleteClassroom = createAsyncThunk<string, string>(
+  'classrooms/deleteClassroom',
+  async (id, { rejectWithValue }) => {
+    try {
+      await classroomApiService.deleteClassroom(id);
+      return id;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+const classroomsSlice = createSlice({
+  name: 'classrooms',
+  initialState,
+  reducers: {
+    setFilters: (state, action: PayloadAction<ClassroomsState['filters']>) => {
+      state.filters = action.payload;
+    },
+    clearFilters: (state) => {
+      state.filters = {};
+    },
+    setCurrentClassroom: (state, action: PayloadAction<Classroom | null>) => {
+      state.currentClassroom = action.payload;
+    },
+    clearError: (state) => {
+      state.error = null;
+      state.validationErrors = null;
+    },
+    selectClassroom: (state, action: PayloadAction<string>) => {
+      if (!state.selectedClassroomIds.includes(action.payload)) {
+        state.selectedClassroomIds.push(action.payload);
+      }
+    },
+    deselectClassroom: (state, action: PayloadAction<string>) => {
+      state.selectedClassroomIds = state.selectedClassroomIds.filter(
+        (id) => id !== action.payload
+      );
+    },
+    selectAllClassrooms: (state) => {
+      state.selectedClassroomIds = state.classrooms.map((classroom) => classroom.id);
+    },
+    clearSelection: (state) => {
+      state.selectedClassroomIds = [];
+    },
+  },
+  extraReducers: (builder: ActionReducerMapBuilder<ClassroomsState>) => {
+    // Fetch Classrooms
+    builder
+      .addCase(fetchClassrooms.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchClassrooms.fulfilled,
+        (state, action: PayloadAction<FetchClassroomsResponse>) => {
+          state.isLoading = false;
+          state.classrooms = action.payload.data;
+          state.pagination = {
+            page: action.payload.meta.page,
+            limit: action.payload.meta.limit,
+            total: action.payload.meta.total,
+            totalPages: action.payload.meta.totalPages,
+          };
+          state.isInitialized = true;
+        }
+      )
+      .addCase(fetchClassrooms.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch Classroom By ID
+    builder
+      .addCase(fetchClassroomById.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchClassroomById.fulfilled, (state, action: PayloadAction<Classroom>) => {
+        state.isLoading = false;
+        state.currentClassroom = action.payload;
+      })
+      .addCase(fetchClassroomById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Delete Classroom
+    builder
+      .addCase(deleteClassroom.pending, (state) => {
+        state.isDeleting = true;
+        state.error = null;
+      })
+      .addCase(deleteClassroom.fulfilled, (state, action: PayloadAction<string>) => {
+        state.isDeleting = false;
+        state.classrooms = state.classrooms.filter(
+          (classroom) => classroom.id !== action.payload
+        );
+        state.selectedClassroomIds = state.selectedClassroomIds.filter(
+          (id) => id !== action.payload
+        );
+      })
+      .addCase(deleteClassroom.rejected, (state, action) => {
+        state.isDeleting = false;
+        state.error = action.payload as string;
+      });
+  },
+});
+
+export const {
+  setFilters,
+  clearFilters,
+  setCurrentClassroom,
+  clearError,
+  selectClassroom,
+  deselectClassroom,
+  selectAllClassrooms,
+  clearSelection,
+} = classroomsSlice.actions;
+
+export default classroomsSlice.reducer;
