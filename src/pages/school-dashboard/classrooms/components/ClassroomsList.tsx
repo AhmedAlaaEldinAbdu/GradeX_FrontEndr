@@ -113,7 +113,7 @@ export default function ClassroomsList() {
     },
     {
       header: 'grades.gradeName',
-      accessor: (row) => <span>{currentLang === 'ar' ? row.nameAr : row.nameEn}</span>,
+      accessor: (row) => <span>{currentLang === 'ar' ? row.name : row.nameEn}</span>,
       headerClassName: 'min-w-[150px]',
     },
     {
@@ -123,7 +123,7 @@ export default function ClassroomsList() {
           {row.imagePath ? (
             <img
               src={row.imagePath}
-              alt={currentLang === 'ar' ? row.nameAr : row.nameEn}
+              alt={currentLang === 'ar' ? row.name : row.nameEn}
               className="h-10 w-10 rounded-md object-cover"
             />
           ) : (
