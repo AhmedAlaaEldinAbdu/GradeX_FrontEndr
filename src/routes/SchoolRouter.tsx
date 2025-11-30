@@ -8,6 +8,8 @@ import StudentManagementPage from '@/pages/school-dashboard/student-management/s
 import ClassroomsPage from '@/pages/school-dashboard/classrooms/classrooms-page';
 import AddClassroomPage from '@/pages/school-dashboard/classrooms/add-classroom-page';
 import EditClassroomPage from '@/pages/school-dashboard/classrooms/edit-classroom-page';
+import SubjectsPage from '@/pages/school-dashboard/subjects/subjects-page';
+import AddSubjectPage from '@/pages/school-dashboard/subjects/add-subject-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -74,6 +76,26 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <EditClassroomPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/subjects"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <SubjectsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/subjects/add"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddSubjectPage />
             </MainLayout>
           </ProtectedRoute>
         }
