@@ -19,6 +19,8 @@ import type {
   City,
   CitiesResponse,
   CityQueryParams,
+  SchoolStage,
+  SchoolStagesResponse,
 } from '../types/lookup.types';
 
 // ============================================================================
@@ -203,6 +205,25 @@ export async function getCitiesByRegion(regionId: string): Promise<City[]> {
 }
 
 // ============================================================================
+// School Stages
+// ============================================================================
+
+/**
+ * Get all school stages
+ */
+export async function getSchoolStages(): Promise<SchoolStage[]> {
+  const response: AxiosResponse<SchoolStagesResponse> = await axiosClient.get(
+    LookupsEndpoints.schoolStages
+  );
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.successMessage || 'Failed to fetch school stages');
+  }
+
+  return response.data.value;
+}
+
+// ============================================================================
 // Export All Services
 // ============================================================================
 
@@ -226,6 +247,9 @@ export const lookupsApiService = {
   // Cities
   getAllCities,
   getCitiesByRegion,
+
+  // School Stages
+  getSchoolStages,
 };
 
 export default lookupsApiService;
