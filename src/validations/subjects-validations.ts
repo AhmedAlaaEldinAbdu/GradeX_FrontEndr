@@ -45,9 +45,13 @@ export const SubjectsSchema = object({
 });
 
 export const EditSubjectSchema = object({
-  materialLevel: number()
+  materialLevel: string()
     .required('subjects.validation.levelRequired')
     .typeError('subjects.validation.levelRequired'),
+  lKSchoolStageIds: array()
+    .of(string().required())
+    .min(1, 'subjects.validation.schoolStagesRequired')
+    .required('subjects.validation.schoolStagesRequired'),
   name: string()
     .required('subjects.validation.subjectNameRequired')
     .typeError('subjects.validation.subjectNameRequired'),
