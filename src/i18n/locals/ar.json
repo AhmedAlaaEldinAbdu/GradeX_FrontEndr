@@ -724,5 +724,42 @@
       "requiredList": "قائمة الصفوف مطلوبة",
       "atLeastOne": "يجب إضافة صف واحد على الأقل"
     }
+  },
+  "subjects": {
+    "title": "المواد الدراسية",
+    "subtitle": "إدارة المواد الدراسية",
+    "addSubject": "إضافة مادة دراسية",
+    "addSubjectSubtitle": "إضافة مادة/مواد دراسية جديدة للنظام",
+    "editSubject": "تعديل مادة دراسية",
+    "editSubjectSubtitle": "تحديث معلومات المادة الدراسية",
+    "subjectsList": "قائمة المواد",
+    "noSubjectsMessage": "لم يتم إضافة أي مادة دراسية حتى الآن. يمكنك البدء بإضافة المواد الدراسية لتنظيم المناهج وإدارة التعليم بشكل أفضل.",
+    "subject": "مادة",
+    "subjectName": "اسم المادة",
+    "subjectNameAr": "اسم المادة (باللغة العربية)",
+    "subjectNameEn": "اسم المادة (باللغة الإنجليزية)",
+    "enterSubjectNameAr": "أدخل اسم المادة بالعربية",
+    "enterSubjectNameEn": "أدخل اسم المادة بالإنجليزية",
+    "level": "المستوى",
+    "selectLevel": "اختر المستوى",
+    "levelEasy": "سهل",
+    "levelMedium": "متوسط",
+    "levelDifficult": "صعب",
+    "schoolStages": "المراحل الدراسية",
+    "selectSchoolStages": "اختر المراحل الدراسية",
+    "addAnotherSubject": "إضافة مادة أخرى",
+    "addedSubjects": "المواد المضافة",
+    "searchSubject": "ابحث عن اسم المادة",
+    "subjectsAddedSuccessfully": "تم إضافة المواد بنجاح",
+    "subjectUpdatedSuccessfully": "تم تحديث المادة بنجاح",
+    "subjectDeletedSuccessfully": "تم حذف المادة بنجاح",
+    "confirmDeleteSubject": "هل أنت متأكد من حذف هذه المادة؟",
+    "validation": {
+      "subjectNameRequired": "اسم المادة مطلوب",
+      "levelRequired": "المستوى مطلوب",
+      "schoolStagesRequired": "المراحل الدراسية مطلوبة",
+      "requiredList": "قائمة المواد مطلوبة",
+      "atLeastOne": "يجب إضافة مادة واحدة على الأقل"
+    }
   }
 }

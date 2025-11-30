@@ -725,5 +725,42 @@
       "requiredList": "Grades list is required",
       "atLeastOne": "At least one grade must be added"
     }
+  },
+  "subjects": {
+    "title": "Subjects",
+    "subtitle": "Manage academic subjects",
+    "addSubject": "Add Subject",
+    "addSubjectSubtitle": "Add new subject(s) to the system",
+    "editSubject": "Edit Subject",
+    "editSubjectSubtitle": "Update subject information",
+    "subjectsList": "Subjects List",
+    "noSubjectsMessage": "No subjects have been added yet. You can start by adding subjects to organize curricula and manage education better.",
+    "subject": "Subject",
+    "subjectName": "Subject Name",
+    "subjectNameAr": "Subject Name in Arabic",
+    "subjectNameEn": "Subject Name in English",
+    "enterSubjectNameAr": "Enter subject name in Arabic",
+    "enterSubjectNameEn": "Enter subject name in English",
+    "level": "Level",
+    "selectLevel": "Select Level",
+    "levelEasy": "Easy",
+    "levelMedium": "Medium",
+    "levelDifficult": "Difficult",
+    "schoolStages": "School Stages",
+    "selectSchoolStages": "Select School Stages",
+    "addAnotherSubject": "Add Another Subject",
+    "addedSubjects": "Added Subjects",
+    "searchSubject": "Search for subject name",
+    "subjectsAddedSuccessfully": "Subjects added successfully",
+    "subjectUpdatedSuccessfully": "Subject updated successfully",
+    "subjectDeletedSuccessfully": "Subject deleted successfully",
+    "confirmDeleteSubject": "Are you sure you want to delete this subject?",
+    "validation": {
+      "subjectNameRequired": "Subject name is required",
+      "levelRequired": "Level is required",
+      "schoolStagesRequired": "School stages are required",
+      "requiredList": "Subjects list is required",
+      "atLeastOne": "At least one subject must be added"
+    }
   }
 }
