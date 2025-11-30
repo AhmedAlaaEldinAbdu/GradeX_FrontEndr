@@ -69,11 +69,14 @@ export async function getSubjects(params?: SubjectQueryParams): Promise<SubjectL
  * Get subject by ID
  */
 export async function getSubjectById(id: string): Promise<Subject> {
-  const response: AxiosResponse<ApiResponseModel<Subject>> = await axiosClient.get(
-    SubjectEndpoints.getSubjectById(id)
-  );
+  const response: AxiosResponse<{
+    data: Subject;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.get(SubjectEndpoints.getSubjectById(id));
 
-  return response.data.value;
+  return response.data.data;
 }
 
 /**
@@ -108,13 +111,30 @@ export async function createSubject(data: CreateSubjectRequest): Promise<Subject
 /**
  * Update an existing subject
  */
-export async function updateSubject(_id: string, data: UpdateSubjectRequest): Promise<Subject> {
-  const response: AxiosResponse<ApiResponseModel<Subject>> = await axiosClient.put(
-    SubjectEndpoints.editSubject,
-    data
-  );
+export async function updateSubject(id: string, data: UpdateSubjectRequest): Promise<Subject> {
+  const response: AxiosResponse<{
+    data: Subject;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.put(SubjectEndpoints.editSubject(id), data);
 
-  return response.data.value;
+  // Check if the response indicates validation errors
+  if (
+    !response.data.isSuccess &&
+    response.data.validationErrors &&
+    response.data.validationErrors.length > 0
+  ) {
+    const error = new Error('Validation failed') as Error & {
+      validationErrors: typeof response.data.validationErrors;
+      isValidationError: boolean;
+    };
+    error.validationErrors = response.data.validationErrors;
+    error.isValidationError = true;
+    throw error;
+  }
+
+  return response.data.data;
 }
 
 /**
