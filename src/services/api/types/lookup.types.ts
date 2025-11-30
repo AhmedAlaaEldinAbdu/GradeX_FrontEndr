@@ -139,6 +139,18 @@ export interface CityQueryParams {
 }
 
 // ============================================================================
+// School Stages
+// ============================================================================
+
+export interface SchoolStage {
+  id: string;
+  nameAR: string;
+  nameEN: string;
+}
+
+export type SchoolStagesResponse = LookupApiResponse<SchoolStage>;
+
+// ============================================================================
 // Helper Types
 // ============================================================================
 
