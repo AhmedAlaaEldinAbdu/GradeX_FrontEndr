@@ -9,6 +9,7 @@ import type {
   Facility,
   Region,
   City,
+  SchoolStage,
 } from '@/services/api/types/lookup.types';
 
 // ============================================================================
@@ -22,6 +23,7 @@ export interface LookupsState {
   countries: Country[];
   regions: Region[];
   cities: City[];
+  schoolStages: SchoolStage[];
 
   // Loading States
   isLoadingFeatures: boolean;
@@ -29,6 +31,7 @@ export interface LookupsState {
   isLoadingCountries: boolean;
   isLoadingRegions: boolean;
   isLoadingCities: boolean;
+  isLoadingSchoolStages: boolean;
 
   // Error States
   featuresError: string | null;
@@ -36,16 +39,19 @@ export interface LookupsState {
   countriesError: string | null;
   regionsError: string | null;
   citiesError: string | null;
+  schoolStagesError: string | null;
 
   // Initialization States
   isFeaturesInitialized: boolean;
   isFacilitiesInitialized: boolean;
   isCountriesInitialized: boolean;
+  isSchoolStagesInitialized: boolean;
 
   // Timestamp for cache management
   lastFetchedFeatures: number | null;
   lastFetchedFacilities: number | null;
   lastFetchedCountries: number | null;
+  lastFetchedSchoolStages: number | null;
 }
 
 // ============================================================================
