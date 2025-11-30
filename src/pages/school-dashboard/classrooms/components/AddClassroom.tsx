@@ -16,6 +16,9 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import FileUpload from '@/shared/components/FileUpload';
 import { ClassroomsSchema, type ClassroomsProps } from '@/validations/classrooms-validations';
+import { createClassroom } from '@/redux/features/classrooms/classroomsSlice';
+import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 
 export default function AddClassroom() {
   const { t, i18n } = useTranslation();
@@ -24,34 +27,28 @@ export default function AddClassroom() {
   const currentLang = i18n.language as 'ar' | 'en';
   const [numOfClassrooms, setNumOfClassrooms] = useState<number[]>([1]);
   const [uploadedFiles, setUploadedFiles] = useState<{ [key: number]: File | null }>({});
-  const [selectedAcademicSystem, setSelectedAcademicSystem] = useState('');
-  const [selectedEducationalStage, setSelectedEducationalStage] = useState('');
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
     type: 'success' | 'error';
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
-  // TODO: Replace with actual Redux selectors when slice is created
+  // Redux state
+  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
+  const isLoadingAcademicSystems = useAppSelector((state) => state.academicSystems.isLoading);
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const isLoadingEducationalStages = useAppSelector((state) => state.educationalStages.isLoading);
+  const isCreating = useAppSelector((state) => state.classrooms.isCreating);
 
-  const academicSystems: any[] = [
-    { id: 'sys1', nameAr: 'العالمي', nameEn: 'International' },
-    { id: 'sys2', nameAr: 'الأمريكي', nameEn: 'American' },
-    { id: 'sys3', nameAr: 'البريطاني', nameEn: 'British' },
-  ];
-  const isLoadingAcademicSystems = false;
-
-  const educationalStages: any[] = [
-    { id: 'stage1', nameAr: 'المرحلة الابتدائية', nameEn: 'Primary School' },
-    { id: 'stage2', nameAr: 'المرحلة الإعدادية', nameEn: 'Middle School' },
-    { id: 'stage3', nameAr: 'المرحلة الثانوية', nameEn: 'High School' },
-  ];
-  const isLoadingEducationalStages = false;
+  useEffect(() => {
+    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000 }));
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
+  }, [dispatch]);
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setValue,
   } = useForm({
     resolver: yupResolver(ClassroomsSchema),
@@ -72,15 +69,96 @@ export default function AddClassroom() {
     },
   });
 
-  const onSubmit = (data: ClassroomsProps) => {
-    // TODO: Implement submit when Redux is ready
-    console.log('Form data:', data);
-    setShowPopupMessage({
-      show: true,
-      type: 'success',
-      message: t('grades.gradesAddedSuccessfully'),
-    });
+  const onSubmit = async (data: ClassroomsProps) => {
+    try {
+      const formData = new FormData();
+
+      // Create dtos array
+      const dtos = data.classrooms.map((classroom, index) => ({
+        academicSystemId: data.academicSystem,
+        gradeId: data.educationalStage,
+        name: classroom.name,
+        nameEn: classroom.nameEn,
+        alias: classroom.alias || '',
+        aliasEn: classroom.aliasEn || '',
+        studentNumber: classroom.maxStudents,
+        note: classroom.note || '',
+        noteEn: classroom.noteEn || '',
+        image: uploadedFiles[index] ? uploadedFiles[index]!.name : '',
+      }));
+
+      // Append dtos as JSON string
+      formData.append('dtos', JSON.stringify(dtos));
+
+      await dispatch(createClassroom(formData as any))
+        .unwrap()
+        .then((res) => {
+          if (res.isSuccess) {
+            setShowPopupMessage({
+              show: true,
+              type: 'success',
+              message: t('grades.gradesAddedSuccessfully'),
+            });
+          } else {
+            setShowPopupMessage({
+              show: true,
+              type: 'error',
+              message: t('common.errorOccurred'),
+            });
+          }
+        });
+    } catch (error: any) {
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: error?.message || t('common.errorOccurred'),
+      });
+    }
   };
+
+  // const onSubmit = async (data: ClassroomsProps) => {
+  //   try {
+  //     // Create request body with dtos array
+  //     const requestBody = {
+  //       dtos: data.classrooms.map((classroom, index) => ({
+  //         academicSystemId: data.academicSystem,
+  //         gradeId: data.educationalStage,
+  //         name: classroom.name,
+  //         nameEn: classroom.nameEn,
+  //         alias: classroom.alias || '',
+  //         aliasEn: classroom.aliasEn || '',
+  //         studentNumber: classroom.maxStudents,
+  //         note: classroom.note || '',
+  //         noteEn: classroom.noteEn || '',
+  //         image: uploadedFiles[index] ? uploadedFiles[index]!.name : '',
+  //       })),
+  //     };
+
+  //     await dispatch(createClassroom(requestBody as any))
+  //       .unwrap()
+  //       .then((res) => {
+  //         if (res.isSuccess) {
+  //           setShowPopupMessage({
+  //             show: true,
+  //             type: 'success',
+  //             message: t('grades.gradesAddedSuccessfully'),
+  //           });
+  //         } else {
+  //           setShowPopupMessage({
+  //             show: true,
+  //             type: 'error',
+  //             message: t('common.errorOccurred'),
+  //           });
+  //         }
+  //       });
+  //   } catch (error: any) {
+  //     setShowPopupMessage({
+  //       show: true,
+  //       type: 'error',
+  //       message: error?.message || t('common.errorOccurred'),
+  //     });
+  //   }
+  // };
 
   const handleAddClassroom = () => {
     setNumOfClassrooms((prev) => [...prev, prev.length + 1]);
@@ -141,7 +219,6 @@ export default function AddClassroom() {
                     onChange={(value) => {
                       const val = Array.isArray(value) ? value[0] : value;
                       field.onChange(val);
-                      setSelectedAcademicSystem(val);
                     }}
                     options={
                       Array.isArray(academicSystems)
@@ -180,7 +257,6 @@ export default function AddClassroom() {
                     onChange={(value) => {
                       const val = Array.isArray(value) ? value[0] : value;
                       field.onChange(val);
-                      setSelectedEducationalStage(val);
                     }}
                     options={
                       Array.isArray(educationalStages)
@@ -206,7 +282,7 @@ export default function AddClassroom() {
           <div className="rounded-md border p-4">
             <div className="flex flex-col-reverse items-end gap-1 md:flex-row md:items-start">
               <div className="flex-grow space-y-6">
-                {numOfClassrooms.map((num, index) => (
+                {numOfClassrooms.map((_, index) => (
                   <div key={index} className="rounded-lg border border-gray-200 p-4">
                     <div className="flex flex-col-reverse items-end gap-1 md:flex-row md:items-start">
                       <div className="flex flex-grow flex-col gap-4">
@@ -412,12 +488,12 @@ export default function AddClassroom() {
               type="button"
               variant="outline"
               onClick={() => navigate(-1)}
-              disabled={isSubmitting}
+              disabled={isCreating}
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting}>
-              {isSubmitting ? t('common.saving') : t('common.add')}
+            <Button type="submit" variant="primary" disabled={isCreating}>
+              {isCreating ? t('common.saving') : t('common.add')}
             </Button>
           </div>
         </form>

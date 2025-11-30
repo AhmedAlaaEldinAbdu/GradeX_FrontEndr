@@ -5,8 +5,9 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
-import type { Classroom, ClassroomQueryParams } from '@/types/classrooms';
+import type { Classroom, ClassroomQueryParams, CreateClassroomRequest } from '@/services/api/types/classrooms.types';
 import { getErrorMessage } from '@/lib/http';
+import type { ApiResponseModel } from '@/services/api';
 
 // ============================================================================
 // Types
@@ -154,6 +155,22 @@ export const fetchClassroomById = createAsyncThunk<Classroom, string>(
   }
 );
 
+// export const createClassroom = createAsyncThunk<ApiResponseModel<null>, CreateClassroomRequest>(
+export const createClassroom = createAsyncThunk<ApiResponseModel<null>, FormData>(
+  'classrooms/createClassroom',
+  async (requestData, { rejectWithValue }) => {
+    try {
+      const response = await classroomApiService.createClassroom(requestData);
+      return response;
+    } catch (error: any) {
+      if (error.isValidationError && error.validationErrors) {
+        return rejectWithValue({ validationErrors: error.validationErrors });
+      }
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 export const deleteClassroom = createAsyncThunk<string, string>(
   'classrooms/deleteClassroom',
   async (id, { rejectWithValue }) => {
@@ -239,6 +256,31 @@ const classroomsSlice = createSlice({
       .addCase(fetchClassroomById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      });
+
+    // Create Classroom
+    builder
+      .addCase(createClassroom.pending, (state) => {
+        state.isCreating = true;
+        state.error = null;
+        state.validationErrors = null;
+      })
+      .addCase(createClassroom.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
+        state.isCreating = false;
+        const { isSuccess, validationErrors } = action.payload;
+        if (!isSuccess && validationErrors) {
+          state.validationErrors = validationErrors as any;
+        }
+        // Note: API doesn't return created classrooms, need to refetch list after creation
+      })
+      .addCase(createClassroom.rejected, (state, action) => {
+        state.isCreating = false;
+        const payload = action.payload as any;
+        if (payload?.validationErrors) {
+          state.validationErrors = payload.validationErrors;
+        } else {
+          state.error = payload as string;
+        }
       });
 
     // Delete Classroom

@@ -13,7 +13,7 @@ import type {
     ClassroomQueryParams,
     CreateClassroomRequest,
     UpdateClassroomRequest,
-} from '@/types/classrooms';
+} from '@/services/api/types/classrooms.types';
 
 // ============================================================================
 // Classroom CRUD Operations
@@ -79,8 +79,8 @@ export async function getClassroomById(id: string): Promise<Classroom> {
 /**
  * Create new classroom(s)
  */
-export async function createClassroom(data: CreateClassroomRequest | FormData): Promise<Classroom[]> {
-    const response: AxiosResponse<ApiResponseModel<Classroom[]>> = await axiosClient.post(
+export async function createClassroom(data: CreateClassroomRequest | FormData): Promise<ApiResponseModel<null>> {
+    const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
         ClassroomEndpoints.addClassroom,
         data,
         {
@@ -109,8 +109,32 @@ export async function createClassroom(data: CreateClassroomRequest | FormData): 
         throw error;
     }
 
-    return response.data.value;
+    return response.data;
 }
+// export async function createClassroom(data: CreateClassroomRequest): Promise<ApiResponseModel<null>> {
+//     const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
+//         ClassroomEndpoints.addClassroom,
+//         data
+//     );
+
+//     // Check if the response indicates validation errors
+//     if (
+//         !response.data.isSuccess &&
+//         response.data.validationErrors &&
+//         response.data.validationErrors.length > 0
+//     ) {
+//         // Create a custom error that includes validation errors
+//         const error = new Error('Validation failed') as Error & {
+//             validationErrors: typeof response.data.validationErrors;
+//             isValidationError: boolean;
+//         };
+//         error.validationErrors = response.data.validationErrors;
+//         error.isValidationError = true;
+//         throw error;
+//     }
+
+//     return response.data;
+// }
 
 /**
  * Update an existing classroom
