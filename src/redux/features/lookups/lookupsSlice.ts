@@ -12,6 +12,7 @@ import type {
   Facility,
   Region,
   City,
+  SchoolStage,
 } from '@/services/api/types/lookup.types';
 import type { RootState, AppDispatch } from '@/redux/store/store';
 import type { LookupsState } from './lookupsTypes';
@@ -28,6 +29,7 @@ const initialState: LookupsState = {
   countries: [],
   regions: [],
   cities: [],
+  schoolStages: [],
 
   // Loading States
   isLoadingFeatures: false,
@@ -35,6 +37,7 @@ const initialState: LookupsState = {
   isLoadingCountries: false,
   isLoadingRegions: false,
   isLoadingCities: false,
+  isLoadingSchoolStages: false,
 
   // Error States
   featuresError: null,
@@ -42,16 +45,19 @@ const initialState: LookupsState = {
   countriesError: null,
   regionsError: null,
   citiesError: null,
+  schoolStagesError: null,
 
   // Initialization States
   isFeaturesInitialized: false,
   isFacilitiesInitialized: false,
   isCountriesInitialized: false,
+  isSchoolStagesInitialized: false,
 
   // Timestamps
   lastFetchedFeatures: null,
   lastFetchedFacilities: null,
   lastFetchedCountries: null,
+  lastFetchedSchoolStages: null,
 };
 
 // ============================================================================
@@ -245,6 +251,39 @@ export const fetchCitiesByRegion = createAsyncThunk<City[], string, { state: Roo
   }
 );
 
+/**
+ * Fetch school stages
+ * Includes cache check to avoid unnecessary API calls
+ */
+export const fetchSchoolStages = createAsyncThunk<
+  SchoolStage[],
+  { force?: boolean } | void,
+  { state: RootState }
+>('lookups/fetchSchoolStages', async (options, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const { lastFetchedSchoolStages, isSchoolStagesInitialized, schoolStages } = state.lookups;
+
+    // Check cache if not forced
+    if (!options?.force && isSchoolStagesInitialized) {
+      const now = Date.now();
+      const isCacheValid =
+        lastFetchedSchoolStages && now - lastFetchedSchoolStages < LOOKUP_CACHE_DURATION;
+
+      if (isCacheValid && schoolStages.length > 0) {
+        // Return cached data
+        return schoolStages;
+      }
+    }
+
+    // Fetch from API
+    const schoolStagesData = await lookupsApiService.getSchoolStages();
+    return schoolStagesData;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 // ============================================================================
 // Slice Definition
 // ============================================================================
@@ -262,12 +301,15 @@ const lookupsSlice = createSlice({
       state.countries = [];
       state.regions = [];
       state.cities = [];
+      state.schoolStages = [];
       state.isFeaturesInitialized = false;
       state.isFacilitiesInitialized = false;
       state.isCountriesInitialized = false;
+      state.isSchoolStagesInitialized = false;
       state.lastFetchedFeatures = null;
       state.lastFetchedFacilities = null;
       state.lastFetchedCountries = null;
+      state.lastFetchedSchoolStages = null;
     },
 
     /**
@@ -279,6 +321,7 @@ const lookupsSlice = createSlice({
       state.countriesError = null;
       state.regionsError = null;
       state.citiesError = null;
+      state.schoolStagesError = null;
     },
 
     /**
@@ -478,6 +521,27 @@ const lookupsSlice = createSlice({
       .addCase(fetchCitiesByRegion.rejected, (state, action) => {
         state.isLoadingCities = false;
         state.citiesError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch School Stages
+    // ========================================================================
+
+    builder
+      .addCase(fetchSchoolStages.pending, (state) => {
+        state.isLoadingSchoolStages = true;
+        state.schoolStagesError = null;
+      })
+      .addCase(fetchSchoolStages.fulfilled, (state, action) => {
+        state.isLoadingSchoolStages = false;
+        state.isSchoolStagesInitialized = true;
+        state.schoolStages = action.payload;
+        state.lastFetchedSchoolStages = Date.now();
+        state.schoolStagesError = null;
+      })
+      .addCase(fetchSchoolStages.rejected, (state, action) => {
+        state.isLoadingSchoolStages = false;
+        state.schoolStagesError = action.payload as string;
       });
   },
 });
