@@ -8,13 +8,16 @@ import ComputerLoginBanner from '@gradex/assets/illustrations/ComputerLoginBanne
 import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
+// import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useForm } from 'react-hook-form';
 import { LoginSchema, type LoginProps } from '@/validations/auth-validations';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { logger } from '@/lib/utils/logger';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const LoginPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { isRTL, direction } = useLanguage();
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -22,15 +25,6 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loginError, setLoginError] = useState<string | null>(null);
-
-  // Language toggle
-  const currentLang = i18n.language;
-  const isRTL = currentLang === 'ar';
-
-  //   const toggleLanguage = () => {
-  //     const newLang = currentLang === 'ar' ? 'en' : 'ar';
-  //     i18n.changeLanguage(newLang);
-  //   };
 
   const {
     register,
@@ -72,36 +66,13 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="flex min-h-screen" dir={direction}>
       {/* Left Side - Form */}
       <div className="flex w-full flex-col justify-between bg-white lg:w-1/2">
         {/* Language Toggle */}
-        {/* <div className={`flex justify-${isRTL ? 'start' : 'end'} p-6`}>
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:border-[#1FAD6C] hover:text-[#1FAD6C]"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M2 10H18M10 2C12.5 4.5 13.5 7.5 13.5 10C13.5 12.5 12.5 15.5 10 18C7.5 15.5 6.5 12.5 6.5 10C6.5 7.5 7.5 4.5 10 2Z"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-            </svg>
-            <span>{currentLang === 'ar' ? 'English' : 'العربية'}</span>
-          </button>
-        </div> */}
+        <div className={`flex ${isRTL ? 'justify-start' : 'justify-end'} p-6`}>
+          {/* <LanguageSwitcher /> */}
+        </div>
 
         {/* Form Container */}
         <div className="flex flex-1 items-center justify-center px-6 py-12">

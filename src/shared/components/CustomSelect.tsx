@@ -119,7 +119,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-500'
         } ${isOpen ? 'ring-2 ring-green-500' : ''} ${isRTL ? 'text-right' : 'text-left'} ${disabled ? 'cursor-not-allowed bg-gray-50 opacity-60' : 'bg-white hover:border-gray-400'}`}
       >
-        <div className="flex flex-row-reverse items-center justify-between gap-2">
+        <div
+          className={`flex flex-row${isRTL ? '-reverse' : ''} items-center justify-between gap-2`}
+        >
           {/* Display selected items */}
           <div className="flex-1 overflow-hidden">
             {isMulti ? (
@@ -194,8 +196,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder={t('common.search') || 'Search...'}
-                  className={`w-full rounded-md border border-gray-300 py-2 pl-4 pr-7 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
-                    isRTL ? 'text-right' : 'text-left'
+                  className={`w-full rounded-md border border-gray-300 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                    isRTL ? 'pl-4 pr-7 text-right' : 'pl-7 pr-4 text-left'
                   }`}
                 />
                 <svg

@@ -5,7 +5,7 @@ import EditUser from './components/EditUser';
 
 const EditUserPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

@@ -5,7 +5,7 @@ import EditNotification from './components/EditNotification';
 
 const EditNotificationPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

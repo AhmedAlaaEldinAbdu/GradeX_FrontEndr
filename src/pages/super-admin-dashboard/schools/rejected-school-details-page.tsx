@@ -89,7 +89,7 @@ const RejectedSchoolDetailsPage: React.FC = () => {
 
   if (!schoolData) {
     return (
-      <div className="pb-8" dir="rtl">
+      <div className="pb-8">
         <Breadcrumb items={breadcrumbItems} />
         <div className="text-center">
           <p className="text-gray-600">{t('schools.schoolNotFound')}</p>
@@ -100,7 +100,7 @@ const RejectedSchoolDetailsPage: React.FC = () => {
 
   return (
     <>
-      <div dir="rtl" className="pb-8">
+      <div className="pb-8">
         <Breadcrumb items={breadcrumbItems} />
 
         {/* Page Header with Rejected Badge */}

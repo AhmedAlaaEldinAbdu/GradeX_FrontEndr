@@ -5,7 +5,7 @@ import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
 const NotificationsPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Page Header */}
       <PageHeader
         title="sidebar.notifications"

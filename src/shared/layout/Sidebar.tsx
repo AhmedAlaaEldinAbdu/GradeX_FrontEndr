@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/hooks/useLanguage';
 import { UserRole, type UserRoleType } from '@gradex/constants';
 
 // Import icons
@@ -121,7 +122,7 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
     icon: <img src={EducationIcon} className="h-5 w-5" alt="Education" />,
     subItems: [
       { key: 'classrooms', path: '/classrooms' },
-      { key: 'subjects', path: '/subjects' }
+      { key: 'subjects', path: '/subjects' },
     ],
   },
   {
@@ -210,6 +211,7 @@ const getMenuItemsForDashboard = (dashboardType: UserRoleType): MenuItem[] => {
  */
 const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => {
   const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -277,7 +279,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         <div
           key={item.key}
           className={`mb-1 ${isExpanded ? 'rounded-lg bg-green-50' : ''}`}
-          style={isExpanded ? { borderRadius: '20px 0 0 20px' } : undefined}
+          style={
+            isExpanded ? { borderRadius: isRTL ? '20px 0 0 20px' : '0 20px 20px 0' } : undefined
+          }
         >
           <button
             onClick={() => toggleExpand(item.key, firstSubItemPath)}
@@ -286,7 +290,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                 ? 'bg-green-700 font-semibold text-white'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
-            style={{ borderRadius: '20px 0 0 20px' }}
+            style={{ borderRadius: isRTL ? '20px 0 0 20px' : '0 20px 20px 0' }}
           >
             <div className="flex items-center gap-3">
               <span
@@ -375,7 +379,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
               : 'text-gray-700 hover:bg-gray-50 hover:text-green-700'
           }`
         }
-        style={{ borderRadius: '20px 0 0 20px' }}
+        style={{ borderRadius: isRTL ? '20px 0 0 20px' : '0 20px 20px 0' }}
       >
         {({ isActive }) => (
           <>
@@ -405,7 +409,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       </div>
 
       {/* Navigation Menu */}
-      <nav className="scrollbar-thin flex-1 overflow-y-auto pl-4">
+      <nav className={`scrollbar-thin flex-1 overflow-y-auto ${isRTL ? 'pl-4' : 'pr-4'}`}>
         {menuItems.map(renderMenuItem)}
       </nav>
     </aside>

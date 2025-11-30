@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { ActionReducerMapBuilder, PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, User } from './authTypes';
-import type { UserRoleType } from '@gradex/constants';
+import { UserRole, type UserRoleType } from '@gradex/constants';
 import {
   tokenManager,
   type StoredUserData,
@@ -99,7 +99,8 @@ export const login = createAsyncThunk(
           id: Number(userData.id) || 0,
           name: userData.name,
           email: userData.email,
-          role: userData.role as UserRoleType,
+          // role: userData.role as UserRoleType,
+          role: UserRole.SCHOOL_ADMIN as UserRoleType, // TODO: Remove this line after backend integration
           isAuthenticated: true,
         },
         token: response.token,

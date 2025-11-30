@@ -203,7 +203,7 @@ const ViewSchoolPage: React.FC = () => {
   }
 
   return (
-    <div dir="rtl" className="pb-8">
+    <div className="pb-8">
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="mb-6 flex items-center justify-between">

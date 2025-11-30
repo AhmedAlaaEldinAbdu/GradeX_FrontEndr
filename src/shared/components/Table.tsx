@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface Column<T> {
   header: string;
@@ -17,12 +18,13 @@ interface TableProps<T> {
 
 function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
   const { t } = useTranslation();
+  const { direction, isRTL } = useLanguage();
 
   return (
     <div className="w-full overflow-x-auto">
       <table
-        className="min-w-full border-collapse border border-gray-300 text-right text-sm"
-        dir="rtl"
+        className={`min-w-full border-collapse border border-gray-300 text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+        dir={direction}
       >
         <thead>
           <tr className="border-b border-gray-200 bg-gray-100">
@@ -76,7 +78,9 @@ function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
           ))}
         </tbody>
       </table>
-      {data.length === 0 && <div className="py-8 text-center text-gray-500">لا توجد بيانات</div>}
+      {data.length === 0 && (
+        <div className="py-8 text-center text-gray-500">{t('common.noData')}</div>
+      )}
     </div>
   );
 }

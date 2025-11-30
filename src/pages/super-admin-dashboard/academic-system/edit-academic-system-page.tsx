@@ -5,7 +5,7 @@ import EditAcademicSystem from './components/EditAcademicSystem';
 
 const EditAcademicSystemPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

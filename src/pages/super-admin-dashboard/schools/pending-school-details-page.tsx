@@ -125,7 +125,7 @@ const PendingSchoolDetailsPage: React.FC = () => {
 
   if (!schoolData) {
     return (
-      <div className="pb-8" dir="rtl">
+      <div className="pb-8">
         <Breadcrumb items={breadcrumbItems} />
         <div className="text-center">
           <p className="text-gray-600">{t('schools.schoolNotFound')}</p>
@@ -163,7 +163,7 @@ const PendingSchoolDetailsPage: React.FC = () => {
         onConfirm={handleReject}
       />
 
-      <div dir="rtl" className="pb-8">
+      <div className="pb-8">
         <Breadcrumb items={breadcrumbItems} />
 
         {/* Action Buttons Section */}

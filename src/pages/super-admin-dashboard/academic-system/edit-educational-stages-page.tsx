@@ -5,7 +5,7 @@ import EditEducationalStages from './components/EditEducationalStages';
 
 const EditEducationalStagesPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[

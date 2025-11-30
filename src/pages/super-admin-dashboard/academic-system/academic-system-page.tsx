@@ -7,7 +7,7 @@ const AcademicSystemPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('AcademicSystem');
 
   return (
-    <div dir="rtl">
+    <div>
       {/* Page Header */}
       <PageHeader
         title="academicSystem.title"

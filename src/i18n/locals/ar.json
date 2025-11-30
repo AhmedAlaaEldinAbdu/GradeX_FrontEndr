@@ -167,7 +167,11 @@
     "securityMessage": "نحن نهتم بأمان بياناتك وخصوصيتها",
     "enterFullCode": "الرجاء إدخال الرمز كاملاً",
     "strongPassword": "كلمة مرور قوية وآمنة",
-    "createStrongPassword": "أنشئ كلمة مرور قوية لحماية حسابك"
+    "createStrongPassword": "أنشئ كلمة مرور قوية لحماية حسابك",
+    "passwordResetSuccess": "تم إعادة تعيين كلمة المرور بنجاح!",
+    "passwordResetSuccessMessage": "تم تحديث كلمة المرور الخاصة بك بنجاح. يمكنك الآن تسجيل الدخول باستخدام كلمة المرور الجديدة.",
+    "redirectingToLogin": "سيتم توجيهك إلى صفحة تسجيل الدخول خلال {{seconds}} ثواني...",
+    "goToLogin": "الذهاب إلى تسجيل الدخول"
   },
   "academicSystem": {
     "title": "النظام الأكاديمي",
@@ -285,6 +289,8 @@
     "phoneRequired": "رقم الهاتف مطلوب",
     "roleRequired": "الدور مطلوب",
     "countryRequired": "الدولة مطلوبة",
+    "roleNameRequired": "اسم الدور مطلوب",
+    "permissionsRequired": "الصلاحيات مطلوبة",
     "country": "الدولة",
     "selectCountry": "اختر الدولة",
     "validation": {

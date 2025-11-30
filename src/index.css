@@ -38,12 +38,20 @@
 }
 
 input[type='date'] {
-  direction: rtl;
-  text-align: right;
+  direction: inherit;
+  text-align: inherit;
 }
 
-input[type='date']::-webkit-calendar-picker-indicator {
+/* RTL-specific date input styles */
+[dir='rtl'] input[type='date']::-webkit-calendar-picker-indicator {
   position: absolute;
   left: 8px;
   right: auto;
+}
+
+/* LTR-specific date input styles */
+[dir='ltr'] input[type='date']::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 8px;
+  left: auto;
 }

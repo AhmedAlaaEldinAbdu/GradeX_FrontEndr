@@ -8,7 +8,7 @@ const StudentManagementPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb items={[{ label: t('studentManagement.students') }]} />
 

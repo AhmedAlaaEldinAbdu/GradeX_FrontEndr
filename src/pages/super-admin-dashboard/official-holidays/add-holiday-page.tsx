@@ -5,7 +5,7 @@ import { Breadcrumb } from '@/shared/layout/layout copy';
 
 const AddHolidayPage: React.FC = () => {
   return (
-    <div dir="rtl">
+    <div>
       {/* Breadcrumb */}
       <Breadcrumb
         items={[
