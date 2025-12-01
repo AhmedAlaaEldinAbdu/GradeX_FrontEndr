@@ -62,7 +62,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/classrooms/add"
+        path="/classrooms/add-classroom"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
@@ -72,7 +72,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/classrooms/edit/:id"
+        path="/classrooms/edit-classroom/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
