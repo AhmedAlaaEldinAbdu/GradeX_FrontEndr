@@ -24,7 +24,7 @@ import {
 import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import AddSystemTypePopup from '../popups/AddSystemTypePopup';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
-import { Button } from '@/shared/components/components';
+import { Button, Loading } from '@/shared/components/components';
 
 export default function EditAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -145,7 +145,7 @@ export default function EditAcademicSystem() {
 
         {isLoadingData ? (
           <div className="flex justify-center py-10">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent"></div>
+            <Loading />
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
