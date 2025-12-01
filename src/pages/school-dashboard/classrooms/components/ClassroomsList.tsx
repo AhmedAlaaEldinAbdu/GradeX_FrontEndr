@@ -157,7 +157,7 @@ export default function ClassroomsList() {
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => navigate(`/classrooms/edit/${row.id}`)}
+            onClick={() => navigate(`/classrooms/edit-classroom/${row.id}`)}
             className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
           >
             <img src={EditIcon} alt="Edit" className="h-4 w-4" />

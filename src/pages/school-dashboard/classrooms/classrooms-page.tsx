@@ -20,7 +20,7 @@ export default function ClassroomsPage() {
         actions={[
           {
             label: 'grades.addGrade',
-            to: '/classrooms/add',
+            to: '/classrooms/add-classroom',
             imgSrc: PlusIcon,
             imgClassName: 'w-[24px] h-[24px]',
           },
