@@ -70,7 +70,7 @@ export default function AddClassroom() {
   });
 
   const onSubmit = async (data: ClassroomsProps) => {
-    debugger
+
     try {
       const requestBody = {
         dtos: data.classrooms.map((classroom, index) => ({
