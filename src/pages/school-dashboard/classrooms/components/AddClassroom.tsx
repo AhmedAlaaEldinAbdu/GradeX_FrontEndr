@@ -70,27 +70,24 @@ export default function AddClassroom() {
   });
 
   const onSubmit = async (data: ClassroomsProps) => {
+    debugger
     try {
-      const formData = new FormData();
+      const requestBody = {
+        dtos: data.classrooms.map((classroom, index) => ({
+          academicSystemId: data.academicSystem,
+          gradeId: data.educationalStage,
+          name: classroom.name,
+          nameEn: classroom.nameEn,
+          alias: classroom.alias || '',
+          aliasEn: classroom.aliasEn || '',
+          studentNumber: classroom.maxStudents,
+          note: classroom.note || '',
+          noteEn: classroom.noteEn || '',
+          image: uploadedFiles[index] ? uploadedFiles[index]!.name : '',
+        })),
+      };
 
-      // Create dtos array
-      const dtos = data.classrooms.map((classroom, index) => ({
-        academicSystemId: data.academicSystem,
-        gradeId: data.educationalStage,
-        name: classroom.name,
-        nameEn: classroom.nameEn,
-        alias: classroom.alias || '',
-        aliasEn: classroom.aliasEn || '',
-        studentNumber: classroom.maxStudents,
-        note: classroom.note || '',
-        noteEn: classroom.noteEn || '',
-        image: uploadedFiles[index] ? uploadedFiles[index]!.name : '',
-      }));
-
-      // Append dtos as JSON string
-      formData.append('dtos', JSON.stringify(dtos));
-
-      await dispatch(createClassroom(formData as any))
+      await dispatch(createClassroom(requestBody as any))
         .unwrap()
         .then((res) => {
           if (res.isSuccess) {
@@ -115,50 +112,6 @@ export default function AddClassroom() {
       });
     }
   };
-
-  // const onSubmit = async (data: ClassroomsProps) => {
-  //   try {
-  //     // Create request body with dtos array
-  //     const requestBody = {
-  //       dtos: data.classrooms.map((classroom, index) => ({
-  //         academicSystemId: data.academicSystem,
-  //         gradeId: data.educationalStage,
-  //         name: classroom.name,
-  //         nameEn: classroom.nameEn,
-  //         alias: classroom.alias || '',
-  //         aliasEn: classroom.aliasEn || '',
-  //         studentNumber: classroom.maxStudents,
-  //         note: classroom.note || '',
-  //         noteEn: classroom.noteEn || '',
-  //         image: uploadedFiles[index] ? uploadedFiles[index]!.name : '',
-  //       })),
-  //     };
-
-  //     await dispatch(createClassroom(requestBody as any))
-  //       .unwrap()
-  //       .then((res) => {
-  //         if (res.isSuccess) {
-  //           setShowPopupMessage({
-  //             show: true,
-  //             type: 'success',
-  //             message: t('grades.gradesAddedSuccessfully'),
-  //           });
-  //         } else {
-  //           setShowPopupMessage({
-  //             show: true,
-  //             type: 'error',
-  //             message: t('common.errorOccurred'),
-  //           });
-  //         }
-  //       });
-  //   } catch (error: any) {
-  //     setShowPopupMessage({
-  //       show: true,
-  //       type: 'error',
-  //       message: error?.message || t('common.errorOccurred'),
-  //     });
-  //   }
-  // };
 
   const handleAddClassroom = () => {
     setNumOfClassrooms((prev) => [...prev, prev.length + 1]);
@@ -430,16 +383,46 @@ export default function AddClassroom() {
                             <Controller
                               name={`classrooms.${index}.maxStudents`}
                               control={control}
-                              render={({ field }) => (
-                                <Input
-                                  {...field}
-                                  type="number"
-                                  placeholder={t('grades.enterMaxStudents')}
-                                  className="w-full"
-                                  min="1"
-                                  id={`classrooms.${index}.maxStudents`}
-                                />
-                              )}
+                              render={({ field }) => {
+                                const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                                  const val = e.target.value;
+
+                                  if (/^[0-9]*$/.test(val)) {
+                                    field.onChange(val);
+                                  }
+                                };
+
+                                const handleKeyDown = (
+                                  e: React.KeyboardEvent<HTMLInputElement>
+                                ) => {
+                                  if (
+                                    !/[0-9]/.test(e.key) &&
+                                    ![
+                                      'Backspace',
+                                      'Delete',
+                                      'ArrowLeft',
+                                      'ArrowRight',
+                                      'Tab',
+                                      'Control',
+                                    ].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                };
+
+                                return (
+                                  <Input
+                                    {...field}
+                                    type="text"
+                                    placeholder={t('grades.enterMaxStudents')}
+                                    className="w-full"
+                                    id={`classrooms.${index}.maxStudents`}
+                                    inputMode="numeric"
+                                    onChange={handleChange}
+                                    onKeyDown={handleKeyDown}
+                                  />
+                                );
+                              }}
                             />
                           </FormField>
 

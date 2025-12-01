@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import PopupMessage from '@/shared/components/PopupMessage';
+import Loading from '@/shared/components/Loading';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';
 import Input from '@/shared/components/Input';
@@ -11,6 +12,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import CustomSelect from '@/shared/components/CustomSelect';
+import { fetchClassroomById, editClassroom } from '@/redux/features/classrooms/classroomsSlice';
+import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import Button from '@/shared/components/Button';
 import FileUpload from '@/shared/components/FileUpload';
 import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
@@ -25,27 +29,20 @@ export default function EditClassroom() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [existingFilePath, setExistingFilePath] = useState<string | null>(null);
   const [existingFileName, setExistingFileName] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
     type: 'success' | 'error';
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
-  // TODO: Replace with actual Redux selectors when slice is created
-  const academicSystems: any[] = [
-    { id: 'sys1', nameAr: 'العالمي', nameEn: 'International' },
-    { id: 'sys2', nameAr: 'الأمريكي', nameEn: 'American' },
-    { id: 'sys3', nameAr: 'البريطاني', nameEn: 'British' },
-  ];
-  const isLoadingAcademicSystems = false;
-
-  const educationalStages: any[] = [
-    { id: 'stage1', nameAr: 'المرحلة الابتدائية', nameEn: 'Primary School' },
-    { id: 'stage2', nameAr: 'المرحلة الإعدادية', nameEn: 'Middle School' },
-    { id: 'stage3', nameAr: 'المرحلة الثانوية', nameEn: 'High School' },
-  ];
-  const isLoadingEducationalStages = false;
+  // Redux state
+  const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
+  const isLoading = useAppSelector((state) => state.classrooms.isLoading);
+  const isUpdating = useAppSelector((state) => state.classrooms.isUpdating);
+  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
+  const isLoadingAcademicSystems = useAppSelector((state) => state.academicSystems.isLoading);
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const isLoadingEducationalStages = useAppSelector((state) => state.educationalStages.isLoading);
 
   const {
     control,
@@ -69,37 +66,84 @@ export default function EditClassroom() {
   });
 
   useEffect(() => {
-    // TODO: Fetch classroom data when Redux is ready
-    // dispatch(getClassroomById(id))
-    // For now, simulate loading
-    setTimeout(() => {
-      // Mock data - replace with actual data from Redux
-      reset({
-        academicSystem: 'system-id',
-        educationalStage: 'stage-id',
-        name: 'الصف الثاني الإعدادي',
-        nameEn: '2/ع',
-        alias: 'الثاني الإعدادي',
-        aliasEn: '2nd Middle',
-        note: 'صف دراسي للمرحلة الإعدادية',
-        noteEn: 'Middle school grade',
-        maxStudents: 30,
-      });
-      setExistingFilePath('/path/to/image.jpg');
-      setExistingFileName('class-image.jpg');
-      setIsLoading(false);
-    }, 500);
-  }, [id, reset]);
+    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000 }));
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
+    if (id) {
+      dispatch(fetchClassroomById(id));
+    }
+  }, [id, dispatch]);
 
-  const onSubmit = (data: EditClassroomProps) => {
-    // TODO: Implement submit when Redux is ready
-    console.log('Form data:', data);
-    console.log('Uploaded file:', uploadedFile);
-    setShowPopupMessage({
-      show: true,
-      type: 'success',
-      message: t('grades.gradeUpdatedSuccessfully'),
-    });
+  useEffect(() => {
+    if (currentClassroom) {
+      reset({
+        academicSystem: currentClassroom.academicSystemId,
+        educationalStage: currentClassroom.gradeId,
+        name: currentClassroom.name,
+        nameEn: currentClassroom.nameEn,
+        alias: currentClassroom.alias || '',
+        aliasEn: currentClassroom.aliasEn || '',
+        note: currentClassroom.note || '',
+        noteEn: currentClassroom.noteEn || '',
+        maxStudents: currentClassroom.studentNumber,
+      });
+
+      if (currentClassroom.imagePath) {
+        setExistingFilePath(currentClassroom.imagePath);
+        setExistingFileName(currentClassroom.imagePath.split('/').pop() || null);
+      }
+    }
+  }, [currentClassroom, reset]);
+
+  const onSubmit = async (data: EditClassroomProps) => {
+    if (!id) return;
+
+    try {
+      const formData = new FormData();
+
+      // Append classroom id
+      formData.append('id', id);
+
+      // Append classroom data
+      formData.append('academicSystemId', data.academicSystem);
+      formData.append('gradeId', data.educationalStage);
+      formData.append('name', data.name);
+      formData.append('nameEn', data.nameEn);
+      formData.append('alias', data.alias || '');
+      formData.append('aliasEn', data.aliasEn || '');
+      formData.append('note', data.note || '');
+      formData.append('noteEn', data.noteEn || '');
+      formData.append('studentNumber', data.maxStudents.toString());
+
+      if (uploadedFile) {
+        formData.append('image', uploadedFile);
+      } else if (existingFilePath) {
+        formData.append('imagePath', existingFilePath);
+      }
+
+      await dispatch(editClassroom({ data: formData }))
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess) {
+            setShowPopupMessage({
+              show: true,
+              type: 'success',
+              message: t('grades.gradeUpdatedSuccessfully'),
+            });
+          } else {
+            setShowPopupMessage({
+              show: true,
+              type: 'error',
+              message: t('common.errorOccurred'),
+            });
+          }
+        });
+    } catch (error: any) {
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: error.message || t('common.errorOccurred'),
+      });
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,9 +166,7 @@ export default function EditClassroom() {
   if (isLoading) {
     return (
       <Card>
-        <div className="flex items-center justify-center py-8">
-          <p className="text-gray-500">{t('common.loading')}</p>
-        </div>
+        <Loading />
       </Card>
     );
   }
@@ -183,7 +225,10 @@ export default function EditClassroom() {
                 render={({ field }) => (
                   <CustomSelect
                     value={field.value}
-                    onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                    onChange={(value) => {
+                      const val = Array.isArray(value) ? value[0] : value;
+                      field.onChange(val);
+                    }}
                     options={
                       Array.isArray(educationalStages)
                         ? educationalStages.map((stage) => ({
@@ -353,16 +398,39 @@ export default function EditClassroom() {
                     <Controller
                       name="maxStudents"
                       control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          type="number"
-                          placeholder={t('grades.enterMaxStudents')}
-                          className="w-full"
-                          min="1"
-                          id="maxStudents"
-                        />
-                      )}
+                      render={({ field }) => {
+                        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                          const val = e.target.value;
+
+                          if (/^[0-9]*$/.test(val)) {
+                            field.onChange(val);
+                          }
+                        };
+
+                        const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(
+                              e.key
+                            )
+                          ) {
+                            e.preventDefault();
+                          }
+                        };
+
+                        return (
+                          <Input
+                            {...field}
+                            type="text"
+                            placeholder={t('grades.enterMaxStudents')}
+                            className="w-full"
+                            id={`maxStudents`}
+                            inputMode="numeric"
+                            onChange={handleChange}
+                            onKeyDown={handleKeyDown}
+                          />
+                        );
+                      }}
                     />
                   </FormField>
 
@@ -395,12 +463,12 @@ export default function EditClassroom() {
               type="button"
               variant="outline"
               onClick={() => navigate(-1)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUpdating}
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting}>
-              {isSubmitting ? t('common.saving') : t('common.save')}
+            <Button type="submit" variant="primary" disabled={isSubmitting || isUpdating}>
+              {isSubmitting || isUpdating ? t('common.saving') : t('common.save')}
             </Button>
           </div>
         </form>

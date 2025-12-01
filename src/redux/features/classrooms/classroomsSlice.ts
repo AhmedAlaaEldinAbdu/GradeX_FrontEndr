@@ -155,8 +155,7 @@ export const fetchClassroomById = createAsyncThunk<Classroom, string>(
   }
 );
 
-// export const createClassroom = createAsyncThunk<ApiResponseModel<null>, CreateClassroomRequest>(
-export const createClassroom = createAsyncThunk<ApiResponseModel<null>, FormData>(
+export const createClassroom = createAsyncThunk<ApiResponseModel<null>, CreateClassroomRequest>(
   'classrooms/createClassroom',
   async (requestData, { rejectWithValue }) => {
     try {
@@ -170,6 +169,21 @@ export const createClassroom = createAsyncThunk<ApiResponseModel<null>, FormData
     }
   }
 );
+
+export const editClassroom = createAsyncThunk<
+  ApiResponseModel<null>,
+  { data: FormData }
+>('classrooms/editClassroom', async ({ data }, { rejectWithValue }) => {
+  try {
+    const response = await classroomApiService.updateClassroom(data);
+    return response;
+  } catch (error: any) {
+    if (error.isValidationError && error.validationErrors) {
+      return rejectWithValue({ validationErrors: error.validationErrors });
+    }
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const deleteClassroom = createAsyncThunk<string, string>(
   'classrooms/deleteClassroom',
@@ -275,6 +289,30 @@ const classroomsSlice = createSlice({
       })
       .addCase(createClassroom.rejected, (state, action) => {
         state.isCreating = false;
+        const payload = action.payload as any;
+        if (payload?.validationErrors) {
+          state.validationErrors = payload.validationErrors;
+        } else {
+          state.error = payload as string;
+        }
+      });
+
+    // Edit Classroom
+    builder
+      .addCase(editClassroom.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+        state.validationErrors = null;
+      })
+      .addCase(editClassroom.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
+        state.isUpdating = false;
+        const { isSuccess, validationErrors } = action.payload;
+        if (!isSuccess && validationErrors) {
+          state.validationErrors = validationErrors as any;
+        }
+      })
+      .addCase(editClassroom.rejected, (state, action) => {
+        state.isUpdating = false;
         const payload = action.payload as any;
         if (payload?.validationErrors) {
           state.validationErrors = payload.validationErrors;

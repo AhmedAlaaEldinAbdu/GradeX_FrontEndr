@@ -73,74 +73,33 @@ export async function getClassroomById(id: string): Promise<Classroom> {
         ClassroomEndpoints.getClassroomById(id)
     );
 
+    // API returns data in the 'data' property
+    if (response.data.data) {
+        return response.data.data;
+    }
+
+    // Fallback to 'value' property if 'data' is not available
     return response.data.value;
 }
 
 /**
  * Create new classroom(s)
  */
-export async function createClassroom(data: CreateClassroomRequest | FormData): Promise<ApiResponseModel<null>> {
+export async function createClassroom(data: CreateClassroomRequest): Promise<ApiResponseModel<null>> {
     const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
         ClassroomEndpoints.addClassroom,
-        data,
-        {
-            headers:
-                data instanceof FormData
-                    ? {
-                        'Content-Type': 'multipart/form-data',
-                    }
-                    : undefined,
-        }
+        data
     );
-
-    // Check if the response indicates validation errors
-    if (
-        !response.data.isSuccess &&
-        response.data.validationErrors &&
-        response.data.validationErrors.length > 0
-    ) {
-        // Create a custom error that includes validation errors
-        const error = new Error('Validation failed') as Error & {
-            validationErrors: typeof response.data.validationErrors;
-            isValidationError: boolean;
-        };
-        error.validationErrors = response.data.validationErrors;
-        error.isValidationError = true;
-        throw error;
-    }
 
     return response.data;
 }
-// export async function createClassroom(data: CreateClassroomRequest): Promise<ApiResponseModel<null>> {
-//     const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
-//         ClassroomEndpoints.addClassroom,
-//         data
-//     );
-
-//     // Check if the response indicates validation errors
-//     if (
-//         !response.data.isSuccess &&
-//         response.data.validationErrors &&
-//         response.data.validationErrors.length > 0
-//     ) {
-//         // Create a custom error that includes validation errors
-//         const error = new Error('Validation failed') as Error & {
-//             validationErrors: typeof response.data.validationErrors;
-//             isValidationError: boolean;
-//         };
-//         error.validationErrors = response.data.validationErrors;
-//         error.isValidationError = true;
-//         throw error;
-//     }
-
-//     return response.data;
-// }
 
 /**
  * Update an existing classroom
  */
-export async function updateClassroom(id: string, data: UpdateClassroomRequest | FormData): Promise<Classroom> {
-    const response: AxiosResponse<ApiResponseModel<Classroom>> = await axiosClient.put(
+export async function updateClassroom(data: UpdateClassroomRequest | FormData): Promise<ApiResponseModel<null>> {
+
+    const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
         ClassroomEndpoints.editClassroom,
         data,
         {
@@ -153,7 +112,9 @@ export async function updateClassroom(id: string, data: UpdateClassroomRequest |
         }
     );
 
-    return response.data.value;
+    // API returns data in the 'data' property
+    return response.data;
+
 }
 
 /**
