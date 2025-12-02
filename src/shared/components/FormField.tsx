@@ -24,7 +24,7 @@ const FormField: React.FC<FormFieldProps> = ({
   return (
     <div>
       <label
-        className={`mb-2 block text-right text-sm font-medium text-gray-700 ${required && 'required'}`}
+        className={`mb-2 block text-start text-sm font-medium text-gray-700 ${required && 'required'}`}
         htmlFor={htmlFor}
       >
         {label}
@@ -33,7 +33,7 @@ const FormField: React.FC<FormFieldProps> = ({
       </label>
       {children}
       {/* {error && <p className="mt-1 text-right text-xs text-red-600">{error}</p>} */}
-      <FormErrorMessage message={error}/>
+      <FormErrorMessage message={error} />
     </div>
   );
 };
