@@ -83,11 +83,11 @@ const Modal: React.FC<ModalProps> = ({
                 )}
               </div>
             )}
-            {/* Close Button - Absolute Right */}
+            {/* Close Button - Absolute positioned at start */}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="absolute left-4 text-gray-400 transition-colors hover:text-gray-600"
+                className="absolute start-4 text-gray-400 transition-colors hover:text-gray-600"
               >
                 <FaTimes className="text-xl" />
               </button>
