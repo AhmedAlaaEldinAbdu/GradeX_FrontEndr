@@ -49,7 +49,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="white"
-          className="pointer-events-none absolute left-1 top-1 hidden h-4 w-4 peer-checked:block"
+          className="pointer-events-none absolute start-1 top-1 hidden h-4 w-4 peer-checked:block"
         >
           <path
             fillRule="evenodd"
