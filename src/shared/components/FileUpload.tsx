@@ -36,7 +36,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   optional = false,
   multiple = false,
   error = false,
-  id = "",
+  id = '',
 }) => {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -156,9 +156,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   return (
     <div className="space-y-3">
-      <label className="mb-2 block text-right text-sm font-medium text-gray-700">
+      <label className="mb-2 block text-start text-sm font-medium text-gray-700">
         {label}
-        {required && <span className="mr-1 text-red-500">*</span>}
+        {required && <span className="me-1 text-red-500">*</span>}
         {optional && <span className="text-xs text-gray-400"> ({t('schools.optional')}) </span>}
       </label>
 
@@ -237,7 +237,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   </div>
 
                   {/* File Info */}
-                  <div className="flex-1 text-right">
+                  <div className="flex-1 text-start">
                     <p className="text-sm font-medium text-gray-900">{fileInfo.file.name}</p>
                     <p className="text-xs text-gray-500">{fileInfo.progress}%</p>
                   </div>
@@ -304,7 +304,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
               </div>
 
               {/* File Info */}
-              <div className="flex-1 text-right">
+              <div className="flex-1 text-start">
                 <p className="text-sm font-medium text-gray-900">{label}</p>
                 <p className="text-xs text-gray-500">{uploadProgress}%</p>
               </div>
@@ -316,7 +316,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 type="button"
                 onClick={handleEdit}
                 className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50"
-                title="تعديل"
+                title={t('common.edit')}
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -332,7 +332,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 type="button"
                 onClick={() => handleDelete()}
                 className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
-                title="حذف"
+                title={t('common.delete')}
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
