@@ -12,7 +12,7 @@ const FormErrorMessage: React.FC<FormErrorMessageProps> = ({ message }) => {
 
   return (
     <div className="flex">
-      <p className="mt-1 text-sm text-red-500">{t(message)}</p>
+      <p className="mt-1 text-start text-sm text-red-500">{t(message)}</p>
     </div>
   );
 };
