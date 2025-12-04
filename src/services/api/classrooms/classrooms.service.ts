@@ -85,10 +85,18 @@ export async function getClassroomById(id: string): Promise<Classroom> {
 /**
  * Create new classroom(s)
  */
-export async function createClassroom(data: CreateClassroomRequest): Promise<ApiResponseModel<null>> {
+export async function createClassroom(data: CreateClassroomRequest | FormData): Promise<ApiResponseModel<null>> {
     const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
         ClassroomEndpoints.addClassroom,
-        data
+        data,
+        {
+            headers:
+                data instanceof FormData
+                    ? {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                    : undefined,
+        }
     );
 
     return response.data;

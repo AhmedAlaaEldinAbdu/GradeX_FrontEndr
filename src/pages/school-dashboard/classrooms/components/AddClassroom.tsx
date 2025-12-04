@@ -70,24 +70,33 @@ export default function AddClassroom() {
   });
 
   const onSubmit = async (data: ClassroomsProps) => {
-
     try {
-      const requestBody = {
-        dtos: data.classrooms.map((classroom, index) => ({
-          academicSystemId: data.academicSystem,
-          gradeId: data.educationalStage,
-          name: classroom.name,
-          nameEn: classroom.nameEn,
-          alias: classroom.alias || '',
-          aliasEn: classroom.aliasEn || '',
-          studentNumber: classroom.maxStudents,
-          note: classroom.note || '',
-          noteEn: classroom.noteEn || '',
-          image: uploadedFiles[index] ? uploadedFiles[index]!.name : '',
-        })),
-      };
+      const formData = new FormData();
 
-      await dispatch(createClassroom(requestBody as any))
+      // Create array of all DTOs
+      const dtos = data.classrooms.map((classroom) => ({
+        academicSystemId: data.academicSystem,
+        gradeId: data.educationalStage,
+        name: classroom.name,
+        nameEn: classroom.nameEn,
+        alias: classroom.alias || '',
+        aliasEn: classroom.aliasEn || '',
+        studentNumber: classroom.maxStudents,
+        note: classroom.note || '',
+        noteEn: classroom.noteEn || '',
+      }));
+
+      // Append DtosJson FIRST as a single JSON array string
+      formData.append('DtosJson', JSON.stringify(dtos));
+
+      // Append all image files AFTER as separate Images entries
+      Object.values(uploadedFiles).forEach((file) => {
+        if (file) {
+          formData.append('Images', file);
+        }
+      });
+
+      await dispatch(createClassroom(formData as any))
         .unwrap()
         .then((res) => {
           if (res.isSuccess) {
