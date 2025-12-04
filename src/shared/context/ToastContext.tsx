@@ -11,6 +11,7 @@ interface ToastData {
   type?: ToastType;
   duration?: number;
   position?: ToastPosition;
+  isRaw?: boolean;
 }
 
 interface ToastContextProps {
@@ -46,6 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           type={toast.type}
           position={(toast.position ?? isRTL) ? 'top-left' : 'top-right'}
           duration={toast.duration}
+          isRaw={toast.isRaw}
         />
       )}
     </ToastContext.Provider>
