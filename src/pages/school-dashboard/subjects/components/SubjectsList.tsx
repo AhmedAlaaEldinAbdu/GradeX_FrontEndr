@@ -214,10 +214,14 @@ export default function SubjectsList() {
         message: 'subjects.subjectDeletedSuccessfully',
         type: 'success',
       });
-    } catch {
+    } catch (error) {
+      setShowDeletePopup(false);
+      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
+      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
       showToast({
-        message: 'common.errorOccurred',
+        message: errorMessage,
         type: 'error',
+        isRaw: isApiError,
       });
     }
   };
