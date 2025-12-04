@@ -6,7 +6,6 @@
 import { axiosClient } from '@/lib/http';
 import type { AxiosResponse } from 'axios';
 import { SubjectEndpoints } from '../endpoints/subject-endpoints';
-import type { ApiResponseModel } from '../config';
 import type {
   Subject,
   SubjectListResponse,
@@ -141,13 +140,16 @@ export async function updateSubject(id: string, data: UpdateSubjectRequest): Pro
  * Delete a subject
  */
 export async function deleteSubject(id: string): Promise<{ success: boolean; message: string }> {
-  const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.delete(
-    SubjectEndpoints.deleteSubject(id)
-  );
+  const response: AxiosResponse<{
+    data: string | null;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.delete(SubjectEndpoints.deleteSubject(id));
 
   return {
     success: response.data.isSuccess,
-    message: response.data.value || 'Subject deleted successfully',
+    message: response.data.message || 'Subject deleted successfully',
   };
 }
 

@@ -173,7 +173,12 @@ export const deleteSubject = createAsyncThunk<string, string>(
   'subjects/deleteSubject',
   async (id, { rejectWithValue }) => {
     try {
-      await subjectApiService.deleteSubject(id);
+      const result = await subjectApiService.deleteSubject(id);
+
+      if (!result.success) {
+        return rejectWithValue(result.message);
+      }
+
       return id;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));

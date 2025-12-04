@@ -6,6 +6,7 @@ interface ToastMessageProps {
   type?: 'success' | 'error' | 'warning' | 'info';
   duration?: number;
   position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+  isRaw?: boolean;
 }
 
 export default function ToastMessage({
@@ -13,6 +14,7 @@ export default function ToastMessage({
   type = 'success',
   duration = 3000,
   position,
+  isRaw = false,
 }: ToastMessageProps) {
   const { t, i18n } = useTranslation();
   const [visible, setVisible] = useState(true);
@@ -114,7 +116,7 @@ export default function ToastMessage({
       className={`fixed z-50 flex max-w-[400px] items-center gap-2 rounded-xl border p-4 shadow-md transition-all duration-300 ${current.bg} ${current.border} ${current.text} ${finalPosition === 'top-right' ? 'right-4 top-4' : finalPosition === 'top-left' ? 'left-4 top-4' : finalPosition === 'bottom-right' ? 'bottom-4 right-4' : 'bottom-4 left-4'} `}
     >
       <span>{current.icon}</span>
-      <span className="font-medium">{t(`${message}`)}</span>
+      <span className="font-medium">{isRaw ? message : t(`${message}`)}</span>
     </div>
   );
 }

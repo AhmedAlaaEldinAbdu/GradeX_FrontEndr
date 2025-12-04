@@ -59,7 +59,7 @@ export default function DeletePopup({
       >
         <button
           onClick={handleClose}
-          className="absolute left-3 top-2 text-xl text-gray-400 hover:text-gray-600"
+          className="absolute start-3 top-2 text-xl text-gray-400 hover:text-gray-600"
         >
           ✕
         </button>
