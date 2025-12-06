@@ -88,3 +88,27 @@ export interface FlattenedBook {
   materialId: string;
   materialName: string;
 }
+
+// ============================================================================
+// Create/Update Book Request Types
+// ============================================================================
+
+export interface CreateBookRequest {
+  name: string;
+  nameEn?: string;
+  code: string;
+  price: number;
+  priceView?: number;
+  totalQuantity: number;
+  packageType: number;
+  number?: number;
+  gradeId: string;
+  materialId: string;
+  fileName?: string;
+  filePath?: string;
+  file?: File;
+}
+
+export interface UpdateBookRequest extends CreateBookRequest {
+  id: string;
+}
