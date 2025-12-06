@@ -1,0 +1,67 @@
+import { mixed, number, object, string, type InferType } from 'yup';
+
+export const AddBookSchema = object({
+  restorePreviousCurriculum: string().oneOf(['yes', 'no']).default('no'),
+  lkSchoolStageId: string()
+    .required('books.validation.gradeRequired')
+    .typeError('books.validation.gradeRequired'),
+  materialId: string()
+    .required('books.validation.subjectRequired')
+    .typeError('books.validation.subjectRequired'),
+  name: string()
+    .required('books.validation.bookNameRequired')
+    .typeError('books.validation.bookNameRequired'),
+  nameEn: string()
+    .required('books.validation.bookNameRequired')
+    .typeError('books.validation.bookNameRequired'),
+  code: string()
+    .required('books.validation.bookCodeRequired')
+    .typeError('books.validation.bookCodeRequired'),
+  packageType: string()
+    .oneOf(['1', '2'], 'books.validation.packageTypeRequired')
+    .required('books.validation.packageTypeRequired'),
+  quantity: number()
+    .required('books.validation.quantityRequired')
+    .positive('books.validation.quantityMustBePositive')
+    .integer('books.validation.quantityMustBeInteger')
+    .typeError('books.validation.quantityRequired'),
+  price: number()
+    .required('books.validation.priceRequired')
+    .positive('books.validation.priceMustBePositive')
+    .typeError('books.validation.priceRequired'),
+  image: mixed().optional(),
+});
+
+export const EditBookSchema = object({
+  lkSchoolStageId: string()
+    .required('books.validation.gradeRequired')
+    .typeError('books.validation.gradeRequired'),
+  materialId: string()
+    .required('books.validation.subjectRequired')
+    .typeError('books.validation.subjectRequired'),
+  name: string()
+    .required('books.validation.bookNameRequired')
+    .typeError('books.validation.bookNameRequired'),
+  nameEn: string()
+    .required('books.validation.bookNameRequired')
+    .typeError('books.validation.bookNameRequired'),
+  code: string()
+    .required('books.validation.bookCodeRequired')
+    .typeError('books.validation.bookCodeRequired'),
+  packageType: string()
+    .oneOf(['1', '2'], 'books.validation.packageTypeRequired')
+    .required('books.validation.packageTypeRequired'),
+  quantity: number()
+    .required('books.validation.quantityRequired')
+    .positive('books.validation.quantityMustBePositive')
+    .integer('books.validation.quantityMustBeInteger')
+    .typeError('books.validation.quantityRequired'),
+  price: number()
+    .required('books.validation.priceRequired')
+    .positive('books.validation.priceMustBePositive')
+    .typeError('books.validation.priceRequired'),
+  image: mixed().optional(),
+});
+
+export type AddBookProps = InferType<typeof AddBookSchema>;
+export type EditBookProps = InferType<typeof EditBookSchema>;
