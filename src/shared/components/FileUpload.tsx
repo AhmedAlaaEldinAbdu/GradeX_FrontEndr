@@ -273,8 +273,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
         </div>
       )}
 
-      {/* Single File Preview Section */}
-      {!multiple && fileName && uploadProgress > 0 && (
+      {/* Single File Preview Section - Only show if no fileInfoList items */}
+      {!multiple && fileName && uploadProgress > 0 && fileInfoList.length === 0 && (
         <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
