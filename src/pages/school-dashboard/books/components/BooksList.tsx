@@ -144,14 +144,8 @@ export default function BooksList() {
       className: 'text-center',
     },
     {
-      header: 'books.status',
-      accessor: (row) => (
-        <span
-          className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatusBadgeColor(row.status)}`}
-        >
-          {getStatusLabel(row.status)}
-        </span>
-      ),
+      header: 'books.bookCode',
+      accessor: (row) => <span>{row.code || '-'}</span>,
       headerClassName: 'min-w-[100px]',
       className: 'text-center',
     },
@@ -174,6 +168,46 @@ export default function BooksList() {
             </div>
           )}
         </div>
+      ),
+      headerClassName: 'min-w-[100px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.status',
+      accessor: (row) => (
+        <span
+          className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatusBadgeColor(row.status)}`}
+        >
+          {getStatusLabel(row.status)}
+        </span>
+      ),
+      headerClassName: 'min-w-[100px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.totalQuantity',
+      accessor: (row) => <span>{row.totalQuantity ?? 0}</span>,
+      headerClassName: 'min-w-[100px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.remainingQuantity',
+      accessor: (row) => <span>{row.remainingQuantity ?? 0}</span>,
+      headerClassName: 'min-w-[100px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.soldQuantity',
+      accessor: (row) => <span>{row.soldQuantity ?? 0}</span>,
+      headerClassName: 'min-w-[100px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.price',
+      accessor: (row) => (
+        <span>
+          {row.price ?? 0} {t('books.currency')}
+        </span>
       ),
       headerClassName: 'min-w-[100px]',
       className: 'text-center',
