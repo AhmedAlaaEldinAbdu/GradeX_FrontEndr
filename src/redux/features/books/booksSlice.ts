@@ -10,7 +10,14 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 import { bookApiService } from '@/services/api/books/books.service';
-import type { BookGrade, BookQueryParams, FlattenedBook, BookStatus } from '@/types/books';
+import type {
+  BookGrade,
+  BookQueryParams,
+  FlattenedBook,
+  BookStatus,
+  CreateBookRequest,
+  Book,
+} from '@/types/books';
 import { getErrorMessage } from '@/lib/http';
 
 // ============================================================================
@@ -42,6 +49,7 @@ export interface BooksState {
 
   // Loading States
   isLoading: boolean;
+  isCreating: boolean;
   isDeleting: boolean;
 
   // Error States
@@ -91,6 +99,7 @@ const initialState: BooksState = {
 
   // Loading States
   isLoading: false,
+  isCreating: false,
   isDeleting: false,
 
   // Error States
@@ -168,6 +177,23 @@ export const deleteBook = createAsyncThunk<string, string>(
   }
 );
 
+export const addBook = createAsyncThunk<Book, CreateBookRequest>(
+  'books/addBook',
+  async (data, { rejectWithValue }) => {
+    try {
+      const result = await bookApiService.createBook(data);
+
+      if (!result.success) {
+        return rejectWithValue(result.message);
+      }
+
+      return result.data as Book;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 // ============================================================================
 // Slice Definition
 // ============================================================================
@@ -237,6 +263,20 @@ const booksSlice = createSlice({
       })
       .addCase(deleteBook.rejected, (state, action) => {
         state.isDeleting = false;
+        state.error = action.payload as string;
+      });
+
+    // Add Book
+    builder
+      .addCase(addBook.pending, (state) => {
+        state.isCreating = true;
+        state.error = null;
+      })
+      .addCase(addBook.fulfilled, (state) => {
+        state.isCreating = false;
+      })
+      .addCase(addBook.rejected, (state, action) => {
+        state.isCreating = false;
         state.error = action.payload as string;
       });
   },
