@@ -1,7 +1,13 @@
 import { axiosClient } from '@/lib/http';
 import type { AxiosResponse } from 'axios';
 import { BookEndpoints } from '../endpoints/book-endpoints';
-import type { BookListResponse, BookQueryParams, FlattenedBook } from '@/types/books';
+import type {
+  BookListResponse,
+  BookQueryParams,
+  FlattenedBook,
+  CreateBookRequest,
+  Book,
+} from '@/types/books';
 
 /**
  * Get list of books with pagination and filters
@@ -96,6 +102,46 @@ export async function deleteBook(id: string): Promise<{ success: boolean; messag
   };
 }
 
+/**
+ * Create a new book
+ */
+export async function createBook(
+  data: CreateBookRequest
+): Promise<{ success: boolean; message: string; data?: Book }> {
+  const formData = new FormData();
+  formData.append('Name', data.name);
+  formData.append('Code', data.code);
+  formData.append('Price', String(data.price));
+  formData.append('PriceView', String(data.priceView ?? 1));
+  formData.append('TotalQuantity', String(data.totalQuantity));
+  formData.append('PackageType', String(data.packageType));
+  formData.append('Number', String(data.number ?? 0));
+  formData.append('GradeId', data.gradeId);
+  formData.append('MaterialId', data.materialId);
+  formData.append('FileName', data.fileName ?? '');
+  formData.append('FilePath', data.filePath ?? '');
+  if (data.file) {
+    formData.append('File', data.file);
+  }
+
+  const response: AxiosResponse<{
+    data: Book | null;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.post(BookEndpoints.addBook, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return {
+    success: response.data.isSuccess,
+    message: response.data.message || 'Book created successfully',
+    data: response.data.data || undefined,
+  };
+}
+
 // ============================================================================
 // Export All Services
 // ============================================================================
@@ -104,6 +150,7 @@ export const bookApiService = {
   getBooks,
   flattenBooksForDisplay,
   deleteBook,
+  createBook,
 };
 
 export default bookApiService;
