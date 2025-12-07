@@ -19,7 +19,7 @@ import type {
 } from '@/validations/official-holidays-validations';
 import AddFixedHolidayForm from './AddFixedHolidayForm';
 import AddOfficialHolidayForm from './AddOfficialHolidayForm';
-import PopupMessage from '@/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 

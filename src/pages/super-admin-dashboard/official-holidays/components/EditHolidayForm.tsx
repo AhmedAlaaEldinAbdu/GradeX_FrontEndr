@@ -22,7 +22,7 @@ import type {
 } from '@/validations/official-holidays-validations';
 import EditFixedHolidayForm from './EditFixedHolidayForm';
 import EditOfficialHolidayForm from './EditOfficialHolidayForm';
-import PopupMessage from '@/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import Loading from '@/shared/components/Loading';

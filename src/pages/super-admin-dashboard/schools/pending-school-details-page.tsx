@@ -7,7 +7,7 @@ import Button from '@gradex/shared/components/Button';
 import SchoolForm from './components/SchoolForm';
 import EditRequestPopup from './popups/EditRequestPopup';
 import RejectSchoolPopup from './popups/RejectSchoolPopup';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import type { SchoolFormData } from './types/school.types';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';

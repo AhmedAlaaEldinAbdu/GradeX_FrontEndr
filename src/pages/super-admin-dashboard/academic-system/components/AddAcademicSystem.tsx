@@ -5,7 +5,7 @@ import Card from '@/shared/components/Card';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
-import PopupMessage from '@/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import MultiSelectTagInput from '@/shared/components/MultiSelectTagInput';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';

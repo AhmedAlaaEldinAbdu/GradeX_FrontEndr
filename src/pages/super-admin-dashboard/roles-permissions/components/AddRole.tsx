@@ -15,7 +15,7 @@ import {
 import { permissionsApiService } from '@gradex/services/api';
 import type { PermissionGroup as APIPermissionGroup } from '@gradex/services/api/types/permissions.types';
 import Loading from '@gradex/shared/components/Loading';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { useRoleForm, type RoleFormData } from '../hooks/useRoleForm';
 import FormField from '@gradex/shared/components/FormField';

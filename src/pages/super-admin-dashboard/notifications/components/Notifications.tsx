@@ -11,7 +11,7 @@ import EditIcon from '@gradex/assets/icons/Edit.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 

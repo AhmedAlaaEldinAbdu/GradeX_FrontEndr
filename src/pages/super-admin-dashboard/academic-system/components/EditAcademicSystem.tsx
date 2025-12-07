@@ -3,7 +3,7 @@ import Card from '@/shared/components/Card';
 import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
-import PopupMessage from '@/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import MultiSelectTagInput from '@/shared/components/MultiSelectTagInput';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm, type Resolver, type SubmitHandler } from 'react-hook-form';

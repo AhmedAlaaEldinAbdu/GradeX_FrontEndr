@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import StepIndicator from '@gradex/shared/components/StepIndicator';
 import Button from '@gradex/shared/components/Button';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BasicInfoStep from './BasicInfoStep';
 import AddressStep from './AddressStep';
 import ContactInfoStep from './ContactInfoStep';

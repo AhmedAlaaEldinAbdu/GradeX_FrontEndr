@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import MultiSelectTagInput from '@gradex/shared/components/MultiSelectTagInput';
 import FormField from '@gradex/shared/components/FormField';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import type { MultiSelectOption } from '@gradex/shared/components/MultiSelectTagInput';
 import { NotificationSchema } from '@gradex/validations/notifications-validations';

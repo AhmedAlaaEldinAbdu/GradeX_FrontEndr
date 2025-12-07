@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
 import { Controller, FormProvider } from 'react-hook-form';
-import PopupMessage from '@gradex/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import FormField from '@gradex/shared/components/FormField';
 import Input from '@gradex/shared/components/Input';

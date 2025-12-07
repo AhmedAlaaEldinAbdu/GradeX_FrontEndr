@@ -3,7 +3,7 @@ import Card from '@/shared/components/Card';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
-import PopupMessage from '@/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import Loading from '@/shared/components/Loading';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';

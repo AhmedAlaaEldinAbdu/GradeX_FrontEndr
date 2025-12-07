@@ -16,7 +16,7 @@ import {
 import { permissionsApiService } from '@gradex/services/api/permissions/permissions.service';
 import type { PermissionGroup } from '@gradex/services/api/types/permissions.types';
 import { useToast } from '@/shared/context/ToastContext';
-import PopupMessage from '@/shared/components/PopupMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
