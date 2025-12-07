@@ -164,7 +164,7 @@ export default function DropdownMenuSchoolsAction({
     <div className="relative inline-block text-left">
       <ActionsDropdown
         actions={actions.filter((action) => action?.visible?.includes(selectedTab))}
-        dropdownClassName="absolute left-0 z-10 mt-2 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+        dropdownClassName="absolute z-10 mt-2 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
       />
       <EditRequestPopup
         open={showEditRequestPopup}
