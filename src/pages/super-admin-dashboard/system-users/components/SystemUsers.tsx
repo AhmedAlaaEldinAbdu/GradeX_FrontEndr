@@ -172,7 +172,7 @@ export default function SystemUsers() {
             to={`edit-user/${row.id}`}
             className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
           >
-            <img src={EditIcon} alt="Edit" />
+            <img src={EditIcon} alt="Edit" className='h-4 w-4' />
           </Link>
           <button
             onClick={() => {
@@ -182,7 +182,7 @@ export default function SystemUsers() {
             disabled={isDeleting}
             className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
           >
-            <img src={TrashIcon} alt="Delete" />
+            <img src={TrashIcon} alt="Delete" className='h-4 w-4' />
           </button>
         </div>
       ),
