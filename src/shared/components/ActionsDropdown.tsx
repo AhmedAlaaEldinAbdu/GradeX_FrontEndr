@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import DotsIcon from '@gradex/assets/icons/Dots.svg';
+import i18n from '@/i18n';
 
 export interface Action {
   id: string;
@@ -25,8 +26,8 @@ export default function ActionsDropdown({
   actions,
   triggerIcon = DotsIcon,
   triggerClassName = 'rounded p-1 hover:bg-gray-100',
-  dropdownClassName = 'absolute left-0 z-10 mt-2 w-max min-w-[7rem] max-w-[10rem] rounded-lg border border-gray-200 bg-white p-1 shadow-lg',
-  position = 'left',
+  dropdownClassName = `absolute z-10 mt-2 w-max min-w-[7rem] max-w-[10rem] ${i18n.language === "ar" ? "max-w-[10rem]" : "max-w-[11rem]"} rounded-lg border border-gray-200 bg-white p-1 shadow-lg`,
+  // position = 'left',
   onOpen,
   onClose,
 }: ActionsDropdownProps) {
@@ -73,7 +74,7 @@ export default function ActionsDropdown({
     return null;
   }
 
-  const positionClass = position === 'right' ? 'right-0' : 'left-0';
+  const positionClass = i18n.language === "ar" ? "left-0" : "right-0";
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
@@ -95,9 +96,8 @@ export default function ActionsDropdown({
               key={action.id}
               onClick={() => handleActionClick(action)}
               disabled={action.disabled}
-              className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-right transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                action.color || 'text-gray-700 hover:bg-gray-100'
-              }`}
+              className={`flex w-full items-center gap-2 rounded-md px-3 py-2 ${i18n.language === "ar" ? "text-right" : "text-left"} transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${action.color || 'text-gray-700 hover:bg-gray-100'
+                }`}
               type="button"
             >
               <img src={action.icon} alt={`${action.label} icon`} className="h-5 w-5" />
