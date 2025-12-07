@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
-import DeletePopup from '@/shared/components/DeletePopup';
+import DeletePopup from '@/shared/popups/DeletePopup';
 import PopupMessage from '@/shared/components/PopupMessage';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';

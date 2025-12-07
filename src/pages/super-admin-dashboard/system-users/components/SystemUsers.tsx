@@ -11,7 +11,7 @@ import DataTable, {
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
-import DeletePopup from '@gradex/shared/components/DeletePopup';
+import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import type { User } from '@gradex/services/api/types/users.types';
 import {

@@ -6,7 +6,7 @@ import type { AppDispatch } from '@gradex/redux/store/store';
 import i18n from '@/i18n';
 import Card from '@/shared/components/Card';
 import EmptyState from '@/shared/components/EmptyState';
-import DeletePopup from '@/shared/components/DeletePopup';
+import DeletePopup from '@/shared/popups/DeletePopup';
 import HolidayTimeline from './HolidayTimeline';
 import FixedHolidayCard from './FixedHolidayCard';
 import type { FixedHoliday, OfficialHoliday } from '@/types/officialHolidays';

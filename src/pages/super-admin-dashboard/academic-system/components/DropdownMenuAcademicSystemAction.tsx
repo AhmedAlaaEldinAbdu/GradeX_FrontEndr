@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import DeletePopup from '@/shared/components/DeletePopup';
+import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';

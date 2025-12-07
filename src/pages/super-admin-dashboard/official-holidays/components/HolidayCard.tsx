@@ -8,7 +8,7 @@ import CheckIcon from '@gradex/assets/icons/Check.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import EyeIcon from '@gradex/assets/icons/Eye.svg';
-import DeletePopup from '@gradex/shared/components/DeletePopup';
+import DeletePopup from '@/shared/popups/DeletePopup';
 import AttachmentViewerPopup from '../popups/AttachmentViewerPopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { ActionsDropdown, type Action } from '@/shared/components/components';
