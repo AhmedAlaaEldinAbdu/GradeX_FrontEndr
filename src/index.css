@@ -37,10 +37,20 @@
   }
 }
 
-input[type='date'] {
+/* input[type='date'] {
   direction: inherit;
   text-align: inherit;
+} */
+html[lang="ar"] input[type="date"] {
+  direction: rtl;
+  text-align: right;
 }
+
+html[lang="en"] input[type="date"] {
+  direction: ltr;
+  text-align: left;
+}
+
 
 /* RTL-specific date input styles */
 [dir='rtl'] input[type='date']::-webkit-calendar-picker-indicator {
