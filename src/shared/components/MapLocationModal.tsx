@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
-import Modal from './Modal';
+import Modal from '../popups/Modal';
 import Button from './Button';
 import { logger } from '@/lib/utils/logger';
 
