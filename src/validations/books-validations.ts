@@ -20,6 +20,22 @@ export const AddBookSchema = object({
   packageType: string()
     .oneOf(['1', '2'], 'books.validation.packageTypeRequired')
     .required('books.validation.packageTypeRequired'),
+  setQuantity: number().when('packageType', {
+    is: '2',
+    then: (schema) =>
+      schema
+        .required('books.validation.setQuantityRequired')
+        .positive('books.validation.setQuantityMustBePositive')
+        .integer('books.validation.setQuantityMustBeInteger'),
+    otherwise: (schema) => schema.optional(),
+  }),
+  priceView: string()
+    .oneOf(['1', '2'])
+    .when('packageType', {
+      is: '2',
+      then: (schema) => schema.required('books.validation.priceViewRequired'),
+      otherwise: (schema) => schema.optional(),
+    }),
   quantity: number()
     .required('books.validation.quantityRequired')
     .positive('books.validation.quantityMustBePositive')
@@ -51,6 +67,22 @@ export const EditBookSchema = object({
   packageType: string()
     .oneOf(['1', '2'], 'books.validation.packageTypeRequired')
     .required('books.validation.packageTypeRequired'),
+  setQuantity: number().when('packageType', {
+    is: '2',
+    then: (schema) =>
+      schema
+        .required('books.validation.setQuantityRequired')
+        .positive('books.validation.setQuantityMustBePositive')
+        .integer('books.validation.setQuantityMustBeInteger'),
+    otherwise: (schema) => schema.optional(),
+  }),
+  priceView: string()
+    .oneOf(['1', '2'])
+    .when('packageType', {
+      is: '2',
+      then: (schema) => schema.required('books.validation.priceViewRequired'),
+      otherwise: (schema) => schema.optional(),
+    }),
   quantity: number()
     .required('books.validation.quantityRequired')
     .positive('books.validation.quantityMustBePositive')
