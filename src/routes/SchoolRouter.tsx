@@ -13,6 +13,7 @@ import AddSubjectPage from '@/pages/school-dashboard/subjects/add-subject-page';
 import EditSubjectPage from '@/pages/school-dashboard/subjects/edit-subject-page';
 import BooksPage from '@/pages/school-dashboard/books/books-page';
 import AddBookPage from '@/pages/school-dashboard/books/add-book-page';
+import EditBookPage from '@/pages/school-dashboard/books/edit-book-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -129,6 +130,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AddBookPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/books/edit/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditBookPage />
             </MainLayout>
           </ProtectedRoute>
         }
