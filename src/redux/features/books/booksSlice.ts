@@ -16,6 +16,7 @@ import type {
   FlattenedBook,
   BookStatus,
   CreateBookRequest,
+  UpdateBookRequest,
   Book,
 } from '@/types/books';
 import { getErrorMessage } from '@/lib/http';
@@ -35,6 +36,9 @@ export interface BooksState {
   // Data
   bookGrades: BookGrade[];
   flattenedBooks: FlattenedBook[];
+  currentBook:
+    | (FlattenedBook & { packageType?: number; priceView?: number; number?: number })
+    | null;
 
   // Pagination
   pagination: {
@@ -50,6 +54,7 @@ export interface BooksState {
   // Loading States
   isLoading: boolean;
   isCreating: boolean;
+  isUpdating: boolean;
   isDeleting: boolean;
 
   // Error States
@@ -85,6 +90,7 @@ const initialState: BooksState = {
   // Data
   bookGrades: [],
   flattenedBooks: [],
+  currentBook: null,
 
   // Pagination
   pagination: {
@@ -100,6 +106,7 @@ const initialState: BooksState = {
   // Loading States
   isLoading: false,
   isCreating: false,
+  isUpdating: false,
   isDeleting: false,
 
   // Error States
@@ -182,6 +189,44 @@ export const addBook = createAsyncThunk<Book, CreateBookRequest>(
   async (data, { rejectWithValue }) => {
     try {
       const result = await bookApiService.createBook(data);
+
+      if (!result.success) {
+        return rejectWithValue(result.message);
+      }
+
+      return result.data as Book;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchBookById = createAsyncThunk<
+  FlattenedBook & { packageType?: number; priceView?: number; number?: number },
+  string
+>('books/fetchBookById', async (id, { rejectWithValue }) => {
+  try {
+    const result = await bookApiService.getBookById(id);
+
+    if (!result.success || !result.data) {
+      return rejectWithValue(result.message);
+    }
+
+    return result.data as FlattenedBook & {
+      packageType?: number;
+      priceView?: number;
+      number?: number;
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const updateBook = createAsyncThunk<Book, { id: string; data: UpdateBookRequest }>(
+  'books/updateBook',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const result = await bookApiService.updateBook(id, data);
 
       if (!result.success) {
         return rejectWithValue(result.message);
@@ -277,6 +322,37 @@ const booksSlice = createSlice({
       })
       .addCase(addBook.rejected, (state, action) => {
         state.isCreating = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch Book By ID
+    builder
+      .addCase(fetchBookById.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.currentBook = null;
+      })
+      .addCase(fetchBookById.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentBook = action.payload;
+      })
+      .addCase(fetchBookById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Update Book
+    builder
+      .addCase(updateBook.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(updateBook.fulfilled, (state) => {
+        state.isUpdating = false;
+        state.currentBook = null;
+      })
+      .addCase(updateBook.rejected, (state, action) => {
+        state.isUpdating = false;
         state.error = action.payload as string;
       });
   },
