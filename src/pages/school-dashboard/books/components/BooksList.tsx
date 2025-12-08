@@ -19,7 +19,7 @@ import type { FlattenedBook, BookStatus } from '@/types/books';
 
 const BOOK_STATUS_OPTIONS = [
   { value: '1', labelKey: 'books.available' },
-  { value: '0', labelKey: 'books.unavailable' },
+  { value: '2', labelKey: 'books.unavailable' },
 ];
 
 export default function BooksList() {
@@ -99,7 +99,7 @@ export default function BooksList() {
     switch (status) {
       case 1:
         return t('books.available');
-      case 0:
+      case 2:
         return t('books.unavailable');
       default:
         return '-';
@@ -110,7 +110,7 @@ export default function BooksList() {
     switch (status) {
       case 1:
         return 'bg-green-100 text-green-800';
-      case 0:
+      case 2:
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';

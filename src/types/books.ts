@@ -1,6 +1,6 @@
 export const BookStatus = {
   Active: 1,
-  Inactive: 0,
+  Inactive: 2,
 } as const;
 
 export type BookStatus = (typeof BookStatus)[keyof typeof BookStatus];
