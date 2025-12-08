@@ -14,7 +14,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import { fetchBooks, deleteBook as deleteBookAction } from '@/redux/features/books/booksSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
-import { fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import type { FlattenedBook, BookStatus } from '@/types/books';
 
 const BOOK_STATUS_OPTIONS = [
@@ -43,13 +43,13 @@ export default function BooksList() {
   const isDeleting = useAppSelector((state) => state.books.isDeleting);
 
   const subjects = useAppSelector((state) => state.subjects.subjects);
-  const schoolStages = useAppSelector((state) => state.lookups.schoolStages);
+  const grades = useAppSelector((state) => state.educationalStages.educationalStages);
   const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
-  const isLoadingSchoolStages = useAppSelector((state) => state.lookups.isLoadingSchoolStages);
+  const isLoadingGrades = useAppSelector((state) => state.educationalStages.isLoading);
 
   useEffect(() => {
     dispatch(fetchSubjects({ page: 1, limit: 100 }));
-    dispatch(fetchSchoolStages());
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -284,12 +284,12 @@ export default function BooksList() {
           onChange={(value) =>
             setSelectedSchoolStageId(Array.isArray(value) ? (value[0] ?? '') : value)
           }
-          options={schoolStages.map((stage) => ({
-            value: stage.id,
-            label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
+          options={grades.map((grade) => ({
+            value: grade.id,
+            label: currentLang === 'ar' ? grade.nameAr : grade.nameEn,
           }))}
-          placeholder={isLoadingSchoolStages ? t('common.loading') : t('books.educationalStage')}
-          disabled={isLoadingSchoolStages}
+          placeholder={isLoadingGrades ? t('common.loading') : t('books.educationalStage')}
+          disabled={isLoadingGrades}
           maxHeight="200px"
         />
       ),
