@@ -802,7 +802,10 @@
     "remainingQuantity": "الكمية المتبقية",
     "bookImage": "صورة الكتاب",
     "coverImage": "صورة الغلاف",
+    "uploadBook": "رفع الكتاب",
+    "bookFile": "ملف الكتاب",
     "uploadBookImage": "اضغط لرفع صورة الكتاب",
+    "uploadBookPdf": "اضغط لرفع ملف الكتاب",
     "addAnotherBook": "إضافة كتاب آخر",
     "addedBooks": "الكتب المضافة",
     "booksAddedSuccessfully": "تم إضافة الكتب بنجاح",
@@ -816,6 +819,16 @@
     "selectEducationalStage": "اختر المرحلة التعليمية",
     "packageIndividual": "فردي",
     "packageSet": "مجموعة",
+    "setQuantity": "عدد المجموعة",
+    "enterSetQuantity": "أدخل عدد المجموعة",
+    "priceView": "عرض سعر الكتاب",
+    "priceViewOptions": {
+      "individual": "فردي",
+      "set": "مجموعه"
+    },
+    "total": "الإجمالي",
+    "stock": "المخزون",
+    "bookPrice": "سعر الكتاب",
     "currency": "ريال",
     "validation": {
       "bookNameRequired": "اسم الكتاب مطلوب",
@@ -828,6 +841,10 @@
       "quantityMustBePositive": "الكمية يجب أن تكون رقم موجب",
       "quantityMustBeInteger": "الكمية يجب أن تكون رقم صحيح",
       "packageTypeRequired": "نوع الحزمة مطلوب",
+      "setQuantityRequired": "عدد المجموعة مطلوب",
+      "setQuantityMustBePositive": "عدد المجموعة يجب أن يكون رقم موجب",
+      "setQuantityMustBeInteger": "عدد المجموعة يجب أن يكون رقم صحيح",
+      "priceViewRequired": "عرض سعر الكتاب مطلوب",
       "requiredList": "قائمة الكتب مطلوبة",
       "atLeastOne": "يجب إضافة كتاب واحد على الأقل"
     }

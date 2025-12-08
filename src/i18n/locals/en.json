@@ -803,7 +803,10 @@
     "remainingQuantity": "Remaining Quantity",
     "bookImage": "Book Image",
     "coverImage": "Cover Image",
+    "uploadBook": "Upload Book",
+    "bookFile": "Book File",
     "uploadBookImage": "Click to upload book image",
+    "uploadBookPdf": "Click to upload book PDF",
     "addAnotherBook": "Add Another Book",
     "addedBooks": "Added Books",
     "booksAddedSuccessfully": "Books added successfully",
@@ -817,6 +820,16 @@
     "selectEducationalStage": "Select Educational Stage",
     "packageIndividual": "Individual Package",
     "packageSet": "Set Package",
+    "setQuantity": "Set Quantity",
+    "enterSetQuantity": "Enter set quantity",
+    "priceView": "Display Book Price",
+    "priceViewOptions": {
+      "individual": "Individual",
+      "set": "Set"
+    },
+    "total": "Total",
+    "stock": "Stock",
+    "bookPrice": "Book Price",
     "currency": "SAR",
     "validation": {
       "bookNameRequired": "Book name is required",
@@ -829,6 +842,10 @@
       "quantityMustBePositive": "Quantity must be a positive number",
       "quantityMustBeInteger": "Quantity must be an integer",
       "packageTypeRequired": "Package type is required",
+      "setQuantityRequired": "Set quantity is required",
+      "setQuantityMustBePositive": "Set quantity must be a positive number",
+      "setQuantityMustBeInteger": "Set quantity must be an integer",
+      "priceViewRequired": "Price view option is required",
       "requiredList": "Books list is required",
       "atLeastOne": "At least one book must be added"
     }
