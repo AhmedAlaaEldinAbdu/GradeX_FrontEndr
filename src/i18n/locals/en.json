@@ -801,6 +801,8 @@
     "enterTotalQuantity": "Enter total quantity",
     "soldQuantity": "Sold Quantity",
     "remainingQuantity": "Remaining Quantity",
+    "openBook": "Open book file",
+    "noBookFile": "No book file available",
     "bookImage": "Book Image",
     "coverImage": "Cover Image",
     "uploadBook": "Upload Book",

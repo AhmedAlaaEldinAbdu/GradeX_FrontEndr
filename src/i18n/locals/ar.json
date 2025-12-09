@@ -800,6 +800,8 @@
     "enterTotalQuantity": "أدخل الكمية الإجمالية",
     "soldQuantity": "الكمية المباعة",
     "remainingQuantity": "الكمية المتبقية",
+    "openBook": "فتح ملف الكتاب",
+    "noBookFile": "لا يوجد ملف للكتاب",
     "bookImage": "صورة الكتاب",
     "coverImage": "صورة الغلاف",
     "uploadBook": "رفع الكتاب",
