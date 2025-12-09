@@ -530,11 +530,14 @@ export default function AddBook() {
                     <Input
                       {...field}
                       type="number"
+                      min={0}
                       placeholder={t('books.enterSetQuantity')}
                       className="w-full"
                       id="setQuantity"
                       value={field.value ?? ''}
-                      onChange={(e) => field.onChange(Number(e.target.value) || undefined)}
+                      onChange={(e) =>
+                        field.onChange(Math.max(0, Number(e.target.value)) || undefined)
+                      }
                     />
                   )}
                 />
@@ -581,10 +584,11 @@ export default function AddBook() {
                   <Input
                     {...field}
                     type="number"
+                    min={0}
                     placeholder={t('books.enterTotalQuantity')}
                     className="w-full"
                     id="quantity"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={(e) => field.onChange(Math.max(0, Number(e.target.value)))}
                   />
                 )}
               />
@@ -604,10 +608,11 @@ export default function AddBook() {
                   <Input
                     {...field}
                     type="number"
+                    min={0}
                     placeholder={t('books.enterPrice')}
                     className="w-full"
                     id="price"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={(e) => field.onChange(Math.max(0, Number(e.target.value)))}
                   />
                 )}
               />
