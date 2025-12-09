@@ -75,6 +75,11 @@
     "approved": "موافقة",
     "errorOccurred": "حدث خطأ",
     "error": "خطأ",
+    "file": "ملف",
+    "filePreview": "معاينة الملف",
+    "fileLoadError": "تعذر تحميل الملف",
+    "openFile": "فتح الملف",
+    "openInNewTab": "فتح في علامة تبويب جديدة",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",

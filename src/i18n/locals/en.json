@@ -75,6 +75,11 @@
     "approved": "Approved",
     "errorOccurred": "An error occurred",
     "error": "Error",
+    "file": "File",
+    "filePreview": "File Preview",
+    "fileLoadError": "Unable to load file",
+    "openFile": "Open File",
+    "openInNewTab": "Open in new tab",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
