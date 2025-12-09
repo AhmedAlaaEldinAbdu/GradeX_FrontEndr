@@ -7,6 +7,7 @@ import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
 import BookIcon from '@gradex/assets/icons/Book.svg';
+import FileViewer from '@/shared/components/FileViewer';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -34,6 +35,11 @@ export default function BooksList() {
   const [selectedMaterialId, setSelectedMaterialId] = useState('');
   const [selectedSchoolStageId, setSelectedSchoolStageId] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [showFileViewer, setShowFileViewer] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<{
+    filePath: string | null;
+    fileName: string;
+  } | null>(null);
 
   const { showToast } = useToast();
 
@@ -150,23 +156,30 @@ export default function BooksList() {
       className: 'text-center',
     },
     {
-      header: 'books.bookImage',
+      header: 'books.book',
       accessor: (row) => (
         <div className="flex justify-center">
-          {row.filePath ? (
+          <button
+            onClick={() => {
+              if (row.filePath) {
+                setSelectedFile({ filePath: row.filePath, fileName: row.fileName || row.name });
+                setShowFileViewer(true);
+              }
+            }}
+            className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
+              row.filePath
+                ? 'cursor-pointer bg-primary-50 hover:bg-primary-100'
+                : 'cursor-not-allowed bg-gray-100'
+            }`}
+            disabled={!row.filePath}
+            title={row.filePath ? t('books.openBook') : t('books.noBookFile')}
+          >
             <img
-              src={`${import.meta.env.VITE_API_BASE_URL?.replace('/api', '')}/${row.filePath}`}
+              src={BookIcon}
               alt={row.name}
-              className="h-12 w-12 rounded-lg object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = BookIcon;
-              }}
+              className={`h-6 w-6 ${row.filePath ? 'opacity-100' : 'opacity-50'}`}
             />
-          ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-              <img src={BookIcon} alt="No image" className="h-6 w-6 opacity-50" />
-            </div>
-          )}
+          </button>
         </div>
       ),
       headerClassName: 'min-w-[100px]',
@@ -374,6 +387,18 @@ export default function BooksList() {
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
             isProcessing={isDeleting}
+          />
+
+          {/* File Viewer Modal */}
+          <FileViewer
+            isOpen={showFileViewer}
+            onClose={() => {
+              setShowFileViewer(false);
+              setSelectedFile(null);
+            }}
+            filePath={selectedFile?.filePath || null}
+            fileName={selectedFile?.fileName}
+            title={selectedFile?.fileName}
           />
         </div>
       ) : null}
