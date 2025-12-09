@@ -120,9 +120,8 @@ export async function createBook(
   formData.append('GradeId', data.gradeId);
   formData.append('MaterialId', data.materialId);
   formData.append('FileName', data.fileName ?? '');
-  formData.append('FilePath', data.filePath ?? '');
   if (data.file) {
-    formData.append('File', data.file);
+    formData.append('FilePath', data.file);
   }
 
   const response: AxiosResponse<{
