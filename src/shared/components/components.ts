@@ -20,7 +20,7 @@ export { default as ActionsDropdown } from './ActionsDropdown';
 export { default as DataTable } from './DataTable';
 export { default as LanguageSwitcher } from './LanguageSwitcher';
 export { default as IconButton } from './IconButton';
-export { default as Image } from './Image';
+export { default as Image } from './CustomImage';
 export type { MultiSelectOption } from './MultiSelectTagInput';
 export type { CustomSelectOption } from './CustomSelect';
 export type { Action } from './ActionsDropdown';
