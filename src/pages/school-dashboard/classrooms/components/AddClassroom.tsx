@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import IconButton from '@/shared/components/IconButton';
 import Card from '@/shared/components/Card';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import { useEffect, useState } from 'react';
@@ -451,13 +451,12 @@ export default function AddClassroom() {
                       </div>
                       <div>
                         {numOfClassrooms.length > 1 && (
-                          <button
-                            type="button"
+                          <IconButton
+                            status="delete"
+                            variant="danger"
                             onClick={() => handleDeleteClassroom(index)}
-                            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
-                          >
-                            <img src={TrashIcon} alt="Delete" className="h-4 w-4" />
-                          </button>
+                            ariaLabel="Delete"
+                          />
                         )}
                       </div>
                     </div>

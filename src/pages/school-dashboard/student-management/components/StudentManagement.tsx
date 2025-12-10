@@ -4,8 +4,7 @@ import EmptyState from '@gradex/shared/components/EmptyState';
 import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
+import IconButton from '@/shared/components/IconButton';
 
 interface Student {
   id: number;
@@ -102,12 +101,16 @@ export default function StudentManagement() {
       header: 'common.actions',
       accessor: () => (
         <div className="flex items-center gap-2">
-          <button className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100">
-            <img src={EditIcon} alt="Edit" />
-          </button>
-          <button className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100">
-            <img src={TrashIcon} alt="Edit" />
-          </button>
+          <IconButton
+            status="edit"
+            variant="success"
+            ariaLabel="Edit"
+          />
+          <IconButton
+            status="delete"
+            variant="danger"
+            ariaLabel="Delete"
+          />
         </div>
       ),
       headerClassName: 'min-w-[150px]',

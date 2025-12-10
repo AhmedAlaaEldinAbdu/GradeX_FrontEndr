@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import IconButton from '@/shared/components/IconButton';
 import { deleteAcademicSystem } from '@/redux/features/academic-system/academicSystemSlice';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useAppSelector } from '@/hooks/useRedux';
@@ -58,19 +57,19 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
   return (
     <div className="relative inline-block text-left">
       <div className="flex items-center justify-center gap-2">
-        <button
+        <IconButton
+          status="edit"
+          variant="success"
           onClick={() => handleEdit()}
-          className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
-        >
-          <img src={EditIcon} alt="Edit" className="h-4 w-4" />
-        </button>
-        <button
+          ariaLabel="Edit"
+        />
+        <IconButton
+          status="delete"
+          variant="danger"
           onClick={() => setShowDeletePopup(true)}
-          className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
           disabled={isProcessing}
-        >
-          <img src={TrashIcon} alt="Delete" className="h-4 w-4" />
-        </button>
+          ariaLabel="Delete"
+        />
       </div>
       <DeletePopup
         open={showDeletePopup}

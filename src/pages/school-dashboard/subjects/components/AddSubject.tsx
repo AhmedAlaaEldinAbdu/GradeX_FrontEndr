@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import IconButton from '@/shared/components/IconButton';
 import Card from '@/shared/components/Card';
 import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
@@ -191,13 +191,13 @@ export default function AddSubject() {
                     </FormField>
                   </div>
                   {fields.length > 1 && (
-                    <button
-                      type="button"
+                    <IconButton
+                      status="delete"
+                      variant="danger"
                       onClick={() => handleRemoveSubject(index)}
-                      className="mb-1 rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
-                    >
-                      <img src={TrashIcon} alt="Delete" className="h-4 w-4" />
-                    </button>
+                      ariaLabel="Delete"
+                      className="mb-1"
+                    />
                   )}
                 </div>
               </div>

@@ -6,8 +6,7 @@ import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import Pagination from '@gradex/shared/components/Pagination';
 import NotificationsMuted from '@gradex/assets/icons/NotificationsMuted.svg';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
+import IconButton from '@/shared/components/IconButton';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
@@ -125,18 +124,18 @@ export default function Notifications() {
       header: 'notifications.operations',
       accessor: (row: NotificationItem) => (
         <div className="flex items-center justify-center gap-2">
-          <button
+          <IconButton
+            status="edit"
+            variant="success"
             onClick={() => navigate(`/notifications/edit-notification/${row.id}`)}
-            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
-          >
-            <img src={EditIcon} alt="Edit" />
-          </button>
-          <button
+            ariaLabel="Edit"
+          />
+          <IconButton
+            status="delete"
+            variant="danger"
             onClick={() => setShowDelete(true)}
-            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
-          >
-            <img src={TrashIcon} alt="Trash" />
-          </button>
+            ariaLabel="Delete"
+          />
         </div>
       ),
       headerClassName: 'min-w-[120px]',

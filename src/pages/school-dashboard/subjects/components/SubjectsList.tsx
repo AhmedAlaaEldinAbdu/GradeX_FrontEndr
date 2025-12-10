@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useToast } from '@/shared/context/ToastContext';
@@ -145,22 +144,22 @@ export default function SubjectsList() {
       header: 'common.actions',
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <button
+          <IconButton
+            status="edit"
+            variant="success"
             onClick={() => navigate(`/subjects/edit/${row.id}`)}
-            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
-          >
-            <img src={EditIcon} alt="Edit" className="h-4 w-4" />
-          </button>
-          <button
+            ariaLabel="Edit"
+          />
+          <IconButton
+            status="delete"
+            variant="danger"
             onClick={() => {
               setSelectedSubjectId(row.id);
               setShowDeletePopup(true);
             }}
-            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
             disabled={isDeleting}
-          >
-            <img src={TrashIcon} alt="Delete" className="h-4 w-4" />
-          </button>
+            ariaLabel="Delete"
+          />
         </div>
       ),
       headerClassName: 'min-w-[100px]',

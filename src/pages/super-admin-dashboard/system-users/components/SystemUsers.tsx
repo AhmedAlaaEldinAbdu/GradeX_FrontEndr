@@ -9,8 +9,7 @@ import DataTable, {
   type DataTableColumn,
 } from '@gradex/shared/components/DataTable';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import type { User } from '@gradex/services/api/types/users.types';
@@ -168,22 +167,23 @@ export default function SystemUsers() {
       header: 'common.actions',
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <Link
-            to={`edit-user/${row.id}`}
-            className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
-          >
-            <img src={EditIcon} alt="Edit" className='h-4 w-4' />
+          <Link to={`edit-user/${row.id}`}>
+            <IconButton
+              status="edit"
+              variant="success"
+              ariaLabel="Edit"
+            />
           </Link>
-          <button
+          <IconButton
+            status="delete"
+            variant="danger"
             onClick={() => {
               setSelectedUserId(row.id);
               setShowDeletePopup(true);
             }}
             disabled={isDeleting}
-            className="rounded-full bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
-          >
-            <img src={TrashIcon} alt="Delete" className='h-4 w-4' />
-          </button>
+            ariaLabel="Delete"
+          />
         </div>
       ),
       headerClassName: 'min-w-[100px]',
