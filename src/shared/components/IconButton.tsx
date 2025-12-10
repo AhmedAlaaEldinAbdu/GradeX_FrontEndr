@@ -46,7 +46,7 @@ const IconButton: React.FC<IconButtonProps> = ({
     status === 'add'
       ? variantClasses.success
       : status === 'edit'
-        ? variantClasses.default
+        ? variantClasses.success
         : status === 'delete'
           ? variantClasses.danger
           : '';
