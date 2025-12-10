@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import CustomImage from '../components/CustomImage';
 
 interface DeletePopupProps {
   open: boolean;
