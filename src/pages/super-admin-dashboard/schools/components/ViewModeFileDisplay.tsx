@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import CustomImage from '@/shared/components/CustomImage';
-import CustomImage from '@/shared/components/CustomImage';
 import { useTranslation } from 'react-i18next';
 import FormField from '@gradex/shared/components/FormField';
 
