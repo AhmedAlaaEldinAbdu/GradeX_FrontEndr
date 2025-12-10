@@ -28,6 +28,7 @@ import DiamondIcon from '@gradex/assets/icons/Diamond.svg';
 import FileIcon from '@gradex/assets/icons/File.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface SchoolFormProps {
   mode: 'add' | 'edit' | 'view';
@@ -142,28 +143,28 @@ const SchoolForm = ({
     {
       id: 1,
       step: 1,
-      icon: <img src={FileIcon} className="h-5 w-5" alt="Basic Info" />,
+      icon: <CustomImage src={FileIcon} className="h-5 w-5" alt="Basic Info" />,
       label: t('schools.basicInfo'),
       completed: currentStep > 1,
     },
     {
       id: 2,
       step: 2,
-      icon: <img src={PhoneIcon} className="h-5 w-5" alt="Contact" />,
+      icon: <CustomImage src={PhoneIcon} className="h-5 w-5" alt="Contact" />,
       label: t('schools.contactInfo'),
       completed: currentStep > 2,
     },
     {
       id: 3,
       step: 3,
-      icon: <img src={LocationIcon} className="h-5 w-5" alt="Address" />,
+      icon: <CustomImage src={LocationIcon} className="h-5 w-5" alt="Address" />,
       label: t('schools.address'),
       completed: currentStep > 3,
     },
     {
       id: 4,
       step: 4,
-      icon: <img src={DiamondIcon} className="h-5 w-5" alt="Facilities" />,
+      icon: <CustomImage src={DiamondIcon} className="h-5 w-5" alt="Facilities" />,
       label: t('schools.facilities'),
       completed: currentStep > 4,
     },

@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface AcademicDetailsPopupProps {
   open: boolean;
@@ -92,7 +93,7 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
                 {dummyData.eduStages?.map((stage) => (
                   <span className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-sm text-gray-700">
                   {stage}
-                    <img src={XmarkCircleIcon} className="cursor-pointer" alt="Xmark" />
+                    <CustomImage src={XmarkCircleIcon} className="cursor-pointer" alt="Xmark" />
                   </span>
                   ))}
               </span> */}

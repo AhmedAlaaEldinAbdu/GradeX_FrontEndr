@@ -26,6 +26,7 @@ import {
 } from '@gradex/redux/features/academic-system';
 import CustomSelect from '@/shared/components/CustomSelect';
 import i18n from '@/i18n';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface BasicInfoStepProps {
   onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -245,7 +246,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   {...field}
                   type="date"
                   placeholder={t('common.chooseDate')}
-                  icon={<img src={calendarIcon} alt="calendar" className="h-5 w-5" />}
+                  icon={<CustomImage src={calendarIcon} alt="calendar" className="h-5 w-5" />}
                   disabled={readOnly}
                   className={'text-end'}
                   id="foundationDate"

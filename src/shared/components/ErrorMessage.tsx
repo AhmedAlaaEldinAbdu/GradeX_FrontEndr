@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import CustomImage from '@/shared/components/CustomImage';
 
 type ErrorMessageProps = {
   /** i18n translation key OR raw string */
@@ -41,7 +42,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
       data-testid="error-message"
     >
       <div className="flex flex-col items-center gap-3">
-        {iconSrc && <img src={iconSrc} alt="error" className="h-12 w-12 opacity-80" />}
+        {iconSrc && <CustomImage src={iconSrc} alt="error" className="h-12 w-12 opacity-80" />}
         <div className="text-base font-semibold">{t(message)}</div>
         {details && <div className="text-sm opacity-80">{details}</div>}
         {onRetry && (

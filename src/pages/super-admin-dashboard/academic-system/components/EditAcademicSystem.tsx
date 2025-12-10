@@ -25,6 +25,7 @@ import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/acade
 import AddSystemTypePopup from '../popups/AddSystemTypePopup';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { Button, Loading } from '@/shared/components/components';
+import CustomImage from '@/shared/components/CustomImage';
 
 export default function EditAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -242,7 +243,7 @@ export default function EditAcademicSystem() {
                     type="button"
                     className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
                   >
-                    <img src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
+                    <CustomImage src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
                   </button>
                 </div>
               </div>

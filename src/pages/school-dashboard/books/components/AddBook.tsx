@@ -20,6 +20,7 @@ import type { FlattenedBook } from '@/types/books';
 import { AddBookSchema, type AddBookProps } from '@/validations/books-validations';
 import FileUpload from '@/shared/components/FileUpload';
 import DataTable, { type DataTableColumn } from '@/shared/components/DataTable';
+import CustomImage from '@/shared/components/CustomImage';
 
 // Package type options
 const PACKAGE_TYPES = [
@@ -257,7 +258,7 @@ export default function AddBook() {
       header: 'books.bookFile',
       accessor: (row) =>
         row.imagePreview ? (
-          <img src={BookIcon} alt={row.name} className="mx-auto h-8 w-8" />
+          <CustomImage src={BookIcon} alt={row.name} className="mx-auto h-8 w-8" />
         ) : (
           <span className="text-gray-400">-</span>
         ),

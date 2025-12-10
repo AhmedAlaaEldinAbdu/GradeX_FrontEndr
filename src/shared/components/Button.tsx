@@ -1,4 +1,5 @@
 import React from 'react';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'danger';
@@ -47,7 +48,7 @@ const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {icon && <span>{icon}</span>}
-      {imgSrc && <img src={imgSrc} alt="Btn Icon" className={`${imgClassName}`} />}
+      {imgSrc && <CustomImage src={imgSrc} alt="Btn Icon" className={`${imgClassName}`} />}
       <span>{children}</span>
     </button>
   );

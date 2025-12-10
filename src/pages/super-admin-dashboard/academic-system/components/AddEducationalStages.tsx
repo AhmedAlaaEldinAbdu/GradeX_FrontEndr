@@ -21,6 +21,7 @@ import { addEducationalStage } from '@/redux/features/educational-stages/educati
 import type { CreateEducationalStageRequest } from '@/services/api/types/educational-stages.types';
 import CustomSelect from '@/shared/components/CustomSelect';
 import { Button } from '@/shared/components/components';
+import CustomImage from '@/shared/components/CustomImage';
 
 export default function AddEducationalStages() {
   const { t, i18n } = useTranslation();
@@ -101,7 +102,7 @@ export default function AddEducationalStages() {
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => handleAddEducationalStages()}>
-              <img src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
+              <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
             </button>
           </div>
         </div>

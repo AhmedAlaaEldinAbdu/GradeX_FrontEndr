@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import CustomImage from '@/shared/components/CustomImage';
 import { useTranslation } from 'react-i18next';
 import type { FacilityDetails } from '../types/school.types';
 import FormField from '@/shared/components/FormField';
@@ -194,7 +195,7 @@ export default function AddFacilityDetailsPopup({
                 {/* Image Preview in View Mode */}
                 {readOnly && existingDetails?.imageUrl && (
                   <div className="mb-3">
-                    <img
+                    <CustomImage
                       src={
                         existingDetails.imageUrl.startsWith('http')
                           ? existingDetails.imageUrl

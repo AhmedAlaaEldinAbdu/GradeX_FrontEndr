@@ -6,7 +6,7 @@ type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> & {
   className?: string;
 };
 
-const Image: React.FC<ImageProps> = ({
+const CustomImage: React.FC<ImageProps> = ({
   src,
   alt,
   fallbackSrc,
@@ -32,4 +32,4 @@ const Image: React.FC<ImageProps> = ({
   );
 };
 
-export default Image;
+export default CustomImage;

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface FileInfo {
   file: File;
@@ -214,7 +215,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   {/* File Preview or Icon */}
                   <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
                     {fileInfo.preview ? (
-                      <img
+                      <CustomImage
                         src={fileInfo.preview}
                         alt="preview"
                         className="h-full w-full rounded-lg object-cover"
@@ -281,7 +282,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
               {/* File Preview or Icon */}
               <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
                 {filePreview ? (
-                  <img
+                  <CustomImage
                     src={filePreview}
                     alt="preview"
                     className="h-full w-full rounded-lg object-cover"
@@ -360,3 +361,5 @@ const FileUpload: React.FC<FileUploadProps> = ({
 };
 
 export default FileUpload;
+
+

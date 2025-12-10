@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
@@ -120,7 +121,7 @@ export default function ClassroomsList() {
       accessor: (row) => (
         <div className="flex items-center justify-center">
           {row.imagePath ? (
-            <img
+            <CustomImage
               src={row.imagePath}
               alt={currentLang === 'ar' ? row.name : row.nameEn}
               className="h-10 w-10 rounded-md object-cover"

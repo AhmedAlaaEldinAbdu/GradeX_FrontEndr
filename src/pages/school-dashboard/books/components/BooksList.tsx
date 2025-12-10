@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
@@ -173,7 +174,7 @@ export default function BooksList() {
             disabled={!row.filePath}
             title={row.filePath ? t('books.openBook') : t('books.noBookFile')}
           >
-            <img
+            <CustomImage
               src={BookIcon}
               alt={row.name}
               className={`h-6 w-6 ${row.filePath ? 'opacity-100' : 'opacity-50'}`}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import CustomImage from '@/shared/components/CustomImage';
 
 type NotFoundMessageProps = {
   /** i18n translation key OR raw text */
@@ -27,7 +28,7 @@ const NotFoundMessage: React.FC<NotFoundMessageProps> = ({
   return (
     <div className={['py-10 text-center text-gray-500 flex flex-col items-center gap-4', className].filter(Boolean).join(' ')}>
       {iconSrc && (
-        <img
+        <CustomImage
           src={iconSrc}
           alt={typeof display === 'string' ? display : 'not-found-icon'}
           className="mx-auto h-20 w-20 object-contain opacity-80"

@@ -18,6 +18,7 @@ import {
 } from '@/redux/features/official-holidays';
 import { useToast } from '@/shared/context/ToastContext';
 import AttachmentViewerPopup from '../popups/AttachmentViewerPopup';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface FixedHolidayCardProps {
   holiday: FixedHoliday;
@@ -104,7 +105,7 @@ export default function FixedHolidayCard({ holiday }: FixedHolidayCardProps) {
           <div className="flex w-full flex-col gap-2">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
-                <img src={CheckIcon} alt="Check" className="h-5 w-5" />
+                <CustomImage src={CheckIcon} alt="Check" className="h-5 w-5" />
                 <div className="flex gap-1 text-sm font-medium text-gray-800">
                   <span>{t('officialHolidays.dayShort')}:</span>
                   <span>{holiday.dayName}</span>

@@ -19,6 +19,7 @@ import { selectAcademicSystems } from '@gradex/redux/features/academic-system';
 import type { School } from '@gradex/services/api/types/school.types';
 import { Link } from 'react-router-dom';
 import Card from '@/shared/components/Card';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface DeletedSchoolsTabProps {
   filters?: {
@@ -191,12 +192,12 @@ export default function DeletedSchoolsTab({
           <div className="flex items-center justify-center gap-3">
             {row?.email && (
               <a href={`mailto:${row.email}`} className="cursor-pointer">
-                <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
+                <CustomImage src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
               </a>
             )}
             {row?.phoneNumber && (
               <a href={`tel:${row.phoneNumber}`} className="cursor-pointer">
-                <img src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
+                <CustomImage src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
               </a>
             )}
           </div>

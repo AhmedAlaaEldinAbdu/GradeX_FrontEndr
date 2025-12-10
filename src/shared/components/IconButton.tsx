@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from './Image';
+import Image from './CustomImage';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';

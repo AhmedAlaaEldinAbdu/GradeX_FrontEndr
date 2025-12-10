@@ -5,6 +5,7 @@ import Breadcrumb from '@gradex/shared/layout/Breadcrumb';
 import CopyIcon from '@gradex/assets/icons/Copy.svg';
 import SchoolForm from './components/SchoolForm';
 import { useClipboard } from '@/hooks/useClipboard';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface AddSchoolPageProps {
   showBreadcrumb?: boolean;
@@ -45,7 +46,7 @@ const AddSchoolPage: React.FC<AddSchoolPageProps> = ({ showBreadcrumb = true }) 
           aria-label={t('common.copyAdditionLink')}
         >
           <span className="inline-flex items-center gap-2">
-            <img src={CopyIcon} alt="" className="h-5 w-5" aria-hidden="true" />
+            <CustomImage src={CopyIcon} alt="" className="h-5 w-5" aria-hidden="true" />
             <span className="whitespace-nowrap">
               {isCopied ? t('common.copied') : t('common.copyAdditionLink')}
             </span>

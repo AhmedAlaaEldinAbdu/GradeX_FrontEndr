@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import CustomImage from '@/shared/components/CustomImage';
 import { useTranslation } from 'react-i18next';
 
 interface AttachmentViewerPopupProps {
@@ -100,7 +101,7 @@ export default function AttachmentViewerPopup({
         <div className="flex-1 overflow-auto p-6">
           {isImage ? (
             <div className="flex items-center justify-center">
-              <img
+              <CustomImage
                 src={fileUrl}
                 alt={displayFileName}
                 className="max-h-[60vh] max-w-full rounded-lg object-contain"

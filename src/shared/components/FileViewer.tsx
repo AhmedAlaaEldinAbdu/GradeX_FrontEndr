@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface FileViewerProps {
   isOpen: boolean;
@@ -99,7 +100,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent"></div>
             </div>
           )}
-          <img
+          <CustomImage
             src={fullUrl}
             alt={fileName || 'File preview'}
             className="max-h-[70vh] max-w-full rounded-lg object-contain"
@@ -171,3 +172,5 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
 };
 
 export default FileViewer;
+
+

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import CustomImage from '@/shared/components/CustomImage';
+import CustomImage from '@/shared/components/CustomImage';
 import { useTranslation } from 'react-i18next';
 import FormField from '@gradex/shared/components/FormField';
 
@@ -72,7 +74,7 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
                       onClick={() => handleImageClick(fileName)}
                     >
                       {isImage ? (
-                        <img
+                        <CustomImage
                           src={fileUrl}
                           alt={fileName}
                           className="h-full w-full object-cover transition-transform hover:scale-110"
@@ -185,7 +187,7 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
             </button>
 
             {/* Image */}
-            <img
+            <CustomImage
               src={selectedImage}
               alt="Preview"
               className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"

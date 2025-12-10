@@ -19,6 +19,7 @@ import { ClassroomsSchema, type ClassroomsProps } from '@/validations/classrooms
 import { createClassroom } from '@/redux/features/classrooms/classroomsSlice';
 import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import CustomImage from '@/shared/components/CustomImage';
 
 export default function AddClassroom() {
   const { t, i18n } = useTranslation();
@@ -466,7 +467,7 @@ export default function AddClassroom() {
               <div className="flex w-10">
                 <div className="w-full pt-1">
                   <button type="button" onClick={handleAddClassroom}>
-                    <img src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
+                    <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
                   </button>
                 </div>
               </div>

@@ -25,6 +25,7 @@ import AddSystemTypePopup from '../popups/AddSystemTypePopup';
 import { selectIsCreatingAcademicSystem } from '@/redux/features/academic-system';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import Button from '@/shared/components/Button';
+import CustomImage from '@/shared/components/CustomImage';
 
 export default function AddAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -120,7 +121,7 @@ export default function AddAcademicSystem() {
           <div className="text-xl font-bold text-gray-700">{t('academicSystem.title')}</div>
           <div className="flex items-center gap-3">
             <button onClick={() => handleAddAcademicSystem()}>
-              <img src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
+              <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
             </button>
           </div>
         </div>
@@ -246,7 +247,7 @@ export default function AddAcademicSystem() {
                     type="button"
                     className="rounded-full bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
                   >
-                    <img src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
+                    <CustomImage src={GreenPlusCircleIcon} alt="Plus" className="h-4 w-4" />
                   </button>
                 </div>
               </div>

@@ -13,6 +13,7 @@ import DeletePopup from '@/shared/popups/DeletePopup';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface NotificationItem {
   id: number;
@@ -112,7 +113,7 @@ export default function Notifications() {
       accessor: (row: NotificationItem) => (
         <div className="flex items-center justify-center">
           {row.hasAttachment ? (
-            <img src={PdfIcon} alt="PDF" className="mr-1 inline-block" />
+            <CustomImage src={PdfIcon} alt="PDF" className="mr-1 inline-block" />
           ) : (
             <span className="text-gray-400">-</span>
           )}

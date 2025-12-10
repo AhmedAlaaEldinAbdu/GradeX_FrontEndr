@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import CustomImage from '@/shared/components/CustomImage';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -118,7 +119,7 @@ export default function HolidayCard({
             }`}
           >
             {!isUpcomingHoliday(holiday.date) ? (
-              <img
+              <CustomImage
                 src={CheckIcon}
                 alt="Completed"
                 className="h-3 w-3 brightness-200 invert saturate-0 filter"

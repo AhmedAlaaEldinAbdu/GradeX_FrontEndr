@@ -21,6 +21,7 @@ import { Link } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import EmptyState from '@gradex/shared/components/EmptyState';
 import schoolIcon from '@gradex/assets/icons/School.svg';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface RegisteredSchoolsTabProps {
   filters?: {
@@ -218,12 +219,12 @@ export default function RegisteredSchoolsTab({
         <div className="flex items-center justify-center gap-3">
           {row?.email && (
             <a href={`mailto:${row.email}`} className="cursor-pointer">
-              <img src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
+              <CustomImage src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
             </a>
           )}
           {row?.phoneNumber && (
             <a href={`tel:${row.phoneNumber}`} className="cursor-pointer">
-              <img src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
+              <CustomImage src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
             </a>
           )}
         </div>

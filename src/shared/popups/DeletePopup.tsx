@@ -66,7 +66,7 @@ export default function DeletePopup({
 
         <div className="my-6 flex flex-col items-center gap-7 py-3">
           <div className="flex justify-center">
-            <img
+            <CustomImage
               src={iconSrc}
               alt="Delete Icon"
               className="h-[120px] w-[120px] lg:h-[150px] lg:w-[150px]"

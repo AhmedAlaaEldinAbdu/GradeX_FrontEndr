@@ -10,6 +10,7 @@ import GradeXLogo from '@/assets/identity/GradeX.svg';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
+import CustomImage from '@/shared/components/CustomImage';
 
 const VerifyOtpPage: React.FC = () => {
   const { t } = useTranslation();
@@ -263,13 +264,13 @@ const VerifyOtpPage: React.FC = () => {
       <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
         <div className="flex flex-col gap-24">
           <div className="flex items-center justify-center">
-            <img src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />
+            <CustomImage src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />
           </div>
           <div className="max-w-lg text-center">
             {/* Illustration - Security/Shield */}
             <div className="mb-8">
               <div className="mb-8">
-                <img src={EnterOTP} alt="Enter OTP Illustration" className="w-full" />
+                <CustomImage src={EnterOTP} alt="Enter OTP Illustration" className="w-full" />
               </div>
             </div>
 

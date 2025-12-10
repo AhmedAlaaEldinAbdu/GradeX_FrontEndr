@@ -1,4 +1,5 @@
 import React from 'react';
+import CustomImage from '@/shared/components/CustomImage';
 import Button from './Button';
 
 interface EmptyStateProps {
@@ -25,7 +26,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       <div className="mb-6 text-gray-300">
         {imgSrc ? (
           <div>
-            <img
+            <CustomImage
               src={imgSrc as string}
               alt="Empty State"
               className={`mx-auto max-w-xs ${blend ? 'mix-blend-luminosity' : ''}`}

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import DotsIcon from '@gradex/assets/icons/Dots.svg';
 import i18n from '@/i18n';
+import CustomImage from '@/shared/components/CustomImage';
 
 export interface Action {
   id: string;
@@ -86,7 +87,7 @@ export default function ActionsDropdown({
         aria-expanded={open}
         aria-haspopup="true"
       >
-        <img src={triggerIcon} alt="Options" className="h-6 w-6" />
+        <CustomImage src={triggerIcon} alt="Options" className="h-6 w-6" />
       </button>
 
       {open && (
@@ -100,7 +101,7 @@ export default function ActionsDropdown({
                 }`}
               type="button"
             >
-              <img src={action.icon} alt={`${action.label} icon`} className="h-5 w-5" />
+              <CustomImage src={action.icon} alt={`${action.label} icon`} className="h-5 w-5" />
               <span className="text-sm">{action.label}</span>
             </button>
           ))}
@@ -109,3 +110,4 @@ export default function ActionsDropdown({
     </div>
   );
 }
+

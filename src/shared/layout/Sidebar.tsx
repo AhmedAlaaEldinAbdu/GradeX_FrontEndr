@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { UserRole, type UserRoleType } from '@gradex/constants';
+import CustomImage from '@/shared/components/CustomImage';
 
 // Import icons
 import HomeIcon from '@gradex/assets/icons/Home.svg';
@@ -42,68 +43,68 @@ interface MenuItem {
 const getSuperAdminMenuItems = (): MenuItem[] => [
   {
     key: 'home',
-    icon: <img src={HomeIcon} className="h-5 w-5" alt="Home" />,
+    icon: <CustomImage src={HomeIcon} className="h-5 w-5" alt="Home" />,
     path: '/dashboard',
   },
   {
     key: 'academicSystem',
-    icon: <img src={EducationIcon} className="h-5 w-5" alt="Academic System" />,
+    icon: <CustomImage src={EducationIcon} className="h-5 w-5" alt="Academic System" />,
     path: '/academic-system',
   },
   {
     key: 'schools',
-    icon: <img src={SchoolRegularIcon} className="h-5 w-5" alt="Schools" />,
+    icon: <CustomImage src={SchoolRegularIcon} className="h-5 w-5" alt="Schools" />,
     path: '/schools',
   },
   {
     key: 'officialHolidays',
-    icon: <img src={BookIcon} className="h-5 w-5" alt="Official Holidays" />,
+    icon: <CustomImage src={BookIcon} className="h-5 w-5" alt="Official Holidays" />,
     path: '/official-holidays',
   },
   {
     key: 'marketing',
-    icon: <img src={PeopleRegularIcon} className="h-5 w-5" alt="Marketing" />,
+    icon: <CustomImage src={PeopleRegularIcon} className="h-5 w-5" alt="Marketing" />,
     path: '/marketing',
   },
   {
     key: 'employeesAdministration',
-    icon: <img src={ContactIcon} className="h-5 w-5" alt="Employees & Administration" />,
+    icon: <CustomImage src={ContactIcon} className="h-5 w-5" alt="Employees & Administration" />,
     subItems: [
       {
         key: 'rolesPermissions',
         path: '/employees-administration/roles-permissions',
-        icon: <img src={ContactIcon} className="h-5 w-5" alt="Roles & Permissions" />,
+        icon: <CustomImage src={ContactIcon} className="h-5 w-5" alt="Roles & Permissions" />,
       },
       {
         key: 'systemUsers',
         path: '/employees-administration/system-users',
-        icon: <img src={ContactIcon} className="h-5 w-5" alt="System Users" />,
+        icon: <CustomImage src={ContactIcon} className="h-5 w-5" alt="System Users" />,
       },
     ],
   },
   {
     key: 'reports',
-    icon: <img src={ReportsIcon} className="h-5 w-5" alt="Reports" />,
+    icon: <CustomImage src={ReportsIcon} className="h-5 w-5" alt="Reports" />,
     path: '/reports',
   },
   {
     key: 'tickets',
-    icon: <img src={TicketsIcon} className="h-5 w-5" alt="Tickets" />,
+    icon: <CustomImage src={TicketsIcon} className="h-5 w-5" alt="Tickets" />,
     path: '/tickets',
   },
   {
     key: 'notifications',
-    icon: <img src={NotificationIcon} className="h-5 w-5" alt="Notifications" />,
+    icon: <CustomImage src={NotificationIcon} className="h-5 w-5" alt="Notifications" />,
     path: '/notifications',
   },
   {
     key: 'messages',
-    icon: <img src={SettingsIcon} className="h-5 w-5" alt="Messages" />,
+    icon: <CustomImage src={SettingsIcon} className="h-5 w-5" alt="Messages" />,
     path: '/messages',
   },
   {
     key: 'settings',
-    icon: <img src={SettingsIcon} className="h-5 w-5" alt="Settings" />,
+    icon: <CustomImage src={SettingsIcon} className="h-5 w-5" alt="Settings" />,
     path: '/settings',
   },
 ];
@@ -114,12 +115,12 @@ const getSuperAdminMenuItems = (): MenuItem[] => [
 const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'home',
-    icon: <img src={HomeIcon} className="h-5 w-5" alt="Home" />,
+    icon: <CustomImage src={HomeIcon} className="h-5 w-5" alt="Home" />,
     path: '/dashboard',
   },
   {
     key: 'educationalStages',
-    icon: <img src={EducationIcon} className="h-5 w-5" alt="Education" />,
+    icon: <CustomImage src={EducationIcon} className="h-5 w-5" alt="Education" />,
     subItems: [
       { key: 'classrooms', path: '/classrooms' },
       { key: 'subjects', path: '/subjects' },
@@ -127,63 +128,63 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   },
   {
     key: 'books',
-    icon: <img src={BookIcon} className="h-5 w-5" alt="Books" />,
+    icon: <CustomImage src={BookIcon} className="h-5 w-5" alt="Books" />,
     path: '/books',
   },
   {
     key: 'teachingStaff',
-    icon: <img src={PeopleRegularIcon} className="h-5 w-5" alt="Teaching Staff" />,
+    icon: <CustomImage src={PeopleRegularIcon} className="h-5 w-5" alt="Teaching Staff" />,
     subItems: [{ key: 'teachingStaff', path: '/teaching-staff' }],
   },
   {
     key: 'academicCalendar',
-    icon: <img src={CalendarIcon} className="h-5 w-5" alt="Calendar" />,
+    icon: <CustomImage src={CalendarIcon} className="h-5 w-5" alt="Calendar" />,
     path: '/academic-calendar',
   },
   {
     key: 'studentManagement',
-    icon: <img src={StudentsIcon} className="h-5 w-5" alt="Students" />,
+    icon: <CustomImage src={StudentsIcon} className="h-5 w-5" alt="Students" />,
     subItems: [
       {
         key: 'students',
         path: '/students',
-        icon: <img src={PeopleSolidIcon} className="h-5 w-5" alt="Students List" />,
+        icon: <CustomImage src={PeopleSolidIcon} className="h-5 w-5" alt="Students List" />,
       },
       {
         key: 'attendanceRequests',
         path: '/attendance-requests',
-        icon: <img src={ReportIcon} className="h-5 w-5" alt="Requests" />,
+        icon: <CustomImage src={ReportIcon} className="h-5 w-5" alt="Requests" />,
       },
     ],
   },
   {
     key: 'attendance',
-    icon: <img src={TicketsIcon} className="h-5 w-5" alt="Attendance" />,
+    icon: <CustomImage src={TicketsIcon} className="h-5 w-5" alt="Attendance" />,
     path: '/attendance',
   },
   {
     key: 'fees',
-    icon: <img src={WalletIcon} className="h-5 w-5" alt="Fees" />,
+    icon: <CustomImage src={WalletIcon} className="h-5 w-5" alt="Fees" />,
     path: '/fees',
   },
   {
     key: 'busManagement',
-    icon: <img src={BusIcon} className="h-5 w-5" alt="Bus Management" />,
+    icon: <CustomImage src={BusIcon} className="h-5 w-5" alt="Bus Management" />,
     path: '/bus-management',
   },
   {
     key: 'notifications',
-    icon: <img src={NotificationIcon} className="h-5 w-5" alt="Notifications" />,
+    icon: <CustomImage src={NotificationIcon} className="h-5 w-5" alt="Notifications" />,
     path: '/notifications',
   },
   {
     key: 'reports',
-    icon: <img src={ReportsIcon} className="h-5 w-5" alt="Reports" />,
+    icon: <CustomImage src={ReportsIcon} className="h-5 w-5" alt="Reports" />,
     path: '/reports',
   },
   {
     key: 'settings',
-    icon: <img src={SettingsIcon} className="h-5 w-5" alt="Settings" />,
+    icon: <CustomImage src={SettingsIcon} className="h-5 w-5" alt="Settings" />,
     path: '/settings',
   },
 ];
@@ -309,7 +310,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             </div>
             <span className={isAnySubItemActive ? 'text-white' : 'text-gray-700'}>
               {isExpanded ? (
-                <img
+                <CustomImage
                   src={ChevronUp}
                   className="h-5 w-5"
                   alt="Collapse"
@@ -318,7 +319,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                   }}
                 />
               ) : (
-                <img
+                <CustomImage
                   src={ChevronDown}
                   className="h-5 w-5"
                   alt="Expand"
@@ -417,3 +418,4 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 };
 
 export default Sidebar;
+

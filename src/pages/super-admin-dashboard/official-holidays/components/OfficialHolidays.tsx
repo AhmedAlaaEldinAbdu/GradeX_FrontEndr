@@ -15,6 +15,7 @@ import {
 } from '@gradex/redux/features/official-holidays';
 import Loading from '@/shared/components/Loading';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
+import CustomImage from '@/shared/components/CustomImage';
 
 export default function OfficialHolidays() {
   const { t, i18n } = useTranslation();
@@ -124,7 +125,7 @@ export default function OfficialHolidays() {
 
                     {/* Official Dates Count with Checkmark */}
                     <div className="flex items-center gap-2">
-                      <img src={CheckIcon} alt="Check Icon" className="h-5 w-5" />
+                      <CustomImage src={CheckIcon} alt="Check Icon" className="h-5 w-5" />
                       <span className="text-sm text-gray-600">
                         {country.leaveCount} {t('officialHolidays.officialHoliday')}
                       </span>

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/hooks/useLanguage';
 import ArrowRightIcon from '@gradex/assets/icons/ArrowRight.svg';
 import ArrowLeftIcon from '@gradex/assets/icons/ArrowLeft.svg';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface PaginationProps {
   currentPage: number;
@@ -69,7 +70,7 @@ const Pagination: React.FC<PaginationProps> = ({
           }`}
         >
           <span className="flex items-center gap-1 text-center">
-            <img
+            <CustomImage
               src={isRTL ? ArrowRightIcon : ArrowLeftIcon}
               alt="ArrowIcon"
               className={currentPage === 1 ? 'opacity-50' : ''}
@@ -111,7 +112,7 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           <span className="flex items-center gap-1 text-center">
             <span>{t('actions.next')}</span>
-            <img
+            <CustomImage
               src={isRTL ? ArrowLeftIcon : ArrowRightIcon}
               alt="ArrowIcon"
               className={currentPage === totalPages ? 'opacity-50' : ''}
@@ -124,3 +125,5 @@ const Pagination: React.FC<PaginationProps> = ({
 };
 
 export default Pagination;
+
+

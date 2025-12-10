@@ -14,6 +14,7 @@ import { LoginSchema, type LoginProps } from '@/validations/auth-validations';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { logger } from '@/lib/utils/logger';
 import { useLanguage } from '@/hooks/useLanguage';
+import CustomImage from '@/shared/components/CustomImage';
 
 const LoginPage: React.FC = () => {
   const { t } = useTranslation();
@@ -265,13 +266,13 @@ const LoginPage: React.FC = () => {
       <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
         <div className="flex flex-col gap-24">
           <div className="flex items-center justify-center">
-            <img src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />
+            <CustomImage src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />
           </div>
 
           <div className="max-w-lg text-center">
             {/* Illustration */}
             <div className="mb-8">
-              <img src={ComputerLoginBanner} alt="Login Illustration" className="w-full" />
+              <CustomImage src={ComputerLoginBanner} alt="Login Illustration" className="w-full" />
             </div>
 
             {/* Text */}

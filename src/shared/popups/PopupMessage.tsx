@@ -97,7 +97,7 @@ export default function PopupMessage({
 
         <div className="my-6 flex flex-col items-center gap-7 py-3">
           {iconSrc && (
-            <img
+            <CustomImage
               src={iconSrc}
               alt="Popup Icon"
               className="h-[120px] w-[120px] lg:h-[150px] lg:w-[150px]"
