@@ -33,7 +33,7 @@ const PRICE_VIEW_OPTIONS = [
 
 export default function EditBook() {
   const { t, i18n } = useTranslation();
-  const { id } = useParams<{ id: string }>();
+  const { gradeBookId, bookId } = useParams<{ gradeBookId: string; bookId: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
@@ -83,12 +83,12 @@ export default function EditBook() {
   const watchedPriceView = watch('priceView');
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchBookById(id));
+    if (gradeBookId && bookId) {
+      dispatch(fetchBookById({ bookId, gradeBookId }));
     }
     dispatch(fetchSubjects({ page: 1, limit: 100 }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
-  }, [dispatch, id]);
+  }, [dispatch, gradeBookId, bookId]);
 
   // Populate form when book data is loaded
   useEffect(() => {
@@ -109,14 +109,14 @@ export default function EditBook() {
   }, [currentBook, reset]);
 
   const onSubmit = async (data: EditBookProps) => {
-    if (!id) return;
+    if (!bookId) return;
 
     try {
       await dispatch(
         updateBook({
-          id,
+          id: bookId,
           data: {
-            id,
+            id: bookId,
             name: data.name,
             nameEn: data.nameEn,
             code: data.code,
