@@ -232,7 +232,7 @@ export default function BooksList() {
           <IconButton
             status="edit"
             variant="success"
-            onClick={() => navigate(`/books/edit/${row.id}`)}
+            onClick={() => navigate(`/books/edit/${row.gradeBookId}/${row.id}`)}
             ariaLabel="Edit"
           />
           <IconButton
