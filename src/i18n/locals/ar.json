@@ -813,6 +813,7 @@
     "bookFile": "ملف الكتاب",
     "uploadBookImage": "اضغط لرفع صورة الكتاب",
     "uploadBookPdf": "اضغط لرفع ملف الكتاب",
+    "uploadBookFile": "اضغط لرفع ملف الكتاب (PDF أو صورة)",
     "addAnotherBook": "إضافة كتاب آخر",
     "addedBooks": "الكتب المضافة",
     "booksAddedSuccessfully": "تم إضافة الكتب بنجاح",

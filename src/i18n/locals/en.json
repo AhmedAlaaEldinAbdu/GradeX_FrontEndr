@@ -814,6 +814,7 @@
     "bookFile": "Book File",
     "uploadBookImage": "Click to upload book image",
     "uploadBookPdf": "Click to upload book PDF",
+    "uploadBookFile": "Click to upload book file (PDF or Image)",
     "addAnotherBook": "Add Another Book",
     "addedBooks": "Added Books",
     "booksAddedSuccessfully": "Books added successfully",
