@@ -8,6 +8,8 @@ import type {
   CreateBookRequest,
   UpdateBookRequest,
   Book,
+  BookDetailResponse,
+  BookGradeDetailResponse,
 } from '@/types/books';
 
 /**
@@ -65,6 +67,7 @@ export function flattenBooksForDisplay(response: BookListResponse): FlattenedBoo
     grade.bookDtos.forEach((book) => {
       flattened.push({
         id: book.id,
+        gradeBookId: grade.gradeBookId,
         name: book.name,
         code: book.code,
         price: book.price,
@@ -146,61 +149,68 @@ export async function createBook(
  * Get a single book by ID
  */
 export async function getBookById(
-  id: string
-): Promise<{ success: boolean; data?: FlattenedBook; message: string }> {
-  const response: AxiosResponse<{
-    data: {
-      bookGradeDto: Array<{
-        gradeId: string;
-        gradeNameAr: string;
-        gradeNameEn: string;
-        materialId: string;
-        materialName: string;
-        number: number;
-        packageType: number;
-        priceView: number;
-        bookDtos: Book[];
-      }>;
-    } | null;
-    isSuccess: boolean;
-    message: string;
-    validationErrors: string[] | null;
-  }> = await axiosClient.get(BookEndpoints.getBookById(id));
+  bookId: string,
+  gradeBookId: string
+): Promise<{
+  success: boolean;
+  data?: FlattenedBook & { packageType: number; priceView: number; number: number };
+  message: string;
+}> {
+  try {
+    // Call both endpoints in parallel
+    const [bookResponse, gradeResponse] = await Promise.all([
+      axiosClient.get<BookDetailResponse>(BookEndpoints.getBookDetails(bookId)),
+      axiosClient.get<BookGradeDetailResponse>(BookEndpoints.getBookGradeDetails(gradeBookId)),
+    ]);
 
-  if (!response.data.isSuccess || !response.data.data?.bookGradeDto?.[0]) {
+    if (!bookResponse.data.isSuccess || !bookResponse.data.data) {
+      return {
+        success: false,
+        message: bookResponse.data.message || 'Book not found',
+      };
+    }
+
+    if (!gradeResponse.data.isSuccess || !gradeResponse.data.data) {
+      return {
+        success: false,
+        message: gradeResponse.data.message || 'Book grade info not found',
+      };
+    }
+
+    const book = bookResponse.data.data;
+    const grade = gradeResponse.data.data;
+
+    return {
+      success: true,
+      data: {
+        id: book.id,
+        gradeBookId: grade.gradeBookId,
+        name: book.name,
+        code: book.code,
+        price: book.price,
+        fileName: book.fileName,
+        filePath: book.filePath,
+        totalQuantity: book.totalQuantity,
+        soldQuantity: book.soldQuantity,
+        remainingQuantity: book.remainingQuantity,
+        status: book.status,
+        gradeId: grade.gradeId,
+        gradeNameAr: grade.gradeNameAr,
+        gradeNameEn: grade.gradeNameEn,
+        materialId: grade.materialId,
+        materialName: grade.materialName,
+        packageType: grade.packageType,
+        priceView: grade.priceView,
+        number: grade.number,
+      },
+      message: 'Book fetched successfully',
+    };
+  } catch (error) {
     return {
       success: false,
-      message: response.data.message || 'Book not found',
+      message: 'Failed to fetch book details',
     };
   }
-
-  const grade = response.data.data.bookGradeDto[0];
-  const book = grade.bookDtos[0];
-
-  return {
-    success: true,
-    data: {
-      id: book.id,
-      name: book.name,
-      code: book.code,
-      price: book.price,
-      fileName: book.fileName,
-      filePath: book.filePath,
-      totalQuantity: book.totalQuantity,
-      soldQuantity: book.soldQuantity,
-      remainingQuantity: book.remainingQuantity,
-      status: book.status,
-      gradeId: grade.gradeId,
-      gradeNameAr: grade.gradeNameAr,
-      gradeNameEn: grade.gradeNameEn,
-      materialId: grade.materialId,
-      materialName: grade.materialName,
-      packageType: grade.packageType,
-      priceView: grade.priceView,
-      number: grade.number,
-    } as FlattenedBook & { packageType: number; priceView: number; number: number },
-    message: 'Book fetched successfully',
-  };
 }
 
 /**
