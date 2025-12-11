@@ -128,7 +128,6 @@ export default function EditBook() {
             gradeId: data.lkSchoolStageId,
             materialId: data.materialId,
             fileName: pdfFile?.name ?? currentBook?.fileName ?? '',
-            filePath: currentBook?.filePath ?? '',
             file: pdfFile ?? undefined,
           },
         })
@@ -433,7 +432,7 @@ export default function EditBook() {
           <div className="mb-6">
             <FileUpload
               label={t('books.uploadBook')}
-              accept="application/pdf"
+              accept="application/pdf,image/*"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
@@ -442,8 +441,8 @@ export default function EditBook() {
               }}
               onDelete={() => setPdfFile(null)}
               fileName={pdfFile?.name || currentBook?.fileName}
-              uploadText={t('books.uploadBookPdf')}
-              formatHints={['PDF']}
+              uploadText={t('books.uploadBookFile')}
+              formatHints={['PDF', 'JPG', 'PNG']}
               id="bookPdf"
             />
           </div>
