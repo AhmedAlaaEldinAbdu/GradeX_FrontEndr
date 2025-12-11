@@ -624,7 +624,7 @@ export default function AddBook() {
           <div className="mb-6">
             <FileUpload
               label={t('books.uploadBook')}
-              accept="application/pdf"
+              accept="application/pdf,image/*"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
@@ -633,8 +633,8 @@ export default function AddBook() {
               }}
               onDelete={() => setImageFile(null)}
               fileName={imageFile?.name}
-              uploadText={t('books.uploadBookPdf')}
-              formatHints={['PDF']}
+              uploadText={t('books.uploadBookFile')}
+              formatHints={['PDF', 'JPG', 'PNG']}
               id="bookPdf"
             />
           </div>
