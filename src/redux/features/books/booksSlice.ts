@@ -203,10 +203,10 @@ export const addBook = createAsyncThunk<Book, CreateBookRequest>(
 
 export const fetchBookById = createAsyncThunk<
   FlattenedBook & { packageType?: number; priceView?: number; number?: number },
-  string
->('books/fetchBookById', async (id, { rejectWithValue }) => {
+  { bookId: string; gradeBookId: string }
+>('books/fetchBookById', async ({ bookId, gradeBookId }, { rejectWithValue }) => {
   try {
-    const result = await bookApiService.getBookById(id);
+    const result = await bookApiService.getBookById(bookId, gradeBookId);
 
     if (!result.success || !result.data) {
       return rejectWithValue(result.message);
