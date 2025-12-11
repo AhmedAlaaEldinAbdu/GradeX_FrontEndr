@@ -23,6 +23,7 @@ export interface Book {
 }
 
 export interface BookGrade {
+  gradeBookId: string;
   gradeId: string;
   gradeNameAr: string;
   gradeNameEn: string;
@@ -33,6 +34,20 @@ export interface BookGrade {
   priceView: number;
   createdOn: string;
   bookDtos: Book[];
+}
+
+export interface BookDetailResponse {
+  data: Book | null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+export interface BookGradeDetailResponse {
+  data: BookGrade | null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
 }
 
 // ============================================================================
@@ -73,6 +88,7 @@ export interface BookQueryParams {
 
 export interface FlattenedBook {
   id: string;
+  gradeBookId: string;
   name: string;
   code: string;
   price: number;
