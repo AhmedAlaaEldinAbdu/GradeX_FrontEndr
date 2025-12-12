@@ -134,7 +134,11 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'teachingStaff',
     icon: <CustomImage src={PeopleRegularIcon} className="h-5 w-5" alt="Teaching Staff" />,
-    subItems: [{ key: 'teachingStaff', path: '/teaching-staff' }],
+    subItems: [
+      { key: 'teachers', path: '/teachers' },
+      { key: 'jobAnnouncements', path: '/job-announcements' },
+      { key: 'interviews', path: '/interviews' },
+    ],
   },
   {
     key: 'academicCalendar',
@@ -418,4 +422,3 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 };
 
 export default Sidebar;
-
