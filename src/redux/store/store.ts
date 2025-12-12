@@ -12,6 +12,7 @@ import officialHolidaysReducer from '../features/official-holidays';
 import classroomsReducer from '../features/classrooms/classroomsSlice';
 import subjectsReducer from '../features/subjects/subjectsSlice';
 import booksReducer from '../features/books/booksSlice';
+import teachersReducer from '../features/teachers/teachersSlice';
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +29,7 @@ export const store = configureStore({
     classrooms: classroomsReducer,
     subjects: subjectsReducer,
     books: booksReducer,
+    teachers: teachersReducer,
   },
 });
 
