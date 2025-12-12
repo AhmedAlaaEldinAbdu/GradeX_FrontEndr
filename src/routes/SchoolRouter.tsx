@@ -14,6 +14,7 @@ import EditSubjectPage from '@/pages/school-dashboard/subjects/edit-subject-page
 import BooksPage from '@/pages/school-dashboard/books/books-page';
 import AddBookPage from '@/pages/school-dashboard/books/add-book-page';
 import EditBookPage from '@/pages/school-dashboard/books/edit-book-page';
+import TeachersPage from '@/pages/school-dashboard/teachers/teachers-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -145,12 +146,35 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/teaching-staff"
+        path="/teachers"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <TeachersPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/job-announcements"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الكادر التعليمي</h2>
+                <h2 className="text-2xl font-bold text-gray-800">إعلانات توظيف</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/interviews"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">المقابلات</h2>
                 <p className="mt-4 text-gray-600">قريباً...</p>
               </div>
             </MainLayout>
