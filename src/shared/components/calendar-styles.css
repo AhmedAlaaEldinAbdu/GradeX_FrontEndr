@@ -1,6 +1,6 @@
 /* Calendar Container */
 .calendar-container {
-  padding: 1rem;
+  padding: .5rem;
   font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -18,7 +18,7 @@
   justify-content: center;
   align-items: center;
   gap: 2rem;
-  padding: 1.5rem 1rem;
+  padding: 1rem 1rem 1.5rem;
   margin-bottom: 1rem;
 }
 
