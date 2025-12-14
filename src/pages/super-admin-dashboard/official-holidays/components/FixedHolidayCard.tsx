@@ -7,6 +7,7 @@ import type { FixedHoliday } from '@/types/officialHolidays';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import IconButton from '@/shared/components/IconButton';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EyeIcon from '@gradex/assets/icons/Eye.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';

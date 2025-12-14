@@ -7,6 +7,7 @@ import type { AppDispatch } from '@gradex/redux/store/store';
 import type { OfficialHoliday } from '@/types/officialHolidays';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import IconButton from '@/shared/components/IconButton';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import EyeIcon from '@gradex/assets/icons/Eye.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
