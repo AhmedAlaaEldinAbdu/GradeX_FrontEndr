@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import Card from '@/shared/components/Card';
-import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
+import CustomImage from '@/shared/components/CustomImage';
+import DotsIcon from '@gradex/assets/icons/Dots.svg';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar-styles.css';
 
@@ -61,9 +62,34 @@ export default function SharedCalendar({
   const { t, i18n } = useTranslation();
   const [view, setView] = useState<keyof typeof Views>(defaultView);
   const [date, setDate] = useState(new Date());
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [dropdownContext, setDropdownContext] = useState<{
+    type: 'date' | 'event';
+    date: Date;
+    event?: CalendarEvent;
+  } | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number } | null>(
+    null
+  );
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentLang = i18n.language as 'ar' | 'en';
   const isRTL = currentLang === 'ar';
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+        setDropdownContext(null);
+      }
+    };
+
+    if (openDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [openDropdown]);
 
   const handleEventClick = useCallback(
     (e: React.MouseEvent, event: CalendarEvent) => {
@@ -75,31 +101,60 @@ export default function SharedCalendar({
     [onSelectEvent]
   );
 
+  const CustomCalendarEvent = ({
+    title,
+  }: {
+    event: CalendarEvent;
+    title?: string;
+  }) => (
+    <span className="line-clamp-2 text-center text-xs font-semibold text-green-700">
+      {title}
+    </span>
+  );
+
+  const eventPropGetter = useCallback(() => {
+    return {
+      className: 'shared-calendar-event',
+    };
+  }, []);
+
   const CustomDateCell = ({ date, event }: { date: Date; event?: CalendarEvent }) => {
-    const actions: Action[] = contextMenuActions
-      .filter((action) => {
-        if (event) {
-          return action.showOnEvent !== false;
-        } else {
-          return action.showOnDate !== false;
-        }
-      })
-      .map((action) => ({
-        id: action.label,
-        label: action.label,
-        icon: action.icon,
-        color: getColorClass(action.color),
-        onClick: () => action.onClick(date, event),
-      }));
+    const dateKey = `date-${date.toISOString()}`;
+    const isOpen = openDropdown === dateKey;
+
+    const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      if (isOpen) {
+        setOpenDropdown(null);
+        setDropdownContext(null);
+        return;
+      }
+      const rect = e.currentTarget.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 4,
+        left: isRTL ? rect.left : rect.right - 160,
+      });
+      setDropdownContext({
+        type: 'date',
+        date,
+        event,
+      });
+      setOpenDropdown(isOpen ? null : dateKey);
+    };
 
     return (
       <div className="relative flex items-center justify-center">
-        <ActionsDropdown
-          actions={actions}
-          triggerClassName="relative rounded p-1 hover:bg-gray-100"
-          iconClassName="h-4 w-4"
-          dropdownClassName={`absolute z-10 mt-0 w-max min-w-[7rem] max-w-[10rem] rounded-lg border border-gray-200 bg-white p-1 shadow-lg`}
-        />
+        <button
+          onClick={handleToggle}
+          className="relative z-10 rounded p-1 hover:bg-gray-100"
+          aria-label="Options"
+        >
+          <CustomImage
+            src={DotsIcon}
+            alt="options"
+            className="h-4 w-4 opacity-60 hover:opacity-100"
+          />
+        </button>
       </div>
     );
   };
@@ -180,19 +235,33 @@ export default function SharedCalendar({
             }
           }}
           onDrillDown={() => {
-            // Prevent drill down to day/week view when clicking on dates
             return false;
           }}
           components={{
             toolbar: CustomToolbar,
+            event: CustomCalendarEvent,
             ...(enableDateCellMenu
               ? {
-                  dateHeader: (props: any) => (
-                    <div className="relative flex items-center justify-between p-1">
-                      <span className="px-1 text-sm">{props.label}</span>
-                      <CustomDateCell date={props.date} />
-                    </div>
-                  ),
+                  dateHeader: (props: any) => {
+                    const dateEvents = events.filter((event) => {
+                      const eventDate = new Date(event.start);
+                      const cellDate = new Date(props.date);
+                      return (
+                        eventDate.getDate() === cellDate.getDate() &&
+                        eventDate.getMonth() === cellDate.getMonth() &&
+                        eventDate.getFullYear() === cellDate.getFullYear()
+                      );
+                    });
+
+                    return (
+                      <div className="relative flex-col">
+                        <div className="relative flex items-center justify-between p-1">
+                          <span className="px-1 text-sm">{props.label}</span>
+                          <CustomDateCell date={props.date} event={dateEvents[0]} />
+                        </div>
+                      </div>
+                    );
+                  },
                 }
               : {}),
           }}
@@ -204,8 +273,45 @@ export default function SharedCalendar({
             week: t('common.week'),
             day: t('common.day'),
           }}
+          eventPropGetter={eventPropGetter}
         />
       </div>
+
+      {/* Dropdown Menu Portal */}
+      {openDropdown && dropdownPosition && dropdownContext && (
+        <div
+          ref={dropdownRef}
+          className="absolute z-[9999] w-max min-w-[7rem] max-w-[10rem] rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+          style={{
+            top: `${dropdownPosition.top - 10}px`,
+            left: `${dropdownPosition.left - 25}px`,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {contextMenuActions
+            .filter((action) => {
+              const hasEvent = Boolean(dropdownContext.event);
+              const allowDateAction = action.showOnDate !== false;
+              const allowEventAction = hasEvent && action.showOnEvent !== false;
+              return allowEventAction || allowDateAction;
+            })
+            .map((action, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  action.onClick(dropdownContext.date, dropdownContext.event);
+                  setOpenDropdown(null);
+                  setDropdownContext(null);
+                }}
+                className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${isRTL ? 'text-right' : 'text-left'} ${getColorClass(action.color)}`}
+                type="button"
+              >
+                <CustomImage src={action.icon} alt={action.label} className="h-5 w-5" />
+                <span>{action.label}</span>
+              </button>
+            ))}
+        </div>
+      )}
     </Card>
   );
 }
