@@ -25,3 +25,5 @@ export type { MultiSelectOption } from './MultiSelectTagInput';
 export type { CustomSelectOption } from './CustomSelect';
 export type { Action } from './ActionsDropdown';
 export type { FilterConfig, DataTableColumn, PaginationData, DataTableProps } from './DataTable';
+export { default as SharedCalendar } from './SharedCalendar';
+export type { CalendarEvent, ContextMenuAction } from './SharedCalendar';
