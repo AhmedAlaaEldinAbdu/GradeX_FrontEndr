@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -28,6 +28,10 @@ export interface CalendarEvent {
   end: Date;
   [key: string]: any;
 }
+
+type CalendarEventWithMeta = CalendarEvent & {
+  extraEventsCount?: number;
+};
 
 export interface ContextMenuAction {
   label: string;
@@ -72,9 +76,44 @@ export default function SharedCalendar({
     null
   );
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const currentLang = i18n.language as 'ar' | 'en';
   const isRTL = currentLang === 'ar';
+
+  const getDayKey = useCallback((date: Date) => {
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized.toISOString();
+  }, []);
+
+  const condensedEvents = useMemo<CalendarEventWithMeta[]>(() => {
+    const grouped = events.reduce<Map<string, CalendarEvent[]>>((acc, event) => {
+      const key = getDayKey(event.start);
+      if (!acc.has(key)) {
+        acc.set(key, []);
+      }
+      acc.get(key)!.push(event);
+      return acc;
+    }, new Map());
+
+    const condensed: CalendarEventWithMeta[] = [];
+    grouped.forEach((group) => {
+      const sorted = [...group].sort(
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+      );
+      const [first, ...rest] = sorted;
+      if (!first) {
+        return;
+      }
+      condensed.push({
+        ...first,
+        extraEventsCount: rest.length,
+      });
+    });
+
+    return condensed;
+  }, [events, getDayKey]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -101,8 +140,21 @@ export default function SharedCalendar({
     [onSelectEvent]
   );
 
-  const CustomCalendarEvent = ({ title }: { event: CalendarEvent; title?: string }) => (
-    <span className="line-clamp-2 text-center text-xs font-semibold text-green-700">{title}</span>
+  const CustomCalendarEvent = ({
+    event,
+    title,
+  }: {
+    event: CalendarEventWithMeta;
+    title?: string;
+  }) => (
+    <div className="flex items-center justify-center gap-2">
+      <span className="line-clamp-2 text-center text-xs font-semibold text-green-700">{title}</span>
+      {typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0 && (
+        <span className="flex h-4 w-5 items-center justify-center rounded-full border border-green-300 bg-green-200 text-[9px] font-bold text-green-700">
+          +{event.extraEventsCount}
+        </span>
+      )}
+    </div>
   );
 
   const eventPropGetter = useCallback(() => {
@@ -122,10 +174,26 @@ export default function SharedCalendar({
         setDropdownContext(null);
         return;
       }
-      const rect = e.currentTarget.getBoundingClientRect();
+      const buttonRect = e.currentTarget.getBoundingClientRect();
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      const dropdownWidth = 160;
+      let top = buttonRect.bottom + 4;
+      let left = isRTL ? buttonRect.left : buttonRect.right - dropdownWidth;
+
+      if (containerRect) {
+        top = buttonRect.bottom - containerRect.top + 4;
+        left = isRTL
+          ? buttonRect.left - containerRect.left
+          : buttonRect.right - containerRect.left - dropdownWidth;
+
+        const maxLeft = containerRect.width - dropdownWidth - 8;
+        const minLeft = 0;
+        left = Math.min(Math.max(left, minLeft), maxLeft);
+      }
+
       setDropdownPosition({
-        top: rect.bottom + 4,
-        left: isRTL ? rect.left : rect.right - 160,
+        top,
+        left,
       });
       setDropdownContext({
         type: 'date',
@@ -206,69 +274,71 @@ export default function SharedCalendar({
   );
 
   return (
-    <Card className={`relative ${className}`}>
-      <div className={`calendar-container ${isRTL ? 'rtl' : 'ltr'}`}>
-        <BigCalendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height }}
-          view={view}
-          onView={setView}
-          date={date}
-          onNavigate={setDate}
-          culture={currentLang}
-          rtl={isRTL}
-          selectable={!!onSelectSlot}
-          onSelectSlot={onSelectSlot}
-          onSelectEvent={(event: any, e: React.SyntheticEvent) => {
-            if (e && onSelectEvent) {
-              handleEventClick(e as React.MouseEvent, event as CalendarEvent);
-            }
-          }}
-          onDrillDown={() => {
-            return false;
-          }}
-          components={{
-            toolbar: CustomToolbar,
-            event: CustomCalendarEvent,
-            ...(enableDateCellMenu
-              ? {
-                  dateHeader: (props: any) => {
-                    const dateEvents = events.filter((event) => {
-                      const eventDate = new Date(event.start);
-                      const cellDate = new Date(props.date);
-                      return (
-                        eventDate.getDate() === cellDate.getDate() &&
-                        eventDate.getMonth() === cellDate.getMonth() &&
-                        eventDate.getFullYear() === cellDate.getFullYear()
-                      );
-                    });
+    <div ref={containerRef} className="relative">
+      <Card className={`relative ${className}`}>
+        <div className={`calendar-container ${isRTL ? 'rtl' : 'ltr'}`}>
+          <BigCalendar
+            localizer={localizer}
+            events={condensedEvents}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height }}
+            view={view}
+            onView={setView}
+            date={date}
+            onNavigate={setDate}
+            culture={currentLang}
+            rtl={isRTL}
+            selectable={!!onSelectSlot}
+            onSelectSlot={onSelectSlot}
+            onSelectEvent={(event: any, e: React.SyntheticEvent) => {
+              if (e && onSelectEvent) {
+                handleEventClick(e as React.MouseEvent, event as CalendarEvent);
+              }
+            }}
+            onDrillDown={() => {
+              return false;
+            }}
+            components={{
+              toolbar: CustomToolbar,
+              event: CustomCalendarEvent,
+              ...(enableDateCellMenu
+                ? {
+                    dateHeader: (props: any) => {
+                      const dateEvents = condensedEvents.filter((event) => {
+                        const eventDate = new Date(event.start);
+                        const cellDate = new Date(props.date);
+                        return (
+                          eventDate.getDate() === cellDate.getDate() &&
+                          eventDate.getMonth() === cellDate.getMonth() &&
+                          eventDate.getFullYear() === cellDate.getFullYear()
+                        );
+                      });
 
-                    return (
-                      <div className="relative flex-col">
-                        <div className="relative flex items-center justify-between p-1">
-                          <span className="px-1 text-sm">{props.label}</span>
-                          <CustomDateCell date={props.date} event={dateEvents[0]} />
+                      return (
+                        <div className="relative flex-col">
+                          <div className="relative flex items-center justify-between p-1">
+                            <span className="px-1 text-sm">{props.label}</span>
+                            <CustomDateCell date={props.date} event={dateEvents[0]} />
+                          </div>
                         </div>
-                      </div>
-                    );
-                  },
-                }
-              : {}),
-          }}
-          messages={{
-            next: t('common.next'),
-            previous: t('common.previous'),
-            today: t('common.today'),
-            month: t('common.month'),
-            week: t('common.week'),
-            day: t('common.day'),
-          }}
-          eventPropGetter={eventPropGetter}
-        />
-      </div>
+                      );
+                    },
+                  }
+                : {}),
+            }}
+            messages={{
+              next: t('common.next'),
+              previous: t('common.previous'),
+              today: t('common.today'),
+              month: t('common.month'),
+              week: t('common.week'),
+              day: t('common.day'),
+            }}
+            eventPropGetter={eventPropGetter}
+          />
+        </div>
+      </Card>
 
       {/* Dropdown Menu Portal */}
       {openDropdown && dropdownPosition && dropdownContext && (
@@ -276,8 +346,8 @@ export default function SharedCalendar({
           ref={dropdownRef}
           className="absolute z-[9999] w-max min-w-[7rem] max-w-[10rem] rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
           style={{
-            top: `${dropdownPosition.top + 15}px`,
-            left: `${dropdownPosition.left - 15}px`,
+            top: `${dropdownPosition.top}px`,
+            left: `${dropdownPosition.left}px`,
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -305,6 +375,6 @@ export default function SharedCalendar({
             ))}
         </div>
       )}
-    </Card>
+    </div>
   );
 }
