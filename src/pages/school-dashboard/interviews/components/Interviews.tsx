@@ -6,11 +6,11 @@ import SharedCalendar, {
   type CalendarEvent,
   type ContextMenuAction,
 } from '@/shared/components/SharedCalendar';
-import AddInterviewPopup, {
+import AddEditInterviewPopup, {
   type AddInterviewFormValues,
   type SelectOption as InterviewSelectOption,
   createInterviewFormDefaults,
-} from '../popups/AddInterviewPopup';
+} from '../popups/AddEditInterviewPopup';
 import InterviewDetailsPopup from '../popups/InterviewDetailsPopup';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import StyledCalendarIcon from '@gradex/assets/icons/StyledCalendar.svg';
@@ -344,7 +344,7 @@ export default function Interviews() {
         defaultView="month"
         height={700}
       />
-      <AddInterviewPopup
+      <AddEditInterviewPopup
         isOpen={isEditorOpen}
         mode={editorMode}
         initialValues={editorInitialValues}
