@@ -15,6 +15,7 @@ import BooksPage from '@/pages/school-dashboard/books/books-page';
 import AddBookPage from '@/pages/school-dashboard/books/add-book-page';
 import EditBookPage from '@/pages/school-dashboard/books/edit-book-page';
 import TeachersPage from '@/pages/school-dashboard/teachers/teachers-page';
+import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -173,10 +174,7 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">المقابلات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <InterviewsPage />
             </MainLayout>
           </ProtectedRoute>
         }

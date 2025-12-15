@@ -16,6 +16,7 @@ export interface Action {
 interface ActionsDropdownProps {
   actions: Action[];
   triggerIcon?: string;
+  iconClassName?: string;
   triggerClassName?: string;
   dropdownClassName?: string;
   position?: 'left' | 'right';
@@ -26,8 +27,9 @@ interface ActionsDropdownProps {
 export default function ActionsDropdown({
   actions,
   triggerIcon = DotsIcon,
+  iconClassName = 'h-6 w-6',
   triggerClassName = 'rounded p-1 hover:bg-gray-100',
-  dropdownClassName = `absolute z-10 mt-2 w-max min-w-[7rem] max-w-[10rem] ${i18n.language === "ar" ? "max-w-[10rem]" : "max-w-[11rem]"} rounded-lg border border-gray-200 bg-white p-1 shadow-lg`,
+  dropdownClassName = `absolute z-10 mt-2 w-max min-w-[7rem] max-w-[10rem] ${i18n.language === 'ar' ? 'max-w-[10rem]' : 'max-w-[11rem]'} rounded-lg border border-gray-200 bg-white p-1 shadow-lg`,
   // position = 'left',
   onOpen,
   onClose,
@@ -75,7 +77,7 @@ export default function ActionsDropdown({
     return null;
   }
 
-  const positionClass = i18n.language === "ar" ? "left-0" : "right-0";
+  const positionClass = i18n.language === 'ar' ? 'left-0' : 'right-0';
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
@@ -87,7 +89,7 @@ export default function ActionsDropdown({
         aria-expanded={open}
         aria-haspopup="true"
       >
-        <CustomImage src={triggerIcon} alt="Options" className="h-6 w-6" />
+        <CustomImage src={triggerIcon} alt="Options" className={`${iconClassName}`} />
       </button>
 
       {open && (
@@ -97,8 +99,9 @@ export default function ActionsDropdown({
               key={action.id}
               onClick={() => handleActionClick(action)}
               disabled={action.disabled}
-              className={`flex w-full items-center gap-2 rounded-md px-3 py-2 ${i18n.language === "ar" ? "text-right" : "text-left"} transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${action.color || 'text-gray-700 hover:bg-gray-100'
-                }`}
+              className={`flex w-full items-center gap-2 rounded-md px-3 py-2 ${i18n.language === 'ar' ? 'text-right' : 'text-left'} transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                action.color || 'text-gray-700 hover:bg-gray-100'
+              }`}
               type="button"
             >
               <CustomImage src={action.icon} alt={`${action.label} icon`} className="h-5 w-5" />
@@ -110,4 +113,3 @@ export default function ActionsDropdown({
     </div>
   );
 }
-
