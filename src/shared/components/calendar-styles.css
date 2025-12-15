@@ -1,6 +1,6 @@
 /* Calendar Container */
 .calendar-container {
-  padding: .5rem;
+  padding: 0.5rem;
   font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -18,7 +18,7 @@
   justify-content: center;
   align-items: center;
   gap: 2rem;
-  padding: 0.5rem 1rem ;
+  padding: 0.5rem 1rem;
   margin-bottom: 1rem;
 }
 
@@ -60,6 +60,7 @@
   border-radius: 0.75rem;
   overflow: hidden;
   background-color: white;
+  gap: 0.5rem;
 }
 
 .rbc-header {
@@ -72,18 +73,21 @@
 }
 
 .rbc-month-row {
-  border-bottom: none;
+  border: 0 !important;
 }
 
 .rbc-month-row:last-child {
   border-bottom: none;
 }
-
+.rbc-row-bg {
+  gap: 0.5rem;
+}
 .rbc-day-bg {
-  border-right: none;
-  min-height: 120px;
   transition: background-color 0.2s;
   position: relative;
+  border: 0 !important;
+  border-radius: 6px;
+  background-color: #f9fafb;
 }
 
 .rtl .rbc-day-bg {
@@ -96,7 +100,7 @@
 }
 
 .rbc-off-range-bg {
-  background-color: #f9fafb;
+  background-color: #e5e7eb;
 }
 
 .rbc-today {
@@ -107,7 +111,6 @@
 }
 .rbc-date-cell {
   padding: 0.5rem;
-  text-align: right;
   font-weight: 500;
   color: #6b7280;
   position: relative;
@@ -165,6 +168,18 @@
   padding: 0.25rem 0.35rem;
 }
 
+.rbc-row-segment .rbc-event-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.1;
+  max-height: 2.75em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+}
+
 .rbc-event-label {
   font-size: 0.75rem;
   font-weight: 600;
@@ -201,7 +216,11 @@
 
 /* Selected Event */
 .rbc-selected {
-  background-color: #1e40af;
+  background-color: #dcfce7;
+}
+.rbc-event.rbc-selected,
+.rbc-day-slot .rbc-selected.rbc-background-event {
+  background-color: #dcfce7;
 }
 
 /* Time Views */
@@ -226,13 +245,6 @@
 .rbc-current-time-indicator {
   background-color: #ef4444;
   height: 2px;
-}
-
-.rbc-row .rbc-date-cell:hover:not(.rbc-off-range, .rbc-now) {
-  background-color: #f0fdf5;
-}
-.rbc-now {
-  background-color: #dcfce7;
 }
 
 /* Agenda View */
@@ -287,17 +299,14 @@
 /* Custom Styles for Date Cells */
 .rbc-row-content {
   position: relative;
+  height: inherit;
 }
+/* .rbc-row-content:hover {
+  background-color: #f0fdf5;
+} */
 
 .rbc-row.rbc-month-header {
   min-height: 55px;
-}
-.rbc-month-row,
-.rbc-row-bg,
-.rbc-row-content,
-.rbc-row,
-.rbc-row .rbc-date-cell {
-  /* min-height: 110px; */
 }
 
 .rbc-row.rbc-month-header .rbc-header {
@@ -325,9 +334,9 @@
     order: -1;
   }
 
-  .rbc-day-bg {
+  /* .rbc-day-bg {
     min-height: 80px;
-  }
+  } */
 
   .rbc-event {
     font-size: 0.75rem;

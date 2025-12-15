@@ -101,15 +101,8 @@ export default function SharedCalendar({
     [onSelectEvent]
   );
 
-  const CustomCalendarEvent = ({
-    title,
-  }: {
-    event: CalendarEvent;
-    title?: string;
-  }) => (
-    <span className="line-clamp-2 text-center text-xs font-semibold text-green-700">
-      {title}
-    </span>
+  const CustomCalendarEvent = ({ title }: { event: CalendarEvent; title?: string }) => (
+    <span className="line-clamp-2 text-center text-xs font-semibold text-green-700">{title}</span>
   );
 
   const eventPropGetter = useCallback(() => {
@@ -283,8 +276,8 @@ export default function SharedCalendar({
           ref={dropdownRef}
           className="absolute z-[9999] w-max min-w-[7rem] max-w-[10rem] rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
           style={{
-            top: `${dropdownPosition.top - 10}px`,
-            left: `${dropdownPosition.left - 25}px`,
+            top: `${dropdownPosition.top + 15}px`,
+            left: `${dropdownPosition.left - 15}px`,
           }}
           onClick={(e) => e.stopPropagation()}
         >
