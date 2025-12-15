@@ -1,11 +1,11 @@
-import { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import Modal from '@/shared/popups/Modal';
 import FormField from '@/shared/components/FormField';
-import Select from '@/shared/components/Select';
+import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
@@ -24,7 +24,7 @@ export interface AddInterviewFormValues {
   endTime: string;
 }
 
-interface AddInterviewPopupProps {
+interface AddEditInterviewPopupProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: (values: AddInterviewFormValues) => void | Promise<void>;
@@ -44,7 +44,7 @@ export const createInterviewFormDefaults = (): AddInterviewFormValues => ({
   endTime: '',
 });
 
-export default function AddInterviewPopup({
+export default function AddEditInterviewPopup({
   isOpen,
   onClose,
   onSubmit,
@@ -54,12 +54,13 @@ export default function AddInterviewPopup({
   selectedDate,
   mode = 'add',
   initialValues,
-}: AddInterviewPopupProps) {
+}: AddEditInterviewPopupProps) {
   const { t, i18n } = useTranslation();
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<AddInterviewFormValues>({
     defaultValues: createInterviewFormDefaults(),
@@ -74,26 +75,6 @@ export default function AddInterviewPopup({
   const formattedSelectedDate = selectedDate
     ? format(selectedDate, 'PPP', { locale: i18n.language === 'ar' ? ar : undefined })
     : null;
-
-  const withPlaceholder = (placeholder: string, options: SelectOption[]) => [
-    { value: '', label: placeholder },
-    ...options,
-  ];
-
-  const announcementOptions = useMemo(
-    () => withPlaceholder(t('interviews.selectAnnouncementName'), announcements),
-    [announcements, t]
-  );
-
-  const teacherOptions = useMemo(
-    () => withPlaceholder(t('interviews.selectTeacherName'), teachers),
-    [teachers, t]
-  );
-
-  const supervisorOptions = useMemo(
-    () => withPlaceholder(t('interviews.selectSupervisor'), supervisors),
-    [supervisors, t]
-  );
 
   const closeAndReset = () => {
     reset(createInterviewFormDefaults());
@@ -112,18 +93,16 @@ export default function AddInterviewPopup({
       isOpen={isOpen}
       onClose={closeAndReset}
       title={mode === 'edit' ? t('interviews.editInterview') : t('interviews.addInterview')}
-      size="lg"
-      contentClassName="bg-gray-50"
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         {formattedSelectedDate && (
-          <div className="rounded-lg bg-white p-4 text-center text-sm text-gray-600 shadow-sm">
+          <div className="rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-600">
             <span className="font-medium text-gray-900">{t('interviews.interviewDate')}:</span>{' '}
             {formattedSelectedDate}
           </div>
         )}
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm">
+        <div>
           <div className="space-y-5">
             <FormField
               label={t('interviews.announcementName')}
@@ -131,12 +110,21 @@ export default function AddInterviewPopup({
               error={errors.announcementId?.message}
               htmlFor="announcementId"
             >
-              <Select
-                id="announcementId"
-                {...register('announcementId', {
-                  required: t('common.validation.required'),
-                })}
-                options={announcementOptions}
+              <Controller
+                name="announcementId"
+                control={control}
+                rules={{ required: t('common.validation.required') }}
+                render={({ field }) => (
+                  <CustomSelect
+                    id="announcementId"
+                    value={field.value ?? ''}
+                    onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                    options={announcements}
+                    placeholder={t('interviews.selectAnnouncementName')}
+                    error={!!errors.announcementId}
+                    disabled={announcements.length === 0}
+                  />
+                )}
               />
             </FormField>
 
@@ -147,12 +135,21 @@ export default function AddInterviewPopup({
                 error={errors.teacherId?.message}
                 htmlFor="teacherId"
               >
-                <Select
-                  id="teacherId"
-                  {...register('teacherId', {
-                    required: t('common.validation.required'),
-                  })}
-                  options={teacherOptions}
+                <Controller
+                  name="teacherId"
+                  control={control}
+                  rules={{ required: t('common.validation.required') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      id="teacherId"
+                      value={field.value ?? ''}
+                      onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                      options={teachers}
+                      placeholder={t('interviews.selectTeacherName')}
+                      error={!!errors.teacherId}
+                      disabled={teachers.length === 0}
+                    />
+                  )}
                 />
               </FormField>
 
@@ -162,12 +159,21 @@ export default function AddInterviewPopup({
                 error={errors.supervisorId?.message}
                 htmlFor="supervisorId"
               >
-                <Select
-                  id="supervisorId"
-                  {...register('supervisorId', {
-                    required: t('common.validation.required'),
-                  })}
-                  options={supervisorOptions}
+                <Controller
+                  name="supervisorId"
+                  control={control}
+                  rules={{ required: t('common.validation.required') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      id="supervisorId"
+                      value={field.value ?? ''}
+                      onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                      options={supervisors}
+                      placeholder={t('interviews.selectSupervisor')}
+                      error={!!errors.supervisorId}
+                      disabled={supervisors.length === 0}
+                    />
+                  )}
                 />
               </FormField>
             </div>
