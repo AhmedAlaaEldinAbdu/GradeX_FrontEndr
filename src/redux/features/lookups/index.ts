@@ -25,6 +25,7 @@ export {
   fetchAllCities,
   fetchCitiesByRegion,
   fetchAllLookups,
+  fetchSchoolStages,
 } from './lookupsSlice';
 
 // Selectors
