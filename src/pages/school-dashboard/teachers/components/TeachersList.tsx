@@ -11,6 +11,9 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import { fetchTeachers, deleteTeacher as deleteTeacherAction } from '@/redux/features/teachers';
+import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchSchoolStages } from '@/redux/features/lookups';
 import type { Teacher } from '@/types/teachers';
 import CustomImage from '@/shared/components/CustomImage';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
@@ -37,6 +40,17 @@ export default function TeachersList() {
   // Get subjects and classrooms from other slices for filter options
   const subjects = useAppSelector((state) => state.subjects.subjects);
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
+  const schoolStages = useAppSelector((state) => state.lookups.schoolStages);
+  const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
+  const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
+  const isLoadingSchoolStages = useAppSelector((state) => state.lookups.isLoadingSchoolStages);
+
+  // Fetch filter data on mount
+  useEffect(() => {
+    dispatch(fetchSubjects({ page: 1, limit: 100 }));
+    dispatch(fetchClassrooms({ page: 1, limit: 100 }));
+    dispatch(fetchSchoolStages());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(
@@ -205,6 +219,11 @@ export default function TeachersList() {
     label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
   }));
 
+  const schoolStageOptions = schoolStages.map((stage) => ({
+    value: stage.id,
+    label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
+  }));
+
   const filterConfigs: FilterConfig[] = [
     {
       type: 'search',
@@ -226,7 +245,30 @@ export default function TeachersList() {
           value={selectedSubject}
           onChange={(value) => setSelectedSubject(Array.isArray(value) ? (value[0] ?? '') : value)}
           options={subjectOptions}
-          placeholder={t('teachers.selectSubject')}
+          placeholder={isLoadingSubjects ? t('common.loading') : t('teachers.selectSubject')}
+          disabled={isLoadingSubjects}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'stage-filter',
+      placeholder: '',
+      value: selectedEducationalStage,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={selectedEducationalStage}
+          onChange={(value) =>
+            setSelectedEducationalStage(Array.isArray(value) ? (value[0] ?? '') : value)
+          }
+          options={schoolStageOptions}
+          placeholder={
+            isLoadingSchoolStages ? t('common.loading') : t('teachers.selectEducationalStage')
+          }
+          disabled={isLoadingSchoolStages}
           maxHeight="200px"
         />
       ),
@@ -245,26 +287,8 @@ export default function TeachersList() {
             setSelectedClassroom(Array.isArray(value) ? (value[0] ?? '') : value)
           }
           options={classroomOptions}
-          placeholder={t('teachers.selectClassroom')}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'stage-filter',
-      placeholder: '',
-      value: selectedEducationalStage,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedEducationalStage}
-          onChange={(value) =>
-            setSelectedEducationalStage(Array.isArray(value) ? (value[0] ?? '') : value)
-          }
-          options={[]}
-          placeholder={t('teachers.selectEducationalStage')}
+          placeholder={isLoadingClassrooms ? t('common.loading') : t('teachers.selectClassroom')}
+          disabled={isLoadingClassrooms}
           maxHeight="200px"
         />
       ),
