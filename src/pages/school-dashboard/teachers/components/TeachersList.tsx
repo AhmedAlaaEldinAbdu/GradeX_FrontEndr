@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
@@ -20,6 +21,7 @@ import DefaultAvatar from '@gradex/assets/images/profile.png';
 
 export default function TeachersList() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
 
@@ -108,7 +110,14 @@ export default function TeachersList() {
     {
       header: 'teachers.teacherName',
       accessor: (row) => (
-        <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/teachers/${row.id}`);
+          }}
+          className="flex items-center gap-3 transition-colors hover:text-primary-600"
+        >
           <div className="h-10 w-10 overflow-hidden rounded-full">
             <CustomImage
               src={row.pictureProfilePath || DefaultAvatar}
@@ -116,8 +125,8 @@ export default function TeachersList() {
               className="h-full w-full object-cover"
             />
           </div>
-          <span className="font-medium">{row.fullName}</span>
-        </div>
+          <span className="font-medium hover:underline">{row.fullName}</span>
+        </button>
       ),
       headerClassName: 'min-w-[200px]',
     },
