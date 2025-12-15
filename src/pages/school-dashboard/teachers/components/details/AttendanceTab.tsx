@@ -6,6 +6,9 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import { mockTeacherDetails, type TeacherAttendanceRecord } from '../../data/mockTeacherData';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
+import TeacherPreparationPopup, {
+  type TeacherPreparationFormValues,
+} from '../../popups/TeacherPreparationPopup';
 
 interface AttendanceTabProps {
   teacherId: string;
@@ -25,6 +28,7 @@ export default function AttendanceTab({ teacherId }: AttendanceTabProps) {
   const [searchDate, setSearchDate] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showPreparationPopup, setShowPreparationPopup] = useState(false);
   const pageSize = 10;
 
   // Use mock data for now
@@ -158,8 +162,15 @@ export default function AttendanceTab({ teacherId }: AttendanceTabProps) {
   };
 
   const handleTeacherPreparation = () => {
-    // TODO: Implement teacher preparation functionality
-    console.log('Prepare teacher:', teacherId);
+    setShowPreparationPopup(true);
+  };
+
+  const handlePreparationSubmit = async (values: TeacherPreparationFormValues) => {
+    // TODO: Integrate with API
+    console.log('Teacher Preparation Data:', {
+      teacherId,
+      ...values,
+    });
   };
 
   return (
@@ -276,6 +287,14 @@ export default function AttendanceTab({ teacherId }: AttendanceTabProps) {
           t={t}
         />
       </Card>
+
+      {/* Teacher Preparation Popup */}
+      <TeacherPreparationPopup
+        isOpen={showPreparationPopup}
+        onClose={() => setShowPreparationPopup(false)}
+        onSubmit={handlePreparationSubmit}
+        teacherId={teacherId}
+      />
     </div>
   );
 }
