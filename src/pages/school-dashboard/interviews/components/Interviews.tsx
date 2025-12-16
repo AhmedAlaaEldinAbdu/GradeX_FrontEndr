@@ -24,17 +24,11 @@ interface Interview extends CalendarEvent {
   candidateName?: string;
   position?: string;
   supervisor?: string;
-  announcementId?: string;
-  announcementName?: string;
   teacherId?: string;
   supervisorId?: string;
+  interviewNameAr?: string;
+  interviewNameEn?: string;
 }
-
-const ANNOUNCEMENT_OPTIONS: InterviewSelectOption[] = [
-  { value: 'announcement-1', label: 'إعلان توظيف معلم لغة عربي' },
-  { value: 'announcement-2', label: 'إعلان توظيف معلم علوم' },
-  { value: 'announcement-3', label: 'إعلان توظيف معلم لغة إنجليزية' },
-];
 
 const TEACHER_OPTIONS: InterviewSelectOption[] = [
   { value: 'teacher-1', label: 'أحمد محمد' },
@@ -50,7 +44,7 @@ const SUPERVISOR_OPTIONS: InterviewSelectOption[] = [
 ];
 
 export default function Interviews() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -19,7 +19,6 @@ export interface SelectOption {
 export interface AddInterviewFormValues {
   interviewNameAr: string;
   interviewNameEn: string;
-  announcementId: string;
   teacherId: string;
   supervisorId: string;
   startTime: string;
@@ -30,7 +29,6 @@ interface AddEditInterviewPopupProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: (values: AddInterviewFormValues) => void | Promise<void>;
-  announcements: SelectOption[];
   teachers: SelectOption[];
   supervisors: SelectOption[];
   selectedDate?: Date | null;
@@ -41,7 +39,6 @@ interface AddEditInterviewPopupProps {
 export const createInterviewFormDefaults = (): AddInterviewFormValues => ({
   interviewNameAr: '',
   interviewNameEn: '',
-  announcementId: '',
   teacherId: '',
   supervisorId: '',
   startTime: '',
@@ -52,7 +49,6 @@ export default function AddEditInterviewPopup({
   isOpen,
   onClose,
   onSubmit,
-  announcements,
   teachers,
   supervisors,
   selectedDate,
