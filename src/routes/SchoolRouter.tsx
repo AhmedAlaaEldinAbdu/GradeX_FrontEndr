@@ -15,6 +15,7 @@ import BooksPage from '@/pages/school-dashboard/books/books-page';
 import AddBookPage from '@/pages/school-dashboard/books/add-book-page';
 import EditBookPage from '@/pages/school-dashboard/books/edit-book-page';
 import TeachersPage from '@/pages/school-dashboard/teachers/teachers-page';
+import TeacherDetailsPage from '@/pages/school-dashboard/teachers/teacher-details-page';
 import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page';
 
 const SchoolRouter: React.FC = () => {
@@ -152,6 +153,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <TeachersPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teachers/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <TeacherDetailsPage />
             </MainLayout>
           </ProtectedRoute>
         }

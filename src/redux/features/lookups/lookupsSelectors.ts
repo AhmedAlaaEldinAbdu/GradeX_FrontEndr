@@ -296,6 +296,53 @@ export const selectCitiesError = createSelector(
 );
 
 // ============================================================================
+// School Stages Selectors
+// ============================================================================
+
+/**
+ * Select all school stages
+ */
+export const selectSchoolStages = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.schoolStages
+);
+
+/**
+ * Select school stages loading state
+ */
+export const selectIsLoadingSchoolStages = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.isLoadingSchoolStages
+);
+
+/**
+ * Select school stages error
+ */
+export const selectSchoolStagesError = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.schoolStagesError
+);
+
+/**
+ * Select school stages initialization state
+ */
+export const selectIsSchoolStagesInitialized = createSelector(
+  [selectLookupsState],
+  (lookupsState) => lookupsState.isSchoolStagesInitialized
+);
+
+/**
+ * Select school stages as dropdown options
+ */
+export const selectSchoolStagesOptions = (language: 'ar' | 'en' = 'en') =>
+  createSelector([selectSchoolStages], (schoolStages) =>
+    schoolStages.map((stage) => ({
+      value: stage.id,
+      label: language === 'ar' ? stage.nameAR : stage.nameEN,
+    }))
+  );
+
+// ============================================================================
 // Combined Selectors
 // ============================================================================
 
