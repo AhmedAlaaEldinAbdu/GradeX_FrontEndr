@@ -148,11 +148,12 @@ export default function SharedCalendar({
     title?: string;
   }) => (
     <div className="flex items-center justify-center gap-2">
-      <span className="line-clamp-2 text-center text-xs font-semibold text-green-700">{title}</span>
-      {typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0 && (
-        <span className="flex h-4 w-5 items-center justify-center rounded-full border border-green-300 bg-green-200 text-[9px] font-bold text-green-700">
+      {typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0 ? (
+        <span className="line-clamp-2 text-center text-sm font-bold text-green-800">
           +{event.extraEventsCount}
         </span>
+      ) : (
+        <span className="line-clamp-2 text-center text-xs font-bold text-green-800">{title}</span>
       )}
     </div>
   );
