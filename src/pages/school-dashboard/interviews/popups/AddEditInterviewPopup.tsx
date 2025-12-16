@@ -17,6 +17,8 @@ export interface SelectOption {
 }
 
 export interface AddInterviewFormValues {
+  interviewNameAr: string;
+  interviewNameEn: string;
   announcementId: string;
   teacherId: string;
   supervisorId: string;
@@ -37,6 +39,8 @@ interface AddEditInterviewPopupProps {
 }
 
 export const createInterviewFormDefaults = (): AddInterviewFormValues => ({
+  interviewNameAr: '',
+  interviewNameEn: '',
   announcementId: '',
   teacherId: '',
   supervisorId: '',
@@ -104,29 +108,37 @@ export default function AddEditInterviewPopup({
 
         <div>
           <div className="space-y-5">
-            <FormField
-              label={t('interviews.announcementName')}
-              required
-              error={errors.announcementId?.message}
-              htmlFor="announcementId"
-            >
-              <Controller
-                name="announcementId"
-                control={control}
-                rules={{ required: t('common.validation.required') }}
-                render={({ field }) => (
-                  <CustomSelect
-                    id="announcementId"
-                    value={field.value ?? ''}
-                    onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                    options={announcements}
-                    placeholder={t('interviews.selectAnnouncementName')}
-                    error={!!errors.announcementId}
-                    disabled={announcements.length === 0}
-                  />
-                )}
-              />
-            </FormField>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                label={t('interviews.interviewNameAr')}
+                required
+                error={errors.interviewNameAr?.message}
+                htmlFor="interviewNameAr"
+              >
+                <Input
+                  id="interviewNameAr"
+                  placeholder={t('interviews.enterInterviewNameAr')}
+                  {...register('interviewNameAr', {
+                    required: t('common.validation.required'),
+                  })}
+                />
+              </FormField>
+
+              <FormField
+                label={t('interviews.interviewNameEn')}
+                required
+                error={errors.interviewNameEn?.message}
+                htmlFor="interviewNameEn"
+              >
+                <Input
+                  id="interviewNameEn"
+                  placeholder={t('interviews.enterInterviewNameEn')}
+                  {...register('interviewNameEn', {
+                    required: t('common.validation.required'),
+                  })}
+                />
+              </FormField>
+            </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
