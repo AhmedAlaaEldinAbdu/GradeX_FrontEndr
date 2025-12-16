@@ -24,11 +24,33 @@ interface Interview extends CalendarEvent {
   candidateName?: string;
   position?: string;
   supervisor?: string;
+  announcementId?: string;
+  announcementName?: string;
+  jobAdvertisementId?: string;
+  jobAdvertisementName?: string;
+  schoolBranchesId?: string;
+  schoolBranchName?: string;
   teacherId?: string;
   supervisorId?: string;
-  interviewNameAr?: string;
-  interviewNameEn?: string;
 }
+
+const ANNOUNCEMENT_OPTIONS: InterviewSelectOption[] = [
+  { value: 'announcement-1', label: 'إعلان توظيف معلم لغة عربي' },
+  { value: 'announcement-2', label: 'إعلان توظيف معلم علوم' },
+  { value: 'announcement-3', label: 'إعلان توظيف معلم لغة إنجليزية' },
+];
+
+const JOB_ADVERTISEMENT_OPTIONS: InterviewSelectOption[] = [
+  { value: 'job-1', label: 'إعلان معلم عربي - فرع الرياض' },
+  { value: 'job-2', label: 'إعلان معلم علوم - فرع جدة' },
+  { value: 'job-3', label: 'إعلان معلم إنجليزي - فرع الدمام' },
+];
+
+const SCHOOL_BRANCH_OPTIONS: InterviewSelectOption[] = [
+  { value: 'branch-1', label: 'مدرسة المستقبل - الرياض' },
+  { value: 'branch-2', label: 'مدرسة الريادة - جدة' },
+  { value: 'branch-3', label: 'مدرسة النخبة - الدمام' },
+];
 
 const TEACHER_OPTIONS: InterviewSelectOption[] = [
   { value: 'teacher-1', label: 'أحمد محمد' },
@@ -44,7 +66,7 @@ const SUPERVISOR_OPTIONS: InterviewSelectOption[] = [
 ];
 
 export default function Interviews() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +94,10 @@ export default function Interviews() {
         end: new Date(2025, 11, 16, 11, 0),
         candidateName: 'أحمد محمد',
         supervisor: 'م. أحمد حسن ابراهيم',
+        schoolBranchesId: 'branch-1',
+        schoolBranchName: 'مدرسة المستقبل - الرياض',
+        jobAdvertisementId: 'job-1',
+        jobAdvertisementName: 'إعلان معلم عربي - فرع الرياض',
         announcementId: 'announcement-1',
         announcementName: 'إعلان توظيف معلم لغة عربي',
         teacherId: 'teacher-1',
@@ -84,6 +110,10 @@ export default function Interviews() {
         end: new Date(2025, 11, 16, 11, 0),
         candidateName: 'محمد أحمد',
         supervisor: 'م. أحمد حسن ابراهيم',
+        schoolBranchesId: 'branch-2',
+        schoolBranchName: 'مدرسة الريادة - جدة',
+        jobAdvertisementId: 'job-3',
+        jobAdvertisementName: 'إعلان معلم إنجليزي - فرع الدمام',
         announcementId: 'announcement-3',
         announcementName: 'إعلان توظيف معلم لغة إنجليزية',
         teacherId: 'teacher-4',
@@ -96,6 +126,10 @@ export default function Interviews() {
         end: new Date(2025, 11, 16, 11, 0),
         candidateName: 'محمد أحمد',
         supervisor: 'م. أحمد حسن ابراهيم',
+        schoolBranchesId: 'branch-2',
+        schoolBranchName: 'مدرسة الريادة - جدة',
+        jobAdvertisementId: 'job-3',
+        jobAdvertisementName: 'إعلان معلم إنجليزي - فرع الدمام',
         announcementId: 'announcement-3',
         announcementName: 'إعلان توظيف معلم لغة إنجليزية',
         teacherId: 'teacher-4',
@@ -108,6 +142,10 @@ export default function Interviews() {
         end: new Date(2025, 11, 18, 15, 30),
         candidateName: 'سارة علي',
         supervisor: 'م. أحمد حسن ابراهيم',
+        schoolBranchesId: 'branch-1',
+        schoolBranchName: 'مدرسة المستقبل - الرياض',
+        jobAdvertisementId: 'job-1',
+        jobAdvertisementName: 'إعلان معلم عربي - فرع الرياض',
         announcementId: 'announcement-1',
         announcementName: 'إعلان توظيف معلم لغة عربي',
         teacherId: 'teacher-2',
@@ -120,6 +158,10 @@ export default function Interviews() {
         end: new Date(2025, 11, 20, 10, 0),
         candidateName: 'محمد حسن',
         supervisor: 'م. أحمد حسن ابراهيم',
+        schoolBranchesId: 'branch-3',
+        schoolBranchName: 'مدرسة النخبة - الدمام',
+        jobAdvertisementId: 'job-2',
+        jobAdvertisementName: 'إعلان معلم علوم - فرع جدة',
         announcementId: 'announcement-2',
         announcementName: 'إعلان توظيف معلم علوم',
         teacherId: 'teacher-3',
@@ -132,6 +174,10 @@ export default function Interviews() {
         end: new Date(2025, 11, 28, 12, 0),
         candidateName: 'فاطمة أحمد',
         supervisor: 'م. أحمد حسن ابراهيم',
+        schoolBranchesId: 'branch-2',
+        schoolBranchName: 'مدرسة الريادة - جدة',
+        jobAdvertisementId: 'job-3',
+        jobAdvertisementName: 'إعلان معلم إنجليزي - فرع الدمام',
         announcementId: 'announcement-3',
         announcementName: 'إعلان توظيف معلم لغة إنجليزية',
         teacherId: 'teacher-4',
@@ -144,6 +190,10 @@ export default function Interviews() {
         end: new Date(2026, 0, 2, 2, 0),
         candidateName: 'فاطمة أحمد',
         supervisor: 'م. أحمد حسن ابراهيم',
+        schoolBranchesId: 'branch-3',
+        schoolBranchName: 'مدرسة النخبة - الدمام',
+        jobAdvertisementId: 'job-3',
+        jobAdvertisementName: 'إعلان معلم إنجليزي - فرع الدمام',
         announcementId: 'announcement-3',
         announcementName: 'إعلان توظيف معلم لغة إنجليزية',
         teacherId: 'teacher-4',
@@ -169,6 +219,8 @@ export default function Interviews() {
     setEditingInterviewId(interview.id);
     setSelectedDateForEditor(interview.start);
     setEditorInitialValues({
+      schoolBranchesId: interview.schoolBranchesId ?? '',
+      jobAdvertisementId: interview.jobAdvertisementId ?? '',
       announcementId: interview.announcementId ?? '',
       teacherId: interview.teacherId ?? '',
       supervisorId: interview.supervisorId ?? '',
@@ -209,16 +261,24 @@ export default function Interviews() {
     const teacherLabel = findLabel(TEACHER_OPTIONS, formValues.teacherId);
     const supervisorLabel = findLabel(SUPERVISOR_OPTIONS, formValues.supervisorId);
     const announcementLabel = findLabel(ANNOUNCEMENT_OPTIONS, formValues.announcementId);
+    const jobAdvertisementLabel = findLabel(JOB_ADVERTISEMENT_OPTIONS, formValues.jobAdvertisementId);
+    const schoolBranchLabel = findLabel(SCHOOL_BRANCH_OPTIONS, formValues.schoolBranchesId);
+    const localizedTitle =
+      announcementLabel || jobAdvertisementLabel || teacherLabel || t('interviews.interview');
 
     const newInterview: Interview = {
       id: `${Date.now()}`,
-      title: teacherLabel || announcementLabel || t('interviews.interview'),
+      title: localizedTitle,
       start,
       end,
       candidateName: teacherLabel,
       supervisor: supervisorLabel,
-      announcementName: announcementLabel,
+      schoolBranchesId: formValues.schoolBranchesId,
+      schoolBranchName: schoolBranchLabel,
+      jobAdvertisementId: formValues.jobAdvertisementId,
+      jobAdvertisementName: jobAdvertisementLabel,
       announcementId: formValues.announcementId,
+      announcementName: announcementLabel,
       teacherId: formValues.teacherId,
       supervisorId: formValues.supervisorId,
     };
@@ -239,6 +299,13 @@ export default function Interviews() {
         const teacherLabel = findLabel(TEACHER_OPTIONS, formValues.teacherId);
         const supervisorLabel = findLabel(SUPERVISOR_OPTIONS, formValues.supervisorId);
         const announcementLabel = findLabel(ANNOUNCEMENT_OPTIONS, formValues.announcementId);
+        const jobAdvertisementLabel = findLabel(
+          JOB_ADVERTISEMENT_OPTIONS,
+          formValues.jobAdvertisementId
+        );
+        const schoolBranchLabel = findLabel(SCHOOL_BRANCH_OPTIONS, formValues.schoolBranchesId);
+        const localizedTitle =
+          announcementLabel || jobAdvertisementLabel || teacherLabel || interview.title;
 
         return {
           ...interview,
@@ -246,11 +313,15 @@ export default function Interviews() {
           end,
           candidateName: teacherLabel,
           supervisor: supervisorLabel,
-          announcementName: announcementLabel,
+          schoolBranchesId: formValues.schoolBranchesId,
+          schoolBranchName: schoolBranchLabel,
+          jobAdvertisementId: formValues.jobAdvertisementId,
+          jobAdvertisementName: jobAdvertisementLabel,
           announcementId: formValues.announcementId,
+          announcementName: announcementLabel,
           teacherId: formValues.teacherId,
           supervisorId: formValues.supervisorId,
-          title: announcementLabel || teacherLabel || interview.title,
+          title: localizedTitle,
         };
       })
     );
@@ -368,6 +439,8 @@ export default function Interviews() {
         initialValues={editorInitialValues}
         onClose={handleCloseEditorPopup}
         onSubmit={handleEditorSubmit}
+        schoolBranches={SCHOOL_BRANCH_OPTIONS}
+        jobAdvertisements={JOB_ADVERTISEMENT_OPTIONS}
         announcements={ANNOUNCEMENT_OPTIONS}
         teachers={TEACHER_OPTIONS}
         supervisors={SUPERVISOR_OPTIONS}

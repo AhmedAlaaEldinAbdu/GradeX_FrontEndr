@@ -962,10 +962,10 @@
     "startTime": "ساعة البدء",
     "endTime": "ساعة الانتهاء",
     "interview": "المقابلة",
-    "interviewNameAr": "اسم المقابلة (بالعربية)",
-    "interviewNameEn": "اسم المقابلة (بالإنجليزية)",
-    "enterInterviewNameAr": "أدخل اسم المقابلة بالعربية",
-    "enterInterviewNameEn": "أدخل اسم المقابلة بالإنجليزية",
+    "schoolBranch": "فرع المدرسة",
+    "selectSchoolBranch": "اختر فرع المدرسة",
+    "jobAdvertisement": "إعلان الوظيفة",
+    "selectJobAdvertisement": "اختر إعلان الوظيفة",
     "selectAnnouncementName": "اختر اسم الإعلان",
     "selectTeacherName": "اختر اسم المعلم",
     "selectSupervisor": "اختر اسم المشرف",
@@ -991,6 +991,17 @@
     "interviewAddedSuccessfully": "تم إضافة المقابلة بنجاح",
     "interviewUpdatedSuccessfully": "تم تحديث المقابلة بنجاح",
     "interviewDeletedSuccessfully": "تم حذف المقابلة بنجاح",
-    "confirmDeleteInterview": "هل أنت متأكد من حذف هذه المقابلة؟"
+    "confirmDeleteInterview": "هل أنت متأكد من حذف هذه المقابلة؟",
+    "validation": {
+      "schoolBranchesIdRequired": "فرع المدرسة مطلوب",
+      "jobAdvertisementIdRequired": "إعلان الوظيفة مطلوب",
+      "teacherIdRequired": "اسم المعلم مطلوب",
+      "supervisorIdRequired": "اسم المشرف مطلوب",
+      "interviewDateRequired": "تاريخ المقابلة مطلوب",
+      "startTimeRequired": "وقت البدء مطلوب",
+      "endTimeRequired": "وقت الانتهاء مطلوب",
+      "interViewTypeRequired": "نوع المقابلة مطلوب",
+      "interViewTypeInvalid": "نوع المقابلة غير صالح"
+    }
   }
 }

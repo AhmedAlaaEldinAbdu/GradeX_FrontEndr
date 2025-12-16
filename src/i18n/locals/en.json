@@ -963,10 +963,10 @@
     "startTime": "Start time",
     "endTime": "End time",
     "interview": "Interview",
-    "interviewNameAr": "Interview Name (Arabic)",
-    "interviewNameEn": "Interview Name (English)",
-    "enterInterviewNameAr": "Enter interview name in Arabic",
-    "enterInterviewNameEn": "Enter interview name in English",
+    "schoolBranch": "School Branch",
+    "selectSchoolBranch": "Select school branch",
+    "jobAdvertisement": "Job Advertisement",
+    "selectJobAdvertisement": "Select job advertisement",
     "selectAnnouncementName": "Select announcement name",
     "selectTeacherName": "Select teacher name",
     "selectSupervisor": "Select supervisor",
@@ -992,6 +992,17 @@
     "interviewAddedSuccessfully": "Interview added successfully",
     "interviewUpdatedSuccessfully": "Interview updated successfully",
     "interviewDeletedSuccessfully": "Interview deleted successfully",
-    "confirmDeleteInterview": "Are you sure you want to delete this interview?"
+    "confirmDeleteInterview": "Are you sure you want to delete this interview?",
+    "validation": {
+      "schoolBranchesIdRequired": "School branch is required",
+      "jobAdvertisementIdRequired": "Job advertisement is required",
+      "teacherIdRequired": "Teacher name is required",
+      "supervisorIdRequired": "Supervisor name is required",
+      "interviewDateRequired": "Interview date is required",
+      "startTimeRequired": "Start time is required",
+      "endTimeRequired": "End time is required",
+      "interViewTypeRequired": "Interview type is required",
+      "interViewTypeInvalid": "Interview type is invalid"
+    }
   }
 }

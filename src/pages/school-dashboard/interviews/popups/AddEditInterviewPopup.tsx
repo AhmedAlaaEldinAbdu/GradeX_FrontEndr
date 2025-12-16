@@ -17,8 +17,9 @@ export interface SelectOption {
 }
 
 export interface AddInterviewFormValues {
-  interviewNameAr: string;
-  interviewNameEn: string;
+  schoolBranchesId: string;
+  jobAdvertisementId: string;
+  announcementId: string;
   teacherId: string;
   supervisorId: string;
   startTime: string;
@@ -29,6 +30,9 @@ interface AddEditInterviewPopupProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit?: (values: AddInterviewFormValues) => void | Promise<void>;
+  schoolBranches: SelectOption[];
+  jobAdvertisements: SelectOption[];
+  announcements: SelectOption[];
   teachers: SelectOption[];
   supervisors: SelectOption[];
   selectedDate?: Date | null;
@@ -37,8 +41,9 @@ interface AddEditInterviewPopupProps {
 }
 
 export const createInterviewFormDefaults = (): AddInterviewFormValues => ({
-  interviewNameAr: '',
-  interviewNameEn: '',
+  schoolBranchesId: '',
+  jobAdvertisementId: '',
+  announcementId: '',
   teacherId: '',
   supervisorId: '',
   startTime: '',
@@ -49,6 +54,9 @@ export default function AddEditInterviewPopup({
   isOpen,
   onClose,
   onSubmit,
+  schoolBranches,
+  jobAdvertisements,
+  announcements,
   teachers,
   supervisors,
   selectedDate,
@@ -106,32 +114,76 @@ export default function AddEditInterviewPopup({
           <div className="space-y-5">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
-                label={t('interviews.interviewNameAr')}
+                label={t('interviews.schoolBranch')}
                 required
-                error={errors.interviewNameAr?.message}
-                htmlFor="interviewNameAr"
+                error={errors.schoolBranchesId?.message}
+                htmlFor="schoolBranchesId"
               >
-                <Input
-                  id="interviewNameAr"
-                  placeholder={t('interviews.enterInterviewNameAr')}
-                  {...register('interviewNameAr', {
-                    required: t('common.validation.required'),
-                  })}
+                <Controller
+                  name="schoolBranchesId"
+                  control={control}
+                  rules={{ required: t('common.validation.required') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      id="schoolBranchesId"
+                      value={field.value ?? ''}
+                      onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                      options={schoolBranches}
+                      placeholder={t('interviews.selectSchoolBranch')}
+                      error={!!errors.schoolBranchesId}
+                      disabled={schoolBranches.length === 0}
+                    />
+                  )}
                 />
               </FormField>
 
               <FormField
-                label={t('interviews.interviewNameEn')}
+                label={t('interviews.jobAdvertisement')}
                 required
-                error={errors.interviewNameEn?.message}
-                htmlFor="interviewNameEn"
+                error={errors.jobAdvertisementId?.message}
+                htmlFor="jobAdvertisementId"
               >
-                <Input
-                  id="interviewNameEn"
-                  placeholder={t('interviews.enterInterviewNameEn')}
-                  {...register('interviewNameEn', {
-                    required: t('common.validation.required'),
-                  })}
+                <Controller
+                  name="jobAdvertisementId"
+                  control={control}
+                  rules={{ required: t('common.validation.required') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      id="jobAdvertisementId"
+                      value={field.value ?? ''}
+                      onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                      options={jobAdvertisements}
+                      placeholder={t('interviews.selectJobAdvertisement')}
+                      error={!!errors.jobAdvertisementId}
+                      disabled={jobAdvertisements.length === 0}
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              <FormField
+                label={t('interviews.announcementName')}
+                required
+                error={errors.announcementId?.message}
+                htmlFor="announcementId"
+              >
+                <Controller
+                  name="announcementId"
+                  control={control}
+                  rules={{ required: t('common.validation.required') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      id="announcementId"
+                      value={field.value ?? ''}
+                      onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                      options={announcements}
+                      placeholder={t('interviews.selectAnnouncementName')}
+                      error={!!errors.announcementId}
+                      disabled={announcements.length === 0}
+                    />
+                  )}
                 />
               </FormField>
             </div>
