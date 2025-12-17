@@ -553,7 +553,11 @@
     "notAvailable": "غير متوفر",
     "filterByStage": "تصفية حسب المرحلة",
     "filterByClassroom": "تصفية حسب الصف",
-    "addAttendanceSchedule": "إضافة موعد الحضور والانصراف"
+    "addAttendanceSchedule": "إضافة موعد الحضور والانصراف",
+    "selected": "محدد",
+    "markAllPresent": "حضور الكل في الموعد",
+    "markAllLate": "تأخير الكل",
+    "markAllAbsent": "غياب الكل"
   },
   "studentForm": {
     "firstName": "الاسم الأول",

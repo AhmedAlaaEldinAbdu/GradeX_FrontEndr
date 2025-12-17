@@ -554,7 +554,11 @@
     "notAvailable": "Not Available",
     "filterByStage": "Filter by stage",
     "filterByClassroom": "Filter by classroom",
-    "addAttendanceSchedule": "Add Attendance Schedule"
+    "addAttendanceSchedule": "Add Attendance Schedule",
+    "selected": "selected",
+    "markAllPresent": "Mark All Present",
+    "markAllLate": "Mark All Late",
+    "markAllAbsent": "Mark All Absent"
   },
   "studentForm": {
     "firstName": "First Name",
