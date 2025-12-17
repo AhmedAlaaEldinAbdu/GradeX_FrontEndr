@@ -211,7 +211,12 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="region"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterRegion')} disabled={readOnly} id="region" />
+              <Input
+                {...field}
+                placeholder={t('schools.enterRegion')}
+                disabled={readOnly}
+                id="region"
+              />
             )}
           />
         </FormField>
@@ -229,7 +234,12 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="city"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterCity')} disabled={readOnly} id="city" />
+              <Input
+                {...field}
+                placeholder={t('schools.enterCity')}
+                disabled={readOnly}
+                id="city"
+              />
             )}
           />
         </FormField>
@@ -244,7 +254,12 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="district"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterDistrict')} disabled={readOnly} id="district" />
+              <Input
+                {...field}
+                placeholder={t('schools.enterDistrict')}
+                disabled={readOnly}
+                id="district"
+              />
             )}
           />
         </FormField>
@@ -262,7 +277,12 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="street"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterStreet')} disabled={readOnly} id="street" />
+              <Input
+                {...field}
+                placeholder={t('schools.enterStreet')}
+                disabled={readOnly}
+                id="street"
+              />
             )}
           />
         </FormField>
@@ -300,7 +320,12 @@ const AddressStep: React.FC<AddressStepProps> = ({
             name="postalCode"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder={t('schools.enterPostalCode')} disabled={readOnly} id="postalCode" />
+              <Input
+                {...field}
+                placeholder={t('schools.enterPostalCode')}
+                disabled={readOnly}
+                id="postalCode"
+              />
             )}
           />
         </FormField>
@@ -309,7 +334,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
       </div>
 
       {/* Has Branches Toggle */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      {/* <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <FormField label="هل لديكم فروع اخري؟" required>
           <Controller
             name="hasBranches"
@@ -342,7 +367,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
             )}
           />
         </FormField>
-      </div>
+      </div> */}
 
       {/* Branch Sections */}
       {hasBranches && (
