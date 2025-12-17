@@ -153,6 +153,7 @@ export default function AttendanceManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedClassroom, setSelectedClassroom] = useState('');
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -185,11 +186,38 @@ export default function AttendanceManagement() {
     currentPage * pageSize
   );
 
+  const handleSelectStudent = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedStudents((prev) => [...prev, id]);
+    } else {
+      setSelectedStudents((prev) => prev.filter((sid) => sid !== id));
+    }
+  };
+
+  const handleBulkAction = (status: 'present' | 'absent' | 'late') => {
+    // Handle bulk status update here
+    console.log(`Bulk action: ${status} for students:`, selectedStudents);
+    setSelectedStudents([]);
+  };
+
   const columns: DataTableColumn<StudentAttendance>[] = [
     {
       header: '#',
       accessor: (_row, index) => (currentPage - 1) * pageSize + (index || 0) + 1,
       headerClassName: 'w-16',
+      className: 'text-center',
+    },
+    {
+      header: '',
+      accessor: (row) => (
+        <input
+          type="checkbox"
+          checked={selectedStudents.includes(row.id)}
+          onChange={(e) => handleSelectStudent(row.id, e.target.checked)}
+          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-600 focus:ring-green-500"
+        />
+      ),
+      headerClassName: 'w-12',
       className: 'text-center',
     },
     {
@@ -337,28 +365,59 @@ export default function AttendanceManagement() {
     setSearchTerm('');
     setSelectedStage('');
     setSelectedClassroom('');
+    setSelectedStudents([]);
   };
 
+  const bulkActionsBar =
+    selectedStudents.length > 0 ? (
+      <div className="flex items-center justify-end gap-2">
+        <button
+          onClick={() => handleBulkAction('present')}
+          className="flex items-center gap-1.5 rounded-full border border-green-500 bg-white px-3 py-1.5 text-sm text-green-600 transition-colors hover:bg-green-50"
+        >
+          <CustomImage src={CheckIcon} className="h-4 w-4" alt="present" />
+          <span>{t('attendance.markAllPresent')}</span>
+        </button>
+        <button
+          onClick={() => handleBulkAction('late')}
+          className="flex items-center gap-1.5 rounded-full border border-yellow-500 bg-white px-3 py-1.5 text-sm text-yellow-600 transition-colors hover:bg-yellow-50"
+        >
+          <CustomImage src={HistoryIcon} className="h-4 w-4" alt="late" />
+          <span>{t('attendance.markAllLate')}</span>
+        </button>
+        <button
+          onClick={() => handleBulkAction('absent')}
+          className="flex items-center gap-1.5 rounded-full border border-red-500 bg-white px-3 py-1.5 text-sm text-red-600 transition-colors hover:bg-red-50"
+        >
+          <CustomImage src={XMarkDangerIcon} className="h-4 w-4" alt="absent" />
+          <span>{t('attendance.markAllAbsent')}</span>
+        </button>
+      </div>
+    ) : null;
+
   return (
-    <Card>
-      <DataTable
-        data={paginatedStudents}
-        columns={columns}
-        keyExtractor={(row) => row.id}
-        pagination={{
-          page: currentPage,
-          limit: pageSize,
-          total: filteredStudents.length,
-          totalPages: totalPages,
-        }}
-        onPageChange={setCurrentPage}
-        filters={filterConfigs}
-        showFilters={true}
-        onResetFilters={handleResetFilters}
-        isLoading={false}
-        emptyMessage={t('attendance.noStudents')}
-        t={t}
-      />
-    </Card>
+    <div>
+      <Card>
+        <DataTable
+          data={paginatedStudents}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          pagination={{
+            page: currentPage,
+            limit: pageSize,
+            total: filteredStudents.length,
+            totalPages: totalPages,
+          }}
+          onPageChange={setCurrentPage}
+          filters={filterConfigs}
+          showFilters={true}
+          onResetFilters={handleResetFilters}
+          bulkActions={bulkActionsBar}
+          isLoading={false}
+          emptyMessage={t('attendance.noStudents')}
+          t={t}
+        />
+      </Card>
+    </div>
   );
 }
