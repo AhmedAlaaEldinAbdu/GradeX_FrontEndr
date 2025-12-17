@@ -52,6 +52,9 @@ export interface DataTableProps<T> {
   showFilters?: boolean;
   onResetFilters?: () => void;
 
+  // Bulk Actions
+  bulkActions?: ReactNode;
+
   // Loading & Empty States
   isLoading?: boolean;
   emptyMessage?: string;
@@ -70,6 +73,7 @@ export default function DataTable<T>({
   filterComponent,
   showFilters = true,
   onResetFilters,
+  bulkActions,
   isLoading = false,
   emptyMessage,
   t,
@@ -215,6 +219,9 @@ export default function DataTable<T>({
           )}
         </div>
       )}
+
+      {/* Bulk Actions */}
+      {bulkActions && <div className="mb-4">{bulkActions}</div>}
 
       {/* Loading State - Only shows on table area */}
       {isLoading ? (
