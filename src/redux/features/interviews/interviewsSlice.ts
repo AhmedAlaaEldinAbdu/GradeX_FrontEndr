@@ -19,7 +19,6 @@ import type { ApiResponseModel } from '@/services/api';
 // ============================================================================
 
 export interface InterviewFilters {
-  announcementId?: string;
   teacherId?: string;
   supervisorId?: string;
   jobAdvertisementId?: string;
@@ -98,7 +97,6 @@ export const fetchInterviews = createAsyncThunk<
 
       if (payload.filters) {
         const {
-          announcementId,
           teacherId,
           supervisorId,
           jobAdvertisementId,
@@ -108,7 +106,6 @@ export const fetchInterviews = createAsyncThunk<
           year,
         } = payload.filters;
 
-        if (announcementId) params.announcementId = announcementId;
         if (teacherId) params.teacherId = teacherId;
         if (supervisorId) params.supervisorId = supervisorId;
         if (jobAdvertisementId) params.jobAdvertisementId = jobAdvertisementId;

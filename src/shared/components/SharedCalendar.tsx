@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ar } from 'date-fns/locale';
-import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DotsIcon from '@gradex/assets/icons/Dots.svg';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -276,7 +275,7 @@ export default function SharedCalendar({
 
   return (
     <div ref={containerRef} className="relative">
-      <Card className={`relative ${className}`}>
+      <div className={`relative ${className}`}>
         <div className={`calendar-container ${isRTL ? 'rtl' : 'ltr'}`}>
           <BigCalendar
             localizer={localizer}
@@ -339,7 +338,7 @@ export default function SharedCalendar({
             eventPropGetter={eventPropGetter}
           />
         </div>
-      </Card>
+      </div>
 
       {/* Dropdown Menu Portal */}
       {openDropdown && dropdownPosition && dropdownContext && (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EmptyState from '@/shared/components/EmptyState';
 import ErrorMessage from '@/shared/components/ErrorMessage';
@@ -6,11 +6,7 @@ import SharedCalendar, {
   type CalendarEvent,
   type ContextMenuAction,
 } from '@/shared/components/SharedCalendar';
-import AddEditInterviewPopup, {
-  type AddInterviewFormValues,
-  type SelectOption as InterviewSelectOption,
-  createInterviewFormDefaults,
-} from '../popups/AddEditInterviewPopup';
+import AddEditInterviewPopup from '../popups/AddEditInterviewPopup';
 import InterviewDetailsPopup from '../popups/InterviewDetailsPopup';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import StyledCalendarIcon from '@gradex/assets/icons/StyledCalendar.svg';
@@ -19,13 +15,15 @@ import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import SearchInput from '@/shared/components/SearchInput';
+import CustomSelect from '@/shared/components/CustomSelect';
+import { useToast } from '@/shared/context/ToastContext';
+import Card from '@/shared/components/Card';
 
 interface Interview extends CalendarEvent {
   candidateName?: string;
   position?: string;
   supervisor?: string;
-  announcementId?: string;
-  announcementName?: string;
   jobAdvertisementId?: string;
   jobAdvertisementName?: string;
   schoolBranchesId?: string;
@@ -34,39 +32,11 @@ interface Interview extends CalendarEvent {
   supervisorId?: string;
 }
 
-const ANNOUNCEMENT_OPTIONS: InterviewSelectOption[] = [
-  { value: 'announcement-1', label: 'إعلان توظيف معلم لغة عربي' },
-  { value: 'announcement-2', label: 'إعلان توظيف معلم علوم' },
-  { value: 'announcement-3', label: 'إعلان توظيف معلم لغة إنجليزية' },
-];
-
-const JOB_ADVERTISEMENT_OPTIONS: InterviewSelectOption[] = [
-  { value: 'job-1', label: 'إعلان معلم عربي - فرع الرياض' },
-  { value: 'job-2', label: 'إعلان معلم علوم - فرع جدة' },
-  { value: 'job-3', label: 'إعلان معلم إنجليزي - فرع الدمام' },
-];
-
-const SCHOOL_BRANCH_OPTIONS: InterviewSelectOption[] = [
-  { value: 'branch-1', label: 'مدرسة المستقبل - الرياض' },
-  { value: 'branch-2', label: 'مدرسة الريادة - جدة' },
-  { value: 'branch-3', label: 'مدرسة النخبة - الدمام' },
-];
-
-const TEACHER_OPTIONS: InterviewSelectOption[] = [
-  { value: 'teacher-1', label: 'أحمد محمد' },
-  { value: 'teacher-2', label: 'سارة علي' },
-  { value: 'teacher-3', label: 'محمد حسن' },
-  { value: 'teacher-4', label: 'فاطمة أحمد' },
-];
-
-const SUPERVISOR_OPTIONS: InterviewSelectOption[] = [
-  { value: 'supervisor-1', label: 'م. أحمد حسن ابراهيم' },
-  { value: 'supervisor-2', label: 'د. سارة إبراهيم' },
-  { value: 'supervisor-3', label: 'أ. يوسف العتيبي' },
-];
-
 export default function Interviews() {
   const { t } = useTranslation();
+  const { showToast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,133 +44,29 @@ export default function Interviews() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorMode, setEditorMode] = useState<'add' | 'edit'>('add');
-  const [editorInitialValues, setEditorInitialValues] = useState<AddInterviewFormValues>(
-    createInterviewFormDefaults()
-  );
-  const [selectedDateForEditor, setSelectedDateForEditor] = useState<Date | null>(null);
+  const [editorInitialValues, setEditorInitialValues] = useState<any>(null);
+  const [selectedDateForEditor, setSelectedDateForEditor] = useState<Date | undefined>(undefined);
   const [editingInterviewId, setEditingInterviewId] = useState<string | null>(null);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [interviewIdPendingDelete, setInterviewIdPendingDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // TODO: Fetch interviews from API
+  const fetchInterviews = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      setInterviews([]);
+    } catch (err) {
+      console.error('Failed to fetch interviews:', err);
+      setError(t('common.error'));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t]);
+
   useEffect(() => {
-    setIsLoading(false);
-    // Sample data - all in December 2025 for easy testing
-    setInterviews([
-      {
-        id: '1',
-        title: 'إعلان توظيف معلم لغة عربي',
-        start: new Date(2025, 11, 16, 10, 0),
-        end: new Date(2025, 11, 16, 11, 0),
-        candidateName: 'أحمد محمد',
-        supervisor: 'م. أحمد حسن ابراهيم',
-        schoolBranchesId: 'branch-1',
-        schoolBranchName: 'مدرسة المستقبل - الرياض',
-        jobAdvertisementId: 'job-1',
-        jobAdvertisementName: 'إعلان معلم عربي - فرع الرياض',
-        announcementId: 'announcement-1',
-        announcementName: 'إعلان توظيف معلم لغة عربي',
-        teacherId: 'teacher-1',
-        supervisorId: 'supervisor-1',
-      },
-      {
-        id: '4',
-        title: 'مقابلة مع محمد أحمد',
-        start: new Date(2025, 11, 16, 10, 0),
-        end: new Date(2025, 11, 16, 11, 0),
-        candidateName: 'محمد أحمد',
-        supervisor: 'م. أحمد حسن ابراهيم',
-        schoolBranchesId: 'branch-2',
-        schoolBranchName: 'مدرسة الريادة - جدة',
-        jobAdvertisementId: 'job-3',
-        jobAdvertisementName: 'إعلان معلم إنجليزي - فرع الدمام',
-        announcementId: 'announcement-3',
-        announcementName: 'إعلان توظيف معلم لغة إنجليزية',
-        teacherId: 'teacher-4',
-        supervisorId: 'supervisor-1',
-      },
-      {
-        id: '4',
-        title: 'مقابلة مع محمد أحمد',
-        start: new Date(2025, 11, 16, 10, 0),
-        end: new Date(2025, 11, 16, 11, 0),
-        candidateName: 'محمد أحمد',
-        supervisor: 'م. أحمد حسن ابراهيم',
-        schoolBranchesId: 'branch-2',
-        schoolBranchName: 'مدرسة الريادة - جدة',
-        jobAdvertisementId: 'job-3',
-        jobAdvertisementName: 'إعلان معلم إنجليزي - فرع الدمام',
-        announcementId: 'announcement-3',
-        announcementName: 'إعلان توظيف معلم لغة إنجليزية',
-        teacherId: 'teacher-4',
-        supervisorId: 'supervisor-1',
-      },
-      {
-        id: '2',
-        title: 'إعلان توظيف معلم لغة عربي - مقابلة مع سارة علي',
-        start: new Date(2025, 11, 18, 14, 0),
-        end: new Date(2025, 11, 18, 15, 30),
-        candidateName: 'سارة علي',
-        supervisor: 'م. أحمد حسن ابراهيم',
-        schoolBranchesId: 'branch-1',
-        schoolBranchName: 'مدرسة المستقبل - الرياض',
-        jobAdvertisementId: 'job-1',
-        jobAdvertisementName: 'إعلان معلم عربي - فرع الرياض',
-        announcementId: 'announcement-1',
-        announcementName: 'إعلان توظيف معلم لغة عربي',
-        teacherId: 'teacher-2',
-        supervisorId: 'supervisor-1',
-      },
-      {
-        id: '3',
-        title: 'مقابلة مع محمد حسن',
-        start: new Date(2025, 11, 20, 9, 0),
-        end: new Date(2025, 11, 20, 10, 0),
-        candidateName: 'محمد حسن',
-        supervisor: 'م. أحمد حسن ابراهيم',
-        schoolBranchesId: 'branch-3',
-        schoolBranchName: 'مدرسة النخبة - الدمام',
-        jobAdvertisementId: 'job-2',
-        jobAdvertisementName: 'إعلان معلم علوم - فرع جدة',
-        announcementId: 'announcement-2',
-        announcementName: 'إعلان توظيف معلم علوم',
-        teacherId: 'teacher-3',
-        supervisorId: 'supervisor-1',
-      },
-      {
-        id: '4',
-        title: 'مقابلة مع فاطمة أحمد',
-        start: new Date(2025, 11, 25, 11, 0),
-        end: new Date(2025, 11, 28, 12, 0),
-        candidateName: 'فاطمة أحمد',
-        supervisor: 'م. أحمد حسن ابراهيم',
-        schoolBranchesId: 'branch-2',
-        schoolBranchName: 'مدرسة الريادة - جدة',
-        jobAdvertisementId: 'job-3',
-        jobAdvertisementName: 'إعلان معلم إنجليزي - فرع الدمام',
-        announcementId: 'announcement-3',
-        announcementName: 'إعلان توظيف معلم لغة إنجليزية',
-        teacherId: 'teacher-4',
-        supervisorId: 'supervisor-1',
-      },
-      {
-        id: '5',
-        title: 'مقابلة مع فاطمة أحمد',
-        start: new Date(2026, 0, 1, 1, 0),
-        end: new Date(2026, 0, 2, 2, 0),
-        candidateName: 'فاطمة أحمد',
-        supervisor: 'م. أحمد حسن ابراهيم',
-        schoolBranchesId: 'branch-3',
-        schoolBranchName: 'مدرسة النخبة - الدمام',
-        jobAdvertisementId: 'job-3',
-        jobAdvertisementName: 'إعلان معلم إنجليزي - فرع الدمام',
-        announcementId: 'announcement-3',
-        announcementName: 'إعلان توظيف معلم لغة إنجليزية',
-        teacherId: 'teacher-4',
-        supervisorId: 'supervisor-1',
-      },
-    ]);
-  }, []);
+    void fetchInterviews();
+  }, [fetchInterviews]);
 
   const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
     // navigate('/interviews/add-interview', { state: { date: slotInfo.start } });
@@ -209,7 +75,7 @@ export default function Interviews() {
   const handleOpenAddPopup = (date?: Date) => {
     setEditorMode('add');
     setEditingInterviewId(null);
-    setEditorInitialValues(createInterviewFormDefaults());
+    setEditorInitialValues(null);
     setSelectedDateForEditor(date ?? new Date());
     setIsEditorOpen(true);
   };
@@ -221,11 +87,12 @@ export default function Interviews() {
     setEditorInitialValues({
       schoolBranchesId: interview.schoolBranchesId ?? '',
       jobAdvertisementId: interview.jobAdvertisementId ?? '',
-      announcementId: interview.announcementId ?? '',
       teacherId: interview.teacherId ?? '',
       supervisorId: interview.supervisorId ?? '',
+      interviewDate: formatDateInput(interview.start),
       startTime: formatTimeInput(interview.start),
       endTime: formatTimeInput(interview.end),
+      interViewType: 0,
     });
     setIsEditorOpen(true);
   };
@@ -234,15 +101,15 @@ export default function Interviews() {
     setIsEditorOpen(false);
     setEditorMode('add');
     setEditingInterviewId(null);
-    setEditorInitialValues(createInterviewFormDefaults());
-    setSelectedDateForEditor(null);
+    setEditorInitialValues(null);
+    setSelectedDateForEditor(undefined);
   };
 
-  const combineDateAndTime = (baseDate: Date, time: string) => {
-    const [hours, minutes] = time.split(':').map((value) => Number(value) || 0);
-    const result = new Date(baseDate);
-    result.setHours(hours, minutes, 0, 0);
-    return result;
+  const formatDateInput = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const formatTimeInput = (date: Date) => {
@@ -251,89 +118,7 @@ export default function Interviews() {
     return `${hours}:${minutes}`;
   };
 
-  const findLabel = (options: InterviewSelectOption[], value: string) =>
-    options.find((option) => option.value === value)?.label ?? '';
-
-  const handleCreateInterview = (formValues: AddInterviewFormValues) => {
-    const baseDate = selectedDateForEditor ?? new Date();
-    const start = combineDateAndTime(baseDate, formValues.startTime);
-    const end = combineDateAndTime(baseDate, formValues.endTime);
-    const teacherLabel = findLabel(TEACHER_OPTIONS, formValues.teacherId);
-    const supervisorLabel = findLabel(SUPERVISOR_OPTIONS, formValues.supervisorId);
-    const announcementLabel = findLabel(ANNOUNCEMENT_OPTIONS, formValues.announcementId);
-    const jobAdvertisementLabel = findLabel(JOB_ADVERTISEMENT_OPTIONS, formValues.jobAdvertisementId);
-    const schoolBranchLabel = findLabel(SCHOOL_BRANCH_OPTIONS, formValues.schoolBranchesId);
-    const localizedTitle =
-      announcementLabel || jobAdvertisementLabel || teacherLabel || t('interviews.interview');
-
-    const newInterview: Interview = {
-      id: `${Date.now()}`,
-      title: localizedTitle,
-      start,
-      end,
-      candidateName: teacherLabel,
-      supervisor: supervisorLabel,
-      schoolBranchesId: formValues.schoolBranchesId,
-      schoolBranchName: schoolBranchLabel,
-      jobAdvertisementId: formValues.jobAdvertisementId,
-      jobAdvertisementName: jobAdvertisementLabel,
-      announcementId: formValues.announcementId,
-      announcementName: announcementLabel,
-      teacherId: formValues.teacherId,
-      supervisorId: formValues.supervisorId,
-    };
-
-    setInterviews((prev) => [...prev, newInterview]);
-  };
-
-  const handleUpdateInterview = (interviewId: string, formValues: AddInterviewFormValues) => {
-    setInterviews((prev) =>
-      prev.map((interview) => {
-        if (interview.id !== interviewId) {
-          return interview;
-        }
-
-        const baseDate = selectedDateForEditor ?? interview.start;
-        const start = combineDateAndTime(baseDate, formValues.startTime);
-        const end = combineDateAndTime(baseDate, formValues.endTime);
-        const teacherLabel = findLabel(TEACHER_OPTIONS, formValues.teacherId);
-        const supervisorLabel = findLabel(SUPERVISOR_OPTIONS, formValues.supervisorId);
-        const announcementLabel = findLabel(ANNOUNCEMENT_OPTIONS, formValues.announcementId);
-        const jobAdvertisementLabel = findLabel(
-          JOB_ADVERTISEMENT_OPTIONS,
-          formValues.jobAdvertisementId
-        );
-        const schoolBranchLabel = findLabel(SCHOOL_BRANCH_OPTIONS, formValues.schoolBranchesId);
-        const localizedTitle =
-          announcementLabel || jobAdvertisementLabel || teacherLabel || interview.title;
-
-        return {
-          ...interview,
-          start,
-          end,
-          candidateName: teacherLabel,
-          supervisor: supervisorLabel,
-          schoolBranchesId: formValues.schoolBranchesId,
-          schoolBranchName: schoolBranchLabel,
-          jobAdvertisementId: formValues.jobAdvertisementId,
-          jobAdvertisementName: jobAdvertisementLabel,
-          announcementId: formValues.announcementId,
-          announcementName: announcementLabel,
-          teacherId: formValues.teacherId,
-          supervisorId: formValues.supervisorId,
-          title: localizedTitle,
-        };
-      })
-    );
-  };
-
-  const handleEditorSubmit = (values: AddInterviewFormValues) => {
-    if (editorMode === 'edit' && editingInterviewId) {
-      handleUpdateInterview(editingInterviewId, values);
-    } else {
-      handleCreateInterview(values);
-    }
-  };
+  const handleEditorSubmit = async (_values: any) => {};
 
   const handleRequestDelete = (interviewId: string) => {
     setInterviewIdPendingDelete(interviewId);
@@ -345,19 +130,40 @@ export default function Interviews() {
     setInterviewIdPendingDelete(null);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!interviewIdPendingDelete) {
       return;
     }
 
-    setInterviews((prev) => prev.filter((interview) => interview.id !== interviewIdPendingDelete));
+    try {
+      setIsDeleting(true);
+      setInterviews((prev) =>
+        prev.filter((interview) => interview.id !== interviewIdPendingDelete)
+      );
 
-    if (selectedInterview?.id === interviewIdPendingDelete) {
-      setSelectedInterview(null);
-      setDetailsOpen(false);
+      if (selectedInterview?.id === interviewIdPendingDelete) {
+        setSelectedInterview(null);
+        setDetailsOpen(false);
+      }
+
+      showToast({
+        message: t('interviews.interviewDeletedSuccessfully'),
+        type: 'success',
+        duration: 3000,
+      });
+
+      await fetchInterviews();
+      handleCancelDelete();
+    } catch (error) {
+      console.error('Failed to delete interview:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setIsDeleting(false);
     }
-
-    handleCancelDelete();
   };
 
   const contextMenuActions: ContextMenuAction[] = [
@@ -420,32 +226,63 @@ export default function Interviews() {
     return <ErrorMessage message={error} />;
   }
 
-  if (!isLoading && interviews.length === 0) {
-    return <EmptyState imgSrc={StyledCalendarIcon} title={t('interviews.noInterviewsMessage')} />;
-  }
+  // if (!isLoading && interviews.length === 0) {
+  //   return (
+  //     <EmptyState
+  //       imgSrc={StyledCalendarIcon}
+  //       title={t('interviews.noInterviewsMessage')}
+  //       blend={true}
+  //     />
+  //   );
+  // }
+
+  const supervisorNames = interviews
+    .map((i) => i.supervisor)
+    .filter((name): name is string => Boolean(name));
+  const SUPERVISOR_OPTIONS = Array.from(new Set(supervisorNames)).map((name) => ({
+    value: name,
+    label: name,
+  }));
 
   return (
     <>
-      <SharedCalendar
-        events={interviews}
-        onSelectSlot={handleSelectSlot}
-        contextMenuActions={contextMenuActions}
-        defaultView="month"
-        height={700}
-      />
-      <AddEditInterviewPopup
-        isOpen={isEditorOpen}
-        mode={editorMode}
-        initialValues={editorInitialValues}
-        onClose={handleCloseEditorPopup}
-        onSubmit={handleEditorSubmit}
-        schoolBranches={SCHOOL_BRANCH_OPTIONS}
-        jobAdvertisements={JOB_ADVERTISEMENT_OPTIONS}
-        announcements={ANNOUNCEMENT_OPTIONS}
-        teachers={TEACHER_OPTIONS}
-        supervisors={SUPERVISOR_OPTIONS}
-        selectedDate={selectedDateForEditor}
-      />
+      <Card>
+        <div className="flex gap-3 mb-5">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder={t('interviews.searchTeacherName')}
+            wrapperClassName="w-[300px]"
+          />
+          <CustomSelect
+            value={selectedSupervisorName}
+            onChange={(value) =>
+              setSelectedSupervisorName(Array.isArray(value) ? (value[0] ?? '') : value)
+            }
+            options={SUPERVISOR_OPTIONS}
+            maxHeight="200px"
+            className='w-[250px]'
+            placeholder={t('interviews.supervisorName')}
+          />
+        </div>
+        <SharedCalendar
+          events={interviews}
+          onSelectSlot={handleSelectSlot}
+          contextMenuActions={contextMenuActions}
+          defaultView="month"
+          height={700}
+        />
+        <AddEditInterviewPopup
+          isOpen={isEditorOpen}
+          mode={editorMode}
+          initialValues={editorInitialValues}
+          onClose={handleCloseEditorPopup}
+          onSubmit={handleEditorSubmit}
+          selectedDate={selectedDateForEditor}
+        />
+      </Card>
+
+      {/* Popups */}
       <InterviewDetailsPopup
         isOpen={detailsOpen}
         onClose={() => {
@@ -460,6 +297,7 @@ export default function Interviews() {
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
       />
     </>
   );

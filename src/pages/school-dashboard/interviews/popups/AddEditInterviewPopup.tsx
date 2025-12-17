@@ -10,58 +10,27 @@ import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
 import CustomImage from '@/shared/components/CustomImage';
-
-export interface SelectOption {
-  value: string;
-  label: string;
-}
-
-export interface AddInterviewFormValues {
-  schoolBranchesId: string;
-  jobAdvertisementId: string;
-  announcementId: string;
-  teacherId: string;
-  supervisorId: string;
-  startTime: string;
-  endTime: string;
-}
+import type { InterviewFormProps } from '@/validations/interviews-validations';
+import { InterviewFormSchema } from '@/validations/interviews-validations';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { data } from 'react-router-dom';
 
 interface AddEditInterviewPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (values: AddInterviewFormValues) => void | Promise<void>;
-  schoolBranches: SelectOption[];
-  jobAdvertisements: SelectOption[];
-  announcements: SelectOption[];
-  teachers: SelectOption[];
-  supervisors: SelectOption[];
-  selectedDate?: Date | null;
+  onSubmit?: (values: InterviewFormProps) => Promise<void>;
+  initialValues?: InterviewFormProps;
+  selectedDate?: Date;
   mode?: 'add' | 'edit';
-  initialValues?: AddInterviewFormValues | null;
 }
-
-export const createInterviewFormDefaults = (): AddInterviewFormValues => ({
-  schoolBranchesId: '',
-  jobAdvertisementId: '',
-  announcementId: '',
-  teacherId: '',
-  supervisorId: '',
-  startTime: '',
-  endTime: '',
-});
 
 export default function AddEditInterviewPopup({
   isOpen,
   onClose,
   onSubmit,
-  schoolBranches,
-  jobAdvertisements,
-  announcements,
-  teachers,
-  supervisors,
+  initialValues,
   selectedDate,
   mode = 'add',
-  initialValues,
 }: AddEditInterviewPopupProps) {
   const { t, i18n } = useTranslation();
   const {
@@ -70,8 +39,54 @@ export default function AddEditInterviewPopup({
     reset,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<AddInterviewFormValues>({
-    defaultValues: createInterviewFormDefaults(),
+  } = useForm<InterviewFormProps>({
+    resolver: yupResolver(InterviewFormSchema),
+    defaultValues: {
+      schoolBranchesId: '',
+      jobAdvertisementId: '',
+      teacherId: '',
+      supervisorId: '',
+      interviewDate: '',
+      startTime: '',
+      endTime: '',
+      interViewType: 1,
+    },
+  });
+
+  const JOB_ADVERTISEMENT_OPTIONS = [
+    { value: 'job-1', label: 'إعلان معلم عربي - فرع الرياض' },
+    { value: 'job-2', label: 'إعلان معلم علوم - فرع جدة' },
+    { value: 'job-3', label: 'إعلان معلم إنجليزي - فرع الدمام' },
+  ];
+
+  const SCHOOL_BRANCH_OPTIONS = [
+    { value: 'branch-1', label: 'مدرسة المستقبل - الرياض' },
+    { value: 'branch-2', label: 'مدرسة الريادة - جدة' },
+    { value: 'branch-3', label: 'مدرسة النخبة - الدمام' },
+  ];
+
+  const TEACHER_OPTIONS = [
+    { value: 'teacher-1', label: 'أحمد محمد' },
+    { value: 'teacher-2', label: 'سارة علي' },
+    { value: 'teacher-3', label: 'محمد حسن' },
+    { value: 'teacher-4', label: 'فاطمة أحمد' },
+  ];
+
+  const SUPERVISOR_OPTIONS = [
+    { value: 'supervisor-1', label: 'م. أحمد حسن ابراهيم' },
+    { value: 'supervisor-2', label: 'د. سارة إبراهيم' },
+    { value: 'supervisor-3', label: 'أ. يوسف العتيبي' },
+  ];
+
+  const createInterviewFormDefaults = (): InterviewFormProps => ({
+    schoolBranchesId: '',
+    jobAdvertisementId: '',
+    teacherId: '',
+    supervisorId: '',
+    interviewDate: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
+    startTime: '',
+    endTime: '',
+    interViewType: 1,
   });
 
   useEffect(() => {
@@ -89,7 +104,7 @@ export default function AddEditInterviewPopup({
     onClose();
   };
 
-  const handleFormSubmit = async (values: AddInterviewFormValues) => {
+  const handleFormSubmit = async (values: InterviewFormProps) => {
     if (onSubmit) {
       await onSubmit(values);
     }
@@ -114,7 +129,7 @@ export default function AddEditInterviewPopup({
           <div className="space-y-5">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
-                label={t('interviews.schoolBranch')}
+                label={t('interviews.school')}
                 required
                 error={errors.schoolBranchesId?.message}
                 htmlFor="schoolBranchesId"
@@ -128,10 +143,10 @@ export default function AddEditInterviewPopup({
                       id="schoolBranchesId"
                       value={field.value ?? ''}
                       onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={schoolBranches}
-                      placeholder={t('interviews.selectSchoolBranch')}
+                      options={SCHOOL_BRANCH_OPTIONS}
+                      placeholder={t('interviews.selectSchool')}
                       error={!!errors.schoolBranchesId}
-                      disabled={schoolBranches.length === 0}
+                      disabled={SCHOOL_BRANCH_OPTIONS.length === 0}
                     />
                   )}
                 />
@@ -152,36 +167,10 @@ export default function AddEditInterviewPopup({
                       id="jobAdvertisementId"
                       value={field.value ?? ''}
                       onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={jobAdvertisements}
+                      options={JOB_ADVERTISEMENT_OPTIONS}
                       placeholder={t('interviews.selectJobAdvertisement')}
                       error={!!errors.jobAdvertisementId}
-                      disabled={jobAdvertisements.length === 0}
-                    />
-                  )}
-                />
-              </FormField>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              <FormField
-                label={t('interviews.announcementName')}
-                required
-                error={errors.announcementId?.message}
-                htmlFor="announcementId"
-              >
-                <Controller
-                  name="announcementId"
-                  control={control}
-                  rules={{ required: t('common.validation.required') }}
-                  render={({ field }) => (
-                    <CustomSelect
-                      id="announcementId"
-                      value={field.value ?? ''}
-                      onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={announcements}
-                      placeholder={t('interviews.selectAnnouncementName')}
-                      error={!!errors.announcementId}
-                      disabled={announcements.length === 0}
+                      disabled={JOB_ADVERTISEMENT_OPTIONS.length === 0}
                     />
                   )}
                 />
@@ -204,17 +193,17 @@ export default function AddEditInterviewPopup({
                       id="teacherId"
                       value={field.value ?? ''}
                       onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={teachers}
+                      options={TEACHER_OPTIONS}
                       placeholder={t('interviews.selectTeacherName')}
                       error={!!errors.teacherId}
-                      disabled={teachers.length === 0}
+                      disabled={TEACHER_OPTIONS.length === 0}
                     />
                   )}
                 />
               </FormField>
 
               <FormField
-                label={t('interviews.supervisor')}
+                label={t('interviews.supervisorName')}
                 required
                 error={errors.supervisorId?.message}
                 htmlFor="supervisorId"
@@ -228,10 +217,10 @@ export default function AddEditInterviewPopup({
                       id="supervisorId"
                       value={field.value ?? ''}
                       onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={supervisors}
+                      options={SUPERVISOR_OPTIONS}
                       placeholder={t('interviews.selectSupervisor')}
                       error={!!errors.supervisorId}
-                      disabled={supervisors.length === 0}
+                      disabled={SUPERVISOR_OPTIONS.length === 0}
                     />
                   )}
                 />

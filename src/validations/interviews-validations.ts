@@ -29,4 +29,4 @@ export const InterviewFormSchema = object({
     .typeError('interviews.validation.interViewTypeRequired'),
 });
 
-export type InterviewFormValues = InferType<typeof InterviewFormSchema>;
+export type InterviewFormProps = InferType<typeof InterviewFormSchema>;

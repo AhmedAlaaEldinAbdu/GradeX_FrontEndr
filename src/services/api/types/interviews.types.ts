@@ -51,7 +51,6 @@ export interface InterviewQueryParams {
   SupervisorName?: string;
   Month?: number;
   Year?: number;
-  announcementId?: string;
   teacherId?: string;
   supervisorId?: string;
   jobAdvertisementId?: string;
