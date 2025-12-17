@@ -13,6 +13,7 @@ import classroomsReducer from '../features/classrooms/classroomsSlice';
 import subjectsReducer from '../features/subjects/subjectsSlice';
 import booksReducer from '../features/books/booksSlice';
 import teachersReducer from '../features/teachers/teachersSlice';
+import jobAdvertismentsReducer from '../features/job-advertisments/jobAdvertismentsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
     subjects: subjectsReducer,
     books: booksReducer,
     teachers: teachersReducer,
+    jobAdvertisments: jobAdvertismentsReducer,
   },
 });
 
