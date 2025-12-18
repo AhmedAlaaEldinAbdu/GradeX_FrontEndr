@@ -20,7 +20,11 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import { useToast } from '@/shared/context/ToastContext';
 import Card from '@/shared/components/Card';
 import { useAppDispatch } from '@/hooks/useRedux';
-import { createInterview, editInterview } from '@/redux/features/interviews/interviewsSlice';
+import {
+  createInterview,
+  deleteInterview,
+  editInterview,
+} from '@/redux/features/interviews/interviewsSlice';
 import type { InterviewFormProps } from '@/validations/interviews-validations';
 import { InterviewType } from '@/services/api/types/interviews.types';
 
@@ -53,7 +57,7 @@ export default function Interviews() {
   const [editorInitialValues, setEditorInitialValues] = useState<any>(null);
   const [selectedDateForEditor, setSelectedDateForEditor] = useState<Date | undefined>(undefined);
   const [editingInterviewId, setEditingInterviewId] = useState<string | null>(null);
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [interviewIdPendingDelete, setInterviewIdPendingDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -126,7 +130,6 @@ export default function Interviews() {
 
   const handleEditorSubmit = async (values: InterviewFormProps) => {
     try {
-      // Normalize form values to match API types
       const payload = {
         ...values,
         interViewType: values.interViewType as InterviewType,
@@ -134,7 +137,11 @@ export default function Interviews() {
 
       if (editorMode === 'edit') {
         if (!editingInterviewId) {
-          throw new Error('Missing interview id for update');
+          throw showToast({
+            message: t('common.error'),
+            type: 'error',
+            duration: 3000,
+          });
         }
 
         await dispatch(editInterview({ id: editingInterviewId, data: payload })).unwrap();
@@ -171,11 +178,11 @@ export default function Interviews() {
 
   const handleRequestDelete = (interviewId: string) => {
     setInterviewIdPendingDelete(interviewId);
-    setIsDeletePopupOpen(true);
+    setShowDeletePopup(true);
   };
 
   const handleCancelDelete = () => {
-    setIsDeletePopupOpen(false);
+    setShowDeletePopup(false);
     setInterviewIdPendingDelete(null);
   };
 
@@ -186,27 +193,27 @@ export default function Interviews() {
 
     try {
       setIsDeleting(true);
-      setInterviews((prev) =>
-        prev.filter((interview) => interview.id !== interviewIdPendingDelete)
-      );
-
-      if (selectedInterview?.id === interviewIdPendingDelete) {
-        setSelectedInterview(null);
-        setDetailsOpen(false);
-      }
-
-      showToast({
-        message: t('interviews.interviewDeletedSuccessfully'),
-        type: 'success',
-        duration: 3000,
-      });
-
-      await fetchInterviews();
-      handleCancelDelete();
+      await dispatch(deleteInterview(interviewIdPendingDelete))
+        .unwrap()
+        .then((res: any) => {
+          if (res?.isSuccess) {
+            setShowDeletePopup(false);
+            setInterviewIdPendingDelete(null);
+            showToast({
+              message: t('interviews.interviewDeletedSuccessfully'),
+              type: 'success',
+              duration: 3000,
+            });
+            fetchInterviews();
+          }
+        });
     } catch (error) {
-      console.error('Failed to delete interview:', error);
+      const message =
+        typeof error === 'string'
+          ? error
+          : (error as { message?: string })?.message || t('common.error');
       showToast({
-        message: t('common.error'),
+        message,
         type: 'error',
         duration: 3000,
       });
@@ -341,7 +348,7 @@ export default function Interviews() {
         interview={selectedInterview}
       />
       <DeletePopup
-        open={isDeletePopupOpen}
+        open={showDeletePopup}
         message="interviews.confirmDeleteInterview"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
