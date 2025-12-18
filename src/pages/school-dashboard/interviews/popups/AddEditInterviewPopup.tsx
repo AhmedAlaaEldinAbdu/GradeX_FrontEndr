@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import Modal from '@/shared/popups/Modal';
 import FormField from '@/shared/components/FormField';
-import CustomSelect from '@/shared/components/CustomSelect';
+import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
@@ -13,7 +13,10 @@ import CustomImage from '@/shared/components/CustomImage';
 import type { InterviewFormProps } from '@/validations/interviews-validations';
 import { InterviewFormSchema } from '@/validations/interviews-validations';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { data } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchSchools } from '@/redux/features/schools/schoolsSlice';
+import { fetchJobAdvertisments } from '@/redux/features/job-advertisments/jobAdvertismentsSlice';
+import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 
 interface AddEditInterviewPopupProps {
   isOpen: boolean;
@@ -33,8 +36,25 @@ export default function AddEditInterviewPopup({
   mode = 'add',
 }: AddEditInterviewPopupProps) {
   const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+
   const {
-    register,
+    schools: schoolsList,
+    isLoading: isSchoolsLoading,
+    isInitialized: isSchoolsInitialized,
+  } = useAppSelector((state) => state.schools);
+  const {
+    jobAdvertisments,
+    isLoading: isJobAdvertismentsLoading,
+    isInitialized: isJobAdvertismentsInitialized,
+  } = useAppSelector((state) => state.jobAdvertisments);
+  const {
+    teachers,
+    isLoading: isTeachersLoading,
+    isInitialized: isTeachersInitialized,
+  } = useAppSelector((state) => state.teachers);
+
+  const {
     handleSubmit,
     reset,
     control,
@@ -53,30 +73,76 @@ export default function AddEditInterviewPopup({
     },
   });
 
-  const JOB_ADVERTISEMENT_OPTIONS = [
-    { value: 'job-1', label: 'إعلان معلم عربي - فرع الرياض' },
-    { value: 'job-2', label: 'إعلان معلم علوم - فرع جدة' },
-    { value: 'job-3', label: 'إعلان معلم إنجليزي - فرع الدمام' },
-  ];
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
 
-  const SCHOOL_BRANCH_OPTIONS = [
-    { value: 'branch-1', label: 'مدرسة المستقبل - الرياض' },
-    { value: 'branch-2', label: 'مدرسة الريادة - جدة' },
-    { value: 'branch-3', label: 'مدرسة النخبة - الدمام' },
-  ];
+    if (!isSchoolsInitialized && !isSchoolsLoading) {
+      dispatch(fetchSchools({ limit: 10000 }));
+    }
 
-  const TEACHER_OPTIONS = [
-    { value: 'teacher-1', label: 'أحمد محمد' },
-    { value: 'teacher-2', label: 'سارة علي' },
-    { value: 'teacher-3', label: 'محمد حسن' },
-    { value: 'teacher-4', label: 'فاطمة أحمد' },
-  ];
+    if (!isJobAdvertismentsInitialized && !isJobAdvertismentsLoading) {
+      dispatch(fetchJobAdvertisments({ limit: 10000 }));
+    }
 
-  const SUPERVISOR_OPTIONS = [
-    { value: 'supervisor-1', label: 'م. أحمد حسن ابراهيم' },
-    { value: 'supervisor-2', label: 'د. سارة إبراهيم' },
-    { value: 'supervisor-3', label: 'أ. يوسف العتيبي' },
-  ];
+    if (!isTeachersInitialized && !isTeachersLoading) {
+      dispatch(fetchTeachers({ limit: 10000 }));
+    }
+  }, [
+    isJobAdvertismentsInitialized,
+    isJobAdvertismentsLoading,
+    isSchoolsInitialized,
+    isSchoolsLoading,
+    isTeachersInitialized,
+    isTeachersLoading,
+    dispatch,
+    isOpen,
+  ]);
+
+  const schoolBranchOptions = useMemo<CustomSelectOption[]>(() => {
+    if (!schoolsList.length) {
+      return [];
+    }
+
+    return schoolsList.flatMap((school) => {
+      const schoolName = i18n.language === 'ar' ? school.nameAr : school.nameEn || school.nameAr;
+      return (school.schoolBranches ?? []).map((branch) => {
+        const branchSegments = [branch.city, branch.neighborhood, branch.address]
+          .filter(Boolean)
+          .join(' - ');
+
+        return {
+          value: branch.id,
+          label: [schoolName, branchSegments].filter(Boolean).join(' | '),
+        };
+      });
+    });
+  }, [i18n.language, schoolsList]);
+
+  const jobAdvertisementOptions = useMemo<CustomSelectOption[]>(() => {
+    if (!jobAdvertisments.length) {
+      return [];
+    }
+
+    return jobAdvertisments.map((advert) => ({
+      value: advert.id,
+      label: i18n.language === 'ar' ? advert.name : advert.nameEn || advert.name,
+    }));
+  }, [i18n.language, jobAdvertisments]);
+
+  const teacherOptions = useMemo<CustomSelectOption[]>(() => {
+    if (!teachers.length) {
+      return [];
+    }
+
+    return teachers.map((teacher) => ({
+      value: teacher.id,
+      label: teacher.fullName,
+    }));
+  }, [teachers]);
+
+  const supervisorOptions = teacherOptions;
 
   const createInterviewFormDefaults = (): InterviewFormProps => ({
     schoolBranchesId: '',
@@ -143,10 +209,10 @@ export default function AddEditInterviewPopup({
                       id="schoolBranchesId"
                       value={field.value ?? ''}
                       onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={SCHOOL_BRANCH_OPTIONS}
+                      options={schoolBranchOptions}
                       placeholder={t('interviews.selectSchool')}
                       error={!!errors.schoolBranchesId}
-                      disabled={SCHOOL_BRANCH_OPTIONS.length === 0}
+                      disabled={schoolBranchOptions.length === 0}
                     />
                   )}
                 />
@@ -167,10 +233,10 @@ export default function AddEditInterviewPopup({
                       id="jobAdvertisementId"
                       value={field.value ?? ''}
                       onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={JOB_ADVERTISEMENT_OPTIONS}
+                      options={jobAdvertisementOptions}
                       placeholder={t('interviews.selectJobAdvertisement')}
                       error={!!errors.jobAdvertisementId}
-                      disabled={JOB_ADVERTISEMENT_OPTIONS.length === 0}
+                      disabled={jobAdvertisementOptions.length === 0}
                     />
                   )}
                 />
@@ -193,10 +259,10 @@ export default function AddEditInterviewPopup({
                       id="teacherId"
                       value={field.value ?? ''}
                       onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={TEACHER_OPTIONS}
+                      options={teacherOptions}
                       placeholder={t('interviews.selectTeacherName')}
                       error={!!errors.teacherId}
-                      disabled={TEACHER_OPTIONS.length === 0}
+                      disabled={teacherOptions.length === 0}
                     />
                   )}
                 />
@@ -217,10 +283,10 @@ export default function AddEditInterviewPopup({
                       id="supervisorId"
                       value={field.value ?? ''}
                       onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
-                      options={SUPERVISOR_OPTIONS}
+                      options={supervisorOptions}
                       placeholder={t('interviews.selectSupervisor')}
                       error={!!errors.supervisorId}
-                      disabled={SUPERVISOR_OPTIONS.length === 0}
+                      disabled={supervisorOptions.length === 0}
                     />
                   )}
                 />
@@ -234,15 +300,22 @@ export default function AddEditInterviewPopup({
                 error={errors.startTime?.message}
                 htmlFor="startTime"
               >
-                <Input
-                  id="startTime"
-                  type="time"
-                  icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
-                  placeholder={t('interviews.selectStartTime')}
-                  {...register('startTime', {
-                    required: t('common.validation.required'),
-                  })}
-                  className="flex justify-end"
+                <Controller
+                  name="startTime"
+                  control={control}
+                  rules={{ required: t('common.validation.required') }}
+                  render={({ field }) => (
+                    <Input
+                      id="startTime"
+                      type="time"
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
+                      placeholder={t('interviews.selectStartTime')}
+                      className="flex justify-end"
+                    />
+                  )}
                 />
               </FormField>
 
@@ -252,15 +325,22 @@ export default function AddEditInterviewPopup({
                 error={errors.endTime?.message}
                 htmlFor="endTime"
               >
-                <Input
-                  id="endTime"
-                  type="time"
-                  icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
-                  placeholder={t('interviews.selectEndTime')}
-                  {...register('endTime', {
-                    required: t('common.validation.required'),
-                  })}
-                  className="flex justify-end"
+                <Controller
+                  name="endTime"
+                  control={control}
+                  rules={{ required: t('common.validation.required') }}
+                  render={({ field }) => (
+                    <Input
+                      id="endTime"
+                      type="time"
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
+                      placeholder={t('interviews.selectEndTime')}
+                      className="flex justify-end"
+                    />
+                  )}
                 />
               </FormField>
             </div>

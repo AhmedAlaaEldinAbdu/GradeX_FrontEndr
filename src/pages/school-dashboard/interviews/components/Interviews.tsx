@@ -19,6 +19,10 @@ import SearchInput from '@/shared/components/SearchInput';
 import CustomSelect from '@/shared/components/CustomSelect';
 import { useToast } from '@/shared/context/ToastContext';
 import Card from '@/shared/components/Card';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { createInterview, editInterview } from '@/redux/features/interviews/interviewsSlice';
+import type { InterviewFormProps } from '@/validations/interviews-validations';
+import { InterviewType } from '@/services/api/types/interviews.types';
 
 interface Interview extends CalendarEvent {
   candidateName?: string;
@@ -30,11 +34,13 @@ interface Interview extends CalendarEvent {
   schoolBranchName?: string;
   teacherId?: string;
   supervisorId?: string;
+  interViewType?: InterviewType;
 }
 
 export default function Interviews() {
   const { t } = useTranslation();
   const { showToast } = useToast();
+  const dispatch = useAppDispatch();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
   const [interviews, setInterviews] = useState<Interview[]>([]);
@@ -92,7 +98,7 @@ export default function Interviews() {
       interviewDate: formatDateInput(interview.start),
       startTime: formatTimeInput(interview.start),
       endTime: formatTimeInput(interview.end),
-      interViewType: 0,
+      interViewType: interview.interViewType ?? InterviewType.ONLINE,
     });
     setIsEditorOpen(true);
   };
@@ -118,7 +124,50 @@ export default function Interviews() {
     return `${hours}:${minutes}`;
   };
 
-  const handleEditorSubmit = async (_values: any) => {};
+  const handleEditorSubmit = async (values: InterviewFormProps) => {
+    try {
+      // Normalize form values to match API types
+      const payload = {
+        ...values,
+        interViewType: values.interViewType as InterviewType,
+      };
+
+      if (editorMode === 'edit') {
+        if (!editingInterviewId) {
+          throw new Error('Missing interview id for update');
+        }
+
+        await dispatch(editInterview({ id: editingInterviewId, data: payload })).unwrap();
+        showToast({
+          message: t('interviews.interviewUpdatedSuccessfully'),
+          type: 'success',
+          duration: 3000,
+        });
+      } else {
+        await dispatch(createInterview(payload)).unwrap();
+        showToast({
+          message: t('interviews.interviewAddedSuccessfully'),
+          type: 'success',
+          duration: 3000,
+        });
+      }
+
+      await fetchInterviews();
+    } catch (error) {
+      const message =
+        typeof error === 'string'
+          ? error
+          : (error as { message?: string })?.message || t('common.error');
+
+      showToast({
+        message,
+        type: 'error',
+        duration: 3000,
+      });
+
+      throw error;
+    }
+  };
 
   const handleRequestDelete = (interviewId: string) => {
     setInterviewIdPendingDelete(interviewId);
@@ -247,7 +296,7 @@ export default function Interviews() {
   return (
     <>
       <Card>
-        <div className="flex gap-3 mb-5">
+        <div className="mb-5 flex gap-3">
           <SearchInput
             value={searchTerm}
             onChange={setSearchTerm}
@@ -261,7 +310,7 @@ export default function Interviews() {
             }
             options={SUPERVISOR_OPTIONS}
             maxHeight="200px"
-            className='w-[250px]'
+            className="w-[250px]"
             placeholder={t('interviews.supervisorName')}
           />
         </div>
