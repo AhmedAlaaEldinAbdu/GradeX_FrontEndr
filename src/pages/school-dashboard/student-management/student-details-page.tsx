@@ -8,8 +8,7 @@ import FeesTab from '@/pages/school-dashboard/student-management/components/deta
 import HomeworkTab from '@/pages/school-dashboard/student-management/components/details/HomeworkTab';
 import PerformanceTab from '@/pages/school-dashboard/student-management/components/details/PerformanceTab';
 import MedicalRecordTab from '@/pages/school-dashboard/student-management/components/details/MedicalRecordTab';
-import CustomImage from '@/shared/components/CustomImage';
-import DefaultAvatar from '@gradex/assets/images/profile.png';
+import ExamsTab from '@/pages/school-dashboard/student-management/components/details/ExamsTab';
 
 // Mock data for now
 const mockStudentDetails = {
@@ -65,9 +64,14 @@ export default function StudentDetailsPage() {
       content: <AttendanceTab studentId={id || ''} />,
     },
     {
-      id: 'fees',
-      label: t('students.details.fees'),
-      content: <FeesTab studentId={id || ''} />,
+      id: 'performance',
+      label: t('students.details.performance'),
+      content: <PerformanceTab studentId={id || ''} />,
+    },
+    {
+      id: 'exams',
+      label: t('students.details.exams'),
+      content: <ExamsTab studentId={id || ''} />,
     },
     {
       id: 'homework',
@@ -75,9 +79,9 @@ export default function StudentDetailsPage() {
       content: <HomeworkTab studentId={id || ''} />,
     },
     {
-      id: 'performance',
-      label: t('students.details.performance'),
-      content: <PerformanceTab studentId={id || ''} />,
+      id: 'fees',
+      label: t('students.details.fees'),
+      content: <FeesTab studentId={id || ''} />,
     },
     {
       id: 'medical-record',
@@ -91,15 +95,8 @@ export default function StudentDetailsPage() {
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      {/* Student Header with Photo and Name */}
-      <div className="mb-6 flex items-center gap-4">
-        <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-gray-200">
-          <CustomImage
-            src={student.pictureProfilePath || DefaultAvatar}
-            alt={currentLang === 'ar' ? student.fullName : student.fullNameEn}
-            className="h-full w-full object-cover"
-          />
-        </div>
+      {/* Student Name Title */}
+      <div className="mb-6">
         <h1 className="text-start text-2xl font-bold text-gray-900">
           {currentLang === 'ar' ? student.fullName : student.fullNameEn}
         </h1>
