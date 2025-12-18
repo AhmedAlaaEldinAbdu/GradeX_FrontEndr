@@ -528,6 +528,38 @@
     "date": "التاريخ",
     "studentName": "اسم الطالب"
   },
+  "students": {
+    "title": "الطلاب",
+    "details": {
+      "personalData": "البيانات الشخصية",
+      "attendance": "الحضور والإنصراف",
+      "fees": "الرسوم",
+      "homework": "الواجبات المنزلية",
+      "performance": "الأداء",
+      "medicalRecord": "السجل الطبي",
+      "housingData": "بيانات التسكين",
+      "guardianData": "بيانات ولي الأمر",
+      "childData": "بيانات الطفل",
+      "attachments": "المرفقات",
+      "educationalSystem": "النظام التعليمي",
+      "educationalStage": "المرحلة التعليمية",
+      "className": "الصف الدراسي",
+      "guardianName": "اسم ولي الأمر",
+      "relationship": "الصلة",
+      "phone": "رقم الهاتف",
+      "email": "البريد الإلكتروني",
+      "nationality": "الجنسية",
+      "country": "الدولة",
+      "address": "العنوان",
+      "schoolName": "اسم المدرسة السابقة",
+      "birthDate": "تاريخ الميلاد",
+      "attendanceComingSoon": "قريباً - سجلات الحضور",
+      "feesComingSoon": "قريباً - سجلات الرسوم",
+      "homeworkComingSoon": "قريباً - سجلات الواجبات",
+      "performanceComingSoon": "قريباً - الأداء الأكاديمي",
+      "medicalRecordComingSoon": "قريباً - السجلات الطبية"
+    }
+  },
   "attendance": {
     "title": "الحضور والانصراف",
     "students": "الطلاب",

@@ -529,6 +529,38 @@
     "date": "Date",
     "studentName": "Student Name"
   },
+  "students": {
+    "title": "Students",
+    "details": {
+      "personalData": "Personal Data",
+      "attendance": "Attendance and Departure",
+      "fees": "Fees",
+      "homework": "Homework",
+      "performance": "Performance",
+      "medicalRecord": "Medical Record",
+      "housingData": "Housing Data",
+      "guardianData": "Guardian Data",
+      "childData": "Child Data",
+      "attachments": "Attachments",
+      "educationalSystem": "Educational System",
+      "educationalStage": "Educational Stage",
+      "className": "Class",
+      "guardianName": "Guardian Name",
+      "relationship": "Relationship",
+      "phone": "Phone Number",
+      "email": "Email",
+      "nationality": "Nationality",
+      "country": "Country",
+      "address": "Address",
+      "schoolName": "Previous School Name",
+      "birthDate": "Birth Date",
+      "attendanceComingSoon": "Coming Soon - Attendance Records",
+      "feesComingSoon": "Coming Soon - Fee Records",
+      "homeworkComingSoon": "Coming Soon - Homework Records",
+      "performanceComingSoon": "Coming Soon - Academic Performance",
+      "medicalRecordComingSoon": "Coming Soon - Medical Records"
+    }
+  },
   "attendance": {
     "title": "Attendance and Departure",
     "students": "Students",
