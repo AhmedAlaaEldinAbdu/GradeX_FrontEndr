@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -147,6 +148,7 @@ const CLASSROOMS = [
 
 export default function AttendanceManagement() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const currentLang = i18n.language as 'ar' | 'en';
 
   const [students] = useState<StudentAttendance[]>(mockStudents);
@@ -227,9 +229,16 @@ export default function AttendanceManagement() {
           <div className="h-10 w-10 overflow-hidden rounded-full">
             <CustomImage src={ProfileImage} alt="profile" className="h-full w-full object-cover" />
           </div>
-          <span className="font-medium">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/students/${row.id}`);
+            }}
+            className="font-medium transition-colors hover:text-primary-600 hover:underline"
+          >
             {currentLang === 'ar' ? row.studentName : row.studentNameEn}
-          </span>
+          </button>
           <button className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100">
             <CustomImage src={EyeStyledIcon} alt="view" className="h-5 w-5" />
           </button>
