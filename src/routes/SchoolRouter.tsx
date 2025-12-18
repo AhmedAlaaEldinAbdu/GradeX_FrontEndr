@@ -5,6 +5,7 @@ import ProtectedRoute from './ProtectedRoutes';
 import MainLayout from '@gradex/shared/layout/MainLayout';
 
 import StudentManagementPage from '@/pages/school-dashboard/student-management/student-management-page';
+import StudentDetailsPage from '@/pages/school-dashboard/student-management/student-details-page';
 import ClassroomsPage from '@/pages/school-dashboard/classrooms/classrooms-page';
 import AddClassroomPage from '@/pages/school-dashboard/classrooms/add-classroom-page';
 import EditClassroomPage from '@/pages/school-dashboard/classrooms/edit-classroom-page';
@@ -41,6 +42,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <StudentManagementPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/students/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <StudentDetailsPage />
             </MainLayout>
           </ProtectedRoute>
         }
