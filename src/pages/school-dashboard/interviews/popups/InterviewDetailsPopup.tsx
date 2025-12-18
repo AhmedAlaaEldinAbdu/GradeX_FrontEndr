@@ -52,13 +52,14 @@ export default function InterviewDetailsPopup({
         setFetchedInterview(data);
       })
       .catch((error) => {
-        const fallback = typeof error === 'string' ? error : (error as { message?: string })?.message;
+        const fallback =
+          typeof error === 'string' ? error : (error as { message?: string })?.message;
         setFetchError(fallback ?? t('common.error'));
       })
       .finally(() => {
         setIsFetching(false);
       });
-  }, [dispatch, interview?.id, isOpen, t]);
+  }, [dispatch, interview?.id, isOpen]);
 
   if (!interview) return null;
 
