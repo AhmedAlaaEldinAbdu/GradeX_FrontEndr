@@ -88,6 +88,7 @@
     "openFile": "Open File",
     "openInNewTab": "Open in new tab",
     "confirm": "Confirm",
+    "processing": "Processing...",
     "showAll": "Show All",
     "validation": {
       "required": "this field is required",
@@ -592,7 +593,16 @@
     "selected": "selected",
     "markAllPresent": "Mark All Present",
     "markAllLate": "Mark All Late",
-    "markAllAbsent": "Mark All Absent"
+    "markAllAbsent": "Mark All Absent",
+    "confirmPresent": "Confirm presence of {{name}}?",
+    "confirmAbsent": "Confirm absence of {{name}}?",
+    "confirmEmployeePresent": "Confirm employee {{name}} presence?",
+    "confirmEmployeeAbsent": "Confirm employee {{name}} absence?",
+    "confirmAllPresent": "Confirm all present?",
+    "confirmAllAbsent": "Confirm all absent?",
+    "confirmLateTitle": "Do you want to confirm late arrival?",
+    "time": "Time",
+    "selectTime": "Select time"
   },
   "studentForm": {
     "firstName": "First Name",

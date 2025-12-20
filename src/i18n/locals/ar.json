@@ -88,6 +88,7 @@
     "openFile": "فتح الملف",
     "openInNewTab": "فتح في علامة تبويب جديدة",
     "confirm": "تأكيد",
+    "processing": "جار المعالجة...",
     "showAll": "عرض الكل",
     "validation": {
       "required": "هذا الحقل مطلوب",
@@ -591,7 +592,16 @@
     "selected": "محدد",
     "markAllPresent": "حضور الكل في الموعد",
     "markAllLate": "تأخير الكل",
-    "markAllAbsent": "غياب الكل"
+    "markAllAbsent": "غياب الكل",
+    "confirmPresent": "تأكيد حضور الطالب {{name}} ؟",
+    "confirmAbsent": "تأكيد غياب الطالب {{name}} ؟",
+    "confirmEmployeePresent": "تأكيد حضور الموظف {{name}} ؟",
+    "confirmEmployeeAbsent": "تأكيد غياب الموظف {{name}} ؟",
+    "confirmAllPresent": "تأكيد حضور الجميع؟",
+    "confirmAllAbsent": "تأكيد غياب الجميع ؟",
+    "confirmLateTitle": "هل تريد تأكيد التأخير ؟",
+    "time": "الوقت",
+    "selectTime": "حدد الوقت"
   },
   "studentForm": {
     "firstName": "الاسم الأول",
