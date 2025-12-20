@@ -317,7 +317,7 @@ export default function AttendanceManagement() {
             className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/students/${row.id}`);
+              navigate(`/students/${row.id}?tab=attendance`);
             }}
           >
             <CustomImage src={EyeStyledIcon} alt="view" className="h-5 w-5" />
