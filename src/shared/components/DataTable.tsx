@@ -20,6 +20,7 @@ export interface FilterConfig {
 
 export interface DataTableColumn<T> {
   header: string;
+  headerComponent?: ReactNode;
   accessor: (row: T, index?: number) => ReactNode;
   headerClassName?: string;
   className?: string;
