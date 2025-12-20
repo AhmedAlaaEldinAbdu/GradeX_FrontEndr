@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 interface Column<T> {
   header: string;
+  headerComponent?: React.ReactNode;
   accessor: keyof T | ((row: T) => React.ReactNode);
   className?: string;
   headerClassName?: string;
@@ -40,7 +41,7 @@ function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
                   className={`border border-gray-300 bg-gray-100 px-4 py-4 text-center text-sm font-semibold ${column.headerClassName} text-gray-700 ${stickyClass}`}
                   style={stickyStyle}
                 >
-                  {t(column.header)}
+                  {column.headerComponent ? column.headerComponent : t(column.header)}
                 </th>
               );
             })}
