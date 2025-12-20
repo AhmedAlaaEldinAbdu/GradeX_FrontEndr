@@ -18,7 +18,6 @@ import {
 } from '@gradex/pages/auth';
 import AddSchoolPage from '@/pages/super-admin-dashboard/schools/add-school-page';
 import MainContainer from '@/shared/layout/Container';
-import StudentDetailsPage from '@/pages/school-dashboard/student-management/student-details-page';
 
 /**
  * Role-Based Router
@@ -47,15 +46,6 @@ const RoleBasedRouter: React.FC = () => {
           element={
             <MainContainer>
               <AddSchoolPage showBreadcrumb={false} />
-            </MainContainer>
-          }
-        />
-        {/* TODO: TEMP */}
-        <Route
-          path="/students/:id"
-          element={
-            <MainContainer>
-              <StudentDetailsPage />
             </MainContainer>
           }
         />
