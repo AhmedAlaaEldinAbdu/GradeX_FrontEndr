@@ -4,6 +4,7 @@ import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
+import AttendanceConfirmPopup from '@/pages/school-dashboard/attendance/popups/AttendanceConfirmPopup';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import HistoryIcon from '@gradex/assets/icons/History.svg';
@@ -167,6 +168,13 @@ export default function EmployeesAttendanceTab({
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
+  // Popup state
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [popupType, setPopupType] = useState<'present' | 'absent' | 'late'>('present');
+  const [popupIsBulk, setPopupIsBulk] = useState(false);
+  const [popupEmployeeName, setPopupEmployeeName] = useState('');
+  const [popupEmployeeId, setPopupEmployeeId] = useState<string | null>(null);
+
   // Only render when active
   if (!isActive) return null;
 
@@ -207,10 +215,73 @@ export default function EmployeesAttendanceTab({
     }
   };
 
-  const handleBulkAction = (status: 'present' | 'absent' | 'late') => {
-    // Handle bulk status update here
-    console.log(`Bulk action: ${status} for employees:`, selectedEmployees);
-    setSelectedEmployees([]);
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const currentPageIds = paginatedEmployees.map((e) => e.id);
+      setSelectedEmployees((prev) => {
+        const newSelected = [...prev];
+        currentPageIds.forEach((id) => {
+          if (!newSelected.includes(id)) {
+            newSelected.push(id);
+          }
+        });
+        return newSelected;
+      });
+    } else {
+      const currentPageIds = paginatedEmployees.map((e) => e.id);
+      setSelectedEmployees((prev) => prev.filter((id) => !currentPageIds.includes(id)));
+    }
+  };
+
+  const allCurrentPageSelected =
+    paginatedEmployees.length > 0 &&
+    paginatedEmployees.every((e) => selectedEmployees.includes(e.id));
+
+  const someCurrentPageSelected =
+    paginatedEmployees.some((e) => selectedEmployees.includes(e.id)) && !allCurrentPageSelected;
+
+  // Individual action handlers
+  const handleIndividualAction = (
+    employeeId: string,
+    employeeName: string,
+    type: 'present' | 'absent' | 'late'
+  ) => {
+    setPopupEmployeeId(employeeId);
+    setPopupEmployeeName(employeeName);
+    setPopupType(type);
+    setPopupIsBulk(false);
+    setPopupOpen(true);
+  };
+
+  // Bulk action handlers
+  const handleBulkActionClick = (type: 'present' | 'absent' | 'late') => {
+    setPopupType(type);
+    setPopupIsBulk(true);
+    setPopupEmployeeId(null);
+    setPopupEmployeeName('');
+    setPopupOpen(true);
+  };
+
+  const handleConfirmAction = (time?: string) => {
+    if (popupIsBulk) {
+      console.log(
+        `Bulk action: ${popupType} for employees:`,
+        selectedEmployees,
+        time ? `at ${time}` : ''
+      );
+      setSelectedEmployees([]);
+    } else if (popupEmployeeId) {
+      console.log(
+        `Individual action: ${popupType} for employee:`,
+        popupEmployeeId,
+        time ? `at ${time}` : ''
+      );
+    }
+    setPopupOpen(false);
+  };
+
+  const handleCancelPopup = () => {
+    setPopupOpen(false);
   };
 
   const columns: DataTableColumn<EmployeeAttendance>[] = [
@@ -222,6 +293,19 @@ export default function EmployeesAttendanceTab({
     },
     {
       header: '',
+      headerComponent: (
+        <input
+          type="checkbox"
+          checked={allCurrentPageSelected}
+          ref={(el) => {
+            if (el) {
+              el.indeterminate = someCurrentPageSelected;
+            }
+          }}
+          onChange={(e) => handleSelectAll(e.target.checked)}
+          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-600 focus:ring-green-500"
+        />
+      ),
       accessor: (row) => (
         <input
           type="checkbox"
@@ -291,25 +375,43 @@ export default function EmployeesAttendanceTab({
     },
     {
       header: 'attendance.actions',
-      accessor: () => (
+      accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
           <button
             className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
-            onClick={() => {}}
+            onClick={() =>
+              handleIndividualAction(
+                row.id,
+                currentLang === 'ar' ? row.employeeName : row.employeeNameEn,
+                'present'
+              )
+            }
             title={t('attendance.present')}
           >
             <CustomImage src={CheckIcon} alt="check" className="h-4 w-4" />
           </button>
           <button
             className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 transition-colors hover:bg-yellow-200"
-            onClick={() => {}}
+            onClick={() =>
+              handleIndividualAction(
+                row.id,
+                currentLang === 'ar' ? row.employeeName : row.employeeNameEn,
+                'late'
+              )
+            }
             title={t('attendance.late')}
           >
             <CustomImage src={HistoryIcon} alt="history" className="h-4 w-4" />
           </button>
           <button
             className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 transition-colors hover:bg-red-200"
-            onClick={() => {}}
+            onClick={() =>
+              handleIndividualAction(
+                row.id,
+                currentLang === 'ar' ? row.employeeName : row.employeeNameEn,
+                'absent'
+              )
+            }
             title={t('attendance.absent')}
           >
             <CustomImage src={XMarkDangerIcon} alt="delete" className="h-4 w-4" />
@@ -406,21 +508,21 @@ export default function EmployeesAttendanceTab({
     selectedEmployees.length > 0 ? (
       <div className="flex items-center justify-end gap-2">
         <button
-          onClick={() => handleBulkAction('present')}
+          onClick={() => handleBulkActionClick('present')}
           className="flex items-center gap-1.5 rounded-full border border-green-500 bg-white px-3 py-1.5 text-sm text-green-600 transition-colors hover:bg-green-50"
         >
           <CustomImage src={CheckIcon} className="h-4 w-4" alt="present" />
           <span>{t('attendance.markAllPresent')}</span>
         </button>
         <button
-          onClick={() => handleBulkAction('late')}
+          onClick={() => handleBulkActionClick('late')}
           className="flex items-center gap-1.5 rounded-full border border-yellow-500 bg-white px-3 py-1.5 text-sm text-yellow-600 transition-colors hover:bg-yellow-50"
         >
           <CustomImage src={HistoryIcon} className="h-4 w-4" alt="late" />
           <span>{t('attendance.markAllLate')}</span>
         </button>
         <button
-          onClick={() => handleBulkAction('absent')}
+          onClick={() => handleBulkActionClick('absent')}
           className="flex items-center gap-1.5 rounded-full border border-red-500 bg-white px-3 py-1.5 text-sm text-red-600 transition-colors hover:bg-red-50"
         >
           <CustomImage src={XMarkDangerIcon} className="h-4 w-4" alt="absent" />
@@ -454,6 +556,17 @@ export default function EmployeesAttendanceTab({
           t={t}
         />
       </Card>
+
+      {/* Attendance Confirmation Popup */}
+      <AttendanceConfirmPopup
+        open={popupOpen}
+        type={popupType}
+        isBulk={popupIsBulk}
+        personName={popupEmployeeName}
+        personType="employee"
+        onConfirm={handleConfirmAction}
+        onCancel={handleCancelPopup}
+      />
     </div>
   );
 }
