@@ -147,7 +147,7 @@ export default function DataTable<T>({
     <div>
       {/* Filters Section */}
       {showFilters && ((Array.isArray(filters) && filters.length) || !!filterComponent) && (
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-3">
           <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
             {/* If parent supplied a custom filter component, render it as-is */}
             {filterComponent ? (

@@ -1171,5 +1171,27 @@
     "allergiesValue": "الفول السوداني",
     "attachments": "المرفقات",
     "medicalReport": "التقرير الطبي"
+  },
+  "jobAnnouncement": {
+    "title": "إعلان التوظيف",
+    "addAnnouncement": "إضافة إعلان",
+    "searchTeacherName": "ابحث عن اسم المعلم",
+    "country": "الدولة",
+    "educationalStages": "المراحل التعليمية",
+    "workType": "نوع الدوام",
+    "subjectName": "اسم المادة",
+    "jobGrade": "الدرجة الوظيفية",
+    "jobType": "نوع الوظيفة",
+    "applicantsCount": "عدد المتقدمين",
+    "academicQualification": "المؤهل الدراسي",
+    "yearsOfExperience": "سنوات الخبرة الوظيفية",
+    "salary": "المرتب",
+    "noAnnouncementsMessage": "لم يتم إضافة أي إعلان توظيف حتى الآن. يمكنك البدء بإضافة إعلان جديد لتنظيم عملية التوظيف.",
+    "confirmDeleteAnnouncement": "هل أنت متأكد من حذف إعلان التوظيف هذا؟",
+    "announcementDeletedSuccessfully": "تم حذف إعلان التوظيف بنجاح",
+    "fullTime": "دوام كامل",
+    "partTime": "دوام جزئي",
+    "onlineWork": "عمل عن بُعد",
+    "offlineWork": "عمل حضوري"
   }
 }

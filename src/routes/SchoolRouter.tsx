@@ -19,6 +19,7 @@ import TeachersPage from '@/pages/school-dashboard/teachers/teachers-page';
 import TeacherDetailsPage from '@/pages/school-dashboard/teachers/teacher-details-page';
 import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page';
 import AttendancePage from '@/pages/school-dashboard/attendance/attendance-page';
+import JobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/job-announcements-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -184,10 +185,7 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">إعلانات توظيف</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <JobAnnouncementsPage />
             </MainLayout>
           </ProtectedRoute>
         }
