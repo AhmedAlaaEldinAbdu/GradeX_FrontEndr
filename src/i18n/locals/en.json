@@ -1069,5 +1069,28 @@
       "interViewTypeRequired": "Interview type is required",
       "interViewTypeInvalid": "Interview type is invalid"
     }
+  },
+  "jobAnnouncement": {
+    "title": "Job announcement",
+    "jobAnnouncement": "Job announcement",
+    "addAnnouncement": "Add announcement",
+    "searchTeacherName": "Search for teacher name",
+    "country": "Country",
+    "educationalStages": "Educational stages",
+    "workType": "Work type",
+    "subjectName": "Subject name",
+    "jobGrade": "Job grade",
+    "jobType": "Job type",
+    "applicantsCount": "Applicants count",
+    "academicQualification": "Academic qualification",
+    "yearsOfExperience": "Years of experience",
+    "salary": "Salary",
+    "noAnnouncementsMessage": "No job announcements yet. Start by creating your first announcement to attract candidates.",
+    "confirmDeleteAnnouncement": "Are you sure you want to delete this job announcement?",
+    "announcementDeletedSuccessfully": "Job announcement deleted successfully",
+    "fullTime": "Full-time",
+    "partTime": "Part-time",
+    "onlineWork": "Remote",
+    "offlineWork": "On-site"
   }
 }

@@ -8,8 +8,16 @@ export const JobAdvertismentWorkShedule = {
   OFFLINE: 2,
 } as const;
 
+export const JobType = {
+  FULLTIME: 1,
+  PARTTIME: 2,
+} as const;
+
 export type JobAdvertismentWorkShedule =
   (typeof JobAdvertismentWorkShedule)[keyof typeof JobAdvertismentWorkShedule];
+  
+export type JobType =
+  (typeof JobType)[keyof typeof JobType];
 
 export interface JobAdvertismentTechnicalSkillDto {
   technicalAppName: string;
