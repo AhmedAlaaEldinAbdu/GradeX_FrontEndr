@@ -114,17 +114,6 @@ export default function AddEditInterviewPopup({
   }, [isSchoolsInitialized, isSchoolsLoading, dispatch, isOpen]);
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const firstBranchId = schoolBranchOptions[0]?.value;
-    if (!selectedSchoolBranchId && firstBranchId) {
-      setValue('schoolBranchesId', firstBranchId);
-    }
-  }, [isOpen, schoolBranchOptions, selectedSchoolBranchId, setValue]);
-
-  useEffect(() => {
     if (!isOpen || !selectedSchoolBranchId) {
       return;
     }

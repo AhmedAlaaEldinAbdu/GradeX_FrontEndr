@@ -208,11 +208,29 @@ export default function Interviews() {
     return `${hours}:${minutes}`;
   };
 
+  const buildIsoDateTime = (dateStr?: string, timeStr?: string) => {
+    if (!dateStr || !timeStr) {
+      return undefined;
+    }
+
+    const normalizedTime = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
+    const combined = `${dateStr}T${normalizedTime}`;
+    const parsed = new Date(combined);
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+  };
+
   const handleEditorSubmit = async (values: InterviewFormProps) => {
     try {
+      const interviewDateValue =
+        values.interviewDate || (selectedDateForEditor ? formatDateInput(selectedDateForEditor) : '');
+      const normalizedStartTime = buildIsoDateTime(interviewDateValue, values.startTime);
+      const normalizedEndTime = buildIsoDateTime(interviewDateValue, values.endTime);
+
       const payload = {
         ...values,
         interViewType: values.interViewType as InterviewType,
+        startTime: normalizedStartTime ?? values.startTime,
+        endTime: normalizedEndTime ?? values.endTime,
       };
 
       if (editorMode === 'edit') {
