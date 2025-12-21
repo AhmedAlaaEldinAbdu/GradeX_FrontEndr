@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -43,21 +43,17 @@ export default function AddEditInterviewPopup({
     isLoading: isSchoolsLoading,
     isInitialized: isSchoolsInitialized,
   } = useAppSelector((state) => state.schools);
-  const {
-    jobAdvertisments,
-    isLoading: isJobAdvertismentsLoading,
-    isInitialized: isJobAdvertismentsInitialized,
-  } = useAppSelector((state) => state.jobAdvertisments);
-  const {
-    teachers,
-    isLoading: isTeachersLoading,
-    isInitialized: isTeachersInitialized,
-  } = useAppSelector((state) => state.teachers);
+
+  const { jobAdvertisments } = useAppSelector((state) => state.jobAdvertisments);
+
+  const { teachers } = useAppSelector((state) => state.teachers);
 
   const {
     handleSubmit,
     reset,
     control,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<InterviewFormProps>({
     resolver: yupResolver(InterviewFormSchema),
@@ -73,6 +69,40 @@ export default function AddEditInterviewPopup({
     },
   });
 
+  const selectedSchoolBranchId = watch('schoolBranchesId');
+
+  const schoolBranchOptions: CustomSelectOption[] = schoolsList.length
+    ? schoolsList.flatMap((school) => {
+        const schoolName = i18n.language === 'ar' ? school.nameAr : school.nameEn || school.nameAr;
+        return (school.schoolBranches ?? []).map((branch) => {
+          const branchSegments = [branch.city, branch.neighborhood, branch.address]
+            .filter(Boolean)
+            .join(' - ');
+
+          return {
+            value: branch.id,
+            label: [schoolName, branchSegments].filter(Boolean).join(' | '),
+          };
+        });
+      })
+    : [];
+
+  const jobAdvertisementOptions: CustomSelectOption[] = jobAdvertisments.length
+    ? jobAdvertisments.map((advert) => ({
+        value: advert.id,
+        label: i18n.language === 'ar' ? advert.name : advert.nameEn || advert.name,
+      }))
+    : [];
+
+  const teacherOptions: CustomSelectOption[] = teachers.length
+    ? teachers.map((teacher) => ({
+        value: teacher.id,
+        label: teacher.fullName,
+      }))
+    : [];
+
+  const supervisorOptions = teacherOptions;
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -81,68 +111,38 @@ export default function AddEditInterviewPopup({
     if (!isSchoolsInitialized && !isSchoolsLoading) {
       dispatch(fetchSchools({ limit: 10000 }));
     }
+  }, [isSchoolsInitialized, isSchoolsLoading, dispatch, isOpen]);
 
-    if (!isJobAdvertismentsInitialized && !isJobAdvertismentsLoading) {
-      dispatch(fetchJobAdvertisments({ limit: 10000 }));
+  useEffect(() => {
+    if (!isOpen) {
+      return;
     }
 
-    if (!isTeachersInitialized && !isTeachersLoading) {
-      dispatch(fetchTeachers({ limit: 10000 }));
+    const firstBranchId = schoolBranchOptions[0]?.value;
+    if (!selectedSchoolBranchId && firstBranchId) {
+      setValue('schoolBranchesId', firstBranchId);
     }
-  }, [
-    isJobAdvertismentsInitialized,
-    isJobAdvertismentsLoading,
-    isSchoolsInitialized,
-    isSchoolsLoading,
-    isTeachersInitialized,
-    isTeachersLoading,
-    dispatch,
-    isOpen,
-  ]);
+  }, [isOpen, schoolBranchOptions, selectedSchoolBranchId, setValue]);
 
-  const schoolBranchOptions = useMemo<CustomSelectOption[]>(() => {
-    if (!schoolsList.length) {
-      return [];
+  useEffect(() => {
+    if (!isOpen || !selectedSchoolBranchId) {
+      return;
     }
 
-    return schoolsList.flatMap((school) => {
-      const schoolName = i18n.language === 'ar' ? school.nameAr : school.nameEn || school.nameAr;
-      return (school.schoolBranches ?? []).map((branch) => {
-        const branchSegments = [branch.city, branch.neighborhood, branch.address]
-          .filter(Boolean)
-          .join(' - ');
+    dispatch(
+      fetchJobAdvertisments({
+        filters: { schoolBranchId: selectedSchoolBranchId },
+        limit: 10000,
+      })
+    );
 
-        return {
-          value: branch.id,
-          label: [schoolName, branchSegments].filter(Boolean).join(' | '),
-        };
-      });
-    });
-  }, [i18n.language, schoolsList]);
-
-  const jobAdvertisementOptions = useMemo<CustomSelectOption[]>(() => {
-    if (!jobAdvertisments.length) {
-      return [];
-    }
-
-    return jobAdvertisments.map((advert) => ({
-      value: advert.id,
-      label: i18n.language === 'ar' ? advert.name : advert.nameEn || advert.name,
-    }));
-  }, [i18n.language, jobAdvertisments]);
-
-  const teacherOptions = useMemo<CustomSelectOption[]>(() => {
-    if (!teachers.length) {
-      return [];
-    }
-
-    return teachers.map((teacher) => ({
-      value: teacher.id,
-      label: teacher.fullName,
-    }));
-  }, [teachers]);
-
-  const supervisorOptions = teacherOptions;
+    dispatch(
+      fetchTeachers({
+        filters: { schoolBranchId: selectedSchoolBranchId },
+        limit: 10000,
+      })
+    );
+  }, [dispatch, isOpen, selectedSchoolBranchId]);
 
   const createInterviewFormDefaults = (): InterviewFormProps => ({
     schoolBranchesId: '',

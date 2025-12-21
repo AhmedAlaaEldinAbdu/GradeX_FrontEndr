@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EmptyState from '@/shared/components/EmptyState';
 import ErrorMessage from '@/shared/components/ErrorMessage';
@@ -19,16 +19,18 @@ import SearchInput from '@/shared/components/SearchInput';
 import CustomSelect from '@/shared/components/CustomSelect';
 import { useToast } from '@/shared/context/ToastContext';
 import Card from '@/shared/components/Card';
-import { useAppDispatch } from '@/hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   createInterview,
   deleteInterview,
   editInterview,
+  fetchInterviews,
 } from '@/redux/features/interviews/interviewsSlice';
 import type { InterviewFormProps } from '@/validations/interviews-validations';
 import { InterviewType } from '@/services/api/types/interviews.types';
+import type { Interview as InterviewEntity } from '@/services/api/types/interviews.types';
 
-interface Interview extends CalendarEvent {
+interface CalendarInterview extends CalendarEvent {
   candidateName?: string;
   position?: string;
   supervisor?: string;
@@ -41,16 +43,25 @@ interface Interview extends CalendarEvent {
   interViewType?: InterviewType;
 }
 
+type ExtendedInterviewEntity = InterviewEntity & {
+  jobAdvertisementName?: string;
+  nameAr?: string;
+  nameEn?: string;
+  schoolBranchName?: string;
+};
+
 export default function Interviews() {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
+  const {
+    interviews: interviewsData,
+    isLoading,
+    error: errorMessage,
+  } = useAppSelector((state) => state.interviews);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
-  const [interviews, setInterviews] = useState<Interview[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
+  const [selectedInterview, setSelectedInterview] = useState<CalendarInterview | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorMode, setEditorMode] = useState<'add' | 'edit'>('add');
@@ -61,24 +72,93 @@ export default function Interviews() {
   const [interviewIdPendingDelete, setInterviewIdPendingDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchInterviews = useCallback(async () => {
+  const fetchInterviewsData = useCallback(async () => {
+    const trimmedSearch = searchTerm.trim();
+    const filters = {
+      ...(trimmedSearch ? { teacherName: trimmedSearch } : {}),
+      ...(selectedSupervisorName ? { supervisorName: selectedSupervisorName } : {}),
+    };
+
     try {
-      setIsLoading(true);
-      setError(null);
-      setInterviews([]);
-    } catch (err) {
-      console.error('Failed to fetch interviews:', err);
-      setError(t('common.error'));
-    } finally {
-      setIsLoading(false);
+      await dispatch(
+        fetchInterviews({
+          filters,
+        })
+      ).unwrap();
+    } catch (error) {
+      const message =
+        typeof error === 'string'
+          ? error
+          : (error as { message?: string })?.message || t('common.error');
+
+      showToast({
+        message,
+        type: 'error',
+        duration: 3000,
+      });
     }
-  }, [t]);
+  }, [dispatch, searchTerm, selectedSupervisorName, showToast, t]);
 
   useEffect(() => {
-    void fetchInterviews();
-  }, [fetchInterviews]);
+    fetchInterviewsData();
+  }, [fetchInterviewsData]);
 
-  const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
+  const calendarInterviews = useMemo<CalendarInterview[]>(() => {
+    const toValidDate = (value?: string) => {
+      if (!value) return undefined;
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? undefined : date;
+    };
+
+    return interviewsData.map((interview: InterviewEntity) => {
+      const extendedInterview = interview as ExtendedInterviewEntity;
+      const start =
+        toValidDate(interview.startTime) || toValidDate(interview.interviewDate) || new Date();
+      const end = toValidDate(interview.endTime) || toValidDate(interview.startTime) || start;
+      const jobAdvertisementLabel =
+        extendedInterview.jobAdvertisementName || interview.jobAdvertisementTitle;
+      const title =
+        jobAdvertisementLabel ||
+        interview.teacherName ||
+        extendedInterview.nameEn ||
+        extendedInterview.nameAr ||
+        t('interviews.untitledInterview');
+
+      return {
+        id: interview.id,
+        title,
+        start,
+        end,
+        candidateName:
+          interview.teacherName || extendedInterview.nameEn || extendedInterview.nameAr || title,
+        position: jobAdvertisementLabel || extendedInterview.nameEn || extendedInterview.nameAr,
+        supervisor: interview.supervisorName,
+        jobAdvertisementId: interview.jobAdvertisementId,
+        jobAdvertisementName: jobAdvertisementLabel,
+        schoolBranchesId: interview.schoolBranchesId,
+        schoolBranchName: extendedInterview.schoolBranchName,
+        teacherId: interview.teacherId,
+        supervisorId: interview.supervisorId,
+        interViewType:
+          (interview.interViewType as InterviewType | undefined) ?? InterviewType.ONLINE,
+      };
+    });
+  }, [interviewsData, t]);
+
+  const SUPERVISOR_OPTIONS = useMemo(() => {
+    const names = interviewsData
+      .map((interview) => interview.supervisorName)
+      .filter((name): name is string => Boolean(name));
+
+    return Array.from(new Set(names)).map((name) => ({
+      value: name,
+      label: name,
+    }));
+  }, [interviewsData]);
+
+  const showEmptyState = !isLoading && calendarInterviews.length === 0;
+
+  const handleSelectSlot = (_slotInfo: { start: Date; end: Date }) => {
     // navigate('/interviews/add-interview', { state: { date: slotInfo.start } });
   };
 
@@ -90,7 +170,7 @@ export default function Interviews() {
     setIsEditorOpen(true);
   };
 
-  const handleOpenEditPopup = (interview: Interview) => {
+  const handleOpenEditPopup = (interview: CalendarInterview) => {
     setEditorMode('edit');
     setEditingInterviewId(interview.id);
     setSelectedDateForEditor(interview.start);
@@ -159,7 +239,7 @@ export default function Interviews() {
         });
       }
 
-      await fetchInterviews();
+      await fetchInterviewsData();
     } catch (error) {
       const message =
         typeof error === 'string'
@@ -193,20 +273,15 @@ export default function Interviews() {
 
     try {
       setIsDeleting(true);
-      await dispatch(deleteInterview(interviewIdPendingDelete))
-        .unwrap()
-        .then((res: any) => {
-          if (res?.isSuccess) {
-            setShowDeletePopup(false);
-            setInterviewIdPendingDelete(null);
-            showToast({
-              message: t('interviews.interviewDeletedSuccessfully'),
-              type: 'success',
-              duration: 3000,
-            });
-            fetchInterviews();
-          }
-        });
+      await dispatch(deleteInterview(interviewIdPendingDelete)).unwrap();
+      setShowDeletePopup(false);
+      setInterviewIdPendingDelete(null);
+      showToast({
+        message: t('interviews.interviewDeletedSuccessfully'),
+        type: 'success',
+        duration: 3000,
+      });
+      await fetchInterviewsData();
     } catch (error) {
       const message =
         typeof error === 'string'
@@ -228,7 +303,7 @@ export default function Interviews() {
       icon: EyeFillIcon,
       onClick: (date, event) => {
         if (event) {
-          const interview = interviews.find((i) => i.id === event.id);
+          const interview = calendarInterviews.find((i) => i.id === event.id);
           if (interview) {
             setSelectedInterview(interview);
             setDetailsOpen(true);
@@ -251,7 +326,7 @@ export default function Interviews() {
       icon: EditFillIcon,
       onClick: (date, event) => {
         if (event) {
-          const interview = interviews.find((i) => i.id === event.id);
+          const interview = calendarInterviews.find((i) => i.id === event.id);
           if (interview) {
             handleOpenEditPopup(interview);
           }
@@ -266,7 +341,7 @@ export default function Interviews() {
       icon: TrashFillIcon,
       onClick: (date, event) => {
         if (event) {
-          const interview = interviews.find((i) => i.id === event.id);
+          const interview = calendarInterviews.find((i) => i.id === event.id);
           if (interview) {
             handleRequestDelete(interview.id);
           }
@@ -278,27 +353,9 @@ export default function Interviews() {
     },
   ];
 
-  if (error) {
-    return <ErrorMessage message={error} />;
+  if (errorMessage) {
+    return <ErrorMessage message={errorMessage} />;
   }
-
-  // if (!isLoading && interviews.length === 0) {
-  //   return (
-  //     <EmptyState
-  //       imgSrc={StyledCalendarIcon}
-  //       title={t('interviews.noInterviewsMessage')}
-  //       blend={true}
-  //     />
-  //   );
-  // }
-
-  const supervisorNames = interviews
-    .map((i) => i.supervisor)
-    .filter((name): name is string => Boolean(name));
-  const SUPERVISOR_OPTIONS = Array.from(new Set(supervisorNames)).map((name) => ({
-    value: name,
-    label: name,
-  }));
 
   return (
     <>
@@ -313,7 +370,11 @@ export default function Interviews() {
           <CustomSelect
             value={selectedSupervisorName}
             onChange={(value) =>
-              setSelectedSupervisorName(Array.isArray(value) ? (value[0] ?? '') : value)
+              setSelectedSupervisorName(
+                Array.isArray(value)
+                  ? ((value[0] as string | undefined) ?? '')
+                  : ((value as string | undefined) ?? '')
+              )
             }
             options={SUPERVISOR_OPTIONS}
             maxHeight="200px"
@@ -321,8 +382,15 @@ export default function Interviews() {
             placeholder={t('interviews.supervisorName')}
           />
         </div>
+        {showEmptyState && (
+          <EmptyState
+            imgSrc={StyledCalendarIcon}
+            title={t('interviews.noInterviewsMessage')}
+            blend={true}
+          />
+        )}
         <SharedCalendar
-          events={interviews}
+          events={calendarInterviews}
           onSelectSlot={handleSelectSlot}
           contextMenuActions={contextMenuActions}
           defaultView="month"
