@@ -20,44 +20,73 @@ export type JobType =
   (typeof JobType)[keyof typeof JobType];
 
 export interface JobAdvertismentTechnicalSkillDto {
+  id?: string;
+  technicalAppId?: string;
   technicalAppName: string;
 }
 
 export interface JobAdvertismentPersonalSkillDto {
+  id?: string;
+  personalSkillId?: string;
   personalSkillName: string;
 }
 
 export interface JobAdvertismentMaterialDto {
+  id?: string;
   materialId: string;
+  materialNameAr?: string;
+  materialNameEn?: string;
 }
 
 export interface JobAdvertismentCountryDto {
+  id?: string;
   lkCountryId: string;
+  lkCountryNameAr?: string;
+  lkCountryNameEn?: string;
 }
 
 export interface JobAdvertismentQualificationDto {
+  id?: string;
   lkQualificationId: string;
+  lkQualificationNameAr?: string;
+  lkQualificationNameEn?: string;
 }
 
 export interface JobAdvertismentSchoolStageDto {
+  id?: string;
   lkSchoolStageId: string;
+  lkSchoolStageNameAr?: string;
+  lkSchoolStageNameEn?: string;
 }
 
 export interface JobAdvertismentLanguageDto {
+  id?: string;
   lkLanguageId: string;
+  lkLanguageNameAr?: string;
+  lkLanguageNameEn?: string;
   lkLanguageLevelId: string;
+  lkLanguageLevelNameAr?: string;
+  lkLanguageLevelNameEn?: string;
 }
 
 export interface JobAdvertismentJobBenefitDto {
+  id?: string;
   lkJobBenefitId: string;
+  lkJobBenefitNameAr?: string;
+  lkJobBenefitNameEn?: string;
 }
 
 export interface JobAdvertismentBase {
   name: string;
   nameEn: string;
   schoolBranchId: string;
+  schoolNameAr?: string;
+  schoolNameEn?: string;
   qualificationType: number;
+  applicantsCount?: number;
   materialId: string;
+  materialNameAr?: string;
+  materialNameEn?: string;
   jobDescription: string;
   jobDescriptionEn: string;
   jobResponsibilities: string;
@@ -76,7 +105,11 @@ export interface JobAdvertismentBase {
   workStartTime: string;
   workEndTime: string;
   lkAdministrativePositionId: string;
+  lkAdministrativePositionNameAr?: string;
+  lkAdministrativePositionNameEn?: string;
   lkTeacherLevelId: string;
+  lkTeacherLevelNameAr?: string;
+  lkTeacherLevelNameEn?: string;
   jobAdvertismentTechnicalSkillsDto?: JobAdvertismentTechnicalSkillDto[];
   jobAdvertismentPersonalSkillsDto?: JobAdvertismentPersonalSkillDto[];
   jobAdvertismentMaterialDto?: JobAdvertismentMaterialDto[];

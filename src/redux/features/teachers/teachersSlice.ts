@@ -100,6 +100,7 @@ export const fetchTeachers = createAsyncThunk<FetchTeachersResponse, FetchTeache
           if (payload.filters.educationalStageId)
             params.EducationalStageId = payload.filters.educationalStageId;
           if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
+          if (payload.filters.schoolBranchId) params.SchoolBranchId = payload.filters.schoolBranchId;
         }
       }
 

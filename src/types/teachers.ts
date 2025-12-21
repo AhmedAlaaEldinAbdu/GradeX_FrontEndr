@@ -74,6 +74,7 @@ export interface TeacherQueryParams {
   SubjectId?: string;
   EducationalStageId?: string;
   ClassroomId?: string;
+  SchoolBranchId?: string;
 }
 
 export interface TeacherFilters {
@@ -81,4 +82,5 @@ export interface TeacherFilters {
   subjectId?: string;
   educationalStageId?: string;
   classroomId?: string;
+  schoolBranchId?: string;
 }

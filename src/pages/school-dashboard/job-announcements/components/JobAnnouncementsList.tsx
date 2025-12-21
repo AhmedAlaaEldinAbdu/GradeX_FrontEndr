@@ -35,7 +35,7 @@ const WORK_TYPE_BADGES: Record<JobType, { bg: string; text: string }> = {
 };
 
 // Toggle this flag when you need mock entries to preview the table layout.
-const SHOULD_USE_DUMMY_JOB_DATA = true;
+const SHOULD_USE_DUMMY_JOB_DATA = false;
 
 const DUMMY_JOB_ADVERTISMENTS = [
   {
@@ -195,6 +195,45 @@ const getDynamicValue = (row: JobAdvertisment, keys: string[]): string | undefin
   return undefined;
 };
 
+const normalizeText = (value?: string | null): string | undefined => {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+};
+
+const getLocalizedText = (
+  arabic?: string | null,
+  english?: string | null,
+  lang: 'ar' | 'en' = 'ar'
+): string | undefined => {
+  const arText = normalizeText(arabic);
+  const enText = normalizeText(english);
+  return lang === 'ar' ? arText ?? enText : enText ?? arText;
+};
+
+const buildLocalizedList = <T,>(
+  list: T[] | undefined,
+  mapper: (item: T) => string | undefined,
+  separator: string
+): string | undefined => {
+  if (!Array.isArray(list) || list.length === 0) {
+    return undefined;
+  }
+
+  const labels = list
+    .map((item) => mapper(item))
+    .map((label) => normalizeText(label))
+    .filter((label): label is string => Boolean(label));
+
+  if (labels.length === 0) {
+    return undefined;
+  }
+
+  return labels.join(separator);
+};
+
 interface FiltersParams {
   searchTerm: string;
   selectedCountryId: string;
@@ -271,7 +310,7 @@ export default function JobAnnouncementsList() {
             filters: filtersPayload,
           })
         ).unwrap();
-      } catch (error) {
+                  return value.toLocaleString(numberLocale);
         showToast({ type: 'error', message: 'common.errorOccurred' });
       }
     };
@@ -303,12 +342,27 @@ export default function JobAnnouncementsList() {
   const stageOptions = Array.isArray(schoolStages)
     ? schoolStages.map((stage) => ({
         value: stage.id,
+            const materialLabel = buildLocalizedList(
+              row.jobAdvertismentMaterialDto,
+              (material) =>
+                getLocalizedText(material.materialNameAr, material.materialNameEn, currentLang) ||
+                (material.materialId ? subjectLabelMap[material.materialId] : undefined),
+              joinSeparator
+            );
+
+            if (materialLabel) {
+              return materialLabel;
+            }
+
         label: currentLang === 'ar' ? stage.nameAr : stage.nameEn,
       }))
     : [];
 
   const subjectOptions = Array.isArray(subjects)
-    ? subjects.map((subject) => ({
+            const dynamicKey =
+              currentLang === 'ar'
+                ? ['subjectNameAr', 'materialNameAr']
+                : ['subjectNameEn', 'materialNameEn'];
         value: subject.id,
         label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
       }))
@@ -446,18 +500,20 @@ export default function JobAnnouncementsList() {
               className={`rounded-full px-3 py-1 text-sm font-medium ${
                 WORK_TYPE_BADGES[row.workShedule]?.bg || 'bg-gray-100 text-gray-700'
               }`}
-            >
-              {WORK_TYPE_BADGES[row.workShedule]
-                ? t(WORK_TYPE_BADGES[row.workShedule].text)
-                : row.workShedule}
-            </span>
-          ) : (
-            <span className="text-sm text-gray-500">--</span>
-          )}
-        </div>
-      ),
-      headerClassName: 'min-w-[140px]',
-      className: 'text-center',
+                  const countryLabel = buildLocalizedList(
+                    row.jobAdvertisementCountryDto,
+                    (country) =>
+                      getLocalizedText(country.lkCountryNameAr, country.lkCountryNameEn, currentLang) ||
+                      (country.lkCountryId ? countryLabelMap[country.lkCountryId] : undefined),
+                    joinSeparator
+                  );
+
+                  if (countryLabel) {
+                    return countryLabel;
+                  }
+
+                  const fallbackKey = currentLang === 'ar' ? ['countryNameAr'] : ['countryNameEn'];
+                  return getDynamicValue(row, fallbackKey) || '--';
     },
     {
       header: 'jobAnnouncement.applicantsCount',
@@ -468,20 +524,21 @@ export default function JobAnnouncementsList() {
               const value = (row as any).applicantsCount;
               if (typeof value === 'number') {
                 return (
-                  <div className="flex gap-2">
-                    <div className="cursor-pointer">
-                      <CustomImage src={EyeStyledIcon} alt="show" className="h-5 w-5" />
-                    </div>{' '}
-                    {value.toLocaleString()}{' '}
-                  </div>
-                );
-              }
-              return '--';
-            })()}
-          </span>
-        </div>
-      ),
-      headerClassName: 'min-w-[140px]',
+                  const stageLabel = buildLocalizedList(
+                    row.jobAdvertisementSchoolStageDto,
+                    (stage) =>
+                      getLocalizedText(stage.lkSchoolStageNameAr, stage.lkSchoolStageNameEn, currentLang) ||
+                      (stage.lkSchoolStageId ? stageLabelMap[stage.lkSchoolStageId] : undefined),
+                    joinSeparator
+                  );
+
+                  if (stageLabel) {
+                    return stageLabel;
+                  }
+
+                  const fallbackKey =
+                    currentLang === 'ar' ? ['schoolStageNameAr'] : ['schoolStageNameEn'];
+                  return getDynamicValue(row, fallbackKey) || '--';
       className: 'text-center',
     },
     {
@@ -492,6 +549,21 @@ export default function JobAnnouncementsList() {
             const fallbackSubjectId =
               row.materialId || row.jobAdvertismentMaterialDto?.[0]?.materialId;
             if (fallbackSubjectId && subjectLabelMap[fallbackSubjectId]) {
+                  const qualificationLabel = buildLocalizedList(
+                    row.jobAdvertisementQualificationDto,
+                    (qualification) =>
+                      getLocalizedText(
+                        qualification.lkQualificationNameAr,
+                        qualification.lkQualificationNameEn,
+                        currentLang
+                      ),
+                    joinSeparator
+                  );
+
+                  if (qualificationLabel) {
+                    return qualificationLabel;
+                  }
+
               return subjectLabelMap[fallbackSubjectId];
             }
             const dynamicKey = currentLang === 'ar' ? ['subjectNameAr'] : ['subjectNameEn'];
