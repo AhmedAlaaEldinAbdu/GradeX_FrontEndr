@@ -19,18 +19,16 @@ import {
 import { fetchCountries, fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import type { JobAdvertisment } from '@/services/api/types/job-advertisment.types';
-import { JobType } from '@/services/api/types/job-advertisment.types';
-import CustomImage from '@/shared/components/CustomImage';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 
-const WORK_TYPE_BADGES: Record<JobType, { bg: string; text: string }> = {
-  [JobType.FULLTIME]: {
-    bg: 'bg-green-50 text-green-700',
-    text: 'jobAnnouncement.fullTime',
+const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; text: string }> = {
+  [JobAdvertismentWorkShedule.ONLINE]: {
+    bg: 'bg-emerald-50 text-emerald-700',
+    text: 'jobAnnouncement.onlineWork',
   },
-  [JobType.PARTTIME]: {
+  [JobAdvertismentWorkShedule.OFFLINE]: {
     bg: 'bg-blue-50 text-blue-700',
-    text: 'jobAnnouncement.partTime',
+    text: 'jobAnnouncement.offlineWork',
   },
 };
 
@@ -59,7 +57,7 @@ const DUMMY_JOB_ADVERTISMENTS = [
     maximumSalary: 7500,
     teacherGender: 0,
     yearsExperience: 5,
-    workShedule: JobType.PARTTIME,
+    workShedule: JobAdvertismentWorkShedule.OFFLINE,
     workStartTime: '08:00',
     workEndTime: '15:00',
     lkAdministrativePositionId: 'admin-role-1',
@@ -107,7 +105,7 @@ const DUMMY_JOB_ADVERTISMENTS = [
     maximumSalary: 9500,
     teacherGender: 1,
     yearsExperience: 8,
-    workShedule: JobType.FULLTIME,
+    workShedule: JobAdvertismentWorkShedule.ONLINE,
     workStartTime: '09:00',
     workEndTime: '16:30',
     lkAdministrativePositionId: 'admin-role-2',
@@ -155,7 +153,7 @@ const DUMMY_JOB_ADVERTISMENTS = [
     maximumSalary: 11000,
     teacherGender: 0,
     yearsExperience: 10,
-    workShedule: JobType.FULLTIME,
+    workShedule: JobAdvertismentWorkShedule.ONLINE,
     workStartTime: '07:30',
     workEndTime: '14:30',
     lkAdministrativePositionId: 'admin-role-3',
@@ -249,7 +247,9 @@ const buildFiltersPayload = ({
   selectedSubjectId,
   selectedWorkType,
 }: FiltersParams): JobAdvertismentFilters => {
-  const workShedule = selectedWorkType ? (Number(selectedWorkType) as JobType) : undefined;
+  const workShedule = selectedWorkType
+    ? (Number(selectedWorkType) as JobAdvertismentWorkShedule)
+    : undefined;
 
   return {
     searchName: searchTerm || undefined,
@@ -310,7 +310,7 @@ export default function JobAnnouncementsList() {
             filters: filtersPayload,
           })
         ).unwrap();
-                  return value.toLocaleString(numberLocale);
+      } catch (error) {
         showToast({ type: 'error', message: 'common.errorOccurred' });
       }
     };
@@ -342,27 +342,12 @@ export default function JobAnnouncementsList() {
   const stageOptions = Array.isArray(schoolStages)
     ? schoolStages.map((stage) => ({
         value: stage.id,
-            const materialLabel = buildLocalizedList(
-              row.jobAdvertismentMaterialDto,
-              (material) =>
-                getLocalizedText(material.materialNameAr, material.materialNameEn, currentLang) ||
-                (material.materialId ? subjectLabelMap[material.materialId] : undefined),
-              joinSeparator
-            );
-
-            if (materialLabel) {
-              return materialLabel;
-            }
-
         label: currentLang === 'ar' ? stage.nameAr : stage.nameEn,
       }))
     : [];
 
   const subjectOptions = Array.isArray(subjects)
-            const dynamicKey =
-              currentLang === 'ar'
-                ? ['subjectNameAr', 'materialNameAr']
-                : ['subjectNameEn', 'materialNameEn'];
+    ? subjects.map((subject) => ({
         value: subject.id,
         label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
       }))
@@ -386,12 +371,12 @@ export default function JobAnnouncementsList() {
   const workTypeOptions = [
     { value: '', label: t('jobAnnouncement.workType') },
     {
-      value: String(JobType.FULLTIME),
-      label: t('jobAnnouncement.fullTime'),
+      value: String(JobAdvertismentWorkShedule.ONLINE),
+      label: t('jobAnnouncement.onlineWork'),
     },
     {
-      value: String(JobType.PARTTIME),
-      label: t('jobAnnouncement.partTime'),
+      value: String(JobAdvertismentWorkShedule.OFFLINE),
+      label: t('jobAnnouncement.offlineWork'),
     },
   ];
 
@@ -500,20 +485,18 @@ export default function JobAnnouncementsList() {
               className={`rounded-full px-3 py-1 text-sm font-medium ${
                 WORK_TYPE_BADGES[row.workShedule]?.bg || 'bg-gray-100 text-gray-700'
               }`}
-                  const countryLabel = buildLocalizedList(
-                    row.jobAdvertisementCountryDto,
-                    (country) =>
-                      getLocalizedText(country.lkCountryNameAr, country.lkCountryNameEn, currentLang) ||
-                      (country.lkCountryId ? countryLabelMap[country.lkCountryId] : undefined),
-                    joinSeparator
-                  );
-
-                  if (countryLabel) {
-                    return countryLabel;
-                  }
-
-                  const fallbackKey = currentLang === 'ar' ? ['countryNameAr'] : ['countryNameEn'];
-                  return getDynamicValue(row, fallbackKey) || '--';
+            >
+              {WORK_TYPE_BADGES[row.workShedule]
+                ? t(WORK_TYPE_BADGES[row.workShedule].text)
+                : row.workShedule}
+            </span>
+          ) : (
+            <span className="text-sm text-gray-500">--</span>
+          )}
+        </div>
+      ),
+      headerClassName: 'w-[160px]',
+      className: 'text-center',
     },
     {
       header: 'jobAnnouncement.applicantsCount',
@@ -521,24 +504,16 @@ export default function JobAnnouncementsList() {
         <div className="flex items-center justify-center gap-2 text-sm">
           <span>
             {(() => {
-              const value = (row as any).applicantsCount;
+              const value = (row as Record<string, unknown>).applicantsCount;
               if (typeof value === 'number') {
-                return (
-                  const stageLabel = buildLocalizedList(
-                    row.jobAdvertisementSchoolStageDto,
-                    (stage) =>
-                      getLocalizedText(stage.lkSchoolStageNameAr, stage.lkSchoolStageNameEn, currentLang) ||
-                      (stage.lkSchoolStageId ? stageLabelMap[stage.lkSchoolStageId] : undefined),
-                    joinSeparator
-                  );
-
-                  if (stageLabel) {
-                    return stageLabel;
-                  }
-
-                  const fallbackKey =
-                    currentLang === 'ar' ? ['schoolStageNameAr'] : ['schoolStageNameEn'];
-                  return getDynamicValue(row, fallbackKey) || '--';
+                return value.toLocaleString(numberLocale);
+              }
+              return '--';
+            })()}
+          </span>
+        </div>
+      ),
+      headerClassName: 'w-[140px]',
       className: 'text-center',
     },
     {
@@ -546,27 +521,27 @@ export default function JobAnnouncementsList() {
       accessor: (row) => (
         <span className="text-sm text-gray-700">
           {(() => {
+            const materialLabel = buildLocalizedList(
+              row.jobAdvertismentMaterialDto,
+              (material) =>
+                getLocalizedText(material.materialNameAr, material.materialNameEn, currentLang) ||
+                (material.materialId ? subjectLabelMap[material.materialId] : undefined),
+              joinSeparator
+            );
+
+            if (materialLabel) {
+              return materialLabel;
+            }
+
             const fallbackSubjectId =
               row.materialId || row.jobAdvertismentMaterialDto?.[0]?.materialId;
             if (fallbackSubjectId && subjectLabelMap[fallbackSubjectId]) {
-                  const qualificationLabel = buildLocalizedList(
-                    row.jobAdvertisementQualificationDto,
-                    (qualification) =>
-                      getLocalizedText(
-                        qualification.lkQualificationNameAr,
-                        qualification.lkQualificationNameEn,
-                        currentLang
-                      ),
-                    joinSeparator
-                  );
-
-                  if (qualificationLabel) {
-                    return qualificationLabel;
-                  }
-
               return subjectLabelMap[fallbackSubjectId];
             }
-            const dynamicKey = currentLang === 'ar' ? ['subjectNameAr'] : ['subjectNameEn'];
+            const dynamicKey =
+              currentLang === 'ar'
+                ? ['subjectNameAr', 'materialNameAr']
+                : ['subjectNameEn', 'materialNameEn'];
             return getDynamicValue(row, dynamicKey) || '--';
           })()}
         </span>
@@ -578,18 +553,20 @@ export default function JobAnnouncementsList() {
       accessor: (row) => (
         <span className="text-sm text-gray-700">
           {(() => {
-            const countryIds =
-              row.jobAdvertisementCountryDto?.map((country) => country.lkCountryId) || [];
-            if (countryIds.length === 0) {
-              const fallbackKey = currentLang === 'ar' ? ['countryNameAr'] : ['countryNameEn'];
-              return getDynamicValue(row, fallbackKey) || '--';
+            const countryLabel = buildLocalizedList(
+              row.jobAdvertisementCountryDto,
+              (country) =>
+                getLocalizedText(country.lkCountryNameAr, country.lkCountryNameEn, currentLang) ||
+                (country.lkCountryId ? countryLabelMap[country.lkCountryId] : undefined),
+              joinSeparator
+            );
+
+            if (countryLabel) {
+              return countryLabel;
             }
-            const labels = countryIds.map((id) => countryLabelMap[id]).filter(Boolean);
-            if (labels.length === 0) {
-              const fallbackKey = currentLang === 'ar' ? ['countryNameAr'] : ['countryNameEn'];
-              return getDynamicValue(row, fallbackKey) || '--';
-            }
-            return labels.join(joinSeparator);
+
+            const fallbackKey = currentLang === 'ar' ? ['countryNameAr'] : ['countryNameEn'];
+            return getDynamicValue(row, fallbackKey) || '--';
           })()}
         </span>
       ),
@@ -600,20 +577,21 @@ export default function JobAnnouncementsList() {
       accessor: (row) => (
         <span className="text-sm text-gray-700">
           {(() => {
-            const stageIds =
-              row.jobAdvertisementSchoolStageDto?.map((stage) => stage.lkSchoolStageId) || [];
-            if (stageIds.length === 0) {
-              const fallbackKey =
-                currentLang === 'ar' ? ['schoolStageNameAr'] : ['schoolStageNameEn'];
-              return getDynamicValue(row, fallbackKey) || '--';
+            const stageLabel = buildLocalizedList(
+              row.jobAdvertisementSchoolStageDto,
+              (stage) =>
+                getLocalizedText(stage.lkSchoolStageNameAr, stage.lkSchoolStageNameEn, currentLang) ||
+                (stage.lkSchoolStageId ? stageLabelMap[stage.lkSchoolStageId] : undefined),
+              joinSeparator
+            );
+
+            if (stageLabel) {
+              return stageLabel;
             }
-            const labels = stageIds.map((id) => stageLabelMap[id]).filter(Boolean);
-            if (labels.length === 0) {
-              const fallbackKey =
-                currentLang === 'ar' ? ['schoolStageNameAr'] : ['schoolStageNameEn'];
-              return getDynamicValue(row, fallbackKey) || '--';
-            }
-            return labels.join(joinSeparator);
+
+            const fallbackKey =
+              currentLang === 'ar' ? ['schoolStageNameAr'] : ['schoolStageNameEn'];
+            return getDynamicValue(row, fallbackKey) || '--';
           })()}
         </span>
       ),
@@ -624,6 +602,21 @@ export default function JobAnnouncementsList() {
       accessor: (row) => (
         <span className="text-sm text-gray-700">
           {(() => {
+            const qualificationLabel = buildLocalizedList(
+              row.jobAdvertisementQualificationDto,
+              (qualification) =>
+                getLocalizedText(
+                  qualification.lkQualificationNameAr,
+                  qualification.lkQualificationNameEn,
+                  currentLang
+                ),
+              joinSeparator
+            );
+
+            if (qualificationLabel) {
+              return qualificationLabel;
+            }
+
             const keys =
               currentLang === 'ar'
                 ? ['qualificationNameAr', 'qualificationTypeNameAr']
@@ -679,7 +672,6 @@ export default function JobAnnouncementsList() {
             variant="success"
             onClick={() => navigate(`/job-announcements/edit/${row.id}`)}
             ariaLabel={t('actions.edit')}
-            disabled={shouldUseDummyData}
           />
           <IconButton
             status="delete"
@@ -688,7 +680,7 @@ export default function JobAnnouncementsList() {
               setSelectedJobId(row.id);
               setShowDeletePopup(true);
             }}
-            disabled={isDeleting || shouldUseDummyData}
+            disabled={isDeleting}
             ariaLabel={t('actions.delete')}
           />
         </div>
