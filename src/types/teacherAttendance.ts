@@ -47,17 +47,17 @@ export interface TeacherAttendanceQueryParams {
   SchoolBrancheId: string;
   PageIndex?: number;
   PageSize?: number;
-  SearchName?: string;
-  EducationalStageId?: string;
+  Search?: string;
+  LKSchoolStageId?: string;
   ClassroomId?: string;
-  Job?: number;
+  Status?: number;
 }
 
 export interface TeacherAttendanceFilters {
-  searchName?: string;
-  educationalStageId?: string;
+  search?: string;
+  lkSchoolStageId?: string;
   classroomId?: string;
-  job?: number;
+  status?: number;
 }
 
 // Attendance status constants
