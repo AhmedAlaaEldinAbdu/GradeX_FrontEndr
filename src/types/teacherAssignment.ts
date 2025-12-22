@@ -14,6 +14,25 @@ export interface TeacherAssignmentClassroom {
 }
 
 // ============================================================================
+// Classroom in List Assignment
+// ============================================================================
+
+export interface TeacherAssignmentListClassroom {
+  id: string;
+  nameAR: string;
+  nameEN: string | null;
+}
+
+// ============================================================================
+// Book in List Assignment
+// ============================================================================
+
+export interface TeacherAssignmentBook {
+  id: string;
+  name: string;
+}
+
+// ============================================================================
 // Grade (Educational Stage) in Assignment
 // ============================================================================
 
@@ -25,7 +44,7 @@ export interface TeacherAssignmentGrade {
 }
 
 // ============================================================================
-// Teacher Assignment Data
+// Teacher Assignment Data (for single teacher details)
 // ============================================================================
 
 export interface TeacherAssignmentData {
@@ -35,6 +54,40 @@ export interface TeacherAssignmentData {
   materailCount: number; // Note: API has typo "materail" instead of "material"
   bookCount: number;
   grades: TeacherAssignmentGrade[];
+}
+
+// ============================================================================
+// Teacher Assignment List Item (for teacher list)
+// ============================================================================
+
+export interface TeacherAssignmentListItem {
+  schoolBranchesId: string;
+  id: string;
+  teacherId: string;
+  teacherName: string;
+  countryCode: string;
+  phone: string;
+  email: string;
+  gradeId: string;
+  gradeNameAR: string;
+  gradeNameEN: string | null;
+  materialId: string;
+  materialNameAR: string;
+  materialNameEN: string | null;
+  classrooms: TeacherAssignmentListClassroom[];
+  books: TeacherAssignmentBook[];
+}
+
+// ============================================================================
+// Teacher Assignment List Data
+// ============================================================================
+
+export interface TeacherAssignmentListData {
+  teacherAssignmentDto: TeacherAssignmentListItem[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
 }
 
 // ============================================================================
@@ -48,10 +101,23 @@ export interface TeacherAssignmentResponse {
   validationErrors: string[] | null;
 }
 
+export interface TeacherAssignmentListResponse {
+  data: TeacherAssignmentListData;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
 // ============================================================================
 // Query Parameters
 // ============================================================================
 
 export interface TeacherAssignmentQueryParams {
   TeacherId: string;
+}
+
+export interface TeacherAssignmentListQueryParams {
+  SchoolBranchesId: string;
+  PageIndex?: number;
+  PageSize?: number;
 }
