@@ -7,7 +7,7 @@ import {
 import { teacherApiService } from '@/services/api/teachers/teachers.service';
 import { teacherAttendanceApiService } from '@/services/api/teacher-attendance/teacher-attendance.service';
 import type { Teacher, TeacherQueryParams, TeacherFilters } from '@/types/teachers';
-import type { TeacherAssignmentData } from '@/types/teacherAssignment';
+import type { TeacherAssignmentData, TeacherAssignmentListItem } from '@/types/teacherAssignment';
 import type {
   TeacherAttendanceDetailRecord,
   TeacherAttendanceSummary,
@@ -22,6 +22,7 @@ import { getErrorMessage } from '@/lib/http';
 export interface TeachersState {
   // Data
   teachers: Teacher[];
+  teacherAssignmentList: TeacherAssignmentListItem[];
   currentTeacher: Teacher | null;
   teacherAssignment: TeacherAssignmentData | null;
   teacherAttendanceRecords: TeacherAttendanceDetailRecord[];
@@ -49,6 +50,7 @@ export interface TeachersState {
 
   // Loading States
   isLoading: boolean;
+  isLoadingAssignmentList: boolean;
   isDeleting: boolean;
   isLoadingAssignment: boolean;
   isLoadingAttendance: boolean;
@@ -97,9 +99,26 @@ export interface FetchTeacherAttendanceResponse {
   };
 }
 
+export interface FetchTeacherAssignmentListPayload {
+  schoolBranchesId: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface FetchTeacherAssignmentListResponse {
+  data: TeacherAssignmentListItem[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 const initialState: TeachersState = {
   // Data
   teachers: [],
+  teacherAssignmentList: [],
   currentTeacher: null,
   teacherAssignment: null,
   teacherAttendanceRecords: [],
@@ -131,6 +150,7 @@ const initialState: TeachersState = {
 
   // Loading States
   isLoading: false,
+  isLoadingAssignmentList: false,
   isDeleting: false,
   isLoadingAssignment: false,
   isLoadingAttendance: false,
@@ -163,6 +183,9 @@ export const fetchTeachers = createAsyncThunk<FetchTeachersResponse, FetchTeache
           if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
           if (payload.filters.schoolBranchId)
             params.SchoolBranchId = payload.filters.schoolBranchId;
+        }
+        if (payload.filters?.schoolBranchesId) {
+          params.SchoolBranchesId = payload.filters.schoolBranchesId;
         }
       }
 
@@ -250,6 +273,31 @@ export const fetchTeacherAttendanceDetails = createAsyncThunk<
         totalAbsent: response.totalAbsence || 0,
         totalLate: response.totalLate || 0,
       },
+      meta: {
+        total: response.totalItems || 0,
+        page: response.pageIndex || 1,
+        limit: response.pageSize || 10,
+        totalPages: response.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const fetchTeacherAssignmentList = createAsyncThunk<
+  FetchTeacherAssignmentListResponse,
+  FetchTeacherAssignmentListPayload
+>('teachers/fetchTeacherAssignmentList', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await teacherApiService.getTeacherAssignmentList({
+      SchoolBranchesId: payload.schoolBranchesId,
+      PageIndex: payload.page || 1,
+      PageSize: payload.limit || 10,
+    });
+
+    return {
+      data: response.teacherAssignmentDto || [],
       meta: {
         total: response.totalItems || 0,
         page: response.pageIndex || 1,
@@ -408,6 +456,31 @@ const teachersSlice = createSlice({
       .addCase(fetchTeacherAttendanceDetails.rejected, (state, action) => {
         state.isLoadingAttendance = false;
         state.attendanceError = action.payload as string;
+      });
+
+    // Fetch Teacher Assignment List
+    builder
+      .addCase(fetchTeacherAssignmentList.pending, (state) => {
+        state.isLoadingAssignmentList = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchTeacherAssignmentList.fulfilled,
+        (state, action: PayloadAction<FetchTeacherAssignmentListResponse>) => {
+          state.isLoadingAssignmentList = false;
+          state.teacherAssignmentList = action.payload.data;
+          state.pagination = {
+            page: action.payload.meta.page,
+            limit: action.payload.meta.limit,
+            total: action.payload.meta.total,
+            totalPages: action.payload.meta.totalPages,
+          };
+          state.isInitialized = true;
+        }
+      )
+      .addCase(fetchTeacherAssignmentList.rejected, (state, action) => {
+        state.isLoadingAssignmentList = false;
+        state.error = action.payload as string;
       });
   },
 });
