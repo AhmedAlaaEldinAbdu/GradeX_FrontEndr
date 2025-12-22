@@ -19,27 +19,17 @@ import {
   deselectAttendance,
   selectAllAttendances,
 } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchSchoolStages } from '@/redux/features/lookups';
 import type { TeacherAttendance } from '@/types/teacherAttendance';
-import { AttendanceStatus, TeacherJobType } from '@/types/teacherAttendance';
+import { AttendanceStatus } from '@/types/teacherAttendance';
 import { formatTime, formatDateDisplay } from '@/shared/common/common';
 
-const EDUCATIONAL_STAGES = [
-  { value: 'primary', labelAr: 'المرحلة الابتدائية', labelEn: 'Primary School' },
-  { value: 'middle', labelAr: 'المرحلة الإعدادية', labelEn: 'Middle School' },
-  { value: 'secondary', labelAr: 'المرحلة الثانوية', labelEn: 'Secondary School' },
-  { value: 'kindergarten', labelAr: 'رياض الأطفال', labelEn: 'Kindergarten' },
-];
-
-const CLASSROOMS = [
-  { value: '1a', labelAr: '1/أ', labelEn: '1/A' },
-  { value: '2a', labelAr: '2/أ', labelEn: '2/A' },
-  { value: '1a-2a', labelAr: '1/أ - 2/أ', labelEn: '1/A - 2/A' },
-];
-
 const TYPE_OPTIONS = [
-  { value: String(TeacherJobType.Teacher), labelAr: 'معلم', labelEn: 'Teacher' },
-  { value: String(TeacherJobType.Administrator), labelAr: 'إداري', labelEn: 'Administrator' },
-  { value: String(TeacherJobType.Supervisor), labelAr: 'مشرف', labelEn: 'Supervisor' },
+  { value: String(AttendanceStatus.Present), labelAr: 'حاضر', labelEn: 'Present' },
+  { value: String(AttendanceStatus.Absent), labelAr: 'غائب', labelEn: 'Absent' },
+  { value: String(AttendanceStatus.Late), labelAr: 'متأخر', labelEn: 'Late' },
+  { value: String(AttendanceStatus.EarlyLeave), labelAr: 'خارج مبكر', labelEn: 'Early Leave' },
 ];
 
 const getStatusDisplay = (
@@ -88,6 +78,12 @@ export default function EmployeesAttendanceTab({
     (state) => state.teacherAttendance
   );
 
+  // Get classrooms from classrooms slice for filter options
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
+
+  // Get school stages from lookups slice for filter options
+  const schoolStages = useAppSelector((state) => state.lookups.schoolStages);
+
   // Local filter state
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('');
@@ -102,6 +98,12 @@ export default function EmployeesAttendanceTab({
   const [popupEmployeeName, setPopupEmployeeName] = useState('');
   const [popupEmployeeId, setPopupEmployeeId] = useState<string | null>(null);
 
+  // Fetch classrooms and school stages for filter dropdowns on mount
+  useEffect(() => {
+    dispatch(fetchClassrooms({ page: 1, limit: 100 }));
+    dispatch(fetchSchoolStages());
+  }, [dispatch]);
+
   // Fetch data when component mounts or filters change
   useEffect(() => {
     if (isActive) {
@@ -110,10 +112,10 @@ export default function EmployeesAttendanceTab({
           page: currentPage,
           limit: pagination.limit,
           filters: {
-            searchName: searchTerm || undefined,
-            educationalStageId: selectedStage || undefined,
+            search: searchTerm || undefined,
+            lkSchoolStageId: selectedStage || undefined,
             classroomId: selectedClassroom || undefined,
-            job: selectedType ? Number(selectedType) : undefined,
+            status: selectedType ? Number(selectedType) : undefined,
           },
         })
       );
@@ -332,26 +334,6 @@ export default function EmployeesAttendanceTab({
   const filterConfigs: FilterConfig[] = [
     {
       type: 'custom',
-      name: 'type-filter',
-      placeholder: '',
-      value: selectedType,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedType}
-          onChange={(value) => setSelectedType(Array.isArray(value) ? (value[0] ?? '') : value)}
-          options={TYPE_OPTIONS.map((type) => ({
-            value: type.value,
-            label: currentLang === 'ar' ? type.labelAr : type.labelEn,
-          }))}
-          placeholder={t('attendance.type')}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
       name: 'classroom-filter',
       placeholder: '',
       value: selectedClassroom,
@@ -363,9 +345,9 @@ export default function EmployeesAttendanceTab({
           onChange={(value) =>
             setSelectedClassroom(Array.isArray(value) ? (value[0] ?? '') : value)
           }
-          options={CLASSROOMS.map((classroom) => ({
-            value: classroom.value,
-            label: currentLang === 'ar' ? classroom.labelAr : classroom.labelEn,
+          options={classrooms.map((classroom) => ({
+            value: classroom.id,
+            label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
           }))}
           placeholder={t('attendance.classroom')}
           maxHeight="200px"
@@ -383,9 +365,9 @@ export default function EmployeesAttendanceTab({
         <CustomSelect
           value={selectedStage}
           onChange={(value) => setSelectedStage(Array.isArray(value) ? (value[0] ?? '') : value)}
-          options={EDUCATIONAL_STAGES.map((stage) => ({
-            value: stage.value,
-            label: currentLang === 'ar' ? stage.labelAr : stage.labelEn,
+          options={schoolStages.map((stage) => ({
+            value: stage.id,
+            label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
           }))}
           placeholder={t('attendance.educationalStage')}
           maxHeight="200px"
@@ -399,6 +381,26 @@ export default function EmployeesAttendanceTab({
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
       width: '40%',
+    },
+    {
+      type: 'custom',
+      name: 'type-filter',
+      placeholder: '',
+      value: selectedType,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={selectedType}
+          onChange={(value) => setSelectedType(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={TYPE_OPTIONS.map((type) => ({
+            value: type.value,
+            label: currentLang === 'ar' ? type.labelAr : type.labelEn,
+          }))}
+          placeholder={t('attendance.type')}
+          maxHeight="200px"
+        />
+      ),
     },
   ];
 
