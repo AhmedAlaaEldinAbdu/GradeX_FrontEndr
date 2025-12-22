@@ -602,7 +602,14 @@
     "confirmAllAbsent": "Confirm all absent?",
     "confirmLateTitle": "Do you want to confirm late arrival?",
     "time": "Time",
-    "selectTime": "Select time"
+    "selectTime": "Select time",
+    "checkInTimeLabel": "Check-in Time",
+    "selectCheckInTime": "Select check-in time",
+    "checkOutTimeLabel": "Check-out Time",
+    "selectCheckOutTime": "Select check-out time",
+    "scheduleUpdatedSuccess": "Attendance schedule updated successfully",
+    "scheduleUpdatedError": "Failed to update attendance schedule",
+    "earlyLeave": "Early Leave"
   },
   "studentForm": {
     "firstName": "First Name",

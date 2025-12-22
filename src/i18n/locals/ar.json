@@ -601,7 +601,14 @@
     "confirmAllAbsent": "تأكيد غياب الجميع ؟",
     "confirmLateTitle": "هل تريد تأكيد التأخير ؟",
     "time": "الوقت",
-    "selectTime": "حدد الوقت"
+    "selectTime": "حدد الوقت",
+    "checkInTimeLabel": "موعد الحضور",
+    "selectCheckInTime": "أختر موعد الحضور",
+    "checkOutTimeLabel": "موعد الإنصراف",
+    "selectCheckOutTime": "أختر موعد الإنصراف",
+    "scheduleUpdatedSuccess": "تم تحديث موعد الحضور والانصراف بنجاح",
+    "scheduleUpdatedError": "حدث خطأ أثناء تحديث موعد الحضور والانصراف",
+    "earlyLeave": "خارج مبكر"
   },
   "studentForm": {
     "firstName": "الاسم الأول",
