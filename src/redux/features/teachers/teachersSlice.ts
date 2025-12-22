@@ -6,6 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 import { teacherApiService } from '@/services/api/teachers/teachers.service';
 import type { Teacher, TeacherQueryParams, TeacherFilters } from '@/types/teachers';
+import type { TeacherAssignmentData } from '@/types/teacherAssignment';
 import { getErrorMessage } from '@/lib/http';
 
 // ============================================================================
@@ -16,6 +17,7 @@ export interface TeachersState {
   // Data
   teachers: Teacher[];
   currentTeacher: Teacher | null;
+  teacherAssignment: TeacherAssignmentData | null;
 
   // Pagination
   pagination: {
@@ -31,9 +33,11 @@ export interface TeachersState {
   // Loading States
   isLoading: boolean;
   isDeleting: boolean;
+  isLoadingAssignment: boolean;
 
   // Error States
   error: string | null;
+  assignmentError: string | null;
 
   // UI States
   selectedTeacherIds: string[];
@@ -60,6 +64,7 @@ const initialState: TeachersState = {
   // Data
   teachers: [],
   currentTeacher: null,
+  teacherAssignment: null,
 
   // Pagination
   pagination: {
@@ -75,9 +80,11 @@ const initialState: TeachersState = {
   // Loading States
   isLoading: false,
   isDeleting: false,
+  isLoadingAssignment: false,
 
   // Error States
   error: null,
+  assignmentError: null,
 
   // UI States
   selectedTeacherIds: [],
@@ -100,7 +107,8 @@ export const fetchTeachers = createAsyncThunk<FetchTeachersResponse, FetchTeache
           if (payload.filters.educationalStageId)
             params.EducationalStageId = payload.filters.educationalStageId;
           if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
-          if (payload.filters.schoolBranchId) params.SchoolBranchId = payload.filters.schoolBranchId;
+          if (payload.filters.schoolBranchId)
+            params.SchoolBranchId = payload.filters.schoolBranchId;
         }
       }
 
@@ -157,6 +165,18 @@ export const deleteTeacher = createAsyncThunk<string, string>(
   }
 );
 
+export const fetchTeacherAssignment = createAsyncThunk<TeacherAssignmentData, string>(
+  'teachers/fetchTeacherAssignment',
+  async (teacherId, { rejectWithValue }) => {
+    try {
+      const response = await teacherApiService.getTeacherAssignment(teacherId);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const teachersSlice = createSlice({
   name: 'teachers',
   initialState,
@@ -169,6 +189,10 @@ const teachersSlice = createSlice({
     },
     setCurrentTeacher: (state, action: PayloadAction<Teacher | null>) => {
       state.currentTeacher = action.payload;
+    },
+    clearTeacherAssignment: (state) => {
+      state.teacherAssignment = null;
+      state.assignmentError = null;
     },
     clearError: (state) => {
       state.error = null;
@@ -241,6 +265,24 @@ const teachersSlice = createSlice({
         state.isDeleting = false;
         state.error = action.payload as string;
       });
+
+    // Fetch Teacher Assignment
+    builder
+      .addCase(fetchTeacherAssignment.pending, (state) => {
+        state.isLoadingAssignment = true;
+        state.assignmentError = null;
+      })
+      .addCase(
+        fetchTeacherAssignment.fulfilled,
+        (state, action: PayloadAction<TeacherAssignmentData>) => {
+          state.isLoadingAssignment = false;
+          state.teacherAssignment = action.payload;
+        }
+      )
+      .addCase(fetchTeacherAssignment.rejected, (state, action) => {
+        state.isLoadingAssignment = false;
+        state.assignmentError = action.payload as string;
+      });
   },
 });
 
@@ -248,6 +290,7 @@ export const {
   setFilters,
   clearFilters,
   setCurrentTeacher,
+  clearTeacherAssignment,
   clearError,
   selectTeacher,
   deselectTeacher,
