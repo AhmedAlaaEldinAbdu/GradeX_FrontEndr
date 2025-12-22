@@ -1,10 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import SearchInput from '@/shared/components/SearchInput';
 import CustomImage from '@/shared/components/CustomImage';
+import Loading from '@/shared/components/Loading';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import { mockTeacherDetails } from '../../data/mockTeacherData';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import {
+  fetchTeacherAssignment,
+  clearTeacherAssignment,
+} from '@/redux/features/teachers/teachersSlice';
 
 interface EducationalStagesTabProps {
   teacherId: string;
@@ -13,21 +18,50 @@ interface EducationalStagesTabProps {
 export default function EducationalStagesTab({ teacherId }: EducationalStagesTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
-
-  console.log('Teacher ID for API:', teacherId);
+  const dispatch = useAppDispatch();
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  //TODO: Use mock data for now
-  const summary = mockTeacherDetails.educationalStagesSummary;
-  const educationalStages = mockTeacherDetails.educationalStages;
+  // Redux state
+  const { teacherAssignment, isLoadingAssignment, assignmentError } = useAppSelector(
+    (state) => state.teachers
+  );
+
+  // Fetch data on mount
+  useEffect(() => {
+    if (teacherId) {
+      dispatch(fetchTeacherAssignment(teacherId));
+    }
+
+    return () => {
+      dispatch(clearTeacherAssignment());
+    };
+  }, [dispatch, teacherId]);
+
+  // Summary data from API
+  const summary = teacherAssignment
+    ? {
+        totalStages: teacherAssignment.gradeCount,
+        totalClassrooms: teacherAssignment.classRoomCount,
+        totalStudents: teacherAssignment.studentCount,
+        totalSubjects: teacherAssignment.materailCount,
+        totalBooks: teacherAssignment.bookCount,
+      }
+    : {
+        totalStages: 0,
+        totalClassrooms: 0,
+        totalStudents: 0,
+        totalSubjects: 0,
+        totalBooks: 0,
+      };
+
+  // Educational stages from API
+  const educationalStages = teacherAssignment?.grades || [];
 
   // Filter stages based on search
   const filteredStages = educationalStages.filter((stage) => {
-    const stageName = currentLang === 'ar' ? stage.nameAr : stage.nameEn;
-    const classroomNames = stage.classrooms.map((c) =>
-      currentLang === 'ar' ? c.nameAr : c.nameEn
-    );
+    const stageName = currentLang === 'ar' ? stage.name : stage.nameEN;
+    const classroomNames = stage.classRooms.map((c) => (currentLang === 'ar' ? c.name : c.nameEN));
     const searchLower = searchTerm.toLowerCase();
 
     return (
@@ -35,6 +69,22 @@ export default function EducationalStagesTab({ teacherId }: EducationalStagesTab
       classroomNames.some((name) => name.toLowerCase().includes(searchLower))
     );
   });
+
+  if (isLoadingAssignment) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (assignmentError) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-red-500">{assignmentError}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -201,16 +251,16 @@ export default function EducationalStagesTab({ teacherId }: EducationalStagesTab
                 <tr key={stage.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-center text-sm text-gray-600">{index + 1}</td>
                   <td className="px-6 py-4 text-center text-sm font-medium text-gray-900">
-                    {currentLang === 'ar' ? stage.nameAr : stage.nameEn}
+                    {currentLang === 'ar' ? stage.name : stage.nameEN}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-2">
-                      {stage.classrooms.map((classroom) => (
+                      {stage.classRooms.map((classroom) => (
                         <span
                           key={classroom.id}
                           className="inline-flex items-center rounded-md bg-cyan-50 px-2.5 py-1 text-sm font-medium text-cyan-700 ring-1 ring-inset ring-cyan-600/20"
                         >
-                          {currentLang === 'ar' ? classroom.nameAr : classroom.nameEn}
+                          {currentLang === 'ar' ? classroom.name : classroom.nameEN}
                           <CustomImage
                             src={EyeStyledIcon}
                             alt="classroom"
