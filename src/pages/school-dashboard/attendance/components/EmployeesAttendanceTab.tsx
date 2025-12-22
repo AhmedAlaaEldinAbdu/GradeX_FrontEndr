@@ -24,6 +24,7 @@ import { fetchSchoolStages } from '@/redux/features/lookups';
 import type { TeacherAttendance } from '@/types/teacherAttendance';
 import { AttendanceStatus } from '@/types/teacherAttendance';
 import { formatTime, formatDateDisplay } from '@/shared/common/common';
+import { useNavigate } from 'react-router-dom';
 
 const TYPE_OPTIONS = [
   { value: String(AttendanceStatus.Present), labelAr: 'حاضر', labelEn: 'Present' },
@@ -70,6 +71,7 @@ export default function EmployeesAttendanceTab({
   isActive,
 }: EmployeesAttendanceTabProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
 
@@ -241,7 +243,13 @@ export default function EmployeesAttendanceTab({
             <CustomImage src={ProfileImage} alt="profile" className="h-full w-full object-cover" />
           </div>
           <span className="font-medium">{row.teacherFullName}</span>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100">
+          <button
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/teachers/${row.id}?tab=attendance`);
+            }}
+          >
             <CustomImage src={EyeStyledIcon} alt="view" className="h-5 w-5" />
           </button>
         </div>
