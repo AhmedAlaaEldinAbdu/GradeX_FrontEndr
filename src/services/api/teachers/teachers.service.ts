@@ -2,7 +2,13 @@ import { axiosClient } from '@/lib/http';
 import type { AxiosResponse } from 'axios';
 import { TeacherEndpoints, TeacherAssignmentEndpoints } from '../endpoints/teacher-endpoints';
 import type { Teacher, TeacherListResponse, TeacherQueryParams } from '@/types/teachers';
-import type { TeacherAssignmentResponse, TeacherAssignmentData } from '@/types/teacherAssignment';
+import type {
+  TeacherAssignmentResponse,
+  TeacherAssignmentData,
+  TeacherAssignmentListResponse,
+  TeacherAssignmentListData,
+  TeacherAssignmentListQueryParams,
+} from '@/types/teacherAssignment';
 
 /**
  * Get list of teachers with pagination and filters
@@ -96,6 +102,30 @@ export async function getTeacherAssignment(teacherId: string): Promise<TeacherAs
   return response.data.data;
 }
 
+/**
+ * Get teacher assignments list by school branch
+ */
+export async function getTeacherAssignmentList(
+  params: TeacherAssignmentListQueryParams
+): Promise<TeacherAssignmentListData> {
+  const response: AxiosResponse<TeacherAssignmentListResponse> = await axiosClient.get(
+    TeacherAssignmentEndpoints.getAll,
+    { params }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      teacherAssignmentDto: [],
+      pageIndex: 1,
+      totalPages: 0,
+      totalItems: 0,
+      pageSize: 10,
+    };
+  }
+
+  return response.data.data;
+}
+
 // ============================================================================
 // Export Service Object
 // ============================================================================
@@ -105,4 +135,5 @@ export const teacherApiService = {
   getTeacherById,
   deleteTeacher,
   getTeacherAssignment,
+  getTeacherAssignmentList,
 };
