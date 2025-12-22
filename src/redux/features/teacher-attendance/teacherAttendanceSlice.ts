@@ -116,11 +116,11 @@ export const fetchTeacherAttendance = createAsyncThunk<
       if (payload.limit) params.PageSize = payload.limit;
 
       if (payload.filters) {
-        if (payload.filters.searchName) params.SearchName = payload.filters.searchName;
-        if (payload.filters.educationalStageId)
-          params.EducationalStageId = payload.filters.educationalStageId;
+        if (payload.filters.search) params.Search = payload.filters.search;
+        if (payload.filters.lkSchoolStageId)
+          params.LKSchoolStageId = payload.filters.lkSchoolStageId;
         if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
-        if (payload.filters.job) params.Job = payload.filters.job;
+        if (payload.filters.status) params.Status = payload.filters.status;
       }
     }
 
