@@ -8,7 +8,7 @@ import Loading from '@/shared/components/Loading';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import TeacherPreparationPopup, {
   type TeacherPreparationFormValues,
-} from '../../popups/TeacherPreparationPopup';
+} from '../popups/TeacherPreparationPopup';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherAttendanceDetails,
