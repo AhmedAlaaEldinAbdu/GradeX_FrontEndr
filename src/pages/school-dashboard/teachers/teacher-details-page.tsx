@@ -4,9 +4,9 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import { mockTeacherDetails } from './data/mockTeacherData';
-import PersonalDataTab from './components/details/PersonalDataTab';
-import AttendanceTab from './components/details/AttendanceTab';
-import EducationalStagesTab from './components/details/EducationalStagesTab';
+import PersonalDataTab from './components/PersonalDataTab';
+import AttendanceTab from './components/AttendanceTab';
+import EducationalStagesTab from './components/EducationalStagesTab';
 
 export default function TeacherDetailsPage() {
   const { t } = useTranslation();
