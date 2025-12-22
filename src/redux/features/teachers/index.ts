@@ -5,6 +5,7 @@ export {
   deleteTeacher,
   fetchTeacherAssignment,
   fetchTeacherAttendanceDetails,
+  fetchTeacherAssignmentList,
   setFilters,
   clearFilters,
   setCurrentTeacher,
@@ -25,4 +26,6 @@ export type {
   FetchTeachersResponse,
   FetchTeacherAttendancePayload,
   FetchTeacherAttendanceResponse,
+  FetchTeacherAssignmentListPayload,
+  FetchTeacherAssignmentListResponse,
 } from './teachersSlice';
