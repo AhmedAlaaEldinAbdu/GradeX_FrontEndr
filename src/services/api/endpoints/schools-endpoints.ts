@@ -8,4 +8,5 @@ export const SchoolsEndpoints = {
   editSchoolStatus: (id: string) => `${SCHOOLS}/${id}/status`,
   addSchoolRequest: (id: string) => `${SCHOOLS}/${id}/update-request`,
   getLocationFilters: `${SCHOOLS}/location/filters`,
+  updateWorkingHours: (id: string) => `${SCHOOLS}/${id}/WorkingHours`,
 };
