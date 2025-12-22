@@ -420,6 +420,33 @@ export async function bulkImportSchools(file: File): Promise<BulkOperationRespon
 }
 
 // ============================================================================
+// Working Hours
+// ============================================================================
+
+export interface UpdateWorkingHoursRequest {
+  workingHoursFrom: string;
+  workingHoursTo: string;
+}
+
+/**
+ * Update school working hours (attendance schedule)
+ */
+export async function updateWorkingHours(
+  schoolId: string,
+  data: UpdateWorkingHoursRequest
+): Promise<void> {
+  const formData = new FormData();
+  formData.append('WorkingHoursFrom', data.workingHoursFrom);
+  formData.append('WorkingHoursTo', data.workingHoursTo);
+
+  await axiosClient.put(SchoolsEndpoints.updateWorkingHours(schoolId), formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}
+
+// ============================================================================
 // Export All Services
 // ============================================================================
 
@@ -460,6 +487,9 @@ export const schoolsApiService = {
   uploadSchoolLogo,
   uploadSchoolDocument,
   bulkImportSchools,
+
+  // Working Hours
+  updateWorkingHours,
 };
 
 export default schoolsApiService;
