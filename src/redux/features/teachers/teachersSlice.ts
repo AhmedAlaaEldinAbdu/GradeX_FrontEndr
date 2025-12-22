@@ -5,8 +5,14 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 import { teacherApiService } from '@/services/api/teachers/teachers.service';
+import { teacherAttendanceApiService } from '@/services/api/teacher-attendance/teacher-attendance.service';
 import type { Teacher, TeacherQueryParams, TeacherFilters } from '@/types/teachers';
 import type { TeacherAssignmentData } from '@/types/teacherAssignment';
+import type {
+  TeacherAttendanceDetailRecord,
+  TeacherAttendanceSummary,
+  TeacherAttendanceDetailFilters,
+} from '@/types/teacherAttendanceDetail';
 import { getErrorMessage } from '@/lib/http';
 
 // ============================================================================
@@ -18,6 +24,8 @@ export interface TeachersState {
   teachers: Teacher[];
   currentTeacher: Teacher | null;
   teacherAssignment: TeacherAssignmentData | null;
+  teacherAttendanceRecords: TeacherAttendanceDetailRecord[];
+  teacherAttendanceSummary: TeacherAttendanceSummary;
 
   // Pagination
   pagination: {
@@ -27,17 +35,28 @@ export interface TeachersState {
     totalPages: number;
   };
 
+  // Attendance Pagination
+  attendancePagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+
   // Filters
   filters: TeacherFilters;
+  attendanceFilters: TeacherAttendanceDetailFilters;
 
   // Loading States
   isLoading: boolean;
   isDeleting: boolean;
   isLoadingAssignment: boolean;
+  isLoadingAttendance: boolean;
 
   // Error States
   error: string | null;
   assignmentError: string | null;
+  attendanceError: string | null;
 
   // UI States
   selectedTeacherIds: string[];
@@ -60,11 +79,35 @@ export interface FetchTeachersResponse {
   };
 }
 
+export interface FetchTeacherAttendancePayload {
+  teacherId: string;
+  page?: number;
+  limit?: number;
+  filters?: TeacherAttendanceDetailFilters;
+}
+
+export interface FetchTeacherAttendanceResponse {
+  records: TeacherAttendanceDetailRecord[];
+  summary: TeacherAttendanceSummary;
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 const initialState: TeachersState = {
   // Data
   teachers: [],
   currentTeacher: null,
   teacherAssignment: null,
+  teacherAttendanceRecords: [],
+  teacherAttendanceSummary: {
+    totalPresent: 0,
+    totalAbsent: 0,
+    totalLate: 0,
+  },
 
   // Pagination
   pagination: {
@@ -74,17 +117,28 @@ const initialState: TeachersState = {
     totalPages: 0,
   },
 
+  // Attendance Pagination
+  attendancePagination: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  },
+
   // Filters
   filters: {},
+  attendanceFilters: {},
 
   // Loading States
   isLoading: false,
   isDeleting: false,
   isLoadingAssignment: false,
+  isLoadingAttendance: false,
 
   // Error States
   error: null,
   assignmentError: null,
+  attendanceError: null,
 
   // UI States
   selectedTeacherIds: [],
@@ -177,6 +231,37 @@ export const fetchTeacherAssignment = createAsyncThunk<TeacherAssignmentData, st
   }
 );
 
+export const fetchTeacherAttendanceDetails = createAsyncThunk<
+  FetchTeacherAttendanceResponse,
+  FetchTeacherAttendancePayload
+>('teachers/fetchTeacherAttendanceDetails', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await teacherAttendanceApiService.getTeacherAttendanceByTeacher({
+      TeacherId: payload.teacherId,
+      PageIndex: payload.page || 1,
+      PageSize: payload.limit || 10,
+      Status: payload.filters?.status,
+    });
+
+    return {
+      records: response.attendances || [],
+      summary: {
+        totalPresent: response.totalAttendance || 0,
+        totalAbsent: response.totalAbsence || 0,
+        totalLate: response.totalLate || 0,
+      },
+      meta: {
+        total: response.totalItems || 0,
+        page: response.pageIndex || 1,
+        limit: response.pageSize || 10,
+        totalPages: response.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const teachersSlice = createSlice({
   name: 'teachers',
   initialState,
@@ -193,6 +278,22 @@ const teachersSlice = createSlice({
     clearTeacherAssignment: (state) => {
       state.teacherAssignment = null;
       state.assignmentError = null;
+    },
+    clearTeacherAttendance: (state) => {
+      state.teacherAttendanceRecords = [];
+      state.teacherAttendanceSummary = {
+        totalPresent: 0,
+        totalAbsent: 0,
+        totalLate: 0,
+      };
+      state.attendanceError = null;
+      state.attendanceFilters = {};
+    },
+    setAttendanceFilters: (state, action: PayloadAction<TeacherAttendanceDetailFilters>) => {
+      state.attendanceFilters = action.payload;
+    },
+    clearAttendanceFilters: (state) => {
+      state.attendanceFilters = {};
     },
     clearError: (state) => {
       state.error = null;
@@ -283,6 +384,31 @@ const teachersSlice = createSlice({
         state.isLoadingAssignment = false;
         state.assignmentError = action.payload as string;
       });
+
+    // Fetch Teacher Attendance Details
+    builder
+      .addCase(fetchTeacherAttendanceDetails.pending, (state) => {
+        state.isLoadingAttendance = true;
+        state.attendanceError = null;
+      })
+      .addCase(
+        fetchTeacherAttendanceDetails.fulfilled,
+        (state, action: PayloadAction<FetchTeacherAttendanceResponse>) => {
+          state.isLoadingAttendance = false;
+          state.teacherAttendanceRecords = action.payload.records;
+          state.teacherAttendanceSummary = action.payload.summary;
+          state.attendancePagination = {
+            page: action.payload.meta.page,
+            limit: action.payload.meta.limit,
+            total: action.payload.meta.total,
+            totalPages: action.payload.meta.totalPages,
+          };
+        }
+      )
+      .addCase(fetchTeacherAttendanceDetails.rejected, (state, action) => {
+        state.isLoadingAttendance = false;
+        state.attendanceError = action.payload as string;
+      });
   },
 });
 
@@ -291,6 +417,9 @@ export const {
   clearFilters,
   setCurrentTeacher,
   clearTeacherAssignment,
+  clearTeacherAttendance,
+  setAttendanceFilters,
+  clearAttendanceFilters,
   clearError,
   selectTeacher,
   deselectTeacher,
