@@ -13,4 +13,6 @@ export const LookupsEndpoints = {
   jobBenefits: '/api/LKJobBenefit',
   languages: '/api/LKLanguage',
   languageLevels: '/api/LKLevels',
+  teacherLevels: '/api/LKTeacherLevel',
+  qualifications: '/api/LKQualification',
 } as const;

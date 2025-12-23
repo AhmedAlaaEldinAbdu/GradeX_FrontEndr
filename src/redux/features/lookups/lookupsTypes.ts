@@ -13,6 +13,8 @@ import type {
   JobBenefit,
   Language,
   LanguageLevel,
+  TeacherLevel,
+  Qualification,
 } from '@/services/api/types/lookup.types';
 
 // ============================================================================
@@ -30,6 +32,8 @@ export interface LookupsState {
   jobBenefits: JobBenefit[];
   languages: Language[];
   languageLevels: LanguageLevel[];
+  teacherLevels: TeacherLevel[];
+  qualifications: Qualification[];
 
   // Loading States
   isLoadingFeatures: boolean;
@@ -41,6 +45,8 @@ export interface LookupsState {
   isLoadingJobBenefits: boolean;
   isLoadingLanguages: boolean;
   isLoadingLanguageLevels: boolean;
+  isLoadingTeacherLevels: boolean;
+  isLoadingQualifications: boolean;
 
   // Error States
   featuresError: string | null;
@@ -52,6 +58,8 @@ export interface LookupsState {
   jobBenefitsError: string | null;
   languagesError: string | null;
   languageLevelsError: string | null;
+  teacherLevelsError: string | null;
+  qualificationsError: string | null;
 
   // Initialization States
   isFeaturesInitialized: boolean;
@@ -61,6 +69,8 @@ export interface LookupsState {
   isJobBenefitsInitialized: boolean;
   isLanguagesInitialized: boolean;
   isLanguageLevelsInitialized: boolean;
+  isTeacherLevelsInitialized: boolean;
+  isQualificationsInitialized: boolean;
 
   // Timestamp for cache management
   lastFetchedFeatures: number | null;
@@ -70,6 +80,8 @@ export interface LookupsState {
   lastFetchedJobBenefits: number | null;
   lastFetchedLanguages: number | null;
   lastFetchedLanguageLevels: number | null;
+  lastFetchedTeacherLevels: number | null;
+  lastFetchedQualifications: number | null;
 }
 
 // ============================================================================

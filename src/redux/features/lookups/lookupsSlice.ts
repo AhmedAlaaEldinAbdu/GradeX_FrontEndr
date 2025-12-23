@@ -16,6 +16,8 @@ import type {
   JobBenefit,
   Language,
   LanguageLevel,
+  TeacherLevel,
+  Qualification,
 } from '@/services/api/types/lookup.types';
 import type { RootState, AppDispatch } from '@/redux/store/store';
 import type { LookupsState } from './lookupsTypes';
@@ -36,6 +38,8 @@ const initialState: LookupsState = {
   jobBenefits: [],
   languages: [],
   languageLevels: [],
+  teacherLevels: [],
+  qualifications: [],
 
   // Loading States
   isLoadingFeatures: false,
@@ -47,6 +51,8 @@ const initialState: LookupsState = {
   isLoadingJobBenefits: false,
   isLoadingLanguages: false,
   isLoadingLanguageLevels: false,
+  isLoadingTeacherLevels: false,
+  isLoadingQualifications: false,
 
   // Error States
   featuresError: null,
@@ -58,6 +64,8 @@ const initialState: LookupsState = {
   jobBenefitsError: null,
   languagesError: null,
   languageLevelsError: null,
+  teacherLevelsError: null,
+  qualificationsError: null,
 
   // Initialization States
   isFeaturesInitialized: false,
@@ -67,6 +75,8 @@ const initialState: LookupsState = {
   isJobBenefitsInitialized: false,
   isLanguagesInitialized: false,
   isLanguageLevelsInitialized: false,
+  isTeacherLevelsInitialized: false,
+  isQualificationsInitialized: false,
 
   // Timestamps
   lastFetchedFeatures: null,
@@ -76,6 +86,8 @@ const initialState: LookupsState = {
   lastFetchedJobBenefits: null,
   lastFetchedLanguages: null,
   lastFetchedLanguageLevels: null,
+  lastFetchedTeacherLevels: null,
+  lastFetchedQualifications: null,
 };
 
 // ============================================================================
@@ -388,6 +400,64 @@ export const fetchLanguageLevels = createAsyncThunk<
   }
 });
 
+/**
+ * Fetch teacher levels lookup
+ */
+export const fetchTeacherLevels = createAsyncThunk<
+  TeacherLevel[],
+  { force?: boolean } | void,
+  { state: RootState }
+>('lookups/fetchTeacherLevels', async (options, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const { lastFetchedTeacherLevels, isTeacherLevelsInitialized, teacherLevels } = state.lookups;
+
+    if (!options?.force && isTeacherLevelsInitialized) {
+      const now = Date.now();
+      const isCacheValid =
+        lastFetchedTeacherLevels && now - lastFetchedTeacherLevels < LOOKUP_CACHE_DURATION;
+
+      if (isCacheValid && teacherLevels.length > 0) {
+        return teacherLevels;
+      }
+    }
+
+    const fetchedTeacherLevels = await lookupsApiService.getTeacherLevels();
+    return fetchedTeacherLevels;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+/**
+ * Fetch qualifications lookup
+ */
+export const fetchQualifications = createAsyncThunk<
+  Qualification[],
+  { force?: boolean } | void,
+  { state: RootState }
+>('lookups/fetchQualifications', async (options, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const { lastFetchedQualifications, isQualificationsInitialized, qualifications } = state.lookups;
+
+    if (!options?.force && isQualificationsInitialized) {
+      const now = Date.now();
+      const isCacheValid =
+        lastFetchedQualifications && now - lastFetchedQualifications < LOOKUP_CACHE_DURATION;
+
+      if (isCacheValid && qualifications.length > 0) {
+        return qualifications;
+      }
+    }
+
+    const fetchedQualifications = await lookupsApiService.getQualifications();
+    return fetchedQualifications;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 // ============================================================================
 // Slice Definition
 // ============================================================================
@@ -409,6 +479,8 @@ const lookupsSlice = createSlice({
       state.jobBenefits = [];
       state.languages = [];
       state.languageLevels = [];
+      state.teacherLevels = [];
+      state.qualifications = [];
       state.isFeaturesInitialized = false;
       state.isFacilitiesInitialized = false;
       state.isCountriesInitialized = false;
@@ -416,6 +488,8 @@ const lookupsSlice = createSlice({
       state.isJobBenefitsInitialized = false;
       state.isLanguagesInitialized = false;
       state.isLanguageLevelsInitialized = false;
+      state.isTeacherLevelsInitialized = false;
+      state.isQualificationsInitialized = false;
       state.lastFetchedFeatures = null;
       state.lastFetchedFacilities = null;
       state.lastFetchedCountries = null;
@@ -423,6 +497,8 @@ const lookupsSlice = createSlice({
       state.lastFetchedJobBenefits = null;
       state.lastFetchedLanguages = null;
       state.lastFetchedLanguageLevels = null;
+      state.lastFetchedTeacherLevels = null;
+      state.lastFetchedQualifications = null;
     },
 
     /**
@@ -438,6 +514,8 @@ const lookupsSlice = createSlice({
       state.jobBenefitsError = null;
       state.languagesError = null;
       state.languageLevelsError = null;
+      state.teacherLevelsError = null;
+      state.qualificationsError = null;
     },
 
     /**
@@ -721,6 +799,48 @@ const lookupsSlice = createSlice({
       .addCase(fetchLanguageLevels.rejected, (state, action) => {
         state.isLoadingLanguageLevels = false;
         state.languageLevelsError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch Teacher Levels
+    // ========================================================================
+
+    builder
+      .addCase(fetchTeacherLevels.pending, (state) => {
+        state.isLoadingTeacherLevels = true;
+        state.teacherLevelsError = null;
+      })
+      .addCase(fetchTeacherLevels.fulfilled, (state, action) => {
+        state.isLoadingTeacherLevels = false;
+        state.isTeacherLevelsInitialized = true;
+        state.teacherLevels = action.payload;
+        state.lastFetchedTeacherLevels = Date.now();
+        state.teacherLevelsError = null;
+      })
+      .addCase(fetchTeacherLevels.rejected, (state, action) => {
+        state.isLoadingTeacherLevels = false;
+        state.teacherLevelsError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch Qualifications
+    // ========================================================================
+
+    builder
+      .addCase(fetchQualifications.pending, (state) => {
+        state.isLoadingQualifications = true;
+        state.qualificationsError = null;
+      })
+      .addCase(fetchQualifications.fulfilled, (state, action) => {
+        state.isLoadingQualifications = false;
+        state.isQualificationsInitialized = true;
+        state.qualifications = action.payload;
+        state.lastFetchedQualifications = Date.now();
+        state.qualificationsError = null;
+      })
+      .addCase(fetchQualifications.rejected, (state, action) => {
+        state.isLoadingQualifications = false;
+        state.qualificationsError = action.payload as string;
       });
   },
 });

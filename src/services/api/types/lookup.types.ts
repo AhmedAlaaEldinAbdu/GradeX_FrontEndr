@@ -226,6 +226,60 @@ export interface LanguageLevelsResponse {
 }
 
 // ============================================================================
+// Teacher Levels
+// ============================================================================
+
+export interface TeacherLevel {
+  id: string;
+  arabicName: string;
+  englishName: string;
+}
+
+export interface TeacherLevelsApiResponse {
+  lkTeacherLevelDto: TeacherLevel[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface TeacherLevelsResponse {
+  data: TeacherLevelsApiResponse;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+// ============================================================================
+// Qualifications
+// ============================================================================
+
+export interface Qualification {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  college: string;
+  specialty: string;
+  certificateUrl: string;
+  graduationYear: string;
+}
+
+export interface QualificationsApiResponse {
+  lkQualificationDto: Qualification[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface QualificationsResponse {
+  data: QualificationsApiResponse;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+// ============================================================================
 // Helper Types
 // ============================================================================
 

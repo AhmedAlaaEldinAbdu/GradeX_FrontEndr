@@ -27,6 +27,10 @@ import type {
   LanguagesResponse,
   LanguageLevel,
   LanguageLevelsResponse,
+  TeacherLevel,
+  TeacherLevelsResponse,
+  Qualification,
+  QualificationsResponse,
 } from '../types/lookup.types';
 
 // ============================================================================
@@ -278,6 +282,38 @@ export async function getLanguageLevels(): Promise<LanguageLevel[]> {
 }
 
 // ============================================================================
+// Teacher Levels
+// ============================================================================
+
+export async function getTeacherLevels(): Promise<TeacherLevel[]> {
+  const response: AxiosResponse<TeacherLevelsResponse> = await axiosClient.get(
+    LookupsEndpoints.teacherLevels
+  );
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.message || 'Failed to fetch teacher levels');
+  }
+
+  return response.data.data?.lkTeacherLevelDto || [];
+}
+
+// ============================================================================
+// Qualifications
+// ============================================================================
+
+export async function getQualifications(): Promise<Qualification[]> {
+  const response: AxiosResponse<QualificationsResponse> = await axiosClient.get(
+    LookupsEndpoints.qualifications
+  );
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.message || 'Failed to fetch qualifications');
+  }
+
+  return response.data.data?.lkQualificationDto || [];
+}
+
+// ============================================================================
 // Export All Services
 // ============================================================================
 
@@ -313,6 +349,12 @@ export const lookupsApiService = {
 
   // Language Levels
   getLanguageLevels,
+
+  // Teacher Levels
+  getTeacherLevels,
+
+  // Qualifications
+  getQualifications,
 };
 
 export default lookupsApiService;
