@@ -13,6 +13,9 @@ import type {
   Region,
   City,
   SchoolStage,
+  JobBenefit,
+  Language,
+  LanguageLevel,
 } from '@/services/api/types/lookup.types';
 import type { RootState, AppDispatch } from '@/redux/store/store';
 import type { LookupsState } from './lookupsTypes';
@@ -30,6 +33,9 @@ const initialState: LookupsState = {
   regions: [],
   cities: [],
   schoolStages: [],
+  jobBenefits: [],
+  languages: [],
+  languageLevels: [],
 
   // Loading States
   isLoadingFeatures: false,
@@ -38,6 +44,9 @@ const initialState: LookupsState = {
   isLoadingRegions: false,
   isLoadingCities: false,
   isLoadingSchoolStages: false,
+  isLoadingJobBenefits: false,
+  isLoadingLanguages: false,
+  isLoadingLanguageLevels: false,
 
   // Error States
   featuresError: null,
@@ -46,18 +55,27 @@ const initialState: LookupsState = {
   regionsError: null,
   citiesError: null,
   schoolStagesError: null,
+  jobBenefitsError: null,
+  languagesError: null,
+  languageLevelsError: null,
 
   // Initialization States
   isFeaturesInitialized: false,
   isFacilitiesInitialized: false,
   isCountriesInitialized: false,
   isSchoolStagesInitialized: false,
+  isJobBenefitsInitialized: false,
+  isLanguagesInitialized: false,
+  isLanguageLevelsInitialized: false,
 
   // Timestamps
   lastFetchedFeatures: null,
   lastFetchedFacilities: null,
   lastFetchedCountries: null,
   lastFetchedSchoolStages: null,
+  lastFetchedJobBenefits: null,
+  lastFetchedLanguages: null,
+  lastFetchedLanguageLevels: null,
 };
 
 // ============================================================================
@@ -284,6 +302,92 @@ export const fetchSchoolStages = createAsyncThunk<
   }
 });
 
+/**
+ * Fetch job benefits lookup
+ */
+export const fetchJobBenefits = createAsyncThunk<
+  JobBenefit[],
+  { force?: boolean } | void,
+  { state: RootState }
+>('lookups/fetchJobBenefits', async (options, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const { lastFetchedJobBenefits, isJobBenefitsInitialized, jobBenefits } = state.lookups;
+
+    if (!options?.force && isJobBenefitsInitialized) {
+      const now = Date.now();
+      const isCacheValid =
+        lastFetchedJobBenefits && now - lastFetchedJobBenefits < LOOKUP_CACHE_DURATION;
+
+      if (isCacheValid && jobBenefits.length > 0) {
+        return jobBenefits;
+      }
+    }
+
+    const benefits = await lookupsApiService.getJobBenefits();
+    return benefits;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+/**
+ * Fetch languages lookup
+ */
+export const fetchLanguages = createAsyncThunk<
+  Language[],
+  { force?: boolean } | void,
+  { state: RootState }
+>('lookups/fetchLanguages', async (options, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const { lastFetchedLanguages, isLanguagesInitialized, languages } = state.lookups;
+
+    if (!options?.force && isLanguagesInitialized) {
+      const now = Date.now();
+      const isCacheValid = lastFetchedLanguages && now - lastFetchedLanguages < LOOKUP_CACHE_DURATION;
+
+      if (isCacheValid && languages.length > 0) {
+        return languages;
+      }
+    }
+
+    const fetchedLanguages = await lookupsApiService.getLanguages();
+    return fetchedLanguages;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+/**
+ * Fetch language levels lookup
+ */
+export const fetchLanguageLevels = createAsyncThunk<
+  LanguageLevel[],
+  { force?: boolean } | void,
+  { state: RootState }
+>('lookups/fetchLanguageLevels', async (options, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const { lastFetchedLanguageLevels, isLanguageLevelsInitialized, languageLevels } = state.lookups;
+
+    if (!options?.force && isLanguageLevelsInitialized) {
+      const now = Date.now();
+      const isCacheValid =
+        lastFetchedLanguageLevels && now - lastFetchedLanguageLevels < LOOKUP_CACHE_DURATION;
+
+      if (isCacheValid && languageLevels.length > 0) {
+        return languageLevels;
+      }
+    }
+
+    const fetchedLevels = await lookupsApiService.getLanguageLevels();
+    return fetchedLevels;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 // ============================================================================
 // Slice Definition
 // ============================================================================
@@ -302,14 +406,23 @@ const lookupsSlice = createSlice({
       state.regions = [];
       state.cities = [];
       state.schoolStages = [];
+      state.jobBenefits = [];
+      state.languages = [];
+      state.languageLevels = [];
       state.isFeaturesInitialized = false;
       state.isFacilitiesInitialized = false;
       state.isCountriesInitialized = false;
       state.isSchoolStagesInitialized = false;
+      state.isJobBenefitsInitialized = false;
+      state.isLanguagesInitialized = false;
+      state.isLanguageLevelsInitialized = false;
       state.lastFetchedFeatures = null;
       state.lastFetchedFacilities = null;
       state.lastFetchedCountries = null;
       state.lastFetchedSchoolStages = null;
+      state.lastFetchedJobBenefits = null;
+      state.lastFetchedLanguages = null;
+      state.lastFetchedLanguageLevels = null;
     },
 
     /**
@@ -322,6 +435,9 @@ const lookupsSlice = createSlice({
       state.regionsError = null;
       state.citiesError = null;
       state.schoolStagesError = null;
+      state.jobBenefitsError = null;
+      state.languagesError = null;
+      state.languageLevelsError = null;
     },
 
     /**
@@ -542,6 +658,69 @@ const lookupsSlice = createSlice({
       .addCase(fetchSchoolStages.rejected, (state, action) => {
         state.isLoadingSchoolStages = false;
         state.schoolStagesError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch Job Benefits
+    // ========================================================================
+
+    builder
+      .addCase(fetchJobBenefits.pending, (state) => {
+        state.isLoadingJobBenefits = true;
+        state.jobBenefitsError = null;
+      })
+      .addCase(fetchJobBenefits.fulfilled, (state, action) => {
+        state.isLoadingJobBenefits = false;
+        state.isJobBenefitsInitialized = true;
+        state.jobBenefits = action.payload;
+        state.lastFetchedJobBenefits = Date.now();
+        state.jobBenefitsError = null;
+      })
+      .addCase(fetchJobBenefits.rejected, (state, action) => {
+        state.isLoadingJobBenefits = false;
+        state.jobBenefitsError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch Languages
+    // ========================================================================
+
+    builder
+      .addCase(fetchLanguages.pending, (state) => {
+        state.isLoadingLanguages = true;
+        state.languagesError = null;
+      })
+      .addCase(fetchLanguages.fulfilled, (state, action) => {
+        state.isLoadingLanguages = false;
+        state.isLanguagesInitialized = true;
+        state.languages = action.payload;
+        state.lastFetchedLanguages = Date.now();
+        state.languagesError = null;
+      })
+      .addCase(fetchLanguages.rejected, (state, action) => {
+        state.isLoadingLanguages = false;
+        state.languagesError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch Language Levels
+    // ========================================================================
+
+    builder
+      .addCase(fetchLanguageLevels.pending, (state) => {
+        state.isLoadingLanguageLevels = true;
+        state.languageLevelsError = null;
+      })
+      .addCase(fetchLanguageLevels.fulfilled, (state, action) => {
+        state.isLoadingLanguageLevels = false;
+        state.isLanguageLevelsInitialized = true;
+        state.languageLevels = action.payload;
+        state.lastFetchedLanguageLevels = Date.now();
+        state.languageLevelsError = null;
+      })
+      .addCase(fetchLanguageLevels.rejected, (state, action) => {
+        state.isLoadingLanguageLevels = false;
+        state.languageLevelsError = action.payload as string;
       });
   },
 });

@@ -151,6 +151,81 @@ export interface SchoolStage {
 export type SchoolStagesResponse = LookupApiResponse<SchoolStage>;
 
 // ============================================================================
+// Job Benefits
+// ============================================================================
+
+export interface JobBenefit {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+}
+
+export interface JobBenefitsApiResponse {
+  lkJobBenefitDto: JobBenefit[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface JobBenefitsResponse {
+  data: JobBenefitsApiResponse;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+// ============================================================================
+// Languages
+// ============================================================================
+
+export interface Language {
+  id: string;
+  arabicName: string;
+  englishName: string;
+}
+
+export interface LanguagesApiResponse {
+  languageDto: Language[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface LanguagesResponse {
+  data: LanguagesApiResponse;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+// ============================================================================
+// Language Levels
+// ============================================================================
+
+export interface LanguageLevel {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+}
+
+export interface LanguageLevelsApiResponse {
+  lkLevelsDto: LanguageLevel[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface LanguageLevelsResponse {
+  data: LanguageLevelsApiResponse;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+// ============================================================================
 // Helper Types
 // ============================================================================
 
