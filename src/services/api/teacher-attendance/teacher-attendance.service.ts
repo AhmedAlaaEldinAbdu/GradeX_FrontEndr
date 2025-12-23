@@ -6,6 +6,10 @@ import type {
   TeacherAttendanceQueryParams,
   TeacherAttendanceListData,
 } from '@/types/teacherAttendance';
+import type {
+  TeacherAttendanceDetailResponse,
+  TeacherAttendanceDetailQueryParams,
+} from '@/types/teacherAttendanceDetail';
 
 /**
  * Get list of teacher attendance by branch with pagination and filters
@@ -60,10 +64,40 @@ export async function getTeacherAttendanceByBranch(
   };
 }
 
+/**
+ * Get list of teacher attendance records for a specific teacher
+ */
+export async function getTeacherAttendanceByTeacher(
+  params: TeacherAttendanceDetailQueryParams
+): Promise<TeacherAttendanceDetailResponse> {
+  const response: AxiosResponse<TeacherAttendanceDetailResponse> = await axiosClient.get(
+    TeacherAttendanceEndpoints.getByTeacher,
+    {
+      params,
+    }
+  );
+
+  if (!response?.data) {
+    return {
+      attendances: [],
+      totalAttendance: 0,
+      totalAbsence: 0,
+      totalLate: 0,
+      pageIndex: params?.PageIndex || 1,
+      totalPages: 0,
+      totalItems: 0,
+      pageSize: params?.PageSize || 10,
+    };
+  }
+
+  return response.data;
+}
+
 // ============================================================================
 // Export Service Object
 // ============================================================================
 
 export const teacherAttendanceApiService = {
   getTeacherAttendanceByBranch,
+  getTeacherAttendanceByTeacher,
 };

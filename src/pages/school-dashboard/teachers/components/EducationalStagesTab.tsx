@@ -13,9 +13,13 @@ import {
 
 interface EducationalStagesTabProps {
   teacherId: string;
+  isActive?: boolean;
 }
 
-export default function EducationalStagesTab({ teacherId }: EducationalStagesTabProps) {
+export default function EducationalStagesTab({
+  teacherId,
+  isActive = true,
+}: EducationalStagesTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
@@ -27,16 +31,16 @@ export default function EducationalStagesTab({ teacherId }: EducationalStagesTab
     (state) => state.teachers
   );
 
-  // Fetch data on mount
+  // Fetch data when tab becomes active
   useEffect(() => {
-    if (teacherId) {
+    if (teacherId && isActive) {
       dispatch(fetchTeacherAssignment(teacherId));
     }
 
     return () => {
       dispatch(clearTeacherAssignment());
     };
-  }, [dispatch, teacherId]);
+  }, [dispatch, teacherId, isActive]);
 
   // Summary data from API
   const summary = teacherAssignment
@@ -70,7 +74,7 @@ export default function EducationalStagesTab({ teacherId }: EducationalStagesTab
     );
   });
 
-  if (isLoadingAssignment) {
+  if (!isActive || isLoadingAssignment) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Loading />

@@ -4,10 +4,15 @@ export {
   fetchTeacherById,
   deleteTeacher,
   fetchTeacherAssignment,
+  fetchTeacherAttendanceDetails,
+  fetchTeacherAssignmentList,
   setFilters,
   clearFilters,
   setCurrentTeacher,
   clearTeacherAssignment,
+  clearTeacherAttendance,
+  setAttendanceFilters,
+  clearAttendanceFilters,
   clearError,
   selectTeacher,
   deselectTeacher,
@@ -15,4 +20,12 @@ export {
   clearSelection,
 } from './teachersSlice';
 
-export type { TeachersState, FetchTeachersPayload, FetchTeachersResponse } from './teachersSlice';
+export type {
+  TeachersState,
+  FetchTeachersPayload,
+  FetchTeachersResponse,
+  FetchTeacherAttendancePayload,
+  FetchTeacherAttendanceResponse,
+  FetchTeacherAssignmentListPayload,
+  FetchTeacherAssignmentListResponse,
+} from './teachersSlice';

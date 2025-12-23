@@ -11,13 +11,17 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
-import { fetchTeachers, deleteTeacher as deleteTeacherAction } from '@/redux/features/teachers';
+import {
+  fetchTeacherAssignmentList,
+  deleteTeacher as deleteTeacherAction,
+} from '@/redux/features/teachers';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchSchoolStages } from '@/redux/features/lookups';
-import type { Teacher } from '@/types/teachers';
-import CustomImage from '@/shared/components/CustomImage';
-import DefaultAvatar from '@gradex/assets/images/profile.png';
+import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
+
+// Static school branch ID
+const SCHOOL_BRANCH_ID = 'D18C45EA-EEEE-4A41-D35E-08DE1D686083';
 
 export default function TeachersList() {
   const { t, i18n } = useTranslation();
@@ -34,9 +38,9 @@ export default function TeachersList() {
 
   const { showToast } = useToast();
 
-  const teachers = useAppSelector((state) => state.teachers.teachers);
+  const teacherAssignmentList = useAppSelector((state) => state.teachers.teacherAssignmentList);
   const pagination = useAppSelector((state) => state.teachers.pagination);
-  const isLoading = useAppSelector((state) => state.teachers.isLoading);
+  const isLoading = useAppSelector((state) => state.teachers.isLoadingAssignmentList);
   const isDeleting = useAppSelector((state) => state.teachers.isDeleting);
 
   // Get subjects and classrooms from other slices for filter options
@@ -56,52 +60,66 @@ export default function TeachersList() {
 
   useEffect(() => {
     dispatch(
-      fetchTeachers({
+      fetchTeacherAssignmentList({
+        schoolBranchesId: SCHOOL_BRANCH_ID,
         page: pagination.page,
         limit: pagination.limit,
-        filters: {
-          searchName: searchTerm || undefined,
-          subjectId: selectedSubject || undefined,
-          educationalStageId: selectedEducationalStage || undefined,
-          classroomId: selectedClassroom || undefined,
-        },
       })
     );
-  }, [
-    dispatch,
-    pagination.page,
-    pagination.limit,
-    searchTerm,
-    selectedSubject,
-    selectedEducationalStage,
-    selectedClassroom,
-  ]);
+  }, [dispatch, pagination.page, pagination.limit]);
 
   const handlePageChange = (page: number) => {
     dispatch(
-      fetchTeachers({
+      fetchTeacherAssignmentList({
+        schoolBranchesId: SCHOOL_BRANCH_ID,
         page,
         limit: pagination.limit,
-        filters: {
-          searchName: searchTerm || undefined,
-          subjectId: selectedSubject || undefined,
-          educationalStageId: selectedEducationalStage || undefined,
-          classroomId: selectedClassroom || undefined,
-        },
       })
     );
   };
 
+  // Filter locally since the API doesn't support these filters
+  const filteredTeachers = teacherAssignmentList.filter((teacher) => {
+    // Search term filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch =
+        teacher.teacherName.toLowerCase().includes(searchLower) ||
+        teacher.email.toLowerCase().includes(searchLower) ||
+        teacher.phone.includes(searchTerm);
+      if (!matchesSearch) return false;
+    }
+
+    // Subject filter
+    if (selectedSubject && teacher.materialId !== selectedSubject) {
+      return false;
+    }
+
+    // Educational stage filter
+    if (selectedEducationalStage && teacher.gradeId !== selectedEducationalStage) {
+      return false;
+    }
+
+    // Classroom filter
+    if (selectedClassroom) {
+      const hasClassroom = teacher.classrooms?.some((c) => c.id === selectedClassroom);
+      if (!hasClassroom) return false;
+    }
+
+    return true;
+  });
+
   const hasActiveFilters =
     searchTerm || selectedSubject || selectedEducationalStage || selectedClassroom;
-  const shouldShowEmptyState = !isLoading && teachers.length === 0 && !hasActiveFilters;
-  const shouldShowContent = isLoading || teachers.length > 0 || hasActiveFilters;
+  const shouldShowEmptyState =
+    !isLoading && teacherAssignmentList.length === 0 && !hasActiveFilters;
+  const shouldShowContent = isLoading || teacherAssignmentList.length > 0 || hasActiveFilters;
 
-  const columns: DataTableColumn<Teacher>[] = [
+  const columns: DataTableColumn<TeacherAssignmentListItem>[] = [
     {
       header: '#',
       accessor: (_row) => {
-        const index = teachers?.findIndex((t) => t?.id === _row?.id);
+        const index = filteredTeachers?.findIndex((t) => t?.id === _row?.id);
         return (pagination.page - 1) * pagination.limit + (index + 1);
       },
       headerClassName: 'w-16',
@@ -114,18 +132,11 @@ export default function TeachersList() {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/teachers/${row.id}`);
+            navigate(`/teachers/${row.teacherId}`);
           }}
           className="flex items-center gap-3 transition-colors hover:text-primary-600"
         >
-          <div className="h-10 w-10 overflow-hidden rounded-full">
-            <CustomImage
-              src={row.pictureProfilePath || DefaultAvatar}
-              alt={row.fullName}
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <span className="font-medium hover:underline">{row.fullName}</span>
+          <span className="font-medium hover:underline">{row.teacherName}</span>
         </button>
       ),
       headerClassName: 'min-w-[200px]',
@@ -133,46 +144,27 @@ export default function TeachersList() {
     {
       header: 'teachers.subjectName',
       accessor: (row) => {
-        // Display subject name if available from API
-        if (row.subjectName || row.subjectNameAr || row.subjectNameEn) {
-          return (
-            <span>
-              {currentLang === 'ar'
-                ? row.subjectNameAr || row.subjectName
-                : row.subjectNameEn || row.subjectName}
-            </span>
-          );
-        }
-        // Display subjects array if available
-        if (row.subjects && row.subjects.length > 0) {
-          return (
-            <span>
-              {row.subjects.map((s) => (currentLang === 'ar' ? s.nameAr : s.nameEn)).join(', ')}
-            </span>
-          );
-        }
-        return <span className="text-gray-400">-</span>;
+        const materialName = currentLang === 'ar' ? row.materialNameAR : row.materialNameEN;
+        return materialName ? (
+          <span>{materialName}</span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        );
       },
       headerClassName: 'min-w-[120px]',
     },
     {
       header: 'teachers.educationalStages',
-      accessor: (row) => (
-        <div className="flex flex-wrap gap-1">
-          {row.educationalStages && row.educationalStages.length > 0 ? (
-            row.educationalStages.map((stage) => (
-              <span
-                key={stage.id}
-                className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800"
-              >
-                {currentLang === 'ar' ? stage.nameAr : stage.nameEn}
-              </span>
-            ))
-          ) : (
-            <span className="text-gray-400">-</span>
-          )}
-        </div>
-      ),
+      accessor: (row) => {
+        const gradeName = currentLang === 'ar' ? row.gradeNameAR : row.gradeNameEN;
+        return gradeName ? (
+          <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+            {gradeName}
+          </span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        );
+      },
       headerClassName: 'min-w-[250px]',
     },
     {
@@ -185,7 +177,7 @@ export default function TeachersList() {
                 key={classroom.id}
                 className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800"
               >
-                {currentLang === 'ar' ? classroom.nameAr : classroom.nameEn}
+                {currentLang === 'ar' ? classroom.nameAR : classroom.nameEN || classroom.nameAR}
               </span>
             ))
           ) : (
@@ -203,7 +195,7 @@ export default function TeachersList() {
             status="delete"
             variant="danger"
             onClick={() => {
-              setSelectedTeacherId(row.id);
+              setSelectedTeacherId(row.teacherId);
               setShowDeletePopup(true);
             }}
             disabled={isDeleting}
@@ -321,6 +313,14 @@ export default function TeachersList() {
         message: 'teachers.teacherDeletedSuccessfully',
         type: 'success',
       });
+      // Refresh the list after deletion
+      dispatch(
+        fetchTeacherAssignmentList({
+          schoolBranchesId: SCHOOL_BRANCH_ID,
+          page: pagination.page,
+          limit: pagination.limit,
+        })
+      );
     } catch (error) {
       setShowDeletePopup(false);
       const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
@@ -344,7 +344,7 @@ export default function TeachersList() {
       ) : shouldShowContent ? (
         <div>
           <DataTable
-            data={teachers}
+            data={filteredTeachers}
             columns={columns}
             keyExtractor={(row) => row.id}
             pagination={{
