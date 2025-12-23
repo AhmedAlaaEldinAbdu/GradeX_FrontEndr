@@ -18,6 +18,7 @@ import type {
   LanguageLevel,
   TeacherLevel,
   Qualification,
+  AdministrativePosition,
 } from '@/services/api/types/lookup.types';
 import type { RootState, AppDispatch } from '@/redux/store/store';
 import type { LookupsState } from './lookupsTypes';
@@ -40,6 +41,7 @@ const initialState: LookupsState = {
   languageLevels: [],
   teacherLevels: [],
   qualifications: [],
+  administrativePositions: [],
 
   // Loading States
   isLoadingFeatures: false,
@@ -53,6 +55,7 @@ const initialState: LookupsState = {
   isLoadingLanguageLevels: false,
   isLoadingTeacherLevels: false,
   isLoadingQualifications: false,
+  isLoadingAdministrativePositions: false,
 
   // Error States
   featuresError: null,
@@ -66,6 +69,7 @@ const initialState: LookupsState = {
   languageLevelsError: null,
   teacherLevelsError: null,
   qualificationsError: null,
+  administrativePositionsError: null,
 
   // Initialization States
   isFeaturesInitialized: false,
@@ -77,6 +81,7 @@ const initialState: LookupsState = {
   isLanguageLevelsInitialized: false,
   isTeacherLevelsInitialized: false,
   isQualificationsInitialized: false,
+  isAdministrativePositionsInitialized: false,
 
   // Timestamps
   lastFetchedFeatures: null,
@@ -88,6 +93,7 @@ const initialState: LookupsState = {
   lastFetchedLanguageLevels: null,
   lastFetchedTeacherLevels: null,
   lastFetchedQualifications: null,
+  lastFetchedAdministrativePositions: null,
 };
 
 // ============================================================================
@@ -458,6 +464,40 @@ export const fetchQualifications = createAsyncThunk<
   }
 });
 
+/**
+ * Fetch administrative positions lookup
+ */
+export const fetchAdministrativePositions = createAsyncThunk<
+  AdministrativePosition[],
+  { force?: boolean } | void,
+  { state: RootState }
+>('lookups/fetchAdministrativePositions', async (options, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const {
+      lastFetchedAdministrativePositions,
+      isAdministrativePositionsInitialized,
+      administrativePositions,
+    } = state.lookups;
+
+    if (!options?.force && isAdministrativePositionsInitialized) {
+      const now = Date.now();
+      const isCacheValid =
+        lastFetchedAdministrativePositions &&
+        now - lastFetchedAdministrativePositions < LOOKUP_CACHE_DURATION;
+
+      if (isCacheValid && administrativePositions.length > 0) {
+        return administrativePositions;
+      }
+    }
+
+    const fetchedPositions = await lookupsApiService.getAdministrativePositions();
+    return fetchedPositions;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 // ============================================================================
 // Slice Definition
 // ============================================================================
@@ -481,6 +521,7 @@ const lookupsSlice = createSlice({
       state.languageLevels = [];
       state.teacherLevels = [];
       state.qualifications = [];
+      state.administrativePositions = [];
       state.isFeaturesInitialized = false;
       state.isFacilitiesInitialized = false;
       state.isCountriesInitialized = false;
@@ -490,6 +531,7 @@ const lookupsSlice = createSlice({
       state.isLanguageLevelsInitialized = false;
       state.isTeacherLevelsInitialized = false;
       state.isQualificationsInitialized = false;
+      state.isAdministrativePositionsInitialized = false;
       state.lastFetchedFeatures = null;
       state.lastFetchedFacilities = null;
       state.lastFetchedCountries = null;
@@ -499,6 +541,7 @@ const lookupsSlice = createSlice({
       state.lastFetchedLanguageLevels = null;
       state.lastFetchedTeacherLevels = null;
       state.lastFetchedQualifications = null;
+      state.lastFetchedAdministrativePositions = null;
     },
 
     /**
@@ -516,6 +559,7 @@ const lookupsSlice = createSlice({
       state.languageLevelsError = null;
       state.teacherLevelsError = null;
       state.qualificationsError = null;
+      state.administrativePositionsError = null;
     },
 
     /**
@@ -841,6 +885,27 @@ const lookupsSlice = createSlice({
       .addCase(fetchQualifications.rejected, (state, action) => {
         state.isLoadingQualifications = false;
         state.qualificationsError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch Administrative Positions
+    // ========================================================================
+
+    builder
+      .addCase(fetchAdministrativePositions.pending, (state) => {
+        state.isLoadingAdministrativePositions = true;
+        state.administrativePositionsError = null;
+      })
+      .addCase(fetchAdministrativePositions.fulfilled, (state, action) => {
+        state.isLoadingAdministrativePositions = false;
+        state.isAdministrativePositionsInitialized = true;
+        state.administrativePositions = action.payload;
+        state.lastFetchedAdministrativePositions = Date.now();
+        state.administrativePositionsError = null;
+      })
+      .addCase(fetchAdministrativePositions.rejected, (state, action) => {
+        state.isLoadingAdministrativePositions = false;
+        state.administrativePositionsError = action.payload as string;
       });
   },
 });

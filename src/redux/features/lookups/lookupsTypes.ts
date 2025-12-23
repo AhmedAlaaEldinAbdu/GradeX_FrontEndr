@@ -15,6 +15,7 @@ import type {
   LanguageLevel,
   TeacherLevel,
   Qualification,
+  AdministrativePosition,
 } from '@/services/api/types/lookup.types';
 
 // ============================================================================
@@ -34,6 +35,7 @@ export interface LookupsState {
   languageLevels: LanguageLevel[];
   teacherLevels: TeacherLevel[];
   qualifications: Qualification[];
+  administrativePositions: AdministrativePosition[];
 
   // Loading States
   isLoadingFeatures: boolean;
@@ -47,6 +49,7 @@ export interface LookupsState {
   isLoadingLanguageLevels: boolean;
   isLoadingTeacherLevels: boolean;
   isLoadingQualifications: boolean;
+  isLoadingAdministrativePositions: boolean;
 
   // Error States
   featuresError: string | null;
@@ -60,6 +63,7 @@ export interface LookupsState {
   languageLevelsError: string | null;
   teacherLevelsError: string | null;
   qualificationsError: string | null;
+  administrativePositionsError: string | null;
 
   // Initialization States
   isFeaturesInitialized: boolean;
@@ -71,6 +75,7 @@ export interface LookupsState {
   isLanguageLevelsInitialized: boolean;
   isTeacherLevelsInitialized: boolean;
   isQualificationsInitialized: boolean;
+  isAdministrativePositionsInitialized: boolean;
 
   // Timestamp for cache management
   lastFetchedFeatures: number | null;
@@ -82,6 +87,7 @@ export interface LookupsState {
   lastFetchedLanguageLevels: number | null;
   lastFetchedTeacherLevels: number | null;
   lastFetchedQualifications: number | null;
+  lastFetchedAdministrativePositions: number | null;
 }
 
 // ============================================================================

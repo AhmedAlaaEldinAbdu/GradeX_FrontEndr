@@ -31,6 +31,8 @@ import type {
   TeacherLevelsResponse,
   Qualification,
   QualificationsResponse,
+  AdministrativePosition,
+  AdministrativePositionsResponse,
 } from '../types/lookup.types';
 
 // ============================================================================
@@ -314,6 +316,22 @@ export async function getQualifications(): Promise<Qualification[]> {
 }
 
 // ============================================================================
+// Administrative Positions
+// ============================================================================
+
+export async function getAdministrativePositions(): Promise<AdministrativePosition[]> {
+  const response: AxiosResponse<AdministrativePositionsResponse> = await axiosClient.get(
+    LookupsEndpoints.administrativePositions
+  );
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.message || 'Failed to fetch administrative positions');
+  }
+
+  return response.data.data?.lkAdministrativePositionDto || [];
+}
+
+// ============================================================================
 // Export All Services
 // ============================================================================
 
@@ -355,6 +373,9 @@ export const lookupsApiService = {
 
   // Qualifications
   getQualifications,
+
+  // Administrative Positions
+  getAdministrativePositions,
 };
 
 export default lookupsApiService;

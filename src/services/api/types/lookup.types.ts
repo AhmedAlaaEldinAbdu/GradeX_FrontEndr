@@ -280,6 +280,31 @@ export interface QualificationsResponse {
 }
 
 // ============================================================================
+// Administrative Positions
+// ============================================================================
+
+export interface AdministrativePosition {
+  id: string;
+  arabicName: string;
+  englishName: string;
+}
+
+export interface AdministrativePositionsApiResponse {
+  lkAdministrativePositionDto: AdministrativePosition[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface AdministrativePositionsResponse {
+  data: AdministrativePositionsApiResponse;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+// ============================================================================
 // Helper Types
 // ============================================================================
 
