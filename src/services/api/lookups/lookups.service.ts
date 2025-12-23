@@ -21,6 +21,12 @@ import type {
   CityQueryParams,
   SchoolStage,
   SchoolStagesResponse,
+  JobBenefit,
+  JobBenefitsResponse,
+  Language,
+  LanguagesResponse,
+  LanguageLevel,
+  LanguageLevelsResponse,
 } from '../types/lookup.types';
 
 // ============================================================================
@@ -224,6 +230,54 @@ export async function getSchoolStages(): Promise<SchoolStage[]> {
 }
 
 // ============================================================================
+// Job Benefits
+// ============================================================================
+
+export async function getJobBenefits(): Promise<JobBenefit[]> {
+  const response: AxiosResponse<JobBenefitsResponse> = await axiosClient.get(
+    LookupsEndpoints.jobBenefits
+  );
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.message || 'Failed to fetch job benefits');
+  }
+
+  return response.data.data?.lkJobBenefitDto || [];
+}
+
+// ============================================================================
+// Languages
+// ============================================================================
+
+export async function getLanguages(): Promise<Language[]> {
+  const response: AxiosResponse<LanguagesResponse> = await axiosClient.get(
+    LookupsEndpoints.languages
+  );
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.message || 'Failed to fetch languages');
+  }
+
+  return response.data.data?.languageDto || [];
+}
+
+// ============================================================================
+// Language Levels
+// ============================================================================
+
+export async function getLanguageLevels(): Promise<LanguageLevel[]> {
+  const response: AxiosResponse<LanguageLevelsResponse> = await axiosClient.get(
+    LookupsEndpoints.languageLevels
+  );
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.message || 'Failed to fetch language levels');
+  }
+
+  return response.data.data?.lkLevelsDto || [];
+}
+
+// ============================================================================
 // Export All Services
 // ============================================================================
 
@@ -250,6 +304,15 @@ export const lookupsApiService = {
 
   // School Stages
   getSchoolStages,
+
+  // Job Benefits
+  getJobBenefits,
+
+  // Languages
+  getLanguages,
+
+  // Language Levels
+  getLanguageLevels,
 };
 
 export default lookupsApiService;
