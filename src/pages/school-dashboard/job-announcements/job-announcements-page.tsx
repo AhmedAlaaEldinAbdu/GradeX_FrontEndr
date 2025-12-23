@@ -21,7 +21,7 @@ export default function JobAnnouncementsPage() {
         actions={[
           {
             label: 'jobAnnouncement.addAnnouncement',
-            to: '/job-announcements/add',
+            to: '/job-announcements/add-job-announcements',
             imgSrc: PlusIcon,
             imgClassName: 'w-[24px] h-[24px]',
           },
