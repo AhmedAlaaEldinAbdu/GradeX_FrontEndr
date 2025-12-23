@@ -1,0 +1,156 @@
+import { array, mixed, number, object, string, type InferType } from 'yup';
+import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
+
+export const JobCategory = {
+  TEACHER: 'TEACHER',
+  ADMIN: 'ADMIN',
+} as const;
+
+export type JobCategoryValue = (typeof JobCategory)[keyof typeof JobCategory];
+
+export const NationalityMode = {
+  ALL: 'ALL',
+  SPECIFIC: 'SPECIFIC',
+} as const;
+
+export type NationalityModeValue = (typeof NationalityMode)[keyof typeof NationalityMode];
+
+export const WorkStartMode = {
+  IMMEDIATE: 'IMMEDIATE',
+  SCHEDULED: 'SCHEDULED',
+} as const;
+
+export type WorkStartModeValue = (typeof WorkStartMode)[keyof typeof WorkStartMode];
+
+export const SalaryOption = {
+  TBD: 'TBD',
+  RANGE: 'RANGE',
+} as const;
+
+export type SalaryOptionValue = (typeof SalaryOption)[keyof typeof SalaryOption];
+
+export const ContractType = {
+  FULL_TIME: 'FULL_TIME',
+  PART_TIME: 'PART_TIME',
+} as const;
+
+export type ContractTypeValue = (typeof ContractType)[keyof typeof ContractType];
+
+const jobScheduleValues = Object.values(JobAdvertismentWorkShedule).map((value) => String(value));
+
+export const AddJobAnnouncementSchema = object({
+  jobCategory: mixed<JobCategoryValue>()
+    .oneOf(Object.values(JobCategory))
+    .required('jobAnnouncement.validation.jobCategoryRequired'),
+  teacherLevelId: string().when('jobCategory', {
+    is: JobCategory.TEACHER,
+    then: (schema) => schema.required('jobAnnouncement.validation.teacherLevelRequired'),
+    otherwise: (schema) => schema.nullable().optional(),
+  }),
+  administrativePositionId: string().when('jobCategory', {
+    is: JobCategory.ADMIN,
+    then: (schema) => schema.required('jobAnnouncement.validation.administrativePositionRequired'),
+    otherwise: (schema) => schema.nullable().optional(),
+  }),
+  specializationIds: array()
+    .of(string().required('jobAnnouncement.validation.specializationRequired'))
+    .min(1, 'jobAnnouncement.validation.specializationRequired')
+    .required('jobAnnouncement.validation.specializationRequired'),
+  stageIds: array()
+    .of(string().required('jobAnnouncement.validation.stageRequired'))
+    .min(1, 'jobAnnouncement.validation.stageRequired')
+    .required('jobAnnouncement.validation.stageRequired'),
+  jobDescriptionAr: string().required('jobAnnouncement.validation.jobDescriptionRequired'),
+  jobDescriptionEn: string().required('jobAnnouncement.validation.jobDescriptionEnRequired'),
+  jobResponsibilitiesAr: string().required('jobAnnouncement.validation.jobResponsibilitiesRequired'),
+  jobResponsibilitiesEn: string().required('jobAnnouncement.validation.jobResponsibilitiesEnRequired'),
+  applicationStartDate: string().required('jobAnnouncement.validation.applicationStartDateRequired'),
+  applicationEndDate: string().required('jobAnnouncement.validation.applicationEndDateRequired'),
+  nationalityMode: mixed<NationalityModeValue>()
+    .oneOf(Object.values(NationalityMode))
+    .required('jobAnnouncement.validation.nationalityRequired'),
+  nationalityIds: array()
+    .of(string().required('jobAnnouncement.validation.nationalityRequired'))
+    .when('nationalityMode', {
+      is: NationalityMode.SPECIFIC,
+      then: (schema) => schema.min(1, 'jobAnnouncement.validation.nationalityRequired'),
+      otherwise: (schema) => schema.optional(),
+    }),
+  workStartMode: mixed<WorkStartModeValue>()
+    .oneOf(Object.values(WorkStartMode))
+    .required('jobAnnouncement.validation.workStartDateRequired'),
+  workStartDate: string().when('workStartMode', {
+    is: WorkStartMode.SCHEDULED,
+    then: (schema) => schema.required('jobAnnouncement.validation.workStartDateRequired'),
+    otherwise: (schema) => schema.nullable().optional(),
+  }),
+  qualificationType: string().required('jobAnnouncement.validation.qualificationTypeRequired'),
+  qualificationIds: array()
+    .of(string().required('jobAnnouncement.validation.qualificationsRequired'))
+    .min(1, 'jobAnnouncement.validation.qualificationsRequired')
+    .required('jobAnnouncement.validation.qualificationsRequired'),
+  yearsOfExperience: number()
+    .typeError('jobAnnouncement.validation.yearsOfExperienceRequired')
+    .min(0)
+    .required('jobAnnouncement.validation.yearsOfExperienceRequired'),
+  workStartTime: string().required('jobAnnouncement.validation.workStartTimeRequired'),
+  workEndTime: string().required('jobAnnouncement.validation.workEndTimeRequired'),
+  salaryOption: mixed<SalaryOptionValue>()
+    .oneOf(Object.values(SalaryOption))
+    .required('jobAnnouncement.validation.salaryRangeRequired'),
+  minimumSalary: number()
+    .typeError('jobAnnouncement.validation.minimumSalaryRequired')
+    .when('salaryOption', {
+      is: SalaryOption.RANGE,
+      then: (schema) => schema.required('jobAnnouncement.validation.minimumSalaryRequired').min(0),
+      otherwise: (schema) => schema.nullable().optional(),
+    }),
+  maximumSalary: number()
+    .typeError('jobAnnouncement.validation.maximumSalaryRequired')
+    .when('salaryOption', {
+      is: SalaryOption.RANGE,
+      then: (schema) =>
+        schema
+          .required('jobAnnouncement.validation.maximumSalaryRequired')
+          .min(0)
+          .test('max-greater-min', 'jobAnnouncement.validation.maximumSalaryRequired', function (value) {
+            const rawMin = this?.parent?.minimumSalary;
+            const min =
+              typeof rawMin === 'number'
+                ? rawMin
+                : rawMin !== undefined && rawMin !== null
+                  ? Number(rawMin)
+                  : undefined;
+
+            if (value === undefined || value === null) {
+              return false;
+            }
+
+            if (min === undefined || Number.isNaN(min)) {
+              return true;
+            }
+
+            return Number(value) >= min;
+          }),
+      otherwise: (schema) => schema.nullable().optional(),
+    }),
+  teacherGender: string().required('jobAnnouncement.validation.teacherGenderRequired'),
+  contractType: array()
+    .of(string().required('jobAnnouncement.validation.contractTypeRequired'))
+    .min(1, 'jobAnnouncement.validation.contractTypeRequired')
+    .required('jobAnnouncement.validation.contractTypeRequired'),
+  technicalSkillIds: array().of(string()).optional(),
+  personalSkillIds: array().of(string()).optional(),
+  benefitsIds: array().of(string()).optional(),
+  languages: array()
+    .of(
+      object({
+        languageId: string().required('jobAnnouncement.validation.languageIdRequired'),
+        levelId: string().required('jobAnnouncement.validation.languageLevelRequired'),
+      })
+    )
+    .min(1, 'jobAnnouncement.validation.languagesRequired')
+    .required('jobAnnouncement.validation.languagesRequired'),
+});
+
+export type AddJobAnnouncementFormValues = InferType<typeof AddJobAnnouncementSchema>;

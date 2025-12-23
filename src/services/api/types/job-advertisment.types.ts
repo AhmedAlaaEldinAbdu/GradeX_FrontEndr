@@ -119,6 +119,41 @@ export interface JobAdvertismentBase {
   jobAdvertisementLanguageDto?: JobAdvertismentLanguageDto[];
   jobAdvertisementJobBenefitDto?: JobAdvertismentJobBenefitDto[];
 }
+export interface CreateJobAdvertisment {
+  qualificationType: number;
+  materialId: string;
+  materialNameAr?: string;
+  materialNameEn?: string;
+  jobDescription: string;
+  jobDescriptionEn: string;
+  jobResponsibilities: string;
+  jobResponsibilitiesEn: string;
+  advertisementStartDate: string;
+  advertisementEndDate: string;
+  nationality: number;
+  salary: number;
+  minimumSalary: number;
+  maximumSalary: number;
+  teacherGender: number;
+  yearsExperience: number;
+  workShedule: JobAdvertismentWorkShedule;
+  workStartTime: string;
+  workEndTime: string;
+  lkAdministrativePositionId: string;
+  lkAdministrativePositionNameAr?: string;
+  lkAdministrativePositionNameEn?: string;
+  lkTeacherLevelId: string;
+  lkTeacherLevelNameAr?: string;
+  lkTeacherLevelNameEn?: string;
+  jobAdvertismentTechnicalSkillsDto?: JobAdvertismentTechnicalSkillDto[];
+  jobAdvertismentPersonalSkillsDto?: JobAdvertismentPersonalSkillDto[];
+  jobAdvertismentMaterialDto?: JobAdvertismentMaterialDto[];
+  jobAdvertisementCountryDto?: JobAdvertismentCountryDto[];
+  jobAdvertisementQualificationDto?: JobAdvertismentQualificationDto[];
+  jobAdvertisementSchoolStageDto?: JobAdvertismentSchoolStageDto[];
+  jobAdvertisementLanguageDto?: JobAdvertismentLanguageDto[];
+  jobAdvertisementJobBenefitDto?: JobAdvertismentJobBenefitDto[];
+}
 
 export interface JobAdvertisment extends JobAdvertismentBase {
   id: string;
@@ -154,5 +189,7 @@ export interface JobAdvertismentQueryParams {
 }
 
 export interface CreateJobAdvertismentRequest extends JobAdvertismentBase {}
+
+export interface CreateJobAdvertismentRequestTwo extends CreateJobAdvertisment {}
 
 export interface UpdateJobAdvertismentRequest extends JobAdvertismentBase {}
