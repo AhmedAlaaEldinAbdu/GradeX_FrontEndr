@@ -594,6 +594,7 @@
     "markAllPresent": "حضور الكل في الموعد",
     "markAllLate": "تأخير الكل",
     "markAllAbsent": "غياب الكل",
+    "bulkAttendanceSuccess": "تم تسجيل الحضور بنجاح لجميع الموظفين المحددين",
     "confirmPresent": "تأكيد حضور الطالب {{name}} ؟",
     "confirmAbsent": "تأكيد غياب الطالب {{name}} ؟",
     "confirmEmployeePresent": "تأكيد حضور الموظف {{name}} ؟",
