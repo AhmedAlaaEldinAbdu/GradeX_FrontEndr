@@ -5,6 +5,7 @@ import type {
   TeacherAttendanceListResponse,
   TeacherAttendanceQueryParams,
   TeacherAttendanceListData,
+  BulkAttendanceRequest,
 } from '@/types/teacherAttendance';
 import type {
   TeacherAttendanceDetailResponse,
@@ -93,6 +94,22 @@ export async function getTeacherAttendanceByTeacher(
   return response.data;
 }
 
+/**
+ * Bulk create teacher attendance records
+ */
+export async function bulkCreateAttendance(data: BulkAttendanceRequest): Promise<void> {
+  const response: AxiosResponse<{
+    data: null;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.post(TeacherAttendanceEndpoints.bulkCreate, data);
+
+  if (!response?.data?.isSuccess) {
+    throw new Error(response?.data?.message || 'Failed to bulk create attendance');
+  }
+}
+
 // ============================================================================
 // Export Service Object
 // ============================================================================
@@ -100,4 +117,5 @@ export async function getTeacherAttendanceByTeacher(
 export const teacherAttendanceApiService = {
   getTeacherAttendanceByBranch,
   getTeacherAttendanceByTeacher,
+  bulkCreateAttendance,
 };
