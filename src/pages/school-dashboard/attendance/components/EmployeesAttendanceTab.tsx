@@ -169,6 +169,9 @@ export default function EmployeesAttendanceTab({
   const someCurrentPageSelected =
     attendances.some((e) => selectedAttendanceIds.includes(e.teacherId)) && !allCurrentPageSelected;
 
+  const allEmployeesDisabled =
+    attendances.length === 0 || attendances.every((e) => e.status !== null && e.status !== -1);
+
   // Individual action handlers
   const handleIndividualAction = (
     employeeId: string,
@@ -289,6 +292,9 @@ export default function EmployeesAttendanceTab({
           type: 'success',
         });
 
+        // Deselect the employee that was just marked
+        dispatch(deselectAttendance(attendance.teacherId));
+
         // Refresh attendance list
         dispatch(
           fetchTeacherAttendance({
@@ -342,7 +348,10 @@ export default function EmployeesAttendanceTab({
             }
           }}
           onChange={(e) => handleSelectAll(e.target.checked)}
-          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-600 focus:ring-green-500"
+          disabled={allEmployeesDisabled}
+          className={`h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 ${
+            allEmployeesDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+          }`}
         />
       ),
       accessor: (row) => {
