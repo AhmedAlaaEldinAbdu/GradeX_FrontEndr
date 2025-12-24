@@ -213,10 +213,12 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
     try {
       await dispatch(
         updateTeacherAttendance({
+          id: '', // TODO: Need to get the id from the API
           teacherId,
           date: values.date,
           checkInTime: values.checkInTime,
           checkOutTime: values.checkOutTime,
+          status: AttendanceStatus.Present,
         })
       ).unwrap();
 
