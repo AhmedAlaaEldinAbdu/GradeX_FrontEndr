@@ -97,6 +97,8 @@ const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   administrativePositionId: '',
   specializationIds: [],
   stageIds: [],
+  subjectName: [],
+  educationalStage: [],
   jobDescriptionAr: '',
   jobDescriptionEn: '',
   jobResponsibilitiesAr: '',
@@ -542,7 +544,6 @@ export default function AddJobAnnouncementForm() {
                         ? t('common.loading')
                         : t('jobAnnouncement.form.selectSpecialization')
                     }
-                    isMulti
                     error={!!errors.specializationIds}
                     disabled={isLoadingSubjects}
                   />
@@ -570,7 +571,6 @@ export default function AddJobAnnouncementForm() {
                         ? t('common.loading')
                         : t('jobAnnouncement.form.selectStage')
                     }
-                    isMulti
                     error={!!errors.stageIds}
                     disabled={isLoadingSchoolStages}
                   />
@@ -788,6 +788,62 @@ export default function AddJobAnnouncementForm() {
 
         <section className="space-y-6">
           <div className="grid grid-cols-1 gap-5">
+            <FormField
+              label={t('jobAnnouncement.form.subjectName')}
+              required
+              error={errors.subjectName?.toString()}
+              htmlFor="subjectName"
+            >
+              <Controller
+                name="subjectName"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    id="subjectName"
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    options={subjectOptions}
+                    placeholder={
+                      isLoadingSubjects
+                        ? t('common.loading')
+                        : t('jobAnnouncement.form.selectSubjectName')
+                    }
+                    isMulti
+                    error={!!errors.subjectName}
+                    disabled={isLoadingSubjects}
+                  />
+                )}
+              />
+            </FormField>
+
+            <FormField
+              label={t('jobAnnouncement.form.educationalStage')}
+              required
+              error={errors.educationalStage?.toString()}
+              htmlFor="educationalStage"
+            >
+              <Controller
+                name="educationalStage"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    id="educationalStage"
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    options={stageOptions}
+                    placeholder={
+                      isLoadingSchoolStages
+                        ? t('common.loading')
+                        : t('jobAnnouncement.form.selectEducationalStage')
+                    }
+                    isMulti
+                    error={!!errors.educationalStage}
+                    disabled={isLoadingSchoolStages}
+                  />
+                )}
+              />
+            </FormField>
+
             <FormField
               label={t('jobAnnouncement.form.academicQualification')}
               required

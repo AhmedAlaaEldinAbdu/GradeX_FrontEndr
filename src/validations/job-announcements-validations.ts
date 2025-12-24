@@ -60,6 +60,14 @@ export const AddJobAnnouncementSchema = object({
     .of(string().required('jobAnnouncement.validation.stageRequired'))
     .min(1, 'jobAnnouncement.validation.stageRequired')
     .required('jobAnnouncement.validation.stageRequired'),
+  subjectName: array()
+    .of(string().required('jobAnnouncement.validation.subjectNameRequired'))
+    .min(1, 'jobAnnouncement.validation.subjectNameRequired')
+    .required('jobAnnouncement.validation.subjectNameRequired'),
+  educationalStage: array()
+    .of(string().required('jobAnnouncement.validation.educationalStageRequired'))
+    .min(1, 'jobAnnouncement.validation.educationalStageRequired')
+    .required('jobAnnouncement.validation.educationalStageRequired'),
   jobDescriptionAr: string().required('jobAnnouncement.validation.jobDescriptionRequired'),
   jobDescriptionEn: string().required('jobAnnouncement.validation.jobDescriptionEnRequired'),
   jobResponsibilitiesAr: string().required('jobAnnouncement.validation.jobResponsibilitiesRequired'),
