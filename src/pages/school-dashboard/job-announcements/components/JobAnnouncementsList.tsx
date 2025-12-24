@@ -9,6 +9,7 @@ import DeletePopup from '@/shared/popups/DeletePopup';
 import EmptyState from '@/shared/components/EmptyState';
 import EmployeesIcon from '@gradex/assets/icons/Employees.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import EyeIcon from '@gradex/assets/icons/Eye.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
@@ -20,6 +21,7 @@ import { fetchCountries, fetchSchoolStages } from '@/redux/features/lookups/look
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import type { JobAdvertisment } from '@/services/api/types/job-advertisment.types';
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
+import CustomImage from '@/shared/components/CustomImage';
 
 const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; text: string }> = {
   [JobAdvertismentWorkShedule.ONLINE]: {
@@ -208,7 +210,7 @@ const getLocalizedText = (
 ): string | undefined => {
   const arText = normalizeText(arabic);
   const enText = normalizeText(english);
-  return lang === 'ar' ? arText ?? enText : enText ?? arText;
+  return lang === 'ar' ? (arText ?? enText) : (enText ?? arText);
 };
 
 const buildLocalizedList = <T,>(
@@ -511,6 +513,18 @@ export default function JobAnnouncementsList() {
               return '--';
             })()}
           </span>
+          <IconButton
+            variant="default"
+            ariaLabel={t('jobAnnouncement.viewApplicants')}
+            onClick={() => navigate(`/job-announcements/${row.id}/applicants`)}
+            className="h-8 w-8"
+          >
+            <CustomImage
+              src={EyeIcon}
+              alt={t('jobAnnouncement.viewApplicants')}
+              className="h-4 w-4"
+            />
+          </IconButton>
         </div>
       ),
       headerClassName: 'w-[140px]',
@@ -580,8 +594,11 @@ export default function JobAnnouncementsList() {
             const stageLabel = buildLocalizedList(
               row.jobAdvertisementSchoolStageDto,
               (stage) =>
-                getLocalizedText(stage.lkSchoolStageNameAr, stage.lkSchoolStageNameEn, currentLang) ||
-                (stage.lkSchoolStageId ? stageLabelMap[stage.lkSchoolStageId] : undefined),
+                getLocalizedText(
+                  stage.lkSchoolStageNameAr,
+                  stage.lkSchoolStageNameEn,
+                  currentLang
+                ) || (stage.lkSchoolStageId ? stageLabelMap[stage.lkSchoolStageId] : undefined),
               joinSeparator
             );
 
