@@ -44,11 +44,15 @@ export const AddJobAnnouncementSchema = object({
     then: (schema) => schema.required('jobAnnouncement.validation.teacherLevelRequired'),
     otherwise: (schema) => schema.nullable().optional(),
   }),
+
+
   administrativePositionId: string().when('jobCategory', {
     is: JobCategory.ADMIN,
     then: (schema) => schema.required('jobAnnouncement.validation.administrativePositionRequired'),
     otherwise: (schema) => schema.nullable().optional(),
   }),
+
+  
   specializationIds: string().required('jobAnnouncement.validation.specializationRequired'),
   stageIds: string().required('jobAnnouncement.validation.stageRequired'),
   subjectName: array()
@@ -75,6 +79,14 @@ export const AddJobAnnouncementSchema = object({
       then: (schema) => schema.min(1, 'jobAnnouncement.validation.nationalityRequired'),
       otherwise: (schema) => schema.optional(),
     }),
+  noticePeriod: mixed<WorkStartModeValue>()
+    .oneOf(Object.values(WorkStartMode))
+    .required('jobAnnouncement.validation.noticePeriodRequired'),
+  noticePeriodDate: string().when('noticePeriod', {
+    is: WorkStartMode.SCHEDULED,
+    then: (schema) => schema.required('jobAnnouncement.validation.noticePeriodDateRequired'),
+    otherwise: (schema) => schema.nullable().optional(),
+  }),
   workStartMode: mixed<WorkStartModeValue>()
     .oneOf(Object.values(WorkStartMode))
     .required('jobAnnouncement.validation.workStartDateRequired'),
