@@ -41,16 +41,15 @@
   direction: inherit;
   text-align: inherit;
 } */
-html[lang="ar"] input[type="date"] {
+html[lang='ar'] input[type='date'] {
   direction: rtl;
   text-align: right;
 }
 
-html[lang="en"] input[type="date"] {
+html[lang='en'] input[type='date'] {
   direction: ltr;
   text-align: left;
 }
-
 
 /* RTL-specific date input styles */
 [dir='rtl'] input[type='date']::-webkit-calendar-picker-indicator {
@@ -64,4 +63,32 @@ html[lang="en"] input[type="date"] {
   position: absolute;
   right: 8px;
   left: auto;
+}
+
+/* Radio Button Style */
+input[type='radio']::after {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  top: -2px;
+  left: 2px;
+  position: relative;
+  background-color: white;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 2px solid #878f8f;
+  cursor: pointer;
+}
+
+input[type='radio']:checked::after {
+  background: radial-gradient(
+    circle,
+    #16a34a 0%,
+    #16a34a 45%,
+    #16a34a 50%,
+    #ffffff 55%,
+    #ffffff 70%,
+    #ffffff 100%
+  );
 }
