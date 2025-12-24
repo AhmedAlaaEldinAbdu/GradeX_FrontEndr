@@ -8,11 +8,13 @@ import { teacherApiService } from '@/services/api/teachers/teachers.service';
 import { teacherAttendanceApiService } from '@/services/api/teacher-attendance/teacher-attendance.service';
 import type { Teacher, TeacherQueryParams, TeacherFilters } from '@/types/teachers';
 import type { TeacherAssignmentData, TeacherAssignmentListItem } from '@/types/teacherAssignment';
+import type { TeacherPersonalDataDetails } from '@/types/teacherPersonalData';
 import type {
   TeacherAttendanceDetailRecord,
   TeacherAttendanceSummary,
   TeacherAttendanceDetailFilters,
 } from '@/types/teacherAttendanceDetail';
+import type { TeacherAttendanceUpdateRequest } from '@/types/teacherAttendance';
 import { getErrorMessage } from '@/lib/http';
 
 // ============================================================================
@@ -24,6 +26,7 @@ export interface TeachersState {
   teachers: Teacher[];
   teacherAssignmentList: TeacherAssignmentListItem[];
   currentTeacher: Teacher | null;
+  teacherPersonalData: TeacherPersonalDataDetails | null;
   teacherAssignment: TeacherAssignmentData | null;
   teacherAttendanceRecords: TeacherAttendanceDetailRecord[];
   teacherAttendanceSummary: TeacherAttendanceSummary;
@@ -51,12 +54,14 @@ export interface TeachersState {
   // Loading States
   isLoading: boolean;
   isLoadingAssignmentList: boolean;
+  isLoadingPersonalData: boolean;
   isDeleting: boolean;
   isLoadingAssignment: boolean;
   isLoadingAttendance: boolean;
 
   // Error States
   error: string | null;
+  personalDataError: string | null;
   assignmentError: string | null;
   attendanceError: string | null;
 
@@ -120,6 +125,7 @@ const initialState: TeachersState = {
   teachers: [],
   teacherAssignmentList: [],
   currentTeacher: null,
+  teacherPersonalData: null,
   teacherAssignment: null,
   teacherAttendanceRecords: [],
   teacherAttendanceSummary: {
@@ -151,12 +157,14 @@ const initialState: TeachersState = {
   // Loading States
   isLoading: false,
   isLoadingAssignmentList: false,
+  isLoadingPersonalData: false,
   isDeleting: false,
   isLoadingAssignment: false,
   isLoadingAttendance: false,
 
   // Error States
   error: null,
+  personalDataError: null,
   assignmentError: null,
   attendanceError: null,
 
@@ -230,6 +238,18 @@ export const fetchTeacherById = createAsyncThunk<Teacher, string>(
   }
 );
 
+export const fetchTeacherPersonalData = createAsyncThunk<TeacherPersonalDataDetails, string>(
+  'teachers/fetchTeacherPersonalData',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await teacherApiService.getTeacherPersonalData(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 export const deleteTeacher = createAsyncThunk<string, string>(
   'teachers/deleteTeacher',
   async (id, { rejectWithValue }) => {
@@ -285,6 +305,17 @@ export const fetchTeacherAttendanceDetails = createAsyncThunk<
   }
 });
 
+export const updateTeacherAttendance = createAsyncThunk<void, TeacherAttendanceUpdateRequest>(
+  'teachers/updateTeacherAttendance',
+  async (payload, { rejectWithValue }) => {
+    try {
+      await teacherApiService.updateTeacherAttendance(payload);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 export const fetchTeacherAssignmentList = createAsyncThunk<
   FetchTeacherAssignmentListResponse,
   FetchTeacherAssignmentListPayload
@@ -322,6 +353,10 @@ const teachersSlice = createSlice({
     },
     setCurrentTeacher: (state, action: PayloadAction<Teacher | null>) => {
       state.currentTeacher = action.payload;
+    },
+    clearTeacherPersonalData: (state) => {
+      state.teacherPersonalData = null;
+      state.personalDataError = null;
     },
     clearTeacherAssignment: (state) => {
       state.teacherAssignment = null;
@@ -397,6 +432,24 @@ const teachersSlice = createSlice({
       .addCase(fetchTeacherById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      });
+
+    // Fetch Teacher Personal Data
+    builder
+      .addCase(fetchTeacherPersonalData.pending, (state) => {
+        state.isLoadingPersonalData = true;
+        state.personalDataError = null;
+      })
+      .addCase(
+        fetchTeacherPersonalData.fulfilled,
+        (state, action: PayloadAction<TeacherPersonalDataDetails>) => {
+          state.isLoadingPersonalData = false;
+          state.teacherPersonalData = action.payload;
+        }
+      )
+      .addCase(fetchTeacherPersonalData.rejected, (state, action) => {
+        state.isLoadingPersonalData = false;
+        state.personalDataError = action.payload as string;
       });
 
     // Delete Teacher
@@ -482,6 +535,20 @@ const teachersSlice = createSlice({
         state.isLoadingAssignmentList = false;
         state.error = action.payload as string;
       });
+
+    // Update Teacher Attendance
+    builder
+      .addCase(updateTeacherAttendance.pending, (state) => {
+        state.isLoadingAttendance = true;
+        state.attendanceError = null;
+      })
+      .addCase(updateTeacherAttendance.fulfilled, (state) => {
+        state.isLoadingAttendance = false;
+      })
+      .addCase(updateTeacherAttendance.rejected, (state, action) => {
+        state.isLoadingAttendance = false;
+        state.attendanceError = action.payload as string;
+      });
   },
 });
 
@@ -489,6 +556,7 @@ export const {
   setFilters,
   clearFilters,
   setCurrentTeacher,
+  clearTeacherPersonalData,
   clearTeacherAssignment,
   clearTeacherAttendance,
   setAttendanceFilters,
