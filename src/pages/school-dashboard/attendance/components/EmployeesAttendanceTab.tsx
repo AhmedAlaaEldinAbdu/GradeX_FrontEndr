@@ -140,6 +140,10 @@ export default function EmployeesAttendanceTab({
     selectedClassroom,
   ]);
 
+  useEffect(() => {
+    dispatch(clearSelection());
+  }, [dispatch, isActive]);
+
   // Only render when active
   if (!isActive) return null;
 
