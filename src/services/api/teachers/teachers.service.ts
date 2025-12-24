@@ -163,12 +163,13 @@ export async function getTeacherAssignmentList(
  * Update teacher attendance (preparation)
  */
 export async function updateTeacherAttendance(data: TeacherAttendanceUpdateRequest): Promise<void> {
+  const { id, ...body } = data;
   const response: AxiosResponse<{
     data: null;
     isSuccess: boolean;
     message: string;
     validationErrors: string[] | null;
-  }> = await axiosClient.put(TeacherAttendanceEndpoints.updateAttendance, data);
+  }> = await axiosClient.put(`${TeacherAttendanceEndpoints.updateAttendance}?Id=${id}`, body);
 
   if (!response?.data?.isSuccess) {
     throw new Error(response?.data?.message || 'Failed to update teacher attendance');
