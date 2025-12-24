@@ -419,7 +419,7 @@ export default function EmployeesAttendanceTab({
       className: 'text-center',
     },
     {
-      header: 'attendance.attendanceTime',
+      header: 'attendance.time',
       accessor: (row) => {
         const statusDisplay = getStatusDisplay(row.status, t);
         return (
