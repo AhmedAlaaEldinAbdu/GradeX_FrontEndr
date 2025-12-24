@@ -21,6 +21,7 @@ import {
   deselectAttendance,
   selectAllAttendances,
 } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { updateTeacherAttendance } from '@/redux/features/teachers';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchSchoolStages } from '@/redux/features/lookups';
 import type { TeacherAttendance } from '@/types/teacherAttendance';
@@ -82,6 +83,9 @@ export default function EmployeesAttendanceTab({
   const { attendances, pagination, isLoading, selectedAttendanceIds } = useAppSelector(
     (state) => state.teacherAttendance
   );
+
+  const isLoadingAttendance = useAppSelector((state) => state.teachers.isLoadingAttendance);
+  const isProcessing = isLoading || isLoadingAttendance;
 
   // Get classrooms from classrooms slice for filter options
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
@@ -236,11 +240,63 @@ export default function EmployeesAttendanceTab({
           })
         );
       } else if (popupEmployeeId) {
-        // Individual action - to be implemented
-        console.log(
-          `Individual action: ${popupType} for employee:`,
-          popupEmployeeId,
-          time ? `at ${time}` : ''
+        // Individual action - update attendance for single employee
+        const attendance = attendances.find((a) => a.id === popupEmployeeId);
+        if (!attendance) {
+          throw new Error('common.errorOccurred');
+        }
+
+        // Map status from popup type
+        const statusMap = {
+          present: AttendanceStatus.Present,
+          late: AttendanceStatus.Late,
+          absent: AttendanceStatus.Absent,
+        };
+
+        // Generate current time for checkInTime if not provided (for present/absent actions)
+        const now = new Date();
+        const currentTime =
+          time ||
+          `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        // Use current date in ISO format
+        const currentDate = new Date().toISOString();
+
+        await dispatch(
+          updateTeacherAttendance({
+            id: attendance.id,
+            teacherId: attendance.teacherId,
+            date: currentDate,
+            checkInTime: currentTime,
+            checkOutTime: attendance.checkOutTime || '18:00',
+            status: statusMap[popupType],
+          })
+        ).unwrap();
+
+        // Show appropriate success message based on action type
+        const successMessageMap = {
+          present: 'attendance.individualAttendanceSuccess',
+          late: 'attendance.individualLateSuccess',
+          absent: 'attendance.individualAbsentSuccess',
+        };
+
+        showToast({
+          message: successMessageMap[popupType],
+          type: 'success',
+        });
+
+        // Refresh attendance list
+        dispatch(
+          fetchTeacherAttendance({
+            page: currentPage,
+            limit: pagination.limit,
+            filters: {
+              search: searchTerm || undefined,
+              lkSchoolStageId: selectedStage || undefined,
+              classroomId: selectedClassroom || undefined,
+              status: selectedType ? Number(selectedType) : undefined,
+            },
+          })
         );
       }
       setPopupOpen(false);
@@ -578,6 +634,7 @@ export default function EmployeesAttendanceTab({
         personType="employee"
         onConfirm={handleConfirmAction}
         onCancel={handleCancelPopup}
+        isProcessing={isProcessing}
       />
     </div>
   );
