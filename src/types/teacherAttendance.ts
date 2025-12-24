@@ -85,3 +85,13 @@ export interface TeacherAttendanceUpdateRequest {
   checkInTime: string;
   checkOutTime: string;
 }
+
+// Bulk attendance request
+export interface BulkAttendanceItem {
+  teacherId: string;
+  date: string;
+  status: number;
+  delayTime?: string;
+}
+
+export type BulkAttendanceRequest = BulkAttendanceItem[];
