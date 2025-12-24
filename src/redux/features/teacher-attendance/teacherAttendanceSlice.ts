@@ -9,6 +9,7 @@ import type {
   TeacherAttendance,
   TeacherAttendanceQueryParams,
   TeacherAttendanceFilters,
+  BulkAttendanceRequest,
 } from '@/types/teacherAttendance';
 import { getErrorMessage } from '@/lib/http';
 
@@ -152,6 +153,17 @@ export const fetchTeacherAttendance = createAsyncThunk<
   }
 });
 
+export const bulkCreateAttendance = createAsyncThunk<void, BulkAttendanceRequest>(
+  'teacherAttendance/bulkCreateAttendance',
+  async (payload, { rejectWithValue }) => {
+    try {
+      await teacherAttendanceApiService.bulkCreateAttendance(payload);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 // ============================================================================
 // Slice
 // ============================================================================
@@ -183,7 +195,7 @@ const teacherAttendanceSlice = createSlice({
       );
     },
     selectAllAttendances: (state) => {
-      state.selectedAttendanceIds = state.attendances.map((attendance) => attendance.id);
+      state.selectedAttendanceIds = state.attendances.map((attendance) => attendance.teacherId);
     },
     clearSelection: (state) => {
       state.selectedAttendanceIds = [];
@@ -211,6 +223,20 @@ const teacherAttendanceSlice = createSlice({
         }
       )
       .addCase(fetchTeacherAttendance.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Bulk Create Attendance
+    builder
+      .addCase(bulkCreateAttendance.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(bulkCreateAttendance.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(bulkCreateAttendance.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
