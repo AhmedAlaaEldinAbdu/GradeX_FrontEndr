@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Tabs from '@/shared/components/Tabs';
 import JobApplicantsRequests from './JobApplicantsRequests';
@@ -19,21 +18,18 @@ type JobApplicantsProps = {
 const JobApplicants = ({ selectedTab, setSelectedTab }: JobApplicantsProps) => {
   const { t } = useTranslation();
 
-  const tabItems = useMemo(
-    () => [
-      {
-        id: JOB_APPLICANTS_TABS.REQUESTS,
-        label: t('jobAnnouncement.applicantsPage.tabs.requests'),
-        content: <JobApplicantsRequests />,
-      },
-      {
-        id: JOB_APPLICANTS_TABS.ARCHIVED,
-        label: t('jobAnnouncement.applicantsPage.tabs.archived'),
-        content: <JobApplicantsArchived />,
-      },
-    ],
-    [t]
-  );
+  const tabItems = [
+    {
+      id: JOB_APPLICANTS_TABS.REQUESTS,
+      label: t('jobAnnouncement.applicantsPage.tabs.requests'),
+      content: <JobApplicantsRequests />,
+    },
+    {
+      id: JOB_APPLICANTS_TABS.ARCHIVED,
+      label: t('jobAnnouncement.applicantsPage.tabs.archived'),
+      content: <JobApplicantsArchived />,
+    },
+  ];
 
   return (
     <div className="mt-6">
