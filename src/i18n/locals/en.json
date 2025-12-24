@@ -116,6 +116,8 @@
     "accept": "Accept",
     "ok": "Ok",
     "reject": "Reject",
+    "archive": "Archive",
+    "recall": "Recall",
     "clearFilter": "Clear Filter",
     "confirmDelete": "Are you sure you want to delete?",
     "successAdd": "Added successfully",
@@ -1211,6 +1213,60 @@
     "partTime": "Part-time",
     "onlineWork": "Remote",
     "offlineWork": "On-site",
+    "viewApplicants": "View applicants",
+    "backToAnnouncements": "Back to announcements list",
+    "applicantsPage": {
+      "title": "Applicants list",
+      "breadcrumb": "Applicants",
+      "jobHeadline": "Announcement overview",
+      "reference": "Reference",
+      "postedOn": "Posted on",
+      "deadline": "Application deadline",
+      "location": "Location",
+      "stage": "Educational stage",
+      "workMode": "Work type",
+      "openPositions": "Open positions",
+      "tabs": {
+        "requests": "Applications",
+        "archived": "Archived"
+      },
+      "filters": {
+        "search": "Search by applicant name",
+        "workType": "Work type",
+        "qualification": "Academic qualification",
+        "nationality": "Nationality",
+        "experience": "Experience (years)"
+      },
+      "table": {
+        "name": "Name",
+        "resume": "Resume",
+        "workType": "Work type",
+        "qualification": "Academic qualification",
+        "experience": "Years of experience",
+        "nationality": "Nationality",
+        "country": "Country",
+        "address": "Address",
+        "contact": "Contact info",
+        "actions": "Actions"
+      },
+      "summary": {
+        "applicants": "Applicants",
+        "shortlisted": "Shortlisted",
+        "interviews": "Interviews",
+        "offers": "Offers"
+      },
+      "status": {
+        "shortlisted": "Shortlisted",
+        "interview": "Interview scheduled",
+        "hired": "Hired",
+        "archived": "Archived",
+        "rejected": "Rejected"
+      },
+      "resumeButton": "Resume (PDF)",
+      "contactEmail": "Email applicant",
+      "contactPhone": "Call applicant",
+      "emptyState": "No applicants found for this tab yet."
+    },
     "form": {
       "schoolBranch": "School branch",
       "selectSchoolBranch": "Select school branch",
@@ -1326,7 +1382,9 @@
       "contractTypeRequired": "Select at least one contract type",
       "languagesRequired": "Add at least one language",
       "languageIdRequired": "Language is required",
-      "languageLevelRequired": "Language level is required"
+      "languageLevelRequired": "Language level is required",
+      "technicalSkillRequired": "Technical skills are required",
+      "personalSkillRequired": "Personal skills are required"
     }
   }
 }

@@ -116,6 +116,8 @@
     "accept": "قبول",
     "ok": "موافق",
     "reject": "رفض",
+    "archive": "أرشفة",
+    "recall": "استرجاع",
     "clearFilter": "مسح الفلتر",
     "confirmDelete": "هل أنت متأكد من الحذف؟",
     "successAdd": "تمت الإضافة بنجاح",
@@ -1209,6 +1211,60 @@
     "partTime": "دوام جزئي",
     "onlineWork": "عمل عن بُعد",
     "offlineWork": "عمل حضوري",
+    "viewApplicants": "عرض المتقدمين",
+    "backToAnnouncements": "العودة لقائمة الإعلانات",
+    "applicantsPage": {
+      "title": "طلبات التقديم",
+      "breadcrumb": "طلبات التقديم",
+      "jobHeadline": "بيانات الإعلان",
+      "reference": "رقم المرجع",
+      "postedOn": "تاريخ النشر",
+      "deadline": "آخر موعد للتقديم",
+      "location": "الموقع",
+      "stage": "المرحلة الدراسية",
+      "workMode": "نوع الدوام",
+      "openPositions": "عدد الوظائف المتاحة",
+      "tabs": {
+        "requests": "طلبات التقديم",
+        "archived": "الأرشيف"
+      },
+      "filters": {
+        "search": "ابحث باسم المتقدم",
+        "workType": "نوع الدوام",
+        "qualification": "المؤهل الدراسي",
+        "nationality": "الجنسية",
+        "experience": "سنوات الخبرة"
+      },
+      "table": {
+        "name": "الاسم",
+        "resume": "السيرة الذاتية",
+        "workType": "نوع الدوام",
+        "qualification": "المؤهل الدراسي",
+        "experience": "سنوات الخبرة",
+        "nationality": "الجنسية",
+        "country": "الدولة",
+        "address": "العنوان",
+        "contact": "معلومات التواصل",
+        "actions": "الإجراءات"
+      },
+      "summary": {
+        "applicants": "عدد المتقدمين",
+        "shortlisted": "المدرجون في القائمة القصيرة",
+        "interviews": "المقابلات",
+        "offers": "العروض"
+      },
+      "status": {
+        "shortlisted": "قائمة قصيرة",
+        "interview": "مقابلة مجدولة",
+        "hired": "تم التوظيف",
+        "archived": "مؤرشف",
+        "rejected": "مرفوض"
+      },
+      "resumeButton": "السيرة الذاتية (PDF)",
+      "contactEmail": "مراسلة المتقدم",
+      "contactPhone": "الاتصال بالمتقدم",
+      "emptyState": "لا يوجد متقدمون في هذا القسم حتى الآن"
+    },
     "form": {
       "schoolBranch": "فرع المدرسة",
       "selectSchoolBranch": "اختر فرع المدرسة",
@@ -1324,7 +1380,9 @@
       "contractTypeRequired": "يرجى تحديد نوع الدوام",
       "languagesRequired": "يرجى إضافة لغة واحدة على الأقل",
       "languageIdRequired": "اختيار اللغة مطلوب",
-      "languageLevelRequired": "اختيار مستوى الإتقان مطلوب"
+      "languageLevelRequired": "اختيار مستوى الإتقان مطلوب",
+      "technicalSkillRequired": "المهارات التقنية مطلوبة",
+      "personalSkillRequired": "المهارات الشخصية مطلوبة"
     }
   }
 }
