@@ -1,5 +1,4 @@
 import { array, mixed, number, object, string, type InferType } from 'yup';
-import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 
 export const JobCategory = {
   TEACHER: 'TEACHER',

@@ -32,7 +32,6 @@ import {
 import type {
   CreateJobAdvertismentRequest,
 } from '@/services/api/types/job-advertisment.types';
-import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 import {
   AddJobAnnouncementSchema,
   ContractType,
