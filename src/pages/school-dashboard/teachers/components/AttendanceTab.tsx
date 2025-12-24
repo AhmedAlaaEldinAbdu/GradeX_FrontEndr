@@ -6,12 +6,14 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import Loading from '@/shared/components/Loading';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
-import TeacherPreparationPopup, {
+import { useToast } from '@/shared/context/ToastContext';
+import RecordAttendancePopup, {
   type TeacherPreparationFormValues,
 } from '../popups/TeacherPreparationPopup';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherAttendanceDetails,
+  updateTeacherAttendance,
   clearTeacherAttendance,
   clearAttendanceFilters,
 } from '@/redux/features/teachers/teachersSlice';
@@ -33,11 +35,12 @@ const ATTENDANCE_STATUS_OPTIONS = [
 export default function AttendanceTab({ teacherId, isActive = true }: AttendanceTabProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const [searchDate, setSearchDate] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [showPreparationPopup, setShowPreparationPopup] = useState(false);
+  const [showRecordAttendancePopup, setShowRecordAttendancePopup] = useState(false);
   const pageSize = 10;
 
   // Redux state
@@ -202,16 +205,48 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
     dispatch(clearAttendanceFilters());
   };
 
-  const handleTeacherPreparation = () => {
-    setShowPreparationPopup(true);
+  const handleRecordAttendance = () => {
+    setShowRecordAttendancePopup(true);
   };
 
   const handlePreparationSubmit = async (values: TeacherPreparationFormValues) => {
-    // TODO: Integrate with API
-    console.log('Teacher Preparation Data:', {
-      teacherId,
-      ...values,
-    });
+    try {
+      await dispatch(
+        updateTeacherAttendance({
+          teacherId,
+          date: values.date,
+          checkInTime: values.checkInTime,
+          checkOutTime: values.checkOutTime,
+        })
+      ).unwrap();
+
+      setShowRecordAttendancePopup(false);
+
+      showToast({
+        message: 'teachers.details.attendanceUpdatedSuccessfully',
+        type: 'success',
+      });
+
+      dispatch(
+        fetchTeacherAttendanceDetails({
+          teacherId,
+          page: currentPage,
+          limit: pageSize,
+          filters: {
+            status: selectedStatus ? Number(selectedStatus) : undefined,
+          },
+        })
+      );
+    } catch (error) {
+      setShowRecordAttendancePopup(false);
+      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
+      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: isApiError,
+      });
+    }
   };
 
   // Show loader when tab is not active or loading
@@ -233,15 +268,15 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
 
   return (
     <div className="space-y-6">
-      {/* Teacher Preparation Button */}
+      {/* Record Attendance Button */}
       <div className="flex justify-end">
         <Button
           variant="primary"
           imgSrc={PlusIcon}
-          onClick={handleTeacherPreparation}
+          onClick={handleRecordAttendance}
           className="flex items-center gap-2"
         >
-          <span>{t('teachers.details.teacherPreparation')}</span>
+          <span>{t('teachers.details.recordAttendance')}</span>
         </Button>
       </div>
 
@@ -350,10 +385,10 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
         />
       </Card>
 
-      {/* Teacher Preparation Popup */}
-      <TeacherPreparationPopup
-        isOpen={showPreparationPopup}
-        onClose={() => setShowPreparationPopup(false)}
+      {/* Record Attendance Popup */}
+      <RecordAttendancePopup
+        isOpen={showRecordAttendancePopup}
+        onClose={() => setShowRecordAttendancePopup(false)}
         onSubmit={handlePreparationSubmit}
         teacherId={teacherId}
       />
