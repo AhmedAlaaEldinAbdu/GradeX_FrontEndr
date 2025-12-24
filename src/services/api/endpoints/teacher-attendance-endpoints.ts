@@ -5,4 +5,5 @@ export const TeacherAttendanceEndpoints = {
   getByTeacher: TeacherAttendance,
   markAttendance: (id: string) => `${TeacherAttendance}/${id}`,
   updateAttendance: TeacherAttendance,
+  bulkCreate: `${TeacherAttendance}/bulk-create`,
 };
