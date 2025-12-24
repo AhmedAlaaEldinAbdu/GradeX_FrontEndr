@@ -78,3 +78,10 @@ export const TeacherJobType = {
 } as const;
 
 export type TeacherJobTypeType = (typeof TeacherJobType)[keyof typeof TeacherJobType];
+
+export interface TeacherAttendanceUpdateRequest {
+  teacherId: string;
+  date: string;
+  checkInTime: string;
+  checkOutTime: string;
+}
