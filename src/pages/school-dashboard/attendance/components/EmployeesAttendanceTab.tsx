@@ -421,11 +421,9 @@ export default function EmployeesAttendanceTab({
     {
       header: 'attendance.time',
       accessor: (row) => {
-        const statusDisplay = getStatusDisplay(row.status, t);
         return (
           <div className="flex flex-col items-center">
             <span className="text-sm">{formatTime(row.checkInTime)}</span>
-            <span className={`text-xs ${statusDisplay.className}`}>{statusDisplay.text}</span>
           </div>
         );
       },
