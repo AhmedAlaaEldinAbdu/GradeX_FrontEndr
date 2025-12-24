@@ -12,6 +12,7 @@ import type {
   CreateJobAdvertismentRequest,
   UpdateJobAdvertismentRequest,
   JobAdvertismentWorkShedule,
+  CreateJobAdvertismentRequestTwo,
 } from '@/services/api/types/job-advertisment.types';
 import type { ApiResponseModel } from '@/services/api';
 
@@ -156,7 +157,7 @@ export const fetchJobAdvertismentById = createAsyncThunk<JobAdvertisment, string
 
 export const createJobAdvertisment = createAsyncThunk<
   ApiResponseModel<null>,
-  CreateJobAdvertismentRequest
+  CreateJobAdvertismentRequestTwo
 >('jobAdvertisments/createJobAdvertisment', async (payload, { rejectWithValue }) => {
   try {
     const response = await jobAdvertismentApiService.createJobAdvertisment(payload);

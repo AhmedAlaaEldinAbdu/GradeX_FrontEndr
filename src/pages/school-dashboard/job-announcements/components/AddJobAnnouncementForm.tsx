@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import type { InferType } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
@@ -35,7 +36,6 @@ import type {
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 import {
   AddJobAnnouncementSchema,
-  type AddJobAnnouncementFormValues,
   ContractType,
   JobCategory,
   NationalityMode,
@@ -44,24 +44,6 @@ import {
 } from '@/validations/job-announcements-validations';
 import CustomImage from '@/shared/components/CustomImage';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
-
-interface LocalizedOption {
-  value: string;
-  labelAr: string;
-  labelEn: string;
-}
-
-const TECHNICAL_SKILL_OPTIONS: LocalizedOption[] = [
-  { value: 'google-classroom', labelAr: 'جوجل كلاس روم', labelEn: 'Google Classroom' },
-  { value: 'microsoft-teams', labelAr: 'مايكروسوفت تيمز', labelEn: 'Microsoft Teams' },
-  { value: 'smart-board', labelAr: 'السبورة الذكية', labelEn: 'Smart Board' },
-];
-
-const PERSONAL_SKILL_OPTIONS: LocalizedOption[] = [
-  { value: 'communication', labelAr: 'التواصل', labelEn: 'Communication' },
-  { value: 'leadership', labelAr: 'القيادة', labelEn: 'Leadership' },
-  { value: 'planning', labelAr: 'التخطيط', labelEn: 'Planning' },
-];
 
 const TEACHER_GENDER_OPTIONS = [
   { value: 'MALE', labelKey: 'jobAnnouncement.form.genderMale' },
@@ -91,12 +73,14 @@ const NATIONALITY_OPTIONS = [
 
 const DEFAULT_QUALIFICATION_TYPE = '1';
 
+type AddJobAnnouncementFormValues = InferType<typeof AddJobAnnouncementSchema>;
+
 const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   jobCategory: JobCategory.TEACHER,
   teacherLevelId: '',
   administrativePositionId: '',
-  specializationIds: [],
-  stageIds: [],
+  specializationIds: '',
+  stageIds: '',
   subjectName: [],
   educationalStage: [],
   jobDescriptionAr: '',
@@ -111,26 +95,21 @@ const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   workStartDate: '',
   qualificationType: DEFAULT_QUALIFICATION_TYPE,
   qualificationIds: [],
-  yearsOfExperience: 0,
+  yearsExperience: 0,
   workStartTime: '',
   workEndTime: '',
-  salaryOption: SalaryOption.TBD,
+  workingHoursFrom: '',
+  workingHoursTo: '',
+  salary: SalaryOption.TBD,
   minimumSalary: 0,
   maximumSalary: 0,
   teacherGender: 'ANY',
   contractType: [ContractType.FULL_TIME],
-  technicalSkillIds: [],
-  personalSkillIds: [],
+  technicalSkillIds: '',
+  personalSkillIds: '',
   benefitsIds: [],
   languages: [{ languageId: '', levelId: '' }],
 };
-
-function getLocalizedOptions(options: LocalizedOption[], lang: 'ar' | 'en') {
-  return options.map((option) => ({
-    value: option.value,
-    label: lang === 'ar' ? option.labelAr : option.labelEn,
-  }));
-}
 
 export default function AddJobAnnouncementForm() {
   const { t, i18n } = useTranslation();
@@ -184,7 +163,7 @@ export default function AddJobAnnouncementForm() {
   const jobCategory = watch('jobCategory');
   const nationalityMode = watch('nationalityMode');
   const workStartMode = watch('workStartMode');
-  const salaryOption = watch('salaryOption');
+  const salaryOption = watch('salary');
   const contractType = watch('contractType');
   const selectedBenefits = watch('benefitsIds');
 
@@ -223,7 +202,6 @@ export default function AddJobAnnouncementForm() {
   useEffect(() => {
     if (workStartMode === WorkStartMode.IMMEDIATE) {
       setValue('workStartDate', '');
-      setValue('noticePeriodDate', '');
     }
   }, [workStartMode, setValue]);
 
@@ -284,16 +262,6 @@ export default function AddJobAnnouncementForm() {
     }));
   }, [administrativePositions, currentLang]);
 
-  const technicalSkillOptions = useMemo(
-    () => getLocalizedOptions(TECHNICAL_SKILL_OPTIONS, currentLang),
-    [currentLang]
-  );
-
-  const personalSkillOptions = useMemo(
-    () => getLocalizedOptions(PERSONAL_SKILL_OPTIONS, currentLang),
-    [currentLang]
-  );
-
   const benefitOptions = useMemo(() => {
     if (!Array.isArray(jobBenefits)) return [];
     return jobBenefits.map((benefit) => ({
@@ -350,14 +318,18 @@ export default function AddJobAnnouncementForm() {
   };
 
   const onSubmit = async (values: AddJobAnnouncementFormValues) => {
-    const primarySubjectId = values.specializationIds[0] || '';
+    const selectedSpecializationId = values.specializationIds || '';
+    const selectedStageId = values.stageIds || '';
+    const specializationList = selectedSpecializationId ? [selectedSpecializationId] : [];
+    const stageList = selectedStageId ? [selectedStageId] : [];
+    const primarySubjectId = selectedSpecializationId;
     const qualificationTypeNumber = Number(values.qualificationType) || 0;
     const nationalityValue = values.nationalityMode === NationalityMode.ALL ? 0 : 1;
+    const technicalSkillValue = values.technicalSkillIds?.trim();
+    const personalSkillValue = values.personalSkillIds?.trim();
 
     const salaryMin = Number(values.minimumSalary || 0);
     const salaryMax = Number(values.maximumSalary || 0);
-    const salaryAverage =
-      values.salaryOption === SalaryOption.RANGE ? (salaryMin + salaryMax) / 2 : 0;
 
     const payload: CreateJobAdvertismentRequestTwo = {
       qualificationType: qualificationTypeNumber,
@@ -369,38 +341,36 @@ export default function AddJobAnnouncementForm() {
       advertisementStartDate: values.applicationStartDate,
       advertisementEndDate: values.applicationEndDate,
       nationality: nationalityValue,
-      salary: salaryAverage,
-      minimumSalary: values.salaryOption === SalaryOption.RANGE ? salaryMin : 0,
-      maximumSalary: values.salaryOption === SalaryOption.RANGE ? salaryMax : 0,
+      salary: values.salary === SalaryOption.RANGE ? 1 : 2,
+      minimumSalary: values.salary === SalaryOption.RANGE ? salaryMin : 0,
+      maximumSalary: values.salary === SalaryOption.RANGE ? salaryMax : 0,
       teacherGender:
         values.teacherGender === 'MALE' ? 0 : values.teacherGender === 'FEMALE' ? 1 : 2,
-      yearsExperience: Number(values.yearsOfExperience || 0),
-      workShedule: workSchedule,
-      workStartTime: values.workStartTime,
-      workEndTime: values.workEndTime,
+      yearsExperience: Number(values.yearsExperience || 0),
+      workShedule: values.workStartMode === WorkStartMode.IMMEDIATE ? 1 : 2,
+      workStartTime: values.workingHoursFrom,
+      workEndTime: values.workingHoursTo,
       lkAdministrativePositionId: values.administrativePositionId || '',
       lkTeacherLevelId: values.teacherLevelId || '',
       //
-      jobAdvertismentTechnicalSkillsDto: values.technicalSkillIds.map((skillId) => {
-        const label = TECHNICAL_SKILL_OPTIONS.find((option) => option.value === skillId);
-        return { technicalAppName: label ? label.labelEn : skillId };
-      }),
-      jobAdvertismentPersonalSkillsDto: values.personalSkillIds.map((skillId) => {
-        const label = PERSONAL_SKILL_OPTIONS.find((option) => option.value === skillId);
-        return { personalSkillName: label ? label.labelEn : skillId };
-      }),
+      jobAdvertismentTechnicalSkillsDto: technicalSkillValue
+        ? [{ technicalAppName: technicalSkillValue }]
+        : [],
+      jobAdvertismentPersonalSkillsDto: personalSkillValue
+        ? [{ personalSkillName: personalSkillValue }]
+        : [],
       //
-      jobAdvertismentMaterialDto: values.specializationIds.map((subjectId) => ({
+      jobAdvertismentMaterialDto: specializationList.map((subjectId) => ({
         materialId: subjectId,
       })),
       jobAdvertisementCountryDto:
         values.nationalityMode === NationalityMode.ALL
           ? []
-          : values.nationalityIds.map((countryId) => ({ lkCountryId: countryId })),
+          : (values.nationalityIds ?? []).map((countryId) => ({ lkCountryId: countryId })),
       jobAdvertisementQualificationDto: values.qualificationIds.map((qualificationId) => ({
         lkQualificationId: qualificationId,
       })),
-      jobAdvertisementSchoolStageDto: values.stageIds.map((stageId) => ({
+      jobAdvertisementSchoolStageDto: stageList.map((stageId) => ({
         lkSchoolStageId: stageId,
       })),
       jobAdvertisementLanguageDto: values.languages
@@ -409,10 +379,9 @@ export default function AddJobAnnouncementForm() {
           lkLanguageId: language.languageId,
           lkLanguageLevelId: language.levelId,
         })),
-      jobAdvertisementJobBenefitDto: values.benefitsIds.map((benefitId) => ({
+      jobAdvertisementJobBenefitDto: (values.benefitsIds ?? []).map((benefitId) => ({
         lkJobBenefitId: benefitId,
       })),
-      jobAdvertisementLanguageDto2: undefined,
     } as CreateJobAdvertismentRequestTwo;
 
     try {
@@ -470,7 +439,7 @@ export default function AddJobAnnouncementForm() {
               <FormField
                 label={t('jobAnnouncement.form.teacherLevel')}
                 required
-                error={errors.teacherLevelId?.toString()}
+                error={errors.teacherLevelId?.message as string | undefined}
                 htmlFor="teacherLevelId"
               >
                 <Controller
@@ -497,7 +466,7 @@ export default function AddJobAnnouncementForm() {
               <FormField
                 label={t('jobAnnouncement.form.administrativePosition')}
                 required
-                error={errors.administrativePositionId?.toString()}
+                error={errors.administrativePositionId?.message as string | undefined}
                 htmlFor="administrativePositionId"
               >
                 <Controller
@@ -527,7 +496,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.specialization')}
               required
-              error={errors.specializationIds?.toString()}
+              error={errors.specializationIds?.message as string | undefined}
               htmlFor="specializationIds"
             >
               <Controller
@@ -536,8 +505,10 @@ export default function AddJobAnnouncementForm() {
                 render={({ field }) => (
                   <CustomSelect
                     id="specializationIds"
-                    value={field.value}
-                    onChange={(value) => field.onChange(value)}
+                    value={field.value || ''}
+                    onChange={(value) =>
+                      field.onChange(Array.isArray(value) ? (value[0] ?? '') : value)
+                    }
                     options={subjectOptions}
                     placeholder={
                       isLoadingSubjects
@@ -554,7 +525,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.stage')}
               required
-              error={errors.stageIds?.toString()}
+              error={errors.stageIds?.message as string | undefined}
               htmlFor="stageIds"
             >
               <Controller
@@ -563,8 +534,10 @@ export default function AddJobAnnouncementForm() {
                 render={({ field }) => (
                   <CustomSelect
                     id="stageIds"
-                    value={field.value}
-                    onChange={(value) => field.onChange(value)}
+                    value={field.value || ''}
+                    onChange={(value) =>
+                      field.onChange(Array.isArray(value) ? (value[0] ?? '') : value)
+                    }
                     options={stageOptions}
                     placeholder={
                       isLoadingSchoolStages
@@ -585,7 +558,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.jobDescriptionAr')}
               optional
-              error={errors.jobDescriptionAr?.toString()}
+              error={errors.jobDescriptionAr?.message as string | undefined}
               htmlFor="jobDescriptionAr"
             >
               <Controller
@@ -604,7 +577,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.jobDescriptionEn')}
               optional
-              error={errors.jobDescriptionEn?.toString()}
+              error={errors.jobDescriptionEn?.message as string | undefined}
               htmlFor="jobDescriptionEn"
             >
               <Controller
@@ -623,7 +596,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.jobResponsibilitiesAr')}
               optional
-              error={errors.jobResponsibilitiesAr?.toString()}
+              error={errors.jobResponsibilitiesAr?.message as string | undefined}
               htmlFor="jobResponsibilitiesAr"
             >
               <Controller
@@ -642,7 +615,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.jobResponsibilitiesEn')}
               optional
-              error={errors.jobResponsibilitiesEn?.toString()}
+              error={errors.jobResponsibilitiesEn?.message as string | undefined}
               htmlFor="jobResponsibilitiesEn"
             >
               <Controller
@@ -665,7 +638,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.applicationStartDate')}
               required
-              error={errors.applicationStartDate?.toString()}
+              error={errors.applicationStartDate?.message as string | undefined}
               htmlFor="applicationStartDate"
             >
               <Input id="applicationStartDate" type="date" {...register('applicationStartDate')} />
@@ -674,7 +647,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.applicationEndDate')}
               required
-              error={errors.applicationEndDate?.toString()}
+              error={errors.applicationEndDate?.message as string | undefined}
               htmlFor="applicationEndDate"
             >
               <Input id="applicationEndDate" type="date" {...register('applicationEndDate')} />
@@ -685,7 +658,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.nationality')}
               required
-              error={errors.national?.toString()}
+              error={errors.nationalityMode?.message as string | undefined}
               htmlFor="nationalityMode"
             >
               <div className="flex items-center gap-6 p-2">
@@ -712,7 +685,7 @@ export default function AddJobAnnouncementForm() {
               <FormField
                 label={t('jobAnnouncement.form.nationalitySpecific')}
                 required
-                error={errors.nationality?.toString()}
+                error={errors.nationalityIds?.message as string | undefined}
                 htmlFor="nationalityMode"
               >
                 <Controller
@@ -720,7 +693,7 @@ export default function AddJobAnnouncementForm() {
                   control={control}
                   render={({ field }) => (
                     <CustomSelect
-                      value={field.value}
+                      value={field.value || []}
                       onChange={(value) => field.onChange(value)}
                       options={countryOptions}
                       placeholder={
@@ -747,7 +720,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.workStart')}
               required
-              error={errors.workStartDate?.toString()}
+              error={errors.workStartDate?.message as string | undefined}
             >
               <div className="flex items-center gap-6 p-2">
                 {WORK_START_OPTIONS.map((option) => (
@@ -772,7 +745,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.workStartDate')}
               required
-              error={errors.workStartDate?.toString()}
+              error={errors.workStartDate?.message as string | undefined}
             >
               <div>
                 <Input type="date" {...register('workStartDate')} />
@@ -791,7 +764,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.subjectName')}
               required
-              error={errors.subjectName?.toString()}
+              error={errors.subjectName?.message as string | undefined}
               htmlFor="subjectName"
             >
               <Controller
@@ -819,7 +792,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.educationalStage')}
               required
-              error={errors.educationalStage?.toString()}
+              error={errors.educationalStage?.message as string | undefined}
               htmlFor="educationalStage"
             >
               <Controller
@@ -847,7 +820,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.academicQualification')}
               required
-              error={errors.qualificationIds?.toString()}
+              error={errors.qualificationIds?.message as string | undefined}
               htmlFor="qualificationIds"
             >
               <Controller
@@ -882,7 +855,7 @@ export default function AddJobAnnouncementForm() {
                       type="radio"
                       value={option.value}
                       checked={salaryOption === option.value}
-                      onChange={() => setValue('salaryOption', option.value)}
+                      onChange={() => setValue('salary', option.value)}
                       className="h-4 w-4 accent-green-600 focus:ring-green-500"
                     />
                     <span className="text-sm text-gray-700">{t(option.labelKey)}</span>
@@ -896,7 +869,7 @@ export default function AddJobAnnouncementForm() {
               <FormField
                 label={t('jobAnnouncement.form.minimumSalary')}
                 required
-                error={errors.minimumSalary?.toString()}
+                error={errors.minimumSalary?.message as string | undefined}
                 htmlFor="minimumSalary"
               >
                 <Input id="minimumSalary" type="number" min={0} {...register('minimumSalary')} />
@@ -904,7 +877,7 @@ export default function AddJobAnnouncementForm() {
               <FormField
                 label={t('jobAnnouncement.form.maximumSalary')}
                 required
-                error={errors.maximumSalary?.toString()}
+                error={errors.maximumSalary?.message as string | undefined}
                 htmlFor="maximumSalary"
               >
                 <Input id="maximumSalary" type="number" min={0} {...register('maximumSalary')} />
@@ -916,7 +889,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.teacherGender')}
               required
-              error={errors.teacherGender?.toString()}
+              error={errors.teacherGender?.message as string | undefined}
               htmlFor="teacherGender"
             >
               <Controller
@@ -950,23 +923,23 @@ export default function AddJobAnnouncementForm() {
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <FormField
-              label={t('jobAnnouncement.form.yearsOfExperience')}
+              label={t('jobAnnouncement.form.yearsExperience')}
               required
-              error={errors.yearsOfExperience?.toString()}
+              error={errors.yearsExperience?.message as string | undefined}
               htmlFor="yearsOfExperience"
             >
               <Input
                 id="yearsOfExperience"
                 type="number"
                 min={0}
-                {...register('yearsOfExperience')}
+                {...register('yearsExperience')}
               />
             </FormField>
 
             <FormField
               label={t('jobAnnouncement.form.contractType')}
               required
-              error={errors.contractType?.toString()}
+              error={errors.contractType?.message as string | undefined}
               htmlFor="contractType"
             >
               <div className="mt-3 flex flex-wrap gap-4">
@@ -991,7 +964,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.workingHoursFrom')}
               required
-              error={errors.workingHoursFrom?.toString()}
+              error={errors.workingHoursFrom?.message as string | undefined}
               htmlFor="workingHoursFrom"
             >
               <Input id="workingHoursFrom" type="time" {...register('workingHoursFrom')} />
@@ -1000,7 +973,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.workingHoursTo')}
               required
-              error={errors.workingHoursTo?.toString()}
+              error={errors.workingHoursTo?.message as string | undefined}
               htmlFor="workingHoursTo"
             >
               <Input id="workingHoursTo" type="time" {...register('workingHoursTo')} />
@@ -1012,43 +985,27 @@ export default function AddJobAnnouncementForm() {
           <div className="grid grid-cols-1 gap-5 md:grid-cols-1">
             <FormField
               label={t('jobAnnouncement.form.technicalSkills')}
-              error={errors.technicalSkillIds?.toString()}
+              error={errors.technicalSkillIds?.message as string | undefined}
               htmlFor="technicalSkillIds"
+              required
             >
-              <Controller
-                name="technicalSkillIds"
-                control={control}
-                render={({ field }) => (
-                  <CustomSelect
-                    id="technicalSkillIds"
-                    value={field.value}
-                    onChange={(value) => field.onChange(value)}
-                    options={technicalSkillOptions}
-                    placeholder={t('jobAnnouncement.form.technicalSkills')}
-                    isMulti
-                  />
-                )}
+              <Input
+                id="technicalSkillIds"
+                {...register('technicalSkillIds')}
+                placeholder={t('jobAnnouncement.form.technicalSkills')}
               />
             </FormField>
 
             <FormField
               label={t('jobAnnouncement.form.personalSkills')}
-              error={errors.personalSkillIds?.toString()}
+              error={errors.personalSkillIds?.message as string | undefined}
               htmlFor="personalSkillIds"
+              required
             >
-              <Controller
-                name="personalSkillIds"
-                control={control}
-                render={({ field }) => (
-                  <CustomSelect
-                    id="personalSkillIds"
-                    value={field.value}
-                    onChange={(value) => field.onChange(value)}
-                    options={personalSkillOptions}
-                    placeholder={t('jobAnnouncement.form.personalSkills')}
-                    isMulti
-                  />
-                )}
+              <Input
+                id="personalSkillIds"
+                {...register('personalSkillIds')}
+                placeholder={t('jobAnnouncement.form.personalSkills')}
               />
             </FormField>
           </div>
@@ -1077,7 +1034,7 @@ export default function AddJobAnnouncementForm() {
                     <FormField
                       label={t('jobAnnouncement.form.language')}
                       required
-                      error={errors.languages?.[index]?.languageId?.toString()}
+                      error={errors.languages?.[index]?.languageId?.message as string | undefined}
                     >
                       <Controller
                         name={`languages.${index}.languageId`}
@@ -1104,7 +1061,7 @@ export default function AddJobAnnouncementForm() {
                     <FormField
                       label={t('jobAnnouncement.form.languageLevel')}
                       required
-                      error={errors.languages?.[index]?.levelId?.toString()}
+                      error={errors.languages?.[index]?.levelId?.message as string | undefined}
                     >
                       <Controller
                         name={`languages.${index}.levelId`}
@@ -1159,7 +1116,7 @@ export default function AddJobAnnouncementForm() {
                   <CustomCheckbox
                     key={benefit.value}
                     label={benefit.label}
-                    checked={selectedBenefits?.includes(benefit.value)}
+                    checked={selectedBenefits?.includes(benefit.value) || false}
                     onChange={(checked) => toggleBenefit(benefit.value, checked)}
                     className="p-2"
                   />

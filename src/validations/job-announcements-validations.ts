@@ -36,8 +36,6 @@ export const ContractType = {
 
 export type ContractTypeValue = (typeof ContractType)[keyof typeof ContractType];
 
-const jobScheduleValues = Object.values(JobAdvertismentWorkShedule).map((value) => String(value));
-
 export const AddJobAnnouncementSchema = object({
   jobCategory: mixed<JobCategoryValue>()
     .oneOf(Object.values(JobCategory))
@@ -52,14 +50,8 @@ export const AddJobAnnouncementSchema = object({
     then: (schema) => schema.required('jobAnnouncement.validation.administrativePositionRequired'),
     otherwise: (schema) => schema.nullable().optional(),
   }),
-  specializationIds: array()
-    .of(string().required('jobAnnouncement.validation.specializationRequired'))
-    .min(1, 'jobAnnouncement.validation.specializationRequired')
-    .required('jobAnnouncement.validation.specializationRequired'),
-  stageIds: array()
-    .of(string().required('jobAnnouncement.validation.stageRequired'))
-    .min(1, 'jobAnnouncement.validation.stageRequired')
-    .required('jobAnnouncement.validation.stageRequired'),
+  specializationIds: string().required('jobAnnouncement.validation.specializationRequired'),
+  stageIds: string().required('jobAnnouncement.validation.stageRequired'),
   subjectName: array()
     .of(string().required('jobAnnouncement.validation.subjectNameRequired'))
     .min(1, 'jobAnnouncement.validation.subjectNameRequired')
@@ -76,7 +68,7 @@ export const AddJobAnnouncementSchema = object({
   applicationEndDate: string().required('jobAnnouncement.validation.applicationEndDateRequired'),
   nationalityMode: mixed<NationalityModeValue>()
     .oneOf(Object.values(NationalityMode))
-    .required('jobAnnouncement.validation.nationalityRequired'),
+    .required('jobAnnouncement.validation.nationalRequired'),
   nationalityIds: array()
     .of(string().required('jobAnnouncement.validation.nationalityRequired'))
     .when('nationalityMode', {
@@ -97,25 +89,40 @@ export const AddJobAnnouncementSchema = object({
     .of(string().required('jobAnnouncement.validation.qualificationsRequired'))
     .min(1, 'jobAnnouncement.validation.qualificationsRequired')
     .required('jobAnnouncement.validation.qualificationsRequired'),
-  yearsOfExperience: number()
+  yearsExperience: number()
     .typeError('jobAnnouncement.validation.yearsOfExperienceRequired')
     .min(0)
     .required('jobAnnouncement.validation.yearsOfExperienceRequired'),
   workStartTime: string().required('jobAnnouncement.validation.workStartTimeRequired'),
   workEndTime: string().required('jobAnnouncement.validation.workEndTimeRequired'),
-  salaryOption: mixed<SalaryOptionValue>()
+  workingHoursFrom: string().required('jobAnnouncement.validation.workingHoursFromRequired'),
+  workingHoursTo: string()
+    .required('jobAnnouncement.validation.workingHoursToRequired')
+    .test(
+      'working-hours-order',
+      'jobAnnouncement.validation.workingHoursToAfterFrom',
+      function (value) {
+        const from = this?.parent?.workingHoursFrom;
+        if (!value || !from) {
+          return true;
+        }
+
+        return value >= from;
+      }
+    ),
+  salary: mixed<SalaryOptionValue>()
     .oneOf(Object.values(SalaryOption))
     .required('jobAnnouncement.validation.salaryRangeRequired'),
   minimumSalary: number()
     .typeError('jobAnnouncement.validation.minimumSalaryRequired')
-    .when('salaryOption', {
+    .when('salary', {
       is: SalaryOption.RANGE,
       then: (schema) => schema.required('jobAnnouncement.validation.minimumSalaryRequired').min(0),
       otherwise: (schema) => schema.nullable().optional(),
     }),
   maximumSalary: number()
     .typeError('jobAnnouncement.validation.maximumSalaryRequired')
-    .when('salaryOption', {
+    .when('salary', {
       is: SalaryOption.RANGE,
       then: (schema) =>
         schema
@@ -147,8 +154,12 @@ export const AddJobAnnouncementSchema = object({
     .of(string().required('jobAnnouncement.validation.contractTypeRequired'))
     .min(1, 'jobAnnouncement.validation.contractTypeRequired')
     .required('jobAnnouncement.validation.contractTypeRequired'),
-  technicalSkillIds: array().of(string()).optional(),
-  personalSkillIds: array().of(string()).optional(),
+  technicalSkillIds: string()
+    .nullable()
+    .required('jobAnnouncement.validation.technicalSkillRequired'),
+  personalSkillIds: string()
+    .nullable()
+    .required('jobAnnouncement.validation.personalSkillRequired'),
   benefitsIds: array().of(string()).optional(),
   languages: array()
     .of(

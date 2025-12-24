@@ -13,6 +13,7 @@ import type {
   JobAdvertisment,
   CreateJobAdvertismentRequest,
   UpdateJobAdvertismentRequest,
+  CreateJobAdvertismentRequestTwo,
 } from '@/services/api/types/job-advertisment.types';
 
 const serializeJobAdvertismentParams = (params?: JobAdvertismentQueryParams) => {
@@ -79,7 +80,7 @@ export async function getJobAdvertismentById(id: string): Promise<JobAdvertismen
 }
 
 export async function createJobAdvertisment(
-  data: CreateJobAdvertismentRequest
+  data: CreateJobAdvertismentRequestTwo
 ): Promise<ApiResponseModel<null>> {
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
     JobAdvertismentEndpoints.addJobAdvertisment,
