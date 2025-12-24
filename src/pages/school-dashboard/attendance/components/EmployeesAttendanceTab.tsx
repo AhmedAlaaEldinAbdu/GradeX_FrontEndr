@@ -209,8 +209,14 @@ export default function EmployeesAttendanceTab({
 
         await dispatch(bulkCreateAttendance(bulkData)).unwrap();
 
+        const successMessageMap = {
+          present: 'attendance.bulkAttendanceSuccess',
+          late: 'attendance.bulkLateSuccess',
+          absent: 'attendance.bulkAbsentSuccess',
+        };
+
         showToast({
-          message: 'attendance.bulkAttendanceSuccess',
+          message: successMessageMap[popupType],
           type: 'success',
         });
 
