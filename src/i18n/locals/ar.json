@@ -90,6 +90,7 @@
     "confirm": "تأكيد",
     "processing": "جار المعالجة...",
     "showAll": "عرض الكل",
+    "notAvailable": "غير متاح",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
@@ -910,7 +911,9 @@
       "skillsAndLanguages": "المهارات واللغات",
       "languagesAndLevels": "اللغات ومستوى كل لغة:",
       "computerSkills": "استخدام الحاسب",
-      "teacherPreparation": "تحضير المعلم",
+      "teacherPreparation": "حضور المعلم",
+      "recordAttendance": "تسجيل الحضور",
+      "attendanceUpdatedSuccessfully": "تم تسجيل الحضور بنجاح",
       "totalPresent": "إجمالي الحضور",
       "totalLate": "إجمالي مرات التأخير",
       "totalAbsent": "إجمالي الغياب",

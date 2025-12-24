@@ -90,6 +90,7 @@
     "confirm": "Confirm",
     "processing": "Processing...",
     "showAll": "Show All",
+    "notAvailable": "Not Available",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
@@ -911,7 +912,9 @@
       "skillsAndLanguages": "Skills & Languages",
       "languagesAndLevels": "Languages and Level:",
       "computerSkills": "Computer Skills",
-      "teacherPreparation": "Teacher Preparation",
+      "teacherPreparation": "Teacher Attendance",
+      "recordAttendance": "Record Attendance",
+      "attendanceUpdatedSuccessfully": "Attendance recorded successfully",
       "totalPresent": "Total Present",
       "totalLate": "Total Late",
       "totalAbsent": "Total Absent",
