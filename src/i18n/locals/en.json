@@ -596,6 +596,8 @@
     "markAllLate": "Mark All Late",
     "markAllAbsent": "Mark All Absent",
     "bulkAttendanceSuccess": "Attendance recorded successfully for all selected employees",
+    "bulkLateSuccess": "Late status recorded successfully for all selected employees",
+    "bulkAbsentSuccess": "Absent status recorded successfully for all selected employees",
     "confirmPresent": "Confirm presence of {{name}}?",
     "confirmAbsent": "Confirm absence of {{name}}?",
     "confirmEmployeePresent": "Confirm employee {{name}} presence?",
