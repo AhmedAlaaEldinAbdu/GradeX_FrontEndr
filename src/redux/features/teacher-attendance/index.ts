@@ -1,6 +1,7 @@
 export {
   default as teacherAttendanceReducer,
   fetchTeacherAttendance,
+  bulkCreateAttendance,
   clearFilters,
   setCurrentAttendance,
   clearError,

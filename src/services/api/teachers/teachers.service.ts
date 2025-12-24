@@ -1,6 +1,7 @@
 import { axiosClient } from '@/lib/http';
 import type { AxiosResponse } from 'axios';
 import { TeacherEndpoints, TeacherAssignmentEndpoints } from '../endpoints/teacher-endpoints';
+import { TeacherAttendanceEndpoints } from '../endpoints/teacher-attendance-endpoints';
 import type { Teacher, TeacherListResponse, TeacherQueryParams } from '@/types/teachers';
 import type {
   TeacherAssignmentResponse,
@@ -9,6 +10,11 @@ import type {
   TeacherAssignmentListData,
   TeacherAssignmentListQueryParams,
 } from '@/types/teacherAssignment';
+import type {
+  TeacherPersonalDataResponse,
+  TeacherPersonalDataDetails,
+} from '@/types/teacherPersonalData';
+import type { TeacherAttendanceUpdateRequest } from '@/types/teacherAttendance';
 
 /**
  * Get list of teachers with pagination and filters
@@ -71,10 +77,19 @@ export async function getTeacherById(id: string): Promise<Teacher> {
 }
 
 /**
- * Delete a teacher
+ * Delete a teacher assignment
  */
 export async function deleteTeacher(id: string): Promise<void> {
-  await axiosClient.delete(TeacherEndpoints.deleteTeacher(id));
+  const response: AxiosResponse<{
+    data: null;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.delete(TeacherAssignmentEndpoints.deleteTeacherAssignment(id));
+
+  if (!response?.data?.isSuccess) {
+    throw new Error(response?.data?.message || 'Failed to delete teacher assignment');
+  }
 }
 
 /**
@@ -97,6 +112,24 @@ export async function getTeacherAssignment(teacherId: string): Promise<TeacherAs
       bookCount: 0,
       grades: [],
     };
+  }
+
+  return response.data.data;
+}
+
+/**
+ * Get teacher personal data by ID
+ */
+export async function getTeacherPersonalData(id: string): Promise<TeacherPersonalDataDetails> {
+  const response: AxiosResponse<TeacherPersonalDataResponse> = await axiosClient.get(
+    TeacherEndpoints.getPersonalDataById,
+    {
+      params: { Id: id },
+    }
+  );
+
+  if (!response?.data?.data) {
+    throw new Error('Failed to fetch teacher personal data');
   }
 
   return response.data.data;
@@ -126,6 +159,23 @@ export async function getTeacherAssignmentList(
   return response.data.data;
 }
 
+/**
+ * Update teacher attendance (preparation)
+ */
+export async function updateTeacherAttendance(data: TeacherAttendanceUpdateRequest): Promise<void> {
+  const { id, ...body } = data;
+  const response: AxiosResponse<{
+    data: null;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.put(`${TeacherAttendanceEndpoints.updateAttendance}?Id=${id}`, body);
+
+  if (!response?.data?.isSuccess) {
+    throw new Error(response?.data?.message || 'Failed to update teacher attendance');
+  }
+}
+
 // ============================================================================
 // Export Service Object
 // ============================================================================
@@ -133,7 +183,9 @@ export async function getTeacherAssignmentList(
 export const teacherApiService = {
   getTeachers,
   getTeacherById,
+  getTeacherPersonalData,
   deleteTeacher,
   getTeacherAssignment,
   getTeacherAssignmentList,
+  updateTeacherAttendance,
 };

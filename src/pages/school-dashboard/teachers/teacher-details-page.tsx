@@ -1,24 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
-import { mockTeacherDetails } from './data/mockTeacherData';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchTeacherPersonalData } from '@/redux/features/teachers';
 import PersonalDataTab from './components/PersonalDataTab';
 import AttendanceTab from './components/AttendanceTab';
 import EducationalStagesTab from './components/EducationalStagesTab';
+import Loading from '@/shared/components/Loading';
 
 export default function TeacherDetailsPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
+  const dispatch = useAppDispatch();
 
-  const teacher = mockTeacherDetails;
+  const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
+  const isLoadingPersonalData = useAppSelector((state) => state.teachers.isLoadingPersonalData);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchTeacherPersonalData(id));
+    }
+  }, [dispatch, id]);
 
   const breadcrumbItems = [
     { label: t('sidebar.teachingStaff') },
     { label: t('teachers.title'), path: '/teachers' },
-    { label: teacher.fullName },
+    { label: teacherPersonalData?.fullName || t('common.loading') },
   ];
 
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'personal-data');
@@ -31,7 +41,7 @@ export default function TeacherDetailsPage() {
     {
       id: 'personal-data',
       label: t('teachers.details.personalData'),
-      content: <PersonalDataTab teacher={teacher} />,
+      content: <PersonalDataTab teacherId={id || ''} isActive={activeTab === 'personal-data'} />,
     },
     {
       id: 'attendance',
@@ -47,6 +57,14 @@ export default function TeacherDetailsPage() {
     },
   ];
 
+  if (isLoadingPersonalData && !teacherPersonalData) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Breadcrumb */}
@@ -54,7 +72,9 @@ export default function TeacherDetailsPage() {
 
       {/* Teacher Name Title */}
       <div className="mb-6">
-        <h1 className="text-start text-2xl font-bold text-gray-900">{teacher.fullName}</h1>
+        <h1 className="text-start text-2xl font-bold text-gray-900">
+          {teacherPersonalData?.fullName || t('common.loading')}
+        </h1>
       </div>
 
       {/* Tabs */}

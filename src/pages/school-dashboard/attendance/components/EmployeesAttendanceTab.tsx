@@ -4,6 +4,7 @@ import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
+import { useToast } from '@/shared/context/ToastContext';
 import AttendanceConfirmPopup from '@/pages/school-dashboard/attendance/popups/AttendanceConfirmPopup';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
@@ -13,12 +14,14 @@ import ProfileImage from '@gradex/assets/images/profile.png';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherAttendance,
+  bulkCreateAttendance,
   clearFilters,
   clearSelection,
   selectAttendance,
   deselectAttendance,
   selectAllAttendances,
 } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { updateTeacherAttendance } from '@/redux/features/teachers';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchSchoolStages } from '@/redux/features/lookups';
 import type { TeacherAttendance } from '@/types/teacherAttendance';
@@ -74,11 +77,15 @@ export default function EmployeesAttendanceTab({
   const navigate = useNavigate();
   const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   // Redux state
   const { attendances, pagination, isLoading, selectedAttendanceIds } = useAppSelector(
     (state) => state.teacherAttendance
   );
+
+  const isLoadingAttendance = useAppSelector((state) => state.teachers.isLoadingAttendance);
+  const isProcessing = isLoading || isLoadingAttendance;
 
   // Get classrooms from classrooms slice for filter options
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
@@ -133,6 +140,10 @@ export default function EmployeesAttendanceTab({
     selectedClassroom,
   ]);
 
+  useEffect(() => {
+    dispatch(clearSelection());
+  }, [dispatch, isActive]);
+
   // Only render when active
   if (!isActive) return null;
 
@@ -153,10 +164,13 @@ export default function EmployeesAttendanceTab({
   };
 
   const allCurrentPageSelected =
-    attendances.length > 0 && attendances.every((e) => selectedAttendanceIds.includes(e.id));
+    attendances.length > 0 && attendances.every((e) => selectedAttendanceIds.includes(e.teacherId));
 
   const someCurrentPageSelected =
-    attendances.some((e) => selectedAttendanceIds.includes(e.id)) && !allCurrentPageSelected;
+    attendances.some((e) => selectedAttendanceIds.includes(e.teacherId)) && !allCurrentPageSelected;
+
+  const allEmployeesDisabled =
+    attendances.length === 0 || attendances.every((e) => e.status !== null && e.status !== -1);
 
   // Individual action handlers
   const handleIndividualAction = (
@@ -180,22 +194,132 @@ export default function EmployeesAttendanceTab({
     setPopupOpen(true);
   };
 
-  const handleConfirmAction = (time?: string) => {
-    if (popupIsBulk) {
-      console.log(
-        `Bulk action: ${popupType} for employees:`,
-        selectedAttendanceIds,
-        time ? `at ${time}` : ''
-      );
-      dispatch(clearSelection());
-    } else if (popupEmployeeId) {
-      console.log(
-        `Individual action: ${popupType} for employee:`,
-        popupEmployeeId,
-        time ? `at ${time}` : ''
-      );
+  const handleConfirmAction = async (time?: string) => {
+    try {
+      if (popupIsBulk) {
+        // Get the current date
+        const currentDate = new Date().toISOString();
+
+        // Map status from popup type
+        const statusMap = {
+          present: AttendanceStatus.Present,
+          late: AttendanceStatus.Late,
+          absent: AttendanceStatus.Absent,
+        };
+
+        // Prepare bulk request data
+        const bulkData = selectedAttendanceIds.map((attendanceId) => {
+          const attendance = attendances.find((a) => a.id === attendanceId);
+          return {
+            teacherId: attendance?.teacherId || attendanceId,
+            date: currentDate,
+            status: statusMap[popupType],
+            delayTime: time || undefined,
+          };
+        });
+
+        await dispatch(bulkCreateAttendance(bulkData)).unwrap();
+
+        const successMessageMap = {
+          present: 'attendance.bulkAttendanceSuccess',
+          late: 'attendance.bulkLateSuccess',
+          absent: 'attendance.bulkAbsentSuccess',
+        };
+
+        showToast({
+          message: successMessageMap[popupType],
+          type: 'success',
+        });
+
+        dispatch(clearSelection());
+
+        // Refresh attendance list
+        dispatch(
+          fetchTeacherAttendance({
+            page: currentPage,
+            limit: pagination.limit,
+            filters: {
+              search: searchTerm || undefined,
+              lkSchoolStageId: selectedStage || undefined,
+              classroomId: selectedClassroom || undefined,
+              status: selectedType ? Number(selectedType) : undefined,
+            },
+          })
+        );
+      } else if (popupEmployeeId) {
+        // Individual action - update attendance for single employee
+        const attendance = attendances.find((a) => a.id === popupEmployeeId);
+        if (!attendance) {
+          throw new Error('common.errorOccurred');
+        }
+
+        // Map status from popup type
+        const statusMap = {
+          present: AttendanceStatus.Present,
+          late: AttendanceStatus.Late,
+          absent: AttendanceStatus.Absent,
+        };
+
+        // Generate current time for checkInTime if not provided (for present/absent actions)
+        const now = new Date();
+        const currentTime =
+          time ||
+          `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        // Use current date in ISO format
+        const currentDate = new Date().toISOString();
+
+        await dispatch(
+          updateTeacherAttendance({
+            id: attendance.id,
+            teacherId: attendance.teacherId,
+            date: currentDate,
+            checkInTime: currentTime,
+            checkOutTime: attendance.checkOutTime || '18:00',
+            status: statusMap[popupType],
+          })
+        ).unwrap();
+
+        // Show appropriate success message based on action type
+        const successMessageMap = {
+          present: 'attendance.individualAttendanceSuccess',
+          late: 'attendance.individualLateSuccess',
+          absent: 'attendance.individualAbsentSuccess',
+        };
+
+        showToast({
+          message: successMessageMap[popupType],
+          type: 'success',
+        });
+
+        // Deselect the employee that was just marked
+        dispatch(deselectAttendance(attendance.teacherId));
+
+        // Refresh attendance list
+        dispatch(
+          fetchTeacherAttendance({
+            page: currentPage,
+            limit: pagination.limit,
+            filters: {
+              search: searchTerm || undefined,
+              lkSchoolStageId: selectedStage || undefined,
+              classroomId: selectedClassroom || undefined,
+              status: selectedType ? Number(selectedType) : undefined,
+            },
+          })
+        );
+      }
+      setPopupOpen(false);
+    } catch (error) {
+      setPopupOpen(false);
+      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
+      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: isApiError,
+      });
     }
-    setPopupOpen(false);
   };
 
   const handleCancelPopup = () => {
@@ -205,7 +329,10 @@ export default function EmployeesAttendanceTab({
   const columns: DataTableColumn<TeacherAttendance>[] = [
     {
       header: '#',
-      accessor: (_row, index) => (currentPage - 1) * pagination.limit + (index || 0) + 1,
+      accessor: (_row) => {
+        const index = attendances?.findIndex((a) => a?.id === _row?.id);
+        return (pagination.page - 1) * pagination.limit + (index + 1);
+      },
       headerClassName: 'w-16',
       className: 'text-center',
     },
@@ -221,17 +348,28 @@ export default function EmployeesAttendanceTab({
             }
           }}
           onChange={(e) => handleSelectAll(e.target.checked)}
-          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-600 focus:ring-green-500"
+          disabled={allEmployeesDisabled}
+          className={`h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 ${
+            allEmployeesDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+          }`}
         />
       ),
-      accessor: (row) => (
-        <input
-          type="checkbox"
-          checked={selectedAttendanceIds.includes(row.id)}
-          onChange={(e) => handleSelectEmployee(row.id, e.target.checked)}
-          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-600 focus:ring-green-500"
-        />
-      ),
+      accessor: (row) => {
+        const hasStatus = row.status !== null && row.status !== -1;
+        return (
+          <input
+            type="checkbox"
+            id={`checkbox-${row.teacherId}`}
+            name={`checkbox-${row.teacherId}`}
+            checked={selectedAttendanceIds.includes(row.teacherId)}
+            onChange={(e) => handleSelectEmployee(row.teacherId, e.target.checked)}
+            disabled={hasStatus}
+            className={`h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 ${
+              hasStatus ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+            }`}
+          />
+        );
+      },
       headerClassName: 'w-12',
       className: 'text-center',
     },
@@ -247,7 +385,7 @@ export default function EmployeesAttendanceTab({
             className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/teachers/${row.id}?tab=attendance`);
+              navigate(`/teachers/${row.teacherId}?tab=attendance`);
             }}
           >
             <CustomImage src={EyeStyledIcon} alt="view" className="h-5 w-5" />
@@ -281,13 +419,11 @@ export default function EmployeesAttendanceTab({
       className: 'text-center',
     },
     {
-      header: 'attendance.attendanceTime',
+      header: 'attendance.time',
       accessor: (row) => {
-        const statusDisplay = getStatusDisplay(row.status, t);
         return (
           <div className="flex flex-col items-center">
             <span className="text-sm">{formatTime(row.checkInTime)}</span>
-            <span className={`text-xs ${statusDisplay.className}`}>{statusDisplay.text}</span>
           </div>
         );
       },
@@ -309,31 +445,56 @@ export default function EmployeesAttendanceTab({
     },
     {
       header: 'attendance.actions',
-      accessor: (row) => (
-        <div className="flex items-center justify-center gap-2">
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
-            onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'present')}
-            title={t('attendance.present')}
-          >
-            <CustomImage src={CheckIcon} alt="check" className="h-4 w-4" />
-          </button>
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 transition-colors hover:bg-yellow-200"
-            onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'late')}
-            title={t('attendance.late')}
-          >
-            <CustomImage src={HistoryIcon} alt="history" className="h-4 w-4" />
-          </button>
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 transition-colors hover:bg-red-200"
-            onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'absent')}
-            title={t('attendance.absent')}
-          >
-            <CustomImage src={XMarkDangerIcon} alt="delete" className="h-4 w-4" />
-          </button>
-        </div>
-      ),
+      accessor: (row) => {
+        const hasStatus = row.status !== null && row.status !== -1;
+
+        if (hasStatus) {
+          const statusDisplay = getStatusDisplay(row.status, t);
+          return (
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                row.status === AttendanceStatus.Present
+                  ? 'bg-green-100 text-green-800'
+                  : row.status === AttendanceStatus.Absent
+                    ? 'bg-red-100 text-red-800'
+                    : row.status === AttendanceStatus.Late
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : row.status === AttendanceStatus.EarlyLeave
+                        ? 'bg-orange-100 text-orange-800'
+                        : 'bg-gray-100 text-gray-800'
+              }`}
+            >
+              {statusDisplay.text}
+            </span>
+          );
+        }
+
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
+              onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'present')}
+              title={t('attendance.present')}
+            >
+              <CustomImage src={CheckIcon} alt="check" className="h-4 w-4" />
+            </button>
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 transition-colors hover:bg-yellow-200"
+              onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'late')}
+              title={t('attendance.late')}
+            >
+              <CustomImage src={HistoryIcon} alt="history" className="h-4 w-4" />
+            </button>
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 transition-colors hover:bg-red-200"
+              onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'absent')}
+              title={t('attendance.absent')}
+            >
+              <CustomImage src={XMarkDangerIcon} alt="delete" className="h-4 w-4" />
+            </button>
+          </div>
+        );
+      },
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
@@ -484,6 +645,7 @@ export default function EmployeesAttendanceTab({
         personType="employee"
         onConfirm={handleConfirmAction}
         onCancel={handleCancelPopup}
+        isProcessing={isProcessing}
       />
     </div>
   );
