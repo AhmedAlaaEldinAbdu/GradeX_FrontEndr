@@ -31,7 +31,6 @@ import {
 } from '@/redux/features/job-advertisments/jobAdvertismentsSlice';
 import type {
   CreateJobAdvertismentRequest,
-  CreateJobAdvertismentRequestTwo,
 } from '@/services/api/types/job-advertisment.types';
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 import {
@@ -324,14 +323,14 @@ export default function AddJobAnnouncementForm() {
     const stageList = selectedStageId ? [selectedStageId] : [];
     const primarySubjectId = selectedSpecializationId;
     const qualificationTypeNumber = Number(values.qualificationType) || 0;
-    const nationalityValue = values.nationalityMode === NationalityMode.ALL ? 0 : 1;
+    const nationalityValue = values.nationalityMode === NationalityMode.ALL ? 1 : 2;
     const technicalSkillValue = values.technicalSkillIds?.trim();
     const personalSkillValue = values.personalSkillIds?.trim();
 
     const salaryMin = Number(values.minimumSalary || 0);
     const salaryMax = Number(values.maximumSalary || 0);
 
-    const payload: CreateJobAdvertismentRequestTwo = {
+    const payload: CreateJobAdvertismentRequest = {
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,
       jobDescription: values.jobDescriptionAr,
@@ -345,8 +344,12 @@ export default function AddJobAnnouncementForm() {
       minimumSalary: values.salary === SalaryOption.RANGE ? salaryMin : 0,
       maximumSalary: values.salary === SalaryOption.RANGE ? salaryMax : 0,
       teacherGender:
-        values.teacherGender === 'MALE' ? 0 : values.teacherGender === 'FEMALE' ? 1 : 2,
+        values.teacherGender === 'MALE' ? 1 : values.teacherGender === 'FEMALE' ? 2 : 3,
       yearsExperience: Number(values.yearsExperience || 0),
+      // //
+      noticePeriod: values.workStartMode === WorkStartMode.IMMEDIATE ? 1 : 2,
+      noticePeriodDate: values.workStartDate || '',
+      // //
       workShedule: values.workStartMode === WorkStartMode.IMMEDIATE ? 1 : 2,
       workStartTime: values.workingHoursFrom,
       workEndTime: values.workingHoursTo,
@@ -382,7 +385,7 @@ export default function AddJobAnnouncementForm() {
       jobAdvertisementJobBenefitDto: (values.benefitsIds ?? []).map((benefitId) => ({
         lkJobBenefitId: benefitId,
       })),
-    } as CreateJobAdvertismentRequestTwo;
+    } as CreateJobAdvertismentRequest;
 
     try {
       await dispatch(createJobAdvertisment(payload))
@@ -707,11 +710,6 @@ export default function AddJobAnnouncementForm() {
                     />
                   )}
                 />
-                {errors.nationalityIds && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {t(errors.nationalityIds.message as string)}
-                  </p>
-                )}
               </FormField>
             )}
           </div>
@@ -720,7 +718,7 @@ export default function AddJobAnnouncementForm() {
             <FormField
               label={t('jobAnnouncement.form.workStart')}
               required
-              error={errors.workStartDate?.message as string | undefined}
+              error={errors.workStartMode?.message as string | undefined}
             >
               <div className="flex items-center gap-6 p-2">
                 {WORK_START_OPTIONS.map((option) => (
@@ -749,11 +747,6 @@ export default function AddJobAnnouncementForm() {
             >
               <div>
                 <Input type="date" {...register('workStartDate')} />
-                {errors.workStartDate && (
-                  <p className="text-sm text-red-600">
-                    {t(errors.workStartDate.message as string)}
-                  </p>
-                )}
               </div>
             </FormField>
           </div>
@@ -913,11 +906,6 @@ export default function AddJobAnnouncementForm() {
                   </div>
                 )}
               />
-              {errors.teacherGender && (
-                <p className="mt-1 text-sm text-red-600">
-                  {t(errors.teacherGender.message as string)}
-                </p>
-              )}
             </FormField>
           </div>
 

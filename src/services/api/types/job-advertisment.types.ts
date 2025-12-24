@@ -77,8 +77,8 @@ export interface JobAdvertismentJobBenefitDto {
 }
 
 export interface JobAdvertismentBase {
-  name: string;
-  nameEn: string;
+  name?: string;
+  nameEn?: string;
   schoolBranchId: string;
   schoolNameAr?: string;
   schoolNameEn?: string;
@@ -93,41 +93,6 @@ export interface JobAdvertismentBase {
   jobResponsibilitiesEn: string;
   noticePeriod: number;
   noticePeriodDate: string;
-  advertisementStartDate: string;
-  advertisementEndDate: string;
-  nationality: number;
-  salary: number;
-  minimumSalary: number;
-  maximumSalary: number;
-  teacherGender: number;
-  yearsExperience: number;
-  workShedule: JobAdvertismentWorkShedule;
-  workStartTime: string;
-  workEndTime: string;
-  lkAdministrativePositionId: string;
-  lkAdministrativePositionNameAr?: string;
-  lkAdministrativePositionNameEn?: string;
-  lkTeacherLevelId: string;
-  lkTeacherLevelNameAr?: string;
-  lkTeacherLevelNameEn?: string;
-  jobAdvertismentTechnicalSkillsDto?: JobAdvertismentTechnicalSkillDto[];
-  jobAdvertismentPersonalSkillsDto?: JobAdvertismentPersonalSkillDto[];
-  jobAdvertismentMaterialDto?: JobAdvertismentMaterialDto[];
-  jobAdvertisementCountryDto?: JobAdvertismentCountryDto[];
-  jobAdvertisementQualificationDto?: JobAdvertismentQualificationDto[];
-  jobAdvertisementSchoolStageDto?: JobAdvertismentSchoolStageDto[];
-  jobAdvertisementLanguageDto?: JobAdvertismentLanguageDto[];
-  jobAdvertisementJobBenefitDto?: JobAdvertismentJobBenefitDto[];
-}
-export interface CreateJobAdvertisment {
-  qualificationType: number;
-  materialId: string;
-  materialNameAr?: string;
-  materialNameEn?: string;
-  jobDescription: string;
-  jobDescriptionEn: string;
-  jobResponsibilities: string;
-  jobResponsibilitiesEn: string;
   advertisementStartDate: string;
   advertisementEndDate: string;
   nationality: number;
@@ -189,7 +154,5 @@ export interface JobAdvertismentQueryParams {
 }
 
 export interface CreateJobAdvertismentRequest extends JobAdvertismentBase {}
-
-export interface CreateJobAdvertismentRequestTwo extends CreateJobAdvertisment {}
 
 export interface UpdateJobAdvertismentRequest extends JobAdvertismentBase {}
