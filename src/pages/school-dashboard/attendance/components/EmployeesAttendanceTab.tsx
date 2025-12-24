@@ -209,7 +209,7 @@ export default function EmployeesAttendanceTab({
 
         // Prepare bulk request data
         const bulkData = selectedAttendanceIds.map((attendanceId) => {
-          const attendance = attendances.find((a) => a.id === attendanceId);
+          const attendance = attendances.find((a) => a.teacherId === attendanceId);
           return {
             teacherId: attendance?.teacherId || attendanceId,
             date: currentDate,
