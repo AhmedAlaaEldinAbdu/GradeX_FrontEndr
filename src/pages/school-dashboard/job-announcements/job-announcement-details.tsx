@@ -6,7 +6,7 @@ import JobApplicants, {
   type JobApplicantsTab,
 } from './components/JobApplicants';
 
-const JobAnnouncementNamePage = () => {
+const JobAnnouncementDetailsPage = () => {
   const [selectedTab, setSelectedTab] = useState<JobApplicantsTab>(JOB_APPLICANTS_TABS.REQUESTS);
 
   const breadcrumbItems = [
@@ -35,4 +35,4 @@ const JobAnnouncementNamePage = () => {
   );
 };
 
-export default JobAnnouncementNamePage;
+export default JobAnnouncementDetailsPage;
