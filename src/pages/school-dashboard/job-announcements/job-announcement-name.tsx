@@ -1,10 +1,8 @@
 ﻿import { useState } from 'react';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
-import JobApplicants, {
-  JOB_APPLICANTS_TABS,
-  type JobApplicantsTab,
-} from './components/JobApplicants';
+import JobApplicants from './components/JobApplicants';
+import { JOB_APPLICANTS_TABS, type JobApplicantsTab } from './constants';
 
 const JobAnnouncementNamePage = () => {
   const [selectedTab, setSelectedTab] = useState<JobApplicantsTab>(JOB_APPLICANTS_TABS.REQUESTS);
