@@ -22,6 +22,13 @@ import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import type { JobAdvertisment } from '@/services/api/types/job-advertisment.types';
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 import CustomImage from '@/shared/components/CustomImage';
+import {
+  USE_MOCK_DATA,
+  MOCK_JOB_ANNOUNCEMENTS,
+  MOCK_COUNTRIES,
+  MOCK_SCHOOL_STAGES,
+  MOCK_SUBJECTS,
+} from '../mock';
 
 const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; text: string }> = {
   [JobAdvertismentWorkShedule.ONLINE]: {
@@ -34,155 +41,12 @@ const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; text: s
   },
 };
 
-// Toggle this flag when you need mock entries to preview the table layout.
-const SHOULD_USE_DUMMY_JOB_DATA = false;
+// Toggle this flag to use mock data from the mock directory.
+// Set USE_MOCK_DATA to true in ../mock/index.ts to enable mock mode.
+const SHOULD_USE_DUMMY_JOB_DATA = USE_MOCK_DATA;
 
-const DUMMY_JOB_ADVERTISMENTS = [
-  {
-    id: 'demo-1',
-    name: 'معلم رياضيات',
-    nameEn: 'Mathematics Teacher',
-    schoolBranchId: 'branch-1',
-    qualificationType: 1,
-    materialId: 'subject-math',
-    jobDescription: 'Expert in algebra and geometry curricula.',
-    jobDescriptionEn: 'Expert in algebra and geometry curricula.',
-    jobResponsibilities: 'إعداد دروس تفاعلية ومتابعة أداء الطلاب.',
-    jobResponsibilitiesEn: 'Prepare interactive lessons and track student performance.',
-    noticePeriod: 30,
-    noticePeriodDate: '2024-01-15',
-    advertisementStartDate: '2024-01-01',
-    advertisementEndDate: '2024-02-01',
-    nationality: 1,
-    salary: 6000,
-    minimumSalary: 5500,
-    maximumSalary: 7500,
-    teacherGender: 0,
-    yearsExperience: 5,
-    workShedule: JobAdvertismentWorkShedule.OFFLINE,
-    workStartTime: '08:00',
-    workEndTime: '15:00',
-    lkAdministrativePositionId: 'admin-role-1',
-    lkTeacherLevelId: 'teacher-level-1',
-    jobAdvertismentTechnicalSkillsDto: [{ technicalAppName: 'Google Classroom' }],
-    jobAdvertismentPersonalSkillsDto: [{ personalSkillName: 'Leadership' }],
-    jobAdvertismentMaterialDto: [{ materialId: 'subject-math' }],
-    jobAdvertisementCountryDto: [{ lkCountryId: 'country-eg' }],
-    jobAdvertisementQualificationDto: [{ lkQualificationId: 'qualification-1' }],
-    jobAdvertisementSchoolStageDto: [{ lkSchoolStageId: 'stage-primary' }],
-    jobAdvertisementLanguageDto: [{ lkLanguageId: 'lang-ar', lkLanguageLevelId: 'advanced' }],
-    jobAdvertisementJobBenefitDto: [{ lkJobBenefitId: 'benefit-health' }],
-    jobGradeNameAr: 'معلم أول',
-    jobGradeNameEn: 'Senior Teacher',
-    jobTypeNameAr: 'معلم',
-    jobTypeNameEn: 'Teacher',
-    subjectNameAr: 'الرياضيات',
-    subjectNameEn: 'Mathematics',
-    countryNameAr: 'مصر',
-    countryNameEn: 'Egypt',
-    schoolStageNameAr: 'المرحلة الابتدائية',
-    schoolStageNameEn: 'Primary Stage',
-    qualificationNameAr: 'بكالوريوس تربية',
-    qualificationNameEn: 'B.Ed in Math',
-    applicantsCount: 42,
-  },
-  {
-    id: 'demo-2',
-    name: 'مشرف علوم',
-    nameEn: 'Science Supervisor',
-    schoolBranchId: 'branch-2',
-    qualificationType: 2,
-    materialId: 'subject-science',
-    jobDescription: 'Oversee science curriculum and coordinate lab work.',
-    jobDescriptionEn: 'Oversee science curriculum and coordinate lab work.',
-    jobResponsibilities: 'قيادة فرق معلمي العلوم وتخطيط الأنشطة العملية.',
-    jobResponsibilitiesEn: 'Lead science teachers and plan practical activities.',
-    noticePeriod: 45,
-    noticePeriodDate: '2024-03-01',
-    advertisementStartDate: '2024-02-15',
-    advertisementEndDate: '2024-03-30',
-    nationality: 2,
-    salary: 8000,
-    minimumSalary: 7500,
-    maximumSalary: 9500,
-    teacherGender: 1,
-    yearsExperience: 8,
-    workShedule: JobAdvertismentWorkShedule.ONLINE,
-    workStartTime: '09:00',
-    workEndTime: '16:30',
-    lkAdministrativePositionId: 'admin-role-2',
-    lkTeacherLevelId: 'teacher-level-2',
-    jobAdvertismentTechnicalSkillsDto: [{ technicalAppName: 'Labster' }],
-    jobAdvertismentPersonalSkillsDto: [{ personalSkillName: 'Coaching' }],
-    jobAdvertismentMaterialDto: [{ materialId: 'subject-science' }],
-    jobAdvertisementCountryDto: [{ lkCountryId: 'country-uae' }],
-    jobAdvertisementQualificationDto: [{ lkQualificationId: 'qualification-2' }],
-    jobAdvertisementSchoolStageDto: [{ lkSchoolStageId: 'stage-middle' }],
-    jobAdvertisementLanguageDto: [{ lkLanguageId: 'lang-en', lkLanguageLevelId: 'fluent' }],
-    jobAdvertisementJobBenefitDto: [{ lkJobBenefitId: 'benefit-housing' }],
-    jobGradeNameAr: 'مشرف أكاديمي',
-    jobGradeNameEn: 'Academic Supervisor',
-    jobTypeNameAr: 'إداري',
-    jobTypeNameEn: 'Administrator',
-    subjectNameAr: 'العلوم',
-    subjectNameEn: 'Science',
-    countryNameAr: 'الإمارات',
-    countryNameEn: 'UAE',
-    schoolStageNameAr: 'المرحلة المتوسطة',
-    schoolStageNameEn: 'Middle Stage',
-    qualificationNameAr: 'ماجستير علوم',
-    qualificationNameEn: 'M.Sc in Education',
-    applicantsCount: 18,
-  },
-  {
-    id: 'demo-3',
-    name: 'منسق لغة إنجليزية',
-    nameEn: 'English Language Coordinator',
-    schoolBranchId: 'branch-3',
-    qualificationType: 3,
-    materialId: 'subject-english',
-    jobDescription: 'Coordinate ESL initiatives and mentor teachers.',
-    jobDescriptionEn: 'Coordinate ESL initiatives and mentor teachers.',
-    jobResponsibilities: 'متابعة نتائج الطلاب وتطوير خطط التحسين.',
-    jobResponsibilitiesEn: 'Monitor student results and develop improvement plans.',
-    noticePeriod: 60,
-    noticePeriodDate: '2024-04-10',
-    advertisementStartDate: '2024-04-01',
-    advertisementEndDate: '2024-05-01',
-    nationality: 3,
-    salary: 9000,
-    minimumSalary: 8500,
-    maximumSalary: 11000,
-    teacherGender: 0,
-    yearsExperience: 10,
-    workShedule: JobAdvertismentWorkShedule.ONLINE,
-    workStartTime: '07:30',
-    workEndTime: '14:30',
-    lkAdministrativePositionId: 'admin-role-3',
-    lkTeacherLevelId: 'teacher-level-3',
-    jobAdvertismentTechnicalSkillsDto: [{ technicalAppName: 'Microsoft Teams' }],
-    jobAdvertismentPersonalSkillsDto: [{ personalSkillName: 'Communication' }],
-    jobAdvertismentMaterialDto: [{ materialId: 'subject-english' }],
-    jobAdvertisementCountryDto: [{ lkCountryId: 'country-sa' }, { lkCountryId: 'country-jo' }],
-    jobAdvertisementQualificationDto: [{ lkQualificationId: 'qualification-3' }],
-    jobAdvertisementSchoolStageDto: [{ lkSchoolStageId: 'stage-high' }],
-    jobAdvertisementLanguageDto: [{ lkLanguageId: 'lang-en', lkLanguageLevelId: 'native' }],
-    jobAdvertisementJobBenefitDto: [{ lkJobBenefitId: 'benefit-transport' }],
-    jobGradeNameAr: 'منسق برامج',
-    jobGradeNameEn: 'Program Coordinator',
-    jobTypeNameAr: 'معلم',
-    jobTypeNameEn: 'Teacher',
-    subjectNameAr: 'اللغة الإنجليزية',
-    subjectNameEn: 'English',
-    countryNameAr: 'السعودية، الأردن',
-    countryNameEn: 'Saudi Arabia, Jordan',
-    schoolStageNameAr: 'المرحلة الثانوية',
-    schoolStageNameEn: 'High School',
-    qualificationNameAr: 'دبلوم تربوي',
-    qualificationNameEn: 'PGCE',
-    applicantsCount: 27,
-  },
-] as JobAdvertisment[];
+// Mock data is now imported from the mock directory for better maintainability.
+const DUMMY_JOB_ADVERTISMENTS = MOCK_JOB_ANNOUNCEMENTS;
 
 const getDynamicValue = (row: JobAdvertisment, keys: string[]): string | undefined => {
   const source = row as Record<string, unknown>;
@@ -289,12 +153,17 @@ export default function JobAnnouncementsList() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    // Skip API calls when mock mode is enabled
+    if (USE_MOCK_DATA) return;
     dispatch(fetchCountries());
     dispatch(fetchSchoolStages());
     dispatch(fetchSubjects({ page: 1, limit: 1000 }));
   }, [dispatch]);
 
   useEffect(() => {
+    // Skip API calls when mock mode is enabled
+    if (USE_MOCK_DATA) return;
+
     const filtersPayload = buildFiltersPayload({
       searchTerm,
       selectedCountryId,
@@ -334,26 +203,41 @@ export default function JobAnnouncementsList() {
     setCurrentPage(1);
   }, [searchTerm, selectedCountryId, selectedStageId, selectedSubjectId, selectedWorkType]);
 
-  const countryOptions = Array.isArray(countries)
-    ? countries.map((country) => ({
+  const countryOptions = USE_MOCK_DATA
+    ? MOCK_COUNTRIES.map((country) => ({
         value: country.id,
         label: currentLang === 'ar' ? country.arabicName : country.englishName,
       }))
-    : [];
+    : Array.isArray(countries)
+      ? countries.map((country) => ({
+          value: country.id,
+          label: currentLang === 'ar' ? country.arabicName : country.englishName,
+        }))
+      : [];
 
-  const stageOptions = Array.isArray(schoolStages)
-    ? schoolStages.map((stage) => ({
+  const stageOptions = USE_MOCK_DATA
+    ? MOCK_SCHOOL_STAGES.map((stage) => ({
         value: stage.id,
         label: currentLang === 'ar' ? stage.nameAr : stage.nameEn,
       }))
-    : [];
+    : Array.isArray(schoolStages)
+      ? schoolStages.map((stage) => ({
+          value: stage.id,
+          label: currentLang === 'ar' ? stage.nameAr : stage.nameEn,
+        }))
+      : [];
 
-  const subjectOptions = Array.isArray(subjects)
-    ? subjects.map((subject) => ({
+  const subjectOptions = USE_MOCK_DATA
+    ? MOCK_SUBJECTS.map((subject) => ({
         value: subject.id,
         label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
       }))
-    : [];
+    : Array.isArray(subjects)
+      ? subjects.map((subject) => ({
+          value: subject.id,
+          label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
+        }))
+      : [];
 
   const countryLabelMap = countryOptions.reduce<Record<string, string>>((acc, option) => {
     acc[option.value] = option.label;
@@ -388,12 +272,12 @@ export default function JobAnnouncementsList() {
   const hasActiveFilters = Boolean(
     searchTerm || selectedCountryId || selectedStageId || selectedSubjectId || selectedWorkType
   );
-  const shouldUseDummyData =
-    SHOULD_USE_DUMMY_JOB_DATA && jobAdvertisments.length === 0 && !hasActiveFilters;
+  // When mock mode is enabled, always use mock data (no dependency on API response)
+  const shouldUseDummyData = SHOULD_USE_DUMMY_JOB_DATA;
   const dataSource = shouldUseDummyData ? DUMMY_JOB_ADVERTISMENTS : jobAdvertisments;
-  const shouldShowEmptyState =
-    !isLoading && jobAdvertisments.length === 0 && !hasActiveFilters && !shouldUseDummyData;
-  const shouldShowContent = isLoading || dataSource.length > 0 || hasActiveFilters;
+  const shouldShowEmptyState = !isLoading && dataSource.length === 0 && !hasActiveFilters;
+  const shouldShowContent =
+    isLoading || dataSource.length > 0 || hasActiveFilters || shouldUseDummyData;
   const tablePagination = shouldUseDummyData
     ? {
         page: 1,
