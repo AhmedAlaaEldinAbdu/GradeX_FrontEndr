@@ -18,6 +18,7 @@ import {
   type NationalityKey,
 } from './applicants-data';
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
+import CustomImage from '@/shared/components/CustomImage';
 
 type JobApplicantsTableProps = {
   data: Applicant[];
@@ -281,10 +282,9 @@ const JobApplicantsTable = ({
         <button
           type="button"
           onClick={() => window.open(row.resumeUrl, '_blank', 'noopener,noreferrer')}
-          className="flex items-center gap-2 rounded-full border border-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-50"
+          className="flex h-10 w-10 items-center justify-center rounded-lg"
         >
-          <img src={PdfIcon} alt="PDF" className="h-4 w-4" />
-          {t('jobAnnouncement.applicantsPage.resumeButton')}
+          <CustomImage src={PdfIcon} alt="PDF" className="h-5 w-5" />
         </button>
       ),
       headerClassName: 'w-[180px]',
