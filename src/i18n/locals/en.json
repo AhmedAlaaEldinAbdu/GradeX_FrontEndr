@@ -1195,6 +1195,7 @@
     "title": "Job announcement",
     "jobAnnouncement": "Job announcement",
     "addAnnouncement": "Add announcement",
+    "editAnnouncement": "Edit announcement",
     "searchTeacherName": "Search for teacher name",
     "country": "Country",
     "educationalStages": "Educational stages",
@@ -1346,6 +1347,7 @@
       "submit": "Add announcement",
       "cancel": "Cancel",
       "successMessage": "Job announcement created successfully",
+      "editSuccessMessage": "Job announcement updated successfully",
       "errorMessage": "Unable to create job announcement",
       "reset": "Reset form"
     },

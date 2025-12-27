@@ -1193,6 +1193,7 @@
   "jobAnnouncement": {
     "title": "إعلان التوظيف",
     "addAnnouncement": "إضافة إعلان",
+    "editAnnouncement": "تعديل الإعلان",
     "searchTeacherName": "ابحث عن اسم المعلم",
     "country": "الدولة",
     "educationalStages": "المراحل التعليمية",
@@ -1344,6 +1345,7 @@
       "submit": "إضافة إعلان",
       "cancel": "إلغاء",
       "successMessage": "تم إنشاء إعلان التوظيف بنجاح",
+      "editSuccessMessage": "تم تحديث إعلان التوظيف بنجاح",
       "errorMessage": "تعذر إنشاء إعلان التوظيف",
       "reset": "إعادة ضبط النموذج"
     },
