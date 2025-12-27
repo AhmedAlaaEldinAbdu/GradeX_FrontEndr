@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import IconButton from '@/shared/components/IconButton';
@@ -24,7 +25,11 @@ type JobApplicantsTableProps = {
   isArchived?: boolean;
 };
 
-const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobApplicantsTableProps) => {
+const JobApplicantsTable = ({
+  data,
+  filterPrefix,
+  isArchived = false,
+}: JobApplicantsTableProps) => {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const locale = currentLang === 'ar' ? 'ar-SA' : 'en-US';
@@ -60,7 +65,9 @@ const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobAppli
       const matchesQualification = qualificationFilter
         ? row.qualificationKey === qualificationFilter
         : true;
-      const matchesNationality = nationalityFilter ? row.nationalityKey === nationalityFilter : true;
+      const matchesNationality = nationalityFilter
+        ? row.nationalityKey === nationalityFilter
+        : true;
       const matchesExperience = experienceFilter
         ? row.yearsExperience.toString() === experienceFilter
         : true;
@@ -73,7 +80,15 @@ const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobAppli
         matchesExperience
       );
     });
-  }, [currentLang, data, experienceFilter, nationalityFilter, qualificationFilter, searchValue, workTypeFilter]);
+  }, [
+    currentLang,
+    data,
+    experienceFilter,
+    nationalityFilter,
+    qualificationFilter,
+    searchValue,
+    workTypeFilter,
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
   const startIndex = (currentPage - 1) * pageSize;
@@ -153,7 +168,9 @@ const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobAppli
         <CustomSelect
           value={workTypeFilter}
           onChange={(value) => {
-            setWorkTypeFilter(Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string));
+            setWorkTypeFilter(
+              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+            );
             setCurrentPage(1);
           }}
           options={workTypeOptions}
@@ -172,7 +189,9 @@ const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobAppli
         <CustomSelect
           value={qualificationFilter}
           onChange={(value) => {
-            setQualificationFilter(Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string));
+            setQualificationFilter(
+              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+            );
             setCurrentPage(1);
           }}
           options={qualificationOptions}
@@ -191,7 +210,9 @@ const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobAppli
         <CustomSelect
           value={nationalityFilter}
           onChange={(value) => {
-            setNationalityFilter(Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string));
+            setNationalityFilter(
+              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+            );
             setCurrentPage(1);
           }}
           options={nationalityOptions}
@@ -210,7 +231,9 @@ const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobAppli
         <CustomSelect
           value={experienceFilter}
           onChange={(value) => {
-            setExperienceFilter(Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string));
+            setExperienceFilter(
+              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+            );
             setCurrentPage(1);
           }}
           options={experienceOptions}
@@ -232,12 +255,18 @@ const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobAppli
       header: 'jobAnnouncement.applicantsPage.table.name',
       accessor: (row) => (
         <div className="flex items-center gap-3">
-          <img src={DefaultAvatar} alt={getApplicantName(row)} className="h-10 w-10 rounded-full object-cover" />
+          <img
+            src={DefaultAvatar}
+            alt={getApplicantName(row)}
+            className="h-10 w-10 rounded-full object-cover"
+          />
           <div>
             <p className="text-sm font-semibold text-gray-900">{getApplicantName(row)}</p>
             <p className="text-xs text-gray-500">{getApplicantRole(row)}</p>
             {row.status && (
-              <span className={`mt-1 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGES[row.status]}`}>
+              <span
+                className={`mt-1 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGES[row.status]}`}
+              >
                 {t(`jobAnnouncement.applicantsPage.status.${row.status}`)}
               </span>
             )}
@@ -330,17 +359,20 @@ const JobApplicantsTable = ({ data, filterPrefix, isArchived = false }: JobAppli
   ];
 
   return (
-    <DataTable
-      data={paginatedRows}
-      columns={columns}
-      keyExtractor={(row) => row.id}
-      filters={filters}
-      onResetFilters={resetFilters}
-      pagination={{ page: currentPage, limit: pageSize, total: filteredRows.length, totalPages }}
-      onPageChange={handlePageChange}
-      emptyMessage={t('jobAnnouncement.applicantsPage.emptyState')}
-      t={t}
-    />
+    <Card>
+      <DataTable
+        data={paginatedRows}
+        columns={columns}
+        keyExtractor={(row) => row.id}
+        filters={filters}
+        showFilters={true}
+        onResetFilters={resetFilters}
+        pagination={{ page: currentPage, limit: pageSize, total: filteredRows.length, totalPages }}
+        onPageChange={handlePageChange}
+        emptyMessage={t('jobAnnouncement.applicantsPage.emptyState')}
+        t={t}
+      />
+    </Card>
   );
 };
 
