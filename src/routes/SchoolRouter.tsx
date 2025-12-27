@@ -21,6 +21,7 @@ import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page'
 import AttendancePage from '@/pages/school-dashboard/attendance/attendance-page';
 import JobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/job-announcements-page';
 import AddJobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/add-job-announcements-page';
+import EditJobAnnouncementPage from '@/pages/school-dashboard/job-announcements/edit-job-announcement-page';
 import JobAnnouncementNamePage from '@/pages/school-dashboard/job-announcements/job-announcement-name';
 
 const SchoolRouter: React.FC = () => {
@@ -208,6 +209,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AddJobAnnouncementsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/job-announcements/edit/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditJobAnnouncementPage />
             </MainLayout>
           </ProtectedRoute>
         }
