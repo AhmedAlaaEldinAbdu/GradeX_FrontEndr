@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
-import IconButton from '@/shared/components/IconButton';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import ArchiveIcon from '@gradex/assets/icons/Archive.svg';
 import RecallIcon from '@gradex/assets/icons/Recall.svg';
+import CheckIcon from '@gradex/assets/icons/Check.svg';
+import TimeLog from '@gradex/assets/icons/TimeLog.svg';
 import {
   QUALIFICATION_LABELS,
   NATIONALITY_LABELS,
@@ -343,17 +344,40 @@ const JobApplicantsTable = ({
       accessor: () => (
         <div className="flex items-center justify-center gap-2">
           {isArchived ? (
-            <IconButton variant="default" ariaLabel={t('actions.recall')}>
-              <img src={RecallIcon} alt={t('actions.recall')} className="h-4 w-4" />
-            </IconButton>
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
+              title={t('actions.recall')}
+            >
+              <CustomImage src={RecallIcon} alt={t('actions.recall')} className="h-4 w-4" />
+            </button>
           ) : (
-            <IconButton variant="default" ariaLabel={t('actions.archive')}>
-              <img src={ArchiveIcon} alt={t('actions.archive')} className="h-4 w-4" />
-            </IconButton>
+            <>
+              {/* Accept/Approve Button */}
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
+                title={t('common.approve')}
+              >
+                <CustomImage src={CheckIcon} alt={t('common.approve')} className="h-4 w-4" />
+              </button>
+              {/* Schedule Interview Button */}
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 transition-colors hover:bg-blue-200"
+                title={t('interviews.addInterview')}
+              >
+                <CustomImage src={TimeLog} alt={t('interviews.addInterview')} className="h-4 w-4" />
+              </button>
+              {/* Archive Button */}
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 transition-colors hover:bg-orange-200"
+                title={t('actions.archive')}
+              >
+                <CustomImage src={ArchiveIcon} alt={t('actions.archive')} className="h-4 w-4" />
+              </button>
+            </>
           )}
         </div>
       ),
-      headerClassName: 'w-[120px]',
+      headerClassName: 'w-[160px]',
       className: 'text-center',
     },
   ];
