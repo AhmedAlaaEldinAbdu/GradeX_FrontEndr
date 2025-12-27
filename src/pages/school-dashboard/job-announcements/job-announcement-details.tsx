@@ -4,7 +4,7 @@ import PageHeader from '@/shared/components/PageHeader';
 import JobApplicants from './components/JobApplicants';
 import { JOB_APPLICANTS_TABS, type JobApplicantsTab } from './constants';
 
-const JobAnnouncementNamePage = () => {
+const JobAnnouncementDetailsPage = () => {
   const [selectedTab, setSelectedTab] = useState<JobApplicantsTab>(JOB_APPLICANTS_TABS.REQUESTS);
 
   const breadcrumbItems = [
@@ -33,4 +33,4 @@ const JobAnnouncementNamePage = () => {
   );
 };
 
-export default JobAnnouncementNamePage;
+export default JobAnnouncementDetailsPage;
