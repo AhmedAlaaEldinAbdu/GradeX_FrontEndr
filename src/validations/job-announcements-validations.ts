@@ -29,8 +29,9 @@ export const SalaryOption = {
 export type SalaryOptionValue = (typeof SalaryOption)[keyof typeof SalaryOption];
 
 export const ContractType = {
-  FULL_TIME: 'FULL_TIME',
-  PART_TIME: 'PART_TIME',
+  FULL_TIME: 1,
+  PART_TIME: 2,
+  BOTH: 3,
 } as const;
 
 export type ContractTypeValue = (typeof ContractType)[keyof typeof ContractType];
@@ -44,15 +45,11 @@ export const AddJobAnnouncementSchema = object({
     then: (schema) => schema.required('jobAnnouncement.validation.teacherLevelRequired'),
     otherwise: (schema) => schema.nullable().optional(),
   }),
-
-
   administrativePositionId: string().when('jobCategory', {
     is: JobCategory.ADMIN,
     then: (schema) => schema.required('jobAnnouncement.validation.administrativePositionRequired'),
     otherwise: (schema) => schema.nullable().optional(),
   }),
-
-  
   specializationIds: string().required('jobAnnouncement.validation.specializationRequired'),
   stageIds: string().required('jobAnnouncement.validation.stageRequired'),
   subjectName: array()
@@ -81,16 +78,8 @@ export const AddJobAnnouncementSchema = object({
     }),
   noticePeriod: mixed<WorkStartModeValue>()
     .oneOf(Object.values(WorkStartMode))
-    .required('jobAnnouncement.validation.noticePeriodRequired'),
-  noticePeriodDate: string().when('noticePeriod', {
-    is: WorkStartMode.SCHEDULED,
-    then: (schema) => schema.required('jobAnnouncement.validation.noticePeriodDateRequired'),
-    otherwise: (schema) => schema.nullable().optional(),
-  }),
-  workStartMode: mixed<WorkStartModeValue>()
-    .oneOf(Object.values(WorkStartMode))
     .required('jobAnnouncement.validation.workStartDateRequired'),
-  workStartDate: string().when('workStartMode', {
+  noticePeriodDate: string().when('noticePeriod', {
     is: WorkStartMode.SCHEDULED,
     then: (schema) => schema.required('jobAnnouncement.validation.workStartDateRequired'),
     otherwise: (schema) => schema.nullable().optional(),
@@ -104,16 +93,14 @@ export const AddJobAnnouncementSchema = object({
     .typeError('jobAnnouncement.validation.yearsOfExperienceRequired')
     .min(0)
     .required('jobAnnouncement.validation.yearsOfExperienceRequired'),
-  workStartTime: string().required('jobAnnouncement.validation.workStartTimeRequired'),
-  workEndTime: string().required('jobAnnouncement.validation.workEndTimeRequired'),
-  workingHoursFrom: string().required('jobAnnouncement.validation.workingHoursFromRequired'),
-  workingHoursTo: string()
+  workStartTime: string().required('jobAnnouncement.validation.workingHoursFromRequired'),
+  workEndTime: string()
     .required('jobAnnouncement.validation.workingHoursToRequired')
     .test(
       'working-hours-order',
       'jobAnnouncement.validation.workingHoursToAfterFrom',
       function (value) {
-        const from = this?.parent?.workingHoursFrom;
+        const from = this?.parent?.workStartTime;
         if (!value || !from) {
           return true;
         }
@@ -161,9 +148,8 @@ export const AddJobAnnouncementSchema = object({
       otherwise: (schema) => schema.nullable().optional(),
     }),
   teacherGender: string().required('jobAnnouncement.validation.teacherGenderRequired'),
-  contractType: array()
-    .of(string().required('jobAnnouncement.validation.contractTypeRequired'))
-    .min(1, 'jobAnnouncement.validation.contractTypeRequired')
+  contractType: mixed<ContractTypeValue>()
+    .oneOf(Object.values(ContractType))
     .required('jobAnnouncement.validation.contractTypeRequired'),
   technicalSkillIds: string()
     .nullable()

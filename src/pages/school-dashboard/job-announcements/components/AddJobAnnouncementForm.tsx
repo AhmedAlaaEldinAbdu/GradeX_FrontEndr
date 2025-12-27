@@ -13,7 +13,6 @@ import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import IconButton from '@/shared/components/IconButton';
 import Button from '@/shared/components/Button';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { useToast } from '@/shared/context/ToastContext';
 import {
   fetchAdministrativePositions,
   fetchCountries,
@@ -39,20 +38,19 @@ import {
   NationalityMode,
   SalaryOption,
   WorkStartMode,
+  type ContractTypeValue,
 } from '@/validations/job-announcements-validations';
 import CustomImage from '@/shared/components/CustomImage';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import { USE_MOCK_DATA, getMockJobAdvertismentById } from '../mock';
+import { PopupMessage } from '@/shared/popups/popups';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 const TEACHER_GENDER_OPTIONS = [
   { value: 'MALE', labelKey: 'jobAnnouncement.form.genderMale' },
   { value: 'FEMALE', labelKey: 'jobAnnouncement.form.genderFemale' },
   { value: 'ANY', labelKey: 'jobAnnouncement.form.genderAny' },
-];
-
-const CONTRACT_TYPE_OPTIONS = [
-  { value: ContractType.FULL_TIME, labelKey: 'jobAnnouncement.form.contractFullTime' },
-  { value: ContractType.PART_TIME, labelKey: 'jobAnnouncement.form.contractPartTime' },
 ];
 
 const SALARY_OPTION_RADIOS = [
@@ -90,20 +88,18 @@ const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   applicationEndDate: '',
   nationalityMode: NationalityMode.ALL,
   nationalityIds: [],
-  workStartMode: WorkStartMode.IMMEDIATE,
-  workStartDate: '',
+  noticePeriod: WorkStartMode.IMMEDIATE,
+  noticePeriodDate: '',
   qualificationType: DEFAULT_QUALIFICATION_TYPE,
   qualificationIds: [],
   yearsExperience: 0,
   workStartTime: '',
   workEndTime: '',
-  workingHoursFrom: '',
-  workingHoursTo: '',
   salary: SalaryOption.TBD,
   minimumSalary: 0,
   maximumSalary: 0,
-  teacherGender: 'ANY',
-  contractType: [ContractType.FULL_TIME],
+  teacherGender: '3',
+  contractType: 1 as ContractTypeValue,
   technicalSkillIds: '',
   personalSkillIds: '',
   benefitsIds: [],
@@ -119,7 +115,12 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { showToast } = useToast();
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
+
 
   const {
     countries,
@@ -142,14 +143,13 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   const { subjects, isLoading: isLoadingSubjects } = useAppSelector((state) => state.subjects);
   const {
     isCreating,
-    isUpdating,
     currentJobAdvertisment,
-    isLoading: isLoadingJob,
   } = useAppSelector((state) => state.jobAdvertisments);
 
   const isEditMode = Boolean(jobId);
   const [isFormReady, setIsFormReady] = useState(!isEditMode);
-  const isProcessing = isCreating || isUpdating;
+  const [isFullTimeChecked, setIsFullTimeChecked] = useState(false);
+  const [isPartTimeChecked, setIsPartTimeChecked] = useState(false);
 
   const {
     control,
@@ -159,7 +159,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     setValue,
     formState: { errors },
   } = useForm<AddJobAnnouncementFormValues>({
-    resolver: yupResolver(AddJobAnnouncementSchema),
+    resolver: yupResolver(AddJobAnnouncementSchema) as any,
     defaultValues: DEFAULT_VALUES,
   });
 
@@ -174,7 +174,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
   const jobCategory = watch('jobCategory');
   const nationalityMode = watch('nationalityMode');
-  const workStartMode = watch('workStartMode');
+  const noticePeriod = watch('noticePeriod');
   const salaryOption = watch('salary');
   const contractType = watch('contractType');
   const selectedBenefits = watch('benefitsIds');
@@ -206,9 +206,12 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const salOption = job.salary === 1 ? SalaryOption.RANGE : SalaryOption.TBD;
 
     // Map gender
-    let gender = 'ANY';
-    if (job.teacherGender === 1) gender = 'MALE';
-    else if (job.teacherGender === 2) gender = 'FEMALE';
+    let gender = '3'; // ANY
+    if (job.teacherGender === 1) gender = '1';
+    else if (job.teacherGender === 2) gender = '2';
+
+    const workSchedule = job.workShedule === 1 ? ContractType.FULL_TIME : job.workShedule === 2 ? ContractType.PART_TIME : ContractType.BOTH;
+    setValue('contractType', workSchedule);
 
     // Set form values
     setValue('jobCategory', isTeacher ? JobCategory.TEACHER : JobCategory.ADMIN);
@@ -227,15 +230,15 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     setValue('applicationEndDate', job.advertisementEndDate?.split('T')[0] || '');
     setValue('nationalityMode', natMode);
     setValue('nationalityIds', job.jobAdvertisementCountryDto?.map((c) => c.lkCountryId) || []);
-    setValue('workStartMode', workMode);
-    setValue('workStartDate', job.noticePeriodDate?.split('T')[0] || '');
+    setValue('noticePeriod', workMode);
+    setValue('noticePeriodDate', job.noticePeriodDate?.split('T')[0] || '');
     setValue(
       'qualificationIds',
       job.jobAdvertisementQualificationDto?.map((q) => q.lkQualificationId) || []
     );
     setValue('yearsExperience', job.yearsExperience || 0);
-    setValue('workingHoursFrom', job.workStartTime || '');
-    setValue('workingHoursTo', job.workEndTime || '');
+    setValue('workStartTime', job.workStartTime || '');
+    setValue('workEndTime', job.workEndTime || '');
     setValue('salary', salOption);
     setValue('minimumSalary', job.minimumSalary || 0);
     setValue('maximumSalary', job.maximumSalary || 0);
@@ -305,10 +308,10 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   }, [nationalityMode, setValue]);
 
   useEffect(() => {
-    if (workStartMode === WorkStartMode.IMMEDIATE) {
-      setValue('workStartDate', '');
+    if (noticePeriod === WorkStartMode.IMMEDIATE) {
+      setValue('noticePeriodDate', '');
     }
-  }, [workStartMode, setValue]);
+  }, [noticePeriod, setValue]);
 
   useEffect(() => {
     if (salaryOption === SalaryOption.TBD) {
@@ -316,6 +319,20 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       setValue('maximumSalary', 0);
     }
   }, [salaryOption, setValue]);
+
+  useEffect(() => {
+    // Sync checkbox state with contractType value
+    if (contractType === ContractType.FULL_TIME) {
+      setIsFullTimeChecked(true);
+      setIsPartTimeChecked(false);
+    } else if (contractType === ContractType.PART_TIME) {
+      setIsFullTimeChecked(false);
+      setIsPartTimeChecked(true);
+    } else if (contractType === ContractType.BOTH) {
+      setIsFullTimeChecked(true);
+      setIsPartTimeChecked(true);
+    }
+  }, [contractType]);
 
   const countryOptions = useMemo(() => {
     if (!Array.isArray(countries)) return [];
@@ -392,19 +409,28 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     }));
   }, [languageLevels, currentLang]);
 
-  const toggleContractType = (value: string, isChecked: boolean) => {
-    const current = contractType || [];
-    if (isChecked) {
-      if (!current.includes(value)) {
-        setValue('contractType', [...current, value]);
-      }
-      return;
-    }
 
-    setValue(
-      'contractType',
-      current.filter((item) => item !== value)
-    );
+
+  const handleContractTypeChange = (type: 'FULL_TIME' | 'PART_TIME', checked: boolean) => {
+    if (type === 'FULL_TIME') {
+      setIsFullTimeChecked(checked);
+      if (checked && isPartTimeChecked) {
+        setValue('contractType', ContractType.BOTH);
+      } else if (checked) {
+        setValue('contractType', ContractType.FULL_TIME);
+      } else if (isPartTimeChecked) {
+        setValue('contractType', ContractType.PART_TIME);
+      }
+    } else {
+      setIsPartTimeChecked(checked);
+      if (checked && isFullTimeChecked) {
+        setValue('contractType', ContractType.BOTH);
+      } else if (checked) {
+        setValue('contractType', ContractType.PART_TIME);
+      } else if (isFullTimeChecked) {
+        setValue('contractType', ContractType.FULL_TIME);
+      }
+    }
   };
 
   const toggleBenefit = (value: string, isChecked: boolean) => {
@@ -437,6 +463,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const salaryMax = Number(values.maximumSalary || 0);
 
     const payload: CreateJobAdvertismentRequest = {
+      name: "", // Name is not part of the form, setting empty string
+      nameEn: "", // NameEn is not part of the form, setting empty string
+      schoolBranchId: "e45f71f1-aeed-4765-2db0-08de255d5ebd", // Temporary static value for school branch ID
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,
       jobDescription: values.jobDescriptionAr,
@@ -452,23 +481,19 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       teacherGender:
         values.teacherGender === 'MALE' ? 1 : values.teacherGender === 'FEMALE' ? 2 : 3,
       yearsExperience: Number(values.yearsExperience || 0),
-      // //
-      noticePeriod: values.workStartMode === WorkStartMode.IMMEDIATE ? 1 : 2,
-      noticePeriodDate: values.workStartDate || '',
-      // //
-      workShedule: values.workStartMode === WorkStartMode.IMMEDIATE ? 1 : 2,
-      workStartTime: values.workingHoursFrom,
-      workEndTime: values.workingHoursTo,
+      noticePeriod: values.noticePeriod === WorkStartMode.IMMEDIATE ? 1 : 2,
+      noticePeriodDate: values.noticePeriodDate,
+      workShedule: values.contractType,
+      workStartTime: values.workStartTime,
+      workEndTime: values.workEndTime,
       lkAdministrativePositionId: values.administrativePositionId || '',
       lkTeacherLevelId: values.teacherLevelId || '',
-      //
       jobAdvertismentTechnicalSkillsDto: technicalSkillValue
         ? [{ technicalAppName: technicalSkillValue }]
         : [],
       jobAdvertismentPersonalSkillsDto: personalSkillValue
         ? [{ personalSkillName: personalSkillValue }]
         : [],
-      //
       jobAdvertismentMaterialDto: specializationList.map((subjectId) => ({
         materialId: subjectId,
       })),
@@ -500,9 +525,18 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           .unwrap()
           .then((res) => {
             if (res.isSuccess) {
-              showToast({ type: 'success', message: 'jobAnnouncement.form.editSuccessMessage' });
+              setShowPopupMessage({
+                show: true,
+                type: 'success',
+                message: t('jobAnnouncement.form.editSuccessMessage'),
+              });
+              navigate('/job-announcements');
             } else {
-              showToast({ type: 'error', message: 'common.errorOccurred' });
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: t('common.errorOccurred'),
+              });
             }
           });
       } else {
@@ -511,18 +545,32 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           .unwrap()
           .then((res) => {
             if (res.isSuccess) {
-              showToast({ type: 'success', message: 'jobAnnouncement.form.successMessage' });
+              setShowPopupMessage({
+                show: true,
+                type: 'success',
+                message: t('jobAnnouncement.form.successMessage'),
+              });
+              navigate('/job-announcements');
             } else {
-              showToast({ type: 'error', message: 'common.errorOccurred' });
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: t('common.errorOccurred'),
+              });
             }
           });
       }
       await dispatch(fetchJobAdvertisments({ page: 1, limit: 10 }));
-      navigate('/job-announcements');
     } catch {
-      showToast({ type: 'error', message: 'common.errorOccurred' });
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: t('common.errorOccurred'),
+      });
     }
   };
+
+  console.log('errors', errors);
 
   return (
     <Card>
@@ -838,7 +886,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             <FormField
               label={t('jobAnnouncement.form.workStart')}
               required
-              error={errors.workStartMode?.message as string | undefined}
+              error={errors.noticePeriod?.message as string | undefined}
             >
               <div className="flex items-center gap-6 p-2">
                 {WORK_START_OPTIONS.map((option) => (
@@ -848,10 +896,10 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                   >
                     <input
                       type="radio"
-                      name="workStartMode"
+                      name="noticePeriod"
                       value={option.value}
-                      checked={workStartMode === option.value}
-                      onChange={() => setValue('workStartMode', option.value)}
+                      checked={noticePeriod === option.value}
+                      onChange={() => setValue('noticePeriod', option.value)}
                       className="h-4 w-4 text-green-600"
                     />
                     {t(option.labelKey)}
@@ -859,16 +907,17 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 ))}
               </div>
             </FormField>
-
-            <FormField
-              label={t('jobAnnouncement.form.workStartDate')}
-              required
-              error={errors.workStartDate?.message as string | undefined}
-            >
-              <div>
-                <Input type="date" {...register('workStartDate')} />
-              </div>
-            </FormField>
+            {noticePeriod === WorkStartMode.SCHEDULED && (
+              <FormField
+                label={t('jobAnnouncement.form.workStartDate')}
+                required
+                error={errors.noticePeriodDate?.message as string | undefined}
+              >
+                <div>
+                  <Input type="date" {...register('noticePeriodDate')} />
+                </div>
+              </FormField>
+            )}
           </div>
         </section>
 
@@ -1031,7 +1080,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <FormField
-              label={t('jobAnnouncement.form.yearsExperience')}
+              label={t('jobAnnouncement.form.yearsOfExperience')}
               required
               error={errors.yearsExperience?.message as string | undefined}
               htmlFor="yearsOfExperience"
@@ -1051,20 +1100,17 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
               htmlFor="contractType"
             >
               <div className="mt-3 flex flex-wrap gap-4">
-                {CONTRACT_TYPE_OPTIONS.map((option) => (
-                  <CustomCheckbox
-                    key={option.value}
-                    label={t(option.labelKey)}
-                    checked={contractType?.includes(option.value)}
-                    onChange={(checked) => toggleContractType(option.value, checked)}
-                  />
-                ))}
+                <CustomCheckbox
+                  label={t('jobAnnouncement.form.contractFullTime')}
+                  checked={isFullTimeChecked}
+                  onChange={(checked) => handleContractTypeChange('FULL_TIME', checked)}
+                />
+                <CustomCheckbox
+                  label={t('jobAnnouncement.form.contractPartTime')}
+                  checked={isPartTimeChecked}
+                  onChange={(checked) => handleContractTypeChange('PART_TIME', checked)}
+                />
               </div>
-              {errors.contractType && (
-                <p className="mt-1 text-sm text-red-600">
-                  {t(errors.contractType.message as string)}
-                </p>
-              )}
             </FormField>
           </div>
 
@@ -1072,19 +1118,19 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             <FormField
               label={t('jobAnnouncement.form.workingHoursFrom')}
               required
-              error={errors.workingHoursFrom?.message as string | undefined}
-              htmlFor="workingHoursFrom"
+              error={errors.workStartTime?.message as string | undefined}
+              htmlFor="workStartTime"
             >
-              <Input id="workingHoursFrom" type="time" {...register('workingHoursFrom')} />
+              <Input id="workStartTime" type="time" {...register('workStartTime')} />
             </FormField>
 
             <FormField
               label={t('jobAnnouncement.form.workingHoursTo')}
               required
-              error={errors.workingHoursTo?.message as string | undefined}
-              htmlFor="workingHoursTo"
+              error={errors.workEndTime?.message as string | undefined}
+              htmlFor="workEndTime"
             >
-              <Input id="workingHoursTo" type="time" {...register('workingHoursTo')} />
+              <Input id="workEndTime" type="time" {...register('workEndTime')} />
             </FormField>
           </div>
         </section>
@@ -1248,6 +1294,17 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           </Button>
         </div>
       </form>
+
+      {/* Popup Message */}
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        autoClose={true}
+        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+        navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
+      />
     </Card>
   );
 }
