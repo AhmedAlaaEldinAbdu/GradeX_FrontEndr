@@ -949,6 +949,21 @@
       "educationalStage": "المراحل التعليمية",
       "searchStageOrClassroom": "ابحث عن اسم المرحلة الدراسية أو الصف الدراسي",
       "classrooms": "الصفوف الدراسية"
+    },
+    "placement": {
+      "title": "تسكين المعلم",
+      "breadcrumb": "تسكين المعلم",
+      "action": "التسكين",
+      "subject": "اسم المادة",
+      "selectSubject": "اختر اسم المادة",
+      "stage": "المرحلة الدراسية",
+      "selectStage": "اختر المرحلة الدراسية",
+      "classrooms": "الصفوف الدراسية",
+      "selectClassrooms": "اختر الصفوف الدراسية",
+      "book": "اسم الكتاب (اختياري)",
+      "selectBook": "أختر اسم الكتاب",
+      "submit": "تسكين",
+      "successMessage": "تم توظيف المعلم بنجاح"
     }
   },
   "books": {

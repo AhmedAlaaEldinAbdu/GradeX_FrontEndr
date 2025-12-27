@@ -950,6 +950,21 @@
       "educationalStage": "Educational Stages",
       "searchStageOrClassroom": "Search for educational stage or classroom name",
       "classrooms": "Classrooms"
+    },
+    "placement": {
+      "title": "Teacher Placement",
+      "breadcrumb": "Teacher Placement",
+      "action": "Placement",
+      "subject": "Subject Name",
+      "selectSubject": "Select subject name",
+      "stage": "Educational Stage",
+      "selectStage": "Select educational stage",
+      "classrooms": "Classrooms",
+      "selectClassrooms": "Select classrooms",
+      "book": "Book Name (Optional)",
+      "selectBook": "Select book name",
+      "submit": "Place",
+      "successMessage": "Teacher placed successfully"
     }
   },
   "books": {
