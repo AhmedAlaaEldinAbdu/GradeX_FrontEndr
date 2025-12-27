@@ -23,7 +23,6 @@ import AttendancePage from '@/pages/school-dashboard/attendance/attendance-page'
 import JobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/job-announcements-page';
 import AddJobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/add-job-announcements-page';
 import EditJobAnnouncementPage from '@/pages/school-dashboard/job-announcements/edit-job-announcement-page';
-import JobAnnouncementNamePage from '@/pages/school-dashboard/job-announcements/job-announcement-name';
 import JobAnnouncementDetailsPage from '@/pages/school-dashboard/job-announcements/job-announcement-details';
 
 const SchoolRouter: React.FC = () => {
