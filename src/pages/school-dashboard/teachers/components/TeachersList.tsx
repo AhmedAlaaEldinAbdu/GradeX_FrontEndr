@@ -7,6 +7,7 @@ import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
 import PeopleRegularIcon from '@gradex/assets/icons/PeopleRegular.svg';
+import CheckIcon from '@gradex/assets/icons/Check.svg';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -192,6 +193,15 @@ export default function TeachersList() {
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <IconButton
+            variant="success"
+            onClick={() => {
+              navigate(`/teachers/${row.teacherId}/placement`);
+            }}
+            ariaLabel={t('teachers.placement.action')}
+          >
+            <img src={CheckIcon} alt="" className="h-4 w-4" />
+          </IconButton>
+          <IconButton
             status="delete"
             variant="danger"
             onClick={() => {
@@ -203,7 +213,7 @@ export default function TeachersList() {
           />
         </div>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
   ];
