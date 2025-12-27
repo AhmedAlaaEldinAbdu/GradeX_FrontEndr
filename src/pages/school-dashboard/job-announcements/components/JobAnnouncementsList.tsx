@@ -9,7 +9,7 @@ import DeletePopup from '@/shared/popups/DeletePopup';
 import EmptyState from '@/shared/components/EmptyState';
 import EmployeesIcon from '@gradex/assets/icons/Employees.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import EyeIcon from '@gradex/assets/icons/Eye.svg';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
@@ -387,7 +387,19 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.applicantsCount',
       accessor: (row) => (
-        <div className="flex items-center justify-center gap-2 text-sm">
+        <div className="flex items-center justify-center text-sm">
+          <IconButton
+            variant="default"
+            ariaLabel={t('jobAnnouncement.viewApplicants')}
+            onClick={() => navigate(`/job-announcements/${row.id}/applicants`)}
+            className="h-8 w-8"
+          >
+            <CustomImage
+              src={EyeStyledIcon}
+              alt={t('jobAnnouncement.viewApplicants')}
+              className="h-4 w-4"
+            />
+          </IconButton>
           <span>
             {(() => {
               const value = (row as Record<string, unknown>).applicantsCount;
@@ -397,18 +409,6 @@ export default function JobAnnouncementsList() {
               return '--';
             })()}
           </span>
-          <IconButton
-            variant="default"
-            ariaLabel={t('jobAnnouncement.viewApplicants')}
-            onClick={() => navigate(`/job-announcements/${row.id}/applicants`)}
-            className="h-8 w-8"
-          >
-            <CustomImage
-              src={EyeIcon}
-              alt={t('jobAnnouncement.viewApplicants')}
-              className="h-4 w-4"
-            />
-          </IconButton>
         </div>
       ),
       headerClassName: 'w-[140px]',
