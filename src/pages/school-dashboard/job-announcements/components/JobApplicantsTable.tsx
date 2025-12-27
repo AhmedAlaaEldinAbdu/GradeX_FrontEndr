@@ -20,6 +20,12 @@ import {
 } from './applicants-data';
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 import CustomImage from '@/shared/components/CustomImage';
+import { useToast } from '@/shared/context/ToastContext';
+import ArchiveApplicantPopup from '../popups/ArchiveApplicantPopup';
+import ScheduleInterviewPopup, {
+  type ScheduleInterviewFormData,
+} from '../popups/ScheduleInterviewPopup';
+import AcceptApplicantPopup from '../popups/AcceptApplicantPopup';
 
 type JobApplicantsTableProps = {
   data: Applicant[];
@@ -33,9 +39,11 @@ const JobApplicantsTable = ({
   isArchived = false,
 }: JobApplicantsTableProps) => {
   const { t, i18n } = useTranslation();
+  const { showToast } = useToast();
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const locale = currentLang === 'ar' ? 'ar-SA' : 'en-US';
 
+  // Filter state
   const [searchValue, setSearchValue] = useState('');
   const [workTypeFilter, setWorkTypeFilter] = useState('');
   const [qualificationFilter, setQualificationFilter] = useState('');
@@ -43,6 +51,12 @@ const JobApplicantsTable = ({
   const [experienceFilter, setExperienceFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
+
+  const [archivePopupOpen, setArchivePopupOpen] = useState(false);
+  const [schedulePopupOpen, setSchedulePopupOpen] = useState(false);
+  const [acceptPopupOpen, setAcceptPopupOpen] = useState(false);
+  const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const getQualificationLabel = (key: QualificationKey) =>
     QUALIFICATION_LABELS[key]?.[currentLang] || QUALIFICATION_LABELS[key]?.en || '';
@@ -104,6 +118,85 @@ const JobApplicantsTable = ({
     setNationalityFilter('');
     setExperienceFilter('');
     setCurrentPage(1);
+  };
+
+  // Popup handlers
+  const handleOpenArchivePopup = (applicant: Applicant) => {
+    setSelectedApplicant(applicant);
+    setArchivePopupOpen(true);
+  };
+
+  const handleOpenSchedulePopup = (applicant: Applicant) => {
+    setSelectedApplicant(applicant);
+    setSchedulePopupOpen(true);
+  };
+
+  const handleOpenAcceptPopup = (applicant: Applicant) => {
+    setSelectedApplicant(applicant);
+    setAcceptPopupOpen(true);
+  };
+
+  const handleArchiveConfirm = async () => {
+    try {
+      setIsProcessing(true);
+      // TODO: Add API call to archive applicant
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated API call
+      showToast({ message: 'jobAnnouncement.applicantsPage.archiveSuccess', type: 'success' });
+      setArchivePopupOpen(false);
+      setSelectedApplicant(null);
+    } catch (error) {
+      showToast({ message: 'common.errorOccurred', type: 'error' });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleScheduleSubmit = async (data: ScheduleInterviewFormData) => {
+    try {
+      setIsProcessing(true);
+      // TODO: Add API call to schedule interview
+      console.log('Schedule interview data:', data);
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated API call
+      showToast({
+        message: 'jobAnnouncement.applicantsPage.interviewScheduledSuccess',
+        type: 'success',
+      });
+      setSchedulePopupOpen(false);
+      setSelectedApplicant(null);
+    } catch (error) {
+      showToast({ message: 'common.errorOccurred', type: 'error' });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleAcceptConfirm = async () => {
+    try {
+      setIsProcessing(true);
+      // TODO: Add API call to accept applicant
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated API call
+      showToast({ message: 'jobAnnouncement.applicantsPage.acceptSuccess', type: 'success' });
+      setAcceptPopupOpen(false);
+      setSelectedApplicant(null);
+    } catch (error) {
+      showToast({ message: 'common.errorOccurred', type: 'error' });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRecall = async (applicant: Applicant) => {
+    try {
+      setIsProcessing(true);
+      // TODO: Add API call to recall applicant
+      console.log('Recall applicant:', applicant.id);
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated API call
+      showToast({ message: 'jobAnnouncement.applicantsPage.recallSuccess', type: 'success' });
+    } catch (error) {
+      showToast({ message: 'common.errorOccurred', type: 'error' });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const workTypeOptions = useMemo(
@@ -341,12 +434,13 @@ const JobApplicantsTable = ({
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.actions',
-      accessor: () => (
+      accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
           {isArchived ? (
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
               title={t('actions.recall')}
+              onClick={() => handleRecall(row)}
             >
               <CustomImage src={RecallIcon} alt={t('actions.recall')} className="h-4 w-4" />
             </button>
@@ -356,20 +450,27 @@ const JobApplicantsTable = ({
               <button
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
                 title={t('common.approve')}
+                onClick={() => handleOpenAcceptPopup(row)}
               >
                 <CustomImage src={CheckIcon} alt={t('common.approve')} className="h-4 w-4" />
               </button>
               {/* Schedule Interview Button */}
               <button
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 transition-colors hover:bg-blue-200"
-                title={t('interviews.addInterview')}
+                title={t('jobAnnouncement.applicantsPage.scheduleInterview')}
+                onClick={() => handleOpenSchedulePopup(row)}
               >
-                <CustomImage src={TimeLog} alt={t('interviews.addInterview')} className="h-4 w-4" />
+                <CustomImage
+                  src={TimeLog}
+                  alt={t('jobAnnouncement.applicantsPage.scheduleInterview')}
+                  className="h-4 w-4"
+                />
               </button>
               {/* Archive Button */}
               <button
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 transition-colors hover:bg-orange-200"
                 title={t('actions.archive')}
+                onClick={() => handleOpenArchivePopup(row)}
               >
                 <CustomImage src={ArchiveIcon} alt={t('actions.archive')} className="h-4 w-4" />
               </button>
@@ -382,21 +483,71 @@ const JobApplicantsTable = ({
     },
   ];
 
+  const getSelectedApplicantName = () => {
+    if (!selectedApplicant) return '';
+    return currentLang === 'ar'
+      ? selectedApplicant.nameAr
+      : selectedApplicant.nameEn || selectedApplicant.nameAr;
+  };
+
   return (
-    <Card>
-      <DataTable
-        data={paginatedRows}
-        columns={columns}
-        keyExtractor={(row) => row.id}
-        filters={filters}
-        showFilters={true}
-        onResetFilters={resetFilters}
-        pagination={{ page: currentPage, limit: pageSize, total: filteredRows.length, totalPages }}
-        onPageChange={handlePageChange}
-        emptyMessage={t('jobAnnouncement.applicantsPage.emptyState')}
-        t={t}
+    <>
+      <Card>
+        <DataTable
+          data={paginatedRows}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          filters={filters}
+          showFilters={true}
+          onResetFilters={resetFilters}
+          pagination={{
+            page: currentPage,
+            limit: pageSize,
+            total: filteredRows.length,
+            totalPages,
+          }}
+          onPageChange={handlePageChange}
+          emptyMessage={t('jobAnnouncement.applicantsPage.emptyState')}
+          t={t}
+        />
+      </Card>
+
+      {/* Archive Applicant Popup */}
+      <ArchiveApplicantPopup
+        open={archivePopupOpen}
+        applicantName={getSelectedApplicantName()}
+        onConfirm={handleArchiveConfirm}
+        onCancel={() => {
+          setArchivePopupOpen(false);
+          setSelectedApplicant(null);
+        }}
+        isProcessing={isProcessing}
       />
-    </Card>
+
+      {/* Schedule Interview Popup */}
+      <ScheduleInterviewPopup
+        open={schedulePopupOpen}
+        applicantName={getSelectedApplicantName()}
+        onClose={() => {
+          setSchedulePopupOpen(false);
+          setSelectedApplicant(null);
+        }}
+        onSubmit={handleScheduleSubmit}
+        isLoading={isProcessing}
+      />
+
+      {/* Accept Applicant Popup */}
+      <AcceptApplicantPopup
+        open={acceptPopupOpen}
+        applicantName={getSelectedApplicantName()}
+        onConfirm={handleAcceptConfirm}
+        onCancel={() => {
+          setAcceptPopupOpen(false);
+          setSelectedApplicant(null);
+        }}
+        isProcessing={isProcessing}
+      />
+    </>
   );
 };
 
