@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { InferType } from 'yup';
@@ -27,11 +27,11 @@ import {
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import {
   createJobAdvertisment,
+  editJobAdvertisment,
   fetchJobAdvertisments,
+  fetchJobAdvertismentById,
 } from '@/redux/features/job-advertisments/jobAdvertismentsSlice';
-import type {
-  CreateJobAdvertismentRequest,
-} from '@/services/api/types/job-advertisment.types';
+import type { CreateJobAdvertismentRequest } from '@/services/api/types/job-advertisment.types';
 import {
   AddJobAnnouncementSchema,
   ContractType,
@@ -42,6 +42,7 @@ import {
 } from '@/validations/job-announcements-validations';
 import CustomImage from '@/shared/components/CustomImage';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
+import { USE_MOCK_DATA, getMockJobAdvertismentById } from '../mock';
 
 const TEACHER_GENDER_OPTIONS = [
   { value: 'MALE', labelKey: 'jobAnnouncement.form.genderMale' },
@@ -109,7 +110,11 @@ const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   languages: [{ languageId: '', levelId: '' }],
 };
 
-export default function AddJobAnnouncementForm() {
+interface AddJobAnnouncementFormProps {
+  jobId?: string;
+}
+
+export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementFormProps) {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
@@ -135,7 +140,16 @@ export default function AddJobAnnouncementForm() {
     isLoadingLanguageLevels,
   } = useAppSelector((state) => state.lookups);
   const { subjects, isLoading: isLoadingSubjects } = useAppSelector((state) => state.subjects);
-  const { isCreating } = useAppSelector((state) => state.jobAdvertisments);
+  const {
+    isCreating,
+    isUpdating,
+    currentJobAdvertisment,
+    isLoading: isLoadingJob,
+  } = useAppSelector((state) => state.jobAdvertisments);
+
+  const isEditMode = Boolean(jobId);
+  const [isFormReady, setIsFormReady] = useState(!isEditMode);
+  const isProcessing = isCreating || isUpdating;
 
   const {
     control,
@@ -174,6 +188,99 @@ export default function AddJobAnnouncementForm() {
     dispatch(fetchJobBenefits());
     dispatch(fetchSubjects({ page: 1, limit: 10000 }));
   }, [dispatch]);
+
+  // Helper function to populate form with job data
+  const populateFormWithJobData = (job: typeof currentJobAdvertisment) => {
+    if (!job) return;
+
+    // Determine job category based on which position field is set
+    const isTeacher = Boolean(job.lkTeacherLevelId);
+
+    // Map work schedule to work start mode
+    const workMode = job.noticePeriod === 1 ? WorkStartMode.IMMEDIATE : WorkStartMode.SCHEDULED;
+
+    // Map nationality
+    const natMode = job.nationality === 1 ? NationalityMode.ALL : NationalityMode.SPECIFIC;
+
+    // Map salary option
+    const salOption = job.salary === 1 ? SalaryOption.RANGE : SalaryOption.TBD;
+
+    // Map gender
+    let gender = 'ANY';
+    if (job.teacherGender === 1) gender = 'MALE';
+    else if (job.teacherGender === 2) gender = 'FEMALE';
+
+    // Set form values
+    setValue('jobCategory', isTeacher ? JobCategory.TEACHER : JobCategory.ADMIN);
+    setValue('teacherLevelId', job.lkTeacherLevelId || '');
+    setValue('administrativePositionId', job.lkAdministrativePositionId || '');
+    setValue(
+      'specializationIds',
+      job.materialId || job.jobAdvertismentMaterialDto?.[0]?.materialId || ''
+    );
+    setValue('stageIds', job.jobAdvertisementSchoolStageDto?.[0]?.lkSchoolStageId || '');
+    setValue('jobDescriptionAr', job.jobDescription || '');
+    setValue('jobDescriptionEn', job.jobDescriptionEn || '');
+    setValue('jobResponsibilitiesAr', job.jobResponsibilities || '');
+    setValue('jobResponsibilitiesEn', job.jobResponsibilitiesEn || '');
+    setValue('applicationStartDate', job.advertisementStartDate?.split('T')[0] || '');
+    setValue('applicationEndDate', job.advertisementEndDate?.split('T')[0] || '');
+    setValue('nationalityMode', natMode);
+    setValue('nationalityIds', job.jobAdvertisementCountryDto?.map((c) => c.lkCountryId) || []);
+    setValue('workStartMode', workMode);
+    setValue('workStartDate', job.noticePeriodDate?.split('T')[0] || '');
+    setValue(
+      'qualificationIds',
+      job.jobAdvertisementQualificationDto?.map((q) => q.lkQualificationId) || []
+    );
+    setValue('yearsExperience', job.yearsExperience || 0);
+    setValue('workingHoursFrom', job.workStartTime || '');
+    setValue('workingHoursTo', job.workEndTime || '');
+    setValue('salary', salOption);
+    setValue('minimumSalary', job.minimumSalary || 0);
+    setValue('maximumSalary', job.maximumSalary || 0);
+    setValue('teacherGender', gender);
+    setValue(
+      'technicalSkillIds',
+      job.jobAdvertismentTechnicalSkillsDto?.[0]?.technicalAppName || ''
+    );
+    setValue(
+      'personalSkillIds',
+      job.jobAdvertismentPersonalSkillsDto?.[0]?.personalSkillName || ''
+    );
+    setValue('benefitsIds', job.jobAdvertisementJobBenefitDto?.map((b) => b.lkJobBenefitId) || []);
+    setValue(
+      'languages',
+      job.jobAdvertisementLanguageDto?.map((l) => ({
+        languageId: l.lkLanguageId,
+        levelId: l.lkLanguageLevelId,
+      })) || [{ languageId: '', levelId: '' }]
+    );
+
+    setIsFormReady(true);
+  };
+
+  // Fetch job data when in edit mode
+  useEffect(() => {
+    if (isEditMode && jobId && !isFormReady) {
+      if (USE_MOCK_DATA) {
+        // Use mock data directly - no API call
+        const mockJob = getMockJobAdvertismentById(jobId);
+        if (mockJob) {
+          populateFormWithJobData(mockJob);
+        }
+      } else {
+        dispatch(fetchJobAdvertismentById(jobId));
+      }
+    }
+  }, [dispatch, isEditMode, jobId, isFormReady]);
+
+  // Populate form with existing job data when editing (for API response)
+  useEffect(() => {
+    if (isEditMode && currentJobAdvertisment && !isFormReady && !USE_MOCK_DATA) {
+      populateFormWithJobData(currentJobAdvertisment);
+    }
+  }, [isEditMode, currentJobAdvertisment, isFormReady]);
 
   useEffect(() => {
     if (jobCategory === JobCategory.TEACHER) {
@@ -387,18 +494,32 @@ export default function AddJobAnnouncementForm() {
     } as CreateJobAdvertismentRequest;
 
     try {
-      await dispatch(createJobAdvertisment(payload))
-        .unwrap()
-        .then((res) => {
-          if (res.isSuccess) {
-            showToast({ type: 'success', message: 'jobAnnouncement.form.successMessage' });
-          } else {
-            showToast({ type: 'error', message: 'common.errorOccurred' });
-          }
-        });
+      if (isEditMode && jobId) {
+        // Edit mode - call editJobAdvertisment
+        await dispatch(editJobAdvertisment({ id: jobId, data: payload }))
+          .unwrap()
+          .then((res) => {
+            if (res.isSuccess) {
+              showToast({ type: 'success', message: 'jobAnnouncement.form.editSuccessMessage' });
+            } else {
+              showToast({ type: 'error', message: 'common.errorOccurred' });
+            }
+          });
+      } else {
+        // Add mode - call createJobAdvertisment
+        await dispatch(createJobAdvertisment(payload))
+          .unwrap()
+          .then((res) => {
+            if (res.isSuccess) {
+              showToast({ type: 'success', message: 'jobAnnouncement.form.successMessage' });
+            } else {
+              showToast({ type: 'error', message: 'common.errorOccurred' });
+            }
+          });
+      }
       await dispatch(fetchJobAdvertisments({ page: 1, limit: 10 }));
       navigate('/job-announcements');
-    } catch (error) {
+    } catch {
       showToast({ type: 'error', message: 'common.errorOccurred' });
     }
   };
