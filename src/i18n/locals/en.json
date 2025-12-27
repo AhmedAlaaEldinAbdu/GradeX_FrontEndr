@@ -91,6 +91,7 @@
     "processing": "Processing...",
     "showAll": "Show All",
     "notAvailable": "Not Available",
+    "all": "All",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",

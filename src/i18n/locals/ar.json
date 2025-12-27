@@ -91,6 +91,7 @@
     "processing": "جار المعالجة...",
     "showAll": "عرض الكل",
     "notAvailable": "غير متاح",
+    "all": "الكل",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
