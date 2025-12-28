@@ -31,6 +31,7 @@ export interface InterviewFilters {
 
 export interface InterviewsState {
   interviews: Interview[];
+  popupInterviews: Interview[];
   currentInterview: Interview | null;
   pagination: {
     page: number;
@@ -40,6 +41,7 @@ export interface InterviewsState {
   };
   filters: InterviewFilters;
   isLoading: boolean;
+  popupIsLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
@@ -53,6 +55,7 @@ export interface FetchInterviewsPayload {
   page?: number;
   limit?: number;
   filters?: InterviewFilters;
+  target?: 'list' | 'popup';
 }
 
 export interface FetchInterviewsResponse {
@@ -67,6 +70,7 @@ export interface FetchInterviewsResponse {
 
 const initialState: InterviewsState = {
   interviews: [],
+  popupInterviews: [],
   currentInterview: null,
   pagination: {
     page: 1,
@@ -76,6 +80,7 @@ const initialState: InterviewsState = {
   },
   filters: {},
   isLoading: false,
+  popupIsLoading: false,
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
@@ -235,23 +240,39 @@ const interviewsSlice = createSlice({
   },
   extraReducers: (builder: ActionReducerMapBuilder<InterviewsState>) => {
     builder
-      .addCase(fetchInterviews.pending, (state) => {
-        state.isLoading = true;
+      .addCase(fetchInterviews.pending, (state, action) => {
+        const target = action.meta.arg?.target === 'popup' ? 'popup' : 'list';
         state.error = null;
+        if (target === 'popup') {
+          state.popupIsLoading = true;
+        } else {
+          state.isLoading = true;
+        }
       })
       .addCase(fetchInterviews.fulfilled, (state, action: PayloadAction<FetchInterviewsResponse>) => {
-        state.isLoading = false;
-        state.interviews = action.payload.data;
-        state.pagination = {
-          page: action.payload.meta.page,
-          limit: action.payload.meta.limit,
-          total: action.payload.meta.total,
-          totalPages: action.payload.meta.totalPages,
-        };
-        state.isInitialized = true;
+        const target = action.meta.arg?.target === 'popup' ? 'popup' : 'list';
+        if (target === 'popup') {
+          state.popupIsLoading = false;
+          state.popupInterviews = action.payload.data;
+        } else {
+          state.isLoading = false;
+          state.interviews = action.payload.data;
+          state.pagination = {
+            page: action.payload.meta.page,
+            limit: action.payload.meta.limit,
+            total: action.payload.meta.total,
+            totalPages: action.payload.meta.totalPages,
+          };
+          state.isInitialized = true;
+        }
       })
       .addCase(fetchInterviews.rejected, (state, action) => {
-        state.isLoading = false;
+        const target = action.meta.arg?.target === 'popup' ? 'popup' : 'list';
+        if (target === 'popup') {
+          state.popupIsLoading = false;
+        } else {
+          state.isLoading = false;
+        }
         state.error = action.payload as string;
       })
       .addCase(fetchInterviewById.pending, (state) => {

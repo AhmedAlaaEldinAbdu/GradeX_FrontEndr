@@ -34,7 +34,7 @@ export default function InterviewDetailsPopup({
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const dispatch = useAppDispatch();
-  const { interviews: interviewsData, isLoading } = useAppSelector((state) => state.interviews);
+  const { popupInterviews, popupIsLoading } = useAppSelector((state) => state.interviews);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
 
@@ -60,10 +60,6 @@ export default function InterviewDetailsPopup({
   const interviewId = interview?.id ?? null;
   const startDateForFilter = safeParseDate(interview?.start ?? null);
   const dateFilter = startDateForFilter ? format(startDateForFilter, 'yyyy-MM-dd') : undefined;
-  const cachedInterview = useMemo(() => {
-    if (!interviewId) return null;
-    return interviewsData.find((item) => item.id === interviewId) ?? null;
-  }, [interviewId, interviewsData]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -79,20 +75,18 @@ export default function InterviewDetailsPopup({
       return;
     }
 
-    if (cachedInterview) {
-      setSelectedInterview(cachedInterview);
-    }
-
     const filters: InterviewFilters & { Date?: string } = {
       date: dateFilter,
       Date: dateFilter,
     };
 
     setFetchError(null);
+    setSelectedInterview(null);
 
     dispatch(
       fetchInterviews({
         filters,
+        target: 'popup',
       })
     )
       .unwrap()
@@ -109,7 +103,7 @@ export default function InterviewDetailsPopup({
           typeof error === 'string' ? error : (error as { message?: string })?.message;
         setFetchError(fallback ?? t('common.error'));
       });
-  }, [cachedInterview, dateFilter, dispatch, interviewId, isOpen, t]);
+  }, [dateFilter, dispatch, interviewId, isOpen, t]);
 
   const toDateFromStrings = (dateStr?: string, timeStr?: string) => {
     if (timeStr?.includes('T')) {
@@ -129,7 +123,7 @@ export default function InterviewDetailsPopup({
     return safeParseDate(`${normalizedDate}T${normalizeTimePortion(timeStr)}`);
   };
 
-  const resolvedInterview = selectedInterview ?? cachedInterview ?? null;
+  const resolvedInterview = selectedInterview;
 
   const startDate = useMemo(() => {
     if (resolvedInterview) {
@@ -157,14 +151,6 @@ export default function InterviewDetailsPopup({
     ? format(startDate, 'PPP', { locale: isRTL ? ar : undefined })
     : t('common.notAvailable');
 
-  const formatTimeLabel = (dateValue: Date | null) =>
-    dateValue
-      ? format(dateValue, 'p', { locale: isRTL ? ar : undefined })
-      : t('common.notAvailable');
-
-  const startTime = formatTimeLabel(startDate);
-  const endTime = formatTimeLabel(endDate);
-
   const formatTimeFromString = (time?: string) => {
     if (!time) return t('common.notAvailable');
     const candidate = time.includes('T') ? time : `1970-01-01T${normalizeTimePortion(time)}`;
@@ -175,11 +161,9 @@ export default function InterviewDetailsPopup({
     return format(parsed, 'p', { locale: isRTL ? ar : undefined });
   };
 
-  const isDetailsLoading = isLoading && !resolvedInterview;
+  const isDetailsLoading = popupIsLoading && !resolvedInterview;
 
   if (!interview) return null;
-
-  console.log(interviewsData);
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={formattedDate}>
       <div className="space-y-4 py-4">
@@ -187,47 +171,56 @@ export default function InterviewDetailsPopup({
           <Loading size="lg" />
         ) : (
           <div className="flex flex-col gap-4">
-            {interviewsData.map((detail) => (
-              <div key={detail.id} className="flex flex-col gap-3 rounded-lg border p-3">
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-gray-900">{t('interviews.announcementName')}</p>
-                  <p className="text-gray-700">{detail.jobAdvertisementName}</p>
-                  <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-100">
-                    <CustomImage src={ArrowIcon} alt="arrow" className="h-5 w-5" />
-                  </div>
-                </div>
+            {popupInterviews.map((detail) => {
+              const jobTitle =
+                detail.jobAdvertisementName ||
+                detail.jobAdvertisementTitle ||
+                t('common.notAvailable');
 
-                {detail?.teacherName && (
+              return (
+                <div key={detail.id} className="flex flex-col gap-3 rounded-lg border p-3">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-900">{t('interviews.teacherName')}</p>:
-                    <p>{detail.teacherName}</p>
-                    <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-blue-100">
-                      <CustomImage src={EyeStyledIcon} alt="supervisor" className="h-5 w-5" />
+                    <p className="font-semibold text-gray-900">
+                      {t('interviews.announcementName')}
+                    </p>
+                    <p className="text-gray-700">{jobTitle}</p>
+                    <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-100">
+                      <CustomImage src={ArrowIcon} alt="arrow" className="h-5 w-5" />
                     </div>
                   </div>
-                )}
 
-                {detail?.supervisorName && (
-                  <div className="flex items-center gap-3">
+                  {detail?.teacherName && (
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-gray-900">{t('interviews.supervisor')}</p>:
-                      <p>{detail.supervisorName}</p>
+                      <p className="font-semibold text-gray-900">{t('interviews.teacherName')}</p>:
+                      <p>{detail.teacherName}</p>
+                      <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-blue-100">
+                        <CustomImage src={EyeStyledIcon} alt="supervisor" className="h-5 w-5" />
+                      </div>
+                    </div>
+                  )}
+
+                  {detail?.supervisorName && (
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-gray-900">{t('interviews.supervisor')}</p>:
+                        <p>{detail.supervisorName}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">{t('interviews.startTime')}</p>:
+                      <p>{formatTimeFromString(detail.startTime)}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">{t('interviews.endTime')}</p>:
+                      <p>{formatTimeFromString(detail.endTime)}</p>
                     </div>
                   </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-900">{t('interviews.startTime')}</p>:
-                    <p>{formatTimeFromString(detail.startTime)}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-900">{t('interviews.endTime')}</p>:
-                    <p>{formatTimeFromString(detail.endTime)}</p>
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {fetchError && <p className="text-sm text-red-500">{fetchError}</p>}
           </div>
         )}

@@ -221,7 +221,8 @@ export default function Interviews() {
   const handleEditorSubmit = async (values: InterviewFormProps) => {
     try {
       const interviewDateValue =
-        values.interviewDate || (selectedDateForEditor ? formatDateInput(selectedDateForEditor) : '');
+        values.interviewDate ||
+        (selectedDateForEditor ? formatDateInput(selectedDateForEditor) : '');
       const normalizedStartTime = buildIsoDateTime(interviewDateValue, values.startTime);
       const normalizedEndTime = buildIsoDateTime(interviewDateValue, values.endTime);
 
@@ -241,26 +242,28 @@ export default function Interviews() {
           });
         }
 
-        await dispatch(editInterview({ id: editingInterviewId, data: payload })).unwrap().then(() => {
-          showToast({
-            message: t('interviews.interviewUpdatedSuccessfully'),
-            type: 'success',
-          });
-          fetchInterviewsData();
-        });
-      } else {
-        await dispatch(createInterview(payload)).unwrap().then((res) => {
-          if (res.isSuccess) {
+        await dispatch(editInterview({ id: editingInterviewId, data: payload }))
+          .unwrap()
+          .then(() => {
             showToast({
-              message: t('interviews.interviewAddedSuccessfully'),
+              message: t('interviews.interviewUpdatedSuccessfully'),
               type: 'success',
             });
             fetchInterviewsData();
-          }
-        });
+          });
+      } else {
+        await dispatch(createInterview(payload))
+          .unwrap()
+          .then((res) => {
+            if (res.isSuccess) {
+              showToast({
+                message: t('interviews.interviewAddedSuccessfully'),
+                type: 'success',
+              });
+              fetchInterviewsData();
+            }
+          });
       }
-
-
     } catch (error) {
       const message =
         typeof error === 'string'
@@ -294,17 +297,19 @@ export default function Interviews() {
 
     try {
       setIsDeleting(true);
-      await dispatch(deleteInterview(interviewIdPendingDelete)).unwrap().then((res: any) => {
-        if (res.isSuccess) {
-          setInterviewIdPendingDelete(null);
-          setShowDeletePopup(false);
-          fetchInterviewsData();
-          showToast({
-            message: t('interviews.interviewDeletedSuccessfully'),
-            type: 'success',
-          });
-        }
-      });
+      await dispatch(deleteInterview(interviewIdPendingDelete))
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess) {
+            setInterviewIdPendingDelete(null);
+            setShowDeletePopup(false);
+            fetchInterviewsData();
+            showToast({
+              message: t('interviews.interviewDeletedSuccessfully'),
+              type: 'success',
+            });
+          }
+        });
     } catch (error) {
       const message =
         typeof error === 'string'
@@ -386,7 +391,6 @@ export default function Interviews() {
       <Card>
         <div className="mb-5 flex justify-between gap-3">
           <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
-
             <SearchInput
               value={searchTerm}
               onChange={setSearchTerm}
@@ -404,7 +408,6 @@ export default function Interviews() {
               placeholder={isLoading ? t('common.loading') : t('interviews.supervisorName')}
               disabled={isLoading}
             />
-
           </div>
 
           <button
@@ -436,7 +439,6 @@ export default function Interviews() {
               />
             </svg>
           </button>
-
         </div>
         {/* {showEmptyState && (
           <EmptyState
