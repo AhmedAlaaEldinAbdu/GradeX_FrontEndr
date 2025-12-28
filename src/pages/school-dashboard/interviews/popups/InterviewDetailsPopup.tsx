@@ -136,17 +136,6 @@ export default function InterviewDetailsPopup({
     return interview?.start ?? null;
   }, [interview, resolvedInterview]);
 
-  const endDate = useMemo(() => {
-    if (resolvedInterview) {
-      return (
-        toDateFromStrings(resolvedInterview.interviewDate, resolvedInterview.endTime) ??
-        interview?.end ??
-        null
-      );
-    }
-    return interview?.end ?? null;
-  }, [interview, resolvedInterview]);
-
   const formattedDate = startDate
     ? format(startDate, 'PPP', { locale: isRTL ? ar : undefined })
     : t('common.notAvailable');

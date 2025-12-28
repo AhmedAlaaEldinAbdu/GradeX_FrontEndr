@@ -329,7 +329,7 @@ export default function Interviews() {
     {
       label: t('interviews.viewDetails'),
       icon: EyeFillIcon,
-      onClick: (date, event) => {
+      onClick: (_date, event) => {
         if (event) {
           const interview = calendarInterviews.find((i) => i.id === event.id);
           if (interview) {
@@ -352,7 +352,7 @@ export default function Interviews() {
     {
       label: t('interviews.editInterview'),
       icon: EditFillIcon,
-      onClick: (date, event) => {
+      onClick: (_date, event) => {
         if (event) {
           const interview = calendarInterviews.find((i) => i.id === event.id);
           if (interview) {
@@ -367,7 +367,7 @@ export default function Interviews() {
     {
       label: t('interviews.deleteInterview'),
       icon: TrashFillIcon,
-      onClick: (date, event) => {
+      onClick: (_date, event) => {
         if (event) {
           const interview = calendarInterviews.find((i) => i.id === event.id);
           if (interview) {
@@ -440,13 +440,13 @@ export default function Interviews() {
             </svg>
           </button>
         </div>
-        {/* {showEmptyState && (
+        {showEmptyState && (
           <EmptyState
             imgSrc={StyledCalendarIcon}
             title={t('interviews.noInterviewsMessage')}
             blend={true}
           />
-        )} */}
+        )}
         <SharedCalendar
           events={calendarInterviews}
           onSelectSlot={handleSelectSlot}

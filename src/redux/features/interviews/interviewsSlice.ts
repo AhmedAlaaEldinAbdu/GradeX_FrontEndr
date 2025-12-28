@@ -249,7 +249,7 @@ const interviewsSlice = createSlice({
           state.isLoading = true;
         }
       })
-      .addCase(fetchInterviews.fulfilled, (state, action: PayloadAction<FetchInterviewsResponse>) => {
+      .addCase(fetchInterviews.fulfilled, (state, action) => {
         const target = action.meta.arg?.target === 'popup' ? 'popup' : 'list';
         if (target === 'popup') {
           state.popupIsLoading = false;
