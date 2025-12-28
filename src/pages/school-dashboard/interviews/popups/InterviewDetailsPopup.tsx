@@ -7,10 +7,9 @@ import CustomImage from '@/shared/components/CustomImage';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import ArrowIcon from '@gradex/assets/icons/Arrow.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import {
-  fetchInterviewById,
-  setCurrentInterview,
-} from '@/redux/features/interviews/interviewsSlice';
+import { fetchInterviews } from '@/redux/features/interviews/interviewsSlice';
+import type { InterviewFilters } from '@/redux/features/interviews/interviewsSlice';
+import type { Interview } from '@/services/api/types/interviews.types';
 import Loading from '@/shared/components/Loading';
 
 interface InterviewDetailsPopupProps {
@@ -33,129 +32,203 @@ export default function InterviewDetailsPopup({
   interview,
 }: InterviewDetailsPopupProps) {
   const { t, i18n } = useTranslation();
-  const dispatch = useAppDispatch();
-  const { currentInterview } = useAppSelector((state) => state.interviews);
   const isRTL = i18n.language === 'ar';
-  const [isFetching, setIsFetching] = useState(false);
+  const dispatch = useAppDispatch();
+  const { interviews: interviewsData, isLoading } = useAppSelector((state) => state.interviews);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
+
+  const safeParseDate = (value?: Date | string | null) => {
+    if (!value) return null;
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime()) ? null : value;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const normalizeDatePortion = (value?: string) => {
+    if (!value) return undefined;
+    return value.includes('T') ? (value.split('T')[0] ?? undefined) : value;
+  };
+
+  const normalizeTimePortion = (value: string) => {
+    if (value.includes('T')) return value;
+    return value.length === 5 ? `${value}:00` : value;
+  };
+
+  const interviewId = interview?.id ?? null;
+  const startDateForFilter = safeParseDate(interview?.start ?? null);
+  const dateFilter = startDateForFilter ? format(startDateForFilter, 'yyyy-MM-dd') : undefined;
+  const cachedInterview = useMemo(() => {
+    if (!interviewId) return null;
+    return interviewsData.find((item) => item.id === interviewId) ?? null;
+  }, [interviewId, interviewsData]);
 
   useEffect(() => {
-    if (!isOpen || !interview?.id) {
-      dispatch(setCurrentInterview(null));
+    if (!isOpen) {
+      setSelectedInterview(null);
       setFetchError(null);
-      setIsFetching(false);
       return;
     }
 
-    setIsFetching(true);
+    if (!interviewId || !dateFilter) {
+      if (interviewId) {
+        setFetchError(t('common.error'));
+      }
+      return;
+    }
+
+    if (cachedInterview) {
+      setSelectedInterview(cachedInterview);
+    }
+
+    const filters: InterviewFilters & { Date?: string } = {
+      date: dateFilter,
+      Date: dateFilter,
+    };
+
     setFetchError(null);
 
-    dispatch(fetchInterviewById(interview.id))
+    dispatch(
+      fetchInterviews({
+        filters,
+      })
+    )
       .unwrap()
+      .then((response) => {
+        const foundInterview = response.data.find((item) => item.id === interviewId) ?? null;
+        setSelectedInterview(foundInterview);
+
+        if (!foundInterview) {
+          setFetchError(t('interviews.interviewNotFound'));
+        }
+      })
       .catch((error) => {
         const fallback =
           typeof error === 'string' ? error : (error as { message?: string })?.message;
         setFetchError(fallback ?? t('common.error'));
-      })
-      .finally(() => {
-        setIsFetching(false);
       });
-  }, [dispatch, interview?.id, isOpen, t]);
+  }, [cachedInterview, dateFilter, dispatch, interviewId, isOpen, t]);
 
   const toDateFromStrings = (dateStr?: string, timeStr?: string) => {
-    if (!dateStr || !timeStr) {
+    if (timeStr?.includes('T')) {
+      return safeParseDate(timeStr);
+    }
+
+    const normalizedDate = normalizeDatePortion(dateStr);
+
+    if (dateStr?.includes('T') && !timeStr) {
+      return safeParseDate(dateStr);
+    }
+
+    if (!normalizedDate || !timeStr) {
       return null;
     }
-    const parsed = new Date(`${dateStr}T${timeStr}`);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
+
+    return safeParseDate(`${normalizedDate}T${normalizeTimePortion(timeStr)}`);
   };
 
+  const resolvedInterview = selectedInterview ?? cachedInterview ?? null;
+
   const startDate = useMemo(() => {
-    if (currentInterview) {
+    if (resolvedInterview) {
       return (
-        toDateFromStrings(currentInterview.interviewDate, currentInterview.startTime) ??
+        toDateFromStrings(resolvedInterview.interviewDate, resolvedInterview.startTime) ??
         interview?.start ??
         null
       );
     }
     return interview?.start ?? null;
-  }, [currentInterview, interview]);
+  }, [interview, resolvedInterview]);
 
   const endDate = useMemo(() => {
-    if (currentInterview) {
+    if (resolvedInterview) {
       return (
-        toDateFromStrings(currentInterview.interviewDate, currentInterview.endTime) ??
+        toDateFromStrings(resolvedInterview.interviewDate, resolvedInterview.endTime) ??
         interview?.end ??
         null
       );
     }
     return interview?.end ?? null;
-  }, [currentInterview, interview]);
+  }, [interview, resolvedInterview]);
 
   const formattedDate = startDate
     ? format(startDate, 'PPP', { locale: isRTL ? ar : undefined })
     : t('common.notAvailable');
 
-  const startTime = startDate
-    ? format(startDate, 'p', { locale: isRTL ? ar : undefined })
-    : t('common.notAvailable');
+  const formatTimeLabel = (dateValue: Date | null) =>
+    dateValue
+      ? format(dateValue, 'p', { locale: isRTL ? ar : undefined })
+      : t('common.notAvailable');
 
-  const endTime = endDate
-    ? format(endDate, 'p', { locale: isRTL ? ar : undefined })
-    : t('common.notAvailable');
+  const startTime = formatTimeLabel(startDate);
+  const endTime = formatTimeLabel(endDate);
 
-  const teacherName = currentInterview?.teacherName ?? interview?.candidateName;
-  const supervisorName = currentInterview?.supervisorName ?? interview?.supervisor;
-  const jobTitle = currentInterview?.jobAdvertisementTitle ?? interview?.title;
+  const formatTimeFromString = (time?: string) => {
+    if (!time) return t('common.notAvailable');
+    const candidate = time.includes('T') ? time : `1970-01-01T${normalizeTimePortion(time)}`;
+    const parsed = safeParseDate(candidate);
+    if (!parsed) {
+      return t('common.notAvailable');
+    }
+    return format(parsed, 'p', { locale: isRTL ? ar : undefined });
+  };
+
+  const isDetailsLoading = isLoading && !resolvedInterview;
 
   if (!interview) return null;
 
+  console.log(interviewsData);
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={formattedDate}>
       <div className="space-y-4 py-4">
-        {isFetching ? (
+        {isDetailsLoading ? (
           <Loading size="lg" />
         ) : (
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-3 rounded-lg border p-3">
-              <div className="flex items-center gap-2">
-                <p className="font-semibold text-gray-900">{t('interviews.announcementName')}</p>
-                <p className="text-gray-700">{jobTitle}</p>
-                <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-100">
-                  <CustomImage src={ArrowIcon} alt="arrow" className="h-5 w-5" />
-                </div>
-              </div>
-
-              {teacherName && (
+            {interviewsData.map((detail) => (
+              <div key={detail.id} className="flex flex-col gap-3 rounded-lg border p-3">
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-gray-900">{t('interviews.teacherName')}</p>:
-                  <p>{teacherName}</p>
-                  <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-blue-100">
-                    <CustomImage src={EyeStyledIcon} alt="supervisor" className="h-5 w-5" />
+                  <p className="font-semibold text-gray-900">{t('interviews.announcementName')}</p>
+                  <p className="text-gray-700">{detail.jobAdvertisementName}</p>
+                  <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-100">
+                    <CustomImage src={ArrowIcon} alt="arrow" className="h-5 w-5" />
                   </div>
                 </div>
-              )}
 
-              {supervisorName && (
-                <div className="flex items-center gap-3">
+                {detail?.teacherName && (
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-900">{t('interviews.supervisor')}</p>:
-                    <p>{supervisorName}</p>
+                    <p className="font-semibold text-gray-900">{t('interviews.teacherName')}</p>:
+                    <p>{detail.teacherName}</p>
+                    <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-blue-100">
+                      <CustomImage src={EyeStyledIcon} alt="supervisor" className="h-5 w-5" />
+                    </div>
+                  </div>
+                )}
+
+                {detail?.supervisorName && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">{t('interviews.supervisor')}</p>:
+                      <p>{detail.supervisorName}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-gray-900">{t('interviews.startTime')}</p>:
+                    <p>{formatTimeFromString(detail.startTime)}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-gray-900">{t('interviews.endTime')}</p>:
+                    <p>{formatTimeFromString(detail.endTime)}</p>
                   </div>
                 </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-gray-900">{t('interviews.startTime')}</p>:
-                  <p>{startTime}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-gray-900">{t('interviews.endTime')}</p>:
-                  <p>{endTime}</p>
-                </div>
               </div>
-            </div>
+            ))}
+            {fetchError && <p className="text-sm text-red-500">{fetchError}</p>}
           </div>
         )}
       </div>

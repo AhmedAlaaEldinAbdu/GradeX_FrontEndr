@@ -121,7 +121,6 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
-
   const {
     countries,
     schoolStages,
@@ -141,10 +140,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     isLoadingLanguageLevels,
   } = useAppSelector((state) => state.lookups);
   const { subjects, isLoading: isLoadingSubjects } = useAppSelector((state) => state.subjects);
-  const {
-    isCreating,
-    currentJobAdvertisment,
-  } = useAppSelector((state) => state.jobAdvertisments);
+  const { isCreating, currentJobAdvertisment } = useAppSelector((state) => state.jobAdvertisments);
 
   const isEditMode = Boolean(jobId);
   const [isFormReady, setIsFormReady] = useState(!isEditMode);
@@ -210,7 +206,12 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     if (job.teacherGender === 1) gender = '1';
     else if (job.teacherGender === 2) gender = '2';
 
-    const workSchedule = job.workShedule === 1 ? ContractType.FULL_TIME : job.workShedule === 2 ? ContractType.PART_TIME : ContractType.BOTH;
+    const workSchedule =
+      job.workShedule === 1
+        ? ContractType.FULL_TIME
+        : job.workShedule === 2
+          ? ContractType.PART_TIME
+          : ContractType.BOTH;
     setValue('contractType', workSchedule);
 
     // Set form values
@@ -409,8 +410,6 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     }));
   }, [languageLevels, currentLang]);
 
-
-
   const handleContractTypeChange = (type: 'FULL_TIME' | 'PART_TIME', checked: boolean) => {
     if (type === 'FULL_TIME') {
       setIsFullTimeChecked(checked);
@@ -463,9 +462,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const salaryMax = Number(values.maximumSalary || 0);
 
     const payload: CreateJobAdvertismentRequest = {
-      name: "", // Name is not part of the form, setting empty string
-      nameEn: "", // NameEn is not part of the form, setting empty string
-      schoolBranchId: "e45f71f1-aeed-4765-2db0-08de255d5ebd", // Temporary static value for school branch ID
+      name: '', // Name is not part of the form, setting empty string
+      nameEn: '', // NameEn is not part of the form, setting empty string
+      schoolBranchId: 'e45f71f1-aeed-4765-2db0-08de255d5ebd', // Temporary static value for school branch ID
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,
       jobDescription: values.jobDescriptionAr,
@@ -531,6 +530,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 message: t('jobAnnouncement.form.editSuccessMessage'),
               });
               navigate('/job-announcements');
+              dispatch(fetchJobAdvertisments({ page: 1, limit: 10 }));
             } else {
               setShowPopupMessage({
                 show: true,
@@ -551,6 +551,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 message: t('jobAnnouncement.form.successMessage'),
               });
               navigate('/job-announcements');
+              dispatch(fetchJobAdvertisments({ page: 1, limit: 10 }));
             } else {
               setShowPopupMessage({
                 show: true,
@@ -560,7 +561,6 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             }
           });
       }
-      await dispatch(fetchJobAdvertisments({ page: 1, limit: 10 }));
     } catch {
       setShowPopupMessage({
         show: true,
