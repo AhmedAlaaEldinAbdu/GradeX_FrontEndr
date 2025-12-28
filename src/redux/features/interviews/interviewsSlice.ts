@@ -26,6 +26,7 @@ export interface InterviewFilters {
   supervisorName?: string;
   month?: number;
   year?: number;
+  date?: string;
 }
 
 export interface InterviewsState {
@@ -104,6 +105,7 @@ export const fetchInterviews = createAsyncThunk<
           supervisorName,
           month,
           year,
+          date,
         } = payload.filters;
 
         if (teacherId) params.teacherId = teacherId;
@@ -113,6 +115,7 @@ export const fetchInterviews = createAsyncThunk<
         if (supervisorName) params.SupervisorName = supervisorName;
         if (month !== undefined) params.Month = month;
         if (year !== undefined) params.Year = year;
+        if (date) params.Date = date;
       }
     }
 

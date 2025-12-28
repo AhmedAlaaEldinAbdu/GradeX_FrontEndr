@@ -23,6 +23,7 @@ export interface Interview {
   teacherName?: string;
   supervisorName?: string;
   jobAdvertisementTitle?: string;
+  jobAdvertisementName?: string;
   status?: string;
   notes?: string;
   createdAt?: string;
@@ -51,6 +52,7 @@ export interface InterviewQueryParams {
   SupervisorName?: string;
   Month?: number;
   Year?: number;
+  Date?: string;
   teacherId?: string;
   supervisorId?: string;
   jobAdvertisementId?: string;
