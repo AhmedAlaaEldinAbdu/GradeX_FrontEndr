@@ -571,7 +571,7 @@ export default function JobAnnouncementsList() {
           <IconButton
             status="edit"
             variant="success"
-            onClick={() => navigate(`/job-announcements/edit/${row.id}`)}
+            onClick={() => navigate(`/job-announcements/edit-job-announcement/${row.id}`)}
             ariaLabel={t('actions.edit')}
           />
           <IconButton
