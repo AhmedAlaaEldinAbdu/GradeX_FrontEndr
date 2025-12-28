@@ -77,16 +77,11 @@ export interface JobAdvertismentJobBenefitDto {
 }
 
 export interface JobAdvertismentBase {
-  name?: string;
-  nameEn?: string;
+  name: string;
+  nameEn: string;
   schoolBranchId: string;
-  schoolNameAr?: string;
-  schoolNameEn?: string;
   qualificationType: number;
-  applicantsCount?: number;
   materialId: string;
-  materialNameAr?: string;
-  materialNameEn?: string;
   jobDescription: string;
   jobDescriptionEn: string;
   jobResponsibilities: string;
@@ -105,11 +100,7 @@ export interface JobAdvertismentBase {
   workStartTime: string;
   workEndTime: string;
   lkAdministrativePositionId: string;
-  lkAdministrativePositionNameAr?: string;
-  lkAdministrativePositionNameEn?: string;
   lkTeacherLevelId: string;
-  lkTeacherLevelNameAr?: string;
-  lkTeacherLevelNameEn?: string;
   jobAdvertismentTechnicalSkillsDto?: JobAdvertismentTechnicalSkillDto[];
   jobAdvertismentPersonalSkillsDto?: JobAdvertismentPersonalSkillDto[];
   jobAdvertismentMaterialDto?: JobAdvertismentMaterialDto[];
@@ -125,6 +116,15 @@ export interface JobAdvertisment extends JobAdvertismentBase {
   status?: number | string;
   createdAt?: string;
   updatedAt?: string;
+  schoolNameAr?: string;
+  schoolNameEn?: string;
+  applicantsCount?: number;
+  materialNameAr?: string;
+  materialNameEn?: string;
+  lkAdministrativePositionNameAr?: string;
+  lkAdministrativePositionNameEn?: string;
+  lkTeacherLevelNameAr?: string;
+  lkTeacherLevelNameEn?: string;
 }
 
 export interface JobAdvertismentListData {

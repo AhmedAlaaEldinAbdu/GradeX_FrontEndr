@@ -13,6 +13,15 @@ import type {
   JobAdvertisment,
   CreateJobAdvertismentRequest,
   UpdateJobAdvertismentRequest,
+  JobAdvertismentBase,
+  JobAdvertismentTechnicalSkillDto,
+  JobAdvertismentPersonalSkillDto,
+  JobAdvertismentMaterialDto,
+  JobAdvertismentCountryDto,
+  JobAdvertismentQualificationDto,
+  JobAdvertismentSchoolStageDto,
+  JobAdvertismentLanguageDto,
+  JobAdvertismentJobBenefitDto,
 } from '@/services/api/types/job-advertisment.types';
 
 const serializeJobAdvertismentParams = (params?: JobAdvertismentQueryParams) => {
@@ -35,6 +44,145 @@ const serializeJobAdvertismentParams = (params?: JobAdvertismentQueryParams) => 
   });
 
   return searchParams.toString();
+};
+
+const appendValue = (formData: FormData, key: string, value: unknown) => {
+  if (value === undefined || value === null) {
+    return;
+  }
+
+  if (value instanceof Blob) {
+    formData.append(key, value);
+    return;
+  }
+
+  formData.append(key, String(value));
+};
+
+const appendJsonCollection = <T extends object>(
+  formData: FormData,
+  formKey: string,
+  items: T[] | undefined,
+  allowedKeys: ReadonlyArray<keyof T>
+) => {
+  if (!items?.length) {
+    return;
+  }
+
+  const sanitized = items
+    .map((item) => {
+      const entry: Record<string, unknown> = {};
+      allowedKeys.forEach((key) => {
+        const value = item[key];
+        if (value !== undefined && value !== null && value !== '') {
+          entry[String(key)] = value;
+        }
+      });
+      return Object.keys(entry).length ? entry : null;
+    })
+    .filter((entry): entry is Record<string, unknown> => Boolean(entry));
+
+  if (!sanitized.length) {
+    return;
+  }
+
+  formData.append(formKey, JSON.stringify(sanitized));
+};
+
+const primitiveJobAdvertismentFields: Array<{
+  key: keyof JobAdvertismentBase;
+  formKey: string;
+}> = [
+  { key: 'name', formKey: 'Name' },
+  { key: 'nameEn', formKey: 'NameEn' },
+  { key: 'schoolBranchId', formKey: 'SchoolBranchId' },
+  { key: 'qualificationType', formKey: 'QualificationType' },
+  { key: 'materialId', formKey: 'MaterialId' },
+  { key: 'jobDescription', formKey: 'JobDescription' },
+  { key: 'jobDescriptionEn', formKey: 'JobDescriptionEn' },
+  { key: 'jobResponsibilities', formKey: 'JobResponsibilities' },
+  { key: 'jobResponsibilitiesEn', formKey: 'JobResponsibilitiesEn' },
+  { key: 'noticePeriod', formKey: 'NoticePeriod' },
+  { key: 'noticePeriodDate', formKey: 'NoticePeriodDate' },
+  { key: 'advertisementStartDate', formKey: 'AdvertisementStartDate' },
+  { key: 'advertisementEndDate', formKey: 'AdvertisementEndDate' },
+  { key: 'nationality', formKey: 'Nationality' },
+  { key: 'salary', formKey: 'Salary' },
+  { key: 'minimumSalary', formKey: 'MinimumSalary' },
+  { key: 'maximumSalary', formKey: 'MaximumSalary' },
+  { key: 'teacherGender', formKey: 'TeacherGender' },
+  { key: 'yearsExperience', formKey: 'YearsExperience' },
+  { key: 'workShedule', formKey: 'WorkShedule' },
+  { key: 'workStartTime', formKey: 'WorkStartTime' },
+  { key: 'workEndTime', formKey: 'WorkEndTime' },
+  { key: 'lkAdministrativePositionId', formKey: 'LkAdministrativePositionId' },
+  { key: 'lkTeacherLevelId', formKey: 'LkTeacherLevelId' },
+];
+
+const buildJobAdvertismentFormData = (data: JobAdvertismentBase): FormData => {
+  const formData = new FormData();
+
+  primitiveJobAdvertismentFields.forEach(({ key, formKey }) => {
+    appendValue(formData, formKey, data[key]);
+  });
+
+  appendJsonCollection<JobAdvertismentTechnicalSkillDto>(
+    formData,
+    'JobAdvertismentTechnicalSkillsDto',
+    data.jobAdvertismentTechnicalSkillsDto,
+    ['technicalAppName']
+  );
+
+  appendJsonCollection<JobAdvertismentPersonalSkillDto>(
+    formData,
+    'JobAdvertismentPersonalSkillsDto',
+    data.jobAdvertismentPersonalSkillsDto,
+    ['personalSkillName']
+  );
+
+  appendJsonCollection<JobAdvertismentMaterialDto>(
+    formData,
+    'JobAdvertismentMaterialDto',
+    data.jobAdvertismentMaterialDto,
+    ['materialId']
+  );
+
+  appendJsonCollection<JobAdvertismentCountryDto>(
+    formData,
+    'JobAdvertisementCountryDto',
+    data.jobAdvertisementCountryDto,
+    ['lkCountryId']
+  );
+
+  appendJsonCollection<JobAdvertismentQualificationDto>(
+    formData,
+    'JobAdvertisementQualificationDto',
+    data.jobAdvertisementQualificationDto,
+    ['lkQualificationId']
+  );
+
+  appendJsonCollection<JobAdvertismentSchoolStageDto>(
+    formData,
+    'JobAdvertisementSchoolStageDto',
+    data.jobAdvertisementSchoolStageDto,
+    ['lkSchoolStageId']
+  );
+
+  appendJsonCollection<JobAdvertismentLanguageDto>(
+    formData,
+    'JobAdvertisementLanguageDto',
+    data.jobAdvertisementLanguageDto,
+    ['lkLanguageId', 'lkLanguageLevelId']
+  );
+
+  appendJsonCollection<JobAdvertismentJobBenefitDto>(
+    formData,
+    'JobAdvertisementJobBenefitDto',
+    data.jobAdvertisementJobBenefitDto,
+    ['lkJobBenefitId']
+  );
+
+  return formData;
 };
 
 export async function getJobAdvertisments(
@@ -81,9 +229,15 @@ export async function getJobAdvertismentById(id: string): Promise<JobAdvertismen
 export async function createJobAdvertisment(
   data: CreateJobAdvertismentRequest
 ): Promise<ApiResponseModel<null>> {
+  const formData = buildJobAdvertismentFormData(data);
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
     JobAdvertismentEndpoints.addJobAdvertisment,
-    data
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
   );
 
   return response.data;
@@ -93,11 +247,15 @@ export async function updateJobAdvertisment(
   id: string,
   data: UpdateJobAdvertismentRequest
 ): Promise<ApiResponseModel<null>> {
+  const formData = buildJobAdvertismentFormData(data);
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
     JobAdvertismentEndpoints.editJobAdvertisment,
-    data,
+    formData,
     {
       params: { Id: id },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     }
   );
 
