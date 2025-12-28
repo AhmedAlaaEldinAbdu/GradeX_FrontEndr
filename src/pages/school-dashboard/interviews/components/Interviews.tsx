@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EmptyState from '@/shared/components/EmptyState';
-import ErrorMessage from '@/shared/components/ErrorMessage';
 import SharedCalendar, {
   type CalendarEvent,
   type ContextMenuAction,
@@ -54,13 +53,10 @@ export default function Interviews() {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
-  const {
-    interviews: interviewsData,
-    isLoading,
-    error: errorMessage,
-  } = useAppSelector((state) => state.interviews);
+  const { interviews: interviewsData, isLoading } = useAppSelector((state) => state.interviews);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
+  const [allSupervisors, setAllSupervisors] = useState<Array<{ value: string; label: string }>>([]);
   const [selectedInterview, setSelectedInterview] = useState<CalendarInterview | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -80,11 +76,25 @@ export default function Interviews() {
     };
 
     try {
-      await dispatch(
+      const result = await dispatch(
         fetchInterviews({
           filters,
         })
       ).unwrap();
+
+      // Capture all supervisors only on initial load (no filters)
+      if (!trimmedSearch && !selectedSupervisorName && result?.data) {
+        const names = result.data
+          .map((interview: InterviewEntity) => interview.supervisorName)
+          .filter((name): name is string => Boolean(name));
+
+        const uniqueSupervisors = Array.from<string>(new Set(names)).map((name) => ({
+          value: name,
+          label: name,
+        }));
+
+        setAllSupervisors(uniqueSupervisors);
+      }
     } catch (error) {
       const message =
         typeof error === 'string'
@@ -144,17 +154,6 @@ export default function Interviews() {
       };
     });
   }, [interviewsData, t]);
-
-  const SUPERVISOR_OPTIONS = useMemo(() => {
-    const names = interviewsData
-      .map((interview) => interview.supervisorName)
-      .filter((name): name is string => Boolean(name));
-
-    return Array.from(new Set(names)).map((name) => ({
-      value: name,
-      label: name,
-    }));
-  }, [interviewsData]);
 
   const showEmptyState = !isLoading && calendarInterviews.length === 0;
 
@@ -242,22 +241,26 @@ export default function Interviews() {
           });
         }
 
-        await dispatch(editInterview({ id: editingInterviewId, data: payload })).unwrap();
-        showToast({
-          message: t('interviews.interviewUpdatedSuccessfully'),
-          type: 'success',
-          duration: 3000,
+        await dispatch(editInterview({ id: editingInterviewId, data: payload })).unwrap().then(() => {
+          showToast({
+            message: t('interviews.interviewUpdatedSuccessfully'),
+            type: 'success',
+          });
+          fetchInterviewsData();
         });
       } else {
-        await dispatch(createInterview(payload)).unwrap();
-        showToast({
-          message: t('interviews.interviewAddedSuccessfully'),
-          type: 'success',
-          duration: 3000,
+        await dispatch(createInterview(payload)).unwrap().then((res) => {
+          if (res.isSuccess) {
+            showToast({
+              message: t('interviews.interviewAddedSuccessfully'),
+              type: 'success',
+            });
+            fetchInterviewsData();
+          }
         });
       }
 
-      await fetchInterviewsData();
+
     } catch (error) {
       const message =
         typeof error === 'string'
@@ -291,15 +294,17 @@ export default function Interviews() {
 
     try {
       setIsDeleting(true);
-      await dispatch(deleteInterview(interviewIdPendingDelete)).unwrap();
-      setShowDeletePopup(false);
-      setInterviewIdPendingDelete(null);
-      showToast({
-        message: t('interviews.interviewDeletedSuccessfully'),
-        type: 'success',
-        duration: 3000,
+      await dispatch(deleteInterview(interviewIdPendingDelete)).unwrap().then((res: any) => {
+        if (res.isSuccess) {
+          setInterviewIdPendingDelete(null);
+          setShowDeletePopup(false);
+          fetchInterviewsData();
+          showToast({
+            message: t('interviews.interviewDeletedSuccessfully'),
+            type: 'success',
+          });
+        }
       });
-      await fetchInterviewsData();
     } catch (error) {
       const message =
         typeof error === 'string'
@@ -371,42 +376,75 @@ export default function Interviews() {
     },
   ];
 
-  if (errorMessage) {
-    return <ErrorMessage message={errorMessage} />;
-  }
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedSupervisorName('');
+  };
 
   return (
     <>
       <Card>
-        <div className="mb-5 flex gap-3">
-          <SearchInput
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder={t('interviews.searchTeacherName')}
-            wrapperClassName="w-[300px]"
-          />
-          <CustomSelect
-            value={selectedSupervisorName}
-            onChange={(value) =>
-              setSelectedSupervisorName(
-                Array.isArray(value)
-                  ? ((value[0] as string | undefined) ?? '')
-                  : ((value as string | undefined) ?? '')
-              )
-            }
-            options={SUPERVISOR_OPTIONS}
-            maxHeight="200px"
-            className="w-[250px]"
-            placeholder={t('interviews.supervisorName')}
-          />
+        <div className="mb-5 flex justify-between gap-3">
+          <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
+
+            <SearchInput
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder={t('interviews.searchTeacherName')}
+              wrapperClassName="w-[300px]"
+            />
+            <CustomSelect
+              value={selectedSupervisorName}
+              onChange={(value) =>
+                setSelectedSupervisorName(Array.isArray(value) ? (value[0] ?? '') : value)
+              }
+              options={allSupervisors}
+              maxHeight="200px"
+              className="w-[250px]"
+              placeholder={isLoading ? t('common.loading') : t('interviews.supervisorName')}
+              disabled={isLoading}
+            />
+
+          </div>
+
+          <button
+            onClick={handleResetFilters}
+            className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+            title={t('actions.clearFilter')}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M21 12a9 9 0 1 0-3.46 6.54"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M21 3v6h-6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
         </div>
-        {showEmptyState && (
+        {/* {showEmptyState && (
           <EmptyState
             imgSrc={StyledCalendarIcon}
             title={t('interviews.noInterviewsMessage')}
             blend={true}
           />
-        )}
+        )} */}
         <SharedCalendar
           events={calendarInterviews}
           onSelectSlot={handleSelectSlot}
