@@ -476,8 +476,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     };
 
     const payload: CreateJobAdvertismentRequest = {
-      name: '', // Name is not part of the form, setting empty string
-      nameEn: '', // NameEn is not part of the form, setting empty string
+      name: 'تست', // Name is not part of the form, setting empty string
+      nameEn: 'test', // NameEn is not part of the form, setting empty string
       schoolBranchId: 'e45f71f1-aeed-4765-2db0-08de255d5ebd', // Temporary static value for school branch ID
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,

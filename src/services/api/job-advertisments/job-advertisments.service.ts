@@ -59,7 +59,7 @@ const appendValue = (formData: FormData, key: string, value: unknown) => {
   formData.append(key, String(value));
 };
 
-const appendJsonCollection = <T extends object>(
+const appendIndexedCollection = <T extends object>(
   formData: FormData,
   formKey: string,
   items: T[] | undefined,
@@ -69,24 +69,15 @@ const appendJsonCollection = <T extends object>(
     return;
   }
 
-  const sanitized = items
-    .map((item) => {
-      const entry: Record<string, unknown> = {};
-      allowedKeys.forEach((key) => {
-        const value = item[key];
-        if (value !== undefined && value !== null && value !== '') {
-          entry[String(key)] = value;
-        }
-      });
-      return Object.keys(entry).length ? entry : null;
-    })
-    .filter((entry): entry is Record<string, unknown> => Boolean(entry));
-
-  if (!sanitized.length) {
-    return;
-  }
-
-  formData.append(formKey, JSON.stringify(sanitized));
+  items.forEach((item, index) => {
+    allowedKeys.forEach((key) => {
+      const value = item[key];
+      if (value !== undefined && value !== null && value !== '') {
+        const fieldName = `${formKey}[${index}].${String(key)}`;
+        formData.append(fieldName, String(value));
+      }
+    });
+  });
 };
 
 const primitiveJobAdvertismentFields: Array<{
@@ -126,56 +117,56 @@ const buildJobAdvertismentFormData = (data: JobAdvertismentBase): FormData => {
     appendValue(formData, formKey, data[key]);
   });
 
-  appendJsonCollection<JobAdvertismentTechnicalSkillDto>(
+  appendIndexedCollection<JobAdvertismentTechnicalSkillDto>(
     formData,
     'JobAdvertismentTechnicalSkillsDto',
     data.jobAdvertismentTechnicalSkillsDto,
     ['technicalAppName']
   );
 
-  appendJsonCollection<JobAdvertismentPersonalSkillDto>(
+  appendIndexedCollection<JobAdvertismentPersonalSkillDto>(
     formData,
     'JobAdvertismentPersonalSkillsDto',
     data.jobAdvertismentPersonalSkillsDto,
     ['personalSkillName']
   );
 
-  appendJsonCollection<JobAdvertismentMaterialDto>(
+  appendIndexedCollection<JobAdvertismentMaterialDto>(
     formData,
     'JobAdvertismentMaterialDto',
     data.jobAdvertismentMaterialDto,
     ['materialId']
   );
 
-  appendJsonCollection<JobAdvertismentCountryDto>(
+  appendIndexedCollection<JobAdvertismentCountryDto>(
     formData,
     'JobAdvertisementCountryDto',
     data.jobAdvertisementCountryDto,
     ['lkCountryId']
   );
 
-  appendJsonCollection<JobAdvertismentQualificationDto>(
+  appendIndexedCollection<JobAdvertismentQualificationDto>(
     formData,
     'JobAdvertisementQualificationDto',
     data.jobAdvertisementQualificationDto,
     ['lkQualificationId']
   );
 
-  appendJsonCollection<JobAdvertismentSchoolStageDto>(
+  appendIndexedCollection<JobAdvertismentSchoolStageDto>(
     formData,
     'JobAdvertisementSchoolStageDto',
     data.jobAdvertisementSchoolStageDto,
     ['lkSchoolStageId']
   );
 
-  appendJsonCollection<JobAdvertismentLanguageDto>(
+  appendIndexedCollection<JobAdvertismentLanguageDto>(
     formData,
     'JobAdvertisementLanguageDto',
     data.jobAdvertisementLanguageDto,
     ['lkLanguageId', 'lkLanguageLevelId']
   );
 
-  appendJsonCollection<JobAdvertismentJobBenefitDto>(
+  appendIndexedCollection<JobAdvertismentJobBenefitDto>(
     formData,
     'JobAdvertisementJobBenefitDto',
     data.jobAdvertisementJobBenefitDto,
