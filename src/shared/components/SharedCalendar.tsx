@@ -39,6 +39,7 @@ export interface ContextMenuAction {
   color?: 'default' | 'success' | 'primary' | 'danger';
   showOnDate?: boolean;
   showOnEvent?: boolean;
+  hidden?: (date?: Date, event?: CalendarEvent) => boolean;
 }
 
 interface SharedCalendarProps {
@@ -304,27 +305,27 @@ export default function SharedCalendar({
               event: CustomCalendarEvent,
               ...(enableDateCellMenu
                 ? {
-                    dateHeader: (props: any) => {
-                      const dateEvents = condensedEvents.filter((event) => {
-                        const eventDate = new Date(event.start);
-                        const cellDate = new Date(props.date);
-                        return (
-                          eventDate.getDate() === cellDate.getDate() &&
-                          eventDate.getMonth() === cellDate.getMonth() &&
-                          eventDate.getFullYear() === cellDate.getFullYear()
-                        );
-                      });
-
+                  dateHeader: (props: any) => {
+                    const dateEvents = condensedEvents.filter((event) => {
+                      const eventDate = new Date(event.start);
+                      const cellDate = new Date(props.date);
                       return (
-                        <div className="relative flex-col">
-                          <div className="relative flex items-center justify-between p-1">
-                            <span className="px-1 text-sm">{props.label}</span>
-                            <CustomDateCell date={props.date} event={dateEvents[0]} />
-                          </div>
-                        </div>
+                        eventDate.getDate() === cellDate.getDate() &&
+                        eventDate.getMonth() === cellDate.getMonth() &&
+                        eventDate.getFullYear() === cellDate.getFullYear()
                       );
-                    },
-                  }
+                    });
+
+                    return (
+                      <div className="relative flex-col">
+                        <div className="relative flex items-center justify-between p-1">
+                          <span className="px-1 text-sm">{props.label}</span>
+                          <CustomDateCell date={props.date} event={dateEvents[0]} />
+                        </div>
+                      </div>
+                    );
+                  },
+                }
                 : {}),
             }}
             messages={{
@@ -356,7 +357,8 @@ export default function SharedCalendar({
               const hasEvent = Boolean(dropdownContext.event);
               const allowDateAction = action.showOnDate !== false;
               const allowEventAction = hasEvent && action.showOnEvent !== false;
-              return allowEventAction || allowDateAction;
+              const isHidden = action.hidden?.(dropdownContext.date, dropdownContext.event) ?? false;
+              return (allowEventAction || allowDateAction) && !isHidden;
             })
             .map((action, index) => (
               <button

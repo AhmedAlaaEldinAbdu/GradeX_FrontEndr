@@ -6,11 +6,15 @@ import Modal from '@/shared/popups/Modal';
 import CustomImage from '@/shared/components/CustomImage';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import ArrowIcon from '@gradex/assets/icons/Arrow.svg';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchInterviews } from '@/redux/features/interviews/interviewsSlice';
+import { fetchInterviews, deleteInterview } from '@/redux/features/interviews/interviewsSlice';
 import type { InterviewFilters } from '@/redux/features/interviews/interviewsSlice';
 import type { Interview } from '@/services/api/types/interviews.types';
 import Loading from '@/shared/components/Loading';
+import IconButton from '@/shared/components/IconButton';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import { useToast } from '@/shared/context/ToastContext';
 
 interface InterviewDetailsPopupProps {
   isOpen: boolean;
@@ -34,9 +38,13 @@ export default function InterviewDetailsPopup({
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const { popupInterviews, popupIsLoading } = useAppSelector((state) => state.interviews);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [interviewIdPendingDelete, setInterviewIdPendingDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const safeParseDate = (value?: Date | string | null) => {
     if (!value) return null;
@@ -77,7 +85,6 @@ export default function InterviewDetailsPopup({
 
     const filters: InterviewFilters & { Date?: string } = {
       date: dateFilter,
-      Date: dateFilter,
     };
 
     setFetchError(null);
@@ -152,6 +159,68 @@ export default function InterviewDetailsPopup({
 
   const isDetailsLoading = popupIsLoading && !resolvedInterview;
 
+  const handleRequestDelete = (interviewId: string) => {
+    setInterviewIdPendingDelete(interviewId);
+    setShowDeletePopup(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeletePopup(false);
+    setInterviewIdPendingDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!interviewIdPendingDelete) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await dispatch(deleteInterview(interviewIdPendingDelete))
+        .unwrap()
+        .then((res: any) => {
+          debugger;
+          if (res === interviewIdPendingDelete || res.isSuccess) {
+            setInterviewIdPendingDelete(null);
+            setShowDeletePopup(false);
+            showToast({
+              message: t('interviews.interviewDeletedSuccessfully'),
+              type: 'success',
+            });
+            if (dateFilter) {
+              const filters: InterviewFilters & { Date?: string } = {
+                date: dateFilter,
+              };
+              dispatch(
+                fetchInterviews({
+                  filters,
+                  target: 'popup',
+                })
+              );
+            }
+          } else {
+            setInterviewIdPendingDelete(null);
+            setShowDeletePopup(false);
+            showToast({
+              message: t('common.error'),
+              type: 'error',
+            });
+          }
+        });
+    } catch (error) {
+      const message =
+        typeof error === 'string'
+          ? error
+          : (error as { message?: string })?.message || t('common.error');
+      showToast({
+        message,
+        type: 'error',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (!interview) return null;
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={formattedDate}>
@@ -168,14 +237,27 @@ export default function InterviewDetailsPopup({
 
               return (
                 <div key={detail.id} className="flex flex-col gap-3 rounded-lg border p-3">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-900">
-                      {t('interviews.announcementName')}
-                    </p>
-                    <p className="text-gray-700">{jobTitle}</p>
-                    <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-100">
-                      <CustomImage src={ArrowIcon} alt="arrow" className="h-5 w-5" />
+                  <div className="flex justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">
+                        {t('interviews.announcementName')}
+                      </p>
+                      <p className="text-gray-700">{jobTitle}</p>
+                      <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-100">
+                        <CustomImage src={ArrowIcon} alt="arrow" className="h-5 w-5" />
+                      </div>
                     </div>
+                    {popupInterviews?.length > 1 &&
+                      <div className="flex items-center">
+                        <IconButton
+                          status="delete"
+                          variant="danger"
+                          onClick={() => handleRequestDelete(detail.id)}
+                          disabled={isDeleting}
+                          ariaLabel="Delete"
+                        />
+                      </div>
+                    }
                   </div>
 
                   {detail?.teacherName && (
@@ -214,6 +296,14 @@ export default function InterviewDetailsPopup({
           </div>
         )}
       </div>
+      <DeletePopup
+        open={showDeletePopup}
+        message="interviews.confirmDeleteInterview"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
+      />
     </Modal>
   );
 }

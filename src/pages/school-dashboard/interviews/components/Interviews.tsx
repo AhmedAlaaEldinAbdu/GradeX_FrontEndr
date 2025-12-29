@@ -300,13 +300,20 @@ export default function Interviews() {
       await dispatch(deleteInterview(interviewIdPendingDelete))
         .unwrap()
         .then((res: any) => {
-          if (res.isSuccess) {
+          if (res === interviewIdPendingDelete || res.isSuccess) {
             setInterviewIdPendingDelete(null);
             setShowDeletePopup(false);
             fetchInterviewsData();
             showToast({
               message: t('interviews.interviewDeletedSuccessfully'),
               type: 'success',
+            });
+          } else {
+            setInterviewIdPendingDelete(null);
+            setShowDeletePopup(false);
+            showToast({
+              message: t('common.error'),
+              type: 'error',
             });
           }
         });
@@ -324,6 +331,19 @@ export default function Interviews() {
       setIsDeleting(false);
     }
   };
+
+  const hasMultipleInterviewsOnDay = useCallback((date: Date) => {
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0);
+
+    const interviewsOnDay = calendarInterviews.filter((interview) => {
+      const interviewDate = new Date(interview.start);
+      interviewDate.setHours(0, 0, 0, 0);
+      return interviewDate.getTime() === targetDate.getTime();
+    });
+
+    return interviewsOnDay.length > 1;
+  }, [calendarInterviews]);
 
   const contextMenuActions: ContextMenuAction[] = [
     {
@@ -370,7 +390,7 @@ export default function Interviews() {
       onClick: (_date, event) => {
         if (event) {
           const interview = calendarInterviews.find((i) => i.id === event.id);
-          if (interview) {
+          if (interview && !hasMultipleInterviewsOnDay(interview.start)) {
             handleRequestDelete(interview.id);
           }
         }
@@ -378,6 +398,13 @@ export default function Interviews() {
       color: 'danger',
       showOnDate: false,
       showOnEvent: true,
+      hidden: (_date, event) => {
+        if (event) {
+          const interview = calendarInterviews.find((i) => i.id === event.id);
+          return interview ? hasMultipleInterviewsOnDay(interview.start) : false;
+        }
+        return false;
+      },
     },
   ];
 
