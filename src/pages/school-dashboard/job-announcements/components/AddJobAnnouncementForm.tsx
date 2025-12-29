@@ -68,12 +68,10 @@ const NATIONALITY_OPTIONS = [
   { value: NationalityMode.SPECIFIC, labelKey: 'jobAnnouncement.form.nationalitySpecific' },
 ];
 
-const DEFAULT_QUALIFICATION_TYPE = '1';
-
 type AddJobAnnouncementFormValues = InferType<typeof AddJobAnnouncementSchema>;
 
 const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
-  jobCategory: JobCategory.TEACHER,
+  qualificationType: JobCategory.TEACHER,
   teacherLevelId: '',
   administrativePositionId: '',
   specializationIds: '',
@@ -90,7 +88,6 @@ const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   nationalityIds: [],
   noticePeriod: WorkStartMode.IMMEDIATE,
   noticePeriodDate: '',
-  qualificationType: DEFAULT_QUALIFICATION_TYPE,
   qualificationIds: [],
   yearsExperience: 0,
   workStartTime: '',
@@ -104,6 +101,80 @@ const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   personalSkillIds: '',
   benefitsIds: [],
   languages: [{ languageId: '', levelId: '' }],
+};
+
+const isEmptyValue = (value: unknown): boolean => {
+  if (value === '' || value === null || value === undefined) {
+    return true;
+  }
+
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+
+  if (value instanceof Date) {
+    return false;
+  }
+
+  if (typeof value === 'object') {
+    return Object.keys(value as Record<string, unknown>).length === 0;
+  }
+
+  return false;
+};
+
+const sanitizeValue = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    const sanitizedArray = value
+      .map((item) => sanitizeValue(item))
+      .filter((item) => !isEmptyValue(item));
+    return sanitizedArray.length ? sanitizedArray : undefined;
+  }
+
+  if (value && typeof value === 'object' && !(value instanceof Date)) {
+    const sanitizedObject = Object.entries(value as Record<string, unknown>).reduce<
+      Record<string, unknown>
+    >((acc, [key, val]) => {
+      const sanitizedChild = sanitizeValue(val);
+      if (!isEmptyValue(sanitizedChild)) {
+        acc[key] = sanitizedChild;
+      }
+      return acc;
+    }, {});
+
+    return isEmptyValue(sanitizedObject) ? undefined : sanitizedObject;
+  }
+
+  return value;
+};
+
+const sanitizePayload = <T,>(payload: T): T => {
+  if (!payload || typeof payload !== 'object') {
+    return payload;
+  }
+
+  const sanitizedEntries = Object.entries(payload as Record<string, unknown>).reduce<
+    Record<string, unknown>
+  >((acc, [key, value]) => {
+    const sanitizedValue = sanitizeValue(value);
+    if (!isEmptyValue(sanitizedValue)) {
+      acc[key] = sanitizedValue;
+    }
+    return acc;
+  }, {});
+
+  return sanitizedEntries as T;
+};
+
+const extractListFromInput = (value?: string | null): string[] => {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(/[\n,]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
 };
 
 interface AddJobAnnouncementFormProps {
@@ -168,7 +239,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     name: 'languages',
   });
 
-  const jobCategory = watch('jobCategory');
+  // المرحلة التعليمية stage
+
+  const jobCategory = watch('qualificationType');
   const nationalityMode = watch('nationalityMode');
   const noticePeriod = watch('noticePeriod');
   const salaryOption = watch('salary');
@@ -215,13 +288,12 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     setValue('contractType', workSchedule);
 
     // Set form values
-    setValue('jobCategory', isTeacher ? JobCategory.TEACHER : JobCategory.ADMIN);
-    setValue('teacherLevelId', job.lkTeacherLevelId || '');
-    setValue('administrativePositionId', job.lkAdministrativePositionId || '');
-    setValue(
-      'specializationIds',
-      job.materialId || job.jobAdvertismentMaterialDto?.[0]?.materialId || ''
-    );
+    setValue('qualificationType', isTeacher ? JobCategory.TEACHER : JobCategory.ADMIN);
+    job.lkTeacherLevelId ? setValue('teacherLevelId', job.lkTeacherLevelId || '') : '';
+    job.lkAdministrativePositionId
+      ? setValue('administrativePositionId', '28b83f51-9b7d-4ff2-b0ad-0d794fd265f9')
+      : '';
+    setValue('specializationIds', job.materialId || '45e85024-f17f-4c43-b6ab-08de2240f2fc' || '');
     setValue('stageIds', job.jobAdvertisementSchoolStageDto?.[0]?.lkSchoolStageId || '');
     setValue('jobDescriptionAr', job.jobDescription || '');
     setValue('jobDescriptionEn', job.jobDescriptionEn || '');
@@ -232,7 +304,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     setValue('nationalityMode', natMode);
     setValue('nationalityIds', job.jobAdvertisementCountryDto?.map((c) => c.lkCountryId) || []);
     setValue('noticePeriod', workMode);
-    setValue('noticePeriodDate', job.noticePeriodDate?.split('T')[0] || '');
+    job.noticePeriodDate
+      ? setValue('noticePeriodDate', job.noticePeriodDate?.split('T')[0] || '')
+      : '';
     setValue(
       'qualificationIds',
       job.jobAdvertisementQualificationDto?.map((q) => q.lkQualificationId) || []
@@ -296,9 +370,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
   useEffect(() => {
     if (jobCategory === JobCategory.TEACHER) {
-      setValue('administrativePositionId', '');
-    } else {
       setValue('teacherLevelId', '');
+    } else {
+      setValue('administrativePositionId', '');
     }
   }, [jobCategory, setValue]);
 
@@ -453,40 +527,26 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const specializationList = selectedSpecializationId ? [selectedSpecializationId] : [];
     const stageList = selectedStageId ? [selectedStageId] : [];
     const primarySubjectId = selectedSpecializationId;
-    const qualificationTypeNumber = Number(values.qualificationType) || 0;
+    const qualificationTypeNumber = Number(values.qualificationType) || 2;
     const nationalityValue = values.nationalityMode === NationalityMode.ALL ? 1 : 2;
-    const technicalSkillValue = values.technicalSkillIds?.trim();
-    const personalSkillValue = values.personalSkillIds?.trim();
+    const technicalSkills = extractListFromInput(values.technicalSkillIds);
+    const personalSkills = extractListFromInput(values.personalSkillIds);
 
     const salaryMin = Number(values.minimumSalary || 0);
     const salaryMax = Number(values.maximumSalary || 0);
 
-    // Helper to convert date to ISO date-time string
-    const toIsoDateTime = (dateStr?: string, defaultTime = '00:00:00') => {
-      if (!dateStr) return '';
-      const normalized = dateStr.includes('T') ? dateStr : `${dateStr}T${defaultTime}`;
-      return normalized;
-    };
-
-    // Helper to convert time to ISO date-time string (using current date as placeholder)
-    const toIsoDateTimeFromTime = (timeStr?: string) => {
-      if (!timeStr) return '';
-      const today = new Date().toISOString().split('T')[0];
-      return `${today}T${timeStr}:00`;
-    };
-
-    const payload: CreateJobAdvertismentRequest = {
-      name: 'تست', // Name is not part of the form, setting empty string
-      nameEn: 'test', // NameEn is not part of the form, setting empty string
-      schoolBranchId: 'e45f71f1-aeed-4765-2db0-08de255d5ebd', // Temporary static value for school branch ID
+    const rawPayload: CreateJobAdvertismentRequest = {
+      name: 'الاسم يبقي اوبشنال', // Name is not part of the form, setting empty string
+      nameEn: 'name not required', // NameEn is not part of the form, setting empty string
+      schoolBranchId: '471D89C1-61A8-4B13-D682-08DE1657ABAD', // Temporary static value for school branch ID
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,
       jobDescription: values.jobDescriptionAr,
       jobDescriptionEn: values.jobDescriptionEn,
       jobResponsibilities: values.jobResponsibilitiesAr,
       jobResponsibilitiesEn: values.jobResponsibilitiesEn,
-      advertisementStartDate: toIsoDateTime(values.applicationStartDate),
-      advertisementEndDate: toIsoDateTime(values.applicationEndDate),
+      advertisementStartDate: values.applicationStartDate,
+      advertisementEndDate: values.applicationEndDate,
       nationality: nationalityValue,
       salary: values.salary === SalaryOption.RANGE ? 1 : 2,
       minimumSalary: values.salary === SalaryOption.RANGE ? salaryMin : 0,
@@ -495,18 +555,18 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
         values.teacherGender === 'MALE' ? 1 : values.teacherGender === 'FEMALE' ? 2 : 3,
       yearsExperience: Number(values.yearsExperience || 0),
       noticePeriod: values.noticePeriod === WorkStartMode.IMMEDIATE ? 1 : 2,
-      noticePeriodDate: toIsoDateTime(values.noticePeriodDate),
+      noticePeriodDate: values.noticePeriodDate || '',
       workShedule: values.contractType,
-      workStartTime: toIsoDateTimeFromTime(values.workStartTime),
-      workEndTime: toIsoDateTimeFromTime(values.workEndTime),
+      workStartTime: values.workStartTime,
+      workEndTime: values.workEndTime,
       lkAdministrativePositionId: values.administrativePositionId || '',
       lkTeacherLevelId: values.teacherLevelId || '',
-      jobAdvertismentTechnicalSkillsDto: technicalSkillValue
-        ? [{ technicalAppName: technicalSkillValue }]
-        : [],
-      jobAdvertismentPersonalSkillsDto: personalSkillValue
-        ? [{ personalSkillName: personalSkillValue }]
-        : [],
+      jobAdvertismentTechnicalSkillsDto: technicalSkills.map((skill) => ({
+        technicalAppName: skill,
+      })),
+      jobAdvertismentPersonalSkillsDto: personalSkills.map((skill) => ({
+        personalSkillName: skill,
+      })),
       jobAdvertismentMaterialDto: specializationList.map((subjectId) => ({
         materialId: subjectId,
       })),
@@ -526,10 +586,14 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           lkLanguageId: language.languageId,
           lkLanguageLevelId: language.levelId,
         })),
-      jobAdvertisementJobBenefitDto: (values.benefitsIds ?? []).map((benefitId) => ({
-        lkJobBenefitId: benefitId,
-      })),
-    } as CreateJobAdvertismentRequest;
+      jobAdvertisementJobBenefitDto: (values.benefitsIds ?? [])
+        .filter((benefitId): benefitId is string => Boolean(benefitId))
+        .map((benefitId) => ({
+          lkJobBenefitId: benefitId,
+        })),
+    };
+
+    const payload = sanitizePayload(rawPayload);
 
     try {
       if (isEditMode && jobId) {
@@ -544,7 +608,6 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 message: t('jobAnnouncement.form.editSuccessMessage'),
               });
               navigate('/job-announcements');
-              dispatch(fetchJobAdvertisments({ page: 1, limit: 10 }));
             } else {
               setShowPopupMessage({
                 show: true,
@@ -565,7 +628,6 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 message: t('jobAnnouncement.form.successMessage'),
               });
               navigate('/job-announcements');
-              dispatch(fetchJobAdvertisments({ page: 1, limit: 10 }));
             } else {
               setShowPopupMessage({
                 show: true,
@@ -598,7 +660,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     type="radio"
                     value={String(JobCategory.ADMIN)}
                     checked={jobCategory === JobCategory.ADMIN}
-                    onChange={() => setValue('jobCategory', JobCategory.ADMIN)}
+                    onChange={() => setValue('qualificationType', JobCategory.ADMIN)}
                     className="h-4 w-4 accent-green-600 focus:ring-green-500"
                   />
                   <span className="text-sm text-gray-700">
@@ -610,7 +672,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     type="radio"
                     value={String(JobCategory.TEACHER)}
                     checked={jobCategory === JobCategory.TEACHER}
-                    onChange={() => setValue('jobCategory', JobCategory.TEACHER)}
+                    onChange={() => setValue('qualificationType', JobCategory.TEACHER)}
                     className="h-4 w-4 accent-green-600 focus:ring-green-500"
                   />
                   <span className="text-sm text-gray-700">

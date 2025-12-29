@@ -106,8 +106,8 @@ const primitiveJobAdvertismentFields: Array<{
   { key: 'workShedule', formKey: 'WorkShedule' },
   { key: 'workStartTime', formKey: 'WorkStartTime' },
   { key: 'workEndTime', formKey: 'WorkEndTime' },
-  { key: 'lkAdministrativePositionId', formKey: 'LkAdministrativePositionId' },
-  { key: 'lkTeacherLevelId', formKey: 'LkTeacherLevelId' },
+  { key: 'lkAdministrativePositionId', formKey: 'LKAdministrativePositionId' },
+  { key: 'lkTeacherLevelId', formKey: 'LKTeacherLevelId' },
 ];
 
 const buildJobAdvertismentFormData = (data: JobAdvertismentBase): FormData => {

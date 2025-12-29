@@ -1,8 +1,8 @@
 import { array, mixed, number, object, string, type InferType } from 'yup';
 
 export const JobCategory = {
-  TEACHER: 'TEACHER',
   ADMIN: 'ADMIN',
+  TEACHER: 'TEACHER',
 } as const;
 
 export type JobCategoryValue = (typeof JobCategory)[keyof typeof JobCategory];
@@ -37,7 +37,7 @@ export const ContractType = {
 export type ContractTypeValue = (typeof ContractType)[keyof typeof ContractType];
 
 export const AddJobAnnouncementSchema = object({
-  jobCategory: mixed<JobCategoryValue>()
+  qualificationType: mixed<JobCategoryValue>()
     .oneOf(Object.values(JobCategory))
     .required('jobAnnouncement.validation.jobCategoryRequired'),
   teacherLevelId: string().when('jobCategory', {
@@ -84,7 +84,6 @@ export const AddJobAnnouncementSchema = object({
     then: (schema) => schema.required('jobAnnouncement.validation.workStartDateRequired'),
     otherwise: (schema) => schema.nullable().optional(),
   }),
-  qualificationType: string().required('jobAnnouncement.validation.qualificationTypeRequired'),
   qualificationIds: array()
     .of(string().required('jobAnnouncement.validation.qualificationsRequired'))
     .min(1, 'jobAnnouncement.validation.qualificationsRequired')
