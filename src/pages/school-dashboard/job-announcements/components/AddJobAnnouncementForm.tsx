@@ -461,6 +461,20 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const salaryMin = Number(values.minimumSalary || 0);
     const salaryMax = Number(values.maximumSalary || 0);
 
+    // Helper to convert date to ISO date-time string
+    const toIsoDateTime = (dateStr?: string, defaultTime = '00:00:00') => {
+      if (!dateStr) return '';
+      const normalized = dateStr.includes('T') ? dateStr : `${dateStr}T${defaultTime}`;
+      return normalized;
+    };
+
+    // Helper to convert time to ISO date-time string (using current date as placeholder)
+    const toIsoDateTimeFromTime = (timeStr?: string) => {
+      if (!timeStr) return '';
+      const today = new Date().toISOString().split('T')[0];
+      return `${today}T${timeStr}:00`;
+    };
+
     const payload: CreateJobAdvertismentRequest = {
       name: '', // Name is not part of the form, setting empty string
       nameEn: '', // NameEn is not part of the form, setting empty string
@@ -471,8 +485,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       jobDescriptionEn: values.jobDescriptionEn,
       jobResponsibilities: values.jobResponsibilitiesAr,
       jobResponsibilitiesEn: values.jobResponsibilitiesEn,
-      advertisementStartDate: values.applicationStartDate,
-      advertisementEndDate: values.applicationEndDate,
+      advertisementStartDate: toIsoDateTime(values.applicationStartDate),
+      advertisementEndDate: toIsoDateTime(values.applicationEndDate),
       nationality: nationalityValue,
       salary: values.salary === SalaryOption.RANGE ? 1 : 2,
       minimumSalary: values.salary === SalaryOption.RANGE ? salaryMin : 0,
@@ -481,10 +495,10 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
         values.teacherGender === 'MALE' ? 1 : values.teacherGender === 'FEMALE' ? 2 : 3,
       yearsExperience: Number(values.yearsExperience || 0),
       noticePeriod: values.noticePeriod === WorkStartMode.IMMEDIATE ? 1 : 2,
-      noticePeriodDate: values.noticePeriodDate,
+      noticePeriodDate: toIsoDateTime(values.noticePeriodDate),
       workShedule: values.contractType,
-      workStartTime: values.workStartTime,
-      workEndTime: values.workEndTime,
+      workStartTime: toIsoDateTimeFromTime(values.workStartTime),
+      workEndTime: toIsoDateTimeFromTime(values.workEndTime),
       lkAdministrativePositionId: values.administrativePositionId || '',
       lkTeacherLevelId: values.teacherLevelId || '',
       jobAdvertismentTechnicalSkillsDto: technicalSkillValue

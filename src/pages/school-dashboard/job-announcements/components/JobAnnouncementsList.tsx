@@ -99,6 +99,7 @@ const buildLocalizedList = <T,>(
 };
 
 interface FiltersParams {
+  schoolBranchId: string;
   searchTerm: string;
   selectedCountryId: string;
   selectedStageId: string;
@@ -107,6 +108,7 @@ interface FiltersParams {
 }
 
 const buildFiltersPayload = ({
+  schoolBranchId,
   searchTerm,
   selectedCountryId,
   selectedStageId,
@@ -118,6 +120,7 @@ const buildFiltersPayload = ({
     : undefined;
 
   return {
+    schoolBranchId,
     searchName: searchTerm || undefined,
     lkCountryId: selectedCountryId || undefined,
     lkSchoolStageId: selectedStageId || undefined,
@@ -132,7 +135,7 @@ export default function JobAnnouncementsList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
-
+  const DummySchoolBranchId = "e45f71f1-aeed-4765-2db0-08de255d5ebd"
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
@@ -165,6 +168,7 @@ export default function JobAnnouncementsList() {
     if (USE_MOCK_DATA) return;
 
     const filtersPayload = buildFiltersPayload({
+      schoolBranchId: DummySchoolBranchId,
       searchTerm,
       selectedCountryId,
       selectedStageId,
@@ -174,6 +178,7 @@ export default function JobAnnouncementsList() {
 
     const fetchData = async () => {
       try {
+        debugger
         await dispatch(
           fetchJobAdvertisments({
             page: currentPage,
@@ -710,6 +715,7 @@ export default function JobAnnouncementsList() {
     }
 
     const filtersPayload = buildFiltersPayload({
+      schoolBranchId: DummySchoolBranchId,
       searchTerm,
       selectedCountryId,
       selectedStageId,
