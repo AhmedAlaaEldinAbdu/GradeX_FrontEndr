@@ -16,6 +16,7 @@ import teachersReducer from '../features/teachers/teachersSlice';
 import jobAdvertismentsReducer from '../features/job-advertisments/jobAdvertismentsSlice';
 import interviewsReducer from '../features/interviews/interviewsSlice';
 import teacherAttendanceReducer from '../features/teacher-attendance/teacherAttendanceSlice';
+import applicationsJobAdvertisementsReducer from '../features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -34,6 +35,7 @@ export const store = configureStore({
     books: booksReducer,
     teachers: teachersReducer,
     jobAdvertisments: jobAdvertismentsReducer,
+    applicationsJobAdvertisements: applicationsJobAdvertisementsReducer,
     interviews: interviewsReducer,
     teacherAttendance: teacherAttendanceReducer,
   },
