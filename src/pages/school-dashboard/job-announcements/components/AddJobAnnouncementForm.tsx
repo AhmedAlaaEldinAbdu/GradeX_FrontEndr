@@ -30,7 +30,10 @@ import {
   fetchJobAdvertisments,
   fetchJobAdvertismentById,
 } from '@/redux/features/job-advertisments/jobAdvertismentsSlice';
-import type { CreateJobAdvertismentRequest } from '@/services/api/types/job-advertisment.types';
+import {
+  JobAdvertismentWorkShedule,
+  type CreateJobAdvertismentRequest,
+} from '@/services/api/types/job-advertisment.types';
 import {
   AddJobAnnouncementSchema,
   ContractType,
@@ -95,8 +98,8 @@ const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   salary: SalaryOption.TBD,
   minimumSalary: 0,
   maximumSalary: 0,
-  teacherGender: '3',
-  contractType: 1 as ContractTypeValue,
+  teacherGender: 'ANY',
+  contractType: ContractType.FULL_TIME as ContractTypeValue,
   technicalSkillIds: '',
   personalSkillIds: '',
   benefitsIds: [],
@@ -275,26 +278,79 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const salOption = job.salary === 1 ? SalaryOption.RANGE : SalaryOption.TBD;
 
     // Map gender
-    let gender = '3'; // ANY
-    if (job.teacherGender === 1) gender = '1';
-    else if (job.teacherGender === 2) gender = '2';
+    const gender =
+      job.teacherGender === 1 ? 'MALE' : job.teacherGender === 2 ? 'FEMALE' : 'ANY';
 
     const workSchedule =
-      job.workShedule === 1
-        ? ContractType.FULL_TIME
-        : job.workShedule === 2
-          ? ContractType.PART_TIME
-          : ContractType.BOTH;
+      job.workShedule === JobAdvertismentWorkShedule.PART_TIME
+        ? ContractType.PART_TIME
+        : job.workShedule === JobAdvertismentWorkShedule.BOTH
+          ? ContractType.BOTH
+          : ContractType.FULL_TIME;
+
+    const subjectIds =
+      job.jobAdvertismentMaterialDto
+        ?.map((material) => material.materialId)
+        .filter((id): id is string => typeof id === 'string' && id.length > 0) ?? [];
+    const primarySubjectId = job.materialId || subjectIds[0] || '';
+    if (primarySubjectId && !subjectIds.includes(primarySubjectId)) {
+      subjectIds.unshift(primarySubjectId);
+    }
+
+    const stageIdsList =
+      job.jobAdvertisementSchoolStageDto
+        ?.map((stage) => stage.lkSchoolStageId)
+        .filter((id): id is string => typeof id === 'string' && id.length > 0) ?? [];
+    const primaryStageId = stageIdsList[0] || '';
+
+    const nationalityIds =
+      job.jobAdvertisementCountryDto
+        ?.map((country) => country.lkCountryId)
+        .filter((id): id is string => typeof id === 'string' && id.length > 0) ?? [];
+
+    const qualificationIds =
+      job.jobAdvertisementQualificationDto
+        ?.map((qualification) => qualification.lkQualificationId)
+        .filter((id): id is string => typeof id === 'string' && id.length > 0) ?? [];
+
+    const technicalSkillsText =
+      job.jobAdvertismentTechnicalSkillsDto
+        ?.map((skill) => skill.technicalAppName?.trim())
+        .filter((name): name is string => Boolean(name))
+        .join('\n') || '';
+
+    const personalSkillsText =
+      job.jobAdvertismentPersonalSkillsDto
+        ?.map((skill) => skill.personalSkillName?.trim())
+        .filter((name): name is string => Boolean(name))
+        .join('\n') || '';
+
+    const benefitIds =
+      job.jobAdvertisementJobBenefitDto
+        ?.map((benefit) => benefit.lkJobBenefitId)
+        .filter((id): id is string => typeof id === 'string' && id.length > 0) ?? [];
+
+    const languagesList =
+      job.jobAdvertisementLanguageDto
+        ?.map((language) => ({
+          languageId: language.lkLanguageId,
+          levelId: language.lkLanguageLevelId,
+        }))
+        .filter(
+          (language): language is { languageId: string; levelId: string } =>
+            Boolean(language.languageId) && Boolean(language.levelId)
+        ) ?? [];
+
     setValue('contractType', workSchedule);
 
     // Set form values
     setValue('qualificationType', isTeacher ? JobCategory.TEACHER : JobCategory.ADMIN);
-    job.lkTeacherLevelId ? setValue('teacherLevelId', job.lkTeacherLevelId || '') : '';
-    job.lkAdministrativePositionId
-      ? setValue('administrativePositionId', '28b83f51-9b7d-4ff2-b0ad-0d794fd265f9')
-      : '';
-    setValue('specializationIds', job.materialId || '45e85024-f17f-4c43-b6ab-08de2240f2fc' || '');
-    setValue('stageIds', job.jobAdvertisementSchoolStageDto?.[0]?.lkSchoolStageId || '');
+    setValue('teacherLevelId', job.lkTeacherLevelId ?? '');
+    setValue('administrativePositionId', job.lkAdministrativePositionId ?? '');
+    setValue('specializationIds', primarySubjectId);
+    setValue('subjectName', subjectIds);
+    setValue('stageIds', primaryStageId);
+    setValue('educationalStage', stageIdsList);
     setValue('jobDescriptionAr', job.jobDescription || '');
     setValue('jobDescriptionEn', job.jobDescriptionEn || '');
     setValue('jobResponsibilitiesAr', job.jobResponsibilities || '');
@@ -302,38 +358,21 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     setValue('applicationStartDate', job.advertisementStartDate?.split('T')[0] || '');
     setValue('applicationEndDate', job.advertisementEndDate?.split('T')[0] || '');
     setValue('nationalityMode', natMode);
-    setValue('nationalityIds', job.jobAdvertisementCountryDto?.map((c) => c.lkCountryId) || []);
+    setValue('nationalityIds', natMode === NationalityMode.SPECIFIC ? nationalityIds : []);
     setValue('noticePeriod', workMode);
-    job.noticePeriodDate
-      ? setValue('noticePeriodDate', job.noticePeriodDate?.split('T')[0] || '')
-      : '';
-    setValue(
-      'qualificationIds',
-      job.jobAdvertisementQualificationDto?.map((q) => q.lkQualificationId) || []
-    );
-    setValue('yearsExperience', job.yearsExperience || 0);
-    setValue('workStartTime', job.workStartTime || '');
-    setValue('workEndTime', job.workEndTime || '');
+    setValue('noticePeriodDate', job.noticePeriodDate ? job.noticePeriodDate.split('T')[0] : '');
+    setValue('qualificationIds', qualificationIds);
+    setValue('yearsExperience', job.yearsExperience ?? 0);
+    setValue('workStartTime', job.workStartTime ?? '');
+    setValue('workEndTime', job.workEndTime ?? '');
     setValue('salary', salOption);
-    setValue('minimumSalary', job.minimumSalary || 0);
-    setValue('maximumSalary', job.maximumSalary || 0);
+    setValue('minimumSalary', job.minimumSalary ?? 0);
+    setValue('maximumSalary', job.maximumSalary ?? 0);
     setValue('teacherGender', gender);
-    setValue(
-      'technicalSkillIds',
-      job.jobAdvertismentTechnicalSkillsDto?.[0]?.technicalAppName || ''
-    );
-    setValue(
-      'personalSkillIds',
-      job.jobAdvertismentPersonalSkillsDto?.[0]?.personalSkillName || ''
-    );
-    setValue('benefitsIds', job.jobAdvertisementJobBenefitDto?.map((b) => b.lkJobBenefitId) || []);
-    setValue(
-      'languages',
-      job.jobAdvertisementLanguageDto?.map((l) => ({
-        languageId: l.lkLanguageId,
-        levelId: l.lkLanguageLevelId,
-      })) || [{ languageId: '', levelId: '' }]
-    );
+    setValue('technicalSkillIds', technicalSkillsText);
+    setValue('personalSkillIds', personalSkillsText);
+    setValue('benefitsIds', benefitIds);
+    setValue('languages', languagesList.length ? languagesList : [{ languageId: '', levelId: '' }]);
 
     setIsFormReady(true);
   };
@@ -370,9 +409,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
   useEffect(() => {
     if (jobCategory === JobCategory.TEACHER) {
-      setValue('teacherLevelId', '');
-    } else {
       setValue('administrativePositionId', '');
+    } else {
+      setValue('teacherLevelId', '');
     }
   }, [jobCategory, setValue]);
 

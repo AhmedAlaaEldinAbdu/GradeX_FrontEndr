@@ -29,9 +29,9 @@ export const SalaryOption = {
 export type SalaryOptionValue = (typeof SalaryOption)[keyof typeof SalaryOption];
 
 export const ContractType = {
-  FULL_TIME: 1,
-  PART_TIME: 2,
-  BOTH: 3,
+  FULL_TIME: 0,
+  PART_TIME: 1,
+  BOTH: 2,
 } as const;
 
 export type ContractTypeValue = (typeof ContractType)[keyof typeof ContractType];
