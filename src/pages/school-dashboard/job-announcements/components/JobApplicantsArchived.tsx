@@ -1,8 +1,19 @@
 import JobApplicantsTable from './JobApplicantsTable';
-import { ARCHIVED_APPLICATIONS } from './applicants-data';
+import { JOB_APPLICATION_STATUS } from './applicants-data';
 
-const JobApplicantsArchived = () => {
-  return <JobApplicantsTable data={ARCHIVED_APPLICATIONS} filterPrefix="archived" isArchived />;
+type JobApplicantsArchivedProps = {
+  jobAdvertisementId: string;
+};
+
+const JobApplicantsArchived = ({ jobAdvertisementId }: JobApplicantsArchivedProps) => {
+  return (
+    <JobApplicantsTable
+      jobAdvertisementId={jobAdvertisementId}
+      filterPrefix="archived"
+      isArchived
+      applicationStatus={JOB_APPLICATION_STATUS.ARCHIVED}
+    />
+  );
 };
 
 export default JobApplicantsArchived;

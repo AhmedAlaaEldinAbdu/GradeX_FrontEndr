@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
@@ -9,16 +9,7 @@ import ArchiveIcon from '@gradex/assets/icons/Archive.svg';
 import RecallIcon from '@gradex/assets/icons/Recall.svg';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import TimeLog from '@gradex/assets/icons/TimeLog.svg';
-import {
-  QUALIFICATION_LABELS,
-  NATIONALITY_LABELS,
-  WORK_TYPE_BADGES,
-  STATUS_BADGES,
-  type Applicant,
-  type QualificationKey,
-  type NationalityKey,
-} from './applicants-data';
-import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
+import { WORK_TYPE_BADGES } from './applicants-data';
 import CustomImage from '@/shared/components/CustomImage';
 import { useToast } from '@/shared/context/ToastContext';
 import ArchiveApplicantPopup from '../popups/ArchiveApplicantPopup';
@@ -28,22 +19,33 @@ import ScheduleInterviewPopup, {
 import AcceptApplicantPopup from '../popups/AcceptApplicantPopup';
 import IconButton from '@/shared/components/IconButton';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchApplicationsJobAdvertisements } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
+import type { ApplicationsJobAdvertisement } from '@/services/api/types/applications-job-advertisement.types';
 
 type JobApplicantsTableProps = {
-  data: Applicant[];
+  jobAdvertisementId: string;
+  applicationStatus: number;
   filterPrefix: string;
   isArchived?: boolean;
 };
 
+const PAGE_SIZE = 10;
+
 const JobApplicantsTable = ({
-  data,
+  jobAdvertisementId,
+  applicationStatus,
   filterPrefix,
   isArchived = false,
 }: JobApplicantsTableProps) => {
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
+  const dispatch = useAppDispatch();
+  const { applications, pagination, isLoading } = useAppSelector(
+    (state) => state.applicationsJobAdvertisements
+  );
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
-  const locale = currentLang === 'ar' ? 'ar-SA' : 'en-US';
+  const numberLocale = currentLang === 'ar' ? 'ar-SA' : 'en-US';
 
   // Filter state
   const [searchValue, setSearchValue] = useState('');
@@ -52,65 +54,54 @@ const JobApplicantsTable = ({
   const [nationalityFilter, setNationalityFilter] = useState('');
   const [experienceFilter, setExperienceFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6;
+  const pageSize = PAGE_SIZE;
 
   const [archivePopupOpen, setArchivePopupOpen] = useState(false);
   const [schedulePopupOpen, setSchedulePopupOpen] = useState(false);
   const [acceptPopupOpen, setAcceptPopupOpen] = useState(false);
-  const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const [selectedApplicant, setSelectedApplicant] = useState<ApplicationsJobAdvertisement | null>(
+    null
+  );
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const getQualificationLabel = (key: QualificationKey) =>
-    QUALIFICATION_LABELS[key]?.[currentLang] || QUALIFICATION_LABELS[key]?.en || '';
-  const getNationalityLabel = (key: NationalityKey) =>
-    NATIONALITY_LABELS[key]?.[currentLang] || NATIONALITY_LABELS[key]?.en || '';
-  const getApplicantName = (applicant: Applicant) =>
-    currentLang === 'ar' ? applicant.nameAr : applicant.nameEn || applicant.nameAr;
-  const getApplicantRole = (applicant: Applicant) =>
-    currentLang === 'ar' ? applicant.roleAr : applicant.roleEn || applicant.roleAr;
-  const getAddress = (applicant: Applicant) =>
-    currentLang === 'ar' ? applicant.addressAr : applicant.addressEn || applicant.addressAr;
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [jobAdvertisementId, applicationStatus]);
 
-  const filteredRows = useMemo(() => {
-    const normalizedSearch = searchValue.trim().toLowerCase();
+  useEffect(() => {
+    if (!jobAdvertisementId) {
+      return;
+    }
 
-    return data.filter((row) => {
-      const nameForSearch = (
-        currentLang === 'ar' ? row.nameAr : row.nameEn || row.nameAr
-      ).toLowerCase();
-      const matchesSearch = nameForSearch.includes(normalizedSearch);
-      const matchesWorkType = workTypeFilter ? String(row.workType) === workTypeFilter : true;
-      const matchesQualification = qualificationFilter
-        ? row.qualificationKey === qualificationFilter
-        : true;
-      const matchesNationality = nationalityFilter
-        ? row.nationalityKey === nationalityFilter
-        : true;
-      const matchesExperience = experienceFilter
-        ? row.yearsExperience.toString() === experienceFilter
-        : true;
-
-      return (
-        matchesSearch &&
-        matchesWorkType &&
-        matchesQualification &&
-        matchesNationality &&
-        matchesExperience
-      );
-    });
+    dispatch(
+      fetchApplicationsJobAdvertisements({
+        page: currentPage,
+        limit: pageSize,
+        filters: {
+          jobAdvertisementId,
+          applicationStatus,
+          search: searchValue.trim() || undefined,
+          workShedule: workTypeFilter ? Number(workTypeFilter) : undefined,
+          lkQualificationId: qualificationFilter || undefined,
+          nationalityId: nationalityFilter || undefined,
+          experienceYears: experienceFilter ? Number(experienceFilter) : undefined,
+        },
+      })
+    );
   }, [
-    currentLang,
-    data,
+    applicationStatus,
+    currentPage,
+    dispatch,
     experienceFilter,
+    jobAdvertisementId,
     nationalityFilter,
     qualificationFilter,
     searchValue,
     workTypeFilter,
+    pageSize,
   ]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
   const startIndex = (currentPage - 1) * pageSize;
-  const paginatedRows = filteredRows.slice(startIndex, startIndex + pageSize);
 
   const handlePageChange = (page: number) => setCurrentPage(page);
   const resetFilters = () => {
@@ -123,17 +114,17 @@ const JobApplicantsTable = ({
   };
 
   // Popup handlers
-  const handleOpenArchivePopup = (applicant: Applicant) => {
+  const handleOpenArchivePopup = (applicant: ApplicationsJobAdvertisement) => {
     setSelectedApplicant(applicant);
     setArchivePopupOpen(true);
   };
 
-  const handleOpenSchedulePopup = (applicant: Applicant) => {
+  const handleOpenSchedulePopup = (applicant: ApplicationsJobAdvertisement) => {
     setSelectedApplicant(applicant);
     setSchedulePopupOpen(true);
   };
 
-  const handleOpenAcceptPopup = (applicant: Applicant) => {
+  const handleOpenAcceptPopup = (applicant: ApplicationsJobAdvertisement) => {
     setSelectedApplicant(applicant);
     setAcceptPopupOpen(true);
   };
@@ -187,7 +178,7 @@ const JobApplicantsTable = ({
     }
   };
 
-  const handleRecall = async (applicant: Applicant) => {
+  const handleRecall = async (applicant: ApplicationsJobAdvertisement) => {
     try {
       setIsProcessing(true);
       // TODO: Add API call to recall applicant
@@ -204,54 +195,95 @@ const JobApplicantsTable = ({
   const workTypeOptions = useMemo(
     () => [
       { value: '', label: t('common.all') },
-      {
-        value: String(JobAdvertismentWorkShedule.FULL_TIME),
-        label: t('jobAnnouncement.form.contractFullTime'),
-      },
-      {
-        value: String(JobAdvertismentWorkShedule.PART_TIME),
-        label: t('jobAnnouncement.form.contractPartTime'),
-      },
-      {
-        value: String(JobAdvertismentWorkShedule.BOTH),
-        label: t('jobAnnouncement.form.contractBoth'),
-      },
+      { value: '1', label: t('jobAnnouncement.form.contractFullTime') },
+      { value: '2', label: t('jobAnnouncement.form.contractPartTime') },
+      { value: '3', label: t('jobAnnouncement.form.contractBoth') },
     ],
     [t]
   );
 
-  const qualificationOptions = useMemo(
-    () => [
-      { value: '', label: t('common.all') },
-      ...Object.keys(QUALIFICATION_LABELS).map((key) => ({
-        value: key,
-        label: QUALIFICATION_LABELS[key as QualificationKey][currentLang],
-      })),
-    ],
-    [currentLang, t]
-  );
+  const qualificationOptions = useMemo(() => {
+    const uniqueQualifications = new Map<string, string>();
 
-  const nationalityOptions = useMemo(
-    () => [
+    applications.forEach((application) => {
+      const qualificationDtos =
+        application.lKQualificationDtos || application.lkQualificationDtos || [];
+
+      qualificationDtos.forEach((item) => {
+        const id = item.lkQualificationId || item.lKQualificationId;
+        if (!id) return;
+        const label =
+          currentLang === 'ar'
+            ? item.lkQualificationNameAr || item.lkQualificationNameEn || ''
+            : item.lkQualificationNameEn || item.lkQualificationNameAr || '';
+        if (!uniqueQualifications.has(id)) {
+          uniqueQualifications.set(id, label || id);
+        }
+      });
+    });
+
+    return [
       { value: '', label: t('common.all') },
-      ...Object.keys(NATIONALITY_LABELS).map((key) => ({
-        value: key,
-        label: NATIONALITY_LABELS[key as NationalityKey][currentLang],
-      })),
-    ],
-    [currentLang, t]
-  );
+      ...Array.from(uniqueQualifications.entries()).map(([value, label]) => ({ value, label })),
+    ];
+  }, [applications, currentLang, t]);
+
+  const nationalityOptions = useMemo(() => {
+    const uniqueNationalities = new Map<string, string>();
+    applications.forEach((application) => {
+      if (!application.nationalityId) return;
+      const label =
+        currentLang === 'ar'
+          ? application.nationalityNameAr || application.nationalityNameEn || ''
+          : application.nationalityNameEn || application.nationalityNameAr || '';
+      if (!uniqueNationalities.has(application.nationalityId)) {
+        uniqueNationalities.set(application.nationalityId, label || application.nationalityId);
+      }
+    });
+
+    return [
+      { value: '', label: t('common.all') },
+      ...Array.from(uniqueNationalities.entries()).map(([value, label]) => ({ value, label })),
+    ];
+  }, [applications, currentLang, t]);
 
   const experienceOptions = useMemo(() => {
-    const uniqueSorted = Array.from(new Set(data.map((item) => item.yearsExperience))).sort(
-      (a, b) => a - b
-    );
+    const uniqueSorted = Array.from(new Set(applications.map((item) => item.experienceYears || 0)))
+      .filter((value) => value > 0)
+      .sort((a, b) => a - b);
 
     return [
       { value: '', label: t('common.all') },
       ...uniqueSorted.map((value) => ({ value: String(value), label: `${value}` })),
     ];
-  }, [data, t]);
+  }, [applications, t]);
+
+  const getApplicantName = (applicant: ApplicationsJobAdvertisement) => applicant.fullName || '';
+  const getAddress = (applicant: ApplicationsJobAdvertisement) => applicant.streetName || '-';
+  const getNationalityLabel = (applicant: ApplicationsJobAdvertisement) =>
+    currentLang === 'ar'
+      ? applicant.nationalityNameAr || applicant.nationalityNameEn || ''
+      : applicant.nationalityNameEn || applicant.nationalityNameAr || '';
+  const getCountryLabel = (applicant: ApplicationsJobAdvertisement) =>
+    currentLang === 'ar'
+      ? applicant.lKCountryNameAr || applicant.lKCountryNameEn || ''
+      : applicant.lKCountryNameEn || applicant.lKCountryNameAr || '';
+  const getQualificationLabel = (applicant: ApplicationsJobAdvertisement) => {
+    const qualificationDtos = applicant.lKQualificationDtos || applicant.lkQualificationDtos || [];
+
+    if (!qualificationDtos.length) {
+      return '-';
+    }
+
+    return qualificationDtos
+      .map((item) =>
+        currentLang === 'ar'
+          ? item.lkQualificationNameAr || item.lkQualificationNameEn || ''
+          : item.lkQualificationNameEn || item.lkQualificationNameAr || ''
+      )
+      .filter(Boolean)
+      .join(', ');
+  };
 
   const filters: FilterConfig[] = [
     {
@@ -351,7 +383,7 @@ const JobApplicantsTable = ({
     },
   ];
 
-  const columns: DataTableColumn<Applicant>[] = [
+  const columns: DataTableColumn<ApplicationsJobAdvertisement>[] = [
     {
       header: '#',
       accessor: (_row, index) => startIndex + (index ?? 0) + 1,
@@ -374,7 +406,7 @@ const JobApplicantsTable = ({
             <IconButton
               variant="default"
               ariaLabel={t('jobAnnouncement.viewApplicants')}
-              // onClick={() => navigate(`/job-announcements/${row.id}/applicants`)}
+              // TODO: navigate to teacher profile once flow is ready using row.teacherId
               className="h-8 w-8"
             >
               <CustomImage
@@ -393,8 +425,13 @@ const JobApplicantsTable = ({
       accessor: (row) => (
         <button
           type="button"
-          onClick={() => window.open(row.resumeUrl, '_blank', 'noopener,noreferrer')}
-          className="flex h-10 w-10 items-center justify-center rounded-lg"
+          onClick={() =>
+            row.resumeFile && window.open(row.resumeFile, '_blank', 'noopener,noreferrer')
+          }
+          disabled={!row.resumeFile}
+          className={`flex h-10 w-10 items-center justify-center rounded-lg transition-opacity ${
+            row.resumeFile ? '' : 'cursor-not-allowed opacity-50'
+          }`}
         >
           <CustomImage src={PdfIcon} alt="PDF" className="h-5 w-5" />
         </button>
@@ -407,10 +444,10 @@ const JobApplicantsTable = ({
       accessor: (row) => (
         <span
           className={`rounded-full px-3 py-1 text-xs font-semibold ${
-            WORK_TYPE_BADGES[row.workType]?.bg || 'bg-gray-100 text-gray-600'
+            WORK_TYPE_BADGES[row.workShedule]?.bg || 'bg-gray-100 text-gray-600'
           }`}
         >
-          {t(WORK_TYPE_BADGES[row.workType]?.label || 'jobAnnouncement.workType')}
+          {t(WORK_TYPE_BADGES[row.workShedule]?.label || 'jobAnnouncement.workType')}
         </span>
       ),
       headerClassName: 'w-[140px]',
@@ -419,30 +456,28 @@ const JobApplicantsTable = ({
     {
       header: 'jobAnnouncement.applicantsPage.table.qualification',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">{getQualificationLabel(row.qualificationKey)}</span>
+        <span className="text-sm text-gray-700">{getQualificationLabel(row)}</span>
       ),
       headerClassName: 'min-w-[160px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.experience',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">{row.yearsExperience.toLocaleString(locale)}</span>
+        <span className="text-sm text-gray-700">
+          {(row.experienceYears || 0).toLocaleString(numberLocale)}
+        </span>
       ),
       headerClassName: 'w-[120px]',
       className: 'text-center',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.nationality',
-      accessor: (row) => (
-        <span className="text-sm text-gray-700">{getNationalityLabel(row.nationalityKey)}</span>
-      ),
+      accessor: (row) => <span className="text-sm text-gray-700">{getNationalityLabel(row)}</span>,
       headerClassName: 'w-[140px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.country',
-      accessor: (row) => (
-        <span className="text-sm text-gray-700">{getNationalityLabel(row.countryKey)}</span>
-      ),
+      accessor: (row) => <span className="text-sm text-gray-700">{getCountryLabel(row)}</span>,
       headerClassName: 'w-[140px]',
     },
     {
@@ -503,29 +538,30 @@ const JobApplicantsTable = ({
 
   const getSelectedApplicantName = () => {
     if (!selectedApplicant) return '';
-    return currentLang === 'ar'
-      ? selectedApplicant.nameAr
-      : selectedApplicant.nameEn || selectedApplicant.nameAr;
+    return selectedApplicant.fullName || '';
+  };
+
+  const tablePagination = {
+    page: currentPage,
+    limit: pageSize,
+    total: pagination.total,
+    totalPages: pagination.totalPages || Math.max(1, Math.ceil(pagination.total / pageSize)),
   };
 
   return (
     <>
       <Card>
         <DataTable
-          data={paginatedRows}
+          data={applications}
           columns={columns}
           keyExtractor={(row) => row.id}
           filters={filters}
           showFilters={true}
           onResetFilters={resetFilters}
-          pagination={{
-            page: currentPage,
-            limit: pageSize,
-            total: filteredRows.length,
-            totalPages,
-          }}
+          pagination={tablePagination}
           onPageChange={handlePageChange}
           emptyMessage={t('jobAnnouncement.applicantsPage.emptyState')}
+          isLoading={isLoading}
           t={t}
         />
       </Card>

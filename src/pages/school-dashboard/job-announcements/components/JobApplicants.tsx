@@ -7,21 +7,22 @@ import { JOB_APPLICANTS_TABS, type JobApplicantsTab } from '../constants';
 type JobApplicantsProps = {
   selectedTab: JobApplicantsTab;
   setSelectedTab: (tab: JobApplicantsTab) => void;
+  jobAdvertisementId: string;
 };
 
-const JobApplicants = ({ selectedTab, setSelectedTab }: JobApplicantsProps) => {
+const JobApplicants = ({ selectedTab, setSelectedTab, jobAdvertisementId }: JobApplicantsProps) => {
   const { t } = useTranslation();
 
   const tabItems = [
     {
       id: JOB_APPLICANTS_TABS.REQUESTS,
       label: t('jobAnnouncement.applicantsPage.tabs.requests'),
-      content: <JobApplicantsRequests />,
+      content: <JobApplicantsRequests jobAdvertisementId={jobAdvertisementId} />,
     },
     {
       id: JOB_APPLICANTS_TABS.ARCHIVED,
       label: t('jobAnnouncement.applicantsPage.tabs.archived'),
-      content: <JobApplicantsArchived />,
+      content: <JobApplicantsArchived jobAdvertisementId={jobAdvertisementId} />,
     },
   ];
 

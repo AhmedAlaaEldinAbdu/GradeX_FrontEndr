@@ -40,6 +40,8 @@ export interface ApplicationsJobAdvertisement {
   applicationStatus: number;
   experienceYears?: number;
   meetingLink?: string;
+  lKQualificationDtos?: ApplicationsJobAdvertisementQualificationDto[];
+  /** @deprecated Prefer lKQualificationDtos for API responses */
   lkQualificationDtos?: ApplicationsJobAdvertisementQualificationDto[];
 }
 

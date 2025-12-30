@@ -1,8 +1,18 @@
 import JobApplicantsTable from './JobApplicantsTable';
-import { APPLICATION_REQUESTS } from './applicants-data';
+import { JOB_APPLICATION_STATUS } from './applicants-data';
 
-const JobApplicantsRequests = () => {
-  return <JobApplicantsTable data={APPLICATION_REQUESTS} filterPrefix="requests" />;
+type JobApplicantsRequestsProps = {
+  jobAdvertisementId: string;
+};
+
+const JobApplicantsRequests = ({ jobAdvertisementId }: JobApplicantsRequestsProps) => {
+  return (
+    <JobApplicantsTable
+      jobAdvertisementId={jobAdvertisementId}
+      filterPrefix="requests"
+      applicationStatus={JOB_APPLICATION_STATUS.REQUESTS}
+    />
+  );
 };
 
 export default JobApplicantsRequests;
