@@ -278,8 +278,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const salOption = job.salary === 1 ? SalaryOption.RANGE : SalaryOption.TBD;
 
     // Map gender
-    const gender =
-      job.teacherGender === 1 ? 'MALE' : job.teacherGender === 2 ? 'FEMALE' : 'ANY';
+    const gender = job.teacherGender === 1 ? 'MALE' : job.teacherGender === 2 ? 'FEMALE' : 'ANY';
 
     const workSchedule =
       job.workShedule === JobAdvertismentWorkShedule.PART_TIME
@@ -587,7 +586,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       advertisementStartDate: values.applicationStartDate,
       advertisementEndDate: values.applicationEndDate,
       nationality: nationalityValue,
-      salary: values.salary === SalaryOption.RANGE ? 1 : 2,
+      salary: values.salary === SalaryOption.RANGE ? 2 : 1,
       minimumSalary: values.salary === SalaryOption.RANGE ? salaryMin : 0,
       maximumSalary: values.salary === SalaryOption.RANGE ? salaryMax : 0,
       teacherGender:
