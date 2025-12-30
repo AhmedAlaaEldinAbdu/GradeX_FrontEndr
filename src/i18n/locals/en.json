@@ -1368,6 +1368,7 @@
       "contractType": "Contract type",
       "contractFullTime": "Full-time",
       "contractPartTime": "Part-time",
+      "contractBoth": "Both",
       "workingHoursFrom": "Working hours from",
       "workingHoursTo": "Working hours to",
       "technicalSkills": "Technical skills",

@@ -202,8 +202,18 @@ const JobApplicantsTable = ({
   const workTypeOptions = useMemo(
     () => [
       { value: '', label: t('common.all') },
-      { value: String(JobAdvertismentWorkShedule.OFFLINE), label: t('jobAnnouncement.fullTime') },
-      { value: String(JobAdvertismentWorkShedule.ONLINE), label: t('jobAnnouncement.partTime') },
+      {
+        value: String(JobAdvertismentWorkShedule.FULL_TIME),
+        label: t('jobAnnouncement.form.contractFullTime'),
+      },
+      {
+        value: String(JobAdvertismentWorkShedule.PART_TIME),
+        label: t('jobAnnouncement.form.contractPartTime'),
+      },
+      {
+        value: String(JobAdvertismentWorkShedule.BOTH),
+        label: t('jobAnnouncement.form.contractBoth'),
+      },
     ],
     [t]
   );

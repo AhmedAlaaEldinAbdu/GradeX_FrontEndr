@@ -1,13 +1,17 @@
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 
 export const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; label: string }> = {
-  [JobAdvertismentWorkShedule.ONLINE]: {
-    bg: 'bg-emerald-50 text-emerald-700',
-    label: 'jobAnnouncement.partTime',
-  },
-  [JobAdvertismentWorkShedule.OFFLINE]: {
+  [JobAdvertismentWorkShedule.FULL_TIME]: {
     bg: 'bg-blue-50 text-blue-700',
-    label: 'jobAnnouncement.fullTime',
+    label: 'jobAnnouncement.form.contractFullTime',
+  },
+  [JobAdvertismentWorkShedule.PART_TIME]: {
+    bg: 'bg-emerald-50 text-emerald-700',
+    label: 'jobAnnouncement.form.contractPartTime',
+  },
+  [JobAdvertismentWorkShedule.BOTH]: {
+    bg: 'bg-violet-50 text-violet-700',
+    label: 'jobAnnouncement.form.contractBoth',
   },
 };
 
@@ -67,7 +71,7 @@ export const APPLICATION_REQUESTS: Applicant[] = [
     email: 'arej.almutairi@example.com',
     phone: '+966501234567',
     resumeUrl: '#',
-    workType: JobAdvertismentWorkShedule.OFFLINE,
+    workType: JobAdvertismentWorkShedule.FULL_TIME,
     qualificationKey: 'bachelor',
     yearsExperience: 6,
     nationalityKey: 'sa',
@@ -85,7 +89,7 @@ export const APPLICATION_REQUESTS: Applicant[] = [
     email: 'lamia.hassan@example.com',
     phone: '+966555223344',
     resumeUrl: '#',
-    workType: JobAdvertismentWorkShedule.ONLINE,
+    workType: JobAdvertismentWorkShedule.PART_TIME,
     qualificationKey: 'master',
     yearsExperience: 8,
     nationalityKey: 'eg',
@@ -103,7 +107,7 @@ export const APPLICATION_REQUESTS: Applicant[] = [
     email: 'reema.abdullah@example.com',
     phone: '+966533210987',
     resumeUrl: '#',
-    workType: JobAdvertismentWorkShedule.OFFLINE,
+    workType: JobAdvertismentWorkShedule.FULL_TIME,
     qualificationKey: 'diploma',
     yearsExperience: 5,
     nationalityKey: 'jo',
@@ -121,7 +125,7 @@ export const APPLICATION_REQUESTS: Applicant[] = [
     email: 'sarah.bouhlal@example.com',
     phone: '+212611223344',
     resumeUrl: '#',
-    workType: JobAdvertismentWorkShedule.ONLINE,
+    workType: JobAdvertismentWorkShedule.PART_TIME,
     qualificationKey: 'leadership',
     yearsExperience: 10,
     nationalityKey: 'ma',
@@ -139,7 +143,7 @@ export const APPLICATION_REQUESTS: Applicant[] = [
     email: 'noor.yassin@example.com',
     phone: '+96170111222',
     resumeUrl: '#',
-    workType: JobAdvertismentWorkShedule.OFFLINE,
+    workType: JobAdvertismentWorkShedule.FULL_TIME,
     qualificationKey: 'master',
     yearsExperience: 9,
     nationalityKey: 'lb',
@@ -160,7 +164,7 @@ export const ARCHIVED_APPLICATIONS: Applicant[] = [
     email: 'reem.talal@example.com',
     phone: '+966555998877',
     resumeUrl: '#',
-    workType: JobAdvertismentWorkShedule.OFFLINE,
+    workType: JobAdvertismentWorkShedule.FULL_TIME,
     qualificationKey: 'bachelor',
     yearsExperience: 3,
     nationalityKey: 'sa',
@@ -178,7 +182,7 @@ export const ARCHIVED_APPLICATIONS: Applicant[] = [
     email: 'manar.jaber@example.com',
     phone: '+962701234567',
     resumeUrl: '#',
-    workType: JobAdvertismentWorkShedule.ONLINE,
+    workType: JobAdvertismentWorkShedule.PART_TIME,
     qualificationKey: 'diploma',
     yearsExperience: 4,
     nationalityKey: 'jo',
@@ -188,3 +192,4 @@ export const ARCHIVED_APPLICATIONS: Applicant[] = [
     status: 'rejected',
   },
 ];
+

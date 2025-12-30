@@ -4,8 +4,9 @@
  */
 
 export const JobAdvertismentWorkShedule = {
-  ONLINE: 1,
-  OFFLINE: 2,
+  FULL_TIME: 0,
+  PART_TIME: 1,
+  BOTH: 2,
 } as const;
 
 export const JobType = {

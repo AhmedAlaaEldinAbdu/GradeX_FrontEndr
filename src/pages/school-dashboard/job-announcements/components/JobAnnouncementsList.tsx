@@ -31,13 +31,17 @@ import {
 } from '../mock';
 
 const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; text: string }> = {
-  [JobAdvertismentWorkShedule.ONLINE]: {
-    bg: 'bg-emerald-50 text-emerald-700',
-    text: 'jobAnnouncement.onlineWork',
-  },
-  [JobAdvertismentWorkShedule.OFFLINE]: {
+  [JobAdvertismentWorkShedule.FULL_TIME]: {
     bg: 'bg-blue-50 text-blue-700',
-    text: 'jobAnnouncement.offlineWork',
+    text: 'jobAnnouncement.form.contractFullTime',
+  },
+  [JobAdvertismentWorkShedule.PART_TIME]: {
+    bg: 'bg-emerald-50 text-emerald-700',
+    text: 'jobAnnouncement.form.contractPartTime',
+  },
+  [JobAdvertismentWorkShedule.BOTH]: {
+    bg: 'bg-violet-50 text-violet-700',
+    text: 'jobAnnouncement.form.contractBoth',
   },
 };
 
@@ -49,7 +53,7 @@ const SHOULD_USE_DUMMY_JOB_DATA = USE_MOCK_DATA;
 const DUMMY_JOB_ADVERTISMENTS = MOCK_JOB_ANNOUNCEMENTS;
 
 const getDynamicValue = (row: JobAdvertisment, keys: string[]): string | undefined => {
-  const source = row as Record<string, unknown>;
+  const source = row as unknown as Record<string, unknown>;
   for (const key of keys) {
     const value = source[key];
     if (typeof value === 'string' && value.trim().length > 0) {
@@ -98,6 +102,25 @@ const buildLocalizedList = <T,>(
   return labels.join(separator);
 };
 
+type StageNameLike = {
+  id: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
+  nameAR?: string | null;
+  nameEN?: string | null;
+};
+
+const resolveStageName = (stage: StageNameLike, lang: 'ar' | 'en'): string => {
+  const normalizedAr = normalizeText(stage.nameAr ?? stage.nameAR);
+  const normalizedEn = normalizeText(stage.nameEn ?? stage.nameEN);
+
+  if (lang === 'ar') {
+    return normalizedAr ?? normalizedEn ?? stage.id;
+  }
+
+  return normalizedEn ?? normalizedAr ?? stage.id;
+};
+
 interface FiltersParams {
   schoolBranchId: string;
   searchTerm: string;
@@ -135,7 +158,7 @@ export default function JobAnnouncementsList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
-  const DummySchoolBranchId = "e45f71f1-aeed-4765-2db0-08de255d5ebd"
+  const DummySchoolBranchId = '471D89C1-61A8-4B13-D682-08DE1657ABAD';
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
@@ -178,7 +201,6 @@ export default function JobAnnouncementsList() {
 
     const fetchData = async () => {
       try {
-        debugger
         await dispatch(
           fetchJobAdvertisments({
             page: currentPage,
@@ -223,12 +245,12 @@ export default function JobAnnouncementsList() {
   const stageOptions = USE_MOCK_DATA
     ? MOCK_SCHOOL_STAGES.map((stage) => ({
         value: stage.id,
-        label: currentLang === 'ar' ? stage.nameAr : stage.nameEn,
+        label: resolveStageName(stage, currentLang),
       }))
     : Array.isArray(schoolStages)
       ? schoolStages.map((stage) => ({
           value: stage.id,
-          label: currentLang === 'ar' ? stage.nameAr : stage.nameEn,
+          label: resolveStageName(stage as StageNameLike, currentLang),
         }))
       : [];
 
@@ -262,12 +284,16 @@ export default function JobAnnouncementsList() {
   const workTypeOptions = [
     { value: '', label: t('jobAnnouncement.workType') },
     {
-      value: String(JobAdvertismentWorkShedule.ONLINE),
-      label: t('jobAnnouncement.onlineWork'),
+      value: String(JobAdvertismentWorkShedule.FULL_TIME),
+      label: t('jobAnnouncement.form.contractFullTime'),
     },
     {
-      value: String(JobAdvertismentWorkShedule.OFFLINE),
-      label: t('jobAnnouncement.offlineWork'),
+      value: String(JobAdvertismentWorkShedule.PART_TIME),
+      label: t('jobAnnouncement.form.contractPartTime'),
+    },
+    {
+      value: String(JobAdvertismentWorkShedule.BOTH),
+      label: t('jobAnnouncement.form.contractBoth'),
     },
   ];
 
@@ -352,6 +378,17 @@ export default function JobAnnouncementsList() {
       accessor: (row) => (
         <span className="text-sm text-gray-700">
           {(() => {
+            const qualificationTypeLabel =
+              row.qualificationType === 1
+                ? t('jobAnnouncement.form.jobCategoryAdmin')
+                : row.qualificationType === 2
+                  ? t('jobAnnouncement.form.jobCategoryTeacher')
+                  : undefined;
+
+            if (qualificationTypeLabel) {
+              return qualificationTypeLabel;
+            }
+
             const keys =
               currentLang === 'ar'
                 ? ['jobTypeNameAr', 'lkAdministrativePositionNameAr']
@@ -371,7 +408,7 @@ export default function JobAnnouncementsList() {
       header: 'jobAnnouncement.workType',
       accessor: (row) => (
         <div className="flex justify-center">
-          {row.workShedule ? (
+          {row.workShedule !== undefined && row.workShedule !== null ? (
             <span
               className={`rounded-full px-3 py-1 text-sm font-medium ${
                 WORK_TYPE_BADGES[row.workShedule]?.bg || 'bg-gray-100 text-gray-700'
@@ -386,7 +423,7 @@ export default function JobAnnouncementsList() {
           )}
         </div>
       ),
-      headerClassName: 'w-[160px]',
+      headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
     {
@@ -407,7 +444,7 @@ export default function JobAnnouncementsList() {
           </IconButton>
           <span>
             {(() => {
-              const value = (row as Record<string, unknown>).applicantsCount;
+              const value = (row as unknown as Record<string, unknown>).applicantsCount;
               if (typeof value === 'number') {
                 return value.toLocaleString(numberLocale);
               }
@@ -416,7 +453,7 @@ export default function JobAnnouncementsList() {
           </span>
         </div>
       ),
-      headerClassName: 'w-[140px]',
+      headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
     {
@@ -466,6 +503,8 @@ export default function JobAnnouncementsList() {
 
             if (countryLabel) {
               return countryLabel;
+            } else {
+              return <div>{t('common.all')}</div>;
             }
 
             const fallbackKey = currentLang === 'ar' ? ['countryNameAr'] : ['countryNameEn'];
@@ -563,7 +602,7 @@ export default function JobAnnouncementsList() {
             if (typeof row.salary === 'number') {
               return row.salary.toLocaleString(numberLocale);
             }
-            return '--';
+            return t("jobAnnouncement.toBeDeterminedLater");
           })()}
         </span>
       ),

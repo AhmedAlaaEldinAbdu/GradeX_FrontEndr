@@ -1366,6 +1366,7 @@
       "contractType": "نوع الدوام",
       "contractFullTime": "دوام كامل",
       "contractPartTime": "دوام جزئي",
+      "contractBoth": "كلاهما",
       "workingHoursFrom": "موعد الدوام من",
       "workingHoursTo": "موعد الدوام إلى",
       "technicalSkills": "المهارات التقنية",
