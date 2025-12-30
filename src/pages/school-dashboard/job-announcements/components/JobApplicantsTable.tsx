@@ -26,6 +26,8 @@ import ScheduleInterviewPopup, {
   type ScheduleInterviewFormData,
 } from '../popups/ScheduleInterviewPopup';
 import AcceptApplicantPopup from '../popups/AcceptApplicantPopup';
+import IconButton from '@/shared/components/IconButton';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
 type JobApplicantsTableProps = {
   data: Applicant[];
@@ -359,22 +361,28 @@ const JobApplicantsTable = ({
     {
       header: 'jobAnnouncement.applicantsPage.table.name',
       accessor: (row) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3">
           <img
             src={DefaultAvatar}
             alt={getApplicantName(row)}
             className="h-10 w-10 rounded-full object-cover"
           />
-          <div>
+          <div className="flex items-center">
             <p className="text-sm font-semibold text-gray-900">{getApplicantName(row)}</p>
-            <p className="text-xs text-gray-500">{getApplicantRole(row)}</p>
-            {row.status && (
-              <span
-                className={`mt-1 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_BADGES[row.status]}`}
-              >
-                {t(`jobAnnouncement.applicantsPage.status.${row.status}`)}
-              </span>
-            )}
+          </div>
+          <div className="flex items-center">
+            <IconButton
+              variant="default"
+              ariaLabel={t('jobAnnouncement.viewApplicants')}
+              // onClick={() => navigate(`/job-announcements/${row.id}/applicants`)}
+              className="h-8 w-8"
+            >
+              <CustomImage
+                src={EyeStyledIcon}
+                alt={t('jobAnnouncement.viewApplicants')}
+                className="h-4 w-4"
+              />
+            </IconButton>
           </div>
         </div>
       ),
