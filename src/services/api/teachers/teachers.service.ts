@@ -9,6 +9,8 @@ import type {
   TeacherAssignmentListResponse,
   TeacherAssignmentListData,
   TeacherAssignmentListQueryParams,
+  TeacherAssignmentListItem,
+  TeacherAssignmentItemResponse,
   CreateTeacherAssignmentRequest,
   CreateTeacherAssignmentResponse,
 } from '@/types/teacherAssignment';
@@ -120,6 +122,23 @@ export async function getTeacherAssignment(teacherId: string): Promise<TeacherAs
 }
 
 /**
+ * Get a specific teacher assignment by its ID (placement details)
+ */
+export async function getTeacherAssignmentById(
+  assignmentId: string
+): Promise<TeacherAssignmentListItem | null> {
+  const response: AxiosResponse<TeacherAssignmentItemResponse> = await axiosClient.get(
+    TeacherAssignmentEndpoints.getById(assignmentId)
+  );
+
+  if (!response?.data?.isSuccess || !response?.data?.data) {
+    return null;
+  }
+
+  return response.data.data;
+}
+
+/**
  * Get teacher personal data by ID
  */
 export async function getTeacherPersonalData(id: string): Promise<TeacherPersonalDataDetails> {
@@ -212,6 +231,7 @@ export const teacherApiService = {
   getTeacherPersonalData,
   deleteTeacher,
   getTeacherAssignment,
+  getTeacherAssignmentById,
   getTeacherAssignmentList,
   updateTeacherAttendance,
   createTeacherAssignment,
