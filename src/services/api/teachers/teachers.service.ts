@@ -9,6 +9,10 @@ import type {
   TeacherAssignmentListResponse,
   TeacherAssignmentListData,
   TeacherAssignmentListQueryParams,
+  TeacherAssignmentListItem,
+  TeacherAssignmentItemResponse,
+  CreateTeacherAssignmentRequest,
+  CreateTeacherAssignmentResponse,
 } from '@/types/teacherAssignment';
 import type {
   TeacherPersonalDataResponse,
@@ -118,6 +122,23 @@ export async function getTeacherAssignment(teacherId: string): Promise<TeacherAs
 }
 
 /**
+ * Get a specific teacher assignment by its ID (placement details)
+ */
+export async function getTeacherAssignmentById(
+  assignmentId: string
+): Promise<TeacherAssignmentListItem | null> {
+  const response: AxiosResponse<TeacherAssignmentItemResponse> = await axiosClient.get(
+    TeacherAssignmentEndpoints.getById(assignmentId)
+  );
+
+  if (!response?.data?.isSuccess || !response?.data?.data) {
+    return null;
+  }
+
+  return response.data.data;
+}
+
+/**
  * Get teacher personal data by ID
  */
 export async function getTeacherPersonalData(id: string): Promise<TeacherPersonalDataDetails> {
@@ -176,6 +197,30 @@ export async function updateTeacherAttendance(data: TeacherAttendanceUpdateReque
   }
 }
 
+/**
+ * Create teacher assignment (placement)
+ */
+export async function createTeacherAssignment(
+  data: CreateTeacherAssignmentRequest
+): Promise<{ success: boolean; message: string }> {
+  const response: AxiosResponse<CreateTeacherAssignmentResponse> = await axiosClient.post(
+    TeacherAssignmentEndpoints.create,
+    data
+  );
+
+  if (!response?.data?.isSuccess) {
+    return {
+      success: false,
+      message: response?.data?.message || 'Failed to create teacher assignment',
+    };
+  }
+
+  return {
+    success: true,
+    message: response.data.message,
+  };
+}
+
 // ============================================================================
 // Export Service Object
 // ============================================================================
@@ -186,6 +231,8 @@ export const teacherApiService = {
   getTeacherPersonalData,
   deleteTeacher,
   getTeacherAssignment,
+  getTeacherAssignmentById,
   getTeacherAssignmentList,
   updateTeacherAttendance,
+  createTeacherAssignment,
 };

@@ -96,7 +96,8 @@
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
       "nameArRequired": "الاسم بالعربية مطلوب",
-      "nameEnRequired": "الاسم بالإنجليزية مطلوب"
+      "nameEnRequired": "الاسم بالإنجليزية مطلوب",
+      "pleaseFillRequiredFields": "يرجى ملء جميع الحقول المطلوبة"
     }
   },
   "actions": {
@@ -960,10 +961,17 @@
       "selectStage": "اختر المرحلة الدراسية",
       "classrooms": "الصفوف الدراسية",
       "selectClassrooms": "اختر الصفوف الدراسية",
+      "selectGradeFirst": "يرجى اختيار المرحلة الدراسية أولاً",
       "book": "اسم الكتاب (اختياري)",
+      "selectSubjectFirst": "يرجى اختيار المادة أولاً",
       "selectBook": "أختر اسم الكتاب",
       "submit": "تسكين",
-      "successMessage": "تم توظيف المعلم بنجاح"
+      "successMessage": "تم توظيف المعلم بنجاح",
+      "details": {
+        "bookName": "اسم الكتاب",
+        "materialPrefix": "المادة",
+        "secondBookName": "اسم الكتاب الثاني"
+      }
     }
   },
   "books": {

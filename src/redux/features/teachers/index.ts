@@ -8,6 +8,7 @@ export {
   fetchTeacherAttendanceDetails,
   updateTeacherAttendance,
   fetchTeacherAssignmentList,
+  createTeacherAssignment,
   setFilters,
   clearFilters,
   setCurrentTeacher,
@@ -31,4 +32,5 @@ export type {
   FetchTeacherAttendanceResponse,
   FetchTeacherAssignmentListPayload,
   FetchTeacherAssignmentListResponse,
+  CreateTeacherAssignmentPayload,
 } from './teachersSlice';

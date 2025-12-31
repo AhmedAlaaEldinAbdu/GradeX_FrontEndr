@@ -109,6 +109,17 @@ export interface TeacherAssignmentListResponse {
 }
 
 // ============================================================================
+// Single Teacher Assignment Item (for viewing a specific placement)
+// ============================================================================
+
+export interface TeacherAssignmentItemResponse {
+  data: TeacherAssignmentListItem;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+// ============================================================================
 // Query Parameters
 // ============================================================================
 
@@ -118,6 +129,27 @@ export interface TeacherAssignmentQueryParams {
 
 export interface TeacherAssignmentListQueryParams {
   SchoolBranchesId: string;
+  TeacherId?: string;
   PageIndex?: number;
   PageSize?: number;
+}
+
+// ============================================================================
+// Create Teacher Assignment Request
+// ============================================================================
+
+export interface CreateTeacherAssignmentRequest {
+  schoolBranchesId: string;
+  teacherId: string;
+  gradeId: string;
+  materialId: string;
+  classroomIds: string[];
+  bookIds: string[];
+}
+
+export interface CreateTeacherAssignmentResponse {
+  data: null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
 }
