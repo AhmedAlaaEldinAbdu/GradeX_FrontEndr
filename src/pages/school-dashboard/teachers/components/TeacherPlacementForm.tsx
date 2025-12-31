@@ -203,29 +203,6 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
     }
   };
 
-  const handleClassroomToggle = (rowId: string, classroomId: string) => {
-    setAssignments(
-      assignments.map((row) => {
-        if (row.id !== rowId) return row;
-        const isSelected = row.classroomIds.includes(classroomId);
-        return {
-          ...row,
-          classroomIds: isSelected
-            ? row.classroomIds.filter((id) => id !== classroomId)
-            : [...row.classroomIds, classroomId],
-        };
-      })
-    );
-    // Clear classroom error
-    if (formErrors[`classroomIds-${rowId}`]) {
-      setFormErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[`classroomIds-${rowId}`];
-        return newErrors;
-      });
-    }
-  };
-
   // Book handlers
   const handleAddBook = (rowId: string) => {
     setAssignments(
@@ -315,13 +292,6 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
     navigate('/teachers');
   };
 
-  const getClassroomName = (rowId: string, classroomId: string) => {
-    const rowClassrooms = classroomsPerRow[rowId] || [];
-    const classroom = rowClassrooms.find((c) => c.id === classroomId);
-    if (!classroom) return classroomId;
-    return currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name;
-  };
-
   return (
     <Card>
       <div className="space-y-6">
@@ -399,19 +369,27 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
                   htmlFor={`classrooms-${row.id}`}
                 >
                   <CustomSelect
-                    value=""
+                    value={row.classroomIds}
                     onChange={(value) => {
-                      const classroomId = Array.isArray(value) ? value[0] : value;
-                      if (classroomId) {
-                        handleClassroomToggle(row.id, classroomId);
+                      const selectedIds = Array.isArray(value) ? value : [value].filter(Boolean);
+                      setAssignments(
+                        assignments.map((r) =>
+                          r.id === row.id ? { ...r, classroomIds: selectedIds as string[] } : r
+                        )
+                      );
+                      // Clear classroom error
+                      if (formErrors[`classroomIds-${row.id}`]) {
+                        setFormErrors((prev) => {
+                          const newErrors = { ...prev };
+                          delete newErrors[`classroomIds-${row.id}`];
+                          return newErrors;
+                        });
                       }
                     }}
-                    options={(classroomsPerRow[row.id] || [])
-                      .filter((c) => !row.classroomIds.includes(c.id))
-                      .map((c) => ({
-                        value: c.id,
-                        label: currentLang === 'ar' ? c.name : c.nameEn || c.name,
-                      }))}
+                    options={(classroomsPerRow[row.id] || []).map((c) => ({
+                      value: c.id,
+                      label: currentLang === 'ar' ? c.name : c.nameEn || c.name,
+                    }))}
                     placeholder={
                       !row.gradeId
                         ? t('teachers.placement.selectGradeFirst')
@@ -420,41 +398,15 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
                           : t('teachers.placement.selectClassrooms')
                     }
                     disabled={!row.gradeId || loadingClassroomsForRow[row.id]}
+                    isMulti={true}
+                    id={`classrooms-${row.id}`}
                   />
-                  {row.classroomIds.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {row.classroomIds.map((classroomId) => (
-                        <span
-                          key={classroomId}
-                          className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800"
-                        >
-                          {getClassroomName(row.id, classroomId)}
-                          <button
-                            type="button"
-                            onClick={() => handleClassroomToggle(row.id, classroomId)}
-                            className="ms-1 text-green-600 hover:text-green-800"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </FormField>
               </div>
 
               {/* Books Section with Add Button */}
               {row.books.map((bookEntry, bookIndex) => (
                 <div key={bookEntry.id} className="mt-4 flex items-end gap-2">
-                  {bookIndex === 0 && (
-                    <button
-                      type="button"
-                      onClick={() => handleAddBook(row.id)}
-                      className="mb-2 flex h-8 w-8 shrink-0 items-center justify-center"
-                    >
-                      <CustomImage src={PlusCircleIcon} alt="add book" className="h-6 w-6" />
-                    </button>
-                  )}
                   {bookIndex > 0 && <div className="w-8 shrink-0" />}
                   <div className="flex-1">
                     <FormField
@@ -482,6 +434,16 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
                       />
                     </FormField>
                   </div>
+
+                  {bookIndex === 0 && (
+                    <button
+                      type="button"
+                      onClick={() => handleAddBook(row.id)}
+                      className="mb-2 flex h-8 w-8 shrink-0 items-center justify-center"
+                    >
+                      <CustomImage src={PlusCircleIcon} alt="add book" className="h-6 w-6" />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
