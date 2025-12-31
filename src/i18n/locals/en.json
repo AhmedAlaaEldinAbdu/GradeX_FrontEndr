@@ -967,7 +967,11 @@
       "selectSubjectFirst": "Please select a subject first",
       "selectBook": "Select book name",
       "submit": "Place",
-      "successMessage": "Teacher placed successfully"
+      "successMessage": "Teacher placed successfully",
+      "details": {
+        "bookName": "Book Name",
+        "secondBookName": "Second Book Name"
+      }
     }
   },
   "books": {
