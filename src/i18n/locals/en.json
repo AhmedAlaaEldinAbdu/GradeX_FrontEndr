@@ -96,7 +96,8 @@
       "required": "this field is required",
       "nameRequired": "name is required",
       "nameArRequired": "name in Arabic is required",
-      "nameEnRequired": "name in English is required"
+      "nameEnRequired": "name in English is required",
+      "pleaseFillRequiredFields": "Please fill all required fields"
     }
   },
   "actions": {
@@ -961,7 +962,9 @@
       "selectStage": "Select educational stage",
       "classrooms": "Classrooms",
       "selectClassrooms": "Select classrooms",
+      "selectGradeFirst": "Please select a grade first",
       "book": "Book Name (Optional)",
+      "selectSubjectFirst": "Please select a subject first",
       "selectBook": "Select book name",
       "submit": "Place",
       "successMessage": "Teacher placed successfully"
