@@ -341,6 +341,30 @@ export const fetchTeacherAssignmentList = createAsyncThunk<
   }
 });
 
+export interface CreateTeacherAssignmentPayload {
+  schoolBranchesId: string;
+  teacherId: string;
+  gradeId: string;
+  materialId: string;
+  classroomIds: string[];
+  bookIds: string[];
+}
+
+export const createTeacherAssignment = createAsyncThunk<
+  { success: boolean; message: string },
+  CreateTeacherAssignmentPayload
+>('teachers/createTeacherAssignment', async (payload, { rejectWithValue }) => {
+  try {
+    const result = await teacherApiService.createTeacherAssignment(payload);
+    if (!result.success) {
+      return rejectWithValue(result.message);
+    }
+    return result;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const teachersSlice = createSlice({
   name: 'teachers',
   initialState,
