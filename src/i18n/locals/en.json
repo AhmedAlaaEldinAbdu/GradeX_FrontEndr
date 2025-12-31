@@ -970,6 +970,7 @@
       "successMessage": "Teacher placed successfully",
       "details": {
         "bookName": "Book Name",
+        "materialPrefix": "Material",
         "secondBookName": "Second Book Name"
       }
     }

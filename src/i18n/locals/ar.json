@@ -969,6 +969,7 @@
       "successMessage": "تم توظيف المعلم بنجاح",
       "details": {
         "bookName": "اسم الكتاب",
+        "materialPrefix": "المادة",
         "secondBookName": "اسم الكتاب الثاني"
       }
     }
