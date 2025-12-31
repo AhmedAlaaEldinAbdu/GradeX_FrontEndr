@@ -1259,7 +1259,8 @@
         "workType": "نوع الدوام",
         "qualification": "المؤهل الدراسي",
         "nationality": "الجنسية",
-        "experience": "سنوات الخبرة"
+        "experience": "سنوات الخبرة",
+        "status": "حالة الطلب"
       },
       "table": {
         "name": "الاسم",
@@ -1296,6 +1297,15 @@
       "confirmAccept": "هل أنت متأكد من قبول {{name}}؟",
       "acceptDescription": "سيتم تحديث حالة المتقدم إلى مقبول",
       "acceptSuccess": "تم قبول المتقدم بنجاح",
+      "confirmRecall": "هل أنت تريد استرجاع المعلم؟",
+      "recallDescription": "سيتم نقله لجدول المتقدمين على الإعلان",
+      "statusLabels": {
+        "accept": "مقبول",
+        "reject": "مرفوض",
+        "pending": "قيد المراجعة",
+        "deleted": "محذوف",
+        "archived": "مؤرشف"
+      },
       "scheduleInterview": "تحديد موعد",
       "schedulingFor": "تحديد موعد مقابلة لـ {{name}}",
       "interviewType": "نوع المقابلة",

@@ -1261,7 +1261,8 @@
         "workType": "Work type",
         "qualification": "Academic qualification",
         "nationality": "Nationality",
-        "experience": "Experience (years)"
+        "experience": "Experience (years)",
+        "status": "Application status"
       },
       "table": {
         "name": "Name",
@@ -1298,6 +1299,15 @@
       "confirmAccept": "Are you sure you want to accept {{name}}?",
       "acceptDescription": "The applicant will be marked as accepted",
       "acceptSuccess": "Applicant accepted successfully",
+      "confirmRecall": "Do you want to recall this applicant?",
+      "recallDescription": "They will move back to the applicants list for this announcement",
+      "statusLabels": {
+        "accept": "Accepted",
+        "reject": "Rejected",
+        "pending": "Under review",
+        "deleted": "Deleted",
+        "archived": "Archived"
+      },
       "scheduleInterview": "Schedule Interview",
       "schedulingFor": "Scheduling interview for {{name}}",
       "interviewType": "Interview Type",

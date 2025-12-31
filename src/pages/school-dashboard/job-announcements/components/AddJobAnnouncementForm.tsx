@@ -684,8 +684,6 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     }
   };
 
-  console.log('errors', errors);
-
   return (
     <Card>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">

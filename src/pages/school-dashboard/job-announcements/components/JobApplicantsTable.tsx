@@ -15,10 +15,9 @@ import { WORK_TYPE_BADGES, JOB_APPLICATION_STATUS } from './applicants-data';
 import CustomImage from '@/shared/components/CustomImage';
 import { useToast } from '@/shared/context/ToastContext';
 import ArchiveApplicantPopup from '../popups/ArchiveApplicantPopup';
-import ScheduleInterviewPopup, {
-  type ScheduleInterviewFormData,
-} from '../popups/ScheduleInterviewPopup';
+import ScheduleInterviewPopup from '../popups/ScheduleInterviewPopup';
 import AcceptApplicantPopup from '../popups/AcceptApplicantPopup';
+import RecallApplicantPopup from '../popups/RecallApplicantPopup';
 import IconButton from '@/shared/components/IconButton';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -26,8 +25,10 @@ import {
   fetchApplicationsJobAdvertisements,
   editApplicationsJobAdvertisementStatus,
 } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
+import { createInterview } from '@/redux/features/interviews/interviewsSlice';
 import { fetchQualifications, fetchCountries } from '@/redux/features/lookups/lookupsSlice';
 import type { ApplicationsJobAdvertisement } from '@/services/api/types/applications-job-advertisement.types';
+import type { InterviewFormProps } from '@/validations/interviews-validations';
 
 type JobApplicantsTableProps = {
   jobAdvertisementId: string;
@@ -37,6 +38,17 @@ type JobApplicantsTableProps = {
 };
 
 const PAGE_SIZE = 10;
+
+const buildIsoDateTime = (dateStr?: string, timeStr?: string) => {
+  if (!dateStr || !timeStr) {
+    return undefined;
+  }
+
+  const normalizedTime = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
+  const combined = `${dateStr}T${normalizedTime}`;
+  const parsed = new Date(combined);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+};
 
 const JobApplicantsTable = ({
   jobAdvertisementId,
@@ -69,12 +81,14 @@ const JobApplicantsTable = ({
   const [qualificationFilter, setQualificationFilter] = useState('');
   const [nationalityFilter, setNationalityFilter] = useState('');
   const [experienceFilter, setExperienceFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = PAGE_SIZE;
 
   const [archivePopupOpen, setArchivePopupOpen] = useState(false);
   const [schedulePopupOpen, setSchedulePopupOpen] = useState(false);
   const [acceptPopupOpen, setAcceptPopupOpen] = useState(false);
+  const [recallPopupOpen, setRecallPopupOpen] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<ApplicationsJobAdvertisement | null>(
     null
   );
@@ -89,13 +103,15 @@ const JobApplicantsTable = ({
       return;
     }
 
+    const effectiveStatus = statusFilter ? Number(statusFilter) : applicationStatus;
+
     dispatch(
       fetchApplicationsJobAdvertisements({
         page: currentPage,
         limit: pageSize,
         filters: {
           jobAdvertisementId,
-          applicationStatus,
+          applicationStatus: effectiveStatus,
           search: searchValue.trim() || undefined,
           workShedule: workTypeFilter ? Number(workTypeFilter) : undefined,
           lkQualificationId: qualificationFilter || undefined,
@@ -114,6 +130,7 @@ const JobApplicantsTable = ({
     pageSize,
     qualificationFilter,
     searchValue,
+    statusFilter,
     workTypeFilter,
   ]);
 
@@ -178,6 +195,7 @@ const JobApplicantsTable = ({
     setQualificationFilter('');
     setNationalityFilter('');
     setExperienceFilter('');
+    setStatusFilter('');
     setCurrentPage(1);
   };
 
@@ -197,6 +215,11 @@ const JobApplicantsTable = ({
     setAcceptPopupOpen(true);
   };
 
+  const handleOpenRecallPopup = (applicant: ApplicationsJobAdvertisement) => {
+    setSelectedApplicant(applicant);
+    setRecallPopupOpen(true);
+  };
+
   const handleArchiveConfirm = async () => {
     const success = await updateApplicantStatus({
       applicant: selectedApplicant,
@@ -210,12 +233,26 @@ const JobApplicantsTable = ({
     }
   };
 
-  const handleScheduleSubmit = async (data: ScheduleInterviewFormData) => {
+  const handleScheduleSubmit = async (data: InterviewFormProps) => {
     try {
       setIsProcessing(true);
-      // TODO: Add API call to schedule interview
-      console.log('Schedule interview data:', data);
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated API call
+
+      const normalizedStartTime = buildIsoDateTime(data.interviewDate, data.startTime);
+      const normalizedEndTime = buildIsoDateTime(data.interviewDate, data.endTime);
+
+      const payload: InterviewFormProps = {
+        ...data,
+        startTime: normalizedStartTime ?? data.startTime,
+        endTime: normalizedEndTime ?? data.endTime,
+      };
+
+      const response = await dispatch(createInterview(payload)).unwrap();
+
+      if (!response?.isSuccess) {
+        showToast({ message: 'common.errorOccurred', type: 'error' });
+        return;
+      }
+
       showToast({
         message: 'jobAnnouncement.applicantsPage.interviewScheduledSuccess',
         type: 'success',
@@ -242,12 +279,17 @@ const JobApplicantsTable = ({
     }
   };
 
-  const handleRecall = async (applicant: ApplicationsJobAdvertisement) => {
-    await updateApplicantStatus({
-      applicant,
+  const handleRecallConfirm = async () => {
+    const success = await updateApplicantStatus({
+      applicant: selectedApplicant,
       nextStatus: JOB_APPLICATION_STATUS.PENDING,
       successMessageKey: 'jobAnnouncement.applicantsPage.recallSuccess',
     });
+
+    if (success) {
+      setRecallPopupOpen(false);
+      setSelectedApplicant(null);
+    }
   };
 
   const workTypeOptions = useMemo(() => {
@@ -325,6 +367,32 @@ const JobApplicantsTable = ({
     return uniqueSorted.map((value) => ({ value: String(value), label: `${value}` }));
   }, [applications, t]);
 
+  const statusOptions = useMemo(() => {
+    const entries = [
+      {
+        value: String(JOB_APPLICATION_STATUS.ACCEPT),
+        labelKey: t('jobAnnouncement.applicantsPage.statusLabels.accept'),
+      },
+      {
+        value: String(JOB_APPLICATION_STATUS.REJECT),
+        labelKey: t('jobAnnouncement.applicantsPage.statusLabels.reject'),
+      },
+      {
+        value: String(JOB_APPLICATION_STATUS.PENDING),
+        labelKey: t('jobAnnouncement.applicantsPage.statusLabels.pending'),
+      },
+      {
+        value: String(JOB_APPLICATION_STATUS.DELETED),
+        labelKey: t('jobAnnouncement.applicantsPage.statusLabels.deleted'),
+      },
+      {
+        value: String(JOB_APPLICATION_STATUS.ARCHIVED),
+        labelKey: t('jobAnnouncement.applicantsPage.statusLabels.archived'),
+      },
+    ];
+    return entries.map(({ value, labelKey }) => ({ value, label: t(labelKey) }));
+  }, [t]);
+
   const getApplicantName = (applicant: ApplicationsJobAdvertisement) => applicant.fullName || '';
   const getAddress = (applicant: ApplicationsJobAdvertisement) => applicant.streetName || '-';
   const getNationalityLabel = (applicant: ApplicationsJobAdvertisement) =>
@@ -369,7 +437,7 @@ const JobApplicantsTable = ({
       name: `${filterPrefix}-work-type`,
       value: workTypeFilter,
       onChange: () => {},
-      width: '20%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={workTypeFilter}
@@ -432,7 +500,7 @@ const JobApplicantsTable = ({
       name: `${filterPrefix}-nationality`,
       value: nationalityFilter,
       onChange: () => {},
-      width: '20%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={nationalityFilter}
@@ -444,6 +512,27 @@ const JobApplicantsTable = ({
           }}
           options={countryOptions}
           placeholder={t('jobAnnouncement.applicantsPage.filters.nationality')}
+          maxHeight="180px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: `${filterPrefix}-status`,
+      value: statusFilter,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={statusFilter}
+          onChange={(value) => {
+            setStatusFilter(
+              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+            );
+            setCurrentPage(1);
+          }}
+          options={statusOptions}
+          placeholder={t('jobAnnouncement.applicantsPage.filters.status')}
           maxHeight="180px"
         />
       ),
@@ -593,7 +682,7 @@ const JobApplicantsTable = ({
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
               title={t('actions.recall')}
-              onClick={() => handleRecall(row)}
+              onClick={() => handleOpenRecallPopup(row)}
             >
               <CustomImage src={RecallIcon} alt={t('actions.recall')} className="h-4 w-4" />
             </button>
@@ -666,6 +755,18 @@ const JobApplicantsTable = ({
         />
       </Card>
 
+      {/* Recall Applicant Popup */}
+      <RecallApplicantPopup
+        open={recallPopupOpen}
+        applicantName={getSelectedApplicantName()}
+        onConfirm={handleRecallConfirm}
+        onCancel={() => {
+          setRecallPopupOpen(false);
+          setSelectedApplicant(null);
+        }}
+        isProcessing={isProcessing}
+      />
+
       {/* Archive Applicant Popup */}
       <ArchiveApplicantPopup
         open={archivePopupOpen}
@@ -682,6 +783,8 @@ const JobApplicantsTable = ({
       <ScheduleInterviewPopup
         open={schedulePopupOpen}
         applicantName={getSelectedApplicantName()}
+        jobAdvertisementId={jobAdvertisementId}
+        applicantTeacherId={selectedApplicant?.teacherId}
         onClose={() => {
           setSchedulePopupOpen(false);
           setSelectedApplicant(null);
