@@ -7,7 +7,7 @@ import DefaultAvatar from '@gradex/assets/images/profile.png';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import ArchiveIcon from '@gradex/assets/icons/Archive.svg';
 import RecallIcon from '@gradex/assets/icons/Recall.svg';
-import CheckIcon from '@gradex/assets/icons/Check.svg';
+import CheckLightIcon from '@gradex/assets/icons/CheckLight.svg';
 import TimeLog from '@gradex/assets/icons/TimeLog.svg';
 import EmailContactIcon from '@gradex/assets/icons/EmailYellow.svg';
 import PhoneContactIcon from '@gradex/assets/icons/PhoneGreen.svg';
@@ -232,7 +232,7 @@ const JobApplicantsTable = ({
   const handleAcceptConfirm = async () => {
     const success = await updateApplicantStatus({
       applicant: selectedApplicant,
-      nextStatus: JOB_APPLICATION_STATUS.ACCEPTED,
+      nextStatus: JOB_APPLICATION_STATUS.ACCEPT,
       successMessageKey: 'jobAnnouncement.applicantsPage.acceptSuccess',
     });
 
@@ -245,7 +245,7 @@ const JobApplicantsTable = ({
   const handleRecall = async (applicant: ApplicationsJobAdvertisement) => {
     await updateApplicantStatus({
       applicant,
-      nextStatus: JOB_APPLICATION_STATUS.REQUESTS,
+      nextStatus: JOB_APPLICATION_STATUS.PENDING,
       successMessageKey: 'jobAnnouncement.applicantsPage.recallSuccess',
     });
   };
@@ -605,7 +605,7 @@ const JobApplicantsTable = ({
                 title={t('common.approve')}
                 onClick={() => handleOpenAcceptPopup(row)}
               >
-                <CustomImage src={CheckIcon} alt={t('common.approve')} className="h-4 w-4" />
+                <CustomImage src={CheckLightIcon} alt={t('common.approve')} className="h-4 w-4" />
               </button>
               {/* Schedule Interview Button */}
               <button

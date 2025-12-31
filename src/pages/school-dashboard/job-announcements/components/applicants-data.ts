@@ -14,9 +14,11 @@ export const WORK_TYPE_BADGES: Record<number, { bg: string; label: string }> = {
 };
 
 export const JOB_APPLICATION_STATUS = {
-  ACCEPTED: 1,
-  REQUESTS: 2,
-  ARCHIVED: 3,
+  ACCEPT: 1,
+  REJECT: 2,
+  PENDING: 3,
+  DELETED: 4,
+  ARCHIVED: 5,
 } as const;
 
 export type JobApplicationStatus =

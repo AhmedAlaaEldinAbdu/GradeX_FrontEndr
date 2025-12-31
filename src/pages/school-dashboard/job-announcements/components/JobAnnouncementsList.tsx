@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
@@ -22,13 +22,6 @@ import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import type { JobAdvertisment } from '@/services/api/types/job-advertisment.types';
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 import CustomImage from '@/shared/components/CustomImage';
-import {
-  USE_MOCK_DATA,
-  MOCK_JOB_ANNOUNCEMENTS,
-  MOCK_COUNTRIES,
-  MOCK_SCHOOL_STAGES,
-  MOCK_SUBJECTS,
-} from '../mock';
 
 const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; text: string }> = {
   [JobAdvertismentWorkShedule.FULL_TIME]: {
@@ -44,13 +37,6 @@ const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; text: s
     text: 'jobAnnouncement.form.contractBoth',
   },
 };
-
-// Toggle this flag to use mock data from the mock directory.
-// Set USE_MOCK_DATA to true in ../mock/index.ts to enable mock mode.
-const SHOULD_USE_DUMMY_JOB_DATA = USE_MOCK_DATA;
-
-// Mock data is now imported from the mock directory for better maintainability.
-const DUMMY_JOB_ADVERTISMENTS = MOCK_JOB_ANNOUNCEMENTS;
 
 const getDynamicValue = (row: JobAdvertisment, keys: string[]): string | undefined => {
   const source = row as unknown as Record<string, unknown>;
@@ -179,17 +165,12 @@ export default function JobAnnouncementsList() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    // Skip API calls when mock mode is enabled
-    if (USE_MOCK_DATA) return;
     dispatch(fetchCountries());
     dispatch(fetchSchoolStages());
     dispatch(fetchSubjects({ page: 1, limit: 1000 }));
   }, [dispatch]);
 
   useEffect(() => {
-    // Skip API calls when mock mode is enabled
-    if (USE_MOCK_DATA) return;
-
     const filtersPayload = buildFiltersPayload({
       schoolBranchId: DummySchoolBranchId,
       searchTerm,
@@ -230,41 +211,26 @@ export default function JobAnnouncementsList() {
     setCurrentPage(1);
   }, [searchTerm, selectedCountryId, selectedStageId, selectedSubjectId, selectedWorkType]);
 
-  const countryOptions = USE_MOCK_DATA
-    ? MOCK_COUNTRIES.map((country) => ({
+  const countryOptions = Array.isArray(countries)
+    ? countries.map((country) => ({
         value: country.id,
         label: currentLang === 'ar' ? country.arabicName : country.englishName,
       }))
-    : Array.isArray(countries)
-      ? countries.map((country) => ({
-          value: country.id,
-          label: currentLang === 'ar' ? country.arabicName : country.englishName,
-        }))
-      : [];
+    : [];
 
-  const stageOptions = USE_MOCK_DATA
-    ? MOCK_SCHOOL_STAGES.map((stage) => ({
+  const stageOptions = Array.isArray(schoolStages)
+    ? schoolStages.map((stage) => ({
         value: stage.id,
-        label: resolveStageName(stage, currentLang),
+        label: resolveStageName(stage as StageNameLike, currentLang),
       }))
-    : Array.isArray(schoolStages)
-      ? schoolStages.map((stage) => ({
-          value: stage.id,
-          label: resolveStageName(stage as StageNameLike, currentLang),
-        }))
-      : [];
+    : [];
 
-  const subjectOptions = USE_MOCK_DATA
-    ? MOCK_SUBJECTS.map((subject) => ({
+  const subjectOptions = Array.isArray(subjects)
+    ? subjects.map((subject) => ({
         value: subject.id,
         label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
       }))
-    : Array.isArray(subjects)
-      ? subjects.map((subject) => ({
-          value: subject.id,
-          label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
-        }))
-      : [];
+    : [];
 
   const countryLabelMap = countryOptions.reduce<Record<string, string>>((acc, option) => {
     acc[option.value] = option.label;
@@ -281,21 +247,20 @@ export default function JobAnnouncementsList() {
     return acc;
   }, {});
 
-  const workTypeOptions = [
-    { value: '', label: t('jobAnnouncement.workType') },
-    {
-      value: String(JobAdvertismentWorkShedule.FULL_TIME),
-      label: t('jobAnnouncement.form.contractFullTime'),
-    },
-    {
-      value: String(JobAdvertismentWorkShedule.PART_TIME),
-      label: t('jobAnnouncement.form.contractPartTime'),
-    },
-    {
-      value: String(JobAdvertismentWorkShedule.BOTH),
-      label: t('jobAnnouncement.form.contractBoth'),
-    },
-  ];
+  const workTypeOptions = useMemo(() => {
+    const baseOptions = [
+      {
+        value: String(JobAdvertismentWorkShedule.FULL_TIME),
+        labelKey: 'jobAnnouncement.form.contractFullTime',
+      },
+      {
+        value: String(JobAdvertismentWorkShedule.PART_TIME),
+        labelKey: 'jobAnnouncement.form.contractPartTime',
+      },
+    ];
+
+    return baseOptions.map(({ value, labelKey }) => ({ value, label: t(labelKey) }));
+  }, [t]);
 
   const numberLocale = currentLang === 'ar' ? 'ar-EG' : 'en-US';
   const joinSeparator = currentLang === 'ar' ? '، ' : ', ';
@@ -303,30 +268,17 @@ export default function JobAnnouncementsList() {
   const hasActiveFilters = Boolean(
     searchTerm || selectedCountryId || selectedStageId || selectedSubjectId || selectedWorkType
   );
-  // When mock mode is enabled, always use mock data (no dependency on API response)
-  const shouldUseDummyData = SHOULD_USE_DUMMY_JOB_DATA;
-  const dataSource = shouldUseDummyData ? DUMMY_JOB_ADVERTISMENTS : jobAdvertisments;
+  const dataSource = Array.isArray(jobAdvertisments) ? jobAdvertisments : [];
   const shouldShowEmptyState = !isLoading && dataSource.length === 0 && !hasActiveFilters;
-  const shouldShowContent =
-    isLoading || dataSource.length > 0 || hasActiveFilters || shouldUseDummyData;
-  const tablePagination = shouldUseDummyData
-    ? {
-        page: 1,
-        limit: dataSource.length || 10,
-        total: dataSource.length,
-        totalPages: 1,
-      }
-    : {
-        page: pagination.page || currentPage,
-        limit: pagination.limit || 10,
-        total: pagination.total || 0,
-        totalPages: pagination.totalPages || 0,
-      };
+  const shouldShowContent = isLoading || dataSource.length > 0 || hasActiveFilters;
+  const tablePagination = {
+    page: pagination?.page || currentPage,
+    limit: pagination?.limit || 10,
+    total: pagination?.total || 0,
+    totalPages: pagination?.totalPages || 0,
+  };
 
   const handlePageChange = (page: number) => {
-    if (shouldUseDummyData) {
-      return;
-    }
     setCurrentPage(page);
   };
 
@@ -602,7 +554,7 @@ export default function JobAnnouncementsList() {
             if (typeof row.salary === 'number') {
               return row.salary.toLocaleString(numberLocale);
             }
-            return t("jobAnnouncement.toBeDeterminedLater");
+            return t('jobAnnouncement.toBeDeterminedLater');
           })()}
         </span>
       ),

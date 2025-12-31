@@ -10,7 +10,7 @@ const JobApplicantsRequests = ({ jobAdvertisementId }: JobApplicantsRequestsProp
     <JobApplicantsTable
       jobAdvertisementId={jobAdvertisementId}
       filterPrefix="requests"
-      applicationStatus={JOB_APPLICATION_STATUS.REQUESTS}
+      applicationStatus={JOB_APPLICATION_STATUS.PENDING}
     />
   );
 };
