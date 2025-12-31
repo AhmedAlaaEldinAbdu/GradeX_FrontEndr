@@ -9,23 +9,24 @@ import Loading from '@/shared/components/Loading';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchTeacherPersonalData } from '@/redux/features/teachers';
 import { teacherApiService } from '@/services/api/teachers/teachers.service';
+import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
 import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
 
 interface TeacherPlacementDetailsProps {
-  assignmentId: string;
+  teacherId: string;
   isActive?: boolean;
 }
 
 export default function TeacherPlacementDetails({
-  assignmentId,
+  teacherId,
   isActive = true,
 }: TeacherPlacementDetailsProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
 
-  // Local state for assignment data
-  const [assignmentData, setAssignmentData] = useState<TeacherAssignmentListItem | null>(null);
+  // Local state for assignments data (multiple assignments)
+  const [assignmentsData, setAssignmentsData] = useState<TeacherAssignmentListItem[]>([]);
   const [isLoadingAssignment, setIsLoadingAssignment] = useState(false);
   const [assignmentError, setAssignmentError] = useState<string | null>(null);
 
@@ -34,35 +35,38 @@ export default function TeacherPlacementDetails({
   const isLoadingPersonalData = useAppSelector((state) => state.teachers.isLoadingPersonalData);
   const personalDataError = useAppSelector((state) => state.teachers.personalDataError);
 
-  // Fetch assignment data
+  // Fetch assignments data
   useEffect(() => {
-    const fetchAssignment = async () => {
-      if (!assignmentId) return;
+    const fetchAssignments = async () => {
+      if (!teacherId) return;
 
       setIsLoadingAssignment(true);
       setAssignmentError(null);
 
       try {
-        const data = await teacherApiService.getTeacherAssignmentById(assignmentId);
-        if (data) {
-          setAssignmentData(data);
-          // Fetch personal data using teacherId from assignment
-          dispatch(fetchTeacherPersonalData(data.teacherId));
+        const data = await teacherApiService.getTeacherAssignmentList({
+          TeacherId: teacherId,
+          SchoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+        });
+        if (data && data.teacherAssignmentDto && data.teacherAssignmentDto.length > 0) {
+          setAssignmentsData(data.teacherAssignmentDto);
+          // Fetch personal data using teacherId
+          dispatch(fetchTeacherPersonalData(teacherId));
         } else {
           setAssignmentError(t('common.noData'));
         }
       } catch (error) {
         setAssignmentError(t('common.errorOccurred'));
-        console.error('Failed to fetch assignment:', error);
+        console.error('Failed to fetch assignments:', error);
       } finally {
         setIsLoadingAssignment(false);
       }
     };
 
     if (isActive) {
-      fetchAssignment();
+      fetchAssignments();
     }
-  }, [assignmentId, isActive, dispatch, t]);
+  }, [teacherId, isActive, dispatch, t]);
 
   // Loading state
   if (!isActive || isLoadingAssignment || (isLoadingPersonalData && !teacherPersonalData)) {
@@ -91,7 +95,7 @@ export default function TeacherPlacementDetails({
   }
 
   // No data state
-  if (!assignmentData || !teacherPersonalData) {
+  if (assignmentsData.length === 0 || !teacherPersonalData) {
     return (
       <div className="flex h-64 items-center justify-center">
         <p className="text-gray-500">{t('common.noData')}</p>
@@ -101,6 +105,9 @@ export default function TeacherPlacementDetails({
 
   const { personalData, qualifications, trainingCourses, languages, technicalSkill, attachment } =
     teacherPersonalData;
+
+  // Get teacher name from first assignment
+  const teacherName = assignmentsData[0]?.teacherName || teacherPersonalData.fullName;
 
   // Format date helper
   const formatDate = (dateString: string) => {
@@ -153,83 +160,117 @@ export default function TeacherPlacementDetails({
     });
   });
 
-  // Get localized names
-  const gradeName =
+  // Helper function to get localized names
+  const getGradeName = (assignment: TeacherAssignmentListItem) =>
     currentLang === 'ar'
-      ? assignmentData.gradeNameAR
-      : assignmentData.gradeNameEN || assignmentData.gradeNameAR;
-  const materialName =
+      ? assignment.gradeNameAR
+      : assignment.gradeNameEN || assignment.gradeNameAR;
+
+  const getMaterialName = (assignment: TeacherAssignmentListItem) =>
     currentLang === 'ar'
-      ? assignmentData.materialNameAR
-      : assignmentData.materialNameEN || assignmentData.materialNameAR;
+      ? assignment.materialNameAR
+      : assignment.materialNameEN || assignment.materialNameAR;
+
+  // Helper function to get ordinal text (First, Second, etc.)
+  const getOrdinal = (num: number, lang: 'ar' | 'en') => {
+    if (lang === 'ar') {
+      const ordinals = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة'];
+      return ordinals[num - 1] || num.toString();
+    } else {
+      const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+      return ordinals[num - 1] || num.toString();
+    }
+  };
+
+  // Aggregate data from all assignments
+  const allSubjects = [...new Set(assignmentsData.map((a) => getMaterialName(a)).filter(Boolean))];
+  const allGrades = [...new Set(assignmentsData.map((a) => getGradeName(a)).filter(Boolean))];
+  const allClassrooms = assignmentsData.flatMap((a) => a.classrooms || []);
+  // Get unique classrooms by id
+  const uniqueClassrooms = allClassrooms.filter(
+    (classroom, index, self) => index === self.findIndex((c) => c.id === classroom.id)
+  );
+
+  // Group books by material
+  const booksByMaterial = assignmentsData.map((assignment, index) => ({
+    materialName: getMaterialName(assignment),
+    materialIndex: index + 1,
+    books: assignment.books || [],
+  }));
 
   return (
     <div className="space-y-6">
-      {/* Header Section - Teacher Name with Placement Info */}
+      {/* Header Section - Teacher Name with All Placements Info */}
       <Card>
         <div className="space-y-4">
           {/* Teacher Name Title */}
-          <h2 className="text-start text-xl font-bold text-gray-900">
-            {assignmentData.teacherName}
-          </h2>
+          <h2 className="text-start text-xl font-bold text-gray-900">{teacherName}</h2>
 
-          {/* Placement Info Grid */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {/* Subject/Material */}
+          {/* Subjects and Grades Row */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* All Subjects */}
             <div className="text-start">
               <span className="text-sm text-gray-600">{t('teachers.placement.subject')}: </span>
               <span className="font-medium text-gray-900">
-                {materialName || t('common.notAvailable')}
+                {allSubjects.length > 0 ? allSubjects.join(' - ') : t('common.notAvailable')}
               </span>
             </div>
 
-            {/* Educational Stage/Grade */}
+            {/* All Educational Stages */}
             <div className="text-start">
               <span className="text-sm text-gray-600">{t('teachers.placement.stage')}: </span>
               <span className="font-medium text-gray-900">
-                {gradeName || t('common.notAvailable')}
+                {allGrades.length > 0 ? allGrades.join(' - ') : t('common.notAvailable')}
               </span>
-            </div>
-
-            {/* Classrooms */}
-            <div className="text-start lg:col-span-2">
-              <span className="text-sm text-gray-600">{t('teachers.placement.classrooms')}: </span>
-              <div className="mt-1 flex flex-wrap gap-2">
-                {assignmentData.classrooms && assignmentData.classrooms.length > 0 ? (
-                  assignmentData.classrooms.map((classroom) => (
-                    <span
-                      key={classroom.id}
-                      className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800"
-                    >
-                      {currentLang === 'ar'
-                        ? classroom.nameAR
-                        : classroom.nameEN || classroom.nameAR}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-gray-500">{t('common.notAvailable')}</span>
-                )}
-              </div>
             </div>
           </div>
 
-          {/* Books Section */}
-          {assignmentData.books && assignmentData.books.length > 0 && (
-            <div className="border-t border-gray-100 pt-4">
-              <div className="text-start">
-                <span className="text-sm text-gray-600">
-                  {t('teachers.placement.details.bookName')}:{' '}
-                </span>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {assignmentData.books.map((book, index) => (
-                    <span key={book.id} className="text-gray-900">
-                      {index > 0 && ' | '}
-                      {book.name}
-                    </span>
+          {/* All Classrooms Row */}
+          <div className="text-start">
+            <span className="text-sm text-gray-600">{t('teachers.placement.classrooms')}: </span>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {uniqueClassrooms.length > 0 ? (
+                uniqueClassrooms.map((classroom) => (
+                  <span
+                    key={classroom.id}
+                    className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800"
+                  >
+                    {currentLang === 'ar' ? classroom.nameAR : classroom.nameEN || classroom.nameAR}
+                  </span>
+                ))
+              ) : (
+                <span className="text-gray-500">{t('common.notAvailable')}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Books Section - Full-width bordered boxes grouped by material */}
+          {booksByMaterial.map(
+            (materialBooks, idx) =>
+              materialBooks.books.length > 0 && (
+                <div key={idx} className="space-y-2 text-start">
+                  {/* Books in bordered boxes */}
+                  {materialBooks.books.map((book) => (
+                    <div
+                      key={book.id}
+                      className="rounded-lg border border-gray-200 bg-white px-4 py-3"
+                    >
+                      {/* Material Title */}
+                      <p className="text-sm font-medium text-gray-900">
+                        {t('teachers.placement.details.bookName')}{' '}
+                        {booksByMaterial.length > 1
+                          ? `${t('teachers.placement.details.materialPrefix')} ${getOrdinal(idx + 1, currentLang)}`
+                          : ''}
+                        :
+                      </p>
+                      <span className="text-sm text-gray-600">
+                        {t('teachers.placement.details.bookName')}:{' '}
+                      </span>
+                      <span className="text-sm text-gray-900">{book.name}</span>
+                    </div>
                   ))}
                 </div>
-              </div>
-            </div>
+              )
           )}
         </div>
       </Card>
