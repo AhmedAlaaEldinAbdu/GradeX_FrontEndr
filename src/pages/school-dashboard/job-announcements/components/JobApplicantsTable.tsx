@@ -9,6 +9,8 @@ import ArchiveIcon from '@gradex/assets/icons/Archive.svg';
 import RecallIcon from '@gradex/assets/icons/Recall.svg';
 import CheckIcon from '@gradex/assets/icons/Check.svg';
 import TimeLog from '@gradex/assets/icons/TimeLog.svg';
+import EmailContactIcon from '@gradex/assets/icons/EmailYellow.svg';
+import PhoneContactIcon from '@gradex/assets/icons/PhoneGreen.svg';
 import { WORK_TYPE_BADGES } from './applicants-data';
 import CustomImage from '@/shared/components/CustomImage';
 import { useToast } from '@/shared/context/ToastContext';
@@ -21,6 +23,7 @@ import IconButton from '@/shared/components/IconButton';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchApplicationsJobAdvertisements } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
+import { fetchQualifications, fetchCountries } from '@/redux/features/lookups/lookupsSlice';
 import type { ApplicationsJobAdvertisement } from '@/services/api/types/applications-job-advertisement.types';
 
 type JobApplicantsTableProps = {
@@ -44,8 +47,18 @@ const JobApplicantsTable = ({
   const { applications, pagination, isLoading } = useAppSelector(
     (state) => state.applicationsJobAdvertisements
   );
+  const {
+    qualifications,
+    countries,
+    isQualificationsInitialized,
+    isCountriesInitialized,
+    isLoadingQualifications,
+    isLoadingCountries,
+  } = useAppSelector((state) => state.lookups);
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const numberLocale = currentLang === 'ar' ? 'ar-SA' : 'en-US';
+  const emailLabel = t('common.email', { defaultValue: 'Email' });
+  const phoneLabel = t('common.phone', { defaultValue: 'Phone' });
 
   // Filter state
   const [searchValue, setSearchValue] = useState('');
@@ -100,6 +113,18 @@ const JobApplicantsTable = ({
     workTypeFilter,
     pageSize,
   ]);
+
+  useEffect(() => {
+    if (!qualifications.length && !isQualificationsInitialized && !isLoadingQualifications) {
+      dispatch(fetchQualifications());
+    }
+  }, [dispatch, isQualificationsInitialized, isLoadingQualifications, qualifications.length]);
+
+  useEffect(() => {
+    if (!countries.length && !isCountriesInitialized && !isLoadingCountries) {
+      dispatch(fetchCountries());
+    }
+  }, [dispatch, isCountriesInitialized, isLoadingCountries, countries.length]);
 
   const startIndex = (currentPage - 1) * pageSize;
 
@@ -192,70 +217,79 @@ const JobApplicantsTable = ({
     }
   };
 
-  const workTypeOptions = useMemo(
-    () => [
-      { value: '', label: t('common.all') },
-      { value: '1', label: t('jobAnnouncement.form.contractFullTime') },
-      { value: '2', label: t('jobAnnouncement.form.contractPartTime') },
-      { value: '3', label: t('jobAnnouncement.form.contractBoth') },
-    ],
-    [t]
-  );
+  const workTypeOptions = useMemo(() => {
+    const baseOptions = [
+      { value: '1', labelKey: 'jobAnnouncement.form.contractFullTime' },
+      { value: '2', labelKey: 'jobAnnouncement.form.contractPartTime' },
+    ];
+
+    return baseOptions.map(({ value, labelKey }) => ({ value, label: t(labelKey) }));
+  }, [t]);
 
   const qualificationOptions = useMemo(() => {
-    const uniqueQualifications = new Map<string, string>();
-
-    applications.forEach((application) => {
-      const qualificationDtos =
-        application.lKQualificationDtos || application.lkQualificationDtos || [];
-
-      qualificationDtos.forEach((item) => {
-        const id = item.lkQualificationId || item.lKQualificationId;
-        if (!id) return;
+    const options = qualifications
+      .map((qualification) => {
+        if (!qualification?.id) {
+          return null;
+        }
         const label =
           currentLang === 'ar'
-            ? item.lkQualificationNameAr || item.lkQualificationNameEn || ''
-            : item.lkQualificationNameEn || item.lkQualificationNameAr || '';
-        if (!uniqueQualifications.has(id)) {
-          uniqueQualifications.set(id, label || id);
+            ? qualification.nameAr || qualification.nameEn || ''
+            : qualification.nameEn || qualification.nameAr || '';
+
+        if (!label) {
+          return null;
         }
-      });
-    });
 
-    return [
-      { value: '', label: t('common.all') },
-      ...Array.from(uniqueQualifications.entries()).map(([value, label]) => ({ value, label })),
-    ];
-  }, [applications, currentLang, t]);
+        return {
+          value: qualification.id,
+          label,
+        };
+      })
+      .filter((option): option is { value: string; label: string } => option !== null)
+      .sort((a, b) =>
+        a.label.localeCompare(b.label, currentLang === 'ar' ? 'ar' : 'en', {
+          sensitivity: 'base',
+        })
+      );
 
-  const nationalityOptions = useMemo(() => {
-    const uniqueNationalities = new Map<string, string>();
-    applications.forEach((application) => {
-      if (!application.nationalityId) return;
-      const label =
-        currentLang === 'ar'
-          ? application.nationalityNameAr || application.nationalityNameEn || ''
-          : application.nationalityNameEn || application.nationalityNameAr || '';
-      if (!uniqueNationalities.has(application.nationalityId)) {
-        uniqueNationalities.set(application.nationalityId, label || application.nationalityId);
-      }
-    });
+    return options;
+  }, [qualifications, currentLang, t]);
 
-    return [
-      { value: '', label: t('common.all') },
-      ...Array.from(uniqueNationalities.entries()).map(([value, label]) => ({ value, label })),
-    ];
-  }, [applications, currentLang, t]);
+  const countryOptions = useMemo(() => {
+    const options = countries
+      .map((country) => {
+        if (!country?.id) {
+          return null;
+        }
+
+        const label =
+          currentLang === 'ar'
+            ? country.arabicName || country.englishName || ''
+            : country.englishName || country.arabicName || '';
+
+        if (!label) {
+          return null;
+        }
+
+        return { value: country.id, label };
+      })
+      .filter((option): option is { value: string; label: string } => option !== null)
+      .sort((a, b) =>
+        a.label.localeCompare(b.label, currentLang === 'ar' ? 'ar' : 'en', {
+          sensitivity: 'base',
+        })
+      );
+
+    return options;
+  }, [countries, currentLang, t]);
 
   const experienceOptions = useMemo(() => {
     const uniqueSorted = Array.from(new Set(applications.map((item) => item.experienceYears || 0)))
       .filter((value) => value > 0)
       .sort((a, b) => a - b);
 
-    return [
-      { value: '', label: t('common.all') },
-      ...uniqueSorted.map((value) => ({ value: String(value), label: `${value}` })),
-    ];
+    return uniqueSorted.map((value) => ({ value: String(value), label: `${value}` }));
   }, [applications, t]);
 
   const getApplicantName = (applicant: ApplicationsJobAdvertisement) => applicant.fullName || '';
@@ -313,7 +347,7 @@ const JobApplicantsTable = ({
             setCurrentPage(1);
           }}
           options={workTypeOptions}
-          placeholder={t('jobAnnouncement.applicantsPage.filters.workType')}
+          placeholder={t('jobAnnouncement.workType')}
           maxHeight="180px"
         />
       ),
@@ -335,28 +369,7 @@ const JobApplicantsTable = ({
           }}
           options={qualificationOptions}
           placeholder={t('jobAnnouncement.applicantsPage.filters.qualification')}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: `${filterPrefix}-nationality`,
-      value: nationalityFilter,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={nationalityFilter}
-          onChange={(value) => {
-            setNationalityFilter(
-              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
-            );
-            setCurrentPage(1);
-          }}
-          options={nationalityOptions}
-          placeholder={t('jobAnnouncement.applicantsPage.filters.nationality')}
-          maxHeight="200px"
+          maxHeight="180px"
         />
       ),
     },
@@ -377,6 +390,27 @@ const JobApplicantsTable = ({
           }}
           options={experienceOptions}
           placeholder={t('jobAnnouncement.applicantsPage.filters.experience')}
+          maxHeight="180px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: `${filterPrefix}-nationality`,
+      value: nationalityFilter,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={nationalityFilter}
+          onChange={(value) => {
+            setNationalityFilter(
+              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+            );
+            setCurrentPage(1);
+          }}
+          options={countryOptions}
+          placeholder={t('jobAnnouncement.applicantsPage.filters.nationality')}
           maxHeight="180px"
         />
       ),
@@ -436,7 +470,7 @@ const JobApplicantsTable = ({
           <CustomImage src={PdfIcon} alt="PDF" className="h-5 w-5" />
         </button>
       ),
-      headerClassName: 'w-[180px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
@@ -450,7 +484,7 @@ const JobApplicantsTable = ({
           {t(WORK_TYPE_BADGES[row.workShedule]?.label || 'jobAnnouncement.workType')}
         </span>
       ),
-      headerClassName: 'w-[140px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
@@ -467,23 +501,56 @@ const JobApplicantsTable = ({
           {(row.experienceYears || 0).toLocaleString(numberLocale)}
         </span>
       ),
-      headerClassName: 'w-[120px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.nationality',
       accessor: (row) => <span className="text-sm text-gray-700">{getNationalityLabel(row)}</span>,
-      headerClassName: 'w-[140px]',
+      headerClassName: 'min-w-[140px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.country',
       accessor: (row) => <span className="text-sm text-gray-700">{getCountryLabel(row)}</span>,
-      headerClassName: 'w-[140px]',
+      headerClassName: 'min-w-[140px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.address',
       accessor: (row) => <span className="text-sm text-gray-700">{getAddress(row)}</span>,
       headerClassName: 'min-w-[200px]',
+    },
+    {
+      header: 'jobAnnouncement.applicantsPage.table.contact',
+      accessor: (row) => (
+        <div className="flex items-center justify-center gap-3">
+          <a
+            href={row.phoneNumber ? `tel:${row.phoneNumber}` : undefined}
+            className={`flex h-10 w-10 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 ${
+              row.phoneNumber
+                ? 'bg-emerald-50 hover:opacity-80'
+                : 'pointer-events-none cursor-not-allowed bg-gray-100 opacity-50'
+            }`}
+            title={row.phoneNumber || phoneLabel}
+            aria-label={row.phoneNumber || phoneLabel}
+          >
+            <CustomImage src={PhoneContactIcon} alt={phoneLabel} className="h-4 w-4" />
+          </a>
+          <a
+            href={row.email ? `mailto:${row.email}` : undefined}
+            className={`flex h-10 w-10 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 ${
+              row.email
+                ? 'bg-orange-50 hover:opacity-80'
+                : 'pointer-events-none cursor-not-allowed bg-gray-100 opacity-50'
+            }`}
+            title={row.email || emailLabel}
+            aria-label={row.email || emailLabel}
+          >
+            <CustomImage src={EmailContactIcon} alt={emailLabel} className="h-4 w-4" />
+          </a>
+        </div>
+      ),
+      headerClassName: 'min-w-[160px]',
+      className: 'text-center',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.actions',

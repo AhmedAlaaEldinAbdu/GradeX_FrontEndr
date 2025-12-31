@@ -8,7 +8,7 @@ export default function AddJobAnnouncementsPage() {
 
   const breadcrumbItems = [
     { label: t('sidebar.teachingStaff') },
-    { label: t('sidebar.jobAnnouncements') },
+    { label: t('sidebar.jobAnnouncements'), path: '/job-announcements' },
     { label: t('jobAnnouncement.addAnnouncement') },
   ];
 

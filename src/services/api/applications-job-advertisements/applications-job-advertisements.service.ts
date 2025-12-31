@@ -8,6 +8,7 @@ import type { AxiosResponse } from 'axios';
 import { ApplicationsJobAdvertisementEndpoints } from '../endpoints/applications-job-advertisement-endpoints';
 import type { ApiResponseModel } from '../config';
 import type {
+  ApplicationsJobAdvertisementListData,
   ApplicationsJobAdvertisementListResponse,
   ApplicationsJobAdvertisementQueryParams,
   CreateApplicationsJobAdvertisementRequest,
@@ -50,16 +51,16 @@ const primitiveApplicationFields: Array<{
   key: keyof CreateApplicationsJobAdvertisementRequest;
   formKey: string;
 }> = [
-  { key: 'jobAdvertisementId', formKey: 'JobAdvertisementId' },
-  { key: 'teacherId', formKey: 'TeacherId' },
-  { key: 'workShedule', formKey: 'WorkShedule' },
-  { key: 'lkSchoolStageId', formKey: 'LKSchoolStageId' },
-  { key: 'useProfileResume', formKey: 'UseProfileResume' },
-  { key: 'worksInAnotherSchool', formKey: 'WorksInAnotherSchool' },
-  { key: 'transferDuration', formKey: 'TransferDuration' },
-  { key: 'experienceYears', formKey: 'ExperienceYears' },
-  { key: 'meetingLink', formKey: 'MeetingLink' },
-];
+    { key: 'jobAdvertisementId', formKey: 'JobAdvertisementId' },
+    { key: 'teacherId', formKey: 'TeacherId' },
+    { key: 'workShedule', formKey: 'WorkShedule' },
+    { key: 'lkSchoolStageId', formKey: 'LKSchoolStageId' },
+    { key: 'useProfileResume', formKey: 'UseProfileResume' },
+    { key: 'worksInAnotherSchool', formKey: 'WorksInAnotherSchool' },
+    { key: 'transferDuration', formKey: 'TransferDuration' },
+    { key: 'experienceYears', formKey: 'ExperienceYears' },
+    { key: 'meetingLink', formKey: 'MeetingLink' },
+  ];
 
 const buildApplicationsJobAdvertisementFormData = (
   data: CreateApplicationsJobAdvertisementRequest
@@ -77,16 +78,40 @@ const buildApplicationsJobAdvertisementFormData = (
   return formData;
 };
 
+type ApplicationsJobAdvertisementApiPayload =
+  | ApplicationsJobAdvertisementListResponse
+  | ApplicationsJobAdvertisementListData;
+
+const isWrappedApplicationsResponse = (
+  payload: ApplicationsJobAdvertisementApiPayload | undefined
+): payload is ApplicationsJobAdvertisementListResponse => {
+  return !!payload && typeof payload === 'object' && 'data' in payload && !!payload.data;
+};
+
 export async function getApplicationsJobAdvertisements(
   params?: ApplicationsJobAdvertisementQueryParams
 ): Promise<ApplicationsJobAdvertisementListResponse> {
-  const response: AxiosResponse<ApplicationsJobAdvertisementListResponse> =
-    await axiosClient.get(ApplicationsJobAdvertisementEndpoints.getApplicationsJobAdvertisements, {
+  const response: AxiosResponse<ApplicationsJobAdvertisementApiPayload> = await axiosClient.get(
+    ApplicationsJobAdvertisementEndpoints.getApplicationsJobAdvertisements,
+    {
       params,
       paramsSerializer: { serialize: serializeApplicationsJobAdvertisementParams },
-    });
+    }
+  );
 
-  if (!response?.data?.data) {
+  const payload = response?.data;
+  const normalizedResponse = isWrappedApplicationsResponse(payload)
+    ? payload
+    : payload
+    ? {
+        data: payload,
+        isSuccess: true,
+        message: '',
+        validationErrors: null,
+      }
+    : null;
+
+  if (!normalizedResponse?.data?.applicationsJobAdvertisementDtos) {
     return {
       data: {
         applicationsJobAdvertisementDtos: [],
@@ -101,7 +126,7 @@ export async function getApplicationsJobAdvertisements(
     };
   }
 
-  return response.data;
+  return normalizedResponse;
 }
 
 export async function createApplicationsJobAdvertisement(
