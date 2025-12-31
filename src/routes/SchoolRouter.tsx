@@ -185,7 +185,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/teachers/:id/placement"
+        path="/teachers/:id/add-placement"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
@@ -195,7 +195,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/teachers/placement/:assignmentId"
+        path="/teachers/:id/placement-details"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
