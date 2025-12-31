@@ -11,5 +11,6 @@ export const TeacherEndpoints = {
 export const TeacherAssignmentEndpoints = {
   getAll: TeacherAssignment,
   getAllTeacherClass: `${TeacherAssignment}/GetAllTeacherClass`,
+  create: TeacherAssignment,
   deleteTeacherAssignment: (id: string) => `${TeacherAssignment}/${id}`,
 };
