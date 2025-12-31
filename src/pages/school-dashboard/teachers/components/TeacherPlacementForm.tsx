@@ -285,7 +285,7 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
 
   const handleSuccessClose = () => {
     setShowSuccessPopup(false);
-    navigate('/teachers');
+    navigate(`/teachers/${teacherId}/placement-details`);
   };
 
   const handleCancel = () => {
