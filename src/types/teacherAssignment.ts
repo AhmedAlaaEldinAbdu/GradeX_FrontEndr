@@ -109,6 +109,17 @@ export interface TeacherAssignmentListResponse {
 }
 
 // ============================================================================
+// Single Teacher Assignment Item (for viewing a specific placement)
+// ============================================================================
+
+export interface TeacherAssignmentItemResponse {
+  data: TeacherAssignmentListItem;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+// ============================================================================
 // Query Parameters
 // ============================================================================
 
