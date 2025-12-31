@@ -121,3 +121,23 @@ export interface TeacherAssignmentListQueryParams {
   PageIndex?: number;
   PageSize?: number;
 }
+
+// ============================================================================
+// Create Teacher Assignment Request
+// ============================================================================
+
+export interface CreateTeacherAssignmentRequest {
+  schoolBranchesId: string;
+  teacherId: string;
+  gradeId: string;
+  materialId: string;
+  classroomIds: string[];
+  bookIds: string[];
+}
+
+export interface CreateTeacherAssignmentResponse {
+  data: null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
