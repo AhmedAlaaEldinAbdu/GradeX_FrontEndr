@@ -150,9 +150,8 @@ export async function editApplicationsJobAdvertisementStatus(
   payload: UpdateApplicationStatusRequest
 ): Promise<ApiResponseModel<null>> {
   const body = {
-    ApplicationsJobAdvertisementId: payload.id,
-    ApplicationStatus: payload.applicationStatus,
-    MeetingLink: payload.meetingLink ?? '',
+    applicationsJobAdvertisementId: payload.applicationsJobAdvertisementId,
+    applicationStatus: payload.applicationStatus,
   };
 
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(

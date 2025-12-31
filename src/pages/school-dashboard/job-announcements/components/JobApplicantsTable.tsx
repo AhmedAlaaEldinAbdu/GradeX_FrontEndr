@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
@@ -11,7 +11,7 @@ import CheckIcon from '@gradex/assets/icons/Check.svg';
 import TimeLog from '@gradex/assets/icons/TimeLog.svg';
 import EmailContactIcon from '@gradex/assets/icons/EmailYellow.svg';
 import PhoneContactIcon from '@gradex/assets/icons/PhoneGreen.svg';
-import { WORK_TYPE_BADGES } from './applicants-data';
+import { WORK_TYPE_BADGES, JOB_APPLICATION_STATUS } from './applicants-data';
 import CustomImage from '@/shared/components/CustomImage';
 import { useToast } from '@/shared/context/ToastContext';
 import ArchiveApplicantPopup from '../popups/ArchiveApplicantPopup';
@@ -22,7 +22,10 @@ import AcceptApplicantPopup from '../popups/AcceptApplicantPopup';
 import IconButton from '@/shared/components/IconButton';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchApplicationsJobAdvertisements } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
+import {
+  fetchApplicationsJobAdvertisements,
+  editApplicationsJobAdvertisementStatus,
+} from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import { fetchQualifications, fetchCountries } from '@/redux/features/lookups/lookupsSlice';
 import type { ApplicationsJobAdvertisement } from '@/services/api/types/applications-job-advertisement.types';
 
@@ -81,7 +84,7 @@ const JobApplicantsTable = ({
     setCurrentPage(1);
   }, [jobAdvertisementId, applicationStatus]);
 
-  useEffect(() => {
+  const fetchApplicants = useCallback(() => {
     if (!jobAdvertisementId) {
       return;
     }
@@ -108,11 +111,15 @@ const JobApplicantsTable = ({
     experienceFilter,
     jobAdvertisementId,
     nationalityFilter,
+    pageSize,
     qualificationFilter,
     searchValue,
     workTypeFilter,
-    pageSize,
   ]);
+
+  useEffect(() => {
+    fetchApplicants();
+  }, [fetchApplicants]);
 
   useEffect(() => {
     if (!qualifications.length && !isQualificationsInitialized && !isLoadingQualifications) {
@@ -125,6 +132,42 @@ const JobApplicantsTable = ({
       dispatch(fetchCountries());
     }
   }, [dispatch, isCountriesInitialized, isLoadingCountries, countries.length]);
+
+  const updateApplicantStatus = useCallback(
+    async ({
+      applicant,
+      nextStatus,
+      successMessageKey,
+    }: {
+      applicant: ApplicationsJobAdvertisement | null;
+      nextStatus: number;
+      successMessageKey: string;
+    }) => {
+      if (!applicant) {
+        showToast({ message: 'common.errorOccurred', type: 'error' });
+        return false;
+      }
+
+      try {
+        setIsProcessing(true);
+        await dispatch(
+          editApplicationsJobAdvertisementStatus({
+            applicationsJobAdvertisementId: applicant.id,
+            applicationStatus: nextStatus,
+          })
+        ).unwrap();
+        showToast({ message: successMessageKey, type: 'success' });
+        fetchApplicants();
+        return true;
+      } catch (error) {
+        showToast({ message: 'common.errorOccurred', type: 'error' });
+        return false;
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [dispatch, fetchApplicants, showToast]
+  );
 
   const startIndex = (currentPage - 1) * pageSize;
 
@@ -155,17 +198,15 @@ const JobApplicantsTable = ({
   };
 
   const handleArchiveConfirm = async () => {
-    try {
-      setIsProcessing(true);
-      // TODO: Add API call to archive applicant
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated API call
-      showToast({ message: 'jobAnnouncement.applicantsPage.archiveSuccess', type: 'success' });
+    const success = await updateApplicantStatus({
+      applicant: selectedApplicant,
+      nextStatus: JOB_APPLICATION_STATUS.ARCHIVED,
+      successMessageKey: 'jobAnnouncement.applicantsPage.archiveSuccess',
+    });
+
+    if (success) {
       setArchivePopupOpen(false);
       setSelectedApplicant(null);
-    } catch (error) {
-      showToast({ message: 'common.errorOccurred', type: 'error' });
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -189,32 +230,24 @@ const JobApplicantsTable = ({
   };
 
   const handleAcceptConfirm = async () => {
-    try {
-      setIsProcessing(true);
-      // TODO: Add API call to accept applicant
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated API call
-      showToast({ message: 'jobAnnouncement.applicantsPage.acceptSuccess', type: 'success' });
+    const success = await updateApplicantStatus({
+      applicant: selectedApplicant,
+      nextStatus: JOB_APPLICATION_STATUS.ACCEPTED,
+      successMessageKey: 'jobAnnouncement.applicantsPage.acceptSuccess',
+    });
+
+    if (success) {
       setAcceptPopupOpen(false);
       setSelectedApplicant(null);
-    } catch (error) {
-      showToast({ message: 'common.errorOccurred', type: 'error' });
-    } finally {
-      setIsProcessing(false);
     }
   };
 
   const handleRecall = async (applicant: ApplicationsJobAdvertisement) => {
-    try {
-      setIsProcessing(true);
-      // TODO: Add API call to recall applicant
-      console.log('Recall applicant:', applicant.id);
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulated API call
-      showToast({ message: 'jobAnnouncement.applicantsPage.recallSuccess', type: 'success' });
-    } catch (error) {
-      showToast({ message: 'common.errorOccurred', type: 'error' });
-    } finally {
-      setIsProcessing(false);
-    }
+    await updateApplicantStatus({
+      applicant,
+      nextStatus: JOB_APPLICATION_STATUS.REQUESTS,
+      successMessageKey: 'jobAnnouncement.applicantsPage.recallSuccess',
+    });
   };
 
   const workTypeOptions = useMemo(() => {

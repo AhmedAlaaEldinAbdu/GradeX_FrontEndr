@@ -86,7 +86,6 @@ export interface CreateApplicationsJobAdvertisementRequest {
 }
 
 export interface UpdateApplicationStatusRequest {
-  id: string;
+  applicationsJobAdvertisementId: string;
   applicationStatus: number;
-  meetingLink?: string;
 }

@@ -262,17 +262,16 @@ const applicationsJobAdvertisementsSlice = createSlice({
           if (!isSuccess && validationErrors) {
             state.validationErrors = validationErrors as any;
           } else if (isSuccess && action.meta?.arg) {
-            const { id, applicationStatus, meetingLink } = action.meta.arg;
+            const { applicationsJobAdvertisementId, applicationStatus } = action.meta.arg;
             state.applications = state.applications.map((application) =>
-              application.id === id
-                ? { ...application, applicationStatus, meetingLink }
+              application.id === applicationsJobAdvertisementId
+                ? { ...application, applicationStatus }
                 : application
             );
-            if (state.currentApplication?.id === id) {
+            if (state.currentApplication?.id === applicationsJobAdvertisementId) {
               state.currentApplication = {
                 ...state.currentApplication,
                 applicationStatus,
-                meetingLink,
               };
             }
           }
