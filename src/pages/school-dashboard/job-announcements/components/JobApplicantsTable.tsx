@@ -29,6 +29,8 @@ import { createInterview } from '@/redux/features/interviews/interviewsSlice';
 import { fetchQualifications, fetchCountries } from '@/redux/features/lookups/lookupsSlice';
 import type { ApplicationsJobAdvertisement } from '@/services/api/types/applications-job-advertisement.types';
 import type { InterviewFormProps } from '@/validations/interviews-validations';
+import { useNavigate } from 'react-router-dom';
+import Button from '@/shared/components/Button';
 
 type JobApplicantsTableProps = {
   jobAdvertisementId: string;
@@ -58,6 +60,7 @@ const JobApplicantsTable = ({
 }: JobApplicantsTableProps) => {
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { applications, pagination, isLoading } = useAppSelector(
     (state) => state.applicationsJobAdvertisements
@@ -245,9 +248,8 @@ const JobApplicantsTable = ({
         startTime: normalizedStartTime ?? data.startTime,
         endTime: normalizedEndTime ?? data.endTime,
       };
-
+      debugger;
       const response = await dispatch(createInterview(payload)).unwrap();
-
       if (!response?.isSuccess) {
         showToast({ message: 'common.errorOccurred', type: 'error' });
         return;
@@ -276,6 +278,7 @@ const JobApplicantsTable = ({
     if (success) {
       setAcceptPopupOpen(false);
       setSelectedApplicant(null);
+      navigate(`/teachers/${selectedApplicant?.teacherId}/add-placement`);
     }
   };
 
@@ -373,28 +376,35 @@ const JobApplicantsTable = ({
         value: String(JOB_APPLICATION_STATUS.ACCEPT),
         labelKey: t('jobAnnouncement.applicantsPage.statusLabels.accept'),
       },
-      {
-        value: String(JOB_APPLICATION_STATUS.REJECT),
-        labelKey: t('jobAnnouncement.applicantsPage.statusLabels.reject'),
-      },
+      // {
+      //   value: String(JOB_APPLICATION_STATUS.REJECT),
+      //   labelKey: t('jobAnnouncement.applicantsPage.statusLabels.reject'),
+      // },
       {
         value: String(JOB_APPLICATION_STATUS.PENDING),
         labelKey: t('jobAnnouncement.applicantsPage.statusLabels.pending'),
       },
-      {
-        value: String(JOB_APPLICATION_STATUS.DELETED),
-        labelKey: t('jobAnnouncement.applicantsPage.statusLabels.deleted'),
-      },
-      {
-        value: String(JOB_APPLICATION_STATUS.ARCHIVED),
-        labelKey: t('jobAnnouncement.applicantsPage.statusLabels.archived'),
-      },
+      // {
+      //   value: String(JOB_APPLICATION_STATUS.DELETED),
+      //   labelKey: t('jobAnnouncement.applicantsPage.statusLabels.deleted'),
+      // },
+      // {
+      //   value: String(JOB_APPLICATION_STATUS.ARCHIVED),
+      //   labelKey: t('jobAnnouncement.applicantsPage.statusLabels.archived'),
+      // },
     ];
     return entries.map(({ value, labelKey }) => ({ value, label: t(labelKey) }));
   }, [t]);
 
   const getApplicantName = (applicant: ApplicationsJobAdvertisement) => applicant.fullName || '';
-  const getAddress = (applicant: ApplicationsJobAdvertisement) => applicant.streetName || '-';
+  const getAddress = (applicant: ApplicationsJobAdvertisement) => {
+    const city = currentLang === 'ar' ? applicant.cityNameAr : applicant.cityNameEn;
+    const street = applicant.streetName;
+    const parts = [city, street]
+      .map((part) => (typeof part === 'string' ? part.trim() : part))
+      .filter((part): part is string => Boolean(part));
+    return parts.length ? parts.join(' - ') : '-';
+  };
   const getNationalityLabel = (applicant: ApplicationsJobAdvertisement) =>
     currentLang === 'ar'
       ? applicant.nationalityNameAr || applicant.nationalityNameEn || ''
@@ -430,7 +440,7 @@ const JobApplicantsTable = ({
         setSearchValue(value as string);
         setCurrentPage(1);
       },
-      width: '40%',
+      width: '35%',
     },
     {
       type: 'custom',
@@ -516,27 +526,31 @@ const JobApplicantsTable = ({
         />
       ),
     },
-    {
-      type: 'custom',
-      name: `${filterPrefix}-status`,
-      value: statusFilter,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={statusFilter}
-          onChange={(value) => {
-            setStatusFilter(
-              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
-            );
-            setCurrentPage(1);
-          }}
-          options={statusOptions}
-          placeholder={t('jobAnnouncement.applicantsPage.filters.status')}
-          maxHeight="180px"
-        />
-      ),
-    },
+    ...(!isArchived
+      ? [
+          {
+            type: 'custom',
+            name: `${filterPrefix}-status`,
+            value: statusFilter,
+            onChange: () => {},
+            width: '20%',
+            customComponent: (
+              <CustomSelect
+                value={statusFilter}
+                onChange={(value) => {
+                  setStatusFilter(
+                    Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+                  );
+                  setCurrentPage(1);
+                }}
+                options={statusOptions}
+                placeholder={t('jobAnnouncement.applicantsPage.filters.status')}
+                maxHeight="180px"
+              />
+            ),
+          } satisfies FilterConfig,
+        ]
+      : []),
   ];
 
   const columns: DataTableColumn<ApplicationsJobAdvertisement>[] = [
@@ -549,20 +563,23 @@ const JobApplicantsTable = ({
     {
       header: 'jobAnnouncement.applicantsPage.table.name',
       accessor: (row) => (
-        <div className="flex items-center justify-between gap-3">
-          <img
-            src={DefaultAvatar}
-            alt={getApplicantName(row)}
-            className="h-10 w-10 rounded-full object-cover"
-          />
-          <div className="flex items-center">
+        <div className="flex w-full items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <img
+              src={DefaultAvatar}
+              alt={getApplicantName(row)}
+              className="h-10 w-10 rounded-lg object-cover"
+            />
             <p className="text-sm font-semibold text-gray-900">{getApplicantName(row)}</p>
           </div>
           <div className="flex items-center">
             <IconButton
               variant="default"
               ariaLabel={t('jobAnnouncement.viewApplicants')}
-              // TODO: navigate to teacher profile once flow is ready using row.teacherId
+              onClick={() =>
+                navigate(`/teachers/${row.teacherId}`, { state: { comeFrom: 'job-announcements' } })
+              }
+              title={t('jobAnnouncement.viewApplicant')}
               className="h-8 w-8"
             >
               <CustomImage
@@ -627,13 +644,13 @@ const JobApplicantsTable = ({
       className: 'text-center',
     },
     {
-      header: 'jobAnnouncement.applicantsPage.table.nationality',
-      accessor: (row) => <span className="text-sm text-gray-700">{getNationalityLabel(row)}</span>,
+      header: 'jobAnnouncement.applicantsPage.table.country',
+      accessor: (row) => <span className="text-sm text-gray-700">{getCountryLabel(row)}</span>,
       headerClassName: 'min-w-[140px]',
     },
     {
-      header: 'jobAnnouncement.applicantsPage.table.country',
-      accessor: (row) => <span className="text-sm text-gray-700">{getCountryLabel(row)}</span>,
+      header: 'jobAnnouncement.applicantsPage.table.nationality',
+      accessor: (row) => <span className="text-sm text-gray-700">{getNationalityLabel(row)}</span>,
       headerClassName: 'min-w-[140px]',
     },
     {
@@ -647,9 +664,9 @@ const JobApplicantsTable = ({
         <div className="flex items-center justify-center gap-3">
           <a
             href={row.phoneNumber ? `tel:${row.phoneNumber}` : undefined}
-            className={`flex h-10 w-10 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 ${
               row.phoneNumber
-                ? 'bg-emerald-50 hover:opacity-80'
+                ? 'bg-emerald-50 hover:bg-emerald-100'
                 : 'pointer-events-none cursor-not-allowed bg-gray-100 opacity-50'
             }`}
             title={row.phoneNumber || phoneLabel}
@@ -659,9 +676,9 @@ const JobApplicantsTable = ({
           </a>
           <a
             href={row.email ? `mailto:${row.email}` : undefined}
-            className={`flex h-10 w-10 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 ${
               row.email
-                ? 'bg-orange-50 hover:opacity-80'
+                ? 'bg-orange-50 hover:bg-orange-100'
                 : 'pointer-events-none cursor-not-allowed bg-gray-100 opacity-50'
             }`}
             title={row.email || emailLabel}
@@ -679,26 +696,40 @@ const JobApplicantsTable = ({
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
           {isArchived ? (
-            <button
+            <IconButton
               className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
               title={t('actions.recall')}
               onClick={() => handleOpenRecallPopup(row)}
             >
               <CustomImage src={RecallIcon} alt={t('actions.recall')} className="h-4 w-4" />
-            </button>
+            </IconButton>
+          ) : Number(statusFilter) === 1 ? (
+            <Button
+              size="sm"
+              title={t('teachers.placement.title')}
+              onClick={() =>
+                navigate(`/teachers/${row.teacherId}/add-placement`, {
+                  state: { comeFrom: 'job-announcements' },
+                })
+              }
+            >
+              {t('teachers.placement.submit')}
+            </Button>
           ) : (
             <>
               {/* Accept/Approve Button */}
-              <button
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
-                title={t('common.approve')}
+              <IconButton
+                className="flex h-8 w-8 items-center justify-center rounded-full"
+                variant="success"
+                title={t('common.approved')}
                 onClick={() => handleOpenAcceptPopup(row)}
               >
-                <CustomImage src={CheckLightIcon} alt={t('common.approve')} className="h-4 w-4" />
-              </button>
+                <CustomImage src={CheckLightIcon} alt={t('common.approved')} className="h-4 w-4" />
+              </IconButton>
               {/* Schedule Interview Button */}
-              <button
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 transition-colors hover:bg-blue-200"
+              <IconButton
+                className="flex h-8 w-8 items-center justify-center rounded-full"
+                variant="primary"
                 title={t('jobAnnouncement.applicantsPage.scheduleInterview')}
                 onClick={() => handleOpenSchedulePopup(row)}
               >
@@ -707,20 +738,21 @@ const JobApplicantsTable = ({
                   alt={t('jobAnnouncement.applicantsPage.scheduleInterview')}
                   className="h-4 w-4"
                 />
-              </button>
+              </IconButton>
               {/* Archive Button */}
-              <button
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 transition-colors hover:bg-orange-200"
+              <IconButton
+                className="flex h-8 w-8 items-center justify-center rounded-full"
+                variant="warning"
                 title={t('actions.archive')}
                 onClick={() => handleOpenArchivePopup(row)}
               >
                 <CustomImage src={ArchiveIcon} alt={t('actions.archive')} className="h-4 w-4" />
-              </button>
+              </IconButton>
             </>
           )}
         </div>
       ),
-      headerClassName: 'w-[160px]',
+      headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
   ];
