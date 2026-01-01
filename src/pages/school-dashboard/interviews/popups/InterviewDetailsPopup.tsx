@@ -15,6 +15,7 @@ import Loading from '@/shared/components/Loading';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
+import { useNavigate } from 'react-router-dom';
 
 interface InterviewDetailsPopupProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ export default function InterviewDetailsPopup({
 }: InterviewDetailsPopupProps) {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
   const { popupInterviews, popupIsLoading } = useAppSelector((state) => state.interviews);
@@ -243,11 +245,11 @@ export default function InterviewDetailsPopup({
                         {t('interviews.announcementName')}
                       </p>
                       <p className="text-gray-700">{jobTitle}</p>
-                      <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-100">
+                      <IconButton variant="default">
                         <CustomImage src={ArrowIcon} alt="arrow" className="h-5 w-5" />
-                      </div>
+                      </IconButton>
                     </div>
-                    {popupInterviews?.length > 1 &&
+                    {popupInterviews?.length > 1 && (
                       <div className="flex items-center">
                         <IconButton
                           status="delete"
@@ -255,18 +257,28 @@ export default function InterviewDetailsPopup({
                           onClick={() => handleRequestDelete(detail.id)}
                           disabled={isDeleting}
                           ariaLabel="Delete"
+                          title={t('actions.delete')}
                         />
                       </div>
-                    }
+                    )}
                   </div>
 
                   {detail?.teacherName && (
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-gray-900">{t('interviews.teacherName')}</p>:
                       <p>{detail.teacherName}</p>
-                      <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-blue-100">
+                      <IconButton
+                        variant="primary"
+                        onClick={() =>
+                          navigate(`teachers/${detail.teacherId}`, {
+                            state: { from: 'interviews' },
+                          })
+                        }
+                        ariaLabel="View Teacher"
+                        title={t('teachers.ViewTeacherDetails')}
+                      >
                         <CustomImage src={EyeStyledIcon} alt="supervisor" className="h-5 w-5" />
-                      </div>
+                      </IconButton>
                     </div>
                   )}
 
