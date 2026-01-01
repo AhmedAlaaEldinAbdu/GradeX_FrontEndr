@@ -40,6 +40,8 @@ export const AddJobAnnouncementSchema = object({
   qualificationType: mixed<JobCategoryValue>()
     .oneOf(Object.values(JobCategory))
     .required('jobAnnouncement.validation.jobCategoryRequired'),
+  name: string().required('jobAnnouncement.validation.jobNameArRequired'),
+  nameEn: string().required('jobAnnouncement.validation.jobNameEnRequired'),
   teacherLevelId: string().when('jobCategory', {
     is: JobCategory.TEACHER,
     then: (schema) => schema.required('jobAnnouncement.validation.teacherLevelRequired'),
