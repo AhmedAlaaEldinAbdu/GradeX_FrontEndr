@@ -890,6 +890,7 @@
     "confirmDeleteTeacher": "هل أنت متأكد من حذف هذا المعلم؟",
     "jobAnnouncements": "إعلانات توظيف",
     "interviews": "المقابلات",
+    "ViewTeacherDetails": "عرض تفاصيل المعلم",
     "details": {
       "personalData": "البيانات الشخصية",
       "attendance": "الحضور والإنصراف",
@@ -1238,6 +1239,7 @@
     "onlineWork": "عمل عن بُعد",
     "offlineWork": "عمل حضوري",
     "viewApplicants": "عرض المتقدمين",
+    "viewApplicant": "عرض المتقدم",
     "backToAnnouncements": "العودة لقائمة الإعلانات",
     "applicantsPage": {
       "title": "طلبات التقديم",

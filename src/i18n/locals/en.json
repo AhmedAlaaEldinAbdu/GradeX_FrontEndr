@@ -891,6 +891,7 @@
     "confirmDeleteTeacher": "Are you sure you want to delete this teacher?",
     "jobAnnouncements": "Job Announcements",
     "interviews": "Interviews",
+    "ViewTeacherDetails": "View Teacher Details",
     "details": {
       "personalData": "Personal Data",
       "attendance": "Attendance",
@@ -1240,6 +1241,7 @@
     "onlineWork": "Remote",
     "offlineWork": "On-site",
     "viewApplicants": "View applicants",
+    "viewApplicant": "View applicant",
     "backToAnnouncements": "Back to announcements list",
     "applicantsPage": {
       "title": "Applicants list",
