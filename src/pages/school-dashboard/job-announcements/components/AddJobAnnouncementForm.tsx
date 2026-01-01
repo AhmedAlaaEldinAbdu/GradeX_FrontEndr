@@ -76,6 +76,8 @@ type AddJobAnnouncementFormValues = InferType<typeof AddJobAnnouncementSchema>;
 
 const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   qualificationType: JobCategory.TEACHER,
+  name: '',
+  nameEn: '',
   teacherLevelId: '',
   administrativePositionId: '',
   specializationIds: '',
@@ -190,6 +192,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const DummySchoolBranchId = '471D89C1-61A8-4B13-D682-08DE1657ABAD';
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
     type: 'success' | 'error';
@@ -245,8 +248,6 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     control,
     name: 'languages',
   });
-
-  // المرحلة التعليمية stage
 
   const jobCategory = watch('qualificationType');
   const nationalityMode = watch('nationalityMode');
@@ -349,6 +350,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
     // Set form values
     setValue('qualificationType', isTeacher ? JobCategory.TEACHER : JobCategory.ADMIN);
+    setValue('name', job.name || '');
+    setValue('nameEn', job.nameEn || '');
     setValue('teacherLevelId', job.lkTeacherLevelId ?? '');
     setValue('administrativePositionId', job.lkAdministrativePositionId ?? '');
     setValue('specializationIds', primarySubjectId);
@@ -587,9 +590,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const salaryMax = Number(values.maximumSalary || 0);
 
     const rawPayload: CreateJobAdvertismentRequest = {
-      name: 'الاسم يبقي اوبشنال', // Name is not part of the form, setting empty string
-      nameEn: 'name not required', // NameEn is not part of the form, setting empty string
-      schoolBranchId: '471D89C1-61A8-4B13-D682-08DE1657ABAD', // Temporary static value for school branch ID
+      name: values.name,
+      nameEn: values.nameEn,
+      schoolBranchId: DummySchoolBranchId, // Temporary static value for school branch ID
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,
       jobDescription: values.jobDescriptionAr,
@@ -849,6 +852,35 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           </div>
         </section>
 
+        <section className="space-y-5">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <FormField
+              label={t('jobAnnouncement.form.jobNameAr')}
+              required
+              error={errors.name?.message as string | undefined}
+              htmlFor="jobNameAr"
+            >
+              <Input
+                id="jobNameAr"
+                {...register('name')}
+                placeholder={t('jobAnnouncement.form.enterJobNameAr')}
+              />
+            </FormField>
+
+            <FormField
+              label={t('jobAnnouncement.form.jobNameEn')}
+              required
+              error={errors.nameEn?.message as string | undefined}
+              htmlFor="jobNameEn"
+            >
+              <Input
+                id="jobNameEn"
+                {...register('nameEn')}
+                placeholder={t('jobAnnouncement.form.enterJobNameEn')}
+              />
+            </FormField>
+          </div>
+        </section>
         <section className="space-y-5">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <FormField
