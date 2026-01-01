@@ -10,7 +10,7 @@ const JobAnnouncementDetailsPage = () => {
   const { jobId = '' } = useParams<{ jobId: string }>();
 
   const breadcrumbItems = [
-    { label: 'sidebar.teachingStaff', path: '/job-announcements' },
+    { label: 'sidebar.teachingStaff' },
     { label: 'sidebar.jobAnnouncements', path: '/job-announcements' },
     { label: 'jobAnnouncement.applicantsPage.breadcrumb' },
   ];
