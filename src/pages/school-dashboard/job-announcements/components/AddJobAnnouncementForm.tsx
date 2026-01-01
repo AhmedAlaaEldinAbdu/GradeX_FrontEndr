@@ -24,6 +24,7 @@ import {
   fetchTeacherLevels,
 } from '@/redux/features/lookups/lookupsSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import {
   createJobAdvertisment,
   editJobAdvertisment,
@@ -213,6 +214,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     isLoadingLanguages,
     isLoadingLanguageLevels,
   } = useAppSelector((state) => state.lookups);
+  const { educationalStages: grades, isLoading: isLoadingEducationalStages } = useAppSelector(
+    (state) => state.educationalStages
+  );
   const { subjects, isLoading: isLoadingSubjects } = useAppSelector((state) => state.subjects);
   const { isCreating, currentJobAdvertisment } = useAppSelector((state) => state.jobAdvertisments);
 
@@ -259,6 +263,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     dispatch(fetchLanguageLevels());
     dispatch(fetchJobBenefits());
     dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
   }, [dispatch]);
 
   // Helper function to populate form with job data
@@ -462,6 +467,14 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
     }));
   }, [schoolStages, currentLang]);
+
+  const educationalStageOptions = useMemo(() => {
+    if (!Array.isArray(grades)) return [];
+    return grades.map((grade) => ({
+      value: grade.id,
+      label: currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr,
+    }));
+  }, [grades, currentLang]);
 
   const subjectOptions = useMemo(() => {
     if (!Array.isArray(subjects)) return [];
@@ -1077,15 +1090,15 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     id="educationalStage"
                     value={field.value}
                     onChange={(value) => field.onChange(value)}
-                    options={stageOptions}
+                    options={educationalStageOptions}
                     placeholder={
-                      isLoadingSchoolStages
+                      isLoadingEducationalStages
                         ? t('common.loading')
                         : t('jobAnnouncement.form.selectEducationalStage')
                     }
                     isMulti
                     error={!!errors.educationalStage}
-                    disabled={isLoadingSchoolStages}
+                    disabled={isLoadingEducationalStages}
                   />
                 )}
               />
