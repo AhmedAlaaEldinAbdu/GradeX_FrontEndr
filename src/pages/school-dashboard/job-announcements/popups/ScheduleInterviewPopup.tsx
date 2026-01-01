@@ -42,8 +42,8 @@ const INTERVIEW_FORM_DEFAULTS: InterviewFormProps = {
 };
 
 const INTERVIEW_TYPE_OPTIONS = [
-  { value: InterviewType.ONLINE, labelAr: 'مقابلة اونلاين', labelEn: 'Online Interview' },
-  { value: InterviewType.OFFLINE, labelAr: 'مقابلة حضورية', labelEn: 'On-site Interview' },
+  { value: InterviewType.ONLINE, labelKey: 'jobAnnouncement.applicantsPage.interviewTypeOnline' },
+  { value: InterviewType.OFFLINE, labelKey: 'jobAnnouncement.applicantsPage.interviewTypeOffline' },
 ];
 
 export default function ScheduleInterviewPopup({
@@ -99,9 +99,9 @@ export default function ScheduleInterviewPopup({
     () =>
       INTERVIEW_TYPE_OPTIONS.map((option) => ({
         value: String(option.value),
-        label: currentLang === 'ar' ? option.labelAr : option.labelEn,
+        label: t(option.labelKey),
       })),
-    [currentLang]
+    [t]
   );
 
   const schoolBranchOptions: CustomSelectOption[] = useMemo(() => {
@@ -193,12 +193,11 @@ export default function ScheduleInterviewPopup({
       reset({
         ...INTERVIEW_FORM_DEFAULTS,
         jobAdvertisementId: jobAdvertisementId ?? '',
-        teacherId: applicantTeacherId ?? '',
       });
     } else {
       reset(INTERVIEW_FORM_DEFAULTS);
     }
-  }, [open, applicantTeacherId, jobAdvertisementId, reset]);
+  }, [open, jobAdvertisementId, reset]);
 
   useEffect(() => {
     if (!open || !selectedJobAdvertisement?.schoolBranchId) {
@@ -221,14 +220,14 @@ export default function ScheduleInterviewPopup({
   }, [jobAdvertisementId, open, selectedJobAdValue, setValue]);
 
   useEffect(() => {
-    if (!open || !applicantTeacherId) {
+    if (!open) {
       return;
     }
 
     if (!selectedTeacherValue) {
-      setValue('teacherId', applicantTeacherId, { shouldDirty: false });
+      setValue('teacherId', '', { shouldDirty: false });
     }
-  }, [applicantTeacherId, open, selectedTeacherValue, setValue]);
+  }, [open, selectedTeacherValue, setValue]);
 
   const handleClose = () => {
     if (isLoading) {
@@ -247,16 +246,9 @@ export default function ScheduleInterviewPopup({
       isOpen={open}
       onClose={handleClose}
       title={t('jobAnnouncement.applicantsPage.scheduleInterview')}
-      size="lg"
       closeOnOverlayClick={!isLoading}
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-        {applicantName && (
-          <div className="rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-600">
-            {t('jobAnnouncement.applicantsPage.schedulingFor', { name: applicantName })}
-          </div>
-        )}
-
         <div className="space-y-5">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
@@ -273,12 +265,14 @@ export default function ScheduleInterviewPopup({
                     id="schoolBranchesId"
                     value={field.value ?? ''}
                     onChange={(value) =>
-                      field.onChange(Array.isArray(value) ? (value[0] as string) : (value as string))
+                      field.onChange(
+                        Array.isArray(value) ? (value[0] as string) : (value as string)
+                      )
                     }
                     options={schoolBranchOptions}
                     placeholder={t('interviews.selectSchool')}
                     error={!!errors.schoolBranchesId}
-                    disabled={isLoading || schoolBranchOptions.length === 0}
+                    disabled
                   />
                 )}
               />
@@ -298,12 +292,14 @@ export default function ScheduleInterviewPopup({
                     id="jobAdvertisementId"
                     value={field.value ?? ''}
                     onChange={(value) =>
-                      field.onChange(Array.isArray(value) ? (value[0] as string) : (value as string))
+                      field.onChange(
+                        Array.isArray(value) ? (value[0] as string) : (value as string)
+                      )
                     }
                     options={jobAdvertisementOptions}
                     placeholder={t('interviews.selectJobAdvertisement')}
                     error={!!errors.jobAdvertisementId}
-                    disabled={isLoading || !selectedBranchId || jobAdvertisementOptions.length === 0}
+                    disabled
                   />
                 )}
               />
@@ -325,7 +321,9 @@ export default function ScheduleInterviewPopup({
                     id="teacherId"
                     value={field.value ?? ''}
                     onChange={(value) =>
-                      field.onChange(Array.isArray(value) ? (value[0] as string) : (value as string))
+                      field.onChange(
+                        Array.isArray(value) ? (value[0] as string) : (value as string)
+                      )
                     }
                     options={teacherOptions}
                     placeholder={t('interviews.selectTeacherName')}
@@ -350,7 +348,9 @@ export default function ScheduleInterviewPopup({
                     id="supervisorId"
                     value={field.value ?? ''}
                     onChange={(value) =>
-                      field.onChange(Array.isArray(value) ? (value[0] as string) : (value as string))
+                      field.onChange(
+                        Array.isArray(value) ? (value[0] as string) : (value as string)
+                      )
                     }
                     options={supervisorOptions}
                     placeholder={t('interviews.selectSupervisor')}
@@ -379,7 +379,6 @@ export default function ScheduleInterviewPopup({
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     onBlur={field.onBlur}
-                    icon={<CustomImage src={CalendarIcon} className="h-5 w-5 text-gray-400" />}
                     placeholder={t('jobAnnouncement.applicantsPage.selectInterviewDate')}
                     className="flex justify-end"
                     disabled={isLoading}

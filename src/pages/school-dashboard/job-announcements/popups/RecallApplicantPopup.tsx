@@ -36,45 +36,43 @@ const RecallApplicantPopup = ({
       closeOnOverlayClick={!isProcessing}
       contentClassName="p-0"
     >
-      <div className="relative rounded-[32px] bg-white p-6 text-center shadow-lg">
-        <button
+      <button
+        type="button"
+        onClick={handleClose}
+        disabled={isProcessing}
+        className="absolute start-4 top-4 text-2xl text-gray-400 transition hover:text-gray-600 disabled:cursor-not-allowed"
+        aria-label={t('common.close')}
+      >
+        ✕
+      </button>
+
+      <div className="flex flex-col gap-3 pb-8 pt-6">
+        <p className="text-xl font-semibold text-gray-900">
+          {t('jobAnnouncement.applicantsPage.confirmRecall')}
+        </p>
+        <p className="text-sm text-gray-500">
+          {t('jobAnnouncement.applicantsPage.recallDescription')}
+        </p>
+      </div>
+
+      <div className="flex flex-col-reverse gap-3 md:flex-row-reverse">
+        <Button
           type="button"
+          variant="outline"
           onClick={handleClose}
           disabled={isProcessing}
-          className="absolute start-4 top-4 text-2xl text-gray-400 transition hover:text-gray-600 disabled:cursor-not-allowed"
-          aria-label={t('common.close')}
+          className="flex-1 border-emerald-700 text-emerald-700"
         >
-          ✕
-        </button>
-
-        <div className="flex flex-col gap-3 pt-6 pb-8">
-          <p className="text-xl font-semibold text-gray-900">
-            {t('jobAnnouncement.applicantsPage.confirmRecall')}
-          </p>
-          <p className="text-sm text-gray-500">
-            {t('jobAnnouncement.applicantsPage.recallDescription')}
-          </p>
-        </div>
-
-        <div className="flex flex-col-reverse gap-3 md:flex-row-reverse">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={isProcessing}
-            className="flex-1 border-emerald-700 text-emerald-700"
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button
-            type="button"
-            onClick={onConfirm}
-            disabled={isProcessing}
-            className="flex-1 bg-emerald-800 text-white hover:bg-emerald-900 focus-visible:ring-emerald-200"
-          >
-            {isProcessing ? t('common.processing') : t('common.confirm')}
-          </Button>
-        </div>
+          {t('common.cancel')}
+        </Button>
+        <Button
+          type="button"
+          onClick={onConfirm}
+          disabled={isProcessing}
+          className="flex-1 bg-emerald-800 text-white hover:bg-emerald-900 focus-visible:ring-emerald-200"
+        >
+          {isProcessing ? t('common.processing') : t('common.confirm')}
+        </Button>
       </div>
     </Modal>
   );

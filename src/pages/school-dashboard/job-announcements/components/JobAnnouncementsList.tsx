@@ -381,7 +381,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.applicantsCount',
       accessor: (row) => (
-        <div className="flex items-center justify-center text-sm">
+        <div className="flex items-center justify-center gap-2 text-sm">
           <IconButton
             variant="default"
             ariaLabel={t('jobAnnouncement.viewApplicants')}

@@ -1313,6 +1313,8 @@
       "scheduleInterview": "Schedule Interview",
       "schedulingFor": "Scheduling interview for {{name}}",
       "interviewType": "Interview Type",
+      "interviewTypeOnline": "Online interview",
+      "interviewTypeOffline": "On-site interview",
       "selectInterviewType": "Select interview type",
       "interviewDate": "Interview Date",
       "selectInterviewDate": "Select interview date",

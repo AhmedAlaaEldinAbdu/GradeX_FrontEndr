@@ -1311,6 +1311,8 @@
       "scheduleInterview": "تحديد موعد",
       "schedulingFor": "تحديد موعد مقابلة لـ {{name}}",
       "interviewType": "نوع المقابلة",
+      "interviewTypeOnline": "مقابلة أونلاين",
+      "interviewTypeOffline": "مقابلة حضورية",
       "selectInterviewType": "اختر نوع المقابلة",
       "interviewDate": "تاريخ موعد",
       "selectInterviewDate": "اختر التاريخ اليوم",
