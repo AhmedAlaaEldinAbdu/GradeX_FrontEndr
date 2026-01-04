@@ -6,6 +6,8 @@ import type {
   TeacherAttendanceQueryParams,
   TeacherAttendanceListData,
   BulkAttendanceRequest,
+  TeacherAttendanceCreateRequest,
+  TeacherAttendanceCreateResponse,
 } from '@/types/teacherAttendance';
 import type {
   TeacherAttendanceDetailResponse,
@@ -95,6 +97,24 @@ export async function getTeacherAttendanceByTeacher(
 }
 
 /**
+ * Create a single teacher attendance record
+ */
+export async function createAttendance(
+  data: TeacherAttendanceCreateRequest
+): Promise<TeacherAttendanceCreateResponse> {
+  const response: AxiosResponse<TeacherAttendanceCreateResponse> = await axiosClient.post(
+    TeacherAttendanceEndpoints.create,
+    data
+  );
+
+  if (!response?.data?.isSuccess) {
+    throw new Error(response?.data?.message || 'Failed to create attendance');
+  }
+
+  return response.data;
+}
+
+/**
  * Bulk create teacher attendance records
  */
 export async function bulkCreateAttendance(data: BulkAttendanceRequest): Promise<void> {
@@ -117,5 +137,6 @@ export async function bulkCreateAttendance(data: BulkAttendanceRequest): Promise
 export const teacherAttendanceApiService = {
   getTeacherAttendanceByBranch,
   getTeacherAttendanceByTeacher,
+  createAttendance,
   bulkCreateAttendance,
 };
