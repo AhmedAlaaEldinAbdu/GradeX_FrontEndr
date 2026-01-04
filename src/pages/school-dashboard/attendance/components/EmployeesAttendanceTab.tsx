@@ -386,13 +386,13 @@ export default function EmployeesAttendanceTab({
     {
       header: 'attendance.employeeName',
       accessor: (row) => (
-        <div className="flex items-center gap-2">
-          <div className="h-10 w-10 overflow-hidden rounded-full">
+        <div className="flex w-full items-center gap-2">
+          <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
             <CustomImage src={ProfileImage} alt="profile" className="h-full w-full object-cover" />
           </div>
-          <span className="font-medium">{row.teacherFullName}</span>
+          <span className="flex-1 font-medium">{row.teacherFullName}</span>
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/teachers/${row.teacherId}?tab=attendance`);
