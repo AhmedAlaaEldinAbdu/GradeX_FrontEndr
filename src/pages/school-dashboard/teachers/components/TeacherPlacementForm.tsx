@@ -15,7 +15,7 @@ import Button from '@/shared/components/Button';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import CustomImage from '@/shared/components/CustomImage';
-import PlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
+import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import SuccessPlacementPopup from '../popups/SuccessPlacementPopup';
 import { useToast } from '@/shared/context/ToastContext';
@@ -406,44 +406,43 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
 
               {/* Books Section with Add Button */}
               {row.books.map((bookEntry, bookIndex) => (
-                <div key={bookEntry.id} className="mt-4 flex items-end gap-2">
+                <div key={bookEntry.id} className="mt-4">
                   {bookIndex > 0 && <div className="w-8 shrink-0" />}
-                  <div className="flex-1">
-                    <FormField
-                      label={bookIndex === 0 ? t('teachers.placement.book') : ''}
-                      htmlFor={`book-${bookEntry.id}`}
-                    >
-                      <CustomSelect
-                        value={bookEntry.bookId}
-                        onChange={(value) =>
-                          handleBookChange(
-                            row.id,
-                            bookEntry.id,
-                            Array.isArray(value) ? value[0] || '' : value
-                          )
-                        }
-                        options={getBookOptionsForSubject(row.subjectId)}
-                        placeholder={
-                          !row.subjectId
-                            ? t('teachers.placement.selectSubjectFirst')
-                            : isLoadingBooks
-                              ? t('common.loading')
-                              : t('teachers.placement.selectBook')
-                        }
-                        disabled={!row.subjectId || isLoadingBooks}
-                      />
-                    </FormField>
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {bookIndex === 0 ? t('teachers.placement.book') : ''}
+                      </label>
+                      {bookIndex === 0 && (
+                        <button
+                          type="button"
+                          onClick={() => handleAddBook(row.id)}
+                          className="flex h-8 w-8 shrink-0 items-center justify-center"
+                        >
+                          <CustomImage src={GreenPlusIcon} alt="add book" className="h-6 w-6" />
+                        </button>
+                      )}
+                    </div>
+                    <CustomSelect
+                      value={bookEntry.bookId}
+                      onChange={(value) =>
+                        handleBookChange(
+                          row.id,
+                          bookEntry.id,
+                          Array.isArray(value) ? value[0] || '' : value
+                        )
+                      }
+                      options={getBookOptionsForSubject(row.subjectId)}
+                      placeholder={
+                        !row.subjectId
+                          ? t('teachers.placement.selectSubjectFirst')
+                          : isLoadingBooks
+                            ? t('common.loading')
+                            : t('teachers.placement.selectBook')
+                      }
+                      disabled={!row.subjectId || isLoadingBooks}
+                    />
                   </div>
-
-                  {bookIndex === 0 && (
-                    <button
-                      type="button"
-                      onClick={() => handleAddBook(row.id)}
-                      className="mb-2 flex h-8 w-8 shrink-0 items-center justify-center"
-                    >
-                      <CustomImage src={PlusCircleIcon} alt="add book" className="h-6 w-6" />
-                    </button>
-                  )}
                 </div>
               ))}
             </div>
@@ -454,7 +453,7 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
               onClick={handleAddRow}
               className="mt-2 flex h-8 w-8 shrink-0 items-center justify-center"
             >
-              <CustomImage src={PlusCircleIcon} alt="add" className="h-7 w-7" />
+              <CustomImage src={GreenPlusIcon} alt="add" className="h-7 w-7" />
             </button>
           </div>
         ))}
