@@ -7,7 +7,6 @@ import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
 import PeopleRegularIcon from '@gradex/assets/icons/PeopleRegular.svg';
-import CheckIcon from '@gradex/assets/icons/Check.svg';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -20,6 +19,8 @@ import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchSchoolStages } from '@/redux/features/lookups';
 import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
+import CustomImage from '@/shared/components/CustomImage';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
 // Static school branch ID
 const SCHOOL_BRANCH_ID = 'D18C45EA-EEEE-4A41-D35E-08DE1D686083';
@@ -129,16 +130,18 @@ export default function TeachersList() {
     {
       header: 'teachers.teacherName',
       accessor: (row) => (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/teachers/${row.teacherId}`);
-          }}
-          className="flex items-center gap-3 transition-colors hover:text-primary-600"
-        >
-          <span className="font-medium hover:underline">{row.teacherName}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {row.teacherName}
+          <button
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/teachers/${row.teacherId}`);
+            }}
+          >
+            <CustomImage src={EyeStyledIcon} alt="view" className="h-5 w-5" />
+          </button>
+        </div>
       ),
       headerClassName: 'min-w-[200px]',
     },
@@ -192,15 +195,6 @@ export default function TeachersList() {
       header: 'common.actions',
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <IconButton
-            variant="success"
-            onClick={() => {
-              navigate(`/teachers/${row.teacherId}/placement`);
-            }}
-            ariaLabel={t('teachers.placement.action')}
-          >
-            <img src={CheckIcon} alt="" className="h-4 w-4" />
-          </IconButton>
           <IconButton
             status="delete"
             variant="danger"
