@@ -13,10 +13,10 @@ import RecordAttendancePopup, {
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherAttendanceDetails,
-  updateTeacherAttendance,
   clearTeacherAttendance,
   clearAttendanceFilters,
 } from '@/redux/features/teachers/teachersSlice';
+import { teacherAttendanceApiService } from '@/services/api/teacher-attendance/teacher-attendance.service';
 import type { TeacherAttendanceDetailRecord } from '@/types/teacherAttendanceDetail';
 import { AttendanceStatus } from '@/types/teacherAttendance';
 import { formatTime, formatDateDisplay } from '@/shared/common/common';
@@ -211,16 +211,12 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
 
   const handlePreparationSubmit = async (values: TeacherPreparationFormValues) => {
     try {
-      await dispatch(
-        updateTeacherAttendance({
-          id: '', // TODO: Need to get the id from the API
-          teacherId,
-          date: values.date,
-          checkInTime: values.checkInTime,
-          checkOutTime: values.checkOutTime,
-          status: AttendanceStatus.Present,
-        })
-      ).unwrap();
+      await teacherAttendanceApiService.createAttendance({
+        teacherId,
+        date: values.date,
+        checkInTime: values.checkInTime,
+        checkOutTime: values.checkOutTime,
+      });
 
       setShowRecordAttendancePopup(false);
 
