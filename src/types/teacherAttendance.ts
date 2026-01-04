@@ -97,3 +97,19 @@ export interface BulkAttendanceItem {
 }
 
 export type BulkAttendanceRequest = BulkAttendanceItem[];
+
+// Create attendance request
+export interface TeacherAttendanceCreateRequest {
+  teacherId: string;
+  date: string;
+  checkInTime: string;
+  checkOutTime: string;
+}
+
+// Create attendance response
+export interface TeacherAttendanceCreateResponse {
+  data: null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
