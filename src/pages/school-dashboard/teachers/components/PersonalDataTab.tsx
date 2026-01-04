@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
@@ -6,19 +7,85 @@ import DownloadIcon from '@gradex/assets/icons/Download.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import Loading from '@/shared/components/Loading';
 import { useAppSelector } from '@/hooks/useRedux';
+import { teacherApiService } from '@/services/api/teachers/teachers.service';
+import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
 
 interface PersonalDataTabProps {
   teacherId: string;
   isActive?: boolean;
 }
 
-export default function PersonalDataTab({ isActive = true }: PersonalDataTabProps) {
+export default function PersonalDataTab({ teacherId, isActive = true }: PersonalDataTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
 
+  // Redux state for personal data
   const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
   const isLoadingPersonalData = useAppSelector((state) => state.teachers.isLoadingPersonalData);
   const personalDataError = useAppSelector((state) => state.teachers.personalDataError);
+
+  // Local state for assignment data
+  const [assignmentsData, setAssignmentsData] = useState<TeacherAssignmentListItem[]>([]);
+  const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
+
+  // Fetch assignments when component becomes active
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      if (!teacherId || !isActive) return;
+
+      setIsLoadingAssignments(true);
+      try {
+        const data = await teacherApiService.getTeacherAssignmentList({
+          TeacherId: teacherId,
+          SchoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+        });
+        if (data?.teacherAssignmentDto) {
+          setAssignmentsData(data.teacherAssignmentDto);
+        }
+      } catch (error) {
+        console.error('Failed to fetch assignments:', error);
+      } finally {
+        setIsLoadingAssignments(false);
+      }
+    };
+
+    fetchAssignments();
+  }, [teacherId, isActive]);
+
+  // Helper functions for placement info
+  const getGradeName = (assignment: TeacherAssignmentListItem) =>
+    currentLang === 'ar'
+      ? assignment.gradeNameAR
+      : assignment.gradeNameEN || assignment.gradeNameAR;
+
+  const getMaterialName = (assignment: TeacherAssignmentListItem) =>
+    currentLang === 'ar'
+      ? assignment.materialNameAR
+      : assignment.materialNameEN || assignment.materialNameAR;
+
+  const getOrdinal = (num: number, lang: 'ar' | 'en') => {
+    if (lang === 'ar') {
+      const ordinals = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة'];
+      return ordinals[num - 1] || num.toString();
+    } else {
+      const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+      return ordinals[num - 1] || num.toString();
+    }
+  };
+
+  // Aggregate placement data
+  const allSubjects = [...new Set(assignmentsData.map((a) => getMaterialName(a)).filter(Boolean))];
+  const allGrades = [...new Set(assignmentsData.map((a) => getGradeName(a)).filter(Boolean))];
+  const allClassrooms = assignmentsData.flatMap((a) => a.classrooms || []);
+  const uniqueClassrooms = allClassrooms.filter(
+    (classroom, index, self) => index === self.findIndex((c) => c.id === classroom.id)
+  );
+  const booksByMaterial = assignmentsData.map((assignment, index) => ({
+    materialName: getMaterialName(assignment),
+    materialIndex: index + 1,
+    books: assignment.books || [],
+  }));
 
   if (!isActive || (isLoadingPersonalData && !teacherPersonalData)) {
     return (
@@ -97,6 +164,93 @@ export default function PersonalDataTab({ isActive = true }: PersonalDataTabProp
 
   return (
     <div className="space-y-6">
+      {/* Placement Info Card */}
+      {assignmentsData.length > 0 && (
+        <Card>
+          <div className="space-y-4">
+            {/* Subjects and Grades Row */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* All Subjects */}
+              <div className="text-start">
+                <span className="text-sm text-gray-600">{t('teachers.placement.subject')}: </span>
+                <span className="font-medium text-gray-900">
+                  {allSubjects.length > 0 ? allSubjects.join(' - ') : t('common.notAvailable')}
+                </span>
+              </div>
+
+              {/* All Educational Stages */}
+              <div className="text-start">
+                <span className="text-sm text-gray-600">{t('teachers.placement.stage')}: </span>
+                <span className="font-medium text-gray-900">
+                  {allGrades.length > 0 ? allGrades.join(' - ') : t('common.notAvailable')}
+                </span>
+              </div>
+            </div>
+
+            {/* All Classrooms Row */}
+            <div className="text-start">
+              <span className="text-sm text-gray-600">{t('teachers.placement.classrooms')}: </span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {uniqueClassrooms.length > 0 ? (
+                  uniqueClassrooms.map((classroom) => (
+                    <span
+                      key={classroom.id}
+                      className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800"
+                    >
+                      {currentLang === 'ar'
+                        ? classroom.nameAR
+                        : classroom.nameEN || classroom.nameAR}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-500">{t('common.notAvailable')}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Books Section - Full-width bordered boxes grouped by material */}
+            {booksByMaterial.map(
+              (materialBooks, idx) =>
+                materialBooks.books.length > 0 && (
+                  <div key={idx} className="space-y-2 text-start">
+                    {/* Books in bordered boxes */}
+                    {materialBooks.books.map((book) => (
+                      <div
+                        key={book.id}
+                        className="rounded-lg border border-gray-200 bg-white px-4 py-3"
+                      >
+                        {/* Material Title */}
+                        <p className="text-sm font-medium text-gray-900">
+                          {t('teachers.placement.details.bookName')}{' '}
+                          {booksByMaterial.length > 1
+                            ? `${t('teachers.placement.details.materialPrefix')} ${getOrdinal(idx + 1, currentLang)}`
+                            : ''}
+                          :
+                        </p>
+                        <p>
+                          <span className="text-sm text-gray-600">
+                            {t('teachers.placement.details.bookName')}:{' '}
+                          </span>
+                          <span className="text-sm text-gray-900">{book.name}</span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Loading indicator for assignments */}
+      {isLoadingAssignments && assignmentsData.length === 0 && (
+        <Card>
+          <div className="flex h-24 items-center justify-center">
+            <Loading />
+          </div>
+        </Card>
+      )}
+
       {/* Profile Picture and Attachments */}
       <Card>
         {/* Profile Picture - Centered */}
@@ -249,7 +403,7 @@ export default function PersonalDataTab({ isActive = true }: PersonalDataTabProp
         )}
       </Card>
 
-      {/* Work Experience - Kept for future use */}
+      {/* Work Experience */}
       <Card>
         <h3 className="mb-6 text-start text-lg font-semibold text-gray-900">
           {t('teachers.details.workExperience')}
