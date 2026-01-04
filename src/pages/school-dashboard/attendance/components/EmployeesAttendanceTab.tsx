@@ -247,8 +247,7 @@ export default function EmployeesAttendanceTab({
           })
         );
       } else if (popupEmployeeId) {
-        // Individual action - update attendance for single employee
-        const attendance = attendances.find((a) => a.id === popupEmployeeId);
+        const attendance = attendances.find((a) => a.teacherId === popupEmployeeId);
         if (!attendance) {
           throw new Error('common.errorOccurred');
         }
@@ -260,25 +259,36 @@ export default function EmployeesAttendanceTab({
           absent: AttendanceStatus.Absent,
         };
 
-        // Generate current time for checkInTime if not provided (for present/absent actions)
-        const now = new Date();
-        const currentTime =
-          time ||
-          `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-        // Use current date in ISO format
         const currentDate = new Date().toISOString();
 
-        await dispatch(
-          updateTeacherAttendance({
-            id: attendance.id,
-            teacherId: attendance.teacherId,
-            date: currentDate,
-            checkInTime: currentTime,
-            checkOutTime: attendance.checkOutTime || '18:00',
-            status: statusMap[popupType],
-          })
-        ).unwrap();
+        if (attendance.id) {
+          const now = new Date();
+          const currentTime =
+            time ||
+            `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+          await dispatch(
+            updateTeacherAttendance({
+              id: attendance.id,
+              teacherId: attendance.teacherId,
+              date: currentDate,
+              checkInTime: currentTime,
+              checkOutTime: attendance.checkOutTime || '18:00',
+              status: statusMap[popupType],
+            })
+          ).unwrap();
+        } else {
+          await dispatch(
+            bulkCreateAttendance([
+              {
+                teacherId: attendance.teacherId,
+                date: currentDate,
+                status: statusMap[popupType],
+                delayTime: time || undefined,
+              },
+            ])
+          ).unwrap();
+        }
 
         // Show appropriate success message based on action type
         const successMessageMap = {
@@ -473,21 +483,21 @@ export default function EmployeesAttendanceTab({
           <div className="flex items-center justify-center gap-2">
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
-              onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'present')}
+              onClick={() => handleIndividualAction(row.teacherId, row.teacherFullName, 'present')}
               title={t('attendance.present')}
             >
               <CustomImage src={CheckIcon} alt="check" className="h-4 w-4" />
             </button>
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 transition-colors hover:bg-yellow-200"
-              onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'late')}
+              onClick={() => handleIndividualAction(row.teacherId, row.teacherFullName, 'late')}
               title={t('attendance.late')}
             >
               <CustomImage src={HistoryIcon} alt="history" className="h-4 w-4" />
             </button>
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 transition-colors hover:bg-red-200"
-              onClick={() => handleIndividualAction(row.id, row.teacherFullName, 'absent')}
+              onClick={() => handleIndividualAction(row.teacherId, row.teacherFullName, 'absent')}
               title={t('attendance.absent')}
             >
               <CustomImage src={XMarkDangerIcon} alt="delete" className="h-4 w-4" />
@@ -618,7 +628,7 @@ export default function EmployeesAttendanceTab({
         <DataTable
           data={attendances}
           columns={columns}
-          keyExtractor={(row) => row.id}
+          keyExtractor={(row) => row.teacherId}
           pagination={{
             page: pagination.page,
             limit: pagination.limit,
