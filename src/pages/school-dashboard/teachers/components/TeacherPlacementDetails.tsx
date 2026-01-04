@@ -263,10 +263,12 @@ export default function TeacherPlacementDetails({
                           : ''}
                         :
                       </p>
-                      <span className="text-sm text-gray-600">
-                        {t('teachers.placement.details.bookName')}:{' '}
-                      </span>
-                      <span className="text-sm text-gray-900">{book.name}</span>
+                      <p>
+                        <span className="text-sm text-gray-600">
+                          {t('teachers.placement.details.bookName')}:{' '}
+                        </span>
+                        <span className="text-sm text-gray-900">{book.name}</span>
+                      </p>
                     </div>
                   ))}
                 </div>
