@@ -5,18 +5,32 @@ import PageHeader from '@/shared/components/PageHeader';
 import TeacherPlacementForm from './components/TeacherPlacementForm';
 import TeacherPlacementDetails from './components/TeacherPlacementDetails';
 
+interface LocationState {
+  comeFrom?: string;
+}
+
 export default function TeacherPlacementPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
 
+  // Check if coming from job-announcements
+  const locationState = location.state as LocationState | null;
+  const isFromJobAnnouncements = locationState?.comeFrom === 'job-announcements';
+
   const isViewMode = location.pathname.includes('placement-details');
 
-  const breadcrumbItems = [
-    { label: t('sidebar.teachingStaff') },
-    { label: t('sidebar.teachers'), path: '/teachers' },
-    { label: t('teachers.placement.breadcrumb') },
-  ];
+  const breadcrumbItems = isFromJobAnnouncements
+    ? [
+        { label: t('sidebar.teachingStaff') },
+        { label: t('teachers.jobAnnouncements'), path: '/job-announcements' },
+        { label: t('teachers.placement.breadcrumb') },
+      ]
+    : [
+        { label: t('sidebar.teachingStaff') },
+        { label: t('sidebar.teachers'), path: '/teachers' },
+        { label: t('teachers.placement.breadcrumb') },
+      ];
 
   return (
     <div>
