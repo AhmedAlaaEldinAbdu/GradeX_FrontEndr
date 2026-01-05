@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -138,8 +138,16 @@ const buildFiltersPayload = ({
   };
 };
 
+interface LocationState {
+  comeFrom?: string;
+  filter?: { name?: string };
+}
+
 export default function JobAnnouncementsList() {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
+  const locationState = location.state as LocationState | null;
+  const filtered = locationState?.filter;
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -458,9 +466,6 @@ export default function JobAnnouncementsList() {
             } else {
               return <div>{t('common.all')}</div>;
             }
-
-            const fallbackKey = currentLang === 'ar' ? ['countryNameAr'] : ['countryNameEn'];
-            return getDynamicValue(row, fallbackKey) || '--';
           })()}
         </span>
       ),
@@ -592,7 +597,7 @@ export default function JobAnnouncementsList() {
       type: 'search',
       name: 'job-announcements-search',
       placeholder: t('jobAnnouncement.searchTeacherName'),
-      value: searchTerm,
+      value: filtered?.name ? filtered?.name : searchTerm,
       onChange: (value) => setSearchTerm((value as string) ?? ''),
       width: '40%',
     },
