@@ -1150,7 +1150,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 render={({ field }) => (
                   <CustomSelect
                     id="subjectName"
-                    value={field.value}
+                    value={field.value ?? ''}
                     onChange={(value) => field.onChange(value)}
                     options={subjectOptions}
                     placeholder={
@@ -1178,7 +1178,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 render={({ field }) => (
                   <CustomSelect
                     id="educationalStage"
-                    value={field.value}
+                    value={field.value ?? ''}
                     onChange={(value) => field.onChange(value)}
                     options={educationalStageOptions}
                     placeholder={
@@ -1502,7 +1502,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                         control={control}
                         render={({ field }) => (
                           <CustomSelect
-                            value={field.value}
+                            value={field.value ?? ''}
                             onChange={(value) =>
                               field.onChange(Array.isArray(value) ? value[0] : value)
                             }
@@ -1529,7 +1529,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                         control={control}
                         render={({ field }) => (
                           <CustomSelect
-                            value={field.value}
+                            value={field.value ?? ''}
                             onChange={(value) =>
                               field.onChange(Array.isArray(value) ? value[0] : value)
                             }
@@ -1596,9 +1596,15 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           >
             {t('common.cancel')}
           </Button>
-          <Button type="submit" variant="primary" disabled={isCreating}>
-            {isCreating ? t('common.saving') : t('common.add')}
-          </Button>
+          {!isEditMode ? (
+            <Button type="submit" variant="primary" disabled={isCreating}>
+              {isCreating ? t('common.saving') : t('common.add')}
+            </Button>
+          ) : (
+            <Button type="submit" variant="primary" disabled={isCreating}>
+              {isCreating ? t('common.saving') : t('common.saveChanges')}
+            </Button>
+          )}
         </div>
       </form>
 
