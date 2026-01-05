@@ -224,10 +224,15 @@ export default function ScheduleInterviewPopup({
       return;
     }
 
+    if (applicantTeacherId) {
+      setValue('teacherId', applicantTeacherId, { shouldDirty: false });
+      return;
+    }
+
     if (!selectedTeacherValue) {
       setValue('teacherId', '', { shouldDirty: false });
     }
-  }, [open, selectedTeacherValue, setValue]);
+  }, [applicantTeacherId, open, selectedTeacherValue, setValue]);
 
   const handleClose = () => {
     if (isLoading) {
@@ -328,7 +333,7 @@ export default function ScheduleInterviewPopup({
                     options={teacherOptions}
                     placeholder={t('interviews.selectTeacherName')}
                     error={!!errors.teacherId}
-                    disabled={isLoading || teacherOptions.length === 0}
+                    disabled
                   />
                 )}
               />
