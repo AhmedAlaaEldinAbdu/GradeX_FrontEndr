@@ -187,6 +187,9 @@ interface AddJobAnnouncementFormProps {
   jobId?: string;
 }
 
+type SkillFieldName = 'technicalSkillIds' | 'personalSkillIds';
+type SkillType = 'technical' | 'personal';
+
 export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementFormProps) {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
@@ -227,6 +230,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   const [isFormReady, setIsFormReady] = useState(!isEditMode);
   const [isFullTimeChecked, setIsFullTimeChecked] = useState(false);
   const [isPartTimeChecked, setIsPartTimeChecked] = useState(false);
+  const [technicalSkillInput, setTechnicalSkillInput] = useState('');
+  const [personalSkillInput, setPersonalSkillInput] = useState('');
 
   const {
     control,
@@ -255,6 +260,19 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   const salaryOption = watch('salary');
   const contractType = watch('contractType');
   const selectedBenefits = watch('benefitsIds');
+  const technicalSkillsValue = watch('technicalSkillIds') || '';
+  const personalSkillsValue = watch('personalSkillIds') || '';
+
+  const technicalSkillsList = useMemo(
+    () => extractListFromInput(technicalSkillsValue),
+    [technicalSkillsValue]
+  );
+  const personalSkillsList = useMemo(
+    () => extractListFromInput(personalSkillsValue),
+    [personalSkillsValue]
+  );
+  const canAddTechnicalSkill = Boolean(technicalSkillInput.trim());
+  const canAddPersonalSkill = Boolean(personalSkillInput.trim());
 
   useEffect(() => {
     dispatch(fetchCountries());
@@ -573,6 +591,46 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       'benefitsIds',
       current.filter((item) => item !== value)
     );
+  };
+
+  const updateSkillsField = (field: SkillFieldName, items: string[]) => {
+    setValue(field, items.length ? items.join('\n') : '', {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  };
+
+  const handleSkillAdd = (type: SkillType) => {
+    const inputValue =
+      type === 'technical' ? technicalSkillInput.trim() : personalSkillInput.trim();
+
+    if (!inputValue) {
+      return;
+    }
+
+    const currentList = type === 'technical' ? technicalSkillsList : personalSkillsList;
+    const field: SkillFieldName = type === 'technical' ? 'technicalSkillIds' : 'personalSkillIds';
+
+    updateSkillsField(field, [...currentList, inputValue]);
+
+    if (type === 'technical') {
+      setTechnicalSkillInput('');
+    } else {
+      setPersonalSkillInput('');
+    }
+  };
+
+  const handleSkillRemove = (type: SkillType, index: number) => {
+    const currentList = type === 'technical' ? technicalSkillsList : personalSkillsList;
+
+    if (index < 0 || index >= currentList.length) {
+      return;
+    }
+
+    const updatedList = currentList.filter((_, skillIndex) => skillIndex !== index);
+    const field: SkillFieldName = type === 'technical' ? 'technicalSkillIds' : 'personalSkillIds';
+
+    updateSkillsField(field, updatedList);
   };
 
   const onSubmit = async (values: AddJobAnnouncementFormValues) => {
@@ -1297,27 +1355,119 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             <FormField
               label={t('jobAnnouncement.form.technicalSkills')}
               error={errors.technicalSkillIds?.message as string | undefined}
-              htmlFor="technicalSkillIds"
+              htmlFor="technicalSkillInput"
               required
             >
-              <Input
-                id="technicalSkillIds"
-                {...register('technicalSkillIds')}
-                placeholder={t('jobAnnouncement.form.technicalSkills')}
-              />
+              <div className="space-y-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Input
+                    id="technicalSkillInput"
+                    value={technicalSkillInput}
+                    onChange={(event) => setTechnicalSkillInput(event.target.value)}
+                    placeholder={t('jobAnnouncement.form.technicalSkills')}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        handleSkillAdd('technical');
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleSkillAdd('technical')}
+                    disabled={!canAddTechnicalSkill}
+                    aria-label={`${t('common.add')} ${t('jobAnnouncement.form.technicalSkills')}`}
+                  >
+                    <CustomImage src={GreenPlusIcon} alt={t('common.add')} className="h-5 w-5" />
+                  </button>
+                </div>
+                <Controller
+                  name="technicalSkillIds"
+                  control={control}
+                  render={({ field }) => (
+                    <input type="hidden" {...field} value={field.value ?? ''} />
+                  )}
+                />
+                {technicalSkillsList.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {technicalSkillsList.map((skill, index) => (
+                      <span
+                        key={`${skill}-${index}`}
+                        className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-2 text-sm text-gray-800"
+                      >
+                        <span>{skill}</span>
+                        <button
+                          type="button"
+                          className="flex h-[20px] w-[20px] items-center justify-center rounded-full text-xs font-semibold text-gray-500 transition hover:bg-red-100 hover:text-red-600 focus:outline-none"
+                          onClick={() => handleSkillRemove('technical', index)}
+                          aria-label={`${t('actions.delete')} ${skill}`}
+                        >
+                          X
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </FormField>
 
             <FormField
               label={t('jobAnnouncement.form.personalSkills')}
               error={errors.personalSkillIds?.message as string | undefined}
-              htmlFor="personalSkillIds"
+              htmlFor="personalSkillInput"
               required
             >
-              <Input
-                id="personalSkillIds"
-                {...register('personalSkillIds')}
-                placeholder={t('jobAnnouncement.form.personalSkills')}
-              />
+              <div className="space-y-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Input
+                    id="personalSkillInput"
+                    value={personalSkillInput}
+                    onChange={(event) => setPersonalSkillInput(event.target.value)}
+                    placeholder={t('jobAnnouncement.form.personalSkills')}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        handleSkillAdd('personal');
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleSkillAdd('personal')}
+                    disabled={!canAddPersonalSkill}
+                    aria-label={`${t('common.add')} ${t('jobAnnouncement.form.personalSkills')}`}
+                  >
+                    <CustomImage src={GreenPlusIcon} alt={t('common.add')} className="h-5 w-5" />
+                  </button>
+                </div>
+                <Controller
+                  name="personalSkillIds"
+                  control={control}
+                  render={({ field }) => (
+                    <input type="hidden" {...field} value={field.value ?? ''} />
+                  )}
+                />
+                {personalSkillsList.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {personalSkillsList.map((skill, index) => (
+                      <span
+                        key={`${skill}-${index}`}
+                        className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800"
+                      >
+                        <span>{skill}</span>
+                        <button
+                          type="button"
+                          className="flex h-[20px] w-[20px] items-center justify-center rounded-full text-xs font-semibold text-gray-500 transition hover:bg-red-100 hover:text-red-600 focus:outline-none"
+                          onClick={() => handleSkillRemove('technical', index)}
+                          aria-label={`${t('actions.delete')} ${skill}`}
+                        >
+                          X
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </FormField>
           </div>
 
