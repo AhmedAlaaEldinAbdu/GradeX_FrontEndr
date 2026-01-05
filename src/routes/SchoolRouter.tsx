@@ -24,6 +24,7 @@ import JobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/job
 import AddJobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/add-job-announcements-page';
 import EditJobAnnouncementPage from '@/pages/school-dashboard/job-announcements/edit-job-announcement-page';
 import JobAnnouncementDetailsPage from '@/pages/school-dashboard/job-announcements/job-announcement-details';
+import WeeklyCalendarPage from '@/pages/school-dashboard/calendar-management/weekly-calendar-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -255,7 +256,56 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/academic-calendar"
+        path="/calendar/tasks"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">المهام</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/preparations"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">التحضيرات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/weekly"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <WeeklyCalendarPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/monthly"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">التقويم الشهري</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/academic"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
