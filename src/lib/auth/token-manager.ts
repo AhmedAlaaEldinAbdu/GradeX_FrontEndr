@@ -18,6 +18,7 @@ export interface StoredUserData {
   role: string;
   avatar?: string;
   isAuthenticated: boolean;
+  schoolBranchId: string | null;
 }
 
 /**
@@ -91,12 +92,15 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       'user@gradex.com';
     const userRole = normalizeRole(rawRole);
 
+    const DummySchoolBranchId = '471D89C1-61A8-4B13-D682-08DE1657ABAD'; // remove later
+    
     const userData: StoredUserData = {
       id: userId,
       name: userName,
       email: userEmail,
       role: userRole,
       isAuthenticated: true,
+      schoolBranchId: payload.SchoolBranchId || DummySchoolBranchId,
     };
 
     logger.success('Decoded user data from JWT', userData);
