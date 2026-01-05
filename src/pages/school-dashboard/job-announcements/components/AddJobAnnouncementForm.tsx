@@ -639,7 +639,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const specializationList = selectedSpecializationId ? [selectedSpecializationId] : [];
     const stageList = selectedStageId ? [selectedStageId] : [];
     const primarySubjectId = selectedSpecializationId;
-    const qualificationTypeNumber = Number(values.qualificationType) || 2;
+    const qualificationTypeNumber = Number(
+      values.qualificationType === JobCategory.TEACHER ? 2 : 1
+    );
     const nationalityValue = values.nationalityMode === NationalityMode.ALL ? 1 : 2;
     const technicalSkills = extractListFromInput(values.technicalSkillIds);
     const personalSkills = extractListFromInput(values.personalSkillIds);
@@ -1458,7 +1460,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                         <button
                           type="button"
                           className="flex h-[20px] w-[20px] items-center justify-center rounded-full text-xs font-semibold text-gray-500 transition hover:bg-red-100 hover:text-red-600 focus:outline-none"
-                          onClick={() => handleSkillRemove('technical', index)}
+                          onClick={() => handleSkillRemove('personal', index)}
                           aria-label={`${t('actions.delete')} ${skill}`}
                         >
                           X
