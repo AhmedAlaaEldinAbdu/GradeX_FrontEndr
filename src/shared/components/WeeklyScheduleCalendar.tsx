@@ -28,9 +28,30 @@ export interface ScheduleEvent {
   hasArrow?: boolean;
 }
 
+// Period header configuration
+export interface PeriodHeader {
+  label: string;
+  time: string;
+}
+
+// Special column configuration (e.g., فطار, الحديقة)
+export interface SpecialColumn {
+  columnIndex: number; // Which column (0-8)
+  label: string; // Display label (e.g., "الفطار", "الحديقة")
+  type: 'breakfast' | 'garden' | 'custom'; // Type for styling
+  bgColor?: string; // Custom background color class (e.g., "bg-amber-100")
+  textColor?: string; // Custom text color class (e.g., "text-amber-700")
+  headerBgColor?: string; // Header background color class
+  headerBorderColor?: string; // Header border color class
+  startDayIndex?: number; // First day to show colored column (default 1 = الأحد)
+  endDayIndex?: number; // Last day to show colored column (default 5 = الخميس)
+}
+
 interface WeeklyScheduleCalendarProps {
   lessons?: ScheduleLesson[];
   events?: ScheduleEvent[];
+  periodHeaders?: PeriodHeader[]; // Customizable period headers
+  specialColumns?: SpecialColumn[]; // Dynamic special columns (breakfast, garden, etc.)
   onLessonClick?: (lesson: ScheduleLesson) => void;
   onDotsClick?: (lesson: ScheduleLesson, e: React.MouseEvent) => void;
   onDayMenuClick?: (dayIndex: number, e: React.MouseEvent) => void;
@@ -40,8 +61,8 @@ interface WeeklyScheduleCalendarProps {
 // Arabic day names for rows (السبت to الجمعة, 7 days)
 const ARABIC_DAY_NAMES = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
 
-// Period headers matching the design (from right to left)
-const PERIOD_HEADERS = [
+// Default period headers matching the design (from right to left)
+const DEFAULT_PERIOD_HEADERS: PeriodHeader[] = [
   { label: '1', time: '8:30ص - 9:15ص' },
   { label: '2', time: '9:15ص - 10ص' },
   { label: '3', time: '10ص - 10:45ص' },
@@ -53,13 +74,37 @@ const PERIOD_HEADERS = [
   { label: '8', time: '2:30م - 3:15م' },
 ];
 
-// Special column indices for colored columns
-const BREAKFAST_COLUMN_INDEX = 3; // فطار column
-const GARDEN_COLUMN_INDEX = 5; // الحديقة column
+// Default special columns (can be overridden via props)
+const DEFAULT_SPECIAL_COLUMNS: SpecialColumn[] = [
+  {
+    columnIndex: 3,
+    label: 'الفطار',
+    type: 'breakfast',
+    bgColor: 'bg-amber-100',
+    textColor: 'text-amber-700',
+    headerBgColor: 'bg-amber-50',
+    headerBorderColor: 'border-amber-200',
+    startDayIndex: 1,
+    endDayIndex: 5,
+  },
+  {
+    columnIndex: 5,
+    label: 'الحديقة',
+    type: 'garden',
+    bgColor: 'bg-emerald-100',
+    textColor: 'text-emerald-700',
+    headerBgColor: 'bg-emerald-50',
+    headerBorderColor: 'border-emerald-200',
+    startDayIndex: 1,
+    endDayIndex: 5,
+  },
+];
 
 export default function WeeklyScheduleCalendar({
   lessons = [],
   events = [],
+  periodHeaders = DEFAULT_PERIOD_HEADERS,
+  specialColumns = DEFAULT_SPECIAL_COLUMNS,
   onLessonClick,
   onDotsClick,
   className = '',
@@ -289,20 +334,15 @@ export default function WeeklyScheduleCalendar({
             {/* Row label header - empty space */}
             <div className="flex items-center justify-center" />
             {/* Period headers - 9 columns for time slots */}
-            {PERIOD_HEADERS.map((period, idx) => {
-              // Special styling for فطار and الحديقة columns
-              const isBreakfast = idx === BREAKFAST_COLUMN_INDEX;
-              const isGarden = idx === GARDEN_COLUMN_INDEX;
-              const bgClass = isBreakfast
-                ? 'bg-amber-50 border-amber-200'
-                : isGarden
-                  ? 'bg-emerald-50 border-emerald-200'
-                  : 'bg-white border-gray-200';
-              const labelClass = isBreakfast
-                ? 'text-amber-700 font-bold'
-                : isGarden
-                  ? 'text-emerald-700 font-bold'
-                  : 'text-gray-800';
+            {periodHeaders.map((period, idx) => {
+              // Check if this column is a special column
+              const specialCol = specialColumns.find((sc) => sc.columnIndex === idx);
+              const bgClass = specialCol
+                ? `${specialCol.headerBgColor || 'bg-gray-50'} ${specialCol.headerBorderColor || 'border-gray-200'}`
+                : 'bg-white border-gray-200';
+              const labelClass = specialCol
+                ? `${specialCol.textColor || 'text-gray-800'} font-bold`
+                : 'text-gray-800';
 
               return (
                 <div
@@ -320,8 +360,11 @@ export default function WeeklyScheduleCalendar({
           {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
             // dayIndex 1 = الأحد is the current/selected day
             const isCurrentDay = dayIndex === 1;
-            // Colored columns only appear for days 1-5 (الأحد to الخميس)
-            const showColoredColumns = dayIndex >= 1 && dayIndex <= 5;
+
+            // Check if this row has a full-row event (spans all columns)
+            const fullRowEvent = events.find(
+              (e) => e.dayIndex === dayIndex && e.startPeriod === 0 && e.endPeriod === 8
+            );
 
             return (
               <div
@@ -331,7 +374,7 @@ export default function WeeklyScheduleCalendar({
                 {/* Day label on the right */}
                 {isCurrentDay ? (
                   // Current day - green badge with menu icon and border
-                  <div className="flex flex-col items-center justify-center rounded-xl border border-emerald-500 bg-white py-4">
+                  <div className="z-10 flex flex-col items-center justify-center rounded-xl border border-emerald-500 bg-white py-4">
                     <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-white">
                       <MenuIcon />
                       <span className="text-xs font-semibold">{getRowLabel(dayIndex)}</span>
@@ -339,7 +382,7 @@ export default function WeeklyScheduleCalendar({
                   </div>
                 ) : (
                   // Other days - just plain text
-                  <div className="flex items-center justify-center py-3">
+                  <div className="z-10 flex items-center justify-center py-3">
                     <span className="text-sm text-gray-500">{getRowLabel(dayIndex)}</span>
                   </div>
                 )}
@@ -350,19 +393,30 @@ export default function WeeklyScheduleCalendar({
                   const isEventStart = isEventStartCell(dayIndex, periodIndex);
                   const isLessonSpan = isLessonSpanCell(dayIndex, periodIndex);
 
-                  // Determine if this is a special colored column (only for days 1-5)
-                  const isBreakfastCol =
-                    periodIndex === BREAKFAST_COLUMN_INDEX && showColoredColumns;
-                  const isGardenCol = periodIndex === GARDEN_COLUMN_INDEX && showColoredColumns;
+                  // Find if this column is a special column and if it should be shown for this day
+                  const specialCol = specialColumns.find((sc) => {
+                    const startDay = sc.startDayIndex ?? 1;
+                    const endDay = sc.endDayIndex ?? 5;
+                    return (
+                      sc.columnIndex === periodIndex && dayIndex >= startDay && dayIndex <= endDay
+                    );
+                  });
 
-                  // Check if this is the middle row for showing label (row 3 = الثلاثاء)
-                  const isMiddleRow = dayIndex === 3;
+                  // Check if there's a full-row event (these cells should be transparent)
+                  const hasFullRowEvent = fullRowEvent !== undefined;
 
-                  // For breakfast and garden columns, use seamless styling
+                  // For special columns (breakfast, garden, etc.), use seamless styling
                   // Use negative margin to connect cells vertically
-                  if (isBreakfastCol) {
-                    const isFirstRow = dayIndex === 1;
-                    const isLastRow = dayIndex === 5;
+                  // These appear ON TOP of any full-row event
+                  if (specialCol) {
+                    const startDay = specialCol.startDayIndex ?? 1;
+                    const endDay = specialCol.endDayIndex ?? 5;
+                    const isFirstRow = dayIndex === startDay;
+                    const isLastRow = dayIndex === endDay;
+                    // Calculate middle row for showing label
+                    const middleRow = Math.floor((startDay + endDay) / 2);
+                    const isMiddleRow = dayIndex === middleRow;
+
                     // Add padding to compensate for gap, and extend height
                     const marginClass = isFirstRow ? '' : '-mt-2';
                     const paddingClass = isFirstRow ? '' : 'pt-2';
@@ -375,37 +429,62 @@ export default function WeeklyScheduleCalendar({
                     return (
                       <div
                         key={periodIndex}
-                        className={`flex min-h-[160px] items-center justify-center bg-amber-100/80 ${roundedClass} ${marginClass} ${paddingClass}`}
+                        className={`z-10 flex min-h-[160px] items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
                         style={{ marginBottom: isLastRow ? 0 : undefined }}
                       >
                         {isMiddleRow && (
-                          <span className="text-lg font-bold text-amber-700">الفطار</span>
+                          <span
+                            className={`text-lg font-bold ${specialCol.textColor || 'text-gray-700'}`}
+                          >
+                            {specialCol.label}
+                          </span>
                         )}
                       </div>
                     );
                   }
 
-                  if (isGardenCol) {
-                    const isFirstRow = dayIndex === 1;
-                    const isLastRow = dayIndex === 5;
-                    const marginClass = isFirstRow ? '' : '-mt-2';
-                    const paddingClass = isFirstRow ? '' : 'pt-2';
-                    const roundedClass = isFirstRow
-                      ? 'rounded-t-xl'
-                      : isLastRow
-                        ? 'rounded-b-xl'
-                        : '';
+                  // For rows with full-row events, show cells with event background color
+                  // Use negative margin to connect cells horizontally (remove gap)
+                  if (hasFullRowEvent) {
+                    const marginClass = periodIndex === 0 ? '' : '-mr-2 pr-2';
 
+                    // First cell (periodIndex 0) shows the event title and arrow
+                    if (periodIndex === 0) {
+                      return (
+                        <div
+                          key={periodIndex}
+                          className={`z-10 flex min-h-[160px] items-center gap-2 rounded-r-xl pr-4 ${getEventBgClasses(fullRowEvent.color)}`}
+                        >
+                          {fullRowEvent.hasArrow && (
+                            <svg
+                              className="h-5 w-5"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <path d="M19 12H5M12 19l-7-7 7-7" />
+                            </svg>
+                          )}
+                          <span className="text-lg font-bold">{fullRowEvent.title}</span>
+                        </div>
+                      );
+                    }
+                    // Last cell (periodIndex 8) has rounded left corner
+                    if (periodIndex === 8) {
+                      return (
+                        <div
+                          key={periodIndex}
+                          className={`z-10 min-h-[160px] rounded-l-xl ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
+                        />
+                      );
+                    }
+                    // Middle cells - just background color with negative margin
                     return (
                       <div
                         key={periodIndex}
-                        className={`flex min-h-[160px] items-center justify-center bg-emerald-100/80 ${roundedClass} ${marginClass} ${paddingClass}`}
-                        style={{ marginBottom: isLastRow ? 0 : undefined }}
-                      >
-                        {isMiddleRow && (
-                          <span className="text-lg font-bold text-emerald-700">الحديقة</span>
-                        )}
-                      </div>
+                        className={`z-10 min-h-[160px] ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
+                      />
                     );
                   }
 
