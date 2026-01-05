@@ -467,13 +467,6 @@ export default function Interviews() {
             </svg>
           </button>
         </div>
-        {showEmptyState && (
-          <EmptyState
-            imgSrc={StyledCalendarIcon}
-            title={t('interviews.noInterviewsMessage')}
-            blend={true}
-          />
-        )}
         <SharedCalendar
           events={calendarInterviews}
           onSelectSlot={handleSelectSlot}
