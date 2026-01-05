@@ -1,11 +1,20 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import WeeklyScheduleCalendar, {
   type ScheduleLesson,
   type ScheduleEvent,
   type PeriodHeader,
   type SpecialColumn,
+  type LessonContextAction,
 } from '@/shared/components/WeeklyScheduleCalendar';
 import CustomSelect from '@/shared/components/CustomSelect';
+import LessonDetailsPopup from './popups/LessonDetailsPopup';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import { useToast } from '@/shared/context/ToastContext';
+import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
+import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
+import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 
 // Demo lessons matching the design exactly
 // dayIndex = row (0=السبت, 1=الأحد, 2=الإثنين, 3=الثلاثاء, 4=الأربعاء, 5=الخميس, 6=الجمعة)
@@ -294,12 +303,95 @@ const DEMO_SPECIAL_COLUMNS: SpecialColumn[] = [
 ];
 
 export default function WeeklyCalendarPage() {
+  const { t } = useTranslation();
+  const { showToast } = useToast();
+
+  // Filter states
   const [educationSystem, setEducationSystem] = useState('');
   const [systemType, setSystemType] = useState('global');
   const [stage, setStage] = useState('');
   const [stageValue, setStageValue] = useState('1');
   const [grade, setGrade] = useState('');
   const [division, setDivision] = useState('1');
+
+  // Popup states
+  const [selectedLesson, setSelectedLesson] = useState<ScheduleLesson | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [lessonPendingDelete, setLessonPendingDelete] = useState<ScheduleLesson | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Handlers for lesson actions
+  const handleViewDetails = (lesson: ScheduleLesson) => {
+    setSelectedLesson(lesson);
+    setDetailsOpen(true);
+  };
+
+  const handleEditLesson = (lesson: ScheduleLesson) => {
+    // TODO: Implement edit lesson popup/modal
+    console.log('Edit lesson:', lesson);
+  };
+
+  const handleRequestDelete = (lesson: ScheduleLesson) => {
+    setLessonPendingDelete(lesson);
+    setShowDeletePopup(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeletePopup(false);
+    setLessonPendingDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!lessonPendingDelete) return;
+
+    try {
+      setIsDeleting(true);
+      // TODO: Implement actual delete API call
+      // await dispatch(deleteLesson(lessonPendingDelete.id)).unwrap();
+
+      showToast({
+        message: t('weeklyCalendar.lessonDeletedSuccessfully'),
+        type: 'success',
+      });
+      setShowDeletePopup(false);
+      setLessonPendingDelete(null);
+    } catch (error) {
+      const message =
+        typeof error === 'string'
+          ? error
+          : (error as { message?: string })?.message || t('common.error');
+      showToast({
+        message,
+        type: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Context menu actions for lessons
+  const lessonContextActions: LessonContextAction[] = [
+    {
+      label: t('weeklyCalendar.viewDetails'),
+      icon: EyeFillIcon,
+      onClick: handleViewDetails,
+      color: 'primary',
+    },
+    {
+      label: t('weeklyCalendar.editLesson'),
+      icon: EditFillIcon,
+      onClick: handleEditLesson,
+      color: 'success',
+    },
+    {
+      label: t('weeklyCalendar.deleteLesson'),
+      icon: TrashFillIcon,
+      onClick: handleRequestDelete,
+      color: 'danger',
+    },
+  ];
 
   const educationSystemOptions = [
     { value: 'global', label: 'عالمي' },
@@ -334,90 +426,113 @@ export default function WeeklyCalendarPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50/80 p-4 md:p-6" dir="rtl">
-      {/* Header Row: Title on right, Button on left */}
-      <div className="mb-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <h1 className="text-xl font-bold text-gray-800 md:text-2xl">التقويم الاسبوعي</h1>
-        <button className="flex items-center gap-2 rounded-full border-2 border-emerald-600 bg-white px-5 py-2 text-sm font-semibold text-emerald-600 transition-all hover:bg-emerald-50 active:scale-95">
-          إسترجاع الحصص بالتساوي
-        </button>
+    <>
+      <div className="min-h-screen bg-gray-50/80 p-4 md:p-6" dir="rtl">
+        {/* Header Row: Title on right, Button on left */}
+        <div className="mb-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <h1 className="text-xl font-bold text-gray-800 md:text-2xl">
+            {t('weeklyCalendar.title')}
+          </h1>
+          <button className="flex items-center gap-2 rounded-full border-2 border-emerald-600 bg-white px-5 py-2 text-sm font-semibold text-emerald-600 transition-all hover:bg-emerald-50 active:scale-95">
+            {t('weeklyCalendar.recoverLessons')}
+          </button>
+        </div>
+
+        {/* Filters Row - matching design order from right to left */}
+        <div className="mb-4 flex flex-wrap items-center justify-start gap-3">
+          {/* اختر النظام التعليم */}
+          <div className="min-w-[160px]">
+            <CustomSelect
+              value={educationSystem}
+              onChange={(val) => setEducationSystem(val as string)}
+              options={educationSystemOptions}
+              placeholder="اختر النظام التعليم"
+            />
+          </div>
+
+          {/* عالمي */}
+          <div className="min-w-[100px]">
+            <CustomSelect
+              value={systemType}
+              onChange={(val) => setSystemType(val as string)}
+              options={systemTypeOptions}
+              placeholder="عالمي"
+            />
+          </div>
+
+          {/* اختر المرحلة */}
+          <div className="min-w-[130px]">
+            <CustomSelect
+              value={stage}
+              onChange={(val) => setStage(val as string)}
+              options={stageOptions}
+              placeholder="اختر المرحلة"
+            />
+          </div>
+
+          {/* الأول الأعدادي */}
+          <div className="min-w-[130px]">
+            <CustomSelect
+              value={stageValue}
+              onChange={(val) => setStageValue(val as string)}
+              options={stageValueOptions}
+              placeholder="الأول الأعدادي"
+            />
+          </div>
+
+          {/* الصف الدراسي */}
+          <div className="min-w-[120px]">
+            <CustomSelect
+              value={grade}
+              onChange={(val) => setGrade(val as string)}
+              options={gradeOptions}
+              placeholder="الصف الدراسي"
+            />
+          </div>
+
+          {/* 1/1 ع */}
+          <div className="min-w-[90px]">
+            <CustomSelect
+              value={division}
+              onChange={(val) => setDivision(val as string)}
+              options={divisionOptions}
+              placeholder="1/1 ع"
+            />
+          </div>
+        </div>
+
+        {/* Calendar Component */}
+        <div className="rounded-xl bg-white shadow-sm">
+          <WeeklyScheduleCalendar
+            lessons={DEMO_LESSONS}
+            events={DEMO_EVENTS}
+            periodHeaders={DEMO_PERIOD_HEADERS}
+            specialColumns={DEMO_SPECIAL_COLUMNS}
+            lessonContextActions={lessonContextActions}
+            onLessonClick={handleViewDetails}
+            onWeekChange={(weekStart) => console.log('Week changed to:', weekStart)}
+          />
+        </div>
       </div>
 
-      {/* Filters Row - matching design order from right to left */}
-      <div className="mb-4 flex flex-wrap items-center justify-start gap-3">
-        {/* اختر النظام التعليم */}
-        <div className="min-w-[160px]">
-          <CustomSelect
-            value={educationSystem}
-            onChange={(val) => setEducationSystem(val as string)}
-            options={educationSystemOptions}
-            placeholder="اختر النظام التعليم"
-          />
-        </div>
+      {/* Popups */}
+      <LessonDetailsPopup
+        isOpen={detailsOpen}
+        onClose={() => {
+          setDetailsOpen(false);
+          setSelectedLesson(null);
+        }}
+        lesson={selectedLesson}
+      />
 
-        {/* عالمي */}
-        <div className="min-w-[100px]">
-          <CustomSelect
-            value={systemType}
-            onChange={(val) => setSystemType(val as string)}
-            options={systemTypeOptions}
-            placeholder="عالمي"
-          />
-        </div>
-
-        {/* اختر المرحلة */}
-        <div className="min-w-[130px]">
-          <CustomSelect
-            value={stage}
-            onChange={(val) => setStage(val as string)}
-            options={stageOptions}
-            placeholder="اختر المرحلة"
-          />
-        </div>
-
-        {/* الأول الأعدادي */}
-        <div className="min-w-[130px]">
-          <CustomSelect
-            value={stageValue}
-            onChange={(val) => setStageValue(val as string)}
-            options={stageValueOptions}
-            placeholder="الأول الأعدادي"
-          />
-        </div>
-
-        {/* الصف الدراسي */}
-        <div className="min-w-[120px]">
-          <CustomSelect
-            value={grade}
-            onChange={(val) => setGrade(val as string)}
-            options={gradeOptions}
-            placeholder="الصف الدراسي"
-          />
-        </div>
-
-        {/* 1/1 ع */}
-        <div className="min-w-[90px]">
-          <CustomSelect
-            value={division}
-            onChange={(val) => setDivision(val as string)}
-            options={divisionOptions}
-            placeholder="1/1 ع"
-          />
-        </div>
-      </div>
-
-      {/* Calendar Component */}
-      <div className="rounded-xl bg-white shadow-sm">
-        <WeeklyScheduleCalendar
-          lessons={DEMO_LESSONS}
-          events={DEMO_EVENTS}
-          periodHeaders={DEMO_PERIOD_HEADERS}
-          specialColumns={DEMO_SPECIAL_COLUMNS}
-          onLessonClick={(lesson) => console.log('Lesson clicked:', lesson)}
-          onDotsClick={(lesson) => console.log('Dots clicked:', lesson)}
-          onDayMenuClick={(dayIndex) => console.log('Day menu clicked:', dayIndex)}
-        />
-      </div>
-    </div>
+      <DeletePopup
+        open={showDeletePopup}
+        message="weeklyCalendar.confirmDeleteLesson"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
+      />
+    </>
   );
 }
