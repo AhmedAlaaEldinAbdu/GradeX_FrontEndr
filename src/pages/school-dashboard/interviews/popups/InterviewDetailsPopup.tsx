@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ar } from 'date-fns/locale';
+import { ar, fi } from 'date-fns/locale';
 import Modal from '@/shared/popups/Modal';
 import CustomImage from '@/shared/components/CustomImage';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
@@ -245,7 +245,16 @@ export default function InterviewDetailsPopup({
                         {t('interviews.announcementName')}
                       </p>
                       <p className="text-gray-700">{jobTitle}</p>
-                      <IconButton variant="default">
+                      <IconButton
+                        variant="default"
+                        onClick={() => {
+                          navigate(`/job-announcements`, {
+                            state: { comeFrom: 'interviews', filter: { name: jobTitle } },
+                          });
+                        }}
+                        ariaLabel="View Job Advertisement"
+                        title={t('interviews.goToAnnouncement')}
+                      >
                         <CustomImage src={ArrowIcon} alt="arrow" className="h-5 w-5" />
                       </IconButton>
                     </div>

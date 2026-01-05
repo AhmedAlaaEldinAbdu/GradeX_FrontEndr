@@ -1118,6 +1118,7 @@
     "interviewUpdatedSuccessfully": "تم تحديث المقابلة بنجاح",
     "interviewDeletedSuccessfully": "تم حذف المقابلة بنجاح",
     "confirmDeleteInterview": "هل أنت متأكد من حذف هذه المقابلة؟",
+    "goToAnnouncement": "اذهب إلى إعلان الوظيفة",
     "validation": {
       "schoolBranchesIdRequired": "فرع المدرسة مطلوب",
       "jobAdvertisementIdRequired": "إعلان الوظيفة مطلوب",

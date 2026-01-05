@@ -1119,6 +1119,7 @@
     "interviewUpdatedSuccessfully": "Interview updated successfully",
     "interviewDeletedSuccessfully": "Interview deleted successfully",
     "confirmDeleteInterview": "Are you sure you want to delete this interview?",
+    "goToAnnouncement": "Go to Announcement",
     "validation": {
       "schoolBranchesIdRequired": "School branch is required",
       "jobAdvertisementIdRequired": "Job advertisement is required",
