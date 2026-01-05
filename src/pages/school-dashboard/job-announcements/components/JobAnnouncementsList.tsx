@@ -314,6 +314,20 @@ export default function JobAnnouncementsList() {
       className: 'text-center',
     },
     {
+      header:
+        currentLang === 'ar'
+          ? 'jobAnnouncement.form.jobNameAr'
+          : 'jobAnnouncement.form.jobNameEn',
+      accessor: (row) => (
+        <span className="text-sm font-medium text-gray-900">
+          {currentLang === 'ar'
+            ? normalizeText(row.name) ?? normalizeText(row.nameEn) ?? '--'
+            : normalizeText(row.nameEn) ?? normalizeText(row.name) ?? '--'}
+        </span>
+      ),
+      headerClassName: 'min-w-[220px]',
+    },
+    {
       header: 'jobAnnouncement.jobGrade',
       accessor: (row) => (
         <span className="text-sm font-medium text-gray-900">
