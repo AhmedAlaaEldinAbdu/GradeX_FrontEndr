@@ -2,6 +2,8 @@ import { useState } from 'react';
 import WeeklyScheduleCalendar, {
   type ScheduleLesson,
   type ScheduleEvent,
+  type PeriodHeader,
+  type SpecialColumn,
 } from '@/shared/components/WeeklyScheduleCalendar';
 import CustomSelect from '@/shared/components/CustomSelect';
 
@@ -60,7 +62,7 @@ const DEMO_LESSONS: ScheduleLesson[] = [
   // Column 5 = الحديقة (skip)
   {
     id: 'sun-5',
-    subject: 'مات',
+    subject: 'ماث',
     teacherName: 'أ/ أحمد حسن رجب',
     startTime: '1:00',
     endTime: '1:45',
@@ -95,7 +97,7 @@ const DEMO_LESSONS: ScheduleLesson[] = [
   // ============ Row 2 (الإثنين - Monday 4/8) ============
   {
     id: 'mon-1',
-    subject: 'مات',
+    subject: 'ماث',
     teacherName: 'أ/ أحمد حسن رجب',
     startTime: '8:30',
     endTime: '9:15',
@@ -106,7 +108,7 @@ const DEMO_LESSONS: ScheduleLesson[] = [
   },
   {
     id: 'mon-2',
-    subject: 'مات',
+    subject: 'ماث',
     teacherName: 'أ/ أحمد حسن رجب',
     startTime: '9:15',
     endTime: '10:00',
@@ -117,7 +119,7 @@ const DEMO_LESSONS: ScheduleLesson[] = [
   },
   {
     id: 'mon-3',
-    subject: 'مات',
+    subject: 'ماث',
     teacherName: 'أ/ أحمد حسن رجب',
     startTime: '10:00',
     endTime: '10:45',
@@ -129,7 +131,7 @@ const DEMO_LESSONS: ScheduleLesson[] = [
   // Column 3 = فطار (skip)
   {
     id: 'mon-4',
-    subject: 'مات',
+    subject: 'ماث',
     teacherName: 'أ/ أحمد حسن رجب',
     startTime: '11:30',
     endTime: '12:15',
@@ -141,7 +143,7 @@ const DEMO_LESSONS: ScheduleLesson[] = [
   // Column 5 = الحديقة (skip)
   {
     id: 'mon-5',
-    subject: 'مات',
+    subject: 'ماث',
     teacherName: 'أ/ أحمد حسن رجب',
     startTime: '1:00',
     endTime: '1:45',
@@ -173,40 +175,7 @@ const DEMO_LESSONS: ScheduleLesson[] = [
     color: 'science',
   },
 
-  // ============ Row 3 (الثلاثاء - Tuesday 5/8) ============
-  {
-    id: 'tue-1',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '8:30',
-    endTime: '9:15',
-    duration: 45,
-    dayIndex: 3,
-    periodIndex: 0,
-    color: 'science',
-  },
-  {
-    id: 'tue-2',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '9:15',
-    endTime: '10:00',
-    duration: 45,
-    dayIndex: 3,
-    periodIndex: 1,
-    color: 'science',
-  },
-  {
-    id: 'tue-3',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '10:00',
-    endTime: '10:45',
-    duration: 45,
-    dayIndex: 3,
-    periodIndex: 2,
-    color: 'science',
-  },
+  // ============ Row 3 (الثلاثاء - Tuesday 5/8) - "فان داي" event takes columns 0-2 ============
 
   // ============ Row 4 (الأربعاء - Wednesday 6/8) ============
   {
@@ -261,13 +230,13 @@ const DEMO_LESSONS: ScheduleLesson[] = [
 
 // Demo events matching the design (colored blocks for special activities)
 const DEMO_EVENTS: ScheduleEvent[] = [
-  // فان داي (green) with arrow - Row 3 (الثلاثاء), column 0
+  // فان داي (green) with arrow - Row 3 (الثلاثاء), spans ALL columns 0-8 (full day)
   {
     id: 'e-funday',
     title: 'فان داي',
     dayIndex: 3,
     startPeriod: 0,
-    endPeriod: 0,
+    endPeriod: 8,
     color: 'green',
     hasArrow: true,
   },
@@ -280,6 +249,47 @@ const DEMO_EVENTS: ScheduleEvent[] = [
     endPeriod: 6,
     color: 'teal',
     hasArrow: true,
+  },
+];
+
+// Dynamic period headers - these can be customized per school
+// This configuration would typically come from an API or school settings
+const DEMO_PERIOD_HEADERS: PeriodHeader[] = [
+  { label: '1', time: '8:30ص - 9:15ص' },
+  { label: '2', time: '9:15ص - 10ص' },
+  { label: '3', time: '10ص - 10:45ص' },
+  { label: 'فطار', time: '10:45ص - 11:30ص' },
+  { label: '5', time: '11:30ص - 12:15م' },
+  { label: 'الحديقة', time: '12:15م - 1م' },
+  { label: '6', time: '1م - 1:45م' },
+  { label: '7', time: '1:45م - 2:30م' },
+  { label: '8', time: '2:30م - 3:15م' },
+];
+
+// Dynamic special columns - these can be customized per school
+// Each school can have different break times, activities, etc.
+const DEMO_SPECIAL_COLUMNS: SpecialColumn[] = [
+  {
+    columnIndex: 3, // Which column (0-8)
+    label: 'الفطار', // Display label
+    type: 'breakfast',
+    bgColor: 'bg-amber-100', // Background color for cells
+    textColor: 'text-amber-700', // Text color for label
+    headerBgColor: 'bg-amber-50', // Header background
+    headerBorderColor: 'border-amber-200', // Header border
+    startDayIndex: 1, // Start from الأحد (Sunday)
+    endDayIndex: 5, // End at الخميس (Thursday)
+  },
+  {
+    columnIndex: 5, // Which column (0-8)
+    label: 'الحديقة', // Display label
+    type: 'garden',
+    bgColor: 'bg-amber-100',
+    textColor: 'text-amber-700',
+    headerBgColor: 'bg-amber-50',
+    headerBorderColor: 'border-amber-200',
+    startDayIndex: 1,
+    endDayIndex: 5,
   },
 ];
 
@@ -401,6 +411,8 @@ export default function WeeklyCalendarPage() {
         <WeeklyScheduleCalendar
           lessons={DEMO_LESSONS}
           events={DEMO_EVENTS}
+          periodHeaders={DEMO_PERIOD_HEADERS}
+          specialColumns={DEMO_SPECIAL_COLUMNS}
           onLessonClick={(lesson) => console.log('Lesson clicked:', lesson)}
           onDotsClick={(lesson) => console.log('Dots clicked:', lesson)}
           onDayMenuClick={(dayIndex) => console.log('Day menu clicked:', dayIndex)}
