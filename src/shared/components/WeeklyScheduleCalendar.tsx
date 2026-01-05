@@ -47,14 +47,24 @@ export interface SpecialColumn {
   endDayIndex?: number; // Last day to show colored column (default 5 = الخميس)
 }
 
+// Context menu action for lesson actions
+export interface LessonContextAction {
+  label: string;
+  icon?: string;
+  onClick: (lesson: ScheduleLesson) => void;
+  color?: 'primary' | 'success' | 'danger';
+}
+
 interface WeeklyScheduleCalendarProps {
   lessons?: ScheduleLesson[];
   events?: ScheduleEvent[];
   periodHeaders?: PeriodHeader[]; // Customizable period headers
   specialColumns?: SpecialColumn[]; // Dynamic special columns (breakfast, garden, etc.)
+  lessonContextActions?: LessonContextAction[]; // Context menu actions for lessons
   onLessonClick?: (lesson: ScheduleLesson) => void;
   onDotsClick?: (lesson: ScheduleLesson, e: React.MouseEvent) => void;
   onDayMenuClick?: (dayIndex: number, e: React.MouseEvent) => void;
+  onWeekChange?: (weekStart: Date) => void; // Callback when week changes
   className?: string;
 }
 
@@ -105,12 +115,20 @@ export default function WeeklyScheduleCalendar({
   events = [],
   periodHeaders = DEFAULT_PERIOD_HEADERS,
   specialColumns = DEFAULT_SPECIAL_COLUMNS,
+  lessonContextActions = [],
   onLessonClick,
   onDotsClick,
+  onWeekChange,
   className = '',
 }: WeeklyScheduleCalendarProps) {
-  useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   const [currentWeek, setCurrentWeek] = useState(new Date(2025, 7, 2)); // August 2, 2025
+  const [contextMenu, setContextMenu] = useState<{
+    isOpen: boolean;
+    lesson: ScheduleLesson | null;
+    position: { x: number; y: number };
+  }>({ isOpen: false, lesson: null, position: { x: 0, y: 0 } });
 
   const weekStart = useMemo(() => {
     return startOfWeek(currentWeek, { weekStartsOn: 6 }); // Saturday start
@@ -121,8 +139,45 @@ export default function WeeklyScheduleCalendar({
     return `${format(weekStart, 'd')} أغسطس – ${format(weekEnd, 'd')} أغسطس ${format(weekEnd, 'yyyy')}`;
   }, [weekStart]);
 
-  const handlePrevWeek = () => setCurrentWeek((prev) => subWeeks(prev, 1));
-  const handleNextWeek = () => setCurrentWeek((prev) => addWeeks(prev, 1));
+  const handlePrevWeek = () => {
+    setCurrentWeek((prev) => {
+      const newWeek = subWeeks(prev, 1);
+      onWeekChange?.(startOfWeek(newWeek, { weekStartsOn: 6 }));
+      return newWeek;
+    });
+  };
+
+  const handleNextWeek = () => {
+    setCurrentWeek((prev) => {
+      const newWeek = addWeeks(prev, 1);
+      onWeekChange?.(startOfWeek(newWeek, { weekStartsOn: 6 }));
+      return newWeek;
+    });
+  };
+
+  // Handle context menu open
+  const handleContextMenuOpen = (lesson: ScheduleLesson, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setContextMenu({
+      isOpen: true,
+      lesson,
+      position: { x: rect.left, y: rect.bottom + 4 },
+    });
+  };
+
+  // Handle context menu close
+  const handleContextMenuClose = () => {
+    setContextMenu({ isOpen: false, lesson: null, position: { x: 0, y: 0 } });
+  };
+
+  // Handle context action click
+  const handleContextActionClick = (action: LessonContextAction) => {
+    if (contextMenu.lesson) {
+      action.onClick(contextMenu.lesson);
+    }
+    handleContextMenuClose();
+  };
 
   // Get lessons for a specific cell (dayIndex = row, periodIndex = column)
   const getLessonsForCell = (dayIndex: number, periodIndex: number) => {
@@ -218,7 +273,11 @@ export default function WeeklyScheduleCalendar({
           className="flex-shrink-0 text-gray-400 hover:text-gray-600"
           onClick={(e) => {
             e.stopPropagation();
-            onDotsClick?.(lesson, e);
+            if (lessonContextActions.length > 0) {
+              handleContextMenuOpen(lesson, e);
+            } else {
+              onDotsClick?.(lesson, e);
+            }
           }}
         >
           <DotsIcon />
@@ -243,13 +302,54 @@ export default function WeeklyScheduleCalendar({
             <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
           </svg>
         </div>
-        <span className="text-[11px] text-gray-400">مدة المحاضرة</span>
+        <span className="text-[11px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
         <span className="rounded border border-gray-200 px-2 py-0.5 text-[11px] text-gray-600">
-          {lesson.duration} دقيقة
+          {lesson.duration} {t('weeklyCalendar.minutes')}
         </span>
       </div>
     </div>
   );
+
+  // Context Menu Component
+  const ContextMenu = () => {
+    if (!contextMenu.isOpen || !contextMenu.lesson) return null;
+
+    const getActionColorClass = (color?: string) => {
+      switch (color) {
+        case 'primary':
+          return 'text-blue-600 hover:bg-blue-50';
+        case 'success':
+          return 'text-emerald-600 hover:bg-emerald-50';
+        case 'danger':
+          return 'text-red-600 hover:bg-red-50';
+        default:
+          return 'text-gray-700 hover:bg-gray-50';
+      }
+    };
+
+    return (
+      <>
+        {/* Backdrop to close menu */}
+        <div className="fixed inset-0 z-40" onClick={handleContextMenuClose} />
+        {/* Menu */}
+        <div
+          className="fixed z-50 min-w-[160px] rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
+          style={{ top: contextMenu.position.y, left: contextMenu.position.x }}
+        >
+          {lessonContextActions.map((action, index) => (
+            <button
+              key={index}
+              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${getActionColorClass(action.color)}`}
+              onClick={() => handleContextActionClick(action)}
+            >
+              {action.icon && <img src={action.icon} alt="" className="h-5 w-5" />}
+              <span>{action.label}</span>
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  };
 
   // Event Block for colored activity blocks (can span both horizontally and vertically)
   const EventBlock = ({
@@ -303,25 +403,32 @@ export default function WeeklyScheduleCalendar({
       {/* Date Navigation Header */}
       <div className="flex items-center justify-center gap-6 border-b border-gray-100 py-4">
         <button
-          onClick={handleNextWeek}
+          onClick={handlePrevWeek}
           className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          aria-label="Previous week"
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M15 19l-7-7 7-7"
+              d={isRTL ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7'}
             />
           </svg>
         </button>
         <span className="text-sm font-semibold text-gray-700">{dateRangeLabel}</span>
         <button
-          onClick={handlePrevWeek}
+          onClick={handleNextWeek}
           className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          aria-label="Next week"
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d={isRTL ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'}
+            />
           </svg>
         </button>
       </div>
@@ -555,6 +662,9 @@ export default function WeeklyScheduleCalendar({
           })}
         </div>
       </div>
+
+      {/* Context Menu */}
+      <ContextMenu />
     </div>
   );
 }
