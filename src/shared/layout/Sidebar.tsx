@@ -141,9 +141,15 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
     ],
   },
   {
-    key: 'academicCalendar',
+    key: 'calendarManagement',
     icon: <CustomImage src={CalendarIcon} className="h-5 w-5" alt="Calendar" />,
-    path: '/academic-calendar',
+    subItems: [
+      { key: 'tasks', path: '/calendar/tasks' },
+      { key: 'preparations', path: '/calendar/preparations' },
+      { key: 'weeklyCalendar', path: '/calendar/weekly' },
+      { key: 'monthlyCalendar', path: '/calendar/monthly' },
+      { key: 'academicCalendar', path: '/calendar/academic' },
+    ],
   },
   {
     key: 'studentManagement',
