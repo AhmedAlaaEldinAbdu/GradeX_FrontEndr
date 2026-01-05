@@ -11,6 +11,11 @@
     "teachers": "Teachers",
     "jobAnnouncements": "Job Announcements",
     "interviews": "Interviews",
+    "calendarManagement": "Calendar Management",
+    "tasks": "Tasks",
+    "preparations": "Preparations",
+    "weeklyCalendar": "Weekly Calendar",
+    "monthlyCalendar": "Monthly Calendar",
     "academicCalendar": "Academic Calendar",
     "userManagement": "User Management",
     "users": "Users",
@@ -1454,6 +1459,17 @@
       "languageLevelRequired": "Language level is required",
       "technicalSkillRequired": "Technical skills are required",
       "personalSkillRequired": "Personal skills are required"
+    }
+  },
+  "weeklyCalendar": {
+    "title": "Weekly Calendar",
+    "recoverLessons": "Recover Lessons Equally",
+    "duration": "Duration: {{minutes}} min",
+    "filters": {
+      "educationSystem": "Select Education System",
+      "stage": "Select Stage",
+      "grade": "Grade",
+      "division": "Division"
     }
   }
 }

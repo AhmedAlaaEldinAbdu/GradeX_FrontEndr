@@ -11,6 +11,11 @@
     "teachers": "المعلمين",
     "jobAnnouncements": "إعلانات توظيف",
     "interviews": "المقابلات",
+    "calendarManagement": "إدارة التقويم",
+    "tasks": "المهام",
+    "preparations": "التحضيرات",
+    "weeklyCalendar": "التقويم الاسبوعي",
+    "monthlyCalendar": "التقويم الشهري",
     "academicCalendar": "التقويم الأكاديمي",
     "userManagement": "إدارة المستخدمين",
     "users": "المستخدمين",
@@ -1452,6 +1457,17 @@
       "languageLevelRequired": "اختيار مستوى الإتقان مطلوب",
       "technicalSkillRequired": "المهارات التقنية مطلوبة",
       "personalSkillRequired": "المهارات الشخصية مطلوبة"
+    }
+  },
+  "weeklyCalendar": {
+    "title": "التقويم الاسبوعي",
+    "recoverLessons": "إسترجاع الحصص بالتساوي",
+    "duration": "مدة المحاضرة: {{minutes}} دقيقة",
+    "filters": {
+      "educationSystem": "اختر النظام التعليم",
+      "stage": "اختر المرحلة",
+      "grade": "الصف الدراسي",
+      "division": "الشعبة"
     }
   }
 }
