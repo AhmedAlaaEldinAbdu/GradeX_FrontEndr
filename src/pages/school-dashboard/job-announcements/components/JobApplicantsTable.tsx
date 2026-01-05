@@ -249,7 +249,7 @@ const JobApplicantsTable = ({
         endTime: normalizedEndTime ?? data.endTime,
       };
       debugger;
-      const response = await dispatch(createInterview(payload)).unwrap();
+      const response = await dispatch(createInterview(payload as any)).unwrap();
       if (!response?.isSuccess) {
         showToast({ message: 'common.errorOccurred', type: 'error' });
         return;
@@ -574,7 +574,7 @@ const JobApplicantsTable = ({
           </div>
           <div className="flex items-center">
             <IconButton
-              variant="default"
+              variant="blue"
               ariaLabel={t('jobAnnouncement.viewApplicants')}
               onClick={() =>
                 navigate(`/teachers/${row.teacherId}`, { state: { comeFrom: 'job-announcements' } })
@@ -729,7 +729,7 @@ const JobApplicantsTable = ({
               {/* Schedule Interview Button */}
               <IconButton
                 className="flex h-8 w-8 items-center justify-center rounded-full"
-                variant="primary"
+                variant="blue"
                 title={t('jobAnnouncement.applicantsPage.scheduleInterview')}
                 onClick={() => handleOpenSchedulePopup(row)}
               >
@@ -742,7 +742,7 @@ const JobApplicantsTable = ({
               {/* Archive Button */}
               <IconButton
                 className="flex h-8 w-8 items-center justify-center rounded-full"
-                variant="warning"
+                variant="yellow"
                 title={t('actions.archive')}
                 onClick={() => handleOpenArchivePopup(row)}
               >

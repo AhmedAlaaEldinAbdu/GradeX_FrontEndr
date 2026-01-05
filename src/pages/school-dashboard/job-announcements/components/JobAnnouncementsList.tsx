@@ -391,7 +391,7 @@ export default function JobAnnouncementsList() {
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2 text-sm">
           <IconButton
-            variant="default"
+            variant="blue"
             ariaLabel={t('jobAnnouncement.viewApplicants')}
             onClick={() => navigate(`/job-announcements/${row.id}/applicants`)}
             className="h-8 w-8"

@@ -132,15 +132,21 @@ export default function TeachersList() {
       accessor: (row) => (
         <div className="flex items-center gap-2">
           {row.teacherName}
-          <button
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
+          <IconButton
+            variant="blue"
+            ariaLabel={t('jobAnnouncement.viewApplicants')}
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/teachers/${row.teacherId}`);
             }}
+            className="h-8 w-8"
           >
-            <CustomImage src={EyeStyledIcon} alt="view" className="h-5 w-5" />
-          </button>
+            <CustomImage
+              src={EyeStyledIcon}
+              alt={t('jobAnnouncement.viewApplicants')}
+              className="h-4 w-4"
+            />
+          </IconButton>
         </div>
       ),
       headerClassName: 'min-w-[200px]',

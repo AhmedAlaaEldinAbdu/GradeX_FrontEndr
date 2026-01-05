@@ -277,7 +277,7 @@ export default function InterviewDetailsPopup({
                       <p className="font-semibold text-gray-900">{t('interviews.teacherName')}</p>:
                       <p>{detail.teacherName}</p>
                       <IconButton
-                        variant="primary"
+                        variant="blue"
                         onClick={() =>
                           navigate(`teachers/${detail.teacherId}`, {
                             state: { from: 'interviews' },

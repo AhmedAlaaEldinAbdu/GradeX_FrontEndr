@@ -28,6 +28,7 @@ import type { TeacherAttendance } from '@/types/teacherAttendance';
 import { AttendanceStatus } from '@/types/teacherAttendance';
 import { formatTime, formatDateDisplay } from '@/shared/common/common';
 import { useNavigate } from 'react-router-dom';
+import IconButton from '@/shared/components/IconButton';
 
 const TYPE_OPTIONS = [
   { value: String(AttendanceStatus.Present), labelAr: 'حاضر', labelEn: 'Present' },
@@ -391,15 +392,21 @@ export default function EmployeesAttendanceTab({
             <CustomImage src={ProfileImage} alt="profile" className="h-full w-full object-cover" />
           </div>
           <span className="flex-1 font-medium">{row.teacherFullName}</span>
-          <button
-            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
+          <IconButton
+            variant="blue"
+            ariaLabel={t('jobAnnouncement.viewApplicants')}
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/teachers/${row.teacherId}?tab=attendance`);
             }}
+            className="h-8 w-8"
           >
-            <CustomImage src={EyeStyledIcon} alt="view" className="h-5 w-5" />
-          </button>
+            <CustomImage
+              src={EyeStyledIcon}
+              alt={t('jobAnnouncement.viewApplicants')}
+              className="h-4 w-4"
+            />
+          </IconButton>
         </div>
       ),
       headerClassName: 'min-w-[200px]',

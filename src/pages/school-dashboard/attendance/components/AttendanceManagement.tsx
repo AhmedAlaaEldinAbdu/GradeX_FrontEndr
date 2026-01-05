@@ -11,6 +11,7 @@ import CheckIcon from '@gradex/assets/icons/Check.svg';
 import HistoryIcon from '@gradex/assets/icons/History.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
+import IconButton from '@/shared/components/IconButton';
 
 interface StudentAttendance {
   id: string;
@@ -313,15 +314,21 @@ export default function AttendanceManagement() {
             <CustomImage src={ProfileImage} alt="profile" className="h-full w-full object-cover" />
           </div>
           {currentLang === 'ar' ? row.studentName : row.studentNameEn}
-          <button
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
+          <IconButton
+            variant="blue"
+            ariaLabel={t('jobAnnouncement.viewApplicants')}
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/students/${row.id}?tab=attendance`);
             }}
+            className="h-8 w-8"
           >
-            <CustomImage src={EyeStyledIcon} alt="view" className="h-5 w-5" />
-          </button>
+            <CustomImage
+              src={EyeStyledIcon}
+              alt={t('jobAnnouncement.viewApplicants')}
+              className="h-4 w-4"
+            />
+          </IconButton>
         </div>
       ),
       headerClassName: 'min-w-[200px]',
