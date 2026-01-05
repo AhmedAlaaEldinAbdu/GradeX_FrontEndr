@@ -52,16 +52,36 @@ export const AddJobAnnouncementSchema = object({
     then: (schema) => schema.required('jobAnnouncement.validation.administrativePositionRequired'),
     otherwise: (schema) => schema.nullable().optional(),
   }),
-  specializationIds: string().required('jobAnnouncement.validation.specializationRequired'),
-  stageIds: string().required('jobAnnouncement.validation.stageRequired'),
+  specializationIds: string().when('qualificationType', {
+    is: JobCategory.TEACHER,
+    then: (schema) => schema.required('jobAnnouncement.validation.specializationRequired'),
+    otherwise: (schema) => schema.optional().nullable(),
+  }),
+  stageIds: string().when('qualificationType', {
+    is: JobCategory.TEACHER,
+    then: (schema) => schema.required('jobAnnouncement.validation.stageRequired'),
+    otherwise: (schema) => schema.optional().nullable(),
+  }),
   subjectName: array()
     .of(string().required('jobAnnouncement.validation.subjectNameRequired'))
-    .min(1, 'jobAnnouncement.validation.subjectNameRequired')
-    .required('jobAnnouncement.validation.subjectNameRequired'),
+    .when('qualificationType', {
+      is: JobCategory.TEACHER,
+      then: (schema) =>
+        schema.min(1, 'jobAnnouncement.validation.subjectNameRequired').required(
+          'jobAnnouncement.validation.subjectNameRequired'
+        ),
+      otherwise: (schema) => schema.optional(),
+    }),
   educationalStage: array()
     .of(string().required('jobAnnouncement.validation.educationalStageRequired'))
-    .min(1, 'jobAnnouncement.validation.educationalStageRequired')
-    .required('jobAnnouncement.validation.educationalStageRequired'),
+    .when('qualificationType', {
+      is: JobCategory.TEACHER,
+      then: (schema) =>
+        schema.min(1, 'jobAnnouncement.validation.educationalStageRequired').required(
+          'jobAnnouncement.validation.educationalStageRequired'
+        ),
+      otherwise: (schema) => schema.optional(),
+    }),
   jobDescriptionAr: string().required('jobAnnouncement.validation.jobDescriptionRequired'),
   jobDescriptionEn: string().required('jobAnnouncement.validation.jobDescriptionEnRequired'),
   jobResponsibilitiesAr: string().required('jobAnnouncement.validation.jobResponsibilitiesRequired'),

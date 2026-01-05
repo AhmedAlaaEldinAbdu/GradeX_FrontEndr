@@ -28,7 +28,6 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 import {
   createJobAdvertisment,
   editJobAdvertisment,
-  fetchJobAdvertisments,
   fetchJobAdvertismentById,
 } from '@/redux/features/job-advertisments/jobAdvertismentsSlice';
 import {
@@ -262,6 +261,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   const selectedBenefits = watch('benefitsIds');
   const technicalSkillsValue = watch('technicalSkillIds') || '';
   const personalSkillsValue = watch('personalSkillIds') || '';
+  const isTeacherCategory = jobCategory === JobCategory.TEACHER;
 
   const technicalSkillsList = useMemo(
     () => extractListFromInput(technicalSkillsValue),
@@ -852,7 +852,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.specialization')}
-              required
+              required={isTeacherCategory}
               error={errors.specializationIds?.message as string | undefined}
               htmlFor="specializationIds"
             >
@@ -881,7 +881,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
             <FormField
               label={t('jobAnnouncement.form.stage')}
-              required
+              required={isTeacherCategory}
               error={errors.stageIds?.message as string | undefined}
               htmlFor="stageIds"
             >
@@ -1140,7 +1140,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           <div className="grid grid-cols-1 gap-5">
             <FormField
               label={t('jobAnnouncement.form.subjectName')}
-              required
+              required={isTeacherCategory}
               error={errors.subjectName?.message as string | undefined}
               htmlFor="subjectName"
             >
@@ -1168,7 +1168,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
             <FormField
               label={t('jobAnnouncement.form.educationalStage')}
-              required
+              required={isTeacherCategory}
               error={errors.educationalStage?.message as string | undefined}
               htmlFor="educationalStage"
             >
