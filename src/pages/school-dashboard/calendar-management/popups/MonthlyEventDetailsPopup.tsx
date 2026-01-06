@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import Modal from '@/shared/popups/Modal';
-import type { MonthlyEventEntity } from '../types';
+import type { MonthlyEventEntity } from '@/services/api/types/monthly-calendar.types';
 
 interface MonthlyEventDetailsPopupProps {
   isOpen: boolean;

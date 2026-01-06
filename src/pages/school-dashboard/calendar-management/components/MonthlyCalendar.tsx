@@ -27,8 +27,9 @@ import {
   type MonthlyCalendarFilters,
 } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchSchoolStages } from '@/redux/features/lookups';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
+import type { Classroom } from '@/services/api/types/classrooms.types';
 import type {
   CreateMonthlyCalendarRequest,
   MonthlyCalendarEvent,
@@ -36,6 +37,7 @@ import type {
 } from '@/services/api/types/monthly-calendar.types';
 import type { MonthlyEventFormValues } from '@/validations/monthly-calendar-validations';
 import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { getErrorMessage } from '@/lib/http';
 
 type CalendarMonthlyEvent = CalendarEvent & { meta: MonthlyEventEntity };
 
@@ -47,7 +49,8 @@ const DEFAULT_CALENDAR_START = '08:00';
 const DEFAULT_CALENDAR_END = '18:00';
 const DEFAULT_PAGE_INDEX = 1;
 const DEFAULT_PAGE_SIZE = 200;
-const EDUCATIONAL_STAGE_LOOKUP_LIMIT = 500;
+const CLASSROOM_LOOKUP_LIMIT = 1000;
+const EDUCATIONAL_STAGE_LOOKUP_LIMIT = 1000;
 const CUSTOM_DURATION = 1;
 const FULL_DAY_DURATION = 2;
 
@@ -98,11 +101,12 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     isLoading,
     isDeleting,
   } = useAppSelector((state) => state.monthlyCalendar);
-  const { schoolStages, isLoadingSchoolStages } = useAppSelector((state) => state.lookups);
   const { educationalStages, isLoading: isEducationalStagesLoading } = useAppSelector(
     (state) => state.educationalStages
   );
 
+  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+  const [isClassroomsLoading, setIsClassroomsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [stageFilter, setStageFilter] = useState('');
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -115,10 +119,6 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const [selectedDateForEditor, setSelectedDateForEditor] = useState<Date | undefined>(undefined);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [eventIdPendingDelete, setEventIdPendingDelete] = useState<string | null>(null);
-
-  useEffect(() => {
-    dispatch(fetchSchoolStages());
-  }, [dispatch]);
 
   const educationalStagesCount = educationalStages.length;
 
@@ -134,6 +134,40 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     );
   }, [dispatch, educationalStagesCount]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadClassrooms = async () => {
+      try {
+        setIsClassroomsLoading(true);
+        const response = await classroomApiService.getClassrooms({
+          pageIndex: 1,
+          pageSize: CLASSROOM_LOOKUP_LIMIT,
+        });
+        if (!isMounted) return;
+        const list = response.data?.classroomDto ?? [];
+        setClassrooms(list);
+      } catch (error) {
+        if (!isMounted) return;
+        showToast({
+          message: getErrorMessage(error),
+          type: 'error',
+          isRaw: true,
+        });
+      } finally {
+        if (isMounted) {
+          setIsClassroomsLoading(false);
+        }
+      }
+    };
+
+    loadClassrooms();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [showToast]);
+
   const buildFilters = useCallback((): MonthlyCalendarFilters => {
     const filters: MonthlyCalendarFilters = {};
     if (searchTerm.trim()) {
@@ -148,8 +182,6 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const fetchEvents = useCallback(() => {
     return dispatch(
       fetchMonthlyCalendarEvents({
-        page: DEFAULT_PAGE_INDEX,
-        limit: DEFAULT_PAGE_SIZE,
         filters: buildFilters(),
       })
     );
@@ -186,16 +218,14 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     [stageOptions, t]
   );
 
-  const gradeOptions = useMemo<CustomSelectOption[]>(
+  const classroomOptions = useMemo<CustomSelectOption[]>(
     () =>
-      schoolStages.map((grade) => ({
-        value: grade.id,
-        label: currentLang === 'ar' ? grade.nameAR : grade.nameEN || grade.nameAR,
+      classrooms.map((classroom) => ({
+        value: classroom.id,
+        label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
       })),
-    [schoolStages, currentLang]
+    [classrooms, currentLang]
   );
-
-  const classroomOptions = stageOptions;
 
   const calendarEvents = useMemo<CalendarMonthlyEvent[]>(() => {
     return normalizedEvents.map((event) => {
@@ -518,11 +548,11 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         initialValues={editorInitialValues ?? undefined}
         selectedDate={editorMode === 'add' ? selectedDateForEditor : undefined}
         mode={editorMode}
-        gradeOptions={gradeOptions}
+        gradeOptions={stageOptions}
         classroomOptions={classroomOptions}
         schoolBranchId={STATIC_SCHOOL_BRANCH_ID}
-        gradeOptionsLoading={isLoadingSchoolStages}
-        classroomOptionsLoading={isEducationalStagesLoading}
+        gradeOptionsLoading={isEducationalStagesLoading}
+        classroomOptionsLoading={isClassroomsLoading}
       />
 
       <MonthlyEventDetailsPopup
