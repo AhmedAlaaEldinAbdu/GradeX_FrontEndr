@@ -1460,6 +1460,95 @@
       "personalSkillRequired": "المهارات الشخصية مطلوبة"
     }
   },
+  "monthlyCalendar": {
+    "title": "التقويم الشهري",
+    "description": "تابع أبرز فعاليات الشهر في لمحة واحدة.",
+    "summary": {
+      "events": "فعاليات هذا الشهر",
+      "exams": "فترات الاختبارات",
+      "activities": "الأنشطة المخطط لها"
+    },
+    "upcomingEvents": "الفعاليات القادمة",
+    "upcomingEventsSubtitle": "استعرض أهم الأنشطة المجدولة لهذا الشهر.",
+    "addEvent": "إضافة فعالية",
+    "addEventButton": "إضافة حدث",
+    "searchPlaceholder": "ابحث عن اسم الحدث",
+    "filters": {
+      "allStages": "جميع المراحل",
+      "stagePlaceholder": "المرحلة"
+    },
+    "emptyStateTitle": "لا توجد أحداث مجدولة",
+    "emptyStateDescription": "استخدم زر إضافة حدث لإنشاء أول فعالية شهرية.",
+    "labels": {
+      "location": "الموقع",
+      "date": "التاريخ"
+    },
+    "status": {
+      "planned": "مجدولة",
+      "inProgress": "قيد التنفيذ",
+      "completed": "مكتملة"
+    },
+    "events": {
+      "scienceExpo": "معرض العلوم",
+      "midtermWeek": "أسبوع الاختبارات النصفية",
+      "parentsMeeting": "لقاء أولياء الأمور وورش العمل"
+    },
+    "locations": {
+      "mainCampus": "قاعة الحرم الرئيسي",
+      "gymHall": "الصالة الرياضية",
+      "parentsLounge": "قاعة أولياء الأمور"
+    },
+    "actions": {
+      "viewDetails": "التفاصيل",
+      "addEvent": "إضافة حدث",
+      "editEvent": "تعديل الحدث",
+      "deleteEvent": "حذف الحدث",
+      "confirmDelete": "هل تريد حذف هذا الحدث؟"
+    },
+    "form": {
+      "nameAr": "اسم الحدث (باللغة العربية)",
+      "nameEn": "اسم الحدث (باللغة الإنجليزية)",
+      "nameArPlaceholder": "اكتب اسم الحدث باللغة العربية",
+      "nameEnPlaceholder": "اكتب اسم الحدث باللغة الإنجليزية",
+      "stage": "المرحلة الدراسية",
+      "selectStage": "اختر المراحل الدراسية",
+      "classrooms": "الصفوف الدراسية",
+      "selectClassrooms": "اختر الصفوف الدراسية",
+      "date": "اليوم",
+      "duration": "المدة",
+      "fullDay": "يوم كامل",
+      "customDuration": "تحديد مدة",
+      "startTime": "ساعة البدء",
+      "endTime": "ساعة الانتهاء",
+      "selectStartTime": "اختر ساعة البدء",
+      "selectEndTime": "اختر ساعة الانتهاء"
+    },
+    "details": {
+      "title": "تفاصيل الحدث",
+      "eventNameAr": "اسم الحدث (باللغة العربية)",
+      "eventNameEn": "اسم الحدث (باللغة الإنجليزية)",
+      "date": "التاريخ",
+      "time": "الوقت",
+      "stages": "المراحل الدراسية",
+      "classrooms": "الصفوف الدراسية",
+      "fullDay": "يوم كامل"
+    },
+    "messages": {
+      "eventAdded": "تم إضافة الحدث بنجاح",
+      "eventUpdated": "تم تحديث الحدث بنجاح",
+      "eventDeleted": "تم حذف الحدث بنجاح"
+    },
+    "validation": {
+      "nameAr": "اسم الحدث بالعربية مطلوب",
+      "nameEn": "اسم الحدث بالإنجليزية مطلوب",
+      "stageIds": "يرجى اختيار مرحلة واحدة على الأقل",
+      "classroomIds": "يرجى اختيار صف واحد على الأقل",
+      "date": "اليوم مطلوب",
+      "startTime": "ساعة البدء مطلوبة",
+      "endTime": "ساعة الانتهاء مطلوبة",
+      "endAfterStart": "يجب أن تكون ساعة الانتهاء بعد ساعة البدء"
+    }
+  },
   "weeklyCalendar": {
     "title": "التقويم الاسبوعي",
     "recoverLessons": "إسترجاع الحصص بالتساوي",

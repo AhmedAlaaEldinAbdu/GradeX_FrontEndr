@@ -1462,6 +1462,95 @@
       "personalSkillRequired": "Personal skills are required"
     }
   },
+  "monthlyCalendar": {
+    "title": "Monthly Calendar",
+    "description": "Keep track of academic highlights for the month at a glance.",
+    "summary": {
+      "events": "Events this month",
+      "exams": "Exam windows",
+      "activities": "Activities planned"
+    },
+    "upcomingEvents": "Upcoming Events",
+    "upcomingEventsSubtitle": "Preview the most important activities scheduled for this month.",
+    "addEvent": "Add Event",
+    "addEventButton": "Add Event",
+    "searchPlaceholder": "Search by event name",
+    "filters": {
+      "allStages": "All stages",
+      "stagePlaceholder": "Stage"
+    },
+    "emptyStateTitle": "No events scheduled",
+    "emptyStateDescription": "Use the add event button to plan your first monthly activity.",
+    "labels": {
+      "location": "Location",
+      "date": "Date"
+    },
+    "status": {
+      "planned": "Planned",
+      "inProgress": "In progress",
+      "completed": "Completed"
+    },
+    "events": {
+      "scienceExpo": "Science Expo Showcase",
+      "midtermWeek": "Midterm Exams Week",
+      "parentsMeeting": "Parents Meeting & Workshops"
+    },
+    "locations": {
+      "mainCampus": "Main campus auditorium",
+      "gymHall": "Gym hall",
+      "parentsLounge": "Parents lounge"
+    },
+    "actions": {
+      "viewDetails": "Details",
+      "addEvent": "Add event",
+      "editEvent": "Edit event",
+      "deleteEvent": "Delete event",
+      "confirmDelete": "Are you sure you want to delete this event?"
+    },
+    "form": {
+      "nameAr": "Event name (in Arabic)",
+      "nameEn": "Event name (in English)",
+      "nameArPlaceholder": "Enter event name in Arabic",
+      "nameEnPlaceholder": "Enter event name in English",
+      "stage": "Stage",
+      "selectStage": "Select stages",
+      "classrooms": "Classrooms",
+      "selectClassrooms": "Select classrooms",
+      "date": "Day",
+      "duration": "Duration",
+      "fullDay": "Full day",
+      "customDuration": "Specify duration",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "selectStartTime": "Select start time",
+      "selectEndTime": "Select end time"
+    },
+    "details": {
+      "title": "Event details",
+      "eventNameAr": "Event name (in Arabic)",
+      "eventNameEn": "Event name (in English)",
+      "date": "Date",
+      "time": "Time",
+      "stages": "Stages",
+      "classrooms": "Classrooms",
+      "fullDay": "Full day"
+    },
+    "messages": {
+      "eventAdded": "Event added successfully",
+      "eventUpdated": "Event updated successfully",
+      "eventDeleted": "Event deleted successfully"
+    },
+    "validation": {
+      "nameAr": "Arabic name is required",
+      "nameEn": "English name is required",
+      "stageIds": "Select at least one stage",
+      "classroomIds": "Select at least one classroom",
+      "date": "Date is required",
+      "startTime": "Start time is required",
+      "endTime": "End time is required",
+      "endAfterStart": "End time must be after start time"
+    }
+  },
   "weeklyCalendar": {
     "title": "Weekly Calendar",
     "recoverLessons": "Recover Lessons Equally",
