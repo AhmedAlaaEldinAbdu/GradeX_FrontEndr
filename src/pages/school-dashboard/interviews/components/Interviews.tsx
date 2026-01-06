@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import EmptyState from '@/shared/components/EmptyState';
 import SharedCalendar, {
   type CalendarEvent,
   type ContextMenuAction,
@@ -8,7 +7,6 @@ import SharedCalendar, {
 import AddEditInterviewPopup from '../popups/AddEditInterviewPopup';
 import InterviewDetailsPopup from '../popups/InterviewDetailsPopup';
 import DeletePopup from '@/shared/popups/DeletePopup';
-import StyledCalendarIcon from '@gradex/assets/icons/StyledCalendar.svg';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
