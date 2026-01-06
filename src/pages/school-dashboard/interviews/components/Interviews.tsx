@@ -332,18 +332,21 @@ export default function Interviews() {
     }
   };
 
-  const hasMultipleInterviewsOnDay = useCallback((date: Date) => {
-    const targetDate = new Date(date);
-    targetDate.setHours(0, 0, 0, 0);
+  const hasMultipleInterviewsOnDay = useCallback(
+    (date: Date) => {
+      const targetDate = new Date(date);
+      targetDate.setHours(0, 0, 0, 0);
 
-    const interviewsOnDay = calendarInterviews.filter((interview) => {
-      const interviewDate = new Date(interview.start);
-      interviewDate.setHours(0, 0, 0, 0);
-      return interviewDate.getTime() === targetDate.getTime();
-    });
+      const interviewsOnDay = calendarInterviews.filter((interview) => {
+        const interviewDate = new Date(interview.start);
+        interviewDate.setHours(0, 0, 0, 0);
+        return interviewDate.getTime() === targetDate.getTime();
+      });
 
-    return interviewsOnDay.length > 1;
-  }, [calendarInterviews]);
+      return interviewsOnDay.length > 1;
+    },
+    [calendarInterviews]
+  );
 
   const contextMenuActions: ContextMenuAction[] = [
     {
@@ -472,19 +475,19 @@ export default function Interviews() {
           onSelectSlot={handleSelectSlot}
           contextMenuActions={contextMenuActions}
           defaultView="month"
-          height={700}
-        />
-        <AddEditInterviewPopup
-          isOpen={isEditorOpen}
-          mode={editorMode}
-          initialValues={editorInitialValues}
-          onClose={handleCloseEditorPopup}
-          onSubmit={handleEditorSubmit}
-          selectedDate={selectedDateForEditor}
         />
       </Card>
 
       {/* Popups */}
+      <AddEditInterviewPopup
+        isOpen={isEditorOpen}
+        mode={editorMode}
+        initialValues={editorInitialValues}
+        onClose={handleCloseEditorPopup}
+        onSubmit={handleEditorSubmit}
+        selectedDate={selectedDateForEditor}
+      />
+
       <InterviewDetailsPopup
         isOpen={detailsOpen}
         onClose={() => {
@@ -493,6 +496,7 @@ export default function Interviews() {
         }}
         interview={selectedInterview}
       />
+
       <DeletePopup
         open={showDeletePopup}
         message="interviews.confirmDeleteInterview"
