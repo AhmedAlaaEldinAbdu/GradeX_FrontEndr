@@ -15,6 +15,26 @@ export interface MonthlyCalendarClassRef {
   nameEn: string;
 }
 
+export interface MonthlyEventReference {
+  id: string;
+  nameAr?: string;
+  nameEn?: string;
+}
+
+export interface MonthlyEventEntity {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  grades: MonthlyEventReference[];
+  classRomms: MonthlyEventReference[];
+  day: string; // yyyy-MM-dd
+  duration: number;
+  isFullDay: boolean;
+  startTime?: string;
+  endTime?: string;
+  schoolBranchesId: string;
+}
+
 export interface MonthlyCalendarEvent {
   id: string;
   nameAr: string;

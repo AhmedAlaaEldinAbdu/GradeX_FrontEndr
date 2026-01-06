@@ -19,7 +19,6 @@ import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import StyledCalendarIcon from '@gradex/assets/icons/StyledCalendar.svg';
 import { useToast } from '@/shared/context/ToastContext';
-import type { MonthlyEventEntity } from '../types';
 import {
   createMonthlyCalendarEvent,
   deleteMonthlyCalendarEvent,
@@ -33,6 +32,7 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 import type {
   CreateMonthlyCalendarRequest,
   MonthlyCalendarEvent,
+  MonthlyEventEntity,
 } from '@/services/api/types/monthly-calendar.types';
 import type { MonthlyEventFormValues } from '@/validations/monthly-calendar-validations';
 import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
