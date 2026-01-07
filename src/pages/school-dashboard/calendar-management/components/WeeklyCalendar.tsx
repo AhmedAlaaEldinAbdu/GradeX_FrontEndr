@@ -384,8 +384,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   };
 
   const handleEditLesson = (lesson: ScheduleLesson) => {
-    // TODO: Implement edit lesson popup/modal
-    console.log('Edit lesson:', lesson);
+    navigate(`/calendar/weekly/edit-lesson/${lesson.id}`);
   };
 
   const handleRequestDelete = (lesson: ScheduleLesson) => {
