@@ -341,6 +341,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <div>
             <FileUpload
               label={t('schools.licenses')}
+              accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
               onChange={onLogoUpload}
               fileNames={licenseFileNames || (licenseFileName ? [licenseFileName] : [])}
               uploadText={t('schools.uploadMedia')}
