@@ -414,12 +414,12 @@ export default function AddLesson() {
           <div className="mb-6">
             <FileUpload
               label={t('addLesson.attachments')}
-              accept="image/png,image/jpg,image/jpeg,image/gif,image/svg+xml"
+              accept="image/png,image/jpg,image/jpeg,image/gif,image/svg+xml,application/pdf"
               onChange={handleFileChange}
               onDelete={handleFileDelete}
               fileNames={attachmentFileNames}
               uploadText={t('addLesson.clickToUpload')}
-              formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
+              formatHints={['GIF', 'SVG', 'JPG', 'PNG', 'PDF']}
               optional={true}
               multiple={true}
             />
