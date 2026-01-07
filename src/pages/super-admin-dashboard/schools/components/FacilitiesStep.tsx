@@ -429,7 +429,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
           <FormField label={t('schools.images')} optional>
             <FileUpload
               label=""
-              accept="image/*,.svg,.jpg,.jpeg,.png"
+              accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
               onChange={onImageUpload}
               onDelete={onImageDelete}
               fileNames={imageFileNames || (imageFileName ? imageFileName.split(', ') : [])}
