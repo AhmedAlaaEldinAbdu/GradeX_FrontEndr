@@ -7,6 +7,7 @@ import Loading from '@/shared/components/Loading';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchMonthlyCalendarEvents } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import type { MonthlyCalendarEvent, MonthlyEventEntity } from '@/services/api/types/monthly-calendar.types';
+import { MonthlyCalendarDuration } from '@/shared/enums/enums';
 
 interface MonthlyEventDetailsPopupProps {
   isOpen: boolean;
@@ -80,7 +81,7 @@ export default function MonthlyEventDetailsPopup({
       const day = apiEvent.day ? format(new Date(apiEvent.day), 'yyyy-MM-dd') : '';
       const startTime = apiEvent.startTime ? format(new Date(apiEvent.startTime), 'HH:mm') : '';
       const endTime = apiEvent.endTime ? format(new Date(apiEvent.endTime), 'HH:mm') : '';
-      const duration = apiEvent.duration ?? 2;
+      const duration = apiEvent.duration ?? MonthlyCalendarDuration.Day;
 
       return {
         id: apiEvent.id,
@@ -98,7 +99,7 @@ export default function MonthlyEventDetailsPopup({
         })),
         day,
         duration,
-        isFullDay: duration === 2,
+        isFullDay: duration === MonthlyCalendarDuration.Day,
         startTime,
         endTime,
         schoolBranchesId: apiEvent.schoolBranchesId,

@@ -8,6 +8,7 @@ import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
+import { MonthlyCalendarDuration } from '@/shared/enums/enums';
 import {
   MonthlyEventFormSchema,
   type MonthlyEventFormValues,
@@ -59,7 +60,7 @@ export default function AddEditMonthlyEventPopup({
       day: '',
       schoolBranchesId: schoolBranchId,
       isFullDay: true,
-      duration: 1,
+      duration: MonthlyCalendarDuration.Day,
       startTime: '',
       endTime: '',
     },
@@ -75,7 +76,7 @@ export default function AddEditMonthlyEventPopup({
     day: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
     schoolBranchesId: schoolBranchId,
     isFullDay: true,
-    duration: 1,
+    duration: MonthlyCalendarDuration.Day,
     startTime: '',
     endTime: '',
   });
@@ -93,7 +94,11 @@ export default function AddEditMonthlyEventPopup({
 
   const handleDurationChange = (value: boolean) => {
     setValue('isFullDay', value, { shouldValidate: true });
-    setValue('duration', value ? 1 : 2, { shouldValidate: true });
+    setValue(
+      'duration',
+      value ? MonthlyCalendarDuration.Day : MonthlyCalendarDuration.SpecificTime,
+      { shouldValidate: true }
+    );
     if (value) {
       setValue('startTime', '');
       setValue('endTime', '');
