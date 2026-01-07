@@ -26,6 +26,7 @@ import EditJobAnnouncementPage from '@/pages/school-dashboard/job-announcements/
 import JobAnnouncementDetailsPage from '@/pages/school-dashboard/job-announcements/job-announcement-details';
 import WeeklyCalendarPage from '@/pages/school-dashboard/calendar-management/weekly-calendar-page';
 import AddLessonPage from '@/pages/school-dashboard/calendar-management/add-lesson-page';
+import EditLessonPage from '@/pages/school-dashboard/calendar-management/edit-lesson-page';
 import MonthlyCalendarPage from '@/pages/school-dashboard/calendar-management/monthly-calendar-page';
 
 const SchoolRouter: React.FC = () => {
@@ -299,6 +300,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AddLessonPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/weekly/edit-lesson/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditLessonPage />
             </MainLayout>
           </ProtectedRoute>
         }

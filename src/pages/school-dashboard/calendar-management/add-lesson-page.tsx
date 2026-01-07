@@ -9,7 +9,7 @@ export default function AddLessonPage() {
   const breadcrumbItems = [
     { label: t('sidebar.calendarManagement') },
     { label: t('sidebar.weeklyCalendar'), path: '/school/calendar/weekly' },
-    { label: t('addLesson.title') },
+    { label: t('lesson.addTitle') },
   ];
 
   return (
@@ -18,7 +18,7 @@ export default function AddLessonPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Page Header */}
-      <PageHeader title="addLesson.title" />
+      <PageHeader title="lesson.addTitle" />
 
       {/* Main Content */}
       <AddLesson />
