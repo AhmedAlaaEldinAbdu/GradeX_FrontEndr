@@ -17,6 +17,7 @@ export interface ClassroomFilters {
   name?: string;
   academicSystemId?: string;
   gradeId?: string;
+  schoolBranchId?: string;
 }
 
 export interface ClassroomsState {
@@ -111,6 +112,7 @@ export const fetchClassrooms = createAsyncThunk<FetchClassroomsResponse, FetchCl
           if (payload.filters.name) params.name = payload.filters.name;
           if (payload.filters.academicSystemId) params.academicSystemId = payload.filters.academicSystemId;
           if (payload.filters.gradeId) params.gradeId = payload.filters.gradeId;
+          if (payload.filters.schoolBranchId) params.schoolBranchId = payload.filters.schoolBranchId;
         }
       }
 

@@ -379,6 +379,8 @@
     "copyAdditionLink": "Copy Addition Link",
     "enterSchoolName": "Enter school name",
     "chooseAcademicSystem": "Choose Academic Systems",
+    "academicSubSystems": "Academic Subsystems",
+    "chooseAcademicSubSystems": "Choose Academic Subsystems",
     "basicInfo": "Basic Information",
     "contactInfo": "Contact Information",
     "address": "Address",
@@ -463,6 +465,7 @@
       "schoolNameEnMax": "School name in English cannot exceed 100 characters",
       "academicSystemRequired": "Academic system is required",
       "academicSystemInvalid": "Please select a valid academic system",
+      "subSystemIdsRequired": "Please select at least one academic subsystem",
       "countryRequired": "Country is required",
       "countryInvalid": "Please select a valid country",
       "foundationDateRequired": "Foundation date is required",
@@ -1465,6 +1468,7 @@
   "monthlyCalendar": {
     "title": "Monthly Calendar",
     "description": "Keep track of academic highlights for the month at a glance.",
+    "educationalStages": "Educational stages",
     "summary": {
       "events": "Events this month",
       "exams": "Exam windows",
@@ -1527,13 +1531,17 @@
     },
     "details": {
       "title": "Event details",
+      "eventItemTitle": "Event {{number}}",
       "eventNameAr": "Event name (in Arabic)",
       "eventNameEn": "Event name (in English)",
       "date": "Date",
       "time": "Time",
+      "startTime": "Start time",
+      "endTime": "End time",
       "stages": "Stages",
       "classrooms": "Classrooms",
-      "fullDay": "Full day"
+      "fullDay": "Full day",
+      "customDuration": "Specific duration"
     },
     "messages": {
       "eventAdded": "Event added successfully",

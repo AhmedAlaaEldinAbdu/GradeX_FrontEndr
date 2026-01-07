@@ -1,4 +1,12 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import Card from '@/shared/components/Card';
@@ -28,8 +36,7 @@ import {
 } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
-import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
-import type { Classroom } from '@/services/api/types/classrooms.types';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import type {
   CreateMonthlyCalendarRequest,
   MonthlyCalendarEvent,
@@ -37,6 +44,7 @@ import type {
 } from '@/services/api/types/monthly-calendar.types';
 import type { MonthlyEventFormValues } from '@/validations/monthly-calendar-validations';
 import { getErrorMessage } from '@/lib/http';
+import { MonthlyCalendarDuration } from '@/shared/enums/enums';
 
 type CalendarMonthlyEvent = CalendarEvent & { meta: MonthlyEventEntity };
 
@@ -46,10 +54,8 @@ export type MonthlyCalendarHandle = {
 
 const DEFAULT_CALENDAR_START = '08:00';
 const DEFAULT_CALENDAR_END = '18:00';
-const CLASSROOM_LOOKUP_LIMIT = 1000;
-const EDUCATIONAL_STAGE_LOOKUP_LIMIT = 1000;
-const CUSTOM_DURATION = 1;
-const FULL_DAY_DURATION = 2;
+const CLASSROOM_LOOKUP_LIMIT = 10000;
+const EDUCATIONAL_STAGE_LOOKUP_LIMIT = 10000;
 
 const normalizeTime = (time: string) => (time.length === 5 ? `${time}:00` : time);
 
@@ -63,7 +69,7 @@ const mapApiEventToEntity = (event: MonthlyCalendarEvent): MonthlyEventEntity =>
   const day = event.day ? format(new Date(event.day), 'yyyy-MM-dd') : '';
   const startTime = event.startTime ? format(new Date(event.startTime), 'HH:mm') : '';
   const endTime = event.endTime ? format(new Date(event.endTime), 'HH:mm') : '';
-  const duration = event.duration ?? FULL_DAY_DURATION;
+  const duration = event.duration ?? MonthlyCalendarDuration.Day;
 
   return {
     id: event.id,
@@ -81,7 +87,7 @@ const mapApiEventToEntity = (event: MonthlyCalendarEvent): MonthlyEventEntity =>
     })),
     day,
     duration,
-    isFullDay: duration === FULL_DAY_DURATION,
+    isFullDay: duration === MonthlyCalendarDuration.Day,
     startTime,
     endTime,
     schoolBranchesId: event.schoolBranchesId,
@@ -102,9 +108,10 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const { educationalStages, isLoading: isEducationalStagesLoading } = useAppSelector(
     (state) => state.educationalStages
   );
-
-  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-  const [isClassroomsLoading, setIsClassroomsLoading] = useState(false);
+  const { classrooms: classroomEntities, isLoading: isClassroomsLoading } = useAppSelector(
+    (state) => state.classrooms
+  );
+  const hasRequestedClassroomsRef = useRef(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [stageFilter, setStageFilter] = useState('');
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -128,6 +135,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       getEducationalStages({
         pageIndex: 1,
         pageSize: EDUCATIONAL_STAGE_LOOKUP_LIMIT,
+        schoolBranchId: DummySchoolBranchId,
       })
     )
       .unwrap()
@@ -141,31 +149,28 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   }, [dispatch, educationalStagesCount, showToast]);
 
   useEffect(() => {
+    if (hasRequestedClassroomsRef.current) {
+      return;
+    }
+    hasRequestedClassroomsRef.current = true;
     let isMounted = true;
 
     const loadClassrooms = async () => {
       try {
-        setIsClassroomsLoading(true);
-        const response = await classroomApiService.getClassrooms({
-          pageIndex: 1,
-          pageSize: CLASSROOM_LOOKUP_LIMIT,
-          academicSystemId: DummySchoolBranchId,
-        });
-        if (!isMounted) return;
-        const list = response.data?.classroomDto ?? [];
-        setClassrooms(list);
+        await dispatch(
+          fetchClassrooms({
+            page: 1,
+            limit: CLASSROOM_LOOKUP_LIMIT,
+            filters: { schoolBranchId: DummySchoolBranchId },
+          })
+        ).unwrap();
       } catch (error) {
         if (!isMounted) return;
-        const errorMessage = getErrorMessage(error);
         showToast({
-          message: errorMessage,
+          message: getErrorMessage(error),
           type: 'error',
           isRaw: true,
         });
-      } finally {
-        if (isMounted) {
-          setIsClassroomsLoading(false);
-        }
       }
     };
 
@@ -174,7 +179,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     return () => {
       isMounted = false;
     };
-  }, [showToast]);
+  }, [dispatch, showToast, DummySchoolBranchId]);
 
   const buildFilters = useCallback((): MonthlyCalendarFilters => {
     const filters: MonthlyCalendarFilters = {};
@@ -228,11 +233,11 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
 
   const classroomOptions = useMemo<CustomSelectOption[]>(
     () =>
-      classrooms.map((classroom) => ({
+      classroomEntities.map((classroom) => ({
         value: classroom.id,
         label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
       })),
-    [classrooms, currentLang]
+    [classroomEntities, currentLang]
   );
 
   const calendarEvents = useMemo<CalendarMonthlyEvent[]>(() => {
@@ -285,7 +290,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       classRomms: event.classRomms.map((classroom) => classroom.id),
       day: event.day,
       isFullDay: event.isFullDay,
-      duration: event.isFullDay ? FULL_DAY_DURATION : CUSTOM_DURATION,
+      duration: event.isFullDay ? MonthlyCalendarDuration.Day : MonthlyCalendarDuration.SpecificTime,
       startTime: event.startTime ?? '',
       endTime: event.endTime ?? '',
       schoolBranchesId: event.schoolBranchesId || DummySchoolBranchId,
@@ -326,7 +331,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       nameAr: values.nameAr,
       nameEn: values.nameEn,
       day: dayISO.toISOString(),
-      duration: values.isFullDay ? FULL_DAY_DURATION : CUSTOM_DURATION,
+      duration: values.isFullDay ? MonthlyCalendarDuration.Day : MonthlyCalendarDuration.SpecificTime,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
       schoolBranchesId: values.schoolBranchesId || DummySchoolBranchId,

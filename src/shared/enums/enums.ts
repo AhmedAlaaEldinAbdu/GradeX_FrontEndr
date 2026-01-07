@@ -43,3 +43,10 @@ export const Days = {
     Saturday: 7
 } as const;
 export type Days = typeof Days[keyof typeof Days];
+
+export const MonthlyCalendarDuration = {
+  Day: 1,
+  SpecificTime: 2,
+} as const;
+export type MonthlyCalendarDuration =
+  typeof MonthlyCalendarDuration[keyof typeof MonthlyCalendarDuration];

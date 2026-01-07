@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
@@ -60,12 +60,14 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
     watch,
     setValue,
     trigger,
+    clearErrors,
   } = useFormContext<SchoolFormData>();
 
   const currentLang = i18n.language as 'ar' | 'en';
 
   const hasCurrentSystem = watch('hasCurrentSystem');
   const selectedFeatures = watch('applicationFeatures');
+  const academicSystemValue = watch('academicSystem');
 
   const countries = useSelector(selectCountries);
   const isLoadingCountries = useSelector(selectIsLoadingCountries);
@@ -73,6 +75,39 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   const isLoadingAcademicSystems = useSelector(selectIsLoadingAcademicSystems);
   const applicationFeatures = useSelector(selectApplicationFeatures);
   const isLoadingFeatures = useSelector(selectIsLoadingFeatures);
+
+  const selectedAcademicSystemId = React.useMemo(() => {
+    if (Array.isArray(academicSystemValue)) {
+      return academicSystemValue[0] || '';
+    }
+    return academicSystemValue || '';
+  }, [academicSystemValue]);
+
+  const academicSubSystemOptions = React.useMemo(() => {
+    if (!selectedAcademicSystemId) return [];
+    const selectedSystem = academicSystems.find((s) => s.id === selectedAcademicSystemId);
+    const subsystems = selectedSystem?.academicSubSystemDto ?? [];
+    return subsystems.map((sub) => ({
+      value: sub.id,
+      label: currentLang === 'ar' ? sub.nameAr : sub.nameEn || sub.nameAr,
+    }));
+  }, [academicSystems, currentLang, selectedAcademicSystemId]);
+
+  const previousAcademicSystemIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    // Only clear when the academic system changes after the initial mount.
+    if (previousAcademicSystemIdRef.current === null) {
+      previousAcademicSystemIdRef.current = selectedAcademicSystemId;
+      return;
+    }
+
+    if (previousAcademicSystemIdRef.current !== selectedAcademicSystemId) {
+      previousAcademicSystemIdRef.current = selectedAcademicSystemId;
+      setValue('subSystemIds', []);
+      clearErrors('subSystemIds');
+    }
+  }, [selectedAcademicSystemId, setValue, clearErrors]);
 
   useEffect(() => {
     dispatch(fetchCountries());
@@ -202,33 +237,63 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           </FormField>
 
           <FormField
-            label={t('schools.countryWithAl')}
+            label={t('schools.academicSubSystems')}
             required
-            htmlFor="country"
-            error={errors.country?.message && t(errors.country.message)}
+            htmlFor="subSystemIds"
+            error={errors.subSystemIds?.message && t(errors.subSystemIds.message as string)}
           >
             <Controller
-              name="country"
+              name="subSystemIds"
               control={control}
               render={({ field }) => (
                 <CustomSelect
-                  value={field.value || ''}
+                  value={field.value || []}
                   onChange={(value) => {
-                    field.onChange(value);
-                    trigger('country');
+                    field.onChange(Array.isArray(value) ? value : [value]);
+                    trigger('subSystemIds');
                   }}
-                  options={countries.map((country) => ({
-                    value: country.id,
-                    label: currentLang === 'ar' ? country.arabicName : country.englishName,
-                  }))}
-                  placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
-                  disabled={isLoadingCountries || readOnly}
+                  options={academicSubSystemOptions}
+                  placeholder={
+                    isLoadingAcademicSystems
+                      ? t('common.loading')
+                      : t('schools.chooseAcademicSubSystems')
+                  }
+                  disabled={isLoadingAcademicSystems || readOnly}
                   maxHeight="200px"
+                  isMulti
                 />
               )}
             />
           </FormField>
         </div>
+
+        <FormField
+          label={t('schools.countryWithAl')}
+          required
+          htmlFor="country"
+          error={errors.country?.message && t(errors.country.message)}
+        >
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+              <CustomSelect
+                value={field.value || ''}
+                onChange={(value) => {
+                  field.onChange(value);
+                  trigger('country');
+                }}
+                options={countries.map((country) => ({
+                  value: country.id,
+                  label: currentLang === 'ar' ? country.arabicName : country.englishName,
+                }))}
+                placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
+                disabled={isLoadingCountries || readOnly}
+                maxHeight="200px"
+              />
+            )}
+          />
+        </FormField>
 
         {/* Foundation Date */}
         <FormField

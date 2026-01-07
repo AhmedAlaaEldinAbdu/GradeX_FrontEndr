@@ -21,6 +21,7 @@ export interface SchoolFormData {
   schoolNameAr: string;
   schoolNameEn: string;
   academicSystem: string | string[];
+  subSystemIds: string[];
   foundationDate: string;
   aboutSchool: string;
   hasCurrentSystem: boolean;
@@ -55,7 +56,7 @@ export interface SchoolFormData {
 
   // Facilities
   hasOtherBranches: boolean;
-  facilities: SchoolFormData[];
+  facilities: string[];
   facilityDetails?: Record<string, FacilityDetails>;
   hasOtherFacility: boolean;
   otherFacilityName?: string; // Deprecated - kept for backward compatibility
@@ -69,6 +70,7 @@ export const initialSchoolFormData: SchoolFormData = {
   schoolNameAr: '',
   schoolNameEn: '',
   academicSystem: [],
+  subSystemIds: [],
   foundationDate: '',
   aboutSchool: '',
   hasCurrentSystem: false,

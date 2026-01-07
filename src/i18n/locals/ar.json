@@ -378,6 +378,8 @@
     "copyAdditionLink": "نسخ رابط الإضافة",
     "enterSchoolName": "اكتب اسم المدرسة",
     "chooseAcademicSystem": "اختر النظم التعليمية",
+    "academicSubSystems": "الأنظمة الفرعية الأكاديمية",
+    "chooseAcademicSubSystems": "اختر الأنظمة الفرعية الأكاديمية",
     "basicInfo": "البيانات الأساسية",
     "contactInfo": "بيانات التواصل",
     "address": "العنوان",
@@ -462,6 +464,7 @@
       "schoolNameEnMax": "لا يمكن أن يتجاوز اسم المدرسة بالإنجليزية 100 حرف",
       "academicSystemRequired": "النظام الأكاديمي مطلوب",
       "academicSystemInvalid": "يرجى اختيار نظام أكاديمي صالح",
+      "subSystemIdsRequired": "يرجى اختيار نظام فرعي أكاديمي واحد على الأقل",
       "countryRequired": "الدولة مطلوبة",
       "countryInvalid": "يرجى اختيار دولة صالحة",
       "foundationDateRequired": "تاريخ التأسيس مطلوب",
@@ -1463,6 +1466,7 @@
   "monthlyCalendar": {
     "title": "التقويم الشهري",
     "description": "تابع أبرز فعاليات الشهر في لمحة واحدة.",
+    "educationalStages": "المراحل التعليمية",
     "summary": {
       "events": "فعاليات هذا الشهر",
       "exams": "فترات الاختبارات",
@@ -1525,13 +1529,17 @@
     },
     "details": {
       "title": "تفاصيل الحدث",
+      "eventItemTitle": "الحدث {{number}}",
       "eventNameAr": "اسم الحدث (باللغة العربية)",
       "eventNameEn": "اسم الحدث (باللغة الإنجليزية)",
       "date": "التاريخ",
       "time": "الوقت",
+      "startTime": "ساعة البدء",
+      "endTime": "ساعة الانتهاء",
       "stages": "المراحل الدراسية",
       "classrooms": "الصفوف الدراسية",
-      "fullDay": "يوم كامل"
+      "fullDay": "يوم كامل",
+      "customDuration": "مدة محددة"
     },
     "messages": {
       "eventAdded": "تم إضافة الحدث بنجاح",

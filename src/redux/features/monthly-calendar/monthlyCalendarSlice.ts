@@ -23,6 +23,7 @@ export interface MonthlyCalendarFilters {
 
 export interface MonthlyCalendarState {
   events: MonthlyCalendarEvent[];
+  popupEvents: MonthlyCalendarEvent[];
   currentEvent: MonthlyCalendarEvent | null;
   pagination: {
     page: number;
@@ -32,6 +33,7 @@ export interface MonthlyCalendarState {
   };
   filters: MonthlyCalendarFilters;
   isLoading: boolean;
+  popupIsLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
@@ -45,6 +47,7 @@ export interface FetchMonthlyCalendarPayload {
   page?: number;
   limit?: number;
   filters?: MonthlyCalendarFilters;
+  target?: 'list' | 'popup';
 }
 
 export interface FetchMonthlyCalendarResponse {
@@ -59,6 +62,7 @@ export interface FetchMonthlyCalendarResponse {
 
 const initialState: MonthlyCalendarState = {
   events: [],
+  popupEvents: [],
   currentEvent: null,
   pagination: {
     page: 1,
@@ -68,6 +72,7 @@ const initialState: MonthlyCalendarState = {
   },
   filters: {},
   isLoading: false,
+  popupIsLoading: false,
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
@@ -214,23 +219,39 @@ const monthlyCalendarSlice = createSlice({
   },
   extraReducers: (builder: ActionReducerMapBuilder<MonthlyCalendarState>) => {
     builder
-      .addCase(fetchMonthlyCalendarEvents.pending, (state) => {
-        state.isLoading = true;
+      .addCase(fetchMonthlyCalendarEvents.pending, (state, action) => {
+        const target = action.meta.arg?.target === 'popup' ? 'popup' : 'list';
         state.error = null;
+        if (target === 'popup') {
+          state.popupIsLoading = true;
+        } else {
+          state.isLoading = true;
+        }
       })
       .addCase(fetchMonthlyCalendarEvents.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.events = action.payload.data;
-        state.pagination = {
-          page: action.payload.meta.page,
-          limit: action.payload.meta.limit,
-          total: action.payload.meta.total,
-          totalPages: action.payload.meta.totalPages,
-        };
-        state.isInitialized = true;
+        const target = action.meta.arg?.target === 'popup' ? 'popup' : 'list';
+        if (target === 'popup') {
+          state.popupIsLoading = false;
+          state.popupEvents = action.payload.data;
+        } else {
+          state.isLoading = false;
+          state.events = action.payload.data;
+          state.pagination = {
+            page: action.payload.meta.page,
+            limit: action.payload.meta.limit,
+            total: action.payload.meta.total,
+            totalPages: action.payload.meta.totalPages,
+          };
+          state.isInitialized = true;
+        }
       })
       .addCase(fetchMonthlyCalendarEvents.rejected, (state, action) => {
-        state.isLoading = false;
+        const target = action.meta.arg?.target === 'popup' ? 'popup' : 'list';
+        if (target === 'popup') {
+          state.popupIsLoading = false;
+        } else {
+          state.isLoading = false;
+        }
         state.error = action.payload as string;
       })
       .addCase(fetchMonthlyCalendarEventById.pending, (state) => {
