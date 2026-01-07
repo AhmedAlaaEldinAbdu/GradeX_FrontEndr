@@ -1579,5 +1579,29 @@
       "grade": "الصف الدراسي",
       "division": "الشعبة"
     }
+  },
+  "addLesson": {
+    "title": "إضافة حصة",
+    "subjectName": "اسم المادة",
+    "selectSubject": "اختر اسم المادة",
+    "teacherName": "اسم المعلم",
+    "selectTeacher": "اسم المعلم",
+    "book": "الكتاب",
+    "bookName": "اسم الكتاب (اختياري)",
+    "selectBook": "اختر اسم الكتاب",
+    "classwork": "عمل الصف",
+    "fromPage": "من صفحة (اختياري)",
+    "toPage": "الي صفحة (اختياري)",
+    "pageNumber": "رقم الصفحة",
+    "homework": "الواجب المنزلي",
+    "descriptionAr": "وصف(باللغة العربية) (اختياري)",
+    "descriptionEn": "وصف(باللغة الانجليزية) (اختياري)",
+    "enterDescription": "ادخل وصف الواجب",
+    "sendTo": "إرسال الواجب الى",
+    "all": "الكل",
+    "specificStudents": "تحديد طلاب",
+    "attachments": "مرفقات (اختياري)",
+    "clickToUpload": "اضغط هنا للإضافة صورة أو ملف",
+    "lessonAddedSuccessfully": "تم إضافة الحصة بنجاح"
   }
 }
