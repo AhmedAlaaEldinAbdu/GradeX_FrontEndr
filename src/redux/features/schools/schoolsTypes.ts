@@ -15,11 +15,15 @@ import type {
 // State Types
 // ============================================================================
 
+// Tab type enum to track which tab's data is in state
+export type SchoolTabType = 'registered' | 'pending' | 'deleted' | null;
+
 export interface SchoolsState {
   // Data
   schools: School[];
   currentSchool: SchoolDetail | null;
   statistics: SchoolStatisticsResponse | null;
+  currentTabType: SchoolTabType; // Track which tab the current data belongs to
 
   // Pagination
   pagination: {
