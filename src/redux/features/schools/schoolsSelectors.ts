@@ -50,6 +50,14 @@ export const selectSchoolStatistics = createSelector(
   (schoolsState): SchoolStatisticsResponse | null => schoolsState.statistics
 );
 
+/**
+ * Select current tab type - indicates which tab the current data belongs to
+ */
+export const selectCurrentTabType = createSelector(
+  [selectSchoolsState],
+  (schoolsState) => schoolsState.currentTabType
+);
+
 // ============================================================================
 // Pagination Selectors
 // ============================================================================
