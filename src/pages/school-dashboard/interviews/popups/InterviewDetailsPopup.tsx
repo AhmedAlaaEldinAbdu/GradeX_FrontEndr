@@ -313,7 +313,6 @@ export default function InterviewDetailsPopup({
                 </div>
               );
             })}
-            {fetchError && <p className="text-sm text-red-500">{fetchError}</p>}
           </div>
         )}
       </div>
