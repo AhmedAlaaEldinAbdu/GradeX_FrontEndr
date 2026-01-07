@@ -9,8 +9,11 @@ import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import FileUpload from '@/shared/components/FileUpload';
 import PopupMessage from '@/shared/popups/PopupMessage';
+import SelectStudentsPopup, { type Student } from '../popups/SelectStudentsPopup';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import DefaultAvatar from '@gradex/assets/images/profile.png';
+import CustomImage from '@/shared/components/CustomImage';
 
 // Demo options for selects (will be replaced with API data)
 const subjectOptions = [
@@ -64,6 +67,8 @@ export default function AddLesson() {
 
   const [sendTo, setSendTo] = useState<'all' | 'specific'>('all');
   const [attachmentFileNames, setAttachmentFileNames] = useState<string[]>([]);
+  const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
+  const [isSelectStudentsPopupOpen, setIsSelectStudentsPopupOpen] = useState(false);
 
   const {
     control,
@@ -91,6 +96,7 @@ export default function AddLesson() {
       // TODO: Implement actual API call
       console.log('Form data:', data, 'Day:', dayIndex, 'Period:', periodIndex);
       console.log('Attachments:', attachmentFileNames);
+      console.log('Selected Students:', selectedStudents);
 
       setShowPopupMessage({
         show: true,
@@ -325,7 +331,10 @@ export default function AddLesson() {
                     name="sendTo"
                     value="all"
                     checked={sendTo === 'all'}
-                    onChange={() => setSendTo('all')}
+                    onChange={() => {
+                      setSendTo('all');
+                      setSelectedStudents([]);
+                    }}
                     className="h-4 w-4 accent-emerald-600"
                   />
                   <span className="text-sm text-gray-700">{t('addLesson.all')}</span>
@@ -336,7 +345,10 @@ export default function AddLesson() {
                     name="sendTo"
                     value="specific"
                     checked={sendTo === 'specific'}
-                    onChange={() => setSendTo('specific')}
+                    onChange={() => {
+                      setSendTo('specific');
+                      setIsSelectStudentsPopupOpen(true);
+                    }}
                     className="h-4 w-4 accent-emerald-600"
                   />
                   <span className="text-sm text-gray-700">{t('addLesson.specificStudents')}</span>
@@ -345,12 +357,55 @@ export default function AddLesson() {
             </FormField>
 
             {/* Selected students indicator */}
-            {sendTo === 'specific' && (
-              <div className="mt-3 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
-                  <span className="text-xs text-gray-600">+33</span>
+            {sendTo === 'specific' && selectedStudents.length > 0 && (
+              <div
+                className="mt-3 flex cursor-pointer items-center gap-2"
+                onClick={() => setIsSelectStudentsPopupOpen(true)}
+              >
+                {/* Stacked Avatars */}
+                <div className="flex -space-x-2 rtl:space-x-reverse">
+                  {selectedStudents.slice(0, 3).map((student, index) => (
+                    <div
+                      key={student.id}
+                      className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-100"
+                      style={{ zIndex: 3 - index }}
+                    >
+                      <CustomImage
+                        src={student.avatar || DefaultAvatar}
+                        alt={student.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ))}
+                  {selectedStudents.length > 3 && (
+                    <div
+                      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-200"
+                      style={{ zIndex: 0 }}
+                    >
+                      <span className="text-xs text-gray-600">+{selectedStudents.length - 3}</span>
+                    </div>
+                  )}
                 </div>
-                <span className="text-sm text-gray-600">علي محمد</span>
+                {/* First student name or count */}
+                <span className="text-sm text-gray-600">
+                  {selectedStudents.length === 1
+                    ? selectedStudents[0].name
+                    : t('addLesson.studentsSelected', { count: selectedStudents.length })}
+                </span>
+              </div>
+            )}
+
+            {/* Button to open popup when specific is selected but no students yet */}
+            {sendTo === 'specific' && selectedStudents.length === 0 && (
+              <div className="flex">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-3"
+                  onClick={() => setIsSelectStudentsPopupOpen(true)}
+                >
+                  {t('addLesson.selectStudentsButton')}
+                </Button>
               </div>
             )}
           </div>
@@ -394,6 +449,14 @@ export default function AddLesson() {
             navigate('/school/calendar/weekly');
           }
         }}
+      />
+
+      {/* Select Students Popup */}
+      <SelectStudentsPopup
+        isOpen={isSelectStudentsPopupOpen}
+        onClose={() => setIsSelectStudentsPopupOpen(false)}
+        onConfirm={(students) => setSelectedStudents(students)}
+        initialSelectedStudents={selectedStudents}
       />
     </>
   );
