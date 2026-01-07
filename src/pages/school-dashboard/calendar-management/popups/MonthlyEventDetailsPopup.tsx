@@ -18,20 +18,25 @@ export default function MonthlyEventDetailsPopup({
 }: MonthlyEventDetailsPopupProps) {
   const { t, i18n } = useTranslation();
 
-  if (!event) {
-    return null;
-  }
-
   const formattedDate = useMemo(() => {
-    const parsed = event.day ? new Date(`${event.day}T00:00:00`) : null;
-    if (!parsed || Number.isNaN(parsed.getTime())) {
-      return event.day;
+    const day = event?.day;
+    if (!day) {
+      return '';
+    }
+
+    const parsed = new Date(`${day}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) {
+      return day;
     }
 
     return format(parsed, 'PPP', {
       locale: i18n.language === 'ar' ? ar : undefined,
     });
-  }, [event.day, i18n.language]);
+  }, [event?.day, i18n.language]);
+
+  if (!event) {
+    return null;
+  }
 
   const formattedTime = event.isFullDay
     ? t('monthlyCalendar.details.fullDay')
