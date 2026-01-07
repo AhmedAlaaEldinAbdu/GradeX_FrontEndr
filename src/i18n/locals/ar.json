@@ -1600,6 +1600,11 @@
     "sendTo": "إرسال الواجب الى",
     "all": "الكل",
     "specificStudents": "تحديد طلاب",
+    "selectStudentsTitle": "تحديد الطلاب",
+    "searchStudentsPlaceholder": "ابحث بسهولة عما تريد",
+    "noStudentsFound": "لم يتم العثور على طلاب",
+    "selectStudentsButton": "اختر الطلاب",
+    "studentsSelected": "{{count}} طالب محدد",
     "attachments": "مرفقات (اختياري)",
     "clickToUpload": "اضغط هنا للإضافة صورة أو ملف",
     "lessonAddedSuccessfully": "تم إضافة الحصة بنجاح"
