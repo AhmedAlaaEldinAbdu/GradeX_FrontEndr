@@ -1573,5 +1573,29 @@
       "grade": "Grade",
       "division": "Division"
     }
+  },
+  "addLesson": {
+    "title": "Add Lesson",
+    "subjectName": "Subject Name",
+    "selectSubject": "Select Subject Name",
+    "teacherName": "Teacher Name",
+    "selectTeacher": "Teacher Name",
+    "book": "Book",
+    "bookName": "Book Name (Optional)",
+    "selectBook": "Select Book Name",
+    "classwork": "Classwork",
+    "fromPage": "From Page (Optional)",
+    "toPage": "To Page (Optional)",
+    "pageNumber": "Page Number",
+    "homework": "Homework",
+    "descriptionAr": "Description (Arabic) (Optional)",
+    "descriptionEn": "Description (English) (Optional)",
+    "enterDescription": "Enter description",
+    "sendTo": "Send Homework To",
+    "all": "All",
+    "specificStudents": "Specific Students",
+    "attachments": "Attachments (Optional)",
+    "clickToUpload": "Click here to add image or file",
+    "lessonAddedSuccessfully": "Lesson added successfully"
   }
 }
