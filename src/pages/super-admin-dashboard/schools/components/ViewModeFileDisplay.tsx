@@ -28,6 +28,11 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
     return imageExtensions.some((ext) => fileName.toLowerCase().endsWith(ext));
   };
 
+  // Check if file is a PDF
+  const isPdfFile = (fileName: string): boolean => {
+    return fileName.toLowerCase().endsWith('.pdf');
+  };
+
   // Get full URL for file
   const getFileUrl = (fileName: string): string => {
     // If fileName already contains full URL, return it
@@ -42,6 +47,13 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
   const handleImageClick = (fileName: string) => {
     if (isImageFile(fileName)) {
       setSelectedImage(getFileUrl(fileName));
+    }
+  };
+
+  // Handle PDF click to open in new tab
+  const handlePdfClick = (fileName: string) => {
+    if (isPdfFile(fileName)) {
+      window.open(getFileUrl(fileName), '_blank');
     }
   };
 
@@ -68,9 +80,19 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
                     {/* File Preview or Icon */}
                     <div
                       className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white ${
-                        isImage ? 'cursor-pointer overflow-hidden ring-2 ring-green-100' : ''
+                        isImage
+                          ? 'cursor-pointer overflow-hidden ring-2 ring-green-100'
+                          : isPdfFile(fileName)
+                            ? 'cursor-pointer ring-2 ring-red-100'
+                            : ''
                       }`}
-                      onClick={() => handleImageClick(fileName)}
+                      onClick={() =>
+                        isImage
+                          ? handleImageClick(fileName)
+                          : isPdfFile(fileName)
+                            ? handlePdfClick(fileName)
+                            : null
+                      }
                     >
                       {isImage ? (
                         <CustomImage
@@ -86,9 +108,26 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
                             }
                           }}
                         />
+                      ) : isPdfFile(fileName) ? (
+                        <svg
+                          className="h-6 w-6 text-red-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                          <text x="7" y="17" fontSize="6" fill="currentColor" fontWeight="bold">
+                            PDF
+                          </text>
+                        </svg>
                       ) : null}
                       <svg
-                        className={`h-6 w-6 text-green-600 ${isImage ? 'hidden' : ''}`}
+                        className={`h-6 w-6 text-green-600 ${isImage || isPdfFile(fileName) ? 'hidden' : ''}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -112,6 +151,11 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
                         {isImage && (
                           <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700">
                             {t('common.image')}
+                          </span>
+                        )}
+                        {isPdfFile(fileName) && (
+                          <span className="rounded bg-red-100 px-2 py-0.5 text-xs text-red-700">
+                            PDF
                           </span>
                         )}
                       </div>
@@ -143,6 +187,30 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
                           strokeLinejoin="round"
                           strokeWidth={2}
                           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    </button>
+                  )}
+
+                  {/* View Button for PDFs - Opens in new tab */}
+                  {isPdfFile(fileName) && (
+                    <button
+                      type="button"
+                      onClick={() => handlePdfClick(fileName)}
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
+                      title={t('common.view')}
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                         />
                       </svg>
                     </button>
