@@ -65,6 +65,7 @@ interface WeeklyScheduleCalendarProps {
   onDotsClick?: (lesson: ScheduleLesson, e: React.MouseEvent) => void;
   onDayMenuClick?: (dayIndex: number, e: React.MouseEvent) => void;
   onWeekChange?: (weekStart: Date) => void; // Callback when week changes
+  onEmptyCellClick?: (dayIndex: number, periodIndex: number) => void; // Callback when clicking empty cell plus icon
   className?: string;
 }
 
@@ -118,6 +119,7 @@ export default function WeeklyScheduleCalendar({
   lessonContextActions = [],
   onLessonClick,
   onDotsClick,
+  onEmptyCellClick,
   onWeekChange,
   className = '',
 }: WeeklyScheduleCalendarProps) {
@@ -621,7 +623,7 @@ export default function WeeklyScheduleCalendar({
                   return (
                     <div
                       key={periodIndex}
-                      className={`relative min-h-[160px] rounded-xl p-1 ${cellBgClass}`}
+                      className={`group relative min-h-[160px] rounded-xl p-1 ${cellBgClass}`}
                     >
                       {/* Event block (can span horizontally and vertically) */}
                       {eventAtCell && isEventStart && (
@@ -653,6 +655,29 @@ export default function WeeklyScheduleCalendar({
                             );
                           })}
                         </div>
+                      )}
+                      {/* Plus icon for empty cells - shown on hover */}
+                      {!eventAtCell && cellLessons.length === 0 && onEmptyCellClick && (
+                        <button
+                          onClick={() => onEmptyCellClick(dayIndex, periodIndex)}
+                          className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                        >
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
+                            <svg
+                              className="h-5 w-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 4v16m8-8H4"
+                              />
+                            </svg>
+                          </div>
+                        </button>
                       )}
                     </div>
                   );
