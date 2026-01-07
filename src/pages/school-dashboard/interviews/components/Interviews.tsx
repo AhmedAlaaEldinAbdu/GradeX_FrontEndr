@@ -153,8 +153,6 @@ export default function Interviews() {
     });
   }, [interviewsData, t]);
 
-  const showEmptyState = !isLoading && calendarInterviews.length === 0;
-
   const handleSelectSlot = (_slotInfo: { start: Date; end: Date }) => {
     // navigate('/interviews/add-interview', { state: { date: slotInfo.start } });
   };
@@ -376,7 +374,7 @@ export default function Interviews() {
       onClick: (_date, event) => {
         if (event) {
           const interview = calendarInterviews.find((i) => i.id === event.id);
-          if (interview) {
+          if (interview && !hasMultipleInterviewsOnDay(interview.start)) {
             handleOpenEditPopup(interview);
           }
         }
@@ -384,6 +382,13 @@ export default function Interviews() {
       color: 'success',
       showOnDate: false,
       showOnEvent: true,
+      hidden: (_date, event) => {
+        if (event) {
+          const interview = calendarInterviews.find((i) => i.id === event.id);
+          return interview ? hasMultipleInterviewsOnDay(interview.start) : false;
+        }
+        return false;
+      },
     },
     {
       label: t('interviews.deleteInterview'),
@@ -491,6 +496,14 @@ export default function Interviews() {
         onClose={() => {
           setDetailsOpen(false);
           setSelectedInterview(null);
+        }}
+        onEdit={(interviewId) => {
+          const interview = calendarInterviews.find((i) => i.id === interviewId);
+          if (interview) {
+            setDetailsOpen(false);
+            setSelectedInterview(null);
+            handleOpenEditPopup(interview);
+          }
         }}
         interview={selectedInterview}
       />
