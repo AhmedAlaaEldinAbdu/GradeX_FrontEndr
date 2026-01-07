@@ -455,13 +455,17 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         icon: EditFillIcon,
         onClick: (_date, calendarEvent) => {
           const event = resolveEvent(calendarEvent);
-          if (event) {
+          if (event && !hasMultipleEventsOnDay(event.day)) {
             handleOpenEditPopup(event);
           }
         },
         color: 'success',
         showOnDate: false,
         showOnEvent: true,
+        hidden: (_date, calendarEvent) => {
+          const event = resolveEvent(calendarEvent);
+          return event ? hasMultipleEventsOnDay(event.day) : false;
+        },
       },
       {
         label: t('monthlyCalendar.actions.deleteEvent'),
@@ -599,6 +603,11 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         onClose={() => {
           setDetailsOpen(false);
           setSelectedEvent(null);
+        }}
+        onEdit={(item) => {
+          setDetailsOpen(false);
+          setSelectedEvent(null);
+          handleOpenEditPopup(item);
         }}
         event={selectedEvent}
       />

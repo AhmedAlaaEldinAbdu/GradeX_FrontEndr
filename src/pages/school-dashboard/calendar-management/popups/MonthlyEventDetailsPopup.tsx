@@ -23,12 +23,14 @@ interface MonthlyEventDetailsPopupProps {
   isOpen: boolean;
   onClose: () => void;
   event: MonthlyEventEntity | null;
+  onEdit?: (event: MonthlyEventEntity) => void;
 }
 
 export default function MonthlyEventDetailsPopup({
   isOpen,
   onClose,
   event,
+  onEdit,
 }: MonthlyEventDetailsPopupProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
@@ -242,7 +244,15 @@ export default function MonthlyEventDetailsPopup({
                       {localizedEventName}
                     </h3>
                     {normalizedPopupEvents.length > 1 && (
-                      <div className="flex items-center">
+                      <div className="flex items-center gap-2">
+                        <IconButton
+                          status="edit"
+                          variant="success"
+                          onClick={() => onEdit?.(item)}
+                          disabled={isDeleting}
+                          ariaLabel="Edit"
+                          title={t('actions.edit')}
+                        />
                         <IconButton
                           status="delete"
                           variant="danger"
