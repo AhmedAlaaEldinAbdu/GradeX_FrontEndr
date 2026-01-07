@@ -132,7 +132,7 @@ export default function AcademicSystemTab() {
     {
       header: 'academicSystem.educationalStagesCount',
       accessor: (row) => row.gradeCount,
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
     {
@@ -148,7 +148,7 @@ export default function AcademicSystemTab() {
           <DropdownMenuAcademicSystemAction id={row.id} onActionComplete={fetchAcademicSystems} />
         </div>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
   ];

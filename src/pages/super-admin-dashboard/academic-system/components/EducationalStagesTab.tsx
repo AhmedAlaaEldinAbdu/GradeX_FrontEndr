@@ -165,7 +165,7 @@ export default function EducationalStagesTab() {
           />
         </div>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
   ];

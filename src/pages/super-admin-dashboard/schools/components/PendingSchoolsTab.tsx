@@ -214,7 +214,7 @@ export default function PendingSchoolsTab({
           return '-';
         }
       },
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[130px]',
     },
     {
       header: 'schools.contactMethods',
@@ -235,7 +235,7 @@ export default function PendingSchoolsTab({
           </div>
         );
       },
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[140px]',
     },
     {
       header: 'common.actions',

@@ -212,7 +212,7 @@ export default function DeletedSchoolsTab({
           return '-';
         }
       },
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[130px]',
     },
     {
       header: 'schools.contactMethods',
@@ -233,7 +233,7 @@ export default function DeletedSchoolsTab({
           </div>
         );
       },
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[140px]',
     },
     {
       header: 'common.actions',

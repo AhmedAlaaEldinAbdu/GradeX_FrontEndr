@@ -242,7 +242,7 @@ export default function RegisteredSchoolsTab({
           return '-';
         }
       },
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[130px]',
     },
     {
       header: 'schools.contactMethods',
@@ -260,7 +260,7 @@ export default function RegisteredSchoolsTab({
           )}
         </div>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[140px]',
     },
     {
       header: 'common.actions',
