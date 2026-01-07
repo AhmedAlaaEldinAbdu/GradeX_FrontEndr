@@ -1465,6 +1465,7 @@
   "monthlyCalendar": {
     "title": "Monthly Calendar",
     "description": "Keep track of academic highlights for the month at a glance.",
+    "educationalStages": "Educational stages",
     "summary": {
       "events": "Events this month",
       "exams": "Exam windows",
@@ -1527,10 +1528,13 @@
     },
     "details": {
       "title": "Event details",
+      "eventItemTitle": "Event {{number}}",
       "eventNameAr": "Event name (in Arabic)",
       "eventNameEn": "Event name (in English)",
       "date": "Date",
       "time": "Time",
+      "startTime": "Start time",
+      "endTime": "End time",
       "stages": "Stages",
       "classrooms": "Classrooms",
       "fullDay": "Full day"

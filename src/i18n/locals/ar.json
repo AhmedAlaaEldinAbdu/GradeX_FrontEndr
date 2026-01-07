@@ -1463,6 +1463,7 @@
   "monthlyCalendar": {
     "title": "التقويم الشهري",
     "description": "تابع أبرز فعاليات الشهر في لمحة واحدة.",
+    "educationalStages": "المراحل التعليمية",
     "summary": {
       "events": "فعاليات هذا الشهر",
       "exams": "فترات الاختبارات",
@@ -1525,10 +1526,13 @@
     },
     "details": {
       "title": "تفاصيل الحدث",
+      "eventItemTitle": "الحدث {{number}}",
       "eventNameAr": "اسم الحدث (باللغة العربية)",
       "eventNameEn": "اسم الحدث (باللغة الإنجليزية)",
       "date": "التاريخ",
       "time": "الوقت",
+      "startTime": "ساعة البدء",
+      "endTime": "ساعة الانتهاء",
       "stages": "المراحل الدراسية",
       "classrooms": "الصفوف الدراسية",
       "fullDay": "يوم كامل"
