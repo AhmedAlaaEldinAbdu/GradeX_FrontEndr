@@ -331,26 +331,26 @@ export default function AttendanceManagement() {
           </IconButton>
         </div>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[230px]',
     },
     {
       header: 'attendance.educationalStage',
       accessor: (row) => (
         <span>{currentLang === 'ar' ? row.educationalStage : row.educationalStageEn}</span>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
       header: 'attendance.classroom',
       accessor: (row) => <span>{currentLang === 'ar' ? row.classroom : row.classroomEn}</span>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
       header: 'attendance.date',
       accessor: (row) => <span>{row.date}</span>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
@@ -358,7 +358,7 @@ export default function AttendanceManagement() {
       accessor: (row) => (
         <span className="text-sm">{row.attendanceTime || t('attendance.notAvailable')}</span>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
@@ -369,7 +369,7 @@ export default function AttendanceManagement() {
           {currentLang === 'ar' ? row.createdByRole : row.createdByRoleEn})
         </span>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[220px]',
       className: 'text-center',
     },
     {
@@ -417,7 +417,7 @@ export default function AttendanceManagement() {
           </button>
         </div>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
   ];

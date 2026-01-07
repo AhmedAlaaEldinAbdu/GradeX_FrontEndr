@@ -136,23 +136,23 @@ export default function BooksList() {
     {
       header: 'books.bookName',
       accessor: (row) => <span>{row.name}</span>,
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[200px]',
     },
     {
       header: 'books.subjectName',
       accessor: (row) => <span>{row.materialName}</span>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[150px]',
     },
     {
       header: 'books.educationalStage',
       accessor: (row) => <span>{currentLang === 'ar' ? row.gradeNameAr : row.gradeNameEn}</span>,
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[230px]',
       className: 'text-center',
     },
     {
       header: 'books.bookCode',
       accessor: (row) => <span>{row.code || '-'}</span>,
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
     {
@@ -182,7 +182,7 @@ export default function BooksList() {
           </button>
         </div>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[130px]',
       className: 'text-center',
     },
     {
@@ -194,25 +194,25 @@ export default function BooksList() {
           {getStatusLabel(row.status)}
         </span>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
       header: 'books.totalQuantity',
       accessor: (row) => <span>{row.totalQuantity ?? 0}</span>,
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
       header: 'books.remainingQuantity',
       accessor: (row) => <span>{row.remainingQuantity ?? 0}</span>,
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
       header: 'books.soldQuantity',
       accessor: (row) => <span>{row.soldQuantity ?? 0}</span>,
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
@@ -222,7 +222,7 @@ export default function BooksList() {
           {row.price ?? 0} {t('books.currency')}
         </span>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
@@ -247,7 +247,7 @@ export default function BooksList() {
           />
         </div>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
   ];

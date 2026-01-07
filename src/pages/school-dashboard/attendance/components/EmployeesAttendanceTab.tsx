@@ -409,7 +409,7 @@ export default function EmployeesAttendanceTab({
           </IconButton>
         </div>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[230px]',
     },
     {
       header: 'attendance.educationalStage',
@@ -420,19 +420,19 @@ export default function EmployeesAttendanceTab({
             : row.lkSchoolStageNameEn || t('attendance.notAvailable')}
         </span>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
       header: 'attendance.classroom',
       accessor: (row) => <span>{getClassroomsDisplay(row.classRooms, currentLang)}</span>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
       header: 'attendance.date',
       accessor: (row) => <span>{formatDateDisplay(row.date)}</span>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
@@ -444,7 +444,7 @@ export default function EmployeesAttendanceTab({
           </div>
         );
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
@@ -457,7 +457,7 @@ export default function EmployeesAttendanceTab({
             : ''}
         </span>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[220px]',
       className: 'text-center',
     },
     {
@@ -512,19 +512,39 @@ export default function EmployeesAttendanceTab({
           </div>
         );
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
   ];
 
   const filterConfigs: FilterConfig[] = [
+     {
+      type: 'custom',
+      name: 'educational-stage-filter',
+      placeholder: '',
+      value: selectedStage,
+      onChange: () => {},
+      width: '30%',
+      customComponent: (
+        <CustomSelect
+          value={selectedStage}
+          onChange={(value) => setSelectedStage(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={schoolStages.map((stage) => ({
+            value: stage.id,
+            label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
+          }))}
+          placeholder={t('attendance.educationalStage')}
+          maxHeight="200px"
+        />
+      ),
+    },
     {
       type: 'custom',
       name: 'classroom-filter',
       placeholder: '',
       value: selectedClassroom,
       onChange: () => {},
-      width: '20%',
+      width: '30%',
       customComponent: (
         <CustomSelect
           value={selectedClassroom}
@@ -536,26 +556,6 @@ export default function EmployeesAttendanceTab({
             label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
           }))}
           placeholder={t('attendance.classroom')}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'educational-stage-filter',
-      placeholder: '',
-      value: selectedStage,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedStage}
-          onChange={(value) => setSelectedStage(Array.isArray(value) ? (value[0] ?? '') : value)}
-          options={schoolStages.map((stage) => ({
-            value: stage.id,
-            label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
-          }))}
-          placeholder={t('attendance.educationalStage')}
           maxHeight="200px"
         />
       ),
