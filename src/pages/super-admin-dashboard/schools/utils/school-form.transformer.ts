@@ -29,6 +29,7 @@ interface BranchData {
 interface BackendSchoolData {
   Name?: string;
   AcademicSystemId?: string;
+  SubSystemIds?: string[];
   FoundingDate?: string;
   Description?: string;
   IsCurrentSystem?: boolean | string;
@@ -88,6 +89,12 @@ function appendBasicInformation(formData: FormData, schoolData: SchoolFormData):
 
   const academicSystemId = extractAcademicSystemId(schoolData.academicSystem);
   formData.append('AcademicSystemId', academicSystemId);
+
+  if (schoolData.subSystemIds && schoolData.subSystemIds.length > 0) {
+    schoolData.subSystemIds.forEach((subSystemId, index) => {
+      formData.append(`SubSystemIds[${index}]`, subSystemId);
+    });
+  }
 
   const foundingDate = formatFoundingDate(schoolData.foundationDate);
   formData.append('FoundingDate', foundingDate);
@@ -177,7 +184,7 @@ function appendFacilities(
           facilityDetail.oldFacilitiesFilePath &&
           facilityDetail.oldFacilitiesFilePath.length > 0
         ) {
-          facilityDetail.oldFacilitiesFilePath.forEach((path, pathIndex) => {
+          facilityDetail.oldFacilitiesFilePath.forEach((path: string, pathIndex: number) => {
             formData.append(
               `Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`,
               path
@@ -218,7 +225,7 @@ function appendFacilities(
           otherFacilityDetail.oldFacilitiesFilePath &&
           otherFacilityDetail.oldFacilitiesFilePath.length > 0
         ) {
-          otherFacilityDetail.oldFacilitiesFilePath.forEach((path, pathIndex) => {
+          otherFacilityDetail.oldFacilitiesFilePath.forEach((path: string, pathIndex: number) => {
             formData.append(
               `Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`,
               path
@@ -345,6 +352,7 @@ interface BackendSchoolResponse {
   nameAr?: string;
   nameEn?: string;
   academicSystemId?: string;
+  subSystemIds?: string[];
   foundingDate?: string;
   description?: string;
   services?: string | null;
@@ -422,12 +430,18 @@ interface BackendSchoolResponse {
 export function transformBackendToSchoolForm(backendData: unknown): SchoolFormData {
   const data = backendData as BackendSchoolData;
 
+  const subSystemIdsRaw = (data as any).SubSystemIds ?? (data as any).subSystemIds;
+  const subSystemIds = Array.isArray(subSystemIdsRaw)
+    ? subSystemIdsRaw.filter((value) => typeof value === 'string' && value.trim().length > 0)
+    : [];
+
   return {
     // Basic Information
     schoolName: data.Name || '',
     schoolNameAr: data.Name || '',
     schoolNameEn: data.Name || '',
     academicSystem: data.AcademicSystemId ? [data.AcademicSystemId] : [],
+    subSystemIds,
     foundationDate: parseDate(data.FoundingDate),
     aboutSchool: data.Description || '',
     hasCurrentSystem: parseBooleanField(data.IsCurrentSystem),
@@ -500,6 +514,11 @@ export function transformBackendSchoolToForm(
   // Extract application feature IDs
   const applicationFeatures =
     data.applicationFeaturesDto?.map((feature) => feature.lkApplicationFeatureId) || [];
+
+  const subSystemIdsRaw = (data as any).subSystemIds ?? (data as any).SubSystemIds;
+  const subSystemIds = Array.isArray(subSystemIdsRaw)
+    ? subSystemIdsRaw.filter((value) => typeof value === 'string' && value.trim().length > 0)
+    : [];
 
   // Extract license file paths from attachments (use filePath for full URL access)
   const licenseFiles = data.licensesAttachments?.map((attachment) => attachment.filePath) || [];
@@ -612,6 +631,7 @@ export function transformBackendSchoolToForm(
     schoolNameAr: data.nameAr || '',
     schoolNameEn: data.nameEn || '',
     academicSystem: data.academicSystemId ? [data.academicSystemId] : [],
+    subSystemIds,
     foundationDate: formatDateForInput(data.foundingDate),
     aboutSchool: data.description || '',
     hasCurrentSystem: data.isCurrentSystem || false,

@@ -38,6 +38,19 @@ export const basicInfoSchema = yup.object().shape({
       return false;
     }),
 
+  subSystemIds: yup
+    .array()
+    .of(yup.string().required())
+    .when('academicSystem', (academicSystem: unknown, schema) => {
+      const hasAcademicSystem =
+        (typeof academicSystem === 'string' && academicSystem.trim().length > 0) ||
+        (Array.isArray(academicSystem) && academicSystem.length > 0);
+
+      return hasAcademicSystem
+        ? schema.min(1, 'schools.validation.subSystemIdsRequired').required('schools.validation.subSystemIdsRequired')
+        : schema.optional().default([]);
+    }),
+
   country: yup.string().required('schools.validation.countryRequired'),
 
   foundationDate: yup
