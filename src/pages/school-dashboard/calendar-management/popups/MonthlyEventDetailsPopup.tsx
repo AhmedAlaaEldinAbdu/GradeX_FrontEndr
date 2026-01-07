@@ -157,9 +157,8 @@ export default function MonthlyEventDetailsPopup({
                 <div key={item.id} className="rounded-2xl border border-gray-200 bg-white p-5">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-right text-lg font-semibold text-gray-900">
-                      {t('monthlyCalendar.details.eventItemTitle', { number: index + 1 })}
+                      {localizedEventName}
                     </h3>
-                    <p className="text-sm font-semibold text-gray-700">{localizedEventName}</p>
                   </div>
 
                   <div className="mt-4 space-y-3 text-sm">
@@ -248,8 +247,6 @@ export default function MonthlyEventDetailsPopup({
                 </div>
               );
             })}
-
-            {fetchError && <p className="text-sm text-red-500">{fetchError}</p>}
           </div>
         )}
       </div>
