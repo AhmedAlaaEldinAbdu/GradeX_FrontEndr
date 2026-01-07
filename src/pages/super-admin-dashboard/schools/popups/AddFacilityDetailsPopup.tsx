@@ -77,6 +77,24 @@ export default function AddFacilityDetailsPopup({
     }
   };
 
+  // Check if file is a PDF
+  const isPdfFile = (fileName: string | undefined): boolean => {
+    return fileName?.toLowerCase().endsWith('.pdf') || false;
+  };
+
+  // Handle opening PDF in new tab
+  const handleViewPdf = () => {
+    if (imageFile && isPdfFile(imageFile.name)) {
+      const url = URL.createObjectURL(imageFile);
+      window.open(url, '_blank');
+    } else if (existingDetails?.imageUrl && isPdfFile(existingDetails.imageUrl)) {
+      const url = existingDetails.imageUrl.startsWith('http')
+        ? existingDetails.imageUrl
+        : `http://gradexpro.runasp.net/${existingDetails.imageUrl}`;
+      window.open(url, '_blank');
+    }
+  };
+
   const handleImageDelete = () => {
     setImageFile(null);
     setImageFileName(undefined);
@@ -147,7 +165,7 @@ export default function AddFacilityDetailsPopup({
               <div className="relative rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center transition-all hover:border-green-500">
                 <input
                   type="file"
-                  accept="image/*,.svg,.jpg,.jpeg,.png"
+                  accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
                   onChange={handleImageUpload}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
@@ -177,7 +195,7 @@ export default function AddFacilityDetailsPopup({
                     />
                   </svg>
                   <p className="text-sm text-green-600">{t('schools.uploadMedia')}</p>
-                  <p className="text-sm text-gray-500">GIF, SVG, JPG, PNG</p>
+                  <p className="text-sm text-gray-500">GIF, SVG, JPG, PNG, PDF</p>
                 </div>
               </div>
             )}
@@ -193,7 +211,7 @@ export default function AddFacilityDetailsPopup({
             {hasExistingImage && imageFileName && (
               <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4">
                 {/* Image Preview in View Mode */}
-                {readOnly && existingDetails?.imageUrl && (
+                {readOnly && existingDetails?.imageUrl && !isPdfFile(existingDetails.imageUrl) && (
                   <div className="mb-3">
                     <CustomImage
                       src={
@@ -210,23 +228,69 @@ export default function AddFacilityDetailsPopup({
                   </div>
                 )}
 
+                {/* PDF Preview in View Mode - Show button to open */}
+                {readOnly && existingDetails?.imageUrl && isPdfFile(existingDetails.imageUrl) && (
+                  <div className="mb-3 flex flex-col items-center justify-center rounded-lg bg-gray-100 p-6">
+                    <svg
+                      className="mb-2 h-12 w-12 text-red-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className="mb-2 text-sm font-medium text-gray-700">{imageFileName}</p>
+                    <button
+                      type="button"
+                      onClick={handleViewPdf}
+                      className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-700"
+                    >
+                      {t('common.view')} PDF
+                    </button>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {/* File Preview */}
                     <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
-                      <svg
-                        className="h-6 w-6 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
+                      {isPdfFile(imageFileName) ? (
+                        <svg
+                          className="h-6 w-6 text-red-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                          <text x="7" y="17" fontSize="6" fill="currentColor" fontWeight="bold">
+                            PDF
+                          </text>
+                        </svg>
+                      ) : (
+                        <svg
+                          className="h-6 w-6 text-green-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      )}
                     </div>
 
                     {/* File Info */}
@@ -243,13 +307,36 @@ export default function AddFacilityDetailsPopup({
                   {/* Action Buttons - Hide in Read-Only Mode */}
                   {!readOnly && (
                     <div className="flex items-center gap-2">
+                      {/* View PDF Button */}
+                      {isPdfFile(imageFileName) && (
+                        <button
+                          type="button"
+                          onClick={handleViewPdf}
+                          className="flex h-8 w-8 items-center justify-center rounded-md border border-blue-300 bg-white text-blue-600 transition-colors hover:bg-blue-50"
+                          title={t('common.view')}
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                            />
+                          </svg>
+                        </button>
+                      )}
                       <label
                         className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50"
                         title={t('common.edit')}
                       >
                         <input
                           type="file"
-                          accept="image/*,.svg,.jpg,.jpeg,.png"
+                          accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
                           onChange={handleImageUpload}
                           className="hidden"
                         />
