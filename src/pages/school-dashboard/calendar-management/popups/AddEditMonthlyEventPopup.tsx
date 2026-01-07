@@ -50,7 +50,7 @@ export default function AddEditMonthlyEventPopup({
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<MonthlyEventFormValues>({
-    resolver: yupResolver(MonthlyEventFormSchema),
+    resolver: yupResolver(MonthlyEventFormSchema) as any,
     defaultValues: {
       nameAr: '',
       nameEn: '',
@@ -103,9 +103,10 @@ export default function AddEditMonthlyEventPopup({
   const handleFormSubmit = async (values: MonthlyEventFormValues) => {
     try {
       await onSubmit(values);
-      closeAndReset();
     } catch (error) {
-      // keep the modal open so the user can resolve validation/API errors
+      // Error is handled in parent component
+      // Keep the modal open so the user can resolve validation/API errors
+      console.error('Form submission error:', error);
     }
   };
 
@@ -181,7 +182,7 @@ export default function AddEditMonthlyEventPopup({
               render={({ field }) => (
                 <CustomSelect
                   id="monthly-event-stage"
-                  value={field.value}
+                  value={field.value || []}
                   onChange={(value) => field.onChange(Array.isArray(value) ? value : [value])}
                   options={gradeOptions}
                   placeholder={gradePlaceholder}
@@ -205,7 +206,7 @@ export default function AddEditMonthlyEventPopup({
               render={({ field }) => (
                 <CustomSelect
                   id="monthly-event-classrooms"
-                  value={field.value}
+                  value={field.value || []}
                   onChange={(value) => field.onChange(Array.isArray(value) ? value : [value])}
                   options={classroomOptions}
                   placeholder={classroomPlaceholder}

@@ -36,7 +36,6 @@ import type {
   MonthlyEventEntity,
 } from '@/services/api/types/monthly-calendar.types';
 import type { MonthlyEventFormValues } from '@/validations/monthly-calendar-validations';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
 import { getErrorMessage } from '@/lib/http';
 
 type CalendarMonthlyEvent = CalendarEvent & { meta: MonthlyEventEntity };
@@ -47,8 +46,6 @@ export type MonthlyCalendarHandle = {
 
 const DEFAULT_CALENDAR_START = '08:00';
 const DEFAULT_CALENDAR_END = '18:00';
-const DEFAULT_PAGE_INDEX = 1;
-const DEFAULT_PAGE_SIZE = 200;
 const CLASSROOM_LOOKUP_LIMIT = 1000;
 const EDUCATIONAL_STAGE_LOOKUP_LIMIT = 1000;
 const CUSTOM_DURATION = 1;
@@ -95,6 +92,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
+  const DummySchoolBranchId = '41b6a93d-947c-4d58-959a-08de1c988710';
 
   const {
     events: apiEvents,
@@ -131,8 +129,16 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         pageIndex: 1,
         pageSize: EDUCATIONAL_STAGE_LOOKUP_LIMIT,
       })
-    );
-  }, [dispatch, educationalStagesCount]);
+    )
+      .unwrap()
+      .catch((error) => {
+        showToast({
+          message: getErrorMessage(error),
+          type: 'error',
+          isRaw: true,
+        });
+      });
+  }, [dispatch, educationalStagesCount, showToast]);
 
   useEffect(() => {
     let isMounted = true;
@@ -143,14 +149,16 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         const response = await classroomApiService.getClassrooms({
           pageIndex: 1,
           pageSize: CLASSROOM_LOOKUP_LIMIT,
+          academicSystemId: DummySchoolBranchId,
         });
         if (!isMounted) return;
         const list = response.data?.classroomDto ?? [];
         setClassrooms(list);
       } catch (error) {
         if (!isMounted) return;
+        const errorMessage = getErrorMessage(error);
         showToast({
-          message: getErrorMessage(error),
+          message: errorMessage,
           type: 'error',
           isRaw: true,
         });
@@ -280,7 +288,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       duration: event.isFullDay ? FULL_DAY_DURATION : CUSTOM_DURATION,
       startTime: event.startTime ?? '',
       endTime: event.endTime ?? '',
-      schoolBranchesId: event.schoolBranchesId || STATIC_SCHOOL_BRANCH_ID,
+      schoolBranchesId: event.schoolBranchesId || DummySchoolBranchId,
     }),
     []
   );
@@ -321,9 +329,9 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       duration: values.isFullDay ? FULL_DAY_DURATION : CUSTOM_DURATION,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
-      schoolBranchesId: values.schoolBranchesId || STATIC_SCHOOL_BRANCH_ID,
-      grades: values.grades,
-      classRomms: values.classRomms,
+      schoolBranchesId: values.schoolBranchesId || DummySchoolBranchId,
+      grades: values.grades || [],
+      classRomms: values.classRomms || [],
     };
   };
 
@@ -332,33 +340,50 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       const payload = transformValuesToRequest(values);
       try {
         if (editorMode === 'edit' && editingEventId) {
-          await dispatch(updateMonthlyCalendarEvent({ id: editingEventId, data: payload }))
-            .unwrap()
-            .then((res) => {
-              if (res.isSuccess) {
-                showToast({ message: t('monthlyCalendar.messages.eventUpdated'), type: 'success' });
-                fetchEvents();
-              } else {
-                showToast({ message: t('common.errorOccurred'), type: 'error' });
-              }
+          const res = await dispatch(
+            updateMonthlyCalendarEvent({ id: editingEventId, data: payload })
+          ).unwrap();
+          if (res.isSuccess) {
+            showToast({ message: t('monthlyCalendar.messages.eventUpdated'), type: 'success' });
+            fetchEvents();
+            handleCloseEditor();
+          } else {
+            const errorMessage = res.successMessage || t('common.errorOccurred');
+            const validationErrors = res.validationErrors
+              ?.map((err: any) =>
+                typeof err === 'string' ? err : err.errorMessage || err.propertyName
+              )
+              .join(', ');
+            showToast({
+              message: validationErrors || errorMessage,
+              type: 'error',
+              isRaw: true,
             });
+          }
         } else {
-          await dispatch(createMonthlyCalendarEvent(payload))
-            .unwrap()
-            .then((res) => {
-              if (res.isSuccess) {
-                showToast({ message: t('monthlyCalendar.messages.eventAdded'), type: 'success' });
-                fetchEvents();
-              } else {
-                showToast({ message: t('common.errorOccurred'), type: 'error' });
-              }
+          const res = await dispatch(createMonthlyCalendarEvent(payload)).unwrap();
+          if (res.isSuccess) {
+            showToast({ message: t('monthlyCalendar.messages.eventAdded'), type: 'success' });
+            fetchEvents();
+            handleCloseEditor();
+          } else {
+            const errorMessage = res.successMessage || t('common.errorOccurred');
+            const validationErrors = res.validationErrors
+              ?.map((err: any) =>
+                typeof err === 'string' ? err : err.errorMessage || err.propertyName
+              )
+              .join(', ');
+            showToast({
+              message: validationErrors || errorMessage,
+              type: 'error',
+              isRaw: true,
             });
+          }
         }
-        handleCloseEditor();
-      } catch (error) {
-        const message = typeof error === 'string' ? error : t('common.errorOccurred');
-        showToast({ message, type: 'error', isRaw: typeof error === 'string' });
-        throw error;
+      } catch (error: any) {
+        const message =
+          error?.message || (typeof error === 'string' ? error : t('common.errorOccurred'));
+        showToast({ message, type: 'error', isRaw: true });
       }
     },
     [dispatch, editorMode, editingEventId, fetchEvents, handleCloseEditor, showToast, t]
@@ -371,20 +396,20 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const handleConfirmDelete = useCallback(async () => {
     if (!eventIdPendingDelete) return;
     try {
-      await dispatch(deleteMonthlyCalendarEvent(eventIdPendingDelete))
-        .unwrap()
-        .then((res: any) => {
-          if (res.isSuccess || res == eventIdPendingDelete) {
-            setEventIdPendingDelete(null);
-            showToast({ message: t('monthlyCalendar.messages.eventDeleted'), type: 'success' });
-            fetchEvents();
-          } else {
-            showToast({ message: t('common.errorOccurred'), type: 'error' });
-          }
-        });
-    } catch (error) {
-      const message = typeof error === 'string' ? error : t('common.errorOccurred');
-      showToast({ message, type: 'error', isRaw: typeof error === 'string' });
+      const res: any = await dispatch(deleteMonthlyCalendarEvent(eventIdPendingDelete)).unwrap();
+      if (res.isSuccess || res == eventIdPendingDelete) {
+        setEventIdPendingDelete(null);
+        showToast({ message: t('monthlyCalendar.messages.eventDeleted'), type: 'success' });
+        fetchEvents();
+      } else {
+        const errorMessage = res.successMessage || t('common.errorOccurred');
+        showToast({ message: errorMessage, type: 'error', isRaw: true });
+      }
+    } catch (error: any) {
+      setEventIdPendingDelete(null);
+      const message =
+        error?.message || (typeof error === 'string' ? error : t('common.errorOccurred'));
+      showToast({ message, type: 'error', isRaw: true });
     }
   }, [dispatch, eventIdPendingDelete, fetchEvents, showToast, t]);
 
@@ -550,7 +575,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         mode={editorMode}
         gradeOptions={stageOptions}
         classroomOptions={classroomOptions}
-        schoolBranchId={STATIC_SCHOOL_BRANCH_ID}
+        schoolBranchId={DummySchoolBranchId}
         gradeOptionsLoading={isEducationalStagesLoading}
         classroomOptionsLoading={isClassroomsLoading}
       />

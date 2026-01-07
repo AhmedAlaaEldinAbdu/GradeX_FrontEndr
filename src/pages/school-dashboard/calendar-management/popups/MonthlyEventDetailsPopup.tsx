@@ -24,7 +24,7 @@ export default function MonthlyEventDetailsPopup({
 
   const formattedDate = useMemo(() => {
     const parsed = event.day ? new Date(`${event.day}T00:00:00`) : null;
-    if (Number.isNaN(parsed.getTime())) {
+    if (!parsed || Number.isNaN(parsed.getTime())) {
       return event.day;
     }
 
