@@ -972,7 +972,7 @@
       "selectSubjectFirst": "يرجى اختيار المادة أولاً",
       "selectBook": "أختر اسم الكتاب",
       "submit": "تسكين",
-      "successMessage": "تم توظيف المعلم بنجاح",
+      "successMessage": "تم تسكين المعلم بنجاح",
       "details": {
         "bookName": "اسم الكتاب",
         "materialPrefix": "المادة",
