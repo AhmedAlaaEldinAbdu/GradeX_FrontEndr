@@ -290,7 +290,9 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       classRomms: event.classRomms.map((classroom) => classroom.id),
       day: event.day,
       isFullDay: event.isFullDay,
-      duration: event.isFullDay ? MonthlyCalendarDuration.Day : MonthlyCalendarDuration.SpecificTime,
+      duration: event.isFullDay
+        ? MonthlyCalendarDuration.Day
+        : MonthlyCalendarDuration.SpecificTime,
       startTime: event.startTime ?? '',
       endTime: event.endTime ?? '',
       schoolBranchesId: event.schoolBranchesId || DummySchoolBranchId,
@@ -319,7 +321,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const transformValuesToRequest = (
     values: MonthlyEventFormValues
   ): CreateMonthlyCalendarRequest => {
-    const dayISO = values.day ? new Date(`${values.day}T00:00:00`) : new Date();
+    const dayISO = values.day ? new Date(`${values.day}T00:00:00.000Z`) : new Date();
     const startTime = values.isFullDay
       ? buildDateTime(values.day, DEFAULT_CALENDAR_START)
       : buildDateTime(values.day, values.startTime || DEFAULT_CALENDAR_START);
@@ -331,7 +333,9 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       nameAr: values.nameAr,
       nameEn: values.nameEn,
       day: dayISO.toISOString(),
-      duration: values.isFullDay ? MonthlyCalendarDuration.Day : MonthlyCalendarDuration.SpecificTime,
+      duration: values.isFullDay
+        ? MonthlyCalendarDuration.Day
+        : MonthlyCalendarDuration.SpecificTime,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
       schoolBranchesId: values.schoolBranchesId || DummySchoolBranchId,
