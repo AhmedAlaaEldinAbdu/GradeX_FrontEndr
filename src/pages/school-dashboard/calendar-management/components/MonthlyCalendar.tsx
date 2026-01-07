@@ -422,6 +422,14 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     [normalizedEvents]
   );
 
+  const hasMultipleEventsOnDay = useCallback(
+    (day: string) => {
+      if (!day) return false;
+      return normalizedEvents.filter((event) => event.day === day).length > 1;
+    },
+    [normalizedEvents]
+  );
+
   const contextMenuActions = useMemo<ContextMenuAction[]>(
     () => [
       {
@@ -461,12 +469,18 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         onClick: (_date, calendarEvent) => {
           const event = resolveEvent(calendarEvent);
           if (event) {
-            handleRequestDelete(event.id);
+            if (!hasMultipleEventsOnDay(event.day)) {
+              handleRequestDelete(event.id);
+            }
           }
         },
         color: 'danger',
         showOnDate: false,
         showOnEvent: true,
+        hidden: (_date, calendarEvent) => {
+          const event = resolveEvent(calendarEvent);
+          return event ? hasMultipleEventsOnDay(event.day) : false;
+        },
       },
     ],
     [
@@ -474,6 +488,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       handleOpenEditPopup,
       handleRequestDelete,
       handleViewDetails,
+      hasMultipleEventsOnDay,
       resolveEvent,
       t,
     ]
