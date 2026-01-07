@@ -37,6 +37,7 @@ export interface EducationalStageParams {
   nameEn?: string;
   acdemicSubsystemId?: string;
   acdemicsystemId?: string;
+  schoolBranchId?: string;
   // academicSubSystemId?: string; // backend changed the param name
 }
 

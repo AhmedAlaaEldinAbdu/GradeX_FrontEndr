@@ -41,6 +41,7 @@ export interface ClassroomQueryParams {
     name?: string;
     academicSystemId?: string;
     gradeId?: string;
+    schoolBranchId?: string;
 }
 
 export interface ClassroomDto {

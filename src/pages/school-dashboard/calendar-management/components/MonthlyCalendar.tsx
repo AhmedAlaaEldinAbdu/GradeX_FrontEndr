@@ -1,4 +1,12 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import Card from '@/shared/components/Card';
@@ -28,8 +36,7 @@ import {
 } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
-import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
-import type { Classroom } from '@/services/api/types/classrooms.types';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import type {
   CreateMonthlyCalendarRequest,
   MonthlyCalendarEvent,
@@ -102,9 +109,10 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const { educationalStages, isLoading: isEducationalStagesLoading } = useAppSelector(
     (state) => state.educationalStages
   );
-
-  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-  const [isClassroomsLoading, setIsClassroomsLoading] = useState(false);
+  const { classrooms: classroomEntities, isLoading: isClassroomsLoading } = useAppSelector(
+    (state) => state.classrooms
+  );
+  const hasRequestedClassroomsRef = useRef(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [stageFilter, setStageFilter] = useState('');
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -128,6 +136,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       getEducationalStages({
         pageIndex: 1,
         pageSize: EDUCATIONAL_STAGE_LOOKUP_LIMIT,
+        schoolBranchId: DummySchoolBranchId,
       })
     )
       .unwrap()
@@ -141,31 +150,28 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   }, [dispatch, educationalStagesCount, showToast]);
 
   useEffect(() => {
+    if (hasRequestedClassroomsRef.current) {
+      return;
+    }
+    hasRequestedClassroomsRef.current = true;
     let isMounted = true;
 
     const loadClassrooms = async () => {
       try {
-        setIsClassroomsLoading(true);
-        const response = await classroomApiService.getClassrooms({
-          pageIndex: 1,
-          pageSize: CLASSROOM_LOOKUP_LIMIT,
-          academicSystemId: DummySchoolBranchId,
-        });
-        if (!isMounted) return;
-        const list = response.data?.classroomDto ?? [];
-        setClassrooms(list);
+        await dispatch(
+          fetchClassrooms({
+            page: 1,
+            limit: CLASSROOM_LOOKUP_LIMIT,
+            filters: { schoolBranchId: DummySchoolBranchId },
+          })
+        ).unwrap();
       } catch (error) {
         if (!isMounted) return;
-        const errorMessage = getErrorMessage(error);
         showToast({
-          message: errorMessage,
+          message: getErrorMessage(error),
           type: 'error',
           isRaw: true,
         });
-      } finally {
-        if (isMounted) {
-          setIsClassroomsLoading(false);
-        }
       }
     };
 
@@ -174,7 +180,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     return () => {
       isMounted = false;
     };
-  }, [showToast]);
+  }, [dispatch, showToast, DummySchoolBranchId]);
 
   const buildFilters = useCallback((): MonthlyCalendarFilters => {
     const filters: MonthlyCalendarFilters = {};
@@ -228,11 +234,11 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
 
   const classroomOptions = useMemo<CustomSelectOption[]>(
     () =>
-      classrooms.map((classroom) => ({
+      classroomEntities.map((classroom) => ({
         value: classroom.id,
         label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
       })),
-    [classrooms, currentLang]
+    [classroomEntities, currentLang]
   );
 
   const calendarEvents = useMemo<CalendarMonthlyEvent[]>(() => {
