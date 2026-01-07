@@ -349,13 +349,8 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
             handleCloseEditor();
           } else {
             const errorMessage = res.successMessage || t('common.errorOccurred');
-            const validationErrors = res.validationErrors
-              ?.map((err: any) =>
-                typeof err === 'string' ? err : err.errorMessage || err.propertyName
-              )
-              .join(', ');
             showToast({
-              message: validationErrors || errorMessage,
+              message: errorMessage,
               type: 'error',
               isRaw: true,
             });
@@ -368,13 +363,8 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
             handleCloseEditor();
           } else {
             const errorMessage = res.successMessage || t('common.errorOccurred');
-            const validationErrors = res.validationErrors
-              ?.map((err: any) =>
-                typeof err === 'string' ? err : err.errorMessage || err.propertyName
-              )
-              .join(', ');
             showToast({
-              message: validationErrors || errorMessage,
+              message: errorMessage,
               type: 'error',
               isRaw: true,
             });
