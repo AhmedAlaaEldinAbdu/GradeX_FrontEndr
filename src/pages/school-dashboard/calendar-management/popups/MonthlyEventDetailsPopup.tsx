@@ -6,7 +6,10 @@ import Modal from '@/shared/popups/Modal';
 import Loading from '@/shared/components/Loading';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchMonthlyCalendarEvents } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
-import type { MonthlyCalendarEvent, MonthlyEventEntity } from '@/services/api/types/monthly-calendar.types';
+import type {
+  MonthlyCalendarEvent,
+  MonthlyEventEntity,
+} from '@/services/api/types/monthly-calendar.types';
 import { MonthlyCalendarDuration } from '@/shared/enums/enums';
 
 interface MonthlyEventDetailsPopupProps {
@@ -76,37 +79,34 @@ export default function MonthlyEventDetailsPopup({
       });
   }, [dispatch, event?.day, isOpen, t]);
 
-  const mapApiEventToEntity = useCallback(
-    (apiEvent: MonthlyCalendarEvent): MonthlyEventEntity => {
-      const day = apiEvent.day ? format(new Date(apiEvent.day), 'yyyy-MM-dd') : '';
-      const startTime = apiEvent.startTime ? format(new Date(apiEvent.startTime), 'HH:mm') : '';
-      const endTime = apiEvent.endTime ? format(new Date(apiEvent.endTime), 'HH:mm') : '';
-      const duration = apiEvent.duration ?? MonthlyCalendarDuration.Day;
+  const mapApiEventToEntity = useCallback((apiEvent: MonthlyCalendarEvent): MonthlyEventEntity => {
+    const day = apiEvent.day ? format(new Date(apiEvent.day), 'yyyy-MM-dd') : '';
+    const startTime = apiEvent.startTime ? format(new Date(apiEvent.startTime), 'hh:mm') : '';
+    const endTime = apiEvent.endTime ? format(new Date(apiEvent.endTime), 'hh:mm') : '';
+    const duration = apiEvent.duration ?? MonthlyCalendarDuration.Day;
 
-      return {
-        id: apiEvent.id,
-        nameAr: apiEvent.nameAr,
-        nameEn: apiEvent.nameEn,
-        grades: (apiEvent.grade ?? []).map((grade) => ({
-          id: grade.id,
-          nameAr: grade.nameAr,
-          nameEn: grade.nameEn,
-        })),
-        classRomms: (apiEvent.class ?? []).map((classroom) => ({
-          id: classroom.id,
-          nameAr: classroom.nameAr,
-          nameEn: classroom.nameEn,
-        })),
-        day,
-        duration,
-        isFullDay: duration === MonthlyCalendarDuration.Day,
-        startTime,
-        endTime,
-        schoolBranchesId: apiEvent.schoolBranchesId,
-      };
-    },
-    []
-  );
+    return {
+      id: apiEvent.id,
+      nameAr: apiEvent.nameAr,
+      nameEn: apiEvent.nameEn,
+      grades: (apiEvent.grade ?? []).map((grade) => ({
+        id: grade.id,
+        nameAr: grade.nameAr,
+        nameEn: grade.nameEn,
+      })),
+      classRomms: (apiEvent.class ?? []).map((classroom) => ({
+        id: classroom.id,
+        nameAr: classroom.nameAr,
+        nameEn: classroom.nameEn,
+      })),
+      day,
+      duration,
+      isFullDay: duration === MonthlyCalendarDuration.Day,
+      startTime,
+      endTime,
+      schoolBranchesId: apiEvent.schoolBranchesId,
+    };
+  }, []);
 
   const normalizedPopupEvents = useMemo<MonthlyEventEntity[]>(
     () => popupEvents.map(mapApiEventToEntity),
@@ -135,9 +135,12 @@ export default function MonthlyEventDetailsPopup({
             {normalizedPopupEvents.map((item, index) => {
               const localizedEventName = isRTL ? item.nameAr : item.nameEn || item.nameAr;
 
-              const formattedTime = item.isFullDay
+              const isFullDayEvent =
+                item.duration === MonthlyCalendarDuration.Day || item.isFullDay === true;
+
+              const durationLabel = isFullDayEvent
                 ? t('monthlyCalendar.details.fullDay')
-                : `${item.startTime ?? '--:--'} - ${item.endTime ?? '--:--'}`;
+                : t('monthlyCalendar.details.customDuration');
 
               const stageLabels = item.grades.map((stage) =>
                 isRTL
@@ -174,30 +177,32 @@ export default function MonthlyEventDetailsPopup({
                       <span className="text-gray-700 md:text-center">{item.nameEn || '-'}</span>
                     </div>
 
-                    <div className="flex flex-col gap-2 md:flex-row">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-700">
-                            {t('monthlyCalendar.details.startTime')}:
-                          </span>
-                          <span className="text-gray-700">{item.startTime ?? '--:--'}</span>
+                    {!isFullDayEvent && (
+                      <div className="flex flex-col gap-2 md:flex-row">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-700">
+                              {t('monthlyCalendar.details.startTime')}:
+                            </span>
+                            <span className="text-gray-700">{item.startTime ?? '--:--'}</span>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-700">
+                              {t('monthlyCalendar.details.endTime')}:
+                            </span>
+                            <span className="text-gray-700">{item.endTime ?? '--:--'}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-700">
-                            {t('monthlyCalendar.details.endTime')}:
-                          </span>
-                          <span className="text-gray-700">{item.endTime ?? '--:--'}</span>
-                        </div>
-                      </div>
-                    </div>
+                    )}
 
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-gray-700">
                         {t('monthlyCalendar.form.duration')}:
                       </span>
-                      <span className="text-gray-700 md:text-center">{formattedTime}</span>
+                      <span className="text-gray-700 md:text-center">{durationLabel}</span>
                     </div>
 
                     <div className="flex gap-2">

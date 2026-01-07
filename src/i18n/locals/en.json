@@ -1540,7 +1540,8 @@
       "endTime": "End time",
       "stages": "Stages",
       "classrooms": "Classrooms",
-      "fullDay": "Full day"
+      "fullDay": "Full day",
+      "customDuration": "Specific duration"
     },
     "messages": {
       "eventAdded": "Event added successfully",

@@ -1538,7 +1538,8 @@
       "endTime": "ساعة الانتهاء",
       "stages": "المراحل الدراسية",
       "classrooms": "الصفوف الدراسية",
-      "fullDay": "يوم كامل"
+      "fullDay": "يوم كامل",
+      "customDuration": "مدة محددة"
     },
     "messages": {
       "eventAdded": "تم إضافة الحدث بنجاح",
