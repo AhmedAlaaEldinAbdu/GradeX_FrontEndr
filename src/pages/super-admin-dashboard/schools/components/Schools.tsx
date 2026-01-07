@@ -27,7 +27,7 @@ import {
   selectAcademicSystems,
   selectIsLoadingAcademicSystems,
 } from '@gradex/redux/features/academic-system';
-import { resetPagination } from '@gradex/redux/features/schools';
+import { resetPagination, clearSchools } from '@gradex/redux/features/schools';
 import SearchInput from '@/shared/components/SearchInput';
 import Tabs from '@/shared/components/Tabs';
 
@@ -107,7 +107,9 @@ export default function Schools() {
 
   // Handle tab change with filter reset
   const handleTabChange = (tabId: string) => {
-    // Reset filters first
+    // Clear schools data immediately to prevent stale data from showing
+    dispatch(clearSchools());
+    // Reset filters
     setSearchTerm('');
     setAcademicSystem('');
     setSelectedCountry('');
