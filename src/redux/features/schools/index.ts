@@ -29,6 +29,7 @@ export {
   fetchSchoolStatistics,
   setPagination,
   resetPagination,
+  clearSchools,
 } from './schoolsSlice';
 
 // Selectors
