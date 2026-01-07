@@ -181,7 +181,6 @@ export default function InterviewDetailsPopup({
       await dispatch(deleteInterview(interviewIdPendingDelete))
         .unwrap()
         .then((res: any) => {
-          debugger;
           if (res === interviewIdPendingDelete || res.isSuccess) {
             setInterviewIdPendingDelete(null);
             setShowDeletePopup(false);

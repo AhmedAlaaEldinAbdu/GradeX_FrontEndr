@@ -5,12 +5,19 @@ import { ar } from 'date-fns/locale';
 import Modal from '@/shared/popups/Modal';
 import Loading from '@/shared/components/Loading';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchMonthlyCalendarEvents } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
+import {
+  deleteMonthlyCalendarEvent,
+  fetchMonthlyCalendarEvents,
+} from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import type {
   MonthlyCalendarEvent,
   MonthlyEventEntity,
 } from '@/services/api/types/monthly-calendar.types';
 import { MonthlyCalendarDuration } from '@/shared/enums/enums';
+import IconButton from '@/shared/components/IconButton';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import { useToast } from '@/shared/context/ToastContext';
 
 interface MonthlyEventDetailsPopupProps {
   isOpen: boolean;
@@ -28,6 +35,11 @@ export default function MonthlyEventDetailsPopup({
   const { popupEvents, popupIsLoading } = useAppSelector((state) => state.monthlyCalendar);
   const isRTL = i18n.language === 'ar';
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const { showToast } = useToast();
+
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [eventIdPendingDelete, setEventIdPendingDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const formattedDate = useMemo(() => {
     const day = event?.day;
@@ -48,6 +60,8 @@ export default function MonthlyEventDetailsPopup({
   useEffect(() => {
     if (!isOpen) {
       setFetchError(null);
+      setShowDeletePopup(false);
+      setEventIdPendingDelete(null);
       return;
     }
 
@@ -69,15 +83,83 @@ export default function MonthlyEventDetailsPopup({
       .unwrap()
       .then((res) => {
         if (!res.data.length) {
-          setFetchError(t('common.noData'));
+          const message = t('common.noData');
+          setFetchError(message);
+          showToast({ message, type: 'error' });
         }
       })
       .catch((error) => {
         const message =
           typeof error === 'string' ? error : (error as { message?: string })?.message;
-        setFetchError(message ?? t('common.error'));
+        const fallback = message ?? t('common.error');
+        setFetchError(fallback);
+        showToast({ message: fallback, type: 'error' });
       });
-  }, [dispatch, event?.day, isOpen, t]);
+  }, [dispatch, event?.day, isOpen, t, showToast]);
+
+  const handleRequestDelete = (id: string) => {
+    setEventIdPendingDelete(id);
+    setShowDeletePopup(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeletePopup(false);
+    setEventIdPendingDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!eventIdPendingDelete) {
+      return;
+    }
+
+    const currentCount = popupEvents.length;
+    const day = event?.day;
+
+    try {
+      setIsDeleting(true);
+      await dispatch(deleteMonthlyCalendarEvent(eventIdPendingDelete)).unwrap();
+
+      showToast({
+        message: t('monthlyCalendar.messages.eventDeleted'),
+        type: 'success',
+      });
+
+      setShowDeletePopup(false);
+      setEventIdPendingDelete(null);
+
+      // If this was the last item in the popup, close the modal.
+      if (currentCount <= 1) {
+        onClose();
+        return;
+      }
+
+      if (day) {
+        const res = await dispatch(
+          fetchMonthlyCalendarEvents({
+            filters: { date: day },
+            target: 'popup',
+            page: 1,
+            limit: 1000,
+          })
+        ).unwrap();
+
+        if (!res.data.length) {
+          const message = t('common.noData');
+          setFetchError(message);
+          showToast({ message, type: 'error' });
+        }
+      }
+    } catch (error) {
+      const message = typeof error === 'string' ? error : (error as { message?: string })?.message;
+
+      showToast({
+        message: message ?? t('common.error'),
+        type: 'error',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const mapApiEventToEntity = useCallback((apiEvent: MonthlyCalendarEvent): MonthlyEventEntity => {
     const day = apiEvent.day ? format(new Date(apiEvent.day), 'yyyy-MM-dd') : '';
@@ -132,7 +214,7 @@ export default function MonthlyEventDetailsPopup({
           </div>
         ) : (
           <div className="space-y-6">
-            {normalizedPopupEvents.map((item, index) => {
+            {normalizedPopupEvents.map((item) => {
               const localizedEventName = isRTL ? item.nameAr : item.nameEn || item.nameAr;
 
               const isFullDayEvent =
@@ -159,6 +241,18 @@ export default function MonthlyEventDetailsPopup({
                     <h3 className="text-right text-lg font-semibold text-gray-900">
                       {localizedEventName}
                     </h3>
+                    {normalizedPopupEvents.length > 1 && (
+                      <div className="flex items-center">
+                        <IconButton
+                          status="delete"
+                          variant="danger"
+                          onClick={() => handleRequestDelete(item.id)}
+                          disabled={isDeleting}
+                          ariaLabel="Delete"
+                          title={t('actions.delete')}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-4 space-y-3 text-sm">
@@ -247,9 +341,20 @@ export default function MonthlyEventDetailsPopup({
                 </div>
               );
             })}
+
+            {fetchError && <p className="text-sm text-red-500">{fetchError}</p>}
           </div>
         )}
       </div>
+
+      <DeletePopup
+        open={showDeletePopup}
+        message="monthlyCalendar.actions.confirmDelete"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
+      />
     </Modal>
   );
 }
