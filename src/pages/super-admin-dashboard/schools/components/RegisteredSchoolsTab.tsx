@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, useRef, type ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import DataTable, { type DataTableColumn } from '@gradex/shared/components/DataTable';
@@ -13,6 +13,7 @@ import {
   selectIsLoading,
   selectPagination,
   selectError,
+  selectCurrentTabType,
 } from '@gradex/redux/features/schools';
 import { selectCountries } from '@gradex/redux/features/lookups';
 import { selectAcademicSystems } from '@gradex/redux/features/academic-system';
@@ -43,9 +44,13 @@ export default function RegisteredSchoolsTab({
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
-  const schools = useSelector(selectSchools) || [];
+  const allSchools = useSelector(selectSchools) || [];
+  const currentTabType = useSelector(selectCurrentTabType);
+  const isDataForThisTab = currentTabType === 'registered';
+  const schools = isDataForThisTab ? allSchools : [];
   const [hasSchools] = useState(true); // TODO Need to implement actual check
-  const isLoading = useSelector(selectIsLoading);
+  const reduxIsLoading = useSelector(selectIsLoading);
+  const isLoading = reduxIsLoading || !isDataForThisTab;
   const pagination = useSelector(selectPagination);
   const error = useSelector(selectError);
   const countries = useSelector(selectCountries) || [];
@@ -69,17 +74,43 @@ export default function RegisteredSchoolsTab({
     return system.nameAr || '-';
   };
 
+  // Track abort controller for cancelling pending requests
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   // Fetch schools on mount and when filters change
   useEffect(() => {
+    // Abort any pending request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
     if (!isActive) return;
 
-    dispatch(
-      fetchRegisteredSchools({
-        page: pagination.page,
-        limit: pagination.limit,
-        filters,
-      })
-    );
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController();
+
+    const fetchData = async () => {
+      try {
+        await dispatch(
+          fetchRegisteredSchools({
+            page: pagination.page,
+            limit: pagination.limit,
+            filters,
+          })
+        ).unwrap();
+      } catch {
+        // Ignore abort errors
+      }
+    };
+
+    fetchData();
+
+    // Cleanup: abort request when dependencies change or component unmounts
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [dispatch, filters, pagination.page, pagination.limit, isActive]);
 
   const handlePageChange = (page: number) => {
