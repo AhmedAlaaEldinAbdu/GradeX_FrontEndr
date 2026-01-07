@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
+import UpLeftArrow from '@gradex/assets/icons/UpLeftArrow.svg';
+import CustomImage from './CustomImage';
 
 // Types
 export interface ScheduleLesson {
@@ -564,18 +566,10 @@ export default function WeeklyScheduleCalendar({
                           key={periodIndex}
                           className={`z-10 flex min-h-[160px] items-center gap-2 rounded-r-xl pr-4 ${getEventBgClasses(fullRowEvent.color)}`}
                         >
-                          {fullRowEvent.hasArrow && (
-                            <svg
-                              className="h-5 w-5"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <path d="M19 12H5M12 19l-7-7 7-7" />
-                            </svg>
-                          )}
                           <span className="text-lg font-bold">{fullRowEvent.title}</span>
+                          {fullRowEvent.hasArrow && (
+                            <CustomImage src={UpLeftArrow} alt="check" className="h-4 w-4" />
+                          )}
                         </div>
                       );
                     }
