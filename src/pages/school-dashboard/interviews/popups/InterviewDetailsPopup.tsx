@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ar, fi } from 'date-fns/locale';
+import { ar } from 'date-fns/locale';
 import Modal from '@/shared/popups/Modal';
 import CustomImage from '@/shared/components/CustomImage';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
@@ -29,12 +29,14 @@ interface InterviewDetailsPopupProps {
     position?: string;
     supervisor?: string;
   } | null;
+  onEdit?: (interviewId: string) => void;
 }
 
 export default function InterviewDetailsPopup({
   isOpen,
   onClose,
   interview,
+  onEdit,
 }: InterviewDetailsPopupProps) {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
@@ -80,7 +82,9 @@ export default function InterviewDetailsPopup({
 
     if (!interviewId || !dateFilter) {
       if (interviewId) {
-        setFetchError(t('common.error'));
+        const message = t('common.error');
+        setFetchError(message);
+        showToast({ message, type: 'error' });
       }
       return;
     }
@@ -104,15 +108,19 @@ export default function InterviewDetailsPopup({
         setSelectedInterview(foundInterview);
 
         if (!foundInterview) {
-          setFetchError(t('interviews.interviewNotFound'));
+          const message = t('interviews.interviewNotFound');
+          setFetchError(message);
+          showToast({ message, type: 'error' });
         }
       })
       .catch((error) => {
-        const fallback =
+        const message =
           typeof error === 'string' ? error : (error as { message?: string })?.message;
-        setFetchError(fallback ?? t('common.error'));
+        const fallback = message ?? t('common.error');
+        setFetchError(fallback);
+        showToast({ message: fallback, type: 'error' });
       });
-  }, [dateFilter, dispatch, interviewId, isOpen, t]);
+  }, [dateFilter, dispatch, interviewId, isOpen, showToast, t]);
 
   const toDateFromStrings = (dateStr?: string, timeStr?: string) => {
     if (timeStr?.includes('T')) {
@@ -258,7 +266,15 @@ export default function InterviewDetailsPopup({
                       </IconButton>
                     </div>
                     {popupInterviews?.length > 1 && (
-                      <div className="flex items-center">
+                      <div className="flex items-center gap-2">
+                        <IconButton
+                          status="edit"
+                          variant="success"
+                          onClick={() => onEdit?.(detail.id)}
+                          disabled={isDeleting}
+                          ariaLabel="Edit"
+                          title={t('actions.edit')}
+                        />
                         <IconButton
                           status="delete"
                           variant="danger"
@@ -312,6 +328,8 @@ export default function InterviewDetailsPopup({
                 </div>
               );
             })}
+
+            {fetchError && <p className="text-sm text-red-500">{fetchError}</p>}
           </div>
         )}
       </div>
