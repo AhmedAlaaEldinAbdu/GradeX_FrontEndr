@@ -32,7 +32,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   fileName,
   fileNames,
   uploadText = 'ارفع الوسائط من هنا',
-  formatHints = ['GIF', 'SVG', 'JPG', 'PNG'],
+  formatHints = ['GIF', 'SVG', 'JPG', 'PNG', 'PDF'],
   required = false,
   optional = false,
   multiple = false,
@@ -44,6 +44,17 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [fileInfoList, setFileInfoList] = useState<FileInfo[]>([]);
+
+  // Check if file is a PDF
+  const isPdfFile = (fileName: string): boolean => {
+    return fileName.toLowerCase().endsWith('.pdf');
+  };
+
+  // Handle opening PDF in new tab
+  const handleViewPdf = (file: File) => {
+    const url = URL.createObjectURL(file);
+    window.open(url, '_blank');
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -220,6 +231,23 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         alt="preview"
                         className="h-full w-full rounded-lg object-cover"
                       />
+                    ) : isPdfFile(fileInfo.file.name) ? (
+                      <svg
+                        className="h-6 w-6 text-red-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                        />
+                        <text x="7" y="17" fontSize="6" fill="currentColor" fontWeight="bold">
+                          PDF
+                        </text>
+                      </svg>
                     ) : (
                       <svg
                         className="h-6 w-6 text-green-600"
@@ -244,22 +272,48 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   </div>
                 </div>
 
-                {/* Delete Button */}
-                <button
-                  type="button"
-                  onClick={() => handleDelete(multiple ? index : undefined)}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
-                  title={t('common.delete')}
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </button>
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2">
+                  {/* View PDF Button */}
+                  {isPdfFile(fileInfo.file.name) && (
+                    <button
+                      type="button"
+                      onClick={() => handleViewPdf(fileInfo.file)}
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-blue-300 bg-white text-blue-600 transition-colors hover:bg-blue-50"
+                      title={t('common.view')}
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                  {/* Delete Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(multiple ? index : undefined)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
+                    title={t('common.delete')}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               {/* Progress Bar */}
@@ -361,5 +415,3 @@ const FileUpload: React.FC<FileUploadProps> = ({
 };
 
 export default FileUpload;
-
-
