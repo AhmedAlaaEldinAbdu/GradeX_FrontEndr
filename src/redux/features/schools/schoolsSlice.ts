@@ -26,6 +26,7 @@ const initialState: SchoolsState = {
   schools: [],
   currentSchool: null,
   statistics: null,
+  currentTabType: null, // Track which tab the current data belongs to
 
   // Pagination
   pagination: {
@@ -482,6 +483,20 @@ const schoolsSlice = createSlice({
         totalPages: 0,
       };
     },
+    /**
+     * Clear schools data - used when switching tabs to prevent stale data
+     */
+    clearSchools: (state) => {
+      state.schools = [];
+      state.currentTabType = null;
+      state.pagination = {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+      };
+      state.error = null;
+    },
   },
 
   extraReducers: (builder: ActionReducerMapBuilder<SchoolsState>) => {
@@ -516,6 +531,7 @@ const schoolsSlice = createSlice({
       .addCase(fetchRegisteredSchools.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isInitialized = true;
+        state.currentTabType = 'registered'; // Mark data as belonging to registered tab
         state.schools = action.payload.data;
         state.pagination = {
           page: action.payload.meta.page,
@@ -539,6 +555,7 @@ const schoolsSlice = createSlice({
       .addCase(fetchPendingSchools.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isInitialized = true;
+        state.currentTabType = 'pending'; // Mark data as belonging to pending tab
         state.schools = action.payload.data;
         state.pagination = {
           page: action.payload.meta.page,
@@ -562,6 +579,7 @@ const schoolsSlice = createSlice({
       .addCase(fetchDeletedSchools.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isInitialized = true;
+        state.currentTabType = 'deleted'; // Mark data as belonging to deleted tab
         state.schools = action.payload.data;
         state.pagination = {
           page: action.payload.meta.page,
@@ -823,6 +841,6 @@ const schoolsSlice = createSlice({
   },
 });
 
-export const { setPagination, resetPagination } = schoolsSlice.actions;
+export const { setPagination, resetPagination, clearSchools } = schoolsSlice.actions;
 
 export default schoolsSlice.reducer;
