@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import WeeklyScheduleCalendar, {
   type ScheduleLesson,
   type ScheduleEvent,
@@ -344,6 +345,7 @@ export type WeeklyCalendarHandle = {
 const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const { t } = useTranslation();
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   // Filter states
   const [educationSystem, setEducationSystem] = useState('');
@@ -360,11 +362,14 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const [lessonPendingDelete, setLessonPendingDelete] = useState<ScheduleLesson | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const handleEmptyCellClick = (dayIndex: number, periodIndex: number) => {
+    navigate(`/calendar/weekly/add-lesson?day=${dayIndex}&period=${periodIndex}`);
+  };
+
   // Expose methods to parent via ref
   useImperativeHandle(ref, () => ({
     openAddLesson: () => {
-      // TODO: Implement add lesson popup/modal
-      console.log('Open add lesson modal');
+      navigate('/calendar/weekly/add-lesson');
     },
     recoverLessons: () => {
       // TODO: Implement recover lessons functionality
@@ -518,6 +523,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           specialColumns={DEMO_SPECIAL_COLUMNS}
           lessonContextActions={lessonContextActions}
           onLessonClick={handleViewDetails}
+          onEmptyCellClick={handleEmptyCellClick}
           onWeekChange={(weekStart) => console.log('Week changed to:', weekStart)}
         />
       </div>
