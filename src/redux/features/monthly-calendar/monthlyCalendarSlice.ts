@@ -16,7 +16,7 @@ import type { ApiResponseModel } from '@/services/api';
 
 export interface MonthlyCalendarFilters {
   searchTerm?: string;
-  stageId?: string;
+  grade?: string;
   classroomId?: string;
   date?: string;
 }
@@ -94,9 +94,9 @@ export const fetchMonthlyCalendarEvents = createAsyncThunk<
       if (payload.limit !== undefined) params.PageSize = payload.limit;
 
       if (payload.filters) {
-        const { searchTerm, stageId, classroomId, date } = payload.filters;
+        const { searchTerm, grade, classroomId, date } = payload.filters;
         if (searchTerm) params.Search = searchTerm;
-        if (stageId) params.StageId = stageId;
+        if (grade) params.Grade = grade;
         if (classroomId) params.ClassRoomId = classroomId;
         if (date) params.Date = date;
       }

@@ -187,7 +187,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       filters.searchTerm = searchTerm.trim();
     }
     if (stageFilter) {
-      filters.stageId = stageFilter;
+      filters.grade = stageFilter;
     }
     return filters;
   }, [searchTerm, stageFilter]);

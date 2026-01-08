@@ -67,7 +67,7 @@ export interface MonthlyCalendarListResponse {
 export interface MonthlyCalendarQueryParams {
   PageIndex?: number;
   PageSize?: number;
-  StageId?: string;
+  Grade?: string;
   ClassRoomId?: string;
   Search?: string;
   Date?: string;

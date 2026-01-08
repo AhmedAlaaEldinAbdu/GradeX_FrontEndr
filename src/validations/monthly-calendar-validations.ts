@@ -44,7 +44,7 @@ export type MonthlyEventFormValues = InferType<typeof MonthlyEventFormSchema>;
 
 export const MonthlyCalendarFiltersSchema = object({
     searchTerm: string().trim().max(100).default(''),
-    stageId: string().default(''),
+    grade: string().default(''),
     classroomId: string().default(''),
     date: string().default(''),
 });
