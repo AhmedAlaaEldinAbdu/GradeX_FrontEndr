@@ -7,6 +7,7 @@ import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
 import MathIcon from '@gradex/assets/icons/Math.svg';
+import FileViewer from '@/shared/components/FileViewer';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -24,12 +25,16 @@ export default function ClassroomsList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedClassroomId, setSelectedClassroomId] = useState<string>('');
   const [selectedAcademicSystemId, setSelectedAcademicSystemId] = useState('');
   const [selectedGradeId, setSelectedGradeId] = useState('');
+  const [fileViewerOpen, setFileViewerOpen] = useState(false);
+  const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
+  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
 
   const { showToast } = useToast();
 
@@ -122,12 +127,21 @@ export default function ClassroomsList() {
         <div className="flex items-center justify-center">
           {row.imagePath ? (
             <CustomImage
-              src={row.imagePath}
+              src={baseUrl + '/' + row.imagePath}
               alt={currentLang === 'ar' ? row.name : row.nameEn}
-              className="h-10 w-10 rounded-md object-cover"
+              className="h-10 w-10 cursor-pointer rounded-md object-cover"
+              onClick={() => {
+                setSelectedFilePath(row.imagePath);
+                setSelectedFileName(currentLang === 'ar' ? row.name : row.nameEn);
+                setFileViewerOpen(true);
+              }}
             />
           ) : (
-            <span className="text-sm text-gray-400">-</span>
+            <CustomImage
+              src={MathIcon}
+              alt={t('common.notAvailable')}
+              className="h-10 w-10 rounded-md object-cover mix-blend-luminosity"
+            />
           )}
         </div>
       ),
@@ -301,6 +315,18 @@ export default function ClassroomsList() {
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
             isProcessing={isDeleting}
+          />
+
+          <FileViewer
+            isOpen={fileViewerOpen}
+            onClose={() => {
+              setFileViewerOpen(false);
+              setSelectedFilePath(null);
+              setSelectedFileName(undefined);
+            }}
+            filePath={selectedFilePath}
+            fileName={selectedFileName}
+            title={t('grades.classImages')}
           />
         </div>
       ) : null}
