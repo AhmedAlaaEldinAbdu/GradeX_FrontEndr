@@ -70,7 +70,7 @@ export interface MonthlyCalendarQueryParams {
   StageId?: string;
   ClassRoomId?: string;
   Search?: string;
-  Day?: string;
+  Date?: string;
 }
 
 export interface BaseMonthlyCalendarRequest {

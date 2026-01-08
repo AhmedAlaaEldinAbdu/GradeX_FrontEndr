@@ -98,7 +98,7 @@ export const fetchMonthlyCalendarEvents = createAsyncThunk<
         if (searchTerm) params.Search = searchTerm;
         if (stageId) params.StageId = stageId;
         if (classroomId) params.ClassRoomId = classroomId;
-        if (date) params.Day = date;
+        if (date) params.Date = date;
       }
     }
 

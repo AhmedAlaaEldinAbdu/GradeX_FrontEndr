@@ -78,8 +78,6 @@ export default function MonthlyEventDetailsPopup({
       fetchMonthlyCalendarEvents({
         filters: { date: day },
         target: 'popup',
-        page: 1,
-        limit: 1000,
       })
     )
       .unwrap()
@@ -140,8 +138,6 @@ export default function MonthlyEventDetailsPopup({
           fetchMonthlyCalendarEvents({
             filters: { date: day },
             target: 'popup',
-            page: 1,
-            limit: 1000,
           })
         ).unwrap();
 
