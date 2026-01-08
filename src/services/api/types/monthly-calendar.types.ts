@@ -85,7 +85,7 @@ export interface BaseMonthlyCalendarRequest {
   classRomms: string[];
 }
 
-export interface CreateMonthlyCalendarRequest extends BaseMonthlyCalendarRequest {}
+export interface CreateMonthlyCalendarRequest extends BaseMonthlyCalendarRequest { }
 
 export interface UpdateMonthlyCalendarRequest extends BaseMonthlyCalendarRequest {
   id?: string;
