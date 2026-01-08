@@ -78,8 +78,8 @@ export interface BaseMonthlyCalendarRequest {
   nameEn: string;
   day: string;
   duration: number;
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
   schoolBranchesId: string;
   grades: string[];
   classRomms: string[];

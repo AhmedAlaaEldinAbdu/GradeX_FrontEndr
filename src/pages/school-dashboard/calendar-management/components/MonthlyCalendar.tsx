@@ -322,12 +322,15 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     values: MonthlyEventFormValues
   ): CreateMonthlyCalendarRequest => {
     const dayISO = values.day ? new Date(`${values.day}T00:00:00.000Z`) : new Date();
-    const startTime = values.isFullDay
-      ? buildDateTime(values.day, DEFAULT_CALENDAR_START)
-      : buildDateTime(values.day, values.startTime || DEFAULT_CALENDAR_START);
-    const endTime = values.isFullDay
-      ? buildDateTime(values.day, DEFAULT_CALENDAR_END)
-      : buildDateTime(values.day, values.endTime || values.startTime || DEFAULT_CALENDAR_END);
+    const startDateTime = values.isFullDay
+      ? null
+      : buildDateTime(values.day, values.startTime || DEFAULT_CALENDAR_START).toISOString();
+    const endDateTime = values.isFullDay
+      ? null
+      : buildDateTime(
+          values.day,
+          values.endTime || values.startTime || DEFAULT_CALENDAR_END
+        ).toISOString();
 
     return {
       nameAr: values.nameAr,
@@ -336,8 +339,8 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       duration: values.isFullDay
         ? MonthlyCalendarDuration.Day
         : MonthlyCalendarDuration.SpecificTime,
-      startTime: startTime.toISOString(),
-      endTime: endTime.toISOString(),
+      startTime: startDateTime,
+      endTime: endDateTime,
       schoolBranchesId: values.schoolBranchesId || DummySchoolBranchId,
       grades: values.grades || [],
       classRomms: values.classRomms || [],
