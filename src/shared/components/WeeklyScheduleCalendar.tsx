@@ -295,6 +295,10 @@ export default function WeeklyScheduleCalendar({
       </p>
       {/* Duration Badge */}
       <div className="mt-3 flex items-center gap-2">
+        <span className="text-[11px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
+        <span className="rounded border border-gray-200 px-2 py-0.5 text-[11px] text-gray-600">
+          {lesson.duration} {t('weeklyCalendar.minutes')}
+        </span>
         <div className="flex h-6 w-6 items-center justify-center rounded border border-gray-200 text-emerald-600">
           <svg
             className="h-3.5 w-3.5"
@@ -306,10 +310,6 @@ export default function WeeklyScheduleCalendar({
             <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
           </svg>
         </div>
-        <span className="text-[11px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
-        <span className="rounded border border-gray-200 px-2 py-0.5 text-[11px] text-gray-600">
-          {lesson.duration} {t('weeklyCalendar.minutes')}
-        </span>
       </div>
     </div>
   );
