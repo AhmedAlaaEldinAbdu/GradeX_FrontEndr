@@ -256,7 +256,7 @@ const applicationsJobAdvertisementsSlice = createSlice({
       })
       .addCase(
         editApplicationsJobAdvertisementStatus.fulfilled,
-        (state, action: PayloadAction<ApiResponseModel<null>>) => {
+        (state, action) => {
           state.isUpdating = false;
           const { isSuccess, validationErrors } = action.payload;
           if (!isSuccess && validationErrors) {
@@ -268,11 +268,11 @@ const applicationsJobAdvertisementsSlice = createSlice({
                 ? { ...application, applicationStatus }
                 : application
             );
-            if (state.currentApplication?.id === applicationsJobAdvertisementId) {
-              state.currentApplication = {
-                ...state.currentApplication,
-                applicationStatus,
-              };
+            if (
+              state.currentApplication &&
+              state.currentApplication.id === applicationsJobAdvertisementId
+            ) {
+              state.currentApplication.applicationStatus = applicationStatus;
             }
           }
         }

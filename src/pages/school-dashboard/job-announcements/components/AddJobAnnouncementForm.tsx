@@ -182,6 +182,18 @@ const extractListFromInput = (value?: string | null): string[] => {
     .filter(Boolean);
 };
 
+const mapContractTypeToWorkSchedule = (type?: ContractTypeValue): JobAdvertismentWorkShedule => {
+  switch (type) {
+    case ContractType.PART_TIME:
+      return JobAdvertismentWorkShedule.PART_TIME;
+    case ContractType.BOTH:
+      return JobAdvertismentWorkShedule.BOTH;
+    case ContractType.FULL_TIME:
+    default:
+      return JobAdvertismentWorkShedule.FULL_TIME;
+  }
+};
+
 interface AddJobAnnouncementFormProps {
   jobId?: string;
 }
@@ -670,7 +682,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       yearsExperience: Number(values.yearsExperience || 0),
       noticePeriod: values.noticePeriod === WorkStartMode.IMMEDIATE ? 1 : 2,
       noticePeriodDate: values.noticePeriodDate || '',
-      workShedule: values.contractType,
+      workShedule: mapContractTypeToWorkSchedule(values.contractType),
       workStartTime: values.workStartTime,
       workEndTime: values.workEndTime,
       lkAdministrativePositionId: values.administrativePositionId || '',
