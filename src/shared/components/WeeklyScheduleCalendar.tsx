@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
+import { ar, enUS } from 'date-fns/locale';
 import UpLeftArrow from '@gradex/assets/icons/UpLeftArrow.svg';
 import CustomImage from './CustomImage';
 
@@ -127,7 +128,8 @@ export default function WeeklyScheduleCalendar({
 }: WeeklyScheduleCalendarProps) {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
-  const [currentWeek, setCurrentWeek] = useState(new Date(2025, 7, 2)); // August 2, 2025
+  // Initialize with current date instead of hardcoded date
+  const [currentWeek, setCurrentWeek] = useState(() => new Date());
   const [contextMenu, setContextMenu] = useState<{
     isOpen: boolean;
     lesson: ScheduleLesson | null;
@@ -138,10 +140,17 @@ export default function WeeklyScheduleCalendar({
     return startOfWeek(currentWeek, { weekStartsOn: 6 }); // Saturday start
   }, [currentWeek]);
 
+  const dateLocale = isRTL ? ar : enUS;
+
   const dateRangeLabel = useMemo(() => {
     const weekEnd = addDays(weekStart, 6);
-    return `${format(weekStart, 'd')} أغسطس – ${format(weekEnd, 'd')} أغسطس ${format(weekEnd, 'yyyy')}`;
-  }, [weekStart]);
+    // Always show both dates with their months based on current language
+    const startDate = format(weekStart, 'd MMMM', { locale: dateLocale });
+    const endDate = format(weekEnd, 'd MMMM', { locale: dateLocale });
+    const year = format(weekEnd, 'yyyy', { locale: dateLocale });
+
+    return `${startDate} - ${endDate} ${year}`;
+  }, [weekStart, dateLocale]);
 
   const handlePrevWeek = () => {
     setCurrentWeek((prev) => {
@@ -397,9 +406,10 @@ export default function WeeklyScheduleCalendar({
   // Get row label (day name with date)
   const getRowLabel = (rowIndex: number) => {
     const dayName = ARABIC_DAY_NAMES[rowIndex] || '';
-    // Static dates matching the design (السبت to الجمعة)
-    const dates = ['2/8', '3/8', '4/8', '5/8', '6/8', '7/8', '8/8'];
-    return `${dayName} ${dates[rowIndex] || ''}`;
+    // Calculate the actual date for this row based on the current week
+    const dayDate = addDays(weekStart, rowIndex);
+    const dateStr = format(dayDate, 'd/M', { locale: dateLocale });
+    return `${dayName} ${dateStr}`;
   };
 
   return (
