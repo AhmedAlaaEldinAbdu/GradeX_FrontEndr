@@ -71,7 +71,6 @@ input[type='radio']::after {
   height: 20px;
   border-radius: 50%;
   top: -2px;
-  left: 2px;
   position: relative;
   background-color: white;
   content: '';
@@ -79,6 +78,16 @@ input[type='radio']::after {
   visibility: visible;
   border: 2px solid #878f8f;
   cursor: pointer;
+}
+
+/* LTR */
+:dir(ltr) input[type='radio']::after {
+  left: -2px;
+}
+
+/* RTL */
+:dir(rtl) input[type='radio']::after {
+  left: 2px;
 }
 
 input[type='radio']:checked::after {
