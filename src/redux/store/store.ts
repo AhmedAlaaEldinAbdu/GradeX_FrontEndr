@@ -19,6 +19,7 @@ import teacherAttendanceReducer from '../features/teacher-attendance/teacherAtte
 import applicationsJobAdvertisementsReducer from '../features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import monthlyCalendarReducer from '../features/monthly-calendar/monthlyCalendarSlice';
 import lessonsReducer from '../features/lessons/lessonsSlice';
+import academicCalendarReducer from '../features/academic-calendar/academicCalendarSlice';
 
 export const store = configureStore({
   reducer: {
@@ -42,6 +43,7 @@ export const store = configureStore({
     teacherAttendance: teacherAttendanceReducer,
     monthlyCalendar: monthlyCalendarReducer,
     lessons: lessonsReducer,
+    academicCalendar: academicCalendarReducer,
   },
 });
 
