@@ -78,6 +78,7 @@
     "saving": "جاري الحفظ...",
     "chooseDate": "اختر التاريخ",
     "copied": "تم النسخ",
+    "comingSoon": "قريباً...",
     "copyAdditionLink": "نسخ رابط الإضافة",
     "active": "نشط",
     "inactive": "غير نشط",
@@ -1461,6 +1462,77 @@
       "languageLevelRequired": "اختيار مستوى الإتقان مطلوب",
       "technicalSkillRequired": "المهارات التقنية مطلوبة",
       "personalSkillRequired": "المهارات الشخصية مطلوبة"
+    }
+  },
+  "academicCalendar": {
+    "title": "التقويم الأكاديمي",
+    "addTitle": "إضافة تقويم",
+    "editTitle": "تعديل تقويم",
+    "addCalendarButton": "إضافة تقويم",
+    "searchPlaceholder": "ابحث عن اسم المرحلة التعليمية",
+    "startDatePlaceholder": "تاريخ البداية",
+    "endDatePlaceholder": "تاريخ النهاية",
+    "confirmDelete": "هل تريد حذف هذا التقويم؟",
+    "emptyStateTitle": "لم يتم إضافة أي تقويم أكاديمي حتى الآن",
+    "emptyStateDescription": "يمكنك البدء بإضافة التقويم الأكاديمي لتنظيم الدراسة والإدارة بشكل أفضل.",
+    "table": {
+      "educationalStages": "المراحل التعليمية",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "weeksCount": "عدد الأسابيع"
+    },
+    "daysOfWeek": {
+      "sunday": "الأحد",
+      "monday": "الإثنين",
+      "tuesday": "الثلاثاء",
+      "wednesday": "الأربعاء",
+      "thursday": "الخميس",
+      "friday": "الجمعة",
+      "saturday": "السبت"
+    },
+    "form": {
+      "educationalStagesLabel": "المراحل التعليمية",
+      "educationalStagesPlaceholder": "اختر المراحل التعليمية",
+      "studyStartDateLabel": "تاريخ بداية الدراسة",
+      "studyEndDateLabel": "تاريخ نهاية الدراسة",
+      "weeksCountLabel": "عدد الأسابيع الدراسية",
+      "lessonDurationLabel": "مدة الحصة",
+      "lessonDurationPlaceholder": "اختر مدة الحصة",
+
+      "educationalStageOptions": {
+        "kg": "رياض أطفال",
+        "primary": "المرحلة الابتدائية",
+        "prep": "المرحلة الإعدادية",
+        "secondary": "المرحلة الثانوية"
+      },
+      "lessonDurationOptions": {
+        "60": "ساعة",
+        "45": "٤٥ دقيقة",
+        "30": "٣٠ دقيقة"
+      },
+
+      "schoolDaySchedulesTitle": "مواعيد اليوم الدراسي",
+      "daysLabel": "الأيام الدراسية",
+      "chooseDaysPlaceholder": "اختر الأيام",
+      "schoolDayStartLabel": "بداية اليوم الدراسي",
+      "schoolDayEndLabel": "نهاية اليوم الدراسي",
+
+      "breakBetweenClassesTitle": "الراحة بين الحصص",
+      "breakBetweenClassesLabel": "موعد الراحة بين الحصص",
+      "yearMode": "طوال العام الدراسي",
+      "customMode": "أيام محددة",
+      "breakStartLabel": "بداية وقت الراحة",
+      "breakEndLabel": "نهاية وقت الراحة",
+
+      "morningLineTitle": "الطابور الصباحي",
+      "morningLineLabel": "موعد الطابور",
+      "morningLineStartLabel": "بداية وقت الطابور",
+      "morningLineEndLabel": "نهاية وقت الطابور",
+
+      "breakfastTitle": "موعد الفطور",
+      "breakfastLabel": "موعد الفطور",
+      "breakfastStartLabel": "بداية وقت الفطور",
+      "breakfastEndLabel": "نهاية وقت الفطور"
     }
   },
   "monthlyCalendar": {

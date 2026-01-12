@@ -78,6 +78,7 @@
     "saving": "Saving...",
     "chooseDate": "Choose Date",
     "copied": "Copied",
+    "comingSoon": "Coming soon...",
     "copyAdditionLink": "Copy Addition Link",
     "active": "Active",
     "inactive": "Inactive",
@@ -1463,6 +1464,77 @@
       "languageLevelRequired": "Language level is required",
       "technicalSkillRequired": "Technical skills are required",
       "personalSkillRequired": "Personal skills are required"
+    }
+  },
+  "academicCalendar": {
+    "title": "Academic Calendar",
+    "addTitle": "Add Calendar",
+    "editTitle": "Edit Calendar",
+    "addCalendarButton": "Add Calendar",
+    "searchPlaceholder": "Search by educational stage",
+    "startDatePlaceholder": "Start date",
+    "endDatePlaceholder": "End date",
+    "confirmDelete": "Do you want to delete this calendar?",
+    "emptyStateTitle": "No academic calendars added yet",
+    "emptyStateDescription": "Start by adding an academic calendar to better organize studies and administration.",
+    "table": {
+      "educationalStages": "Educational stages",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "weeksCount": "Weeks count"
+    },
+    "daysOfWeek": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "form": {
+      "educationalStagesLabel": "Educational stages",
+      "educationalStagesPlaceholder": "Select educational stages",
+      "studyStartDateLabel": "Study start date",
+      "studyEndDateLabel": "Study end date",
+      "weeksCountLabel": "Weeks count",
+      "lessonDurationLabel": "Lesson duration",
+      "lessonDurationPlaceholder": "Select lesson duration",
+
+      "educationalStageOptions": {
+        "kg": "Kindergarten",
+        "primary": "Primary",
+        "prep": "Preparatory",
+        "secondary": "Secondary"
+      },
+      "lessonDurationOptions": {
+        "60": "1 hour",
+        "45": "45 minutes",
+        "30": "30 minutes"
+      },
+
+      "schoolDaySchedulesTitle": "School day schedule",
+      "daysLabel": "School days",
+      "chooseDaysPlaceholder": "Select days",
+      "schoolDayStartLabel": "School day start",
+      "schoolDayEndLabel": "School day end",
+
+      "breakBetweenClassesTitle": "Break between classes",
+      "breakBetweenClassesLabel": "Break schedule",
+      "yearMode": "Throughout the academic year",
+      "customMode": "Specific days",
+      "breakStartLabel": "Break start",
+      "breakEndLabel": "Break end",
+
+      "morningLineTitle": "Morning line",
+      "morningLineLabel": "Morning line schedule",
+      "morningLineStartLabel": "Morning line start",
+      "morningLineEndLabel": "Morning line end",
+
+      "breakfastTitle": "Breakfast",
+      "breakfastLabel": "Breakfast schedule",
+      "breakfastStartLabel": "Breakfast start",
+      "breakfastEndLabel": "Breakfast end"
     }
   },
   "monthlyCalendar": {
