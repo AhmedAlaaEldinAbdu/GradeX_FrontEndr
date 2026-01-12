@@ -175,7 +175,7 @@ export default function JobAnnouncementsList() {
   useEffect(() => {
     dispatch(fetchCountries());
     dispatch(fetchSchoolStages());
-    dispatch(fetchSubjects({ page: 1, limit: 1000 }));
+    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
   }, [dispatch]);
 
   useEffect(() => {
@@ -193,7 +193,7 @@ export default function JobAnnouncementsList() {
         await dispatch(
           fetchJobAdvertisments({
             page: currentPage,
-            limit: pagination.limit || 10,
+            limit: pagination.limit,
             filters: filtersPayload,
           })
         ).unwrap();
@@ -212,7 +212,6 @@ export default function JobAnnouncementsList() {
     selectedStageId,
     selectedSubjectId,
     selectedWorkType,
-    showToast,
   ]);
 
   useEffect(() => {
