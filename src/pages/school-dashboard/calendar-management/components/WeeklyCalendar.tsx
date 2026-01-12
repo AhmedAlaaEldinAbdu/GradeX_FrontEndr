@@ -1,6 +1,7 @@
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useImperativeHandle, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { startOfWeek, addDays, parseISO, startOfDay, isBefore, isEqual } from 'date-fns';
 import WeeklyScheduleCalendar, {
   type ScheduleLesson,
   type ScheduleEvent,
@@ -12,231 +13,253 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import LessonDetailsPopup from '../popups/LessonDetailsPopup';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchLessons, deleteLessonById } from '@/redux/features/lessons/lessonsSlice';
+import type { Lesson } from '@/services/api/types/lessons.types';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 
-// Demo lessons matching the design exactly
-// dayIndex = row (0=السبت, 1=الأحد, 2=الإثنين, 3=الثلاثاء, 4=الأربعاء, 5=الخميس, 6=الجمعة)
-// periodIndex = column (0-8): 0=1, 1=2, 2=3, 3=فطار, 4=5, 5=الحديقة, 6=6, 7=7, 8=8
-const DEMO_LESSONS: ScheduleLesson[] = [
-  // ============ Row 0 (السبت - Saturday 2/8) - EMPTY ============
-
-  // ============ Row 1 (الأحد - Sunday 3/8) ============
-  {
-    id: 'sun-1',
-    subject: 'عربي',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '8:30',
-    endTime: '9:15',
-    duration: 45,
-    dayIndex: 1,
-    periodIndex: 0,
-    color: 'arabic',
-  },
-  {
-    id: 'sun-2',
-    subject: 'عربي',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '9:15',
-    endTime: '10:00',
-    duration: 45,
-    dayIndex: 1,
-    periodIndex: 1,
-    color: 'arabic',
-  },
-  {
-    id: 'sun-3',
-    subject: 'عربي',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '10:00',
-    endTime: '10:45',
-    duration: 45,
-    dayIndex: 1,
-    periodIndex: 2,
-    color: 'arabic',
-  },
-  // Column 3 = فطار (skip)
-  {
-    id: 'sun-4',
-    subject: 'عربي',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '11:30',
-    endTime: '12:15',
-    duration: 45,
-    dayIndex: 1,
-    periodIndex: 4,
-    color: 'arabic',
-  },
-  // Column 5 = الحديقة (skip)
-  {
-    id: 'sun-5',
-    subject: 'ماث',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '1:00',
-    endTime: '1:45',
-    duration: 45,
-    dayIndex: 1,
-    periodIndex: 6,
-    color: 'math',
-  },
-  {
-    id: 'sun-6',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '1:45',
-    endTime: '2:30',
-    duration: 45,
-    dayIndex: 1,
-    periodIndex: 7,
-    color: 'science',
-  },
-  {
-    id: 'sun-7',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '2:30',
-    endTime: '3:15',
-    duration: 45,
-    dayIndex: 1,
-    periodIndex: 8,
-    color: 'science',
-  },
-
-  // ============ Row 2 (الإثنين - Monday 4/8) ============
-  {
-    id: 'mon-1',
-    subject: 'ماث',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '8:30',
-    endTime: '9:15',
-    duration: 45,
-    dayIndex: 2,
-    periodIndex: 0,
-    color: 'math',
-  },
-  {
-    id: 'mon-2',
-    subject: 'ماث',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '9:15',
-    endTime: '10:00',
-    duration: 45,
-    dayIndex: 2,
-    periodIndex: 1,
-    color: 'math',
-  },
-  {
-    id: 'mon-3',
-    subject: 'ماث',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '10:00',
-    endTime: '10:45',
-    duration: 45,
-    dayIndex: 2,
-    periodIndex: 2,
-    color: 'math',
-  },
-  // Column 3 = فطار (skip)
-  {
-    id: 'mon-4',
-    subject: 'ماث',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '11:30',
-    endTime: '12:15',
-    duration: 45,
-    dayIndex: 2,
-    periodIndex: 4,
-    color: 'math',
-  },
-  // Column 5 = الحديقة (skip)
-  {
-    id: 'mon-5',
-    subject: 'ماث',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '1:00',
-    endTime: '1:45',
-    duration: 45,
-    dayIndex: 2,
-    periodIndex: 6,
-    color: 'math',
-  },
-  {
-    id: 'mon-6',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '1:45',
-    endTime: '2:30',
-    duration: 45,
-    dayIndex: 2,
-    periodIndex: 7,
-    color: 'science',
-  },
-  {
-    id: 'mon-7',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '2:30',
-    endTime: '3:15',
-    duration: 45,
-    dayIndex: 2,
-    periodIndex: 8,
-    color: 'science',
-  },
-
-  // ============ Row 3 (الثلاثاء - Tuesday 5/8) - "فان داي" event takes columns 0-2 ============
-
-  // ============ Row 4 (الأربعاء - Wednesday 6/8) ============
-  {
-    id: 'wed-1',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '8:30',
-    endTime: '9:15',
-    duration: 45,
-    dayIndex: 4,
-    periodIndex: 0,
-    color: 'science',
-  },
-  {
-    id: 'wed-2',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '9:15',
-    endTime: '10:00',
-    duration: 45,
-    dayIndex: 4,
-    periodIndex: 1,
-    color: 'science',
-  },
-
-  // ============ Row 5 (الخميس - Thursday 7/8) ============
-  {
-    id: 'thu-1',
-    subject: 'خارجي',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '8:30',
-    endTime: '9:15',
-    duration: 45,
-    dayIndex: 5,
-    periodIndex: 0,
-    color: 'english',
-  },
-  {
-    id: 'thu-2',
-    subject: 'علوم',
-    teacherName: 'أ/ أحمد حسن رجب',
-    startTime: '10:00',
-    endTime: '10:45',
-    duration: 45,
-    dayIndex: 5,
-    periodIndex: 2,
-    color: 'science',
-  },
-
-  // ============ Row 6 (الجمعة - Friday 8/8) - EMPTY ============
+// Period time slots for mapping API times to periodIndex
+// Each slot has start and end times in 24h format (HH:mm)
+const PERIOD_TIME_SLOTS = [
+  { periodIndex: 0, startHour: 8, startMin: 30, endHour: 9, endMin: 15 },
+  { periodIndex: 1, startHour: 9, startMin: 15, endHour: 10, endMin: 0 },
+  { periodIndex: 2, startHour: 10, startMin: 0, endHour: 10, endMin: 45 },
+  { periodIndex: 3, startHour: 10, startMin: 45, endHour: 11, endMin: 30 },
+  { periodIndex: 4, startHour: 11, startMin: 30, endHour: 12, endMin: 15 },
+  { periodIndex: 5, startHour: 12, startMin: 15, endHour: 13, endMin: 0 },
+  { periodIndex: 6, startHour: 13, startMin: 0, endHour: 13, endMin: 45 },
+  { periodIndex: 7, startHour: 13, startMin: 45, endHour: 14, endMin: 30 },
+  { periodIndex: 8, startHour: 14, startMin: 30, endHour: 15, endMin: 15 },
 ];
+
+// Subject color mapping
+const SUBJECT_COLORS: Record<string, ScheduleLesson['color']> = {
+  عربي: 'arabic',
+  'اللغة العربية': 'arabic',
+  ماث: 'math',
+  رياضيات: 'math',
+  علوم: 'science',
+  'اللغة الانجليزية': 'english',
+  انجليزي: 'english',
+  english: 'english',
+};
+
+/**
+ * Get the day index (0-6) for a given date
+ * Saturday = 0, Sunday = 1, ..., Friday = 6
+ */
+const getDayIndexFromDate = (date: Date): number => {
+  const jsDay = date.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+  // Convert to our format: Saturday=0, Sunday=1, Monday=2, etc.
+  return jsDay === 6 ? 0 : jsDay + 1;
+};
+
+/**
+ * Get period index based on time
+ * Returns the period index that contains the given time, or -1 if not found
+ */
+const getPeriodIndexFromTime = (hours: number, minutes: number): number => {
+  const timeInMinutes = hours * 60 + minutes;
+
+  for (const slot of PERIOD_TIME_SLOTS) {
+    const slotStart = slot.startHour * 60 + slot.startMin;
+    const slotEnd = slot.endHour * 60 + slot.endMin;
+
+    if (timeInMinutes >= slotStart && timeInMinutes < slotEnd) {
+      return slot.periodIndex;
+    }
+  }
+
+  // If time is before first slot, return 0
+  const firstSlotStart = PERIOD_TIME_SLOTS[0].startHour * 60 + PERIOD_TIME_SLOTS[0].startMin;
+  if (timeInMinutes < firstSlotStart) {
+    return 0;
+  }
+
+  // If time is after last slot, return last index
+  return 8;
+};
+
+/**
+ * Parse time string "HH:mm:ss" to hours and minutes
+ */
+const parseTimeString = (timeStr: string): { hours: number; minutes: number } => {
+  const parts = timeStr.split(':');
+  return {
+    hours: parseInt(parts[0], 10),
+    minutes: parseInt(parts[1], 10),
+  };
+};
+
+/**
+ * Format time from "HH:mm:ss" to "H:mm" display format
+ */
+const formatTimeDisplay = (timeStr: string): string => {
+  const { hours, minutes } = parseTimeString(timeStr);
+  return `${hours}:${minutes.toString().padStart(2, '0')}`;
+};
+
+/**
+ * Calculate lesson duration in minutes
+ */
+const calculateDuration = (startTime: string, endTime: string): number => {
+  const start = parseTimeString(startTime);
+  const end = parseTimeString(endTime);
+  const startMinutes = start.hours * 60 + start.minutes;
+  const endMinutes = end.hours * 60 + end.minutes;
+  return endMinutes - startMinutes;
+};
+
+/**
+ * Get color for subject based on subject name
+ */
+const getSubjectColor = (subjectName: string): ScheduleLesson['color'] => {
+  // Check for exact match first
+  if (SUBJECT_COLORS[subjectName]) {
+    return SUBJECT_COLORS[subjectName];
+  }
+
+  // Check for partial match
+  const lowerName = subjectName.toLowerCase();
+  for (const [key, color] of Object.entries(SUBJECT_COLORS)) {
+    if (lowerName.includes(key.toLowerCase()) || key.toLowerCase().includes(lowerName)) {
+      return color;
+    }
+  }
+
+  return 'default';
+};
+
+/**
+ * Check if date1 is on or before date2 (comparing only date parts, ignoring time)
+ */
+const isDateOnOrBefore = (date1: Date, date2: Date): boolean => {
+  const d1 = startOfDay(date1);
+  const d2 = startOfDay(date2);
+  return isBefore(d1, d2) || isEqual(d1, d2);
+};
+
+/**
+ * Get the date for a specific day index within a week
+ * dayIndex: 0=Saturday, 1=Sunday, ..., 6=Friday
+ */
+const getDateForDayInWeek = (weekStart: Date, dayIndex: number): Date => {
+  return addDays(weekStart, dayIndex);
+};
+
+/**
+ * Find the applicable lesson for a specific day and period within a week.
+ * A lesson applies if:
+ * 1. It's on the same day of the week (e.g., both are Sunday)
+ * 2. It's on the same time slot (periodIndex)
+ * 3. Its date is on or before the current week's day
+ * 4. There's no newer lesson for the same day+period that also applies
+ */
+const findApplicableLessonForSlot = (
+  lessons: Lesson[],
+  dayIndex: number,
+  periodIndex: number,
+  weekStart: Date,
+  lang: string
+): ScheduleLesson | null => {
+  // Get the actual date for this day in the current week
+  const currentDayDate = getDateForDayInWeek(weekStart, dayIndex);
+
+  // Filter lessons that match this day of week and time slot
+  const matchingLessons = lessons.filter((lesson) => {
+    const lessonDate = parseISO(lesson.date);
+    const lessonDayIndex = getDayIndexFromDate(lessonDate);
+    const startTimeParsed = parseTimeString(lesson.startTime);
+    const lessonPeriodIndex = getPeriodIndexFromTime(
+      startTimeParsed.hours,
+      startTimeParsed.minutes
+    );
+
+    // Must be same day of week and same period
+    if (lessonDayIndex !== dayIndex || lessonPeriodIndex !== periodIndex) {
+      return false;
+    }
+
+    // Lesson date must be on or before the current day in the week
+    // (lesson can only apply from its creation date forward)
+    return isDateOnOrBefore(lessonDate, currentDayDate);
+  });
+
+  if (matchingLessons.length === 0) {
+    return null;
+  }
+
+  // Sort by date descending to get the most recent applicable lesson
+  matchingLessons.sort((a, b) => {
+    const dateA = parseISO(a.date);
+    const dateB = parseISO(b.date);
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  // Get the most recent lesson that applies to this slot
+  const mostRecentLesson = matchingLessons[0];
+
+  // Get subject name based on language
+  const subjectName =
+    lang === 'ar'
+      ? mostRecentLesson.materialNameAr
+      : mostRecentLesson.materialNameEn || mostRecentLesson.materialNameAr;
+
+  return {
+    id: mostRecentLesson.id,
+    subject: subjectName,
+    teacherName: mostRecentLesson.teacherName,
+    startTime: formatTimeDisplay(mostRecentLesson.startTime),
+    endTime: formatTimeDisplay(mostRecentLesson.endTime),
+    duration: calculateDuration(mostRecentLesson.startTime, mostRecentLesson.endTime),
+    dayIndex,
+    periodIndex,
+    color: getSubjectColor(subjectName),
+  };
+};
+
+/**
+ * Transform all API Lessons to ScheduleLessons for the current week.
+ * Lessons repeat weekly until a newer lesson for the same slot is added.
+ */
+const transformLessonsForWeek = (
+  apiLessons: Lesson[],
+  weekStart: Date,
+  lang: string
+): ScheduleLesson[] => {
+  const scheduleLessons: ScheduleLesson[] = [];
+  const processedSlots = new Set<string>();
+
+  // For each day (0-6) and each period (0-8), find the applicable lesson
+  for (let dayIndex = 0; dayIndex <= 6; dayIndex++) {
+    for (let periodIndex = 0; periodIndex <= 8; periodIndex++) {
+      const slotKey = `${dayIndex}-${periodIndex}`;
+
+      // Skip if we've already processed this slot
+      if (processedSlots.has(slotKey)) {
+        continue;
+      }
+
+      const lesson = findApplicableLessonForSlot(
+        apiLessons,
+        dayIndex,
+        periodIndex,
+        weekStart,
+        lang
+      );
+
+      if (lesson) {
+        scheduleLessons.push(lesson);
+        processedSlots.add(slotKey);
+      }
+    }
+  }
+
+  return scheduleLessons;
+};
 
 // Demo events matching the design (colored blocks for special activities)
 const DEMO_EVENTS: ScheduleEvent[] = [
@@ -343,9 +366,16 @@ export type WeeklyCalendarHandle = {
 };
 
 const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  // Get current language
+  const currentLang = i18n.language;
+
+  // Redux state for lessons
+  const { lessons: apiLessons, isLoading } = useAppSelector((state) => state.lessons);
 
   // Filter states
   const [educationSystem, setEducationSystem] = useState('');
@@ -355,12 +385,36 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const [grade, setGrade] = useState('');
   const [division, setDivision] = useState('1');
 
+  // Current week start date (Saturday)
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
+    () => startOfWeek(new Date(), { weekStartsOn: 6 }) // 6 = Saturday
+  );
+
   // Popup states
   const [selectedLesson, setSelectedLesson] = useState<ScheduleLesson | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [lessonPendingDelete, setLessonPendingDelete] = useState<ScheduleLesson | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Fetch lessons when component mounts
+  useEffect(() => {
+    dispatch(fetchLessons());
+  }, [dispatch]);
+
+  // Transform API lessons to ScheduleLesson format with weekly repetition
+  const transformedLessons: ScheduleLesson[] = useMemo(() => {
+    if (!apiLessons || apiLessons.length === 0) {
+      return [];
+    }
+
+    return transformLessonsForWeek(apiLessons, currentWeekStart, currentLang);
+  }, [apiLessons, currentWeekStart, currentLang]);
+
+  // Handle week change from calendar navigation
+  const handleWeekChange = useCallback((weekStart: Date) => {
+    setCurrentWeekStart(weekStart);
+  }, []);
 
   const handleEmptyCellClick = (dayIndex: number, periodIndex: number) => {
     navigate(`/calendar/weekly/add-lesson?day=${dayIndex}&period=${periodIndex}`);
@@ -402,8 +456,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
     try {
       setIsDeleting(true);
-      // TODO: Implement actual delete API call
-      // await dispatch(deleteLesson(lessonPendingDelete.id)).unwrap();
+      await dispatch(deleteLessonById(lessonPendingDelete.id)).unwrap();
 
       showToast({
         message: t('weeklyCalendar.lessonDeletedSuccessfully'),
@@ -515,16 +568,22 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
       {/* Calendar Component */}
       <div className="rounded-xl bg-white shadow-sm">
-        <WeeklyScheduleCalendar
-          lessons={DEMO_LESSONS}
-          events={DEMO_EVENTS}
-          periodHeaders={DEMO_PERIOD_HEADERS}
-          specialColumns={DEMO_SPECIAL_COLUMNS}
-          lessonContextActions={lessonContextActions}
-          onLessonClick={handleViewDetails}
-          onEmptyCellClick={handleEmptyCellClick}
-          onWeekChange={(weekStart) => console.log('Week changed to:', weekStart)}
-        />
+        {isLoading ? (
+          <div className="flex h-96 items-center justify-center">
+            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary-500"></div>
+          </div>
+        ) : (
+          <WeeklyScheduleCalendar
+            lessons={transformedLessons}
+            events={DEMO_EVENTS}
+            periodHeaders={DEMO_PERIOD_HEADERS}
+            specialColumns={DEMO_SPECIAL_COLUMNS}
+            lessonContextActions={lessonContextActions}
+            onLessonClick={handleViewDetails}
+            onEmptyCellClick={handleEmptyCellClick}
+            onWeekChange={handleWeekChange}
+          />
+        )}
       </div>
 
       {/* Popups */}
