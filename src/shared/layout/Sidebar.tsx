@@ -24,6 +24,7 @@ import ChevronDown from '@gradex/assets/icons/ChevronDown.svg';
 import ChevronUp from '@gradex/assets/icons/ChevronUp.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
+import MainLogo from '@gradex/assets/identity/MainLogo.webp';
 
 interface SidebarProps {
   dashboardType: UserRoleType;
@@ -415,8 +416,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   return (
     <aside className="flex w-64 flex-col border-r border-gray-200 bg-white shadow-lg">
       {/* Sidebar Header */}
-      <div className="border-gray-200 p-6">
-        <h1 className="text-center text-2xl font-bold text-gray-800">Logo</h1>
+      <div className="h-[96px] border-gray-200 px-6 py-4">
+        {/* <h1 className="text-center text-2xl font-bold text-gray-800">Logo</h1> */}
+        <CustomImage src={MainLogo} alt="Logo" className="mx-auto h-[65px] w-auto" />
       </div>
 
       {/* Navigation Menu */}
