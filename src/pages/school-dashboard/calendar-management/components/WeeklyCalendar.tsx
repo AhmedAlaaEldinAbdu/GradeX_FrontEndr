@@ -15,7 +15,9 @@ import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchLessons, deleteLessonById } from '@/redux/features/lessons/lessonsSlice';
+import { fetchMonthlyCalendarEvents } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import type { Lesson } from '@/services/api/types/lessons.types';
+import type { MonthlyCalendarEvent } from '@/services/api/types/monthly-calendar.types';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
@@ -261,29 +263,80 @@ const transformLessonsForWeek = (
   return scheduleLessons;
 };
 
-// Demo events matching the design (colored blocks for special activities)
-const DEMO_EVENTS: ScheduleEvent[] = [
-  // فان داي (green) with arrow - Row 3 (الثلاثاء), spans ALL columns 0-8 (full day)
-  {
-    id: 'e-funday',
-    title: 'فان داي',
-    dayIndex: 3,
-    startPeriod: 0,
-    endPeriod: 8,
-    color: 'green',
-    hasArrow: true,
-  },
-  // تصوير الطلاب (teal) with arrow - Row 5 (الخميس), columns 5-6
-  {
-    id: 'e-photo',
-    title: 'تصوير الطلاب',
-    dayIndex: 5,
-    startPeriod: 5,
-    endPeriod: 6,
-    color: 'teal',
-    hasArrow: true,
-  },
-];
+// Event color options (rotate through them for variety)
+const EVENT_COLORS: ScheduleEvent['color'][] = ['green', 'orange', 'blue', 'teal', 'yellow'];
+
+const getEventColor = (index: number): ScheduleEvent['color'] => {
+  return EVENT_COLORS[index % EVENT_COLORS.length];
+};
+
+const getEventPeriodRange = (
+  startTime: string,
+  duration: number
+): { startPeriod: number; endPeriod: number } => {
+  const startTimeParsed = parseTimeString(startTime.split('T')[1] || startTime);
+
+  const startPeriod = getPeriodIndexFromTime(startTimeParsed.hours, startTimeParsed.minutes);
+
+  const periodsToSpan = Math.max(1, Math.ceil(duration / 0.75)); // 45 min = 0.75 hours per period
+
+  let endPeriod = startPeriod + periodsToSpan - 1;
+
+  // Cap at max period index (8)
+  if (endPeriod > 8) {
+    endPeriod = 8;
+  }
+
+  return { startPeriod, endPeriod };
+};
+
+const transformEventsForWeek = (
+  apiEvents: MonthlyCalendarEvent[],
+  weekStart: Date,
+  lang: string
+): ScheduleEvent[] => {
+  const scheduleEvents: ScheduleEvent[] = [];
+  const weekEnd = addDays(weekStart, 6);
+
+  apiEvents.forEach((event, index) => {
+    // Parse the event day
+    const eventDate = parseISO(event.day);
+    const eventDayStart = startOfDay(eventDate);
+    const weekStartDay = startOfDay(weekStart);
+    const weekEndDay = startOfDay(weekEnd);
+
+    // Check if event falls within current week
+    const isInWeek =
+      isEqual(eventDayStart, weekStartDay) ||
+      isEqual(eventDayStart, weekEndDay) ||
+      (isBefore(weekStartDay, eventDayStart) && isBefore(eventDayStart, weekEndDay));
+
+    if (!isInWeek) {
+      return;
+    }
+
+    // Get day index (0=Saturday, 1=Sunday, etc.)
+    const dayIndex = getDayIndexFromDate(eventDate);
+
+    // Get period range from start time and duration
+    const { startPeriod, endPeriod } = getEventPeriodRange(event.startTime, event.duration);
+
+    // Get title based on language
+    const title = lang === 'ar' ? event.nameAr : event.nameEn || event.nameAr;
+
+    scheduleEvents.push({
+      id: event.id,
+      title,
+      dayIndex,
+      startPeriod,
+      endPeriod,
+      color: getEventColor(index),
+      hasArrow: true,
+    });
+  });
+
+  return scheduleEvents;
+};
 
 // Dynamic period headers - these can be customized per school
 // This configuration would typically come from an API or school settings
@@ -374,8 +427,16 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   // Get current language
   const currentLang = i18n.language;
 
-  // Redux state for lessons
-  const { lessons: apiLessons, isLoading } = useAppSelector((state) => state.lessons);
+  // Redux state for lessons and events
+  const { lessons: apiLessons, isLoading: isLoadingLessons } = useAppSelector(
+    (state) => state.lessons
+  );
+  const { events: apiEvents, isLoading: isLoadingEvents } = useAppSelector(
+    (state) => state.monthlyCalendar
+  );
+
+  // Combined loading state
+  const isLoading = isLoadingLessons || isLoadingEvents;
 
   // Filter states
   const [educationSystem, setEducationSystem] = useState('');
@@ -397,9 +458,10 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const [lessonPendingDelete, setLessonPendingDelete] = useState<ScheduleLesson | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Fetch lessons when component mounts
+  // Fetch lessons and calendar events when component mounts
   useEffect(() => {
     dispatch(fetchLessons());
+    dispatch(fetchMonthlyCalendarEvents({ page: 1, limit: 100 }));
   }, [dispatch]);
 
   // Transform API lessons to ScheduleLesson format with weekly repetition
@@ -410,6 +472,15 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
     return transformLessonsForWeek(apiLessons, currentWeekStart, currentLang);
   }, [apiLessons, currentWeekStart, currentLang]);
+
+  // Transform API events to ScheduleEvent format for current week
+  const transformedEvents: ScheduleEvent[] = useMemo(() => {
+    if (!apiEvents || apiEvents.length === 0) {
+      return [];
+    }
+
+    return transformEventsForWeek(apiEvents, currentWeekStart, currentLang);
+  }, [apiEvents, currentWeekStart, currentLang]);
 
   // Handle week change from calendar navigation
   const handleWeekChange = useCallback((weekStart: Date) => {
@@ -575,7 +646,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         ) : (
           <WeeklyScheduleCalendar
             lessons={transformedLessons}
-            events={DEMO_EVENTS}
+            events={transformedEvents}
             periodHeaders={DEMO_PERIOD_HEADERS}
             specialColumns={DEMO_SPECIAL_COLUMNS}
             lessonContextActions={lessonContextActions}
