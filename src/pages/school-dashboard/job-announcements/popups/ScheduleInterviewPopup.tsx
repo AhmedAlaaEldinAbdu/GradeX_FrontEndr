@@ -8,7 +8,6 @@ import CustomSelect, { type CustomSelectOption } from '@/shared/components/Custo
 import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
-import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
 import { InterviewFormSchema, type InterviewFormProps } from '@/validations/interviews-validations';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -48,7 +47,6 @@ const INTERVIEW_TYPE_OPTIONS = [
 
 export default function ScheduleInterviewPopup({
   open,
-  applicantName,
   jobAdvertisementId,
   applicantTeacherId,
   onClose,

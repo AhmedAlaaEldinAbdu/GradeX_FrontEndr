@@ -53,7 +53,6 @@ export default function AddEditInterviewPopup({
     reset,
     control,
     watch,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<InterviewFormProps>({
     resolver: yupResolver(InterviewFormSchema),

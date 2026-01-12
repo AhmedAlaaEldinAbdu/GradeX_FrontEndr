@@ -22,28 +22,37 @@ const RejectedSchoolDetailsPage: React.FC = () => {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         // Mock data - replace with actual API call
+        const applicationFeatureFlags = {
+          attendanceAndDeparture: true,
+          remoteBookTracking: false,
+          expensesTrackingOnly: false,
+          fullExpensesPayment: true,
+        };
+
         const mockData: SchoolFormData = {
           schoolName: 'اسم المدرسة',
+          schoolNameAr: 'اسم المدرسة',
+          schoolNameEn: 'School Name',
           academicSystem: 'government',
+          subSystemIds: [],
           foundationDate: '2020-05-22',
           aboutSchool:
             'بيتم كتابة بيانات مفيدة عن المدرسة وأنشطتها بيتم كتابة بيانات مفيدة عن المدرسة وأنشطتها بيتم كتابة بيانات مفيدة عن المدرسة وأنشطتها',
           hasCurrentSystem: true,
           currentSystem: 'حكومي',
           country: 'SA',
-          applicationFeatures: {
-            attendanceAndDeparture: true,
-            remoteBookTracking: false,
-            expensesTrackingOnly: false,
-            fullExpensesPayment: true,
-          },
+          applicationFeatures: Object.entries(applicationFeatureFlags)
+            .filter(([, enabled]) => enabled)
+            .map(([key]) => key),
           bankName: 'بنك السعودي المركزي',
           accountNumber: '231',
           ibanNumber: '1222',
+          landline: '',
           phoneNumber: '+966501234567',
           email: 'info@school.com',
           website: 'www.school.com',
           contactPerson: 'أحمد محمد',
+          addressCountry: 'SA',
           region: 'الرياض',
           state: 'الرياض',
           city: 'الرياض',
@@ -53,11 +62,12 @@ const RejectedSchoolDetailsPage: React.FC = () => {
           postalCode: '12345',
           hasBranches: false,
           hasOtherBranches: false,
-          attendanceFeature: true,
-          buyBooksFeature: false,
-          payCashFeature: true,
-          payInstallmentFeature: true,
           facilities: ['library', 'laboratory', 'sportField', 'canteen', 'busService'],
+          facilityDetails: {},
+          hasOtherFacility: false,
+          otherFacilityName: '',
+          otherFacilityNameAr: '',
+          otherFacilityNameEn: '',
         };
 
         setSchoolData(mockData);

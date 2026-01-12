@@ -10,7 +10,6 @@ import RejectSchoolPopup from './popups/RejectSchoolPopup';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import type { SchoolFormData } from './types/school.types';
-import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 const PendingSchoolDetailsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -31,28 +30,46 @@ const PendingSchoolDetailsPage: React.FC = () => {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         // Mock data - replace with actual API call
+        const applicationFeatureFlags = {
+          attendanceAndDeparture: true,
+          remoteBookTracking: false,
+          expensesTrackingOnly: false,
+          fullExpensesPayment: true,
+        };
+
+        const facilitiesFlags = {
+          playground: true,
+          library: true,
+          laboratory: false,
+          sportField: true,
+          canteen: false,
+          busService: true,
+        };
+
         const mockData: SchoolFormData = {
           schoolName: 'اسم المدرسة',
+          schoolNameAr: 'اسم المدرسة',
+          schoolNameEn: 'School Name',
           academicSystem: 'government',
+          subSystemIds: [],
           foundationDate: '2020-05-22',
           aboutSchool:
             'بيتم كتابة بيانات مفيدة عن المدرسة وأنشطتها بيتم كتابة بيانات مفيدة عن المدرسة وأنشطتها بيتم كتابة بيانات مفيدة عن المدرسة وأنشطتها',
           hasCurrentSystem: true,
           currentSystem: 'حكومي',
           country: 'SA',
-          applicationFeatures: {
-            attendanceAndDeparture: true,
-            remoteBookTracking: false,
-            expensesTrackingOnly: false,
-            fullExpensesPayment: true,
-          },
+          applicationFeatures: Object.entries(applicationFeatureFlags)
+            .filter(([, enabled]) => enabled)
+            .map(([key]) => key),
           bankName: 'بنك السعودي المركزي',
           accountNumber: '231',
           ibanNumber: '1222',
+          landline: '',
           phoneNumber: '+966501234567',
           email: 'info@school.com',
           website: 'www.school.com',
           contactPerson: 'أحمد محمد',
+          addressCountry: 'SA',
           region: 'الرياض',
           state: 'الرياض',
           city: 'الرياض',
@@ -62,18 +79,14 @@ const PendingSchoolDetailsPage: React.FC = () => {
           postalCode: '12345',
           hasBranches: false,
           hasOtherBranches: false,
-          attendanceFeature: true,
-          buyBooksFeature: false,
-          payCashFeature: true,
-          payInstallmentFeature: true,
-          facilities: {
-            playground: true,
-            library: true,
-            laboratory: false,
-            sportField: true,
-            canteen: false,
-            busService: true,
-          },
+          facilities: Object.entries(facilitiesFlags)
+            .filter(([, enabled]) => enabled)
+            .map(([key]) => key),
+          facilityDetails: {},
+          hasOtherFacility: false,
+          otherFacilityName: '',
+          otherFacilityNameAr: '',
+          otherFacilityNameEn: '',
         };
 
         setSchoolData(mockData);

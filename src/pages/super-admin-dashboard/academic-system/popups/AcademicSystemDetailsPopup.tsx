@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
-import CustomImage from '@/shared/components/CustomImage';
 
 interface AcademicDetailsPopupProps {
   open: boolean;

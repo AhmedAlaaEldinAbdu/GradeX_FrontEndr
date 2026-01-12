@@ -9,7 +9,6 @@ import { applicationsJobAdvertisementApiService } from '@/services/api/applicati
 import type {
   ApplicationsJobAdvertisement,
   ApplicationsJobAdvertisementQueryParams,
-  ApplicationsJobAdvertisementListResponse,
   CreateApplicationsJobAdvertisementRequest,
   UpdateApplicationStatusRequest,
 } from '@/services/api/types/applications-job-advertisement.types';

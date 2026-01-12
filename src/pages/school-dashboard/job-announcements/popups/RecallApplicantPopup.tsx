@@ -13,7 +13,6 @@ interface RecallApplicantPopupProps {
 
 const RecallApplicantPopup = ({
   open,
-  applicantName,
   onConfirm,
   onCancel,
   isProcessing = false,
