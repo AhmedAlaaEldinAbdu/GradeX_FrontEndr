@@ -314,14 +314,12 @@ export default function JobAnnouncementsList() {
     },
     {
       header:
-        currentLang === 'ar'
-          ? 'jobAnnouncement.form.jobNameAr'
-          : 'jobAnnouncement.form.jobNameEn',
+        currentLang === 'ar' ? 'jobAnnouncement.form.jobNameAr' : 'jobAnnouncement.form.jobNameEn',
       accessor: (row) => (
         <span className="text-sm font-medium text-gray-900">
           {currentLang === 'ar'
-            ? normalizeText(row.name) ?? normalizeText(row.nameEn) ?? '--'
-            : normalizeText(row.nameEn) ?? normalizeText(row.name) ?? '--'}
+            ? (normalizeText(row.name) ?? normalizeText(row.nameEn) ?? '--')
+            : (normalizeText(row.nameEn) ?? normalizeText(row.name) ?? '--')}
         </span>
       ),
       headerClassName: 'min-w-[220px]',
@@ -396,7 +394,7 @@ export default function JobAnnouncementsList() {
           )}
         </div>
       ),
-      headerClassName: 'min-w-[140px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
@@ -426,7 +424,7 @@ export default function JobAnnouncementsList() {
           </span>
         </div>
       ),
-      headerClassName: 'min-w-[140px]',
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
