@@ -18,6 +18,7 @@ import interviewsReducer from '../features/interviews/interviewsSlice';
 import teacherAttendanceReducer from '../features/teacher-attendance/teacherAttendanceSlice';
 import applicationsJobAdvertisementsReducer from '../features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import monthlyCalendarReducer from '../features/monthly-calendar/monthlyCalendarSlice';
+import lessonsReducer from '../features/lessons/lessonsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -40,6 +41,7 @@ export const store = configureStore({
     interviews: interviewsReducer,
     teacherAttendance: teacherAttendanceReducer,
     monthlyCalendar: monthlyCalendarReducer,
+    lessons: lessonsReducer,
   },
 });
 
