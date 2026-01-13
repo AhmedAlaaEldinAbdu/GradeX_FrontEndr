@@ -8,7 +8,10 @@ import { createAcademicCalendar } from '@/redux/features/academic-calendar/acade
 import { useToast } from '@/shared/context/ToastContext';
 import { getErrorMessage } from '@/lib/http';
 import type { AcademicCalendarFormValues } from './components/AcademicCalendarForm';
-import { toDaysEnumValues, type AcademicCalendarScheduleItem } from './components/AcademicCalendarForm';
+import {
+  toDaysEnumValues,
+  type AcademicCalendarScheduleItem,
+} from './components/AcademicCalendarForm';
 import type {
   AcademicCalendarDaySchedule,
   AcademicCalendarTimedSchedule,
@@ -51,18 +54,19 @@ const mapFormValuesToCreateRequests = (
   values: AcademicCalendarFormValues,
   schoolBrancheId: string
 ): CreateAcademicCalendarRequest[] => {
-  const stageIds = (values.educationalStages || []).filter(Boolean);
+  const lkSchoolStageId = values.educationalStages?.[0];
+  if (!lkSchoolStageId) return [];
 
-  return stageIds.map((lkSchoolStageId) => {
-    const daySchedules: AcademicCalendarDaySchedule[] = (values.schoolDaySchedules || []).map(
-      (item) => ({
-        days: toDaysEnumValues(item.days || []).map(Number),
-        dayStartTime: item.startTime,
-        dayEndTime: item.endTime,
-      })
-    );
+  const daySchedules: AcademicCalendarDaySchedule[] = (values.schoolDaySchedules || []).map(
+    (item) => ({
+      days: toDaysEnumValues(item.days || []).map(Number),
+      dayStartTime: item.startTime,
+      dayEndTime: item.endTime,
+    })
+  );
 
-    return {
+  return [
+    {
       schoolBrancheId,
       lkSchoolStageId,
       studyStartDate: normalizeDateToApi(values.studyStartDate),
@@ -73,8 +77,8 @@ const mapFormValuesToCreateRequests = (
       breaks: mapTimedGroup(values.breakBetweenClassesMode, values.breakBetweenClassesSchedules),
       assemblies: mapTimedGroup(values.morningLineMode, values.morningLineSchedules),
       breakfasts: mapTimedGroup(values.breakfastMode, values.breakfastSchedules),
-    };
-  });
+    },
+  ];
 };
 
 export default function AddAcademicCalendarPage() {
@@ -111,15 +115,17 @@ export default function AddAcademicCalendarPage() {
           }
 
           try {
-            for (const req of requests) {
-              const res = await dispatch(createAcademicCalendar(req)).unwrap();
-              if (!res.isSuccess) {
-                throw new Error(res.errors?.[0] || t('common.errorOccurred'));
-              }
+            const res = await dispatch(createAcademicCalendar(requests[0])).unwrap();
+            if (!res.isSuccess) {
+              showToast({
+                message: 'common.errorOccurred',
+                type: 'error',
+              });
+              return;
             }
 
             showToast({
-              message: 'common.add',
+              message: 'academicCalendar.toast.addSuccess',
               type: 'success',
             });
             navigate('/calendar/academic');

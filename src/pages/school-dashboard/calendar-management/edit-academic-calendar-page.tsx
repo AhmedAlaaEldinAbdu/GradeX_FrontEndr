@@ -14,7 +14,10 @@ import {
 import { useToast } from '@/shared/context/ToastContext';
 import { getErrorMessage } from '@/lib/http';
 import type { AcademicCalendarFormValues } from './components/AcademicCalendarForm';
-import { toDaysEnumValues, type AcademicCalendarScheduleItem } from './components/AcademicCalendarForm';
+import {
+  toDaysEnumValues,
+  type AcademicCalendarScheduleItem,
+} from './components/AcademicCalendarForm';
 import { Days as DaysEnum } from '@/shared/enums/enums';
 import type {
   AcademicCalendarDaySchedule,
@@ -55,9 +58,7 @@ const normalizeTimeForInput = (value: string) => {
 };
 
 const toDaysEnumKeys = (days: number[]): DayKey[] => {
-  return (days || [])
-    .map((dayNumber) => (DaysEnum as any)[dayNumber] as unknown)
-    .filter(isDayKey);
+  return (days || []).map((dayNumber) => (DaysEnum as any)[dayNumber] as unknown).filter(isDayKey);
 };
 
 const mapTimedGroup = (
@@ -252,11 +253,15 @@ export default function EditAcademicCalendarPage() {
               ).unwrap();
 
               if (!res.isSuccess) {
-                throw new Error(res.errors?.[0] || t('common.errorOccurred'));
+                showToast({
+                  message: 'common.errorOccurred',
+                  type: 'error',
+                });
+                return;
               }
 
               showToast({
-                message: 'common.save',
+                message: 'academicCalendar.toast.editSuccess',
                 type: 'success',
               });
               navigate('/calendar/academic');
