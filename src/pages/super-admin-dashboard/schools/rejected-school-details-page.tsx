@@ -33,7 +33,7 @@ const RejectedSchoolDetailsPage: React.FC = () => {
           schoolName: 'اسم المدرسة',
           schoolNameAr: 'اسم المدرسة',
           schoolNameEn: 'School Name',
-          academicSystem: 'government',
+          academicSystemIds: ['government'],
           subSystemIds: [],
           foundationDate: '2020-05-22',
           aboutSchool:

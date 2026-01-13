@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import { useTranslation } from 'react-i18next';
@@ -67,7 +67,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 
   const hasCurrentSystem = watch('hasCurrentSystem');
   const selectedFeatures = watch('applicationFeatures');
-  const academicSystemValue = watch('academicSystem');
+  const academicSystemIdsValue = watch('academicSystemIds') as unknown as string[] | string;
 
   const countries = useSelector(selectCountries);
   const isLoadingCountries = useSelector(selectIsLoadingCountries);
@@ -76,38 +76,62 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   const applicationFeatures = useSelector(selectApplicationFeatures);
   const isLoadingFeatures = useSelector(selectIsLoadingFeatures);
 
-  const selectedAcademicSystemId = React.useMemo(() => {
-    if (Array.isArray(academicSystemValue)) {
-      return academicSystemValue[0] || '';
+  const selectedAcademicSystemIds = useMemo(() => {
+    if (Array.isArray(academicSystemIdsValue)) {
+      return academicSystemIdsValue.filter(Boolean);
     }
-    return academicSystemValue || '';
-  }, [academicSystemValue]);
+    if (typeof academicSystemIdsValue === 'string' && academicSystemIdsValue.trim().length > 0) {
+      return [academicSystemIdsValue];
+    }
+    return [] as string[];
+  }, [academicSystemIdsValue]);
 
-  const academicSubSystemOptions = React.useMemo(() => {
-    if (!selectedAcademicSystemId) return [];
-    const selectedSystem = academicSystems.find((s) => s.id === selectedAcademicSystemId);
-    const subsystems = selectedSystem?.academicSubSystemDto ?? [];
-    return subsystems.map((sub) => ({
-      value: sub.id,
-      label: currentLang === 'ar' ? sub.nameAr : sub.nameEn || sub.nameAr,
-    }));
-  }, [academicSystems, currentLang, selectedAcademicSystemId]);
+  const academicSubSystemOptions = useMemo(() => {
+    if (!selectedAcademicSystemIds.length) return [];
 
-  const previousAcademicSystemIdRef = useRef<string | null>(null);
+    const optionsMap = new Map<string, { value: string; label: string }>();
+
+    academicSystems
+      .filter((system) => selectedAcademicSystemIds.includes(system.id))
+      .forEach((system) => {
+        const subsystems = system?.academicSubSystemDto ?? [];
+        subsystems.forEach((sub) => {
+          if (!sub?.id) return;
+          if (optionsMap.has(sub.id)) return;
+          optionsMap.set(sub.id, {
+            value: sub.id,
+            label: currentLang === 'ar' ? sub.nameAr : sub.nameEn || sub.nameAr,
+          });
+        });
+      });
+
+    return Array.from(optionsMap.values());
+  }, [academicSystems, currentLang, selectedAcademicSystemIds]);
+
+  const previousAcademicSystemIdsKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Only clear when the academic system changes after the initial mount.
-    if (previousAcademicSystemIdRef.current === null) {
-      previousAcademicSystemIdRef.current = selectedAcademicSystemId;
+    const key = selectedAcademicSystemIds.slice().sort().join(',');
+
+    // Only prune when the academic systems change after the initial mount.
+    if (previousAcademicSystemIdsKeyRef.current === null) {
+      previousAcademicSystemIdsKeyRef.current = key;
       return;
     }
 
-    if (previousAcademicSystemIdRef.current !== selectedAcademicSystemId) {
-      previousAcademicSystemIdRef.current = selectedAcademicSystemId;
-      setValue('subSystemIds', []);
+    if (previousAcademicSystemIdsKeyRef.current !== key) {
+      previousAcademicSystemIdsKeyRef.current = key;
+
+      const allowedSubSystemIds = new Set(academicSubSystemOptions.map((opt) => opt.value));
+      const currentSelected = watch('subSystemIds') || [];
+      const nextSelected = (currentSelected || []).filter((id) => allowedSubSystemIds.has(id));
+
+      if (nextSelected.length !== currentSelected.length) {
+        setValue('subSystemIds', nextSelected);
+      }
       clearErrors('subSystemIds');
     }
-  }, [selectedAcademicSystemId, setValue, clearErrors]);
+  }, [academicSubSystemOptions, clearErrors, selectedAcademicSystemIds, setValue, watch]);
 
   useEffect(() => {
     dispatch(fetchCountries());
@@ -200,27 +224,25 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <FormField
             label={t('schools.academicSystem')}
             required
-            htmlFor="academicSystem"
-            error={errors.academicSystem?.message && t(errors.academicSystem.message)}
+            htmlFor="academicSystemIds"
+            error={errors.academicSystemIds?.message && t(errors.academicSystemIds.message)}
           >
             <Controller
-              name="academicSystem"
+              name="academicSystemIds"
               control={control}
               render={({ field }) => {
-                const fieldValue = Array.isArray(field.value)
-                  ? field.value[0] || ''
-                  : field.value || '';
+                const fieldValue = Array.isArray(field.value) ? field.value : [];
 
                 return (
                   <CustomSelect
-                    value={fieldValue}
+                    value={fieldValue || []}
                     onChange={(value) => {
-                      field.onChange(typeof value === 'string' ? [value] : value);
-                      trigger('academicSystem');
+                      field.onChange(Array.isArray(value) ? value : [value]);
+                      trigger('academicSystemIds');
                     }}
                     options={academicSystems.map((system) => ({
                       value: system.id,
-                      label: system.nameAr || '',
+                      label: currentLang === 'ar' ? system.nameAr : system.nameEn || system.nameAr,
                     }))}
                     placeholder={
                       isLoadingAcademicSystems
@@ -229,7 +251,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                     }
                     disabled={isLoadingAcademicSystems || readOnly}
                     maxHeight="200px"
-                    isMulti={false}
+                    isMulti
                   />
                 );
               }}
