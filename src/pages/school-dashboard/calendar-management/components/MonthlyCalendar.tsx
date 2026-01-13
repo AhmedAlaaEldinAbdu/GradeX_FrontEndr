@@ -45,6 +45,7 @@ import type {
 import type { MonthlyEventFormValues } from '@/validations/monthly-calendar-validations';
 import { getErrorMessage } from '@/lib/http';
 import { MonthlyCalendarDuration } from '@/shared/enums/enums';
+import Loading from '@/shared/components/Loading';
 
 type CalendarMonthlyEvent = CalendarEvent & { meta: MonthlyEventEntity };
 
@@ -561,9 +562,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-16 text-gray-500">
-            {t('loading.loading')}
-          </div>
+          <Loading size="lg" />
         ) : showEmptyState ? (
           <EmptyState
             imgSrc={StyledCalendarIcon}
