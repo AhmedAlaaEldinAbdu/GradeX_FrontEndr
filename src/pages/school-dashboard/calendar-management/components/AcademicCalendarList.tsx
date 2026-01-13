@@ -197,8 +197,6 @@ export default function AcademicCalendarList() {
             setPage(1);
           }}
           placeholder={t('academicCalendar.startDatePlaceholder')}
-          icon={<CustomImage src={calendarIcon} alt="calendar" className="h-5 w-5" />}
-          className="text-end"
         />
       ),
     },
@@ -217,8 +215,6 @@ export default function AcademicCalendarList() {
             setPage(1);
           }}
           placeholder={t('academicCalendar.endDatePlaceholder')}
-          icon={<CustomImage src={calendarIcon} alt="calendar" className="h-5 w-5" />}
-          className="text-end"
         />
       ),
     },

@@ -192,15 +192,6 @@ export default function AcademicCalendarForm({
       .filter((opt) => Boolean(opt.label));
   }, [currentLang, schoolStages]);
 
-  const durationOptions: CustomSelectOption[] = useMemo(
-    () => [
-      { value: '60', label: t('academicCalendar.form.lessonDurationOptions.60') },
-      { value: '45', label: t('academicCalendar.form.lessonDurationOptions.45') },
-      { value: '30', label: t('academicCalendar.form.lessonDurationOptions.30') },
-    ],
-    [t]
-  );
-
   const [values, setValues] = useState<AcademicCalendarFormValues>({
     educationalStages: initialValues?.educationalStages ?? [],
     studyStartDate: initialValues?.studyStartDate ?? '',
@@ -331,12 +322,11 @@ export default function AcademicCalendarForm({
             </FormField>
 
             <FormField label={t('academicCalendar.form.lessonDurationLabel')} required>
-              <CustomSelect
+              <Input
+                type="number"
+                min={0}
                 value={values.lessonDuration}
-                onChange={(value) =>
-                  patch({ lessonDuration: Array.isArray(value) ? (value[0] ?? '') : value })
-                }
-                options={durationOptions}
+                onChange={(e) => patch({ lessonDuration: e.target.value })}
                 placeholder={t('academicCalendar.form.lessonDurationPlaceholder')}
               />
             </FormField>
