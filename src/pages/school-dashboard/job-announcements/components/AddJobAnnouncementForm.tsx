@@ -785,7 +785,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     value={String(JobCategory.ADMIN)}
                     checked={jobCategory === JobCategory.ADMIN}
                     onChange={() => setValue('qualificationType', JobCategory.ADMIN)}
-                    className="h-4 w-4 accent-green-600 focus:ring-green-500"
+                    className="h-4 w-4"
                   />
                   <span className="text-sm text-gray-700">
                     {t('jobAnnouncement.form.jobCategoryAdmin')}
@@ -797,7 +797,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     value={String(JobCategory.TEACHER)}
                     checked={jobCategory === JobCategory.TEACHER}
                     onChange={() => setValue('qualificationType', JobCategory.TEACHER)}
-                    className="h-4 w-4 accent-green-600 focus:ring-green-500"
+                    className="h-4 w-4"
                   />
                   <span className="text-sm text-gray-700">
                     {t('jobAnnouncement.form.jobCategoryTeacher')}
@@ -1247,7 +1247,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                       value={option.value}
                       checked={salaryOption === option.value}
                       onChange={() => setValue('salary', option.value)}
-                      className="h-4 w-4 accent-green-600 focus:ring-green-500"
+                      className="h-4 w-4"
                     />
                     <span className="text-sm text-gray-700">{t(option.labelKey)}</span>
                   </label>
