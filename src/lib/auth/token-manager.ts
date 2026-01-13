@@ -175,7 +175,7 @@ export const tokenManager = {
    * Set user data
    */
   setUserData: (userData: StoredUserData, rememberMe: boolean = false): void => {
-    userData.role = UserRole.SCHOOL_ADMIN as string; // TODO: Remove this line after backend integration
+    // TODO(TEST TEAM): Role is no longer forced here; keep provided role as-is.
     const dataString = JSON.stringify(userData);
     if (rememberMe) {
       localStorage.setItem(USER_DATA_KEY, dataString);

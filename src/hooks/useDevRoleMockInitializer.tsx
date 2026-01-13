@@ -13,7 +13,19 @@ export const useDevRoleMockInitializer = () => {
     if (import.meta.env.VITE_API_BASE_URL) {
       return;
     }
-    const savedRole = localStorage.getItem('dev_current_role') as UserRoleType | null;
+    // TODO(TEST TEAM): temporary dev role initializer for builds without backend.
+    // Reads from localStorage `userData.role` (same contract used by token-manager).
+    let savedRole: UserRoleType | null = null;
+    try {
+      const rawUserData = localStorage.getItem('userData');
+      const parsed = rawUserData ? (JSON.parse(rawUserData) as { role?: unknown }) : null;
+      const role = parsed?.role;
+      if (role === UserRole.SUPER_ADMIN || role === UserRole.SCHOOL_ADMIN) {
+        savedRole = role;
+      }
+    } catch {
+      savedRole = null;
+    }
 
     if (!currentUser) {
       dispatch(

@@ -19,6 +19,8 @@ export { default as MultiSelectTagInput } from './MultiSelectTagInput';
 export { default as ActionsDropdown } from './ActionsDropdown';
 export { default as DataTable } from './DataTable';
 export { default as LanguageSwitcher } from './LanguageSwitcher';
+// TODO(TEST TEAM): Temporary export (remove later)
+export { default as RoleSwitcher } from './RoleSwitcher';
 export { default as IconButton } from './IconButton';
 export { default as Image } from './CustomImage';
 export type { MultiSelectOption } from './MultiSelectTagInput';
