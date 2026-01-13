@@ -20,7 +20,7 @@ export interface SchoolFormData {
   schoolName: string;
   schoolNameAr: string;
   schoolNameEn: string;
-  academicSystem: string | string[];
+  academicSystemIds: string[];
   subSystemIds: string[];
   foundationDate: string;
   aboutSchool: string;
@@ -69,7 +69,7 @@ export const initialSchoolFormData: SchoolFormData = {
   schoolName: '',
   schoolNameAr: '',
   schoolNameEn: '',
-  academicSystem: [],
+  academicSystemIds: [],
   subSystemIds: [],
   foundationDate: '',
   aboutSchool: '',

@@ -28,6 +28,9 @@ import WeeklyCalendarPage from '@/pages/school-dashboard/calendar-management/wee
 import AddLessonPage from '@/pages/school-dashboard/calendar-management/add-lesson-page';
 import EditLessonPage from '@/pages/school-dashboard/calendar-management/edit-lesson-page';
 import MonthlyCalendarPage from '@/pages/school-dashboard/calendar-management/monthly-calendar-page';
+import AcademicCalendarPage from '@/pages/school-dashboard/calendar-management/academic-calendar-page';
+import AddAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/add-academic-calendar-page';
+import EditAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/edit-academic-calendar-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -329,10 +332,27 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">التقويم الأكاديمي</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <AcademicCalendarPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/academic/add-academic-calendar"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddAcademicCalendarPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/academic/edit-academic-calendar/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditAcademicCalendarPage />
             </MainLayout>
           </ProtectedRoute>
         }

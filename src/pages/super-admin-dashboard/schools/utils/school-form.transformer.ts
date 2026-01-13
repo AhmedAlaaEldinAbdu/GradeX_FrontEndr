@@ -28,7 +28,7 @@ interface BranchData {
 
 interface BackendSchoolData {
   Name?: string;
-  AcademicSystemId?: string;
+  AcademicSystemIds?: string[];
   SubSystemIds?: string[];
   FoundingDate?: string;
   Description?: string;
@@ -87,8 +87,10 @@ function appendBasicInformation(formData: FormData, schoolData: SchoolFormData):
   formData.append('NameAr', schoolData.schoolNameAr || schoolData.schoolName);
   formData.append('NameEn', schoolData.schoolNameEn || schoolData.schoolName);
 
-  const academicSystemId = extractAcademicSystemId(schoolData.academicSystem);
-  formData.append('AcademicSystemId', academicSystemId);
+  const academicSystemIds = (schoolData.academicSystemIds || []).filter(Boolean);
+  academicSystemIds.forEach((id, index) => {
+    formData.append(`AcademicSystemIds[${index}]`, id);
+  });
 
   if (schoolData.subSystemIds && schoolData.subSystemIds.length > 0) {
     schoolData.subSystemIds.forEach((subSystemId, index) => {
@@ -295,8 +297,14 @@ function appendBranchData(formData: FormData, branch: BranchData, index: number)
   }
 }
 
-function extractAcademicSystemId(academicSystem: string | string[]): string {
-  return Array.isArray(academicSystem) ? academicSystem[0] || '' : academicSystem;
+function extractAcademicSystemIds(academicSystemIds: unknown): string[] {
+  if (Array.isArray(academicSystemIds)) {
+    return academicSystemIds.filter((value) => typeof value === 'string' && value.trim().length > 0);
+  }
+  if (typeof academicSystemIds === 'string' && academicSystemIds.trim().length > 0) {
+    return [academicSystemIds];
+  }
+  return [];
 }
 
 function formatFoundingDate(date?: string): string {
@@ -351,7 +359,6 @@ interface BackendSchoolResponse {
   name?: string;
   nameAr?: string;
   nameEn?: string;
-  academicSystemId?: string;
   subSystemIds?: string[];
   foundingDate?: string;
   description?: string;
@@ -430,6 +437,10 @@ interface BackendSchoolResponse {
 export function transformBackendToSchoolForm(backendData: unknown): SchoolFormData {
   const data = backendData as BackendSchoolData;
 
+  const academicSystemIdsRaw =
+    (data as any).AcademicSystemIds ?? (data as any).academicSystemIds;
+  const academicSystemIds = extractAcademicSystemIds(academicSystemIdsRaw);
+
   const subSystemIdsRaw = (data as any).SubSystemIds ?? (data as any).subSystemIds;
   const subSystemIds = Array.isArray(subSystemIdsRaw)
     ? subSystemIdsRaw.filter((value) => typeof value === 'string' && value.trim().length > 0)
@@ -440,7 +451,7 @@ export function transformBackendToSchoolForm(backendData: unknown): SchoolFormDa
     schoolName: data.Name || '',
     schoolNameAr: data.Name || '',
     schoolNameEn: data.Name || '',
-    academicSystem: data.AcademicSystemId ? [data.AcademicSystemId] : [],
+    academicSystemIds,
     subSystemIds,
     foundationDate: parseDate(data.FoundingDate),
     aboutSchool: data.Description || '',
@@ -519,6 +530,10 @@ export function transformBackendSchoolToForm(
   const subSystemIds = Array.isArray(subSystemIdsRaw)
     ? subSystemIdsRaw.filter((value) => typeof value === 'string' && value.trim().length > 0)
     : [];
+
+  const academicSystemIdsRaw =
+    (data as any).academicSystemIds ?? (data as any).AcademicSystemIds;
+  const academicSystemIds = extractAcademicSystemIds(academicSystemIdsRaw);
 
   // Extract license file paths from attachments (use filePath for full URL access)
   const licenseFiles = data.licensesAttachments?.map((attachment) => attachment.filePath) || [];
@@ -630,7 +645,7 @@ export function transformBackendSchoolToForm(
     schoolName: data.name || data.nameAr || data.nameEn || '',
     schoolNameAr: data.nameAr || '',
     schoolNameEn: data.nameEn || '',
-    academicSystem: data.academicSystemId ? [data.academicSystemId] : [],
+    academicSystemIds,
     subSystemIds,
     foundationDate: formatDateForInput(data.foundingDate),
     aboutSchool: data.description || '',
@@ -683,16 +698,16 @@ export function transformBackendSchoolToForm(
     branches:
       data.schoolBranches && data.schoolBranches.length > 1
         ? data.schoolBranches.slice(1).map((branch) => ({
-            country: branch.lkCountryId || '',
-            region: branch.region || '',
-            city: branch.city || '',
-            district: branch.neighborhood || '',
-            street: branch.street || '',
-            buildingNumber: branch.buildingNumber || '',
-            postalCode: branch.zipCode || '',
-            latitude: branch.latitude,
-            longitude: branch.longitude,
-          }))
+          country: branch.lkCountryId || '',
+          region: branch.region || '',
+          city: branch.city || '',
+          district: branch.neighborhood || '',
+          street: branch.street || '',
+          buildingNumber: branch.buildingNumber || '',
+          postalCode: branch.zipCode || '',
+          latitude: branch.latitude,
+          longitude: branch.longitude,
+        }))
         : [],
   };
 }

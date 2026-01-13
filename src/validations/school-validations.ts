@@ -21,18 +21,18 @@ export const basicInfoSchema = yup.object().shape({
     .max(100, 'schools.validation.schoolNameMax')
     .trim(),
 
-  academicSystem: yup
+  academicSystemIds: yup
     .mixed()
     .required('schools.validation.academicSystemRequired')
     .test('valid-academic-systems', 'schools.validation.academicSystemInvalid', function (value) {
       if (!value) return false;
 
       if (typeof value === 'string') {
-        return value.length > 0;
+        return value.trim().length > 0;
       }
 
       if (Array.isArray(value)) {
-        return value.length > 0;
+        return value.filter((id) => typeof id === 'string' && id.trim().length > 0).length > 0;
       }
 
       return false;
@@ -41,10 +41,10 @@ export const basicInfoSchema = yup.object().shape({
   subSystemIds: yup
     .array()
     .of(yup.string().required())
-    .when('academicSystem', (academicSystem: unknown, schema) => {
+    .when('academicSystemIds', (academicSystemIds: unknown, schema) => {
       const hasAcademicSystem =
-        (typeof academicSystem === 'string' && academicSystem.trim().length > 0) ||
-        (Array.isArray(academicSystem) && academicSystem.length > 0);
+        (typeof academicSystemIds === 'string' && academicSystemIds.trim().length > 0) ||
+        (Array.isArray(academicSystemIds) && academicSystemIds.length > 0);
 
       return hasAcademicSystem
         ? schema.min(1, 'schools.validation.subSystemIdsRequired').required('schools.validation.subSystemIdsRequired')
