@@ -479,8 +479,13 @@ export default function WeeklyScheduleCalendar({
 
           {/* Day Rows (7 rows for all days of the week) */}
           {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-            // dayIndex 1 = الأحد is the current/selected day
-            const isCurrentDay = dayIndex === 1;
+            // Check if this day is today by comparing dates
+            const dayDate = addDays(weekStart, dayIndex);
+            const today = new Date();
+            const isCurrentDay =
+              dayDate.getDate() === today.getDate() &&
+              dayDate.getMonth() === today.getMonth() &&
+              dayDate.getFullYear() === today.getFullYear();
 
             // Check if this row has a full-row event (spans all columns)
             const fullRowEvent = events.find(
