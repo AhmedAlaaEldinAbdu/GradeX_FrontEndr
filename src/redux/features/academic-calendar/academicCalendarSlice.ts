@@ -111,7 +111,7 @@ export const fetchAcademicCalendars = createAsyncThunk<
     }
 
     return {
-      data: responseData.academicCalendarDto || [],
+      data: responseData.academicCalendarDto || responseData.calendars || [],
       meta: {
         total: responseData.totalItems || 0,
         page: responseData.pageIndex || params.PageIndex || 1,

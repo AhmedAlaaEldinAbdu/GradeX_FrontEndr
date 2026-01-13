@@ -29,8 +29,14 @@ export interface AcademicCalendarEntity {
   schoolBrancheId?: string;
   schoolBranchId?: string;
   lkSchoolStageId: string;
+  lkSchoolStageNameAr?: string | null;
+  lkSchoolStageNameEn?: string | null;
   studyStartDate: string;
   studyEndDate: string;
+  topicAr?: string | null;
+  topicEn?: string | null;
+  contentAr?: string | null;
+  contentEn?: string | null;
   weeksCount: number;
   lessonDuration: number;
   daySchedules: AcademicCalendarDaySchedule[];
@@ -40,7 +46,8 @@ export interface AcademicCalendarEntity {
 }
 
 export interface AcademicCalendarListData {
-  academicCalendarDto: AcademicCalendarEntity[];
+  academicCalendarDto?: AcademicCalendarEntity[];
+  calendars?: AcademicCalendarEntity[];
   pageIndex: number;
   totalPages: number;
   totalItems: number;
