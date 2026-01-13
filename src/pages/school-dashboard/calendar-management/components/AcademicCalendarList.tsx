@@ -17,7 +17,8 @@ import {
   deleteAcademicCalendar,
   fetchAcademicCalendars,
 } from '@/redux/features/academic-calendar/academicCalendarSlice';
-import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
+import { selectSchoolStages } from '@/redux/features/lookups/lookupsSelectors';
 
 type AcademicCalendarRow = {
   id: string;
@@ -46,17 +47,16 @@ export default function AcademicCalendarList() {
   const { calendars, pagination, isLoading, isDeleting } = useAppSelector(
     (state) => state.academicCalendar
   );
-  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const schoolStages = useAppSelector(selectSchoolStages);
 
   const DummySchoolBranchId = '41b6a93d-947c-4d58-959a-08de1c988710';
-  const EDUCATIONAL_STAGE_LOOKUP_LIMIT = 10000;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
   const [page, setPage] = useState(1);
-  const limit = 7;
+  const limit = 10;
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedId, setSelectedId] = useState<string>('');
@@ -64,15 +64,9 @@ export default function AcademicCalendarList() {
   const hasActiveFilters = Boolean(searchTerm || startDate || endDate);
 
   useEffect(() => {
-    if (educationalStages.length > 0) return;
-    dispatch(
-      getEducationalStages({
-        pageIndex: 1,
-        pageSize: EDUCATIONAL_STAGE_LOOKUP_LIMIT,
-        schoolBranchId: DummySchoolBranchId,
-      })
-    );
-  }, [dispatch, educationalStages.length]);
+    if (schoolStages.length > 0) return;
+    dispatch(fetchSchoolStages());
+  }, [dispatch, schoolStages.length]);
 
   useEffect(() => {
     dispatch(
@@ -91,20 +85,22 @@ export default function AcademicCalendarList() {
 
   const stageNameById = useMemo(() => {
     const map = new Map<string, { ar: string; en: string }>();
-    educationalStages.forEach((stage) => {
-      map.set(stage.id, { ar: stage.nameAr, en: stage.nameEn || stage.nameAr });
+    schoolStages.forEach((stage) => {
+      map.set(stage.id, { ar: stage.nameAR, en: stage.nameEN || stage.nameAR });
     });
     return map;
-  }, [educationalStages]);
+  }, [schoolStages]);
 
   const tableRows = useMemo<AcademicCalendarRow[]>(() => {
     return (calendars || []).map((calendar) => {
       const stage = stageNameById.get(calendar.lkSchoolStageId);
+      const apiStageNameAr = calendar.lkSchoolStageNameAr || undefined;
+      const apiStageNameEn = calendar.lkSchoolStageNameEn || undefined;
 
       return {
         id: calendar.id,
-        stageNameAr: stage?.ar || '-',
-        stageNameEn: stage?.en || '-',
+        stageNameAr: apiStageNameAr || stage?.ar || '-',
+        stageNameEn: apiStageNameEn || stage?.en || '-',
         startDate: calendar.studyStartDate?.slice(0, 10) || '',
         endDate: calendar.studyEndDate?.slice(0, 10) || '',
         weeksCount: calendar.weeksCount || 0,
@@ -243,7 +239,7 @@ export default function AcademicCalendarList() {
       setShowDeletePopup(false);
       setSelectedId('');
       showToast({
-        message: 'common.delete',
+        message: 'academicCalendar.toast.deleteSuccess',
         type: 'success',
       });
     } catch {

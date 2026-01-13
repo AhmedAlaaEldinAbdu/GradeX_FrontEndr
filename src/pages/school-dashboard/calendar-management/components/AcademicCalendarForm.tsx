@@ -9,7 +9,8 @@ import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import { Days as DaysEnum, type Days as DaysValue } from '@/shared/enums/enums';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
+import { selectIsLoadingSchoolStages, selectSchoolStages } from '@/redux/features/lookups/lookupsSelectors';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 
 type DayKey = keyof typeof DaysEnum;
@@ -155,21 +156,25 @@ export default function AcademicCalendarForm({
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
 
-  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const schoolStages = useAppSelector(selectSchoolStages);
+  const isSchoolStagesLoading = useAppSelector(selectIsLoadingSchoolStages);
 
   useEffect(() => {
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
-  }, [dispatch]);
+    if (schoolStages.length > 0) return;
+    dispatch(fetchSchoolStages());
+  }, [dispatch, schoolStages.length]);
 
   const dayOptions = useMemo<CustomSelectOption[]>(() => {
     const order: DayKey[] = [
-      'Wednesday',
-      'Tuesday',
-      'Monday',
+      'Saturday',
       'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
       'Thursday',
       'Friday',
-      'Saturday',
     ];
 
     return order.map((key) => ({
@@ -179,23 +184,13 @@ export default function AcademicCalendarForm({
   }, [t]);
 
   const educationalStageOptions: CustomSelectOption[] = useMemo(() => {
-    if (educationalStages.length > 0) {
-      return educationalStages
-        .map((stage) => ({
-          value: stage.id,
-          label:
-            (currentLang === 'ar' ? stage.nameAr : stage.nameEn) || stage.nameAr || stage.nameEn,
-        }))
-        .filter((opt) => Boolean(opt.label));
-    }
-
-    return [
-      { value: 'kg', label: t('academicCalendar.form.educationalStageOptions.kg') },
-      { value: 'primary', label: t('academicCalendar.form.educationalStageOptions.primary') },
-      { value: 'prep', label: t('academicCalendar.form.educationalStageOptions.prep') },
-      { value: 'secondary', label: t('academicCalendar.form.educationalStageOptions.secondary') },
-    ];
-  }, [currentLang, educationalStages, t]);
+    return schoolStages
+      .map((stage) => ({
+        value: stage.id,
+        label: (currentLang === 'ar' ? stage.nameAR : stage.nameEN) || stage.nameAR || stage.nameEN,
+      }))
+      .filter((opt) => Boolean(opt.label));
+  }, [currentLang, schoolStages]);
 
   const durationOptions: CustomSelectOption[] = useMemo(
     () => [
@@ -277,7 +272,13 @@ export default function AcademicCalendarForm({
   };
 
   const handleSubmit = async () => {
-    await onSubmit?.(values);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      await onSubmit?.(values);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -286,11 +287,14 @@ export default function AcademicCalendarForm({
         <div className="space-y-6">
           <FormField label={t('academicCalendar.form.educationalStagesLabel')} required>
             <CustomSelect
-              value={values.educationalStages}
-              onChange={(value) => patch({ educationalStages: Array.isArray(value) ? value : [] })}
+              value={values.educationalStages[0] ?? ''}
+              onChange={(value) => {
+                const selected = Array.isArray(value) ? (value[0] ?? '') : value;
+                patch({ educationalStages: selected ? [selected] : [] });
+              }}
               options={educationalStageOptions}
               placeholder={t('academicCalendar.form.educationalStagesPlaceholder')}
-              isMulti
+              disabled={isSchoolStagesLoading}
             />
           </FormField>
 
@@ -619,7 +623,7 @@ export default function AcademicCalendarForm({
         </Card>
 
         <div className="flex flex-row-reverse gap-3 pt-4">
-          <Button onClick={handleSubmit} variant="primary">
+          <Button onClick={handleSubmit} variant="primary" disabled={isSubmitting}>
             {submitLabel}
           </Button>
           <Button onClick={onCancel} variant="outline" type="button">
