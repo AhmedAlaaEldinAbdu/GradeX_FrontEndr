@@ -1472,7 +1472,12 @@
     "searchPlaceholder": "ابحث عن اسم المرحلة التعليمية",
     "startDatePlaceholder": "تاريخ البداية",
     "endDatePlaceholder": "تاريخ النهاية",
-    "confirmDelete": "هل تريد حذف هذا التقويم؟",
+    "confirmDelete": "هل متأكد من التقويم الأكاديمي؟",
+    "toast": {
+      "addSuccess": "تم إضافة التقويم الأكاديمي بنجاح",
+      "editSuccess": "تم تعديل التقويم الأكاديمي بنجاح",
+      "deleteSuccess": "تم حذف التقويم الأكاديمي بنجاح"
+    },
     "emptyStateTitle": "لم يتم إضافة أي تقويم أكاديمي حتى الآن",
     "emptyStateDescription": "يمكنك البدء بإضافة التقويم الأكاديمي لتنظيم الدراسة والإدارة بشكل أفضل.",
     "table": {
