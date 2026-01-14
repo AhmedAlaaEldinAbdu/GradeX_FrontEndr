@@ -16,12 +16,18 @@ import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchLessons, deleteLessonById } from '@/redux/features/lessons/lessonsSlice';
 import { fetchMonthlyCalendarEvents } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
+import { fetchAcademicCalendarsForWeek } from '@/redux/features/academic-calendar/academicCalendarSlice';
 import type { Lesson } from '@/services/api/types/lessons.types';
 import type { MonthlyCalendarEvent } from '@/services/api/types/monthly-calendar.types';
+import type {
+  AcademicCalendarEntity,
+  AcademicCalendarTimedSchedule,
+} from '@/services/api/types/academic-calendar.types';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance';
 
 // Period time slots for mapping API times to periodIndex
 // Each slot has start and end times in 24h format (HH:mm)
@@ -338,46 +344,158 @@ const transformEventsForWeek = (
   return scheduleEvents;
 };
 
-// Dynamic period headers - these can be customized per school
-// This configuration would typically come from an API or school settings
-const DEMO_PERIOD_HEADERS: PeriodHeader[] = [
-  { label: '1', time: '8:30ص - 9:15ص' },
-  { label: '2', time: '9:15ص - 10ص' },
-  { label: '3', time: '10ص - 10:45ص' },
-  { label: 'فطار', time: '10:45ص - 11:30ص' },
-  { label: '5', time: '11:30ص - 12:15م' },
-  { label: 'الحديقة', time: '12:15م - 1م' },
-  { label: '6', time: '1م - 1:45م' },
-  { label: '7', time: '1:45م - 2:30م' },
-  { label: '8', time: '2:30م - 3:15م' },
-];
-
-// Dynamic special columns - these can be customized per school
-// Each school can have different break times, activities, etc.
-const DEMO_SPECIAL_COLUMNS: SpecialColumn[] = [
-  {
-    columnIndex: 3, // Which column (0-8)
-    label: 'الفطار', // Display label
-    type: 'breakfast',
-    bgColor: 'bg-amber-100', // Background color for cells
-    textColor: 'text-amber-700', // Text color for label
-    headerBgColor: 'bg-amber-50', // Header background
-    headerBorderColor: 'border-amber-200', // Header border
-    startDayIndex: 1, // Start from الأحد (Sunday)
-    endDayIndex: 5, // End at الخميس (Thursday)
-  },
-  {
-    columnIndex: 5, // Which column (0-8)
-    label: 'الحديقة', // Display label
-    type: 'garden',
+/**
+ * Color configurations for different types of special columns
+ */
+const SPECIAL_COLUMN_COLORS = {
+  breakfast: {
     bgColor: 'bg-amber-100',
     textColor: 'text-amber-700',
     headerBgColor: 'bg-amber-50',
     headerBorderColor: 'border-amber-200',
-    startDayIndex: 1,
-    endDayIndex: 5,
   },
+  break: {
+    bgColor: 'bg-sky-100',
+    textColor: 'text-sky-700',
+    headerBgColor: 'bg-sky-50',
+    headerBorderColor: 'border-sky-200',
+  },
+  assembly: {
+    bgColor: 'bg-emerald-100',
+    textColor: 'text-emerald-700',
+    headerBgColor: 'bg-emerald-50',
+    headerBorderColor: 'border-emerald-200',
+  },
+} as const;
+
+const mapApiDaysToCalendarDays = (
+  apiDays: number[]
+): { startDayIndex: number; endDayIndex: number } => {
+  if (!apiDays || apiDays.length === 0) {
+    return {
+      startDayIndex: 1, // Sunday
+      endDayIndex: 5, // Thursday
+    };
+  }
+
+  const mappedDays = apiDays.map((d) => d);
+  const minDay = Math.min(...mappedDays);
+  const maxDay = Math.max(...mappedDays);
+
+  return {
+    startDayIndex: minDay,
+    endDayIndex: maxDay,
+  };
+};
+
+/**
+ * Transform academic calendar timed schedules (breaks, breakfasts, assemblies) into SpecialColumn format
+ */
+const transformTimedSchedulesToSpecialColumns = (
+  schedules: AcademicCalendarTimedSchedule[],
+  type: 'breakfast' | 'break' | 'assembly',
+  t: (key: string) => string
+): SpecialColumn[] => {
+  if (!schedules || schedules.length === 0) {
+    return [];
+  }
+
+  const colors = SPECIAL_COLUMN_COLORS[type];
+
+  return schedules.map((schedule) => {
+    // Parse time to get period index
+    const timeParts = schedule.startTime.split(':');
+    const hours = parseInt(timeParts[0], 10);
+    const minutes = parseInt(timeParts[1], 10);
+    const periodIndex = getPeriodIndexFromTime(hours, minutes);
+
+    // Get day range from API days
+    const { startDayIndex, endDayIndex } = mapApiDaysToCalendarDays(schedule.days);
+
+    return {
+      columnIndex: periodIndex,
+      label: t(`weeklyCalendar.specialColumns.${type}`),
+      type: type === 'break' ? 'custom' : type,
+      ...colors,
+      startDayIndex,
+      endDayIndex,
+    } as SpecialColumn;
+  });
+};
+
+/**
+ * Transform all academic calendar data into SpecialColumn array
+ * Processes breaks, breakfasts, and assemblies from all calendars for the week
+ */
+const transformAcademicCalendarToSpecialColumns = (
+  calendars: AcademicCalendarEntity[],
+  t: (key: string) => string
+): SpecialColumn[] => {
+  if (!calendars || calendars.length === 0) {
+    return [];
+  }
+
+  const allSpecialColumns: SpecialColumn[] = [];
+  const usedColumnIndices = new Set<number>();
+
+  // Process all calendars (there might be multiple for different stages)
+  for (const calendar of calendars) {
+    // Process breakfasts
+    const breakfastColumns = transformTimedSchedulesToSpecialColumns(
+      calendar.breakfasts || [],
+      'breakfast',
+      t
+    );
+    for (const col of breakfastColumns) {
+      if (!usedColumnIndices.has(col.columnIndex)) {
+        allSpecialColumns.push(col);
+        usedColumnIndices.add(col.columnIndex);
+      }
+    }
+
+    // Process breaks
+    const breakColumns = transformTimedSchedulesToSpecialColumns(calendar.breaks || [], 'break', t);
+    for (const col of breakColumns) {
+      if (!usedColumnIndices.has(col.columnIndex)) {
+        allSpecialColumns.push(col);
+        usedColumnIndices.add(col.columnIndex);
+      }
+    }
+
+    // Process assemblies
+    const assemblyColumns = transformTimedSchedulesToSpecialColumns(
+      calendar.assemblies || [],
+      'assembly',
+      t
+    );
+    for (const col of assemblyColumns) {
+      if (!usedColumnIndices.has(col.columnIndex)) {
+        allSpecialColumns.push(col);
+        usedColumnIndices.add(col.columnIndex);
+      }
+    }
+  }
+
+  // Sort by column index for consistent ordering
+  return allSpecialColumns.sort((a, b) => a.columnIndex - b.columnIndex);
+};
+
+// Dynamic period headers - these can be customized per school
+// This configuration would typically come from an API or school settings
+const DEFAULT_PERIOD_HEADERS: PeriodHeader[] = [
+  { label: '1', time: '8:30ص - 9:15ص' },
+  { label: '2', time: '9:15ص - 10ص' },
+  { label: '3', time: '10ص - 10:45ص' },
+  { label: '4', time: '10:45ص - 11:30ص' },
+  { label: '5', time: '11:30ص - 12:15م' },
+  { label: '6', time: '12:15م - 1م' },
+  { label: '7', time: '1م - 1:45م' },
+  { label: '8', time: '1:45م - 2:30م' },
+  { label: '9', time: '2:30م - 3:15م' },
 ];
+
+// Fallback special columns when no academic calendar data is available
+const FALLBACK_SPECIAL_COLUMNS: SpecialColumn[] = [];
 
 // Filter options
 const educationSystemOptions = [
@@ -435,8 +553,14 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     (state) => state.monthlyCalendar
   );
 
+  // Redux state for academic calendar (special columns data)
+  const {
+    weekCalendarsWithDetails: academicCalendars,
+    isLoadingWeekCalendars: isLoadingAcademicCalendars,
+  } = useAppSelector((state) => state.academicCalendar);
+
   // Combined loading state
-  const isLoading = isLoadingLessons || isLoadingEvents;
+  const isLoading = isLoadingLessons || isLoadingEvents || isLoadingAcademicCalendars;
 
   // Filter states
   const [educationSystem, setEducationSystem] = useState('');
@@ -458,11 +582,21 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const [lessonPendingDelete, setLessonPendingDelete] = useState<ScheduleLesson | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Fetch lessons and calendar events when component mounts
+  // TODO: Replace with actual school branch ID from user context/auth state
+  const schoolBranchId = STATIC_SCHOOL_BRANCH_ID;
+
   useEffect(() => {
     dispatch(fetchLessons());
     dispatch(fetchMonthlyCalendarEvents({ page: 1, limit: 100 }));
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(
+      fetchAcademicCalendarsForWeek({
+        schoolBranchId,
+      })
+    );
+  }, [dispatch, currentWeekStart, schoolBranchId]);
 
   // Transform API lessons to ScheduleLesson format with weekly repetition
   const transformedLessons: ScheduleLesson[] = useMemo(() => {
@@ -481,6 +615,15 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
     return transformEventsForWeek(apiEvents, currentWeekStart, currentLang);
   }, [apiEvents, currentWeekStart, currentLang]);
+
+  // Transform academic calendar data to SpecialColumn format
+  const specialColumns: SpecialColumn[] = useMemo(() => {
+    if (!academicCalendars || academicCalendars.length === 0) {
+      return FALLBACK_SPECIAL_COLUMNS;
+    }
+
+    return transformAcademicCalendarToSpecialColumns(academicCalendars, t);
+  }, [academicCalendars, t]);
 
   // Handle week change from calendar navigation
   const handleWeekChange = useCallback((weekStart: Date) => {
@@ -647,12 +790,13 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           <WeeklyScheduleCalendar
             lessons={transformedLessons}
             events={transformedEvents}
-            periodHeaders={DEMO_PERIOD_HEADERS}
-            specialColumns={DEMO_SPECIAL_COLUMNS}
+            periodHeaders={DEFAULT_PERIOD_HEADERS}
+            specialColumns={specialColumns}
             lessonContextActions={lessonContextActions}
             onLessonClick={handleViewDetails}
             onEmptyCellClick={handleEmptyCellClick}
             onWeekChange={handleWeekChange}
+            weekStart={currentWeekStart}
           />
         )}
       </div>
