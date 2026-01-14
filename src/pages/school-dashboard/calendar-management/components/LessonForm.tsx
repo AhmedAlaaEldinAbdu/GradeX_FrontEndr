@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import Card from '@/shared/components/Card';
@@ -15,29 +15,29 @@ import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import CustomImage from '@/shared/components/CustomImage';
 
-// Demo options for selects (will be replaced with API data)
-const subjectOptions = [
-  { value: 'arabic', label: 'العربي' },
-  { value: 'math', label: 'الرياضيات' },
-  { value: 'science', label: 'العلوم' },
-  { value: 'english', label: 'الإنجليزية' },
-];
+// API Services
+import { getSubjects } from '@/services/api/subjects/subjects.service';
+import { getTeachers } from '@/services/api/teachers/teachers.service';
+import { fetchEducationalStages } from '@/services/api/educational-stages/educational-stages.service';
+import { getBooks } from '@/services/api/books/books.service';
+import { getClassrooms } from '@/services/api/classrooms/classrooms.service';
+import { lessonsApiService } from '@/services/api/lessons/lessons.service';
+import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance';
+import { useLanguage } from '@/hooks/useLanguage';
 
-const teacherOptions = [
-  { value: '1', label: 'معتز أحمد محمد' },
-  { value: '2', label: 'أحمد حسن رجب' },
-  { value: '3', label: 'محمد علي' },
-];
-
-const bookOptions = [
-  { value: '1', label: 'قصة دمية' },
-  { value: '2', label: 'كتاب العربي الأساسي' },
-  { value: '3', label: 'كتاب الرياضيات' },
-];
+// Types
+import type { Subject } from '@/types/subjects';
+import type { Teacher } from '@/types/teachers';
+import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
+import type { Book, BookGrade } from '@/types/books';
+import type { Classroom } from '@/services/api/types/classrooms.types';
+import type { CreateLessonRequest, Lesson } from '@/services/api/types/lessons.types';
 
 export interface LessonFormData {
-  subjectId: string;
+  materialId: string;
   teacherId: string;
+  gradeId: string;
+  classroomId: string;
   bookId: string;
   classworkFromPage: string;
   classworkToPage: string;
@@ -45,28 +45,70 @@ export interface LessonFormData {
   homeworkToPage: string;
   descriptionAr: string;
   descriptionEn: string;
-  sendTo: 'all' | 'specific';
+  date: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface LessonData extends LessonFormData {
   id: string;
   attachments?: string[];
   selectedStudents?: Student[];
+  isHomeworkForAllStudents?: boolean;
 }
 
 interface LessonFormProps {
   mode: 'add' | 'edit';
-  initialData?: LessonData;
+  initialData?: LessonData | Lesson;
+}
+
+// Helper to convert Lesson to LessonData format
+function mapLessonToFormData(lesson: Lesson): LessonData {
+  return {
+    id: lesson.id,
+    materialId: lesson.materialId,
+    teacherId: lesson.teacherId,
+    gradeId: lesson.gradeId,
+    classroomId: lesson.classroomId,
+    bookId: lesson.bookId,
+    classworkFromPage: String(lesson.classworkFromPage),
+    classworkToPage: String(lesson.classworkToPage),
+    homeworkFromPage: String(lesson.homeworkFromPage),
+    homeworkToPage: String(lesson.homeworkToPage),
+    descriptionAr: lesson.homeworkDescriptionAr || '',
+    descriptionEn: lesson.homeworkDescriptionEn || '',
+    date: lesson.date ? lesson.date.split('T')[0] : '',
+    startTime: lesson.startTime ? lesson.startTime.substring(0, 5) : '',
+    endTime: lesson.endTime ? lesson.endTime.substring(0, 5) : '',
+    isHomeworkForAllStudents: lesson.isHomeworkForAllStudents,
+    attachments: lesson.attachments?.map((a) => a.fileName) || [],
+    selectedStudents:
+      lesson.lessonsStudent?.map((s) => ({
+        id: s.studentId,
+        name: s.studentName || '',
+      })) || [],
+  };
 }
 
 export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const { t } = useTranslation();
+  const { isArabic } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Get day and period from URL params if available (for add mode)
-  const dayIndex = searchParams.get('day');
-  const periodIndex = searchParams.get('period');
+  // Get date and time from URL params if available (for add mode)
+  const dateParam = searchParams.get('date');
+  const startTimeParam = searchParams.get('startTime');
+  const endTimeParam = searchParams.get('endTime');
+
+  // Normalize initialData
+  const normalizedInitialData = useMemo(() => {
+    if (!initialData) return undefined;
+    if ('materialId' in initialData && !('materialNameAr' in initialData)) {
+      return initialData as LessonData;
+    }
+    return mapLessonToFormData(initialData as Lesson);
+  }, [initialData]);
 
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
@@ -74,67 +116,264 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
-  const [sendTo, setSendTo] = useState<'all' | 'specific'>(initialData?.sendTo || 'all');
+  const [sendTo, setSendTo] = useState<'all' | 'specific'>(
+    normalizedInitialData?.isHomeworkForAllStudents === false ? 'specific' : 'all'
+  );
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [attachmentFileNames, setAttachmentFileNames] = useState<string[]>(
-    initialData?.attachments || []
+    normalizedInitialData?.attachments || []
   );
   const [selectedStudents, setSelectedStudents] = useState<Student[]>(
-    initialData?.selectedStudents || []
+    normalizedInitialData?.selectedStudents || []
   );
   const [isSelectStudentsPopupOpen, setIsSelectStudentsPopupOpen] = useState(false);
+
+  // API Data States
+  const [materials, setMaterials] = useState<Subject[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [grades, setGrades] = useState<EducationalStageResponse[]>([]);
+  const [bookGrades, setBookGrades] = useState<BookGrade[]>([]);
+  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+
+  // Loading States
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
+  const [isLoadingTeachers, setIsLoadingTeachers] = useState(false);
+  const [isLoadingGrades, setIsLoadingGrades] = useState(false);
+  const [isLoadingBooks, setIsLoadingBooks] = useState(false);
+  const [isLoadingClassrooms, setIsLoadingClassrooms] = useState(false);
 
   const {
     control,
     handleSubmit,
+    watch,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LessonFormData>({
     defaultValues: {
-      subjectId: initialData?.subjectId || '',
-      teacherId: initialData?.teacherId || '',
-      bookId: initialData?.bookId || '',
-      classworkFromPage: initialData?.classworkFromPage || '',
-      classworkToPage: initialData?.classworkToPage || '',
-      homeworkFromPage: initialData?.homeworkFromPage || '',
-      homeworkToPage: initialData?.homeworkToPage || '',
-      descriptionAr: initialData?.descriptionAr || '',
-      descriptionEn: initialData?.descriptionEn || '',
-      sendTo: initialData?.sendTo || 'all',
+      materialId: normalizedInitialData?.materialId || '',
+      teacherId: normalizedInitialData?.teacherId || '',
+      gradeId: normalizedInitialData?.gradeId || '',
+      classroomId: normalizedInitialData?.classroomId || '',
+      bookId: normalizedInitialData?.bookId || '',
+      classworkFromPage: normalizedInitialData?.classworkFromPage || '',
+      classworkToPage: normalizedInitialData?.classworkToPage || '',
+      homeworkFromPage: normalizedInitialData?.homeworkFromPage || '',
+      homeworkToPage: normalizedInitialData?.homeworkToPage || '',
+      descriptionAr: normalizedInitialData?.descriptionAr || '',
+      descriptionEn: normalizedInitialData?.descriptionEn || '',
+      date: normalizedInitialData?.date || dateParam || '',
+      startTime: normalizedInitialData?.startTime || startTimeParam || '',
+      endTime: normalizedInitialData?.endTime || endTimeParam || '',
     },
   });
 
+  const watchedGradeId = watch('gradeId');
+  const watchedMaterialId = watch('materialId');
+
+  // Fetch Materials (Subjects)
+  const fetchMaterials = useCallback(async () => {
+    setIsLoadingMaterials(true);
+    try {
+      const response = await getSubjects({ PageIndex: 1, PageSize: 100 });
+      setMaterials(response.data?.materialDto || []);
+    } catch (error) {
+      console.error('Failed to fetch materials:', error);
+    } finally {
+      setIsLoadingMaterials(false);
+    }
+  }, []);
+
+  // Fetch Teachers
+  const fetchTeachers = useCallback(async () => {
+    setIsLoadingTeachers(true);
+    try {
+      const response = await getTeachers({
+        PageIndex: 1,
+        PageSize: 100,
+        SchoolBranchId: STATIC_SCHOOL_BRANCH_ID,
+      });
+      setTeachers(response.data?.teachers || []);
+    } catch (error) {
+      console.error('Failed to fetch teachers:', error);
+    } finally {
+      setIsLoadingTeachers(false);
+    }
+  }, []);
+
+  // Fetch Grades
+  const fetchGrades = useCallback(async () => {
+    setIsLoadingGrades(true);
+    try {
+      const response = await fetchEducationalStages({ pageIndex: 1, pageSize: 100 });
+      setGrades(response?.gradeDtos || []);
+    } catch (error) {
+      console.error('Failed to fetch grades:', error);
+    } finally {
+      setIsLoadingGrades(false);
+    }
+  }, []);
+
+  // Fetch Books - depends on materialId and gradeId
+  const fetchBooksData = useCallback(async (materialId: string, gradeId: string) => {
+    if (!materialId || !gradeId) {
+      setBookGrades([]);
+      return;
+    }
+    setIsLoadingBooks(true);
+    try {
+      const response = await getBooks({ MaterialId: materialId, GradeId: gradeId });
+      setBookGrades(response.data?.bookGradeDto || []);
+    } catch (error) {
+      console.error('Failed to fetch books:', error);
+    } finally {
+      setIsLoadingBooks(false);
+    }
+  }, []);
+
+  // Fetch Classrooms - depends on gradeId
+  const fetchClassroomsData = useCallback(async (gradeId: string) => {
+    if (!gradeId) {
+      setClassrooms([]);
+      return;
+    }
+    setIsLoadingClassrooms(true);
+    try {
+      const response = await getClassrooms({ GradeId: gradeId });
+      setClassrooms(response.data?.classroomDto || []);
+    } catch (error) {
+      console.error('Failed to fetch classrooms:', error);
+    } finally {
+      setIsLoadingClassrooms(false);
+    }
+  }, []);
+
+  // Initial data fetches
+  useEffect(() => {
+    fetchMaterials();
+    fetchTeachers();
+    fetchGrades();
+  }, [fetchMaterials, fetchTeachers, fetchGrades]);
+
+  // Fetch books when material or grade changes
+  useEffect(() => {
+    if (watchedMaterialId && watchedGradeId) {
+      fetchBooksData(watchedMaterialId, watchedGradeId);
+    } else {
+      setBookGrades([]);
+      setValue('bookId', '');
+    }
+  }, [watchedMaterialId, watchedGradeId, fetchBooksData, setValue]);
+
+  // Fetch classrooms when grade changes
+  useEffect(() => {
+    if (watchedGradeId) {
+      fetchClassroomsData(watchedGradeId);
+    } else {
+      setClassrooms([]);
+      setValue('classroomId', '');
+    }
+  }, [watchedGradeId, fetchClassroomsData, setValue]);
+
+  // Build options for selects
+  const materialOptions = useMemo(() => {
+    return materials.map((m) => ({
+      value: m.id,
+      label: isArabic ? m.name : m.nameEn || m.name,
+    }));
+  }, [materials, isArabic]);
+
+  const teacherOptions = useMemo(() => {
+    return teachers.map((t) => ({
+      value: t.id,
+      label: t.fullName,
+    }));
+  }, [teachers]);
+
+  const gradeOptions = useMemo(() => {
+    return grades.map((g) => ({
+      value: g.id,
+      label: isArabic ? g.nameAr : g.nameEn,
+    }));
+  }, [grades, isArabic]);
+
+  const bookOptions = useMemo(() => {
+    const books: Book[] = [];
+    bookGrades.forEach((bg) => {
+      bg.bookDtos.forEach((book) => books.push(book));
+    });
+    return books.map((b) => ({
+      value: b.id,
+      label: b.name,
+    }));
+  }, [bookGrades]);
+
+  const classroomOptions = useMemo(() => {
+    return classrooms.map((c) => ({
+      value: c.id,
+      label: isArabic ? c.name : c.nameEn || c.name,
+    }));
+  }, [classrooms, isArabic]);
+
   // Reset form when initialData changes (for edit mode)
   useEffect(() => {
-    if (initialData) {
+    if (normalizedInitialData) {
       reset({
-        subjectId: initialData.subjectId,
-        teacherId: initialData.teacherId,
-        bookId: initialData.bookId,
-        classworkFromPage: initialData.classworkFromPage,
-        classworkToPage: initialData.classworkToPage,
-        homeworkFromPage: initialData.homeworkFromPage,
-        homeworkToPage: initialData.homeworkToPage,
-        descriptionAr: initialData.descriptionAr,
-        descriptionEn: initialData.descriptionEn,
-        sendTo: initialData.sendTo,
+        materialId: normalizedInitialData.materialId,
+        teacherId: normalizedInitialData.teacherId,
+        gradeId: normalizedInitialData.gradeId,
+        classroomId: normalizedInitialData.classroomId,
+        bookId: normalizedInitialData.bookId,
+        classworkFromPage: normalizedInitialData.classworkFromPage,
+        classworkToPage: normalizedInitialData.classworkToPage,
+        homeworkFromPage: normalizedInitialData.homeworkFromPage,
+        homeworkToPage: normalizedInitialData.homeworkToPage,
+        descriptionAr: normalizedInitialData.descriptionAr,
+        descriptionEn: normalizedInitialData.descriptionEn,
+        date: normalizedInitialData.date,
+        startTime: normalizedInitialData.startTime,
+        endTime: normalizedInitialData.endTime,
       });
-      setSendTo(initialData.sendTo || 'all');
-      setAttachmentFileNames(initialData.attachments || []);
-      setSelectedStudents(initialData.selectedStudents || []);
+      setSendTo(normalizedInitialData.isHomeworkForAllStudents === false ? 'specific' : 'all');
+      setAttachmentFileNames(normalizedInitialData.attachments || []);
+      setSelectedStudents(normalizedInitialData.selectedStudents || []);
     }
-  }, [initialData, reset]);
+  }, [normalizedInitialData, reset]);
 
   const onSubmit = async (data: LessonFormData) => {
     try {
-      if (mode === 'add') {
-        // TODO: Implement actual API call for adding lesson
-        console.log('Adding lesson:', data, 'Day:', dayIndex, 'Period:', periodIndex);
-      } else {
-        // TODO: Implement actual API call for editing lesson
-        console.log('Editing lesson:', initialData?.id, data);
+      const request: CreateLessonRequest = {
+        materialId: data.materialId,
+        teacherId: data.teacherId,
+        gradeId: data.gradeId,
+        classroomId: data.classroomId,
+        bookId: data.bookId,
+        classworkFromPage: parseInt(data.classworkFromPage) || 0,
+        classworkToPage: parseInt(data.classworkToPage) || 0,
+        homeworkFromPage: parseInt(data.homeworkFromPage) || 0,
+        homeworkToPage: parseInt(data.homeworkToPage) || 0,
+        homeworkDescriptionAr: data.descriptionAr || undefined,
+        homeworkDescriptionEn: data.descriptionEn || undefined,
+        date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+        startTime: data.startTime || '08:00',
+        endTime: data.endTime || '09:00',
+        isHomeworkForAllStudents: sendTo === 'all',
+        schoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+      };
+
+      // If sending to specific students, add first student ID (API limitation)
+      if (sendTo === 'specific' && selectedStudents.length > 0) {
+        request.studentId = selectedStudents[0].id;
       }
-      console.log('Attachments:', attachmentFileNames);
-      console.log('Selected Students:', selectedStudents);
+
+      if (mode === 'add') {
+        await lessonsApiService.createLesson(request, attachmentFiles);
+      } else if (normalizedInitialData?.id) {
+        await lessonsApiService.updateLesson(
+          { ...request, id: normalizedInitialData.id },
+          attachmentFiles
+        );
+      }
 
       setShowPopupMessage({
         show: true,
@@ -143,7 +382,8 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
           mode === 'add' ? 'lesson.lessonAddedSuccessfully' : 'lesson.lessonUpdatedSuccessfully'
         ),
       });
-    } catch {
+    } catch (error) {
+      console.error('Failed to save lesson:', error);
       setShowPopupMessage({
         show: true,
         type: 'error',
@@ -160,14 +400,17 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
       const newFileNames = newFiles.map((file) => file.name);
+      setAttachmentFiles((prev) => [...prev, ...newFiles]);
       setAttachmentFileNames((prev) => [...prev, ...newFileNames]);
     }
   };
 
   const handleFileDelete = (index?: number) => {
     if (index !== undefined) {
+      setAttachmentFiles((prev) => prev.filter((_, i) => i !== index));
       setAttachmentFileNames((prev) => prev.filter((_, i) => i !== index));
     } else {
+      setAttachmentFiles([]);
       setAttachmentFileNames([]);
     }
   };
@@ -176,6 +419,120 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     <>
       <Card>
         <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Schedule Information Section */}
+          <div className="mb-6 rounded-xl border border-gray-200 p-4">
+            <h3 className="mb-4 text-start text-sm font-semibold text-gray-700">
+              {t('lesson.scheduleInfo')}
+            </h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {/* Date */}
+              <FormField
+                label={t('lesson.date')}
+                required
+                error={errors.date?.message}
+                htmlFor="date"
+              >
+                <Controller
+                  name="date"
+                  control={control}
+                  rules={{ required: t('validation.required') }}
+                  render={({ field }) => <Input {...field} type="date" id="date" />}
+                />
+              </FormField>
+
+              {/* Start Time */}
+              <FormField
+                label={t('lesson.startTime')}
+                required
+                error={errors.startTime?.message}
+                htmlFor="startTime"
+              >
+                <Controller
+                  name="startTime"
+                  control={control}
+                  rules={{ required: t('validation.required') }}
+                  render={({ field }) => <Input {...field} type="time" id="startTime" />}
+                />
+              </FormField>
+
+              {/* End Time */}
+              <FormField
+                label={t('lesson.endTime')}
+                required
+                error={errors.endTime?.message}
+                htmlFor="endTime"
+              >
+                <Controller
+                  name="endTime"
+                  control={control}
+                  rules={{ required: t('validation.required') }}
+                  render={({ field }) => <Input {...field} type="time" id="endTime" />}
+                />
+              </FormField>
+            </div>
+          </div>
+
+          {/* Grade & Classroom Section */}
+          <div className="mb-6 rounded-xl border border-gray-200 p-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* Grade */}
+              <FormField
+                label={t('lesson.grade')}
+                required
+                error={errors.gradeId?.message}
+                htmlFor="gradeId"
+              >
+                <Controller
+                  name="gradeId"
+                  control={control}
+                  rules={{ required: t('validation.required') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={gradeOptions}
+                      placeholder={
+                        isLoadingGrades ? t('lesson.loadingGrades') : t('lesson.selectGrade')
+                      }
+                      disabled={isLoadingGrades}
+                    />
+                  )}
+                />
+              </FormField>
+
+              {/* Classroom */}
+              <FormField
+                label={t('lesson.classroom')}
+                required
+                error={errors.classroomId?.message}
+                htmlFor="classroomId"
+              >
+                <Controller
+                  name="classroomId"
+                  control={control}
+                  rules={{ required: t('validation.required') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={classroomOptions}
+                      placeholder={
+                        !watchedGradeId
+                          ? t('lesson.selectGradeFirst')
+                          : isLoadingClassrooms
+                            ? t('lesson.loadingClassrooms')
+                            : classroomOptions.length === 0
+                              ? t('lesson.noClassroomsAvailable')
+                              : t('lesson.selectClassroom')
+                      }
+                      disabled={!watchedGradeId || isLoadingClassrooms}
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+          </div>
+
           {/* Subject Name & Teacher Name */}
           <div className="mb-6 rounded-xl border border-gray-200 p-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -183,19 +540,24 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
               <FormField
                 label={t('lesson.subjectName')}
                 required
-                error={errors.subjectId?.message}
-                htmlFor="subjectId"
+                error={errors.materialId?.message}
+                htmlFor="materialId"
               >
                 <Controller
-                  name="subjectId"
+                  name="materialId"
                   control={control}
                   rules={{ required: t('validation.required') }}
                   render={({ field }) => (
                     <CustomSelect
                       value={field.value}
                       onChange={field.onChange}
-                      options={subjectOptions}
-                      placeholder={t('lesson.selectSubject')}
+                      options={materialOptions}
+                      placeholder={
+                        isLoadingMaterials
+                          ? t('lesson.loadingMaterials')
+                          : t('lesson.selectSubject')
+                      }
+                      disabled={isLoadingMaterials}
                     />
                   )}
                 />
@@ -217,7 +579,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                       value={field.value}
                       onChange={field.onChange}
                       options={teacherOptions}
-                      placeholder={t('lesson.selectTeacher')}
+                      placeholder={
+                        isLoadingTeachers ? t('lesson.loadingTeachers') : t('lesson.selectTeacher')
+                      }
+                      disabled={isLoadingTeachers}
                     />
                   )}
                 />
@@ -239,7 +604,16 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                     value={field.value}
                     onChange={field.onChange}
                     options={bookOptions}
-                    placeholder={t('lesson.selectBook')}
+                    placeholder={
+                      !watchedMaterialId || !watchedGradeId
+                        ? t('lesson.selectMaterialFirst')
+                        : isLoadingBooks
+                          ? t('lesson.loadingBooks')
+                          : bookOptions.length === 0
+                            ? t('lesson.noBooksAvailable')
+                            : t('lesson.selectBook')
+                    }
+                    disabled={!watchedMaterialId || !watchedGradeId || isLoadingBooks}
                   />
                 )}
               />
@@ -260,9 +634,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                   render={({ field }) => (
                     <Input
                       {...field}
-                      type="text"
+                      type="number"
                       placeholder={t('lesson.pageNumber')}
                       id="classworkFromPage"
+                      min={0}
                     />
                   )}
                 />
@@ -276,9 +651,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                   render={({ field }) => (
                     <Input
                       {...field}
-                      type="text"
+                      type="number"
                       placeholder={t('lesson.pageNumber')}
                       id="classworkToPage"
+                      min={0}
                     />
                   )}
                 />
@@ -300,9 +676,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                   render={({ field }) => (
                     <Input
                       {...field}
-                      type="text"
+                      type="number"
                       placeholder={t('lesson.pageNumber')}
                       id="homeworkFromPage"
+                      min={0}
                     />
                   )}
                 />
@@ -316,9 +693,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                   render={({ field }) => (
                     <Input
                       {...field}
-                      type="text"
+                      type="number"
                       placeholder={t('lesson.pageNumber')}
                       id="homeworkToPage"
+                      min={0}
                     />
                   )}
                 />
@@ -499,6 +877,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         onClose={() => setIsSelectStudentsPopupOpen(false)}
         onConfirm={(students) => setSelectedStudents(students)}
         initialSelectedStudents={selectedStudents}
+        classroomId={watch('classroomId') || undefined}
       />
     </>
   );
