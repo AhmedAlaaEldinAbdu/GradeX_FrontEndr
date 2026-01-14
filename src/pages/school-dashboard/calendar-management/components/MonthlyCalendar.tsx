@@ -569,7 +569,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
             title={t('monthlyCalendar.emptyStateTitle')}
             description={t('monthlyCalendar.emptyStateDescription')}
             actionLabel={t('monthlyCalendar.addEventButton')}
-            onAction={() => handleOpenAddPopup()}
+            blend
           />
         ) : (
           <SharedCalendar
