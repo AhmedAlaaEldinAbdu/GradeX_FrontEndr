@@ -46,8 +46,9 @@ export interface SpecialColumn {
   textColor?: string; // Custom text color class (e.g., "text-amber-700")
   headerBgColor?: string; // Header background color class
   headerBorderColor?: string; // Header border color class
-  startDayIndex?: number; // First day to show colored column (default 1 = الأحد)
-  endDayIndex?: number; // Last day to show colored column (default 5 = الخميس)
+  startDayIndex?: number; // First day to show colored column (default 1 = الأحد) - used when days array is not provided
+  endDayIndex?: number; // Last day to show colored column (default 5 = الخميس) - used when days array is not provided
+  days?: number[]; // Specific days to show (takes precedence over startDayIndex/endDayIndex)
 }
 
 // Context menu action for lesson actions
@@ -531,11 +532,17 @@ export default function WeeklyScheduleCalendar({
 
                   // Find if this column is a special column and if it should be shown for this day
                   const specialCol = specialColumns.find((sc) => {
+                    if (sc.columnIndex !== periodIndex) return false;
+
+                    // If days array is provided, check if this day is in the array
+                    if (sc.days && sc.days.length > 0) {
+                      return sc.days.includes(dayIndex);
+                    }
+
+                    // Fall back to startDayIndex/endDayIndex range
                     const startDay = sc.startDayIndex ?? 1;
                     const endDay = sc.endDayIndex ?? 5;
-                    return (
-                      sc.columnIndex === periodIndex && dayIndex >= startDay && dayIndex <= endDay
-                    );
+                    return dayIndex >= startDay && dayIndex <= endDay;
                   });
 
                   // Check if there's a full-row event (these cells should be transparent)
@@ -545,13 +552,24 @@ export default function WeeklyScheduleCalendar({
                   // Use negative margin to connect cells vertically
                   // These appear ON TOP of any full-row event
                   if (specialCol) {
-                    const startDay = specialCol.startDayIndex ?? 1;
-                    const endDay = specialCol.endDayIndex ?? 5;
-                    const isFirstRow = dayIndex === startDay;
-                    const isLastRow = dayIndex === endDay;
-                    // Calculate middle row for showing label
-                    const middleRow = Math.floor((startDay + endDay) / 2);
-                    const isMiddleRow = dayIndex === middleRow;
+                    // Get the applicable days for this special column
+                    const applicableDays =
+                      specialCol.days && specialCol.days.length > 0
+                        ? [...specialCol.days].sort((a, b) => a - b)
+                        : Array.from(
+                            {
+                              length:
+                                (specialCol.endDayIndex ?? 5) - (specialCol.startDayIndex ?? 1) + 1,
+                            },
+                            (_, i) => (specialCol.startDayIndex ?? 1) + i
+                          );
+
+                    const dayPositionInList = applicableDays.indexOf(dayIndex);
+                    const isFirstRow = dayPositionInList === 0;
+                    const isLastRow = dayPositionInList === applicableDays.length - 1;
+                    // Calculate middle position for showing label
+                    const middlePosition = Math.floor(applicableDays.length / 2);
+                    const isMiddleRow = dayPositionInList === middlePosition;
 
                     // Add padding to compensate for gap, and extend height
                     const marginClass = isFirstRow ? '' : '-mt-2';
