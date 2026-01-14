@@ -69,6 +69,7 @@ interface WeeklyScheduleCalendarProps {
   onDayMenuClick?: (dayIndex: number, e: React.MouseEvent) => void;
   onWeekChange?: (weekStart: Date) => void; // Callback when week changes
   onEmptyCellClick?: (dayIndex: number, periodIndex: number) => void; // Callback when clicking empty cell plus icon
+  weekStart?: Date;
   className?: string;
 }
 
@@ -124,12 +125,15 @@ export default function WeeklyScheduleCalendar({
   onDotsClick,
   onEmptyCellClick,
   onWeekChange,
+  weekStart: controlledWeekStart,
   className = '',
 }: WeeklyScheduleCalendarProps) {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
-  // Initialize with current date instead of hardcoded date
-  const [currentWeek, setCurrentWeek] = useState(() => new Date());
+  const [internalWeek, setInternalWeek] = useState(() => controlledWeekStart ?? new Date());
+
+  const currentWeek = controlledWeekStart ?? internalWeek;
+
   const [contextMenu, setContextMenu] = useState<{
     isOpen: boolean;
     lesson: ScheduleLesson | null;
@@ -153,19 +157,25 @@ export default function WeeklyScheduleCalendar({
   }, [weekStart, dateLocale]);
 
   const handlePrevWeek = () => {
-    setCurrentWeek((prev) => {
-      const newWeek = subWeeks(prev, 1);
-      onWeekChange?.(startOfWeek(newWeek, { weekStartsOn: 6 }));
-      return newWeek;
-    });
+    const newWeek = subWeeks(currentWeek, 1);
+    const newWeekStart = startOfWeek(newWeek, { weekStartsOn: 6 });
+
+    if (!controlledWeekStart) {
+      setInternalWeek(newWeek);
+    }
+
+    onWeekChange?.(newWeekStart);
   };
 
   const handleNextWeek = () => {
-    setCurrentWeek((prev) => {
-      const newWeek = addWeeks(prev, 1);
-      onWeekChange?.(startOfWeek(newWeek, { weekStartsOn: 6 }));
-      return newWeek;
-    });
+    const newWeek = addWeeks(currentWeek, 1);
+    const newWeekStart = startOfWeek(newWeek, { weekStartsOn: 6 });
+
+    if (!controlledWeekStart) {
+      setInternalWeek(newWeek);
+    }
+
+    onWeekChange?.(newWeekStart);
   };
 
   // Handle context menu open
