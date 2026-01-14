@@ -67,18 +67,85 @@ export async function getLessonById(id: string): Promise<Lesson> {
   return response.data.value as Lesson;
 }
 
-export async function createLesson(data: CreateLessonRequest): Promise<ApiResponseModel<null>> {
+/**
+ * Build FormData from CreateLessonRequest
+ * The API expects multipart/form-data with PascalCase field names
+ */
+function buildLessonFormData(data: CreateLessonRequest, attachmentFiles?: File[]): FormData {
+  const formData = new FormData();
+
+  // Required fields - use PascalCase for API
+  formData.append('MaterialId', data.materialId);
+  formData.append('TeacherId', data.teacherId);
+  formData.append('BookId', data.bookId);
+  formData.append('GradeId', data.gradeId);
+  formData.append('ClassroomId', data.classroomId);
+  formData.append('SchoolBranchesId', data.schoolBranchesId);
+  formData.append('Date', data.date);
+  formData.append('StartTime', data.startTime);
+  formData.append('EndTime', data.endTime);
+  formData.append('ClassworkFromPage', String(data.classworkFromPage));
+  formData.append('ClassworkToPage', String(data.classworkToPage));
+  formData.append('HomeworkFromPage', String(data.homeworkFromPage));
+  formData.append('HomeworkToPage', String(data.homeworkToPage));
+  formData.append('IsHomeworkForAllStudents', String(data.isHomeworkForAllStudents));
+
+  // Optional fields
+  if (data.studentId) {
+    formData.append('studentId', data.studentId);
+  }
+  if (data.homeworkDescriptionAr) {
+    formData.append('HomeworkDescriptionAr', data.homeworkDescriptionAr);
+  }
+  if (data.homeworkDescriptionEn) {
+    formData.append('HomeworkDescriptionEn', data.homeworkDescriptionEn);
+  }
+
+  // Handle attachments - can be files or attachment metadata
+  if (attachmentFiles && attachmentFiles.length > 0) {
+    attachmentFiles.forEach((file) => {
+      formData.append('Attachments', file);
+    });
+  } else if (data.attachments) {
+    formData.append('Attachments', JSON.stringify(data.attachments));
+  }
+
+  return formData;
+}
+
+export async function createLesson(
+  data: CreateLessonRequest,
+  attachmentFiles?: File[]
+): Promise<ApiResponseModel<null>> {
+  const formData = buildLessonFormData(data, attachmentFiles);
+
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
     LessonsEndpoints.createLesson,
-    data
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
   );
   return response.data;
 }
 
-export async function updateLesson(data: UpdateLessonRequest): Promise<ApiResponseModel<null>> {
+export async function updateLesson(
+  data: UpdateLessonRequest,
+  attachmentFiles?: File[]
+): Promise<ApiResponseModel<null>> {
+  const formData = buildLessonFormData(data as CreateLessonRequest, attachmentFiles);
+  formData.append('Id', data.id);
+
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
     LessonsEndpoints.updateLesson,
-    data
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
   );
   return response.data;
 }
