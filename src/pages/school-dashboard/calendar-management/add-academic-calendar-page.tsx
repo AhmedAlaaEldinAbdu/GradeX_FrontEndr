@@ -102,6 +102,7 @@ export default function AddAcademicCalendarPage() {
 
       <AcademicCalendarForm
         mode="add"
+        schoolBranchId={DummySchoolBranchId}
         onCancel={() => navigate('/calendar/academic')}
         onSubmit={async (values: AcademicCalendarFormValues) => {
           const requests = mapFormValuesToCreateRequests(values, DummySchoolBranchId);

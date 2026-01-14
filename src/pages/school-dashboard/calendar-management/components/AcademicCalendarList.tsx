@@ -15,8 +15,7 @@ import {
   deleteAcademicCalendar,
   fetchAcademicCalendars,
 } from '@/redux/features/academic-calendar/academicCalendarSlice';
-import { fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
-import { selectSchoolStages } from '@/redux/features/lookups/lookupsSelectors';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 
 type AcademicCalendarRow = {
   id: string;
@@ -45,7 +44,7 @@ export default function AcademicCalendarList() {
   const { calendars, pagination, isLoading, isDeleting } = useAppSelector(
     (state) => state.academicCalendar
   );
-  const schoolStages = useAppSelector(selectSchoolStages);
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
 
   const DummySchoolBranchId = '41b6a93d-947c-4d58-959a-08de1c988710';
 
@@ -62,9 +61,9 @@ export default function AcademicCalendarList() {
   const hasActiveFilters = Boolean(searchTerm || startDate || endDate);
 
   useEffect(() => {
-    if (schoolStages.length > 0) return;
-    dispatch(fetchSchoolStages());
-  }, [dispatch, schoolStages.length]);
+    if (educationalStages.length > 0) return;
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId: DummySchoolBranchId }));
+  }, [dispatch, educationalStages.length, DummySchoolBranchId]);
 
   useEffect(() => {
     dispatch(
@@ -83,11 +82,11 @@ export default function AcademicCalendarList() {
 
   const stageNameById = useMemo(() => {
     const map = new Map<string, { ar: string; en: string }>();
-    schoolStages.forEach((stage) => {
-      map.set(stage.id, { ar: stage.nameAR, en: stage.nameEN || stage.nameAR });
+    educationalStages.forEach((stage) => {
+      map.set(stage.id, { ar: stage.nameAr, en: stage.nameEn || stage.nameAr });
     });
     return map;
-  }, [schoolStages]);
+  }, [educationalStages]);
 
   const tableRows = useMemo<AcademicCalendarRow[]>(() => {
     return (calendars || []).map((calendar) => {

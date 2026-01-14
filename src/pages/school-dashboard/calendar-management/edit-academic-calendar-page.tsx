@@ -236,6 +236,7 @@ export default function EditAcademicCalendarPage() {
         <AcademicCalendarForm
           key={currentCalendar.id}
           mode="edit"
+          schoolBranchId={DummySchoolBranchId}
           onCancel={() => navigate('/calendar/academic')}
           initialValues={initialValues}
           onSubmit={async (values: AcademicCalendarFormValues) => {

@@ -9,11 +9,7 @@ import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import { Days as DaysEnum, type Days as DaysValue } from '@/shared/enums/enums';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
-import {
-  selectIsLoadingSchoolStages,
-  selectSchoolStages,
-} from '@/redux/features/lookups/lookupsSelectors';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 
 type DayKey = keyof typeof DaysEnum;
@@ -47,6 +43,7 @@ export type AcademicCalendarFormValues = {
 
 type AcademicCalendarFormProps = {
   mode: 'add' | 'edit';
+  schoolBranchId: string;
   initialValues?: Partial<AcademicCalendarFormValues>;
   onCancel?: () => void;
   onSubmit?: (values: AcademicCalendarFormValues) => void | Promise<void>;
@@ -151,6 +148,7 @@ function ScheduleSection({
 
 export default function AcademicCalendarForm({
   mode,
+  schoolBranchId,
   initialValues,
   onCancel,
   onSubmit,
@@ -161,13 +159,13 @@ export default function AcademicCalendarForm({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const schoolStages = useAppSelector(selectSchoolStages);
-  const isSchoolStagesLoading = useAppSelector(selectIsLoadingSchoolStages);
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const isEducationalStagesLoading = useAppSelector((state) => state.educationalStages.isLoading);
 
   useEffect(() => {
-    if (schoolStages.length > 0) return;
-    dispatch(fetchSchoolStages());
-  }, [dispatch, schoolStages.length]);
+    if (educationalStages.length > 0) return;
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
+  }, [dispatch, educationalStages.length, schoolBranchId]);
 
   const dayOptions = useMemo<CustomSelectOption[]>(() => {
     const order: DayKey[] = [
@@ -187,13 +185,14 @@ export default function AcademicCalendarForm({
   }, [t]);
 
   const educationalStageOptions: CustomSelectOption[] = useMemo(() => {
-    return schoolStages
+    return educationalStages
       .map((stage) => ({
         value: stage.id,
-        label: (currentLang === 'ar' ? stage.nameAR : stage.nameEN) || stage.nameAR || stage.nameEN,
+        label:
+          (currentLang === 'ar' ? stage.nameAr : stage.nameEn) || stage.nameAr || stage.nameEn,
       }))
       .filter((opt) => Boolean(opt.label));
-  }, [currentLang, schoolStages]);
+  }, [currentLang, educationalStages]);
 
   const [values, setValues] = useState<AcademicCalendarFormValues>({
     educationalStageId: initialValues?.educationalStageId ?? '',
@@ -288,7 +287,7 @@ export default function AcademicCalendarForm({
               }}
               options={educationalStageOptions}
               placeholder={t('academicCalendar.form.educationalStagesPlaceholder')}
-              disabled={isSchoolStagesLoading}
+              disabled={isEducationalStagesLoading}
             />
           </FormField>
 
