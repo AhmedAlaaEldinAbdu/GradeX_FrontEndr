@@ -24,6 +24,8 @@ export interface AcademicCalendarFilters {
 export interface AcademicCalendarState {
   calendars: AcademicCalendarEntity[];
   currentCalendar: AcademicCalendarEntity | null;
+  weekCalendarsWithDetails: AcademicCalendarEntity[];
+  isLoadingWeekCalendars: boolean;
   pagination: {
     page: number;
     limit: number;
@@ -59,6 +61,8 @@ export interface FetchAcademicCalendarsResponse {
 const initialState: AcademicCalendarState = {
   calendars: [],
   currentCalendar: null,
+  weekCalendarsWithDetails: [],
+  isLoadingWeekCalendars: false,
   pagination: {
     page: 1,
     limit: 10,
@@ -178,6 +182,72 @@ export const deleteAcademicCalendar = createAsyncThunk<string, string>(
   }
 );
 
+/**
+ * Payload for fetching academic calendar data for weekly view
+ */
+export interface FetchWeeklyCalendarPayload {
+  schoolBranchId: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+/**
+ * Fetch academic calendars for a specific week and get full details
+ */
+export const fetchAcademicCalendarsForWeek = createAsyncThunk<
+  AcademicCalendarEntity[],
+  FetchWeeklyCalendarPayload
+>('academicCalendar/fetchAcademicCalendarsForWeek', async (payload, { rejectWithValue }) => {
+  try {
+    const params: AcademicCalendarQueryParams = {
+      schoolBranchId: payload.schoolBranchId,
+      PageSize: 100,
+      PageIndex: 1,
+    };
+
+    // Only include StartDate if provided
+    if (payload.startDate) {
+      params.StartDate = payload.startDate;
+    }
+
+    // Only include EndDate if provided
+    if (payload.endDate) {
+      params.EndDate = payload.endDate;
+    }
+
+    // Step 1: Fetch the list of calendars that overlap with the date range
+    const listResponse = await academicCalendarApiService.getAcademicCalendars(params);
+    const listData = listResponse.data || listResponse.value;
+
+    if (!listData) {
+      return [];
+    }
+
+    const calendars = listData.academicCalendarDto || listData.calendars || [];
+
+    if (calendars.length === 0) {
+      return [];
+    }
+
+    // Step 2: Fetch full details for each calendar (to get breaks, breakfasts, assemblies with times)
+    const detailedCalendars = await Promise.all(
+      calendars.map((calendar) => academicCalendarApiService.getAcademicCalendarById(calendar.id))
+    );
+
+    // Step 3: Filter calendars where the current date is between studyStartDate and studyEndDate
+    const now = new Date();
+    const activeCalendars = detailedCalendars.filter((calendar) => {
+      const studyStart = new Date(calendar.studyStartDate);
+      const studyEnd = new Date(calendar.studyEndDate);
+      return now >= studyStart && now <= studyEnd;
+    });
+
+    return activeCalendars;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const academicCalendarSlice = createSlice({
   name: 'academicCalendar',
   initialState,
@@ -244,7 +314,11 @@ const academicCalendarSlice = createSlice({
       })
       .addCase(createAcademicCalendar.rejected, (state, action) => {
         state.isCreating = false;
-        if (typeof action.payload === 'object' && action.payload && 'validationErrors' in action.payload) {
+        if (
+          typeof action.payload === 'object' &&
+          action.payload &&
+          'validationErrors' in action.payload
+        ) {
           state.validationErrors = (action.payload as any).validationErrors;
         } else {
           state.error = action.payload as string;
@@ -264,7 +338,11 @@ const academicCalendarSlice = createSlice({
       })
       .addCase(updateAcademicCalendar.rejected, (state, action) => {
         state.isUpdating = false;
-        if (typeof action.payload === 'object' && action.payload && 'validationErrors' in action.payload) {
+        if (
+          typeof action.payload === 'object' &&
+          action.payload &&
+          'validationErrors' in action.payload
+        ) {
           state.validationErrors = (action.payload as any).validationErrors;
         } else {
           state.error = action.payload as string;
@@ -285,10 +363,25 @@ const academicCalendarSlice = createSlice({
       .addCase(deleteAcademicCalendar.rejected, (state, action) => {
         state.isDeleting = false;
         state.error = action.payload as string;
+      })
+
+      // fetchAcademicCalendarsForWeek - for weekly calendar special columns
+      .addCase(fetchAcademicCalendarsForWeek.pending, (state) => {
+        state.isLoadingWeekCalendars = true;
+        state.error = null;
+      })
+      .addCase(fetchAcademicCalendarsForWeek.fulfilled, (state, action) => {
+        state.isLoadingWeekCalendars = false;
+        state.weekCalendarsWithDetails = action.payload;
+      })
+      .addCase(fetchAcademicCalendarsForWeek.rejected, (state, action) => {
+        state.isLoadingWeekCalendars = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { setFilters, clearFilters, setCurrentCalendar, clearError } = academicCalendarSlice.actions;
+export const { setFilters, clearFilters, setCurrentCalendar, clearError } =
+  academicCalendarSlice.actions;
 
 export default academicCalendarSlice.reducer;
