@@ -368,24 +368,36 @@ const SPECIAL_COLUMN_COLORS = {
   },
 } as const;
 
-const mapApiDaysToCalendarDays = (
-  apiDays: number[]
-): { startDayIndex: number; endDayIndex: number } => {
-  if (!apiDays || apiDays.length === 0) {
-    return {
-      startDayIndex: 1, // Sunday
-      endDayIndex: 5, // Thursday
-    };
+const getWorkingDaysFromSchedules = (
+  daySchedules: AcademicCalendarEntity['daySchedules']
+): number[] => {
+  if (!daySchedules || daySchedules.length === 0) {
+    // Default working days: Sunday(1) to Thursday(5)
+    return [1, 2, 3, 4, 5];
   }
 
-  const mappedDays = apiDays.map((d) => d);
-  const minDay = Math.min(...mappedDays);
-  const maxDay = Math.max(...mappedDays);
+  // Collect all unique days from all day schedules
+  const allDays = new Set<number>();
+  for (const schedule of daySchedules) {
+    if (schedule.days && schedule.days.length > 0) {
+      schedule.days.forEach((day) => allDays.add(day));
+    }
+  }
 
-  return {
-    startDayIndex: minDay,
-    endDayIndex: maxDay,
-  };
+  // If no days found in schedules, default to Sunday-Thursday
+  if (allDays.size === 0) {
+    return [1, 2, 3, 4, 5];
+  }
+
+  return Array.from(allDays).sort((a, b) => a - b);
+};
+
+const getApplicableDays = (scheduleDays: number[], workingDays: number[]): number[] => {
+  if (scheduleDays && scheduleDays.length > 0) {
+    return [...scheduleDays].sort((a, b) => a - b);
+  }
+
+  return workingDays;
 };
 
 /**
@@ -394,7 +406,8 @@ const mapApiDaysToCalendarDays = (
 const transformTimedSchedulesToSpecialColumns = (
   schedules: AcademicCalendarTimedSchedule[],
   type: 'breakfast' | 'break' | 'assembly',
-  t: (key: string) => string
+  t: (key: string) => string,
+  workingDays: number[]
 ): SpecialColumn[] => {
   if (!schedules || schedules.length === 0) {
     return [];
@@ -409,16 +422,15 @@ const transformTimedSchedulesToSpecialColumns = (
     const minutes = parseInt(timeParts[1], 10);
     const periodIndex = getPeriodIndexFromTime(hours, minutes);
 
-    // Get day range from API days
-    const { startDayIndex, endDayIndex } = mapApiDaysToCalendarDays(schedule.days);
+    // Get applicable days for this schedule
+    const applicableDays = getApplicableDays(schedule.days, workingDays);
 
     return {
       columnIndex: periodIndex,
       label: t(`weeklyCalendar.specialColumns.${type}`),
       type: type === 'break' ? 'custom' : type,
       ...colors,
-      startDayIndex,
-      endDayIndex,
+      days: applicableDays, // Use days array for proper non-contiguous support
     } as SpecialColumn;
   });
 };
@@ -426,6 +438,7 @@ const transformTimedSchedulesToSpecialColumns = (
 /**
  * Transform all academic calendar data into SpecialColumn array
  * Processes breaks, breakfasts, and assemblies from all calendars for the week
+ * Uses daySchedules to determine working days when schedule.days is empty
  */
 const transformAcademicCalendarToSpecialColumns = (
   calendars: AcademicCalendarEntity[],
@@ -440,11 +453,15 @@ const transformAcademicCalendarToSpecialColumns = (
 
   // Process all calendars (there might be multiple for different stages)
   for (const calendar of calendars) {
+    // Get working days from this calendar's daySchedules
+    const workingDays = getWorkingDaysFromSchedules(calendar.daySchedules);
+
     // Process breakfasts
     const breakfastColumns = transformTimedSchedulesToSpecialColumns(
       calendar.breakfasts || [],
       'breakfast',
-      t
+      t,
+      workingDays
     );
     for (const col of breakfastColumns) {
       if (!usedColumnIndices.has(col.columnIndex)) {
@@ -454,7 +471,12 @@ const transformAcademicCalendarToSpecialColumns = (
     }
 
     // Process breaks
-    const breakColumns = transformTimedSchedulesToSpecialColumns(calendar.breaks || [], 'break', t);
+    const breakColumns = transformTimedSchedulesToSpecialColumns(
+      calendar.breaks || [],
+      'break',
+      t,
+      workingDays
+    );
     for (const col of breakColumns) {
       if (!usedColumnIndices.has(col.columnIndex)) {
         allSpecialColumns.push(col);
@@ -466,7 +488,8 @@ const transformAcademicCalendarToSpecialColumns = (
     const assemblyColumns = transformTimedSchedulesToSpecialColumns(
       calendar.assemblies || [],
       'assembly',
-      t
+      t,
+      workingDays
     );
     for (const col of assemblyColumns) {
       if (!usedColumnIndices.has(col.columnIndex)) {
