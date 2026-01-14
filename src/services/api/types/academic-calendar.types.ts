@@ -12,17 +12,29 @@ export type AcademicCalendarTimePeriodScope =
   (typeof AcademicCalendarTimePeriodScope)[keyof typeof AcademicCalendarTimePeriodScope];
 
 export interface AcademicCalendarDaySchedule {
+  id?: string;
   days: number[];
   dayStartTime: string;
   dayEndTime: string;
 }
 
 export interface AcademicCalendarTimedSchedule {
+  id?: string;
   timePeriodScope: number;
   startTime: string;
   endTime: string;
   days: number[];
 }
+
+export const AcademicCalendarDayMapping = {
+  SATURDAY: 0,
+  SUNDAY: 1,
+  MONDAY: 2,
+  TUESDAY: 3,
+  WEDNESDAY: 4,
+  THURSDAY: 5,
+  FRIDAY: 6,
+} as const;
 
 export interface AcademicCalendarEntity {
   id: string;
