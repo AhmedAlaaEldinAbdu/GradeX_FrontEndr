@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
 import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import CustomImage from '@/shared/components/CustomImage';
+import { studentsApiService } from '@/services/api/students/students.service';
+import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
 
 export interface Student {
   id: string;
@@ -12,23 +14,12 @@ export interface Student {
   avatar?: string;
 }
 
-// Demo students data (will be replaced with API data)
-const DEMO_STUDENTS: Student[] = [
-  { id: '1', name: 'علي محمد', avatar: '' },
-  { id: '2', name: 'علي محمد', avatar: '' },
-  { id: '3', name: 'علي محمد', avatar: '' },
-  { id: '4', name: 'علي محمد', avatar: '' },
-  { id: '5', name: 'علي محمد', avatar: '' },
-  { id: '6', name: 'أحمد خالد', avatar: '' },
-  { id: '7', name: 'محمد سعيد', avatar: '' },
-  { id: '8', name: 'عمر حسن', avatar: '' },
-];
-
 interface SelectStudentsPopupProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (selectedStudents: Student[]) => void;
   initialSelectedStudents?: Student[];
+  classroomId?: string;
 }
 
 export default function SelectStudentsPopup({
@@ -36,22 +27,60 @@ export default function SelectStudentsPopup({
   onClose,
   onConfirm,
   initialSelectedStudents = [],
+  classroomId,
 }: SelectStudentsPopupProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+  const [students, setStudents] = useState<Student[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(
     new Set(initialSelectedStudents.map((s) => s.id))
   );
 
+  // Fetch students from API
+  const fetchStudents = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await studentsApiService.getStudents({
+        PageIndex: 1,
+        PageSize: 100,
+        ClassroomId: classroomId,
+      });
+      const studentDtos = response.data?.studentDto || [];
+      const mappedStudents: Student[] = studentDtos.map((s: StudentDto) => ({
+        id: s.id,
+        name: getStudentFullName(s),
+        avatar: s.profilePicture || '',
+      }));
+      setStudents(mappedStudents);
+    } catch (error) {
+      console.error('Failed to fetch students:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [classroomId]);
+
+  // Fetch students when popup opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchStudents();
+    }
+  }, [isOpen, fetchStudents]);
+
+  // Reset selected students when initialSelectedStudents changes
+  useEffect(() => {
+    setSelectedStudentIds(new Set(initialSelectedStudents.map((s) => s.id)));
+  }, [initialSelectedStudents]);
+
   // Filter students based on search query
   const filteredStudents = useMemo(() => {
     if (!searchQuery.trim()) {
-      return DEMO_STUDENTS;
+      return students;
     }
-    return DEMO_STUDENTS.filter((student) =>
+    return students.filter((student) =>
       student.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [searchQuery]);
+  }, [searchQuery, students]);
 
   const handleStudentToggle = (studentId: string) => {
     setSelectedStudentIds((prev) => {
@@ -66,7 +95,7 @@ export default function SelectStudentsPopup({
   };
 
   const handleConfirm = () => {
-    const selectedStudents = DEMO_STUDENTS.filter((student) => selectedStudentIds.has(student.id));
+    const selectedStudents = students.filter((student) => selectedStudentIds.has(student.id));
     onConfirm(selectedStudents);
     onClose();
   };
@@ -114,7 +143,9 @@ export default function SelectStudentsPopup({
 
         {/* Students List */}
         <div className="max-h-80 overflow-y-auto">
-          {filteredStudents.length === 0 ? (
+          {isLoading ? (
+            <div className="py-8 text-center text-gray-500">{t('lesson.loadingStudents')}</div>
+          ) : filteredStudents.length === 0 ? (
             <div className="py-8 text-center text-gray-500">{t('addLesson.noStudentsFound')}</div>
           ) : (
             <div className="flex flex-col">
