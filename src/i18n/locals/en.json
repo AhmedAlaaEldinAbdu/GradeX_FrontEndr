@@ -1652,6 +1652,11 @@
     "teacher": "Teacher",
     "startTime": "Start Time",
     "endTime": "End Time",
+    "specialColumns": {
+      "breakfast": "Breakfast",
+      "break": "Break",
+      "assembly": "Assembly"
+    },
     "filters": {
       "educationSystem": "Select Education System",
       "stage": "Select Stage",

@@ -1650,6 +1650,11 @@
     "teacher": "المعلم",
     "startTime": "وقت البدء",
     "endTime": "وقت الانتهاء",
+    "specialColumns": {
+      "breakfast": "الفطار",
+      "break": "استراحة",
+      "assembly": "الطابور"
+    },
     "filters": {
       "educationSystem": "اختر النظام التعليم",
       "stage": "اختر المرحلة",
