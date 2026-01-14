@@ -54,7 +54,7 @@ const mapFormValuesToCreateRequests = (
   values: AcademicCalendarFormValues,
   schoolBrancheId: string
 ): CreateAcademicCalendarRequest[] => {
-  const lkSchoolStageId = values.educationalStages?.[0];
+  const lkSchoolStageId = values.educationalStageId;
   if (!lkSchoolStageId) return [];
 
   const daySchedules: AcademicCalendarDaySchedule[] = (values.schoolDaySchedules || []).map(

@@ -9,8 +9,6 @@ import DeletePopup from '@/shared/popups/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import CalendarEmptyIcon from '@/assets/icons/calendar.svg';
 import Input from '@/shared/components/Input';
-import CustomImage from '@/shared/components/CustomImage';
-import calendarIcon from '@gradex/assets/icons/calendar.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {

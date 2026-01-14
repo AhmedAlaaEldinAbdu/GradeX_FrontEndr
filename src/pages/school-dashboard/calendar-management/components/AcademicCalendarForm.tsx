@@ -10,7 +10,10 @@ import CustomImage from '@/shared/components/CustomImage';
 import { Days as DaysEnum, type Days as DaysValue } from '@/shared/enums/enums';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
-import { selectIsLoadingSchoolStages, selectSchoolStages } from '@/redux/features/lookups/lookupsSelectors';
+import {
+  selectIsLoadingSchoolStages,
+  selectSchoolStages,
+} from '@/redux/features/lookups/lookupsSelectors';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 
 type DayKey = keyof typeof DaysEnum;
@@ -25,7 +28,7 @@ export type AcademicCalendarScheduleItem = {
 };
 
 export type AcademicCalendarFormValues = {
-  educationalStages: string[];
+  educationalStageId: string;
   studyStartDate: string;
   studyEndDate: string;
   weeksCount: number | '';
@@ -193,7 +196,7 @@ export default function AcademicCalendarForm({
   }, [currentLang, schoolStages]);
 
   const [values, setValues] = useState<AcademicCalendarFormValues>({
-    educationalStages: initialValues?.educationalStages ?? [],
+    educationalStageId: initialValues?.educationalStageId ?? '',
     studyStartDate: initialValues?.studyStartDate ?? '',
     studyEndDate: initialValues?.studyEndDate ?? '',
     weeksCount: initialValues?.weeksCount ?? '',
@@ -278,10 +281,10 @@ export default function AcademicCalendarForm({
         <div className="space-y-6">
           <FormField label={t('academicCalendar.form.educationalStagesLabel')} required>
             <CustomSelect
-              value={values.educationalStages[0] ?? ''}
+              value={values.educationalStageId}
               onChange={(value) => {
                 const selected = Array.isArray(value) ? (value[0] ?? '') : value;
-                patch({ educationalStages: selected ? [selected] : [] });
+                patch({ educationalStageId: selected ?? '' });
               }}
               options={educationalStageOptions}
               placeholder={t('academicCalendar.form.educationalStagesPlaceholder')}

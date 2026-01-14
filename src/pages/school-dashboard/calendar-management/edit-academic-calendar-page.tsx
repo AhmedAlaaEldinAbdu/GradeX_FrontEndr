@@ -173,7 +173,7 @@ const mapApiEntityToFormInitialValues = (
   const breakfasts = mapTimed(entity.breakfasts);
 
   return {
-    educationalStages: entity.lkSchoolStageId ? [entity.lkSchoolStageId] : [],
+    educationalStageId: entity.lkSchoolStageId ?? '',
     studyStartDate: entity.studyStartDate ? entity.studyStartDate.slice(0, 10) : '',
     studyEndDate: entity.studyEndDate ? entity.studyEndDate.slice(0, 10) : '',
     weeksCount: entity.weeksCount ?? '',
@@ -240,7 +240,7 @@ export default function EditAcademicCalendarPage() {
           initialValues={initialValues}
           onSubmit={async (values: AcademicCalendarFormValues) => {
             try {
-              const stageId = values.educationalStages?.[0] || currentCalendar.lkSchoolStageId;
+              const stageId = values.educationalStageId || currentCalendar.lkSchoolStageId;
               const req = mapFormValuesToUpdateRequest(
                 values,
                 DummySchoolBranchId,
