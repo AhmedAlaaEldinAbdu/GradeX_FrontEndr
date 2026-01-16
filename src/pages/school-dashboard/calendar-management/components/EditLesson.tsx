@@ -1,55 +1,61 @@
 import { useParams } from 'react-router-dom';
-import LessonForm, { type LessonData } from './LessonForm';
-
-// Demo lesson data for testing (will be replaced with API call)
-const DEMO_LESSON_DATA: Record<string, LessonData> = {
-  'sun-1': {
-    id: 'sun-1',
-    subjectId: 'arabic',
-    teacherId: '1',
-    bookId: '1',
-    classworkFromPage: '15',
-    classworkToPage: '20',
-    homeworkFromPage: '12',
-    homeworkToPage: '15',
-    descriptionAr: 'ادخل وصف للواجب',
-    descriptionEn: '',
-    sendTo: 'all',
-    attachments: [],
-    selectedStudents: [],
-  },
-  'sun-2': {
-    id: 'sun-2',
-    subjectId: 'arabic',
-    teacherId: '2',
-    bookId: '1',
-    classworkFromPage: '20',
-    classworkToPage: '25',
-    homeworkFromPage: '15',
-    homeworkToPage: '18',
-    descriptionAr: '',
-    descriptionEn: '',
-    sendTo: 'specific',
-    attachments: [],
-    selectedStudents: [
-      { id: '1', name: 'علي محمد', avatar: '' },
-      { id: '2', name: 'علي محمد', avatar: '' },
-    ],
-  },
-};
+import { useEffect, useState } from 'react';
+import LessonForm from './LessonForm';
+import { lessonsApiService } from '@/services/api/lessons/lessons.service';
+import type { Lesson } from '@/services/api/types/lessons.types';
 
 export default function EditLesson() {
   const { id } = useParams<{ id: string }>();
+  const [lessonData, setLessonData] = useState<Lesson | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // TODO: Replace with actual API call to fetch lesson data
-  const lessonData = id ? DEMO_LESSON_DATA[id] : undefined;
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
 
-  // In a real application, you would fetch the lesson data here
-  // useEffect(() => {
-  //   if (id) {
-  //     dispatch(fetchLessonById(id));
-  //   }
-  // }, [id, dispatch]);
+    const fetchLesson = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const lesson = await lessonsApiService.getLessonById(id);
+        setLessonData(lesson);
+      } catch (err) {
+        console.error('Failed to fetch lesson:', err);
+        setError('Failed to load lesson data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLesson();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-gray-500">Loading lesson...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
+
+  if (!lessonData) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-gray-500">Lesson not found</div>
+      </div>
+    );
+  }
 
   return <LessonForm mode="edit" initialData={lessonData} />;
 }
