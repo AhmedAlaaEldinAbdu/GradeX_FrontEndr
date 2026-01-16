@@ -91,8 +91,10 @@ function buildLessonFormData(data: CreateLessonRequest, attachmentFiles?: File[]
   formData.append('IsHomeworkForAllStudents', String(data.isHomeworkForAllStudents));
 
   // Optional fields
-  if (data.studentId) {
-    formData.append('studentId', data.studentId);
+  if (data.lessonsStudent && data.lessonsStudent.length > 0) {
+    data.lessonsStudent.forEach((student) => {
+      formData.append('LessonsStudent', JSON.stringify(student));
+    });
   }
   if (data.homeworkDescriptionAr) {
     formData.append('HomeworkDescriptionAr', data.homeworkDescriptionAr);
@@ -135,8 +137,37 @@ export async function updateLesson(
   data: UpdateLessonRequest,
   attachmentFiles?: File[]
 ): Promise<ApiResponseModel<null>> {
-  const formData = buildLessonFormData(data as CreateLessonRequest, attachmentFiles);
-  formData.append('Id', data.id);
+  const formData = new FormData();
+
+  const dto = {
+    id: data.id,
+    lessonsStudent: data.lessonsStudent || [],
+    materialId: data.materialId,
+    classworkFromPage: data.classworkFromPage,
+    bookId: data.bookId,
+    endTime: data.endTime,
+    homeworkFromPage: data.homeworkFromPage,
+    isHomeworkForAllStudents: data.isHomeworkForAllStudents,
+    classroomId: data.classroomId,
+    date: data.date,
+    startTime: data.startTime,
+    attachments: data.attachments || [],
+    gradeId: data.gradeId,
+    classworkToPage: data.classworkToPage,
+    homeworkDescriptionEn: data.homeworkDescriptionEn || '',
+    homeworkToPage: data.homeworkToPage,
+    teacherId: data.teacherId,
+    homeworkDescriptionAr: data.homeworkDescriptionAr || '',
+    schoolBranchesId: data.schoolBranchesId,
+  };
+
+  formData.append('dto', JSON.stringify(dto));
+
+  if (attachmentFiles && attachmentFiles.length > 0) {
+    attachmentFiles.forEach((file) => {
+      formData.append('files', file);
+    });
+  }
 
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
     LessonsEndpoints.updateLesson,
