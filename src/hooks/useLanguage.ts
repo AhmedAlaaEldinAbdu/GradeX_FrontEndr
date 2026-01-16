@@ -10,6 +10,7 @@ interface UseLanguageReturn {
   currentLanguage: Language;
   direction: Direction;
   isRTL: boolean;
+  isArabic: boolean;
   toggleLanguage: () => void;
   setLanguage: (lang: Language) => void;
 }
@@ -19,6 +20,7 @@ export const useLanguage = (): UseLanguageReturn => {
 
   const currentLanguage = (i18n.language || 'ar') as Language;
   const isRTL = currentLanguage === 'ar';
+  const isArabic = currentLanguage === 'ar';
   const direction: Direction = isRTL ? 'rtl' : 'ltr';
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export const useLanguage = (): UseLanguageReturn => {
     currentLanguage,
     direction,
     isRTL,
+    isArabic,
     toggleLanguage,
     setLanguage,
   };
