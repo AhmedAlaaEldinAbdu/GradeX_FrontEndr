@@ -80,11 +80,18 @@ export interface LessonAttachmentInput {
 }
 
 /**
+ * Lesson student structure for API
+ */
+export interface LessonStudentInput {
+  studentId: string;
+}
+
+/**
  * Create lesson request payload - matches API multipart/form-data format
  * Note: The API expects form-data with PascalCase field names
  */
 export interface CreateLessonRequest {
-  studentId?: string;
+  lessonsStudent?: LessonStudentInput[];
   materialId: string;
   classworkFromPage: number;
   bookId: string;
@@ -94,7 +101,7 @@ export interface CreateLessonRequest {
   classroomId: string;
   date: string;
   startTime: string;
-  attachments?: LessonAttachmentInput;
+  attachments?: LessonAttachmentInput[];
   gradeId: string;
   classworkToPage: number;
   homeworkDescriptionEn?: string;
