@@ -50,9 +50,15 @@ export interface LessonFormData {
   endTime: string;
 }
 
+export interface LessonAttachmentData {
+  fileName: string;
+  oldFile?: string;
+  fileUrl?: string;
+}
+
 export interface LessonData extends LessonFormData {
   id: string;
-  attachments?: string[];
+  attachments?: LessonAttachmentData[];
   selectedStudents?: Student[];
   isHomeworkForAllStudents?: boolean;
 }
@@ -81,7 +87,12 @@ function mapLessonToFormData(lesson: Lesson): LessonData {
     startTime: lesson.startTime ? lesson.startTime.substring(0, 5) : '',
     endTime: lesson.endTime ? lesson.endTime.substring(0, 5) : '',
     isHomeworkForAllStudents: lesson.isHomeworkForAllStudents,
-    attachments: lesson.attachments?.map((a) => a.fileName) || [],
+    attachments:
+      lesson.attachments?.map((a) => ({
+        fileName: a.fileName,
+        oldFile: a.fileName,
+        fileUrl: a.fileUrl,
+      })) || [],
     selectedStudents:
       lesson.lessonsStudent?.map((s) => ({
         id: s.studentId,
@@ -120,7 +131,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     normalizedInitialData?.isHomeworkForAllStudents === false ? 'specific' : 'all'
   );
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
-  const [attachmentFileNames, setAttachmentFileNames] = useState<string[]>(
+  const [existingAttachments, setExistingAttachments] = useState<LessonAttachmentData[]>(
     normalizedInitialData?.attachments || []
   );
   const [selectedStudents, setSelectedStudents] = useState<Student[]>(
@@ -239,7 +250,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     }
     setIsLoadingClassrooms(true);
     try {
-      const response = await getClassrooms({ GradeId: gradeId });
+      const response = await getClassrooms({ gradeId: gradeId });
       setClassrooms(response.data?.classroomDto || []);
     } catch (error) {
       console.error('Failed to fetch classrooms:', error);
@@ -335,7 +346,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         endTime: normalizedInitialData.endTime,
       });
       setSendTo(normalizedInitialData.isHomeworkForAllStudents === false ? 'specific' : 'all');
-      setAttachmentFileNames(normalizedInitialData.attachments || []);
+      setExistingAttachments(normalizedInitialData.attachments || []);
       setSelectedStudents(normalizedInitialData.selectedStudents || []);
     }
   }, [normalizedInitialData, reset]);
@@ -361,9 +372,16 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         schoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
       };
 
-      // If sending to specific students, add first student ID (API limitation)
+      // If sending to specific students, add lessonsStudent array
       if (sendTo === 'specific' && selectedStudents.length > 0) {
-        request.studentId = selectedStudents[0].id;
+        request.lessonsStudent = selectedStudents.map((student) => ({
+          studentId: student.id,
+        }));
+      }
+
+      // For edit mode, include existing attachments metadata
+      if (mode === 'edit' && existingAttachments.length > 0) {
+        request.attachments = existingAttachments;
       }
 
       if (mode === 'add') {
@@ -399,21 +417,32 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      const newFileNames = newFiles.map((file) => file.name);
       setAttachmentFiles((prev) => [...prev, ...newFiles]);
-      setAttachmentFileNames((prev) => [...prev, ...newFileNames]);
     }
   };
 
   const handleFileDelete = (index?: number) => {
     if (index !== undefined) {
-      setAttachmentFiles((prev) => prev.filter((_, i) => i !== index));
-      setAttachmentFileNames((prev) => prev.filter((_, i) => i !== index));
+      const totalExisting = existingAttachments.length;
+      if (index < totalExisting) {
+        // Deleting an existing attachment
+        setExistingAttachments((prev) => prev.filter((_, i) => i !== index));
+      } else {
+        // Deleting a new file attachment
+        const newFileIndex = index - totalExisting;
+        setAttachmentFiles((prev) => prev.filter((_, i) => i !== newFileIndex));
+      }
     } else {
       setAttachmentFiles([]);
-      setAttachmentFileNames([]);
+      setExistingAttachments([]);
     }
   };
+
+  // Combine existing attachment names and new file names for display
+  const allAttachmentNames = [
+    ...existingAttachments.map((a) => a.fileName),
+    ...attachmentFiles.map((f) => f.name),
+  ];
 
   return (
     <>
@@ -835,7 +864,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
               accept="image/png,image/jpg,image/jpeg,image/gif,image/svg+xml,application/pdf"
               onChange={handleFileChange}
               onDelete={handleFileDelete}
-              fileNames={attachmentFileNames}
+              fileNames={allAttachmentNames}
               uploadText={t('lesson.clickToUpload')}
               formatHints={['GIF', 'SVG', 'JPG', 'PNG', 'PDF']}
               optional={true}
