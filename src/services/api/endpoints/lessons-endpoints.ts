@@ -5,7 +5,7 @@ export const LessonsEndpoints = {
   getLessonById: (id: string) => `${Lessons}/${id}`,
   createLesson: Lessons,
   updateLesson: Lessons,
-  deleteLesson: (id: string) => `${Lessons}/${id}`,
+  deleteLesson: (id: string) => `${Lessons}?Id=${id}`,
 };
 
 export default LessonsEndpoints;
