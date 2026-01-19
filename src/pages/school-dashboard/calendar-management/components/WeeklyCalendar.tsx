@@ -220,15 +220,23 @@ const findApplicableLessonForSlot = (
       ? mostRecentLesson.materialNameAr
       : mostRecentLesson.materialNameEn || mostRecentLesson.materialNameAr;
 
+  // Calculate duration in minutes
+  const duration = calculateDuration(mostRecentLesson.startTime, mostRecentLesson.endTime);
+
+  // Calculate exact colSpan based on duration (each period is 45 minutes)
+  // Use precise calculation: 45min=1.0, 90min=2.0, 108min=2.4
+  const colSpan = Math.max(1, duration / 45);
+
   return {
     id: mostRecentLesson.id,
     subject: subjectName,
     teacherName: mostRecentLesson.teacherName,
     startTime: formatTimeDisplay(mostRecentLesson.startTime),
     endTime: formatTimeDisplay(mostRecentLesson.endTime),
-    duration: calculateDuration(mostRecentLesson.startTime, mostRecentLesson.endTime),
+    duration,
     dayIndex,
     periodIndex,
+    colSpan,
     color: getSubjectColor(subjectName),
   };
 };
