@@ -3,15 +3,19 @@ import { useTranslation } from 'react-i18next';
 import WeeklyCalendar, { type WeeklyCalendarHandle } from './components/WeeklyCalendar';
 
 export default function WeeklyCalendarPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const calendarRef = useRef<WeeklyCalendarHandle>(null);
+  const currentLang = i18n.language;
 
   const handleRecoverLessons = () => {
     calendarRef.current?.recoverLessons();
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/80 p-4 md:p-6" dir="rtl">
+    <div
+      className="min-h-screen bg-gray-50/80 p-4 md:p-6"
+      dir={currentLang === 'ar' ? 'rtl' : 'ltr'}
+    >
       {/* Header Row: Title on right, Button on left */}
       <div className="mb-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
         <h1 className="text-xl font-bold text-gray-800 md:text-2xl">{t('weeklyCalendar.title')}</h1>
