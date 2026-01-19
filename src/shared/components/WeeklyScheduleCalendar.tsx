@@ -4,6 +4,7 @@ import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import UpLeftArrow from '@gradex/assets/icons/UpLeftArrow.svg';
 import CustomImage from './CustomImage';
+import { ARABIC_DAY_NAMES, ENGLISH_DAY_NAMES } from '@/lib/utils/date-utils';
 
 // Types
 export interface ScheduleLesson {
@@ -73,17 +74,6 @@ interface WeeklyScheduleCalendarProps {
   weekStart?: Date;
   className?: string;
 }
-
-const ARABIC_DAY_NAMES = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
-const ENGLISH_DAY_NAMES = [
-  'Saturday',
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-];
 
 const PERIOD_TIME_SLOTS = [
   { periodIndex: 0, label: '1', startHour: 8, startMin: 30, endHour: 9, endMin: 15 },
