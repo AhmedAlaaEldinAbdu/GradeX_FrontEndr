@@ -1647,6 +1647,8 @@
     "deleteLesson": "Delete Lesson",
     "confirmDeleteLesson": "Are you sure you want to delete this lesson?",
     "lessonDeletedSuccessfully": "Lesson deleted successfully",
+    "lessonsRecoveredSuccessfully": "All lessons have been successfully updated to 45 minutes",
+    "recoverLessonsFailed": "Failed to update lessons",
     "lessonDetails": "Lesson Details",
     "subject": "Subject",
     "teacher": "Teacher",
