@@ -1,7 +1,12 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import { getErrorMessage } from '@/lib/http';
 import { lessonsApiService } from '@/services/api/lessons/lessons.service';
-import type { Lesson, LessonsQueryParams } from '@/services/api/types/lessons.types';
+import type {
+  Lesson,
+  LessonsQueryParams,
+  UpdateLessonRequest,
+} from '@/services/api/types/lessons.types';
+import { addMinutesToTime } from '@/lib/utils/date-utils';
 
 export interface LessonsFilters {
   searchTerm?: string;
@@ -121,6 +126,55 @@ export const deleteLessonById = createAsyncThunk<string, string>(
   }
 );
 
+export const recoverAllLessons = createAsyncThunk<
+  Lesson[],
+  void,
+  { state: { lessons: LessonsState } }
+>('lessons/recoverAllLessons', async (_, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const lessons = state.lessons.lessons;
+
+    if (!lessons || lessons.length === 0) {
+      return [];
+    }
+
+    const updatePromises = lessons.map(async (lesson) => {
+      const newEndTime = addMinutesToTime(lesson.startTime, 45);
+
+      const updateData: UpdateLessonRequest = {
+        id: lesson.id,
+        materialId: lesson.materialId,
+        teacherId: lesson.teacherId,
+        bookId: lesson.bookId,
+        gradeId: lesson.gradeId,
+        classroomId: lesson.classroomId,
+        schoolBranchesId: lesson.schoolBranchesId,
+        date: lesson.date,
+        startTime: lesson.startTime,
+        endTime: newEndTime,
+        classworkFromPage: lesson.classworkFromPage,
+        classworkToPage: lesson.classworkToPage,
+        homeworkFromPage: lesson.homeworkFromPage,
+        homeworkToPage: lesson.homeworkToPage,
+        homeworkDescriptionAr: lesson.homeworkDescriptionAr || '',
+        homeworkDescriptionEn: lesson.homeworkDescriptionEn || '',
+        isHomeworkForAllStudents: lesson.isHomeworkForAllStudents,
+        lessonsStudent: lesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
+        attachments: lesson.attachments.map((a) => ({ fileName: a.fileName, fileUrl: a.fileUrl })),
+      };
+
+      await lessonsApiService.updateLesson(updateData);
+      return { ...lesson, endTime: newEndTime };
+    });
+
+    const updatedLessons = await Promise.all(updatePromises);
+    return updatedLessons;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const lessonsSlice = createSlice({
   name: 'lessons',
   initialState,
@@ -185,6 +239,20 @@ const lessonsSlice = createSlice({
       })
       .addCase(deleteLessonById.rejected, (state, action) => {
         state.isDeleting = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(recoverAllLessons.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(recoverAllLessons.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        state.lessons = action.payload;
+      })
+      .addCase(recoverAllLessons.rejected, (state, action) => {
+        state.isUpdating = false;
         state.error = action.payload as string;
       });
   },

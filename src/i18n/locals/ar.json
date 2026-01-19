@@ -1645,6 +1645,8 @@
     "deleteLesson": "حذف الحصة",
     "confirmDeleteLesson": "هل أنت متأكد من حذف هذه الحصة؟",
     "lessonDeletedSuccessfully": "تم حذف الحصة بنجاح",
+    "lessonsRecoveredSuccessfully": "تم تحديث جميع الحصص بنجاح لتكون 45 دقيقة",
+    "recoverLessonsFailed": "فشل في تحديث الحصص",
     "lessonDetails": "تفاصيل الحصة",
     "subject": "المادة",
     "teacher": "المعلم",

@@ -14,7 +14,11 @@ import LessonDetailsPopup from '../popups/LessonDetailsPopup';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchLessons, deleteLessonById } from '@/redux/features/lessons/lessonsSlice';
+import {
+  fetchLessons,
+  deleteLessonById,
+  recoverAllLessons,
+} from '@/redux/features/lessons/lessonsSlice';
 import { fetchMonthlyCalendarEvents } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import { fetchAcademicCalendarsForWeek } from '@/redux/features/academic-calendar/academicCalendarSlice';
 import type { Lesson } from '@/services/api/types/lessons.types';
@@ -662,9 +666,19 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     openAddLesson: () => {
       navigate('/calendar/weekly/add-lesson');
     },
-    recoverLessons: () => {
-      // TODO: Implement recover lessons functionality
-      console.log('Recover lessons');
+    recoverLessons: async () => {
+      try {
+        await dispatch(recoverAllLessons()).unwrap();
+        showToast({
+          message: t('weeklyCalendar.lessonsRecoveredSuccessfully'),
+          type: 'success',
+        });
+      } catch {
+        showToast({
+          message: t('weeklyCalendar.recoverLessonsFailed'),
+          type: 'error',
+        });
+      }
     },
   }));
 

@@ -40,6 +40,19 @@ export const calculateDurationMinutes = (startTime: string, endTime: string): nu
   return endMinutes - startMinutes;
 };
 
+export const addMinutesToTime = (timeStr: string, minutesToAdd: number): string => {
+  const parts = timeStr.split(':');
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+  const seconds = parts[2] ? parseInt(parts[2], 10) : 0;
+
+  const totalMinutes = hours * 60 + minutes + minutesToAdd;
+  const newHours = Math.floor(totalMinutes / 60) % 24;
+  const newMinutes = totalMinutes % 60;
+
+  return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+};
+
 export const ARABIC_DAY_NAMES = [
   'السبت',
   'الأحد',
