@@ -74,20 +74,27 @@ interface WeeklyScheduleCalendarProps {
   className?: string;
 }
 
-// Arabic day names for rows (السبت to الجمعة, 7 days)
 const ARABIC_DAY_NAMES = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+const ENGLISH_DAY_NAMES = [
+  'Saturday',
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+];
 
-// Default period headers matching the design (from right to left)
-const DEFAULT_PERIOD_HEADERS: PeriodHeader[] = [
-  { label: '1', time: '8:30ص - 9:15ص' },
-  { label: '2', time: '9:15ص - 10ص' },
-  { label: '3', time: '10ص - 10:45ص' },
-  { label: 'فطار', time: '10:45ص - 11:30ص' },
-  { label: '5', time: '11:30ص - 12:15م' },
-  { label: 'الحديقة', time: '12:15م - 1م' },
-  { label: '6', time: '1م - 1:45م' },
-  { label: '7', time: '1:45م - 2:30م' },
-  { label: '8', time: '2:30م - 3:15م' },
+const PERIOD_TIME_SLOTS = [
+  { periodIndex: 0, label: '1', startHour: 8, startMin: 30, endHour: 9, endMin: 15 },
+  { periodIndex: 1, label: '2', startHour: 9, startMin: 15, endHour: 10, endMin: 0 },
+  { periodIndex: 2, label: '3', startHour: 10, startMin: 0, endHour: 10, endMin: 45 },
+  { periodIndex: 3, label: '4', startHour: 10, startMin: 45, endHour: 11, endMin: 30 },
+  { periodIndex: 4, label: '5', startHour: 11, startMin: 30, endHour: 12, endMin: 15 },
+  { periodIndex: 5, label: '6', startHour: 12, startMin: 15, endHour: 13, endMin: 0 },
+  { periodIndex: 6, label: '7', startHour: 13, startMin: 0, endHour: 13, endMin: 45 },
+  { periodIndex: 7, label: '8', startHour: 13, startMin: 45, endHour: 14, endMin: 30 },
+  { periodIndex: 8, label: '9', startHour: 14, startMin: 30, endHour: 15, endMin: 15 },
 ];
 
 // Default special columns (can be overridden via props)
@@ -119,7 +126,6 @@ const DEFAULT_SPECIAL_COLUMNS: SpecialColumn[] = [
 export default function WeeklyScheduleCalendar({
   lessons = [],
   events = [],
-  periodHeaders = DEFAULT_PERIOD_HEADERS,
   specialColumns = DEFAULT_SPECIAL_COLUMNS,
   lessonContextActions = [],
   onLessonClick,
@@ -146,6 +152,30 @@ export default function WeeklyScheduleCalendar({
   }, [currentWeek]);
 
   const dateLocale = isRTL ? ar : enUS;
+
+  // Generate localized period headers
+  const localizedPeriodHeaders = useMemo(() => {
+    // Format time with localized AM/PM
+    const formatTime = (hour: number, min: number) => {
+      const suffix = isRTL ? (hour < 12 ? 'ص' : 'م') : hour < 12 ? 'AM' : 'PM';
+      const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+      const minStr = min > 0 ? `:${min.toString().padStart(2, '0')}` : '';
+      return `${displayHour}${minStr}${suffix}`;
+    };
+
+    return PERIOD_TIME_SLOTS.map((slot, idx) => {
+      // Check if this period index has a special column with a custom label
+      const specialCol = specialColumns.find((sc) => sc.columnIndex === idx);
+      // Use special column label if available, otherwise use the period number
+      const label = specialCol ? specialCol.label : slot.label;
+      const startTime = formatTime(slot.startHour, slot.startMin);
+      const endTime = formatTime(slot.endHour, slot.endMin);
+      return {
+        label,
+        time: `${startTime} - ${endTime}`,
+      };
+    });
+  }, [isRTL, specialColumns]);
 
   const dateRangeLabel = useMemo(() => {
     const weekEnd = addDays(weekStart, 6);
@@ -416,7 +446,8 @@ export default function WeeklyScheduleCalendar({
 
   // Get row label (day name with date)
   const getRowLabel = (rowIndex: number) => {
-    const dayName = ARABIC_DAY_NAMES[rowIndex] || '';
+    const dayNames = isRTL ? ARABIC_DAY_NAMES : ENGLISH_DAY_NAMES;
+    const dayName = dayNames[rowIndex] || '';
     // Calculate the actual date for this row based on the current week
     const dayDate = addDays(weekStart, rowIndex);
     const dateStr = format(dayDate, 'd/M', { locale: dateLocale });
@@ -469,20 +500,15 @@ export default function WeeklyScheduleCalendar({
             {/* Row label header - empty space */}
             <div className="flex items-center justify-center" />
             {/* Period headers - 9 columns for time slots */}
-            {periodHeaders.map((period, idx) => {
+            {localizedPeriodHeaders.map((period, idx) => {
               // Check if this column is a special column
               const specialCol = specialColumns.find((sc) => sc.columnIndex === idx);
-              const bgClass = specialCol
-                ? `${specialCol.headerBgColor || 'bg-gray-50'} ${specialCol.headerBorderColor || 'border-gray-200'}`
-                : 'bg-white border-gray-200';
-              const labelClass = specialCol
-                ? `${specialCol.textColor || 'text-gray-800'} font-bold`
-                : 'text-gray-800';
+              const labelClass = specialCol ? 'text-gray-800 font-bold' : 'text-gray-800';
 
               return (
                 <div
                   key={idx}
-                  className={`flex flex-col items-center justify-center rounded-xl border py-4 ${bgClass}`}
+                  className={`flex flex-col items-center justify-center rounded-xl border py-4`}
                 >
                   <span className={`text-lg font-bold ${labelClass}`}>{period.label}</span>
                   <span className="mt-1 text-[11px] text-gray-400">{period.time}</span>
