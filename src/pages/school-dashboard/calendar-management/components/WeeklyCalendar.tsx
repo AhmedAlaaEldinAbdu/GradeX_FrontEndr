@@ -666,7 +666,30 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   }, []);
 
   const handleEmptyCellClick = (dayIndex: number, periodIndex: number) => {
-    navigate(`/calendar/weekly/add-lesson?day=${dayIndex}&period=${periodIndex}`);
+    // Calculate the actual date for this cell
+    const cellDate = addDays(currentWeekStart, dayIndex);
+
+    // Format date in local timezone (YYYY-MM-DD) without UTC conversion
+    const year = cellDate.getFullYear();
+    const month = (cellDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = cellDate.getDate().toString().padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
+    // Get time slot for this period
+    const timeSlot = PERIOD_TIME_SLOTS.find((slot) => slot.periodIndex === periodIndex);
+    if (!timeSlot) {
+      navigate(`/calendar/weekly/add-lesson`);
+      return;
+    }
+
+    // Format start and end times as HH:mm
+    const startTime = `${timeSlot.startHour.toString().padStart(2, '0')}:${timeSlot.startMin.toString().padStart(2, '0')}`;
+    const endTime = `${timeSlot.endHour.toString().padStart(2, '0')}:${timeSlot.endMin.toString().padStart(2, '0')}`;
+
+    // Navigate with date and time parameters
+    navigate(
+      `/calendar/weekly/add-lesson?date=${dateStr}&startTime=${startTime}&endTime=${endTime}`
+    );
   };
 
   // Expose methods to parent via ref
