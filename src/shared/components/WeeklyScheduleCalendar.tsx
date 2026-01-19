@@ -424,7 +424,10 @@ export default function WeeklyScheduleCalendar({
   };
 
   return (
-    <div className={`w-full overflow-hidden rounded-xl bg-white ${className}`} dir="rtl">
+    <div
+      className={`w-full overflow-hidden rounded-xl bg-white ${className}`}
+      dir={isRTL ? 'rtl' : 'ltr'}
+    >
       {/* Date Navigation Header */}
       <div className="flex items-center justify-center gap-6 border-b border-gray-100 py-4">
         <button
@@ -600,14 +603,14 @@ export default function WeeklyScheduleCalendar({
                   // For rows with full-row events, show cells with event background color
                   // Use negative margin to connect cells horizontally (remove gap)
                   if (hasFullRowEvent) {
-                    const marginClass = periodIndex === 0 ? '' : '-mr-2 pr-2';
+                    const marginClass = periodIndex === 0 ? '' : '-me-2 pe-2';
 
                     // First cell (periodIndex 0) shows the event title and arrow
                     if (periodIndex === 0) {
                       return (
                         <div
                           key={periodIndex}
-                          className={`z-10 flex min-h-[160px] items-center gap-2 rounded-r-xl pr-4 ${getEventBgClasses(fullRowEvent.color)}`}
+                          className={`z-10 flex min-h-[160px] items-center gap-2 rounded-s-xl ps-4 ${getEventBgClasses(fullRowEvent.color)}`}
                         >
                           <span className="text-lg font-bold">{fullRowEvent.title}</span>
                           {fullRowEvent.hasArrow && (
@@ -621,7 +624,7 @@ export default function WeeklyScheduleCalendar({
                       return (
                         <div
                           key={periodIndex}
-                          className={`z-10 min-h-[160px] rounded-l-xl ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
+                          className={`z-10 min-h-[160px] rounded-e-xl ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
                         />
                       );
                     }
@@ -684,7 +687,7 @@ export default function WeeklyScheduleCalendar({
                             return (
                               <div
                                 key={lesson.id}
-                                className={span > 1 ? 'absolute inset-y-1.5 right-1.5 z-10' : ''}
+                                className={span > 1 ? 'absolute inset-y-1.5 start-1.5 z-10' : ''}
                                 style={widthStyle}
                               >
                                 <LessonCard lesson={lesson} />
