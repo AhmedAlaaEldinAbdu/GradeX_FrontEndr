@@ -39,3 +39,23 @@ export const calculateDurationMinutes = (startTime: string, endTime: string): nu
 
   return endMinutes - startMinutes;
 };
+
+export const ARABIC_DAY_NAMES = [
+  'السبت',
+  'الأحد',
+  'الإثنين',
+  'الثلاثاء',
+  'الأربعاء',
+  'الخميس',
+  'الجمعة',
+];
+
+export const ENGLISH_DAY_NAMES = [
+  'Saturday',
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+];
