@@ -24,7 +24,7 @@ function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
   return (
     <div className="w-full overflow-x-auto">
       <table
-        className={`min-w-full border-collapse border border-gray-300 text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+        className={`min-w-full border-collapse mx-2 border border-gray-300 text-sm ${isRTL ? 'text-right' : 'text-left'}`}
         dir={direction}
       >
         <thead>
