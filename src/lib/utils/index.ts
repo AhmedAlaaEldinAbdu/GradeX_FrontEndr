@@ -9,6 +9,7 @@ export {
   formatDateWithDay,
   formatTimeShort,
   calculateDurationMinutes,
+  addMinutesToTime,
   ARABIC_DAY_NAMES,
   ENGLISH_DAY_NAMES,
 } from './date-utils';
