@@ -5,6 +5,7 @@ import { ar, enUS } from 'date-fns/locale';
 import UpLeftArrow from '@gradex/assets/icons/UpLeftArrow.svg';
 import CustomImage from './CustomImage';
 import { ARABIC_DAY_NAMES, ENGLISH_DAY_NAMES } from '@/lib/utils/date-utils';
+import MenuICon from '@gradex/assets/icons/Menu.svg';
 
 // Types
 export interface ScheduleLesson {
@@ -232,9 +233,29 @@ export default function WeeklyScheduleCalendar({
   const isLessonSpanCell = (dayIndex: number, periodIndex: number) => {
     return lessons.some((l) => {
       const span = l.colSpan || 1;
+      const fullSpan = Math.floor(span); // Only full cells, not including fractional
       return (
-        l.dayIndex === dayIndex && periodIndex > l.periodIndex && periodIndex < l.periodIndex + span
+        l.dayIndex === dayIndex &&
+        periodIndex > l.periodIndex &&
+        periodIndex <= l.periodIndex + fullSpan - 1 // Only fully covered cells
       );
+    });
+  };
+
+  // Check if a lesson starts at this cell
+  const getLessonStartingAtCell = (dayIndex: number, periodIndex: number) => {
+    return lessons.find((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
+  };
+
+  // Check if this cell should show the fractional part of a lesson from previous cells
+  const getFractionalLessonForCell = (dayIndex: number, periodIndex: number) => {
+    return lessons.find((l) => {
+      if (l.dayIndex !== dayIndex) return false;
+      const span = l.colSpan || 1;
+      const fullCells = Math.floor(span);
+      const fractionalPart = span - fullCells;
+      // This cell shows the fractional part if it's at periodIndex = lessonStart + fullCells
+      return fractionalPart > 0 && periodIndex === l.periodIndex + fullCells;
     });
   };
 
@@ -270,19 +291,6 @@ export default function WeeklyScheduleCalendar({
       <circle cx="8" cy="3" r="1.5" />
       <circle cx="8" cy="8" r="1.5" />
       <circle cx="8" cy="13" r="1.5" />
-    </svg>
-  );
-
-  // Menu hamburger icon
-  const MenuIcon = () => (
-    <svg
-      className="h-3 w-3"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-    >
-      <path d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   );
 
@@ -328,18 +336,21 @@ export default function WeeklyScheduleCalendar({
         </button>
       </div>
       {/* Teacher Name */}
-      <p className="mt-1.5 text-xs text-gray-500">{lesson.teacherName}</p>
+      <p className="mt-1.5 text-start text-xs text-gray-500">{lesson.teacherName}</p>
       {/* Time Range */}
-      <p className="mt-1 text-xs text-gray-400">
+      <p className="mt-1 text-start text-xs text-gray-400">
         {lesson.startTime}ص - {lesson.endTime}ص
       </p>
       {/* Duration Badge */}
       <div className="mt-3 flex items-center gap-2">
         <span className="text-[11px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
-        <span className="rounded border border-gray-200 px-2 py-0.5 text-[11px] text-gray-600">
-          {lesson.duration} {t('weeklyCalendar.minutes')}
+        <span className="text-[11px] text-gray-600">
+          <span className="me-1 inline-block rounded border border-gray-200 px-1 py-0.5">
+            {lesson.duration}
+          </span>
+          {t('weeklyCalendar.minutes')}
         </span>
-        <div className="flex h-6 w-6 items-center justify-center rounded border border-gray-200 text-emerald-600">
+        <div className="ms-auto flex h-6 w-6 items-center justify-center rounded border border-gray-200 text-emerald-600">
           <svg
             className="h-3.5 w-3.5"
             viewBox="0 0 24 24"
@@ -531,9 +542,10 @@ export default function WeeklyScheduleCalendar({
                 {isCurrentDay ? (
                   // Current day - green badge with menu icon and border
                   <div className="z-10 flex flex-col items-center justify-center rounded-xl border border-emerald-500 bg-white py-4">
-                    <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-white">
-                      <MenuIcon />
-                      <span className="text-xs font-semibold">{getRowLabel(dayIndex)}</span>
+                    <div className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-emerald-500">
+                      {/* <MenuIcon /> */}
+                      <img src={MenuICon} alt="menu" className="h-4 w-4" />
+                      <span className="text-xs font-bold">{getRowLabel(dayIndex)}</span>
                     </div>
                   </div>
                 ) : (
@@ -602,7 +614,7 @@ export default function WeeklyScheduleCalendar({
                     return (
                       <div
                         key={periodIndex}
-                        className={`z-10 flex min-h-[160px] items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
+                        className={`flex min-h-[160px] items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
                         style={{ marginBottom: isLastRow ? 0 : undefined }}
                       >
                         {isMiddleRow && (
@@ -666,20 +678,71 @@ export default function WeeklyScheduleCalendar({
                     );
                   }
 
-                  // If this cell is covered by a spanning lesson, hide it but keep bg
+                  // If this cell is covered by a spanning lesson, skip rendering
                   if (isLessonSpan) {
+                    return null;
+                  }
+
+                  // Check if a lesson starts at this cell
+                  const lessonStartingHere = getLessonStartingAtCell(dayIndex, periodIndex);
+
+                  const fractionalLesson = getFractionalLessonForCell(dayIndex, periodIndex);
+
+                  if (lessonStartingHere && !eventAtCell) {
+                    const span = lessonStartingHere.colSpan || 1;
+                    const fullCells = Math.floor(span);
+                    const fractionalPart = span - fullCells;
+
+                    let widthCalc = '100%';
+                    if (fullCells > 1) {
+                      const additionalCells = Array(fullCells - 1)
+                        .fill('100% + 8px')
+                        .join(' + ');
+                      widthCalc = `calc(100% + ${additionalCells})`;
+                    }
+                    if (fractionalPart > 0) {
+                      const fractionalWidth = `${fractionalPart * 100}% + ${fractionalPart * 8}px`;
+                      widthCalc =
+                        fullCells > 1
+                          ? `calc(${widthCalc} + ${fractionalWidth})`
+                          : `calc(100% + ${fractionalWidth})`;
+                    }
+
                     return (
                       <div
                         key={periodIndex}
-                        className={`min-h-[160px] rounded-xl ${cellBgClass}`}
-                      />
+                        className="relative min-h-[160px]"
+                        style={{ width: span > 1 ? widthCalc : '100%' }}
+                      >
+                        <LessonCard lesson={lessonStartingHere} />
+                      </div>
+                    );
+                  }
+
+                  if (fractionalLesson && !eventAtCell) {
+                    const span = fractionalLesson.colSpan || 1;
+                    const fractionalPart = span - Math.floor(span);
+                    const remainingPart = 1 - fractionalPart;
+
+                    return (
+                      <div key={periodIndex} className="flex min-h-[160px]" style={{ gap: '8px' }}>
+                        <div
+                          style={{ width: `${fractionalPart * 100}%` }}
+                          className="flex-shrink-0"
+                        />
+                        <div
+                          style={{ width: `calc(${remainingPart * 100}% - 8px)` }}
+                          className="flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors hover:bg-gray-50"
+                          onClick={() => onEmptyCellClick?.(dayIndex, periodIndex)}
+                        />
+                      </div>
                     );
                   }
 
                   return (
                     <div
                       key={periodIndex}
-                      className={`group relative min-h-[160px] rounded-xl p-1 ${cellBgClass}`}
+                      className={`group relative min-h-[160px] overflow-visible rounded-xl ${cellBgClass}`}
                     >
                       {/* Event block (can span horizontally and vertically) */}
                       {eventAtCell && isEventStart && (
@@ -688,29 +751,6 @@ export default function WeeklyScheduleCalendar({
                           colSpan={getEventColSpan(eventAtCell)}
                           rowSpan={getEventRowSpan(eventAtCell)}
                         />
-                      )}
-                      {/* Lessons */}
-                      {!eventAtCell && (
-                        <div className="flex flex-col gap-1.5">
-                          {cellLessons.map((lesson) => {
-                            const span = lesson.colSpan || 1;
-                            // Calculate width for spanning lessons
-                            const widthStyle =
-                              span > 1
-                                ? { width: `calc(${span * 100}% + ${(span - 1) * 8}px)` }
-                                : {};
-
-                            return (
-                              <div
-                                key={lesson.id}
-                                className={span > 1 ? 'absolute inset-y-1.5 start-1.5 z-10' : ''}
-                                style={widthStyle}
-                              >
-                                <LessonCard lesson={lesson} />
-                              </div>
-                            );
-                          })}
-                        </div>
                       )}
                       {/* Plus icon for empty cells - shown on hover */}
                       {!eventAtCell && cellLessons.length === 0 && onEmptyCellClick && (
