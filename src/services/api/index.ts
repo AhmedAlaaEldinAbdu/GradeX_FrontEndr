@@ -17,6 +17,8 @@ export * from './job-advertisments/job-advertisments.service';
 export * from './monthly-calendar/monthly-calendar.service';
 export * from './academic-calendar/academic-calendar.service';
 export * from './lessons/lessons.service';
+export * from './tuition-fees/tuition-fees.service';
+export * from './lk-payment-method/lk-payment-method.service';
 
 // Types
 export * from './types/auth.types';
@@ -29,6 +31,8 @@ export * from './types/job-advertisment.types';
 export * from './types/monthly-calendar.types';
 export * from './types/academic-calendar.types';
 export * from './types/lessons.types';
+export * from './types/tuition-fees.types';
+export * from './types/lk-payment-method.types';
 
 // Endpoints
 export * from './endpoints/auth-endpoints';
@@ -41,3 +45,5 @@ export * from './endpoints/job-advertisment-endpoints';
 export * from './endpoints/monthly-calendar-endpoints';
 export * from './endpoints/academic-calendar-endpoints';
 export * from './endpoints/lessons-endpoints';
+export * from './endpoints/tuition-fees-endpoints';
+export * from './endpoints/lk-payment-method-endpoints';

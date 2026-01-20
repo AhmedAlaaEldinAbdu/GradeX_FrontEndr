@@ -20,6 +20,8 @@ import applicationsJobAdvertisementsReducer from '../features/applications-job-a
 import monthlyCalendarReducer from '../features/monthly-calendar/monthlyCalendarSlice';
 import lessonsReducer from '../features/lessons/lessonsSlice';
 import academicCalendarReducer from '../features/academic-calendar/academicCalendarSlice';
+import tuitionFeesReducer from '../features/tuition-fees/tuitionFeesSlice';
+import lkPaymentMethodReducer from '../features/lk-payment-method/lkPaymentMethodSlice';
 
 export const store = configureStore({
   reducer: {
@@ -44,6 +46,8 @@ export const store = configureStore({
     monthlyCalendar: monthlyCalendarReducer,
     lessons: lessonsReducer,
     academicCalendar: academicCalendarReducer,
+    tuitionFees: tuitionFeesReducer,
+    lkPaymentMethod: lkPaymentMethodReducer,
   },
 });
 
