@@ -729,9 +729,31 @@ export default function WeeklyScheduleCalendar({
                         />
                         <div
                           style={{ width: `calc(${remainingPart * 100}% - 8px)` }}
-                          className="flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors hover:bg-gray-50"
-                          onClick={() => onEmptyCellClick?.(dayIndex, periodIndex)}
-                        />
+                          className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors hover:bg-gray-50"
+                        >
+                          {onEmptyCellClick && (
+                            <button
+                              onClick={() => onEmptyCellClick(dayIndex, periodIndex)}
+                              className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                            >
+                              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
+                                <svg
+                                  className="h-5 w-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 4v16m8-8H4"
+                                  />
+                                </svg>
+                              </div>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     );
                   }
