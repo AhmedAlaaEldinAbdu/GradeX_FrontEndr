@@ -536,7 +536,7 @@ export default function WeeklyScheduleCalendar({
             return (
               <div
                 key={dayIndex}
-                className="relative mb-2 grid grid-cols-[120px_repeat(9,minmax(150px,1fr))] gap-2"
+                className="relative mb-2 grid grid-cols-[120px_repeat(9,minmax(150px,1fr))] gap-2 overflow-visible"
               >
                 {/* Day label on the right */}
                 {isCurrentDay ? (
@@ -678,9 +678,14 @@ export default function WeeklyScheduleCalendar({
                     );
                   }
 
-                  // If this cell is covered by a spanning lesson, skip rendering
                   if (isLessonSpan) {
-                    return null;
+                    return (
+                      <div
+                        key={periodIndex}
+                        className="pointer-events-none min-h-[160px]"
+                        aria-hidden="true"
+                      />
+                    );
                   }
 
                   // Check if a lesson starts at this cell
@@ -693,26 +698,18 @@ export default function WeeklyScheduleCalendar({
                     const fullCells = Math.floor(span);
                     const fractionalPart = span - fullCells;
 
-                    let widthCalc = '100%';
-                    if (fullCells > 1) {
-                      const additionalCells = Array(fullCells - 1)
-                        .fill('100% + 8px')
-                        .join(' + ');
-                      widthCalc = `calc(100% + ${additionalCells})`;
-                    }
-                    if (fractionalPart > 0) {
-                      const fractionalWidth = `${fractionalPart * 100}% + ${fractionalPart * 8}px`;
-                      widthCalc =
-                        fullCells > 1
-                          ? `calc(${widthCalc} + ${fractionalWidth})`
-                          : `calc(100% + ${fractionalWidth})`;
+                    let widthStyle: string | undefined = undefined;
+                    if (span > 1) {
+                      const totalCells = fullCells + (fractionalPart > 0 ? fractionalPart : 0);
+                      const gapCount = fullCells - 1 + (fractionalPart > 0 ? 1 : 0);
+                      widthStyle = `calc(${totalCells * 100}% + ${gapCount * 8}px)`;
                     }
 
                     return (
                       <div
                         key={periodIndex}
-                        className="relative min-h-[160px]"
-                        style={{ width: span > 1 ? widthCalc : '100%' }}
+                        className="relative z-10 min-h-[160px]"
+                        style={{ width: widthStyle }}
                       >
                         <LessonCard lesson={lessonStartingHere} />
                       </div>
