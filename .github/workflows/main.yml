@@ -3,32 +3,38 @@ name: Deploy React App to SmarterASP
 on:
   push:
     branches:
-      - main   # change if needed
+      - main   # change if you use master
 
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    # 1️⃣ Checkout source code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
+    # 2️⃣ Setup Node.js
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
 
+    # 3️⃣ Install dependencies
     - name: Install dependencies
       run: npm install
 
+    # 4️⃣ Build React app
     - name: Build React app
       run: npm run build
 
-    - name: Deploy to SmarterASP via FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4
+    # 5️⃣ Deploy build folder to SmarterASP via FTP
+    - name: Deploy to SmarterASP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: build/
         server-dir: ${{ secrets.FTP_PATH }}/
+        dangerous-clean-slate: true
