@@ -7,7 +7,7 @@ import EmptyState from '@/shared/components/EmptyState';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import CalendarEmptyIcon from '@/assets/icons/calendar.svg';
+import CalendarEmptyIcon from '@/assets/icons/Calendar.svg';
 import Input from '@/shared/components/Input';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';

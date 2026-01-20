@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Controller, useFormContext } from 'react-hook-form';
 import Input from '@gradex/shared/components/Input';
 import TextArea from '@gradex/shared/components/TextArea';
-import calendarIcon from '@gradex/assets/icons/calendar.svg';
+import calendarIcon from '@gradex/assets/icons/Calendar.svg';
 import FormField from '@gradex/shared/components/FormField';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
