@@ -5,7 +5,7 @@ import Modal from '@/shared/popups/Modal';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
-import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
+import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
 import CustomImage from '@/shared/components/CustomImage';
 
