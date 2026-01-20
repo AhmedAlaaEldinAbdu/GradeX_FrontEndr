@@ -3,7 +3,6 @@
  * Handles JWT token storage and retrieval with Remember Me support
  */
 
-import { UserRole } from '@/constants';
 import { logger } from '@/lib/utils/logger';
 
 const TOKEN_KEY = 'authToken';
