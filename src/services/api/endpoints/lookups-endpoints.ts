@@ -16,4 +16,5 @@ export const LookupsEndpoints = {
   teacherLevels: '/LKTeacherLevel',
   qualifications: '/LKQualification',
   administrativePositions: '/LKAdministrativePosition',
+  lkPaymentMethods: '/LKPaymentMethod',
 } as const;

@@ -305,6 +305,45 @@ export interface AdministrativePositionsResponse {
 }
 
 // ============================================================================
+// LK Payment Methods
+// ============================================================================
+
+export interface LKPaymentMethodDto {
+  id: string;
+  arabicName: string;
+  englishName: string;
+}
+
+export interface LKPaymentMethodsApiResponse {
+  lkPaymentMethodDto: LKPaymentMethodDto[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface LKPaymentMethodsResponse {
+  data: LKPaymentMethodsApiResponse | null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+export interface LKPaymentMethodQueryParams {
+  PageIndex?: number;
+  PageSize?: number;
+}
+
+export interface CreateLKPaymentMethodRequest {
+  arabicName: string;
+  englishName: string;
+}
+
+export interface UpdateLKPaymentMethodRequest extends CreateLKPaymentMethodRequest {
+  id: string;
+}
+
+// ============================================================================
 // Helper Types
 // ============================================================================
 

@@ -33,7 +33,26 @@ import type {
   QualificationsResponse,
   AdministrativePosition,
   AdministrativePositionsResponse,
+  LKPaymentMethodDto,
+  LKPaymentMethodsResponse,
+  LKPaymentMethodQueryParams,
+  CreateLKPaymentMethodRequest,
+  UpdateLKPaymentMethodRequest,
 } from '../types/lookup.types';
+import type { ApiResponseModel } from '../config';
+
+const serializeParams = (params?: Record<string, string | number | boolean | undefined | null>) => {
+  const searchParams = new URLSearchParams();
+
+  if (!params) return searchParams.toString();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    searchParams.append(key, String(value));
+  });
+
+  return searchParams.toString();
+};
 
 // ============================================================================
 // Application Features
@@ -332,6 +351,62 @@ export async function getAdministrativePositions(): Promise<AdministrativePositi
 }
 
 // ============================================================================
+// LK Payment Methods
+// ============================================================================
+
+export async function getLKPaymentMethods(
+  params?: LKPaymentMethodQueryParams
+): Promise<LKPaymentMethodsResponse> {
+  const response: AxiosResponse<LKPaymentMethodsResponse> = await axiosClient.get(
+    LookupsEndpoints.lkPaymentMethods,
+    {
+      params,
+      paramsSerializer: { serialize: serializeParams },
+    }
+  );
+
+  return response.data;
+}
+
+export async function getLKPaymentMethodById(id: string): Promise<LKPaymentMethodDto> {
+  const response: AxiosResponse<ApiResponseModel<LKPaymentMethodDto>> = await axiosClient.get(
+    `${LookupsEndpoints.lkPaymentMethods}/${id}`
+  );
+
+  return (response.data.data ?? response.data.value) as LKPaymentMethodDto;
+}
+
+export async function createLKPaymentMethod(
+  data: CreateLKPaymentMethodRequest
+): Promise<ApiResponseModel<null>> {
+  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
+    LookupsEndpoints.lkPaymentMethods,
+    data
+  );
+
+  return response.data;
+}
+
+export async function updateLKPaymentMethod(
+  data: UpdateLKPaymentMethodRequest
+): Promise<ApiResponseModel<null>> {
+  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
+    LookupsEndpoints.lkPaymentMethods,
+    data
+  );
+
+  return response.data;
+}
+
+export async function deleteLKPaymentMethod(id: string): Promise<ApiResponseModel<string>> {
+  const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.delete(
+    `${LookupsEndpoints.lkPaymentMethods}/${id}`
+  );
+
+  return response.data;
+}
+
+// ============================================================================
 // Export All Services
 // ============================================================================
 
@@ -376,6 +451,13 @@ export const lookupsApiService = {
 
   // Administrative Positions
   getAdministrativePositions,
+
+  // LK Payment Methods
+  getLKPaymentMethods,
+  getLKPaymentMethodById,
+  createLKPaymentMethod,
+  updateLKPaymentMethod,
+  deleteLKPaymentMethod,
 };
 
 export default lookupsApiService;
