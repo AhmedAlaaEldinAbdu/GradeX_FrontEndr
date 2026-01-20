@@ -1200,7 +1200,79 @@
     "equalPayments": "بالتساوي جميع الدفعات",
     "ratioPerPayment": "نسبة لكل دفعة",
     "dueDate": "تاريخ الاستحقاق",
-    "percentage": "النسبة"
+    "percentage": "النسبة",
+    "tuition": {
+      "tabTitle": "الرسوم الدراسية",
+      "addTitle": "إضافة الرسوم الدراسية",
+      "editTitle": "تعديل الرسوم الدراسية",
+      "addAction": "إضافة الرسوم الدراسية",
+      "emptyTitle": "لم يتم إضافة أي رسوم دراسية حتى الآن.",
+      "emptyDescription": "يمكنك البدء بإضافة الرسوم الدراسية لتنظيم والإدارة بشكل أفضل.",
+      "form": {
+        "stageLabel": "اسم المرحلة الدراسية",
+        "stagePlaceholder": "اختر المرحلة الدراسية",
+        "tuitionAmountLabel": "المصروفات الدراسية",
+        "tuitionAmountPlaceholder": "اكتب المصروفات",
+        "serviceArLabel": "الخدمة (باللغة العربية)",
+        "serviceArPlaceholder": "اكتب الخدمة",
+        "serviceEnLabel": "الخدمة (باللغة الإنجليزية)",
+        "serviceEnPlaceholder": "اكتب الخدمة",
+        "amountPlaceholder": "اكتب المبلغ",
+        "paymentMethodsTitle": "طرق الدفع",
+        "payCash": "دفع نقداً",
+        "payOnline": "قنوات الدفع الإلكتروني",
+        "payInstallment": "دفع بخطة التقسيط",
+        "installmentsTitle": "إدارة خطط الأقساط",
+        "planTitle": "الخطة"
+      },
+      "percentagePlaceholder": "اكتب النسبة",
+      "list": {
+        "filters": {
+          "searchPlaceholder": "ابحث عن اسم المرحلة",
+          "paymentMethodsPlaceholder": "طرق الدفع",
+          "paymentMethodsAll": "الكل"
+        },
+        "table": {
+          "columns": {
+            "index": "#",
+            "stageName": "اسم المرحلة الدراسية",
+            "tuitionAmount": "الرسوم الدراسية",
+            "includes": "تشمل",
+            "excludes": "لا تشمل",
+            "paymentMethods": "طرق الدفع",
+            "actions": "الإجراءات"
+          }
+        }
+      }
+    },
+    "discounts": {
+      "tabTitle": "الخصومات والعروض",
+      "addAction": "إضافة عرض",
+      "filters": {
+        "searchPlaceholder": "ابحث عن اسم العرض",
+        "statusPlaceholder": "حالة العرض",
+        "statusAll": "الكل",
+        "statusActive": "نشط",
+        "statusInactive": "غير نشط"
+      },
+      "table": {
+        "columns": {
+          "index": "#",
+          "name": "اسم العرض",
+          "discount": "الخصم",
+          "startDate": "تاريخ بداية العرض",
+          "endDate": "تاريخ نهاية العرض",
+          "status": "حالة العرض",
+          "actions": "الإجراءات"
+        }
+      },
+      "mock": {
+        "siblingsOffer": "عرض الأخوة",
+        "siblingsOfferDiscount": "1000 ريال",
+        "earlyPaymentOffer": "عرض الدفع المبكر",
+        "earlyPaymentOfferDiscount": "%8"
+      }
+    }
   },
   "medicalRecord": {
     "title": "السجل الصحي",

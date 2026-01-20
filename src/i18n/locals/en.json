@@ -1201,7 +1201,79 @@
     "equalPayments": "Equal all payments",
     "ratioPerPayment": "Ratio per payment",
     "dueDate": "Due Date",
-    "percentage": "Percentage"
+    "percentage": "Percentage",
+    "tuition": {
+      "tabTitle": "Tuition Fees",
+      "addTitle": "Add Tuition Fees",
+      "editTitle": "Edit Tuition Fees",
+      "addAction": "Add Tuition Fees",
+      "emptyTitle": "No tuition fees yet.",
+      "emptyDescription": "Start by adding tuition fees to organize fee management better.",
+      "form": {
+        "stageLabel": "Educational Stage",
+        "stagePlaceholder": "Choose educational stage",
+        "tuitionAmountLabel": "Tuition Amount",
+        "tuitionAmountPlaceholder": "Enter tuition amount",
+        "serviceArLabel": "Service (Arabic)",
+        "serviceArPlaceholder": "Enter service name",
+        "serviceEnLabel": "Service (English)",
+        "serviceEnPlaceholder": "Enter service name",
+        "amountPlaceholder": "Enter amount",
+        "paymentMethodsTitle": "Payment Methods",
+        "payCash": "Cash payment",
+        "payOnline": "Online payment channels",
+        "payInstallment": "Installment plan",
+        "installmentsTitle": "Installment Plans",
+        "planTitle": "Plan"
+      },
+      "percentagePlaceholder": "Enter percentage",
+      "list": {
+        "filters": {
+          "searchPlaceholder": "Search by stage name",
+          "paymentMethodsPlaceholder": "Payment methods",
+          "paymentMethodsAll": "All"
+        },
+        "table": {
+          "columns": {
+            "index": "#",
+            "stageName": "Educational stage",
+            "tuitionAmount": "Tuition fees",
+            "includes": "Includes",
+            "excludes": "Excludes",
+            "paymentMethods": "Payment methods",
+            "actions": "Actions"
+          }
+        }
+      }
+    },
+    "discounts": {
+      "tabTitle": "Discounts & Offers",
+      "addAction": "Add Offer",
+      "filters": {
+        "searchPlaceholder": "Search by offer name",
+        "statusPlaceholder": "Offer status",
+        "statusAll": "All",
+        "statusActive": "Active",
+        "statusInactive": "Inactive"
+      },
+      "table": {
+        "columns": {
+          "index": "#",
+          "name": "Offer name",
+          "discount": "Discount",
+          "startDate": "Start date",
+          "endDate": "End date",
+          "status": "Offer status",
+          "actions": "Actions"
+        }
+      },
+      "mock": {
+        "siblingsOffer": "Siblings offer",
+        "siblingsOfferDiscount": "SAR 1000",
+        "earlyPaymentOffer": "Early payment offer",
+        "earlyPaymentOfferDiscount": "8%"
+      }
+    }
   },
   "medicalRecord": {
     "title": "Medical Record",
