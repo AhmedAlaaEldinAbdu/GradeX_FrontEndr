@@ -31,6 +31,9 @@ import MonthlyCalendarPage from '@/pages/school-dashboard/calendar-management/mo
 import AcademicCalendarPage from '@/pages/school-dashboard/calendar-management/academic-calendar-page';
 import AddAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/add-academic-calendar-page';
 import EditAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/edit-academic-calendar-page';
+import TuitionFeesPage from '@/pages/school-dashboard/tuition-fees/tuition-fees-page';
+import AddTuitionFeePage from '@/pages/school-dashboard/tuition-fees/add-tuition-fee-page';
+import EditTuitionFeePage from '@/pages/school-dashboard/tuition-fees/edit-tuition-fee-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -385,10 +388,27 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الرسوم المالية</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <TuitionFeesPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/add-tuition-fee"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddTuitionFeePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/edit-tuition-fee/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditTuitionFeePage />
             </MainLayout>
           </ProtectedRoute>
         }
