@@ -38,4 +38,3 @@ jobs:
         local-dir: dist/
         server-dir: ${{ secrets.FTP_PATH }}/
         dangerous-clean-slate: true
-        log-level: verbose
