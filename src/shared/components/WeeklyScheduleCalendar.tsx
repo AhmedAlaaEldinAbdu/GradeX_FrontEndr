@@ -71,7 +71,12 @@ interface WeeklyScheduleCalendarProps {
   onDotsClick?: (lesson: ScheduleLesson, e: React.MouseEvent) => void;
   onDayMenuClick?: (dayIndex: number, e: React.MouseEvent) => void;
   onWeekChange?: (weekStart: Date) => void; // Callback when week changes
-  onEmptyCellClick?: (dayIndex: number, periodIndex: number) => void; // Callback when clicking empty cell plus icon
+  onEmptyCellClick?: (
+    dayIndex: number,
+    periodIndex: number,
+    startTime: string,
+    endTime: string
+  ) => void; // Callback when clicking empty cell plus icon with time slot
   weekStart?: Date;
   className?: string;
 }
@@ -283,6 +288,52 @@ export default function WeeklyScheduleCalendar({
   const getEventRowSpan = (event: ScheduleEvent) => {
     const endDay = event.endDayIndex ?? event.dayIndex;
     return endDay - event.dayIndex + 1;
+  };
+
+  // Helper to format time as HH:mm
+  const formatTime = (hours: number, minutes: number): string => {
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
+
+  // Get the start and end time for a period
+  const getPeriodTimes = (periodIndex: number): { startTime: string; endTime: string } => {
+    const slot = PERIOD_TIME_SLOTS[periodIndex];
+    if (!slot) {
+      return { startTime: '08:30', endTime: '09:15' };
+    }
+    return {
+      startTime: formatTime(slot.startHour, slot.startMin),
+      endTime: formatTime(slot.endHour, slot.endMin),
+    };
+  };
+
+  // Get adjusted start time for a shrinked cell (when a previous lesson extends into this period)
+  const getShrinkedCellTimes = (
+    periodIndex: number,
+    fractionalLesson: ScheduleLesson
+  ): { startTime: string; endTime: string } => {
+    const slot = PERIOD_TIME_SLOTS[periodIndex];
+    if (!slot) {
+      return { startTime: '08:30', endTime: '09:15' };
+    }
+
+    const span = fractionalLesson.colSpan || 1;
+    const fractionalPart = span - Math.floor(span);
+
+    // Calculate how many minutes the fractional part takes from this period
+    // Each period is 45 minutes
+    const periodDuration = 45;
+    const minutesTaken = Math.round(fractionalPart * periodDuration);
+
+    // Calculate adjusted start time
+    let adjustedStartMinutes = slot.startHour * 60 + slot.startMin + minutesTaken;
+    const adjustedStartHours = Math.floor(adjustedStartMinutes / 60);
+    adjustedStartMinutes = adjustedStartMinutes % 60;
+
+    return {
+      startTime: formatTime(adjustedStartHours, adjustedStartMinutes),
+      endTime: formatTime(slot.endHour, slot.endMin),
+    };
   };
 
   // Three dots menu icon (vertical)
@@ -721,6 +772,12 @@ export default function WeeklyScheduleCalendar({
                     const fractionalPart = span - Math.floor(span);
                     const remainingPart = 1 - fractionalPart;
 
+                    // Get adjusted times for the shrinked cell
+                    const { startTime, endTime } = getShrinkedCellTimes(
+                      periodIndex,
+                      fractionalLesson
+                    );
+
                     return (
                       <div key={periodIndex} className="flex min-h-[160px]" style={{ gap: '8px' }}>
                         <div
@@ -729,11 +786,13 @@ export default function WeeklyScheduleCalendar({
                         />
                         <div
                           style={{ width: `calc(${remainingPart * 100}% - 8px)` }}
-                          className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors hover:bg-gray-50"
+                          className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors"
                         >
                           {onEmptyCellClick && (
                             <button
-                              onClick={() => onEmptyCellClick(dayIndex, periodIndex)}
+                              onClick={() =>
+                                onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
+                              }
                               className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
                             >
                               <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
@@ -758,6 +817,9 @@ export default function WeeklyScheduleCalendar({
                     );
                   }
 
+                  // Get times for regular empty cell
+                  const { startTime, endTime } = getPeriodTimes(periodIndex);
+
                   return (
                     <div
                       key={periodIndex}
@@ -774,7 +836,9 @@ export default function WeeklyScheduleCalendar({
                       {/* Plus icon for empty cells - shown on hover */}
                       {!eventAtCell && cellLessons.length === 0 && onEmptyCellClick && (
                         <button
-                          onClick={() => onEmptyCellClick(dayIndex, periodIndex)}
+                          onClick={() =>
+                            onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
+                          }
                           className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
                         >
                           <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
