@@ -16,6 +16,7 @@ import type {
   TeacherLevel,
   Qualification,
   AdministrativePosition,
+  LKPaymentMethodDto,
 } from '@/services/api/types/lookup.types';
 
 // ============================================================================
@@ -36,6 +37,7 @@ export interface LookupsState {
   teacherLevels: TeacherLevel[];
   qualifications: Qualification[];
   administrativePositions: AdministrativePosition[];
+  lkPaymentMethods: LKPaymentMethodDto[];
 
   // Loading States
   isLoadingFeatures: boolean;
@@ -50,6 +52,10 @@ export interface LookupsState {
   isLoadingTeacherLevels: boolean;
   isLoadingQualifications: boolean;
   isLoadingAdministrativePositions: boolean;
+  isLoadingLKPaymentMethods: boolean;
+  isCreatingLKPaymentMethod: boolean;
+  isUpdatingLKPaymentMethod: boolean;
+  isDeletingLKPaymentMethod: boolean;
 
   // Error States
   featuresError: string | null;
@@ -64,6 +70,7 @@ export interface LookupsState {
   teacherLevelsError: string | null;
   qualificationsError: string | null;
   administrativePositionsError: string | null;
+  lkPaymentMethodsError: string | null;
 
   // Initialization States
   isFeaturesInitialized: boolean;
@@ -76,6 +83,7 @@ export interface LookupsState {
   isTeacherLevelsInitialized: boolean;
   isQualificationsInitialized: boolean;
   isAdministrativePositionsInitialized: boolean;
+  isLKPaymentMethodsInitialized: boolean;
 
   // Timestamp for cache management
   lastFetchedFeatures: number | null;
@@ -88,6 +96,7 @@ export interface LookupsState {
   lastFetchedTeacherLevels: number | null;
   lastFetchedQualifications: number | null;
   lastFetchedAdministrativePositions: number | null;
+  lastFetchedLKPaymentMethods: number | null;
 }
 
 // ============================================================================

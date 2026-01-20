@@ -19,7 +19,12 @@ import type {
   TeacherLevel,
   Qualification,
   AdministrativePosition,
+  LKPaymentMethodsResponse,
+  LKPaymentMethodQueryParams,
+  CreateLKPaymentMethodRequest,
+  UpdateLKPaymentMethodRequest,
 } from '@/services/api/types/lookup.types';
+import type { ApiResponseModel } from '@/services/api/config';
 import type { RootState, AppDispatch } from '@/redux/store/store';
 import type { LookupsState } from './lookupsTypes';
 import { LOOKUP_CACHE_DURATION } from './lookupsTypes';
@@ -42,6 +47,7 @@ const initialState: LookupsState = {
   teacherLevels: [],
   qualifications: [],
   administrativePositions: [],
+  lkPaymentMethods: [],
 
   // Loading States
   isLoadingFeatures: false,
@@ -56,6 +62,10 @@ const initialState: LookupsState = {
   isLoadingTeacherLevels: false,
   isLoadingQualifications: false,
   isLoadingAdministrativePositions: false,
+  isLoadingLKPaymentMethods: false,
+  isCreatingLKPaymentMethod: false,
+  isUpdatingLKPaymentMethod: false,
+  isDeletingLKPaymentMethod: false,
 
   // Error States
   featuresError: null,
@@ -70,6 +80,7 @@ const initialState: LookupsState = {
   teacherLevelsError: null,
   qualificationsError: null,
   administrativePositionsError: null,
+  lkPaymentMethodsError: null,
 
   // Initialization States
   isFeaturesInitialized: false,
@@ -82,6 +93,7 @@ const initialState: LookupsState = {
   isTeacherLevelsInitialized: false,
   isQualificationsInitialized: false,
   isAdministrativePositionsInitialized: false,
+  isLKPaymentMethodsInitialized: false,
 
   // Timestamps
   lastFetchedFeatures: null,
@@ -94,6 +106,7 @@ const initialState: LookupsState = {
   lastFetchedTeacherLevels: null,
   lastFetchedQualifications: null,
   lastFetchedAdministrativePositions: null,
+  lastFetchedLKPaymentMethods: null,
 };
 
 // ============================================================================
@@ -498,6 +511,82 @@ export const fetchAdministrativePositions = createAsyncThunk<
   }
 });
 
+/**
+ * Fetch LK payment methods
+ * Includes cache check to avoid unnecessary API calls
+ */
+export const fetchLKPaymentMethods = createAsyncThunk<
+  LKPaymentMethodsResponse,
+  { params?: LKPaymentMethodQueryParams; force?: boolean } | void,
+  { state: RootState }
+>('lookups/fetchLKPaymentMethods', async (options, { getState, rejectWithValue }) => {
+  try {
+    const state = getState();
+    const { lastFetchedLKPaymentMethods, isLKPaymentMethodsInitialized, lkPaymentMethods } =
+      state.lookups;
+
+    if (!options?.force && isLKPaymentMethodsInitialized) {
+      const now = Date.now();
+      const isCacheValid =
+        lastFetchedLKPaymentMethods && now - lastFetchedLKPaymentMethods < LOOKUP_CACHE_DURATION;
+
+      if (isCacheValid && lkPaymentMethods.length > 0) {
+        return {
+          data: {
+            lkPaymentMethodDto: lkPaymentMethods,
+            pageIndex: 1,
+            pageSize: lkPaymentMethods.length,
+            totalItems: lkPaymentMethods.length,
+            totalPages: 1,
+          },
+          isSuccess: true,
+          message: 'CACHED',
+          validationErrors: null,
+        };
+      }
+    }
+
+    return await lookupsApiService.getLKPaymentMethods(
+      options?.params ?? { PageIndex: 1, PageSize: 1000 }
+    );
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const createLKPaymentMethod = createAsyncThunk<
+  ApiResponseModel<null>,
+  CreateLKPaymentMethodRequest
+>('lookups/createLKPaymentMethod', async (data, { rejectWithValue }) => {
+  try {
+    return await lookupsApiService.createLKPaymentMethod(data);
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const updateLKPaymentMethod = createAsyncThunk<
+  ApiResponseModel<null>,
+  UpdateLKPaymentMethodRequest
+>('lookups/updateLKPaymentMethod', async (data, { rejectWithValue }) => {
+  try {
+    return await lookupsApiService.updateLKPaymentMethod(data);
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const deleteLKPaymentMethod = createAsyncThunk<ApiResponseModel<string>, string>(
+  'lookups/deleteLKPaymentMethod',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await lookupsApiService.deleteLKPaymentMethod(id);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 // ============================================================================
 // Slice Definition
 // ============================================================================
@@ -522,6 +611,7 @@ const lookupsSlice = createSlice({
       state.teacherLevels = [];
       state.qualifications = [];
       state.administrativePositions = [];
+      state.lkPaymentMethods = [];
       state.isFeaturesInitialized = false;
       state.isFacilitiesInitialized = false;
       state.isCountriesInitialized = false;
@@ -532,6 +622,7 @@ const lookupsSlice = createSlice({
       state.isTeacherLevelsInitialized = false;
       state.isQualificationsInitialized = false;
       state.isAdministrativePositionsInitialized = false;
+      state.isLKPaymentMethodsInitialized = false;
       state.lastFetchedFeatures = null;
       state.lastFetchedFacilities = null;
       state.lastFetchedCountries = null;
@@ -542,6 +633,7 @@ const lookupsSlice = createSlice({
       state.lastFetchedTeacherLevels = null;
       state.lastFetchedQualifications = null;
       state.lastFetchedAdministrativePositions = null;
+      state.lastFetchedLKPaymentMethods = null;
     },
 
     /**
@@ -560,6 +652,7 @@ const lookupsSlice = createSlice({
       state.teacherLevelsError = null;
       state.qualificationsError = null;
       state.administrativePositionsError = null;
+      state.lkPaymentMethodsError = null;
     },
 
     /**
@@ -906,6 +999,86 @@ const lookupsSlice = createSlice({
       .addCase(fetchAdministrativePositions.rejected, (state, action) => {
         state.isLoadingAdministrativePositions = false;
         state.administrativePositionsError = action.payload as string;
+      });
+
+    // ========================================================================
+    // Fetch LK Payment Methods
+    // ========================================================================
+
+    builder
+      .addCase(fetchLKPaymentMethods.pending, (state) => {
+        state.isLoadingLKPaymentMethods = true;
+        state.lkPaymentMethodsError = null;
+      })
+      .addCase(fetchLKPaymentMethods.fulfilled, (state, action) => {
+        state.isLoadingLKPaymentMethods = false;
+        state.isLKPaymentMethodsInitialized = true;
+        state.lkPaymentMethods = action.payload?.data?.lkPaymentMethodDto ?? [];
+        state.lastFetchedLKPaymentMethods = Date.now();
+        state.lkPaymentMethodsError = null;
+      })
+      .addCase(fetchLKPaymentMethods.rejected, (state, action) => {
+        state.isLoadingLKPaymentMethods = false;
+        state.lkPaymentMethodsError = action.payload as string;
+      });
+
+    // ========================================================================
+    // LK Payment Methods CRUD
+    // ========================================================================
+
+    builder
+      .addCase(createLKPaymentMethod.pending, (state) => {
+        state.isCreatingLKPaymentMethod = true;
+        state.lkPaymentMethodsError = null;
+      })
+      .addCase(createLKPaymentMethod.fulfilled, (state, action) => {
+        state.isCreatingLKPaymentMethod = false;
+        const payload = action.payload as ApiResponseModel<null>;
+        if (!payload.isSuccess) {
+          state.lkPaymentMethodsError = Array.isArray(payload.validationErrors)
+            ? payload.validationErrors.join(', ')
+            : (payload.validationErrors as unknown as string) ?? null;
+        }
+      })
+      .addCase(createLKPaymentMethod.rejected, (state, action) => {
+        state.isCreatingLKPaymentMethod = false;
+        state.lkPaymentMethodsError = action.payload as string;
+      });
+
+    builder
+      .addCase(updateLKPaymentMethod.pending, (state) => {
+        state.isUpdatingLKPaymentMethod = true;
+        state.lkPaymentMethodsError = null;
+      })
+      .addCase(updateLKPaymentMethod.fulfilled, (state, action) => {
+        state.isUpdatingLKPaymentMethod = false;
+        const payload = action.payload as ApiResponseModel<null>;
+        if (!payload.isSuccess) {
+          state.lkPaymentMethodsError = Array.isArray(payload.validationErrors)
+            ? payload.validationErrors.join(', ')
+            : (payload.validationErrors as unknown as string) ?? null;
+        }
+      })
+      .addCase(updateLKPaymentMethod.rejected, (state, action) => {
+        state.isUpdatingLKPaymentMethod = false;
+        state.lkPaymentMethodsError = action.payload as string;
+      });
+
+    builder
+      .addCase(deleteLKPaymentMethod.pending, (state) => {
+        state.isDeletingLKPaymentMethod = true;
+        state.lkPaymentMethodsError = null;
+      })
+      .addCase(deleteLKPaymentMethod.fulfilled, (state, action) => {
+        state.isDeletingLKPaymentMethod = false;
+        const payload = action.payload as ApiResponseModel<string>;
+        if (payload.isSuccess && payload.value) {
+          state.lkPaymentMethods = state.lkPaymentMethods.filter((m) => m.id !== payload.value);
+        }
+      })
+      .addCase(deleteLKPaymentMethod.rejected, (state, action) => {
+        state.isDeletingLKPaymentMethod = false;
+        state.lkPaymentMethodsError = action.payload as string;
       });
   },
 });
