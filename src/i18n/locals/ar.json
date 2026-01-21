@@ -1742,10 +1742,14 @@
       "assembly": "الطابور"
     },
     "filters": {
-      "educationSystem": "اختر النظام التعليم",
-      "stage": "اختر المرحلة",
+      "educationSystem": "النظام التعليمي",
+      "selectSystem": "اختر النظام",
+      "stage": "المرحلة",
+      "selectStage": "اختر المرحلة",
       "grade": "الصف الدراسي",
-      "division": "الشعبة"
+      "classroom": "الصف الدراسي",
+      "division": "الشعبة",
+      "global": "عالمي"
     }
   },
   "addLesson": {

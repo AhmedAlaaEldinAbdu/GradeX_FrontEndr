@@ -7,6 +7,7 @@ export interface LessonStudent {
   id: string;
   studentId: string;
   studentName?: string;
+  studentProfilePicture?: string;
 }
 
 export interface LessonAttachment {

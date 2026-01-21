@@ -1745,9 +1745,13 @@
     },
     "filters": {
       "educationSystem": "Select Education System",
+      "selectSystem": "Select System",
       "stage": "Select Stage",
+      "selectStage": "Select Stage",
       "grade": "Grade",
-      "division": "Division"
+      "classroom": "Classroom",
+      "division": "Division",
+      "global": "Global"
     }
   },
   "addLesson": {

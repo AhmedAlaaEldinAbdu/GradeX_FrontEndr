@@ -9,7 +9,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import HomeIcon from '@gradex/assets/icons/Home.svg';
 import BookIcon from '@gradex/assets/icons/Book.svg';
 import BusIcon from '@gradex/assets/icons/Bus.svg';
-import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
+import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import EducationIcon from '@gradex/assets/icons/Education.svg';
 import NotificationIcon from '@gradex/assets/icons/Notification.svg';
 import PeopleRegularIcon from '@gradex/assets/icons/PeopleRegular.svg';

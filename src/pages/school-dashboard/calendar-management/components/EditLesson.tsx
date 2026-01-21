@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import LessonForm from './LessonForm';
 import { lessonsApiService } from '@/services/api/lessons/lessons.service';
 import type { Lesson } from '@/services/api/types/lessons.types';
+import Loading from '@/shared/components/Loading';
 
 export default function EditLesson() {
   const { id } = useParams<{ id: string }>();
@@ -36,7 +37,7 @@ export default function EditLesson() {
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-gray-500">Loading lesson...</div>
+        <Loading size="lg" />
       </div>
     );
   }

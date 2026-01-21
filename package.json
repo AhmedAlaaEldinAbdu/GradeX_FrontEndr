@@ -29,6 +29,7 @@
     "react-international-phone": "^4.6.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.3",
+    "rollup-plugin-copy": "^3.5.0",
     "yup": "^1.7.1"
   },
   "devDependencies": {

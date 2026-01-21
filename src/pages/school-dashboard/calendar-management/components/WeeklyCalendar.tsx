@@ -31,6 +31,16 @@ import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import {
+  fetchEducationalStages,
+  fetchEducationalStagesBySubSystemId,
+} from '@/services/api/educational-stages/educational-stages.service';
+import { getClassrooms } from '@/services/api/classrooms/classrooms.service';
+import { getAcademicSystem } from '@/services/api/academic-system/academic-system.service';
+import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
+import type { Classroom } from '@/services/api/types/classrooms.types';
+import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
+import { useLanguage } from '@/hooks/useLanguage';
 import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance';
 
 // Period time slots for mapping API times to periodIndex
@@ -220,15 +230,23 @@ const findApplicableLessonForSlot = (
       ? mostRecentLesson.materialNameAr
       : mostRecentLesson.materialNameEn || mostRecentLesson.materialNameAr;
 
+  // Calculate duration in minutes
+  const duration = calculateDuration(mostRecentLesson.startTime, mostRecentLesson.endTime);
+
+  // Calculate exact colSpan based on duration (each period is 45 minutes)
+  // Use precise calculation: 45min=1.0, 90min=2.0, 108min=2.4
+  const colSpan = Math.max(1, duration / 45);
+
   return {
     id: mostRecentLesson.id,
     subject: subjectName,
     teacherName: mostRecentLesson.teacherName,
     startTime: formatTimeDisplay(mostRecentLesson.startTime),
     endTime: formatTimeDisplay(mostRecentLesson.endTime),
-    duration: calculateDuration(mostRecentLesson.startTime, mostRecentLesson.endTime),
+    duration,
     dayIndex,
     periodIndex,
+    colSpan,
     color: getSubjectColor(subjectName),
   };
 };
@@ -524,38 +542,105 @@ const DEFAULT_PERIOD_HEADERS: PeriodHeader[] = [
 // Fallback special columns when no academic calendar data is available
 const FALLBACK_SPECIAL_COLUMNS: SpecialColumn[] = [];
 
-// Filter options
-const educationSystemOptions = [
-  { value: 'global', label: 'عالمي' },
-  { value: 'national', label: 'وطني' },
+// Dummy/Fallback data for filters when API returns empty
+const DUMMY_ACADEMIC_SYSTEMS: AcademicSubSystemResponse[] = [
+  {
+    id: 'dummy-system-1',
+    nameAr: 'عالمي',
+    nameEn: 'International',
+    academicSubSystemDto: [
+      { id: 'dummy-subsystem-1', nameAr: 'النظام العالمي', nameEn: 'International System' },
+    ],
+    lkCountriesDto: [],
+    created: new Date().toISOString(),
+    gradeCount: 3,
+  },
+  {
+    id: 'dummy-system-2',
+    nameAr: 'وطني',
+    nameEn: 'National',
+    academicSubSystemDto: [
+      { id: 'dummy-subsystem-2', nameAr: 'النظام الوطني', nameEn: 'National System' },
+    ],
+    lkCountriesDto: [],
+    created: new Date().toISOString(),
+    gradeCount: 3,
+  },
 ];
 
-const systemTypeOptions = [{ value: 'global', label: 'عالمي' }];
-
-const stageOptions = [
-  { value: '', label: 'اختر المرحلة' },
-  { value: '1', label: 'الأول الأعدادي' },
-  { value: '2', label: 'الثاني الأعدادي' },
-  { value: '3', label: 'الثالث الأعدادي' },
+const DUMMY_STAGES: EducationalStageResponse[] = [
+  {
+    id: 'dummy-stage-1',
+    nameAr: 'الأول الإعدادي',
+    nameEn: 'First Preparatory',
+    academicSubSystemGradeId: 'dummy-subsystem-1',
+  },
+  {
+    id: 'dummy-stage-2',
+    nameAr: 'الثاني الإعدادي',
+    nameEn: 'Second Preparatory',
+    academicSubSystemGradeId: 'dummy-subsystem-1',
+  },
+  {
+    id: 'dummy-stage-3',
+    nameAr: 'الثالث الإعدادي',
+    nameEn: 'Third Preparatory',
+    academicSubSystemGradeId: 'dummy-subsystem-1',
+  },
 ];
 
-const stageValueOptions = [
-  { value: '1', label: 'الأول الأعدادي' },
-  { value: '2', label: 'الثاني الأعدادي' },
-  { value: '3', label: 'الثالث الأعدادي' },
+const DUMMY_CLASSROOMS: Classroom[] = [
+  {
+    id: 'dummy-class-1',
+    name: '1/1 ع',
+    nameEn: '1/1 P',
+    gradeId: 'dummy-stage-1',
+    academicSystemId: 'dummy-system-1',
+    academicSystemName: 'عالمي',
+    gradeName: 'الأول الإعدادي',
+    alias: null,
+    aliasEn: null,
+    studentNumber: 30,
+    note: null,
+    noteEn: null,
+    imagePath: null,
+    creationDate: new Date().toISOString(),
+  },
+  {
+    id: 'dummy-class-2',
+    name: '1/2 ع',
+    nameEn: '1/2 P',
+    gradeId: 'dummy-stage-1',
+    academicSystemId: 'dummy-system-1',
+    academicSystemName: 'عالمي',
+    gradeName: 'الأول الإعدادي',
+    alias: null,
+    aliasEn: null,
+    studentNumber: 28,
+    note: null,
+    noteEn: null,
+    imagePath: null,
+    creationDate: new Date().toISOString(),
+  },
+  {
+    id: 'dummy-class-3',
+    name: '1/3 ع',
+    nameEn: '1/3 P',
+    gradeId: 'dummy-stage-1',
+    academicSystemId: 'dummy-system-1',
+    academicSystemName: 'عالمي',
+    gradeName: 'الأول الإعدادي',
+    alias: null,
+    aliasEn: null,
+    studentNumber: 25,
+    note: null,
+    noteEn: null,
+    imagePath: null,
+    creationDate: new Date().toISOString(),
+  },
 ];
 
-const gradeOptions = [
-  { value: '', label: 'الصف الدراسي' },
-  { value: '1', label: 'الصف الأول' },
-  { value: '2', label: 'الصف الثاني' },
-];
-
-const divisionOptions = [
-  { value: '1', label: '1/1 ع' },
-  { value: '2', label: '1/2 ع' },
-  { value: '3', label: '1/3 ع' },
-];
+// Filter options - education system options now fetched from API
 
 // Export handle type for parent ref access
 export type WeeklyCalendarHandle = {
@@ -565,6 +650,7 @@ export type WeeklyCalendarHandle = {
 
 const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const { t, i18n } = useTranslation();
+  const { isArabic } = useLanguage();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -591,11 +677,19 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
   // Filter states
   const [educationSystem, setEducationSystem] = useState('');
-  const [systemType, setSystemType] = useState('global');
+  const [subSystemId, setSubSystemId] = useState('');
   const [stage, setStage] = useState('');
-  const [stageValue, setStageValue] = useState('1');
   const [grade, setGrade] = useState('');
-  const [division, setDivision] = useState('1');
+
+  // API Data States for filters
+  const [academicSystems, setAcademicSystems] = useState<AcademicSubSystemResponse[]>([]);
+  const [stages, setStages] = useState<EducationalStageResponse[]>([]);
+  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+
+  // Loading States for filters
+  const [isLoadingAcademicSystems, setIsLoadingAcademicSystems] = useState(false);
+  const [isLoadingStages, setIsLoadingStages] = useState(false);
+  const [isLoadingClassrooms, setIsLoadingClassrooms] = useState(false);
 
   // Current week start date (Saturday)
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
@@ -612,10 +706,126 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   // TODO: Replace with actual school branch ID from user context/auth state
   const schoolBranchId = STATIC_SCHOOL_BRANCH_ID;
 
+  // Fetch Academic Systems (النظام التعليمي)
+  const fetchAcademicSystemsData = useCallback(async () => {
+    setIsLoadingAcademicSystems(true);
+    try {
+      const response = await getAcademicSystem({ pageIndex: 1, pageSize: 100 });
+      const systems = response?.academicSubSystemResponse || [];
+      // Use dummy data if API returns empty
+      const finalSystems = systems.length > 0 ? systems : DUMMY_ACADEMIC_SYSTEMS;
+      setAcademicSystems(finalSystems);
+      // If there are systems, select the first one by default
+      if (finalSystems.length > 0) {
+        const firstSystem = finalSystems[0];
+        setEducationSystem(firstSystem.id);
+        // If the system has sub-systems, use the first one to fetch stages
+        if (firstSystem.academicSubSystemDto?.length > 0) {
+          setSubSystemId(firstSystem.academicSubSystemDto[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch academic systems:', error);
+      // Use dummy data on error
+      setAcademicSystems(DUMMY_ACADEMIC_SYSTEMS);
+      setEducationSystem(DUMMY_ACADEMIC_SYSTEMS[0].id);
+      if (DUMMY_ACADEMIC_SYSTEMS[0].academicSubSystemDto?.length > 0) {
+        setSubSystemId(DUMMY_ACADEMIC_SYSTEMS[0].academicSubSystemDto[0].id);
+      }
+    } finally {
+      setIsLoadingAcademicSystems(false);
+    }
+  }, []);
+
+  // Fetch Stages (المرحلة) - depends on subSystemId
+  const fetchStagesData = useCallback(async (academicSubSystemId?: string) => {
+    setIsLoadingStages(true);
+    try {
+      let response;
+      if (academicSubSystemId) {
+        response = await fetchEducationalStagesBySubSystemId(academicSubSystemId, {
+          pageIndex: 1,
+          pageSize: 100,
+        });
+      } else {
+        response = await fetchEducationalStages({ pageIndex: 1, pageSize: 100 });
+      }
+      const stagesData = response?.gradeDtos || [];
+      // Use dummy data if API returns empty
+      setStages(stagesData.length > 0 ? stagesData : DUMMY_STAGES);
+      // Reset stage selection when stages change
+      setStage('');
+      setGrade('');
+    } catch (error) {
+      console.error('Failed to fetch stages:', error);
+      // Use dummy data on error
+      setStages(DUMMY_STAGES);
+    } finally {
+      setIsLoadingStages(false);
+    }
+  }, []);
+
+  // Fetch Classrooms (الصف) - depends on stage selection
+  const fetchClassroomsData = useCallback(async (gradeId: string) => {
+    if (!gradeId) {
+      setClassrooms([]);
+      return;
+    }
+    setIsLoadingClassrooms(true);
+    try {
+      const response = await getClassrooms({ gradeId: gradeId });
+      const classroomsData = response.data?.classroomDto || [];
+      // Use dummy data if API returns empty
+      setClassrooms(classroomsData.length > 0 ? classroomsData : DUMMY_CLASSROOMS);
+    } catch (error) {
+      console.error('Failed to fetch classrooms:', error);
+      // Use dummy data on error
+      setClassrooms(DUMMY_CLASSROOMS);
+    } finally {
+      setIsLoadingClassrooms(false);
+    }
+  }, []);
+
+  // Initial data fetches
   useEffect(() => {
-    dispatch(fetchLessons());
+    fetchAcademicSystemsData();
+  }, [fetchAcademicSystemsData]);
+
+  // Fetch stages when subSystemId changes
+  useEffect(() => {
+    if (subSystemId) {
+      fetchStagesData(subSystemId);
+    } else {
+      fetchStagesData();
+    }
+  }, [subSystemId, fetchStagesData]);
+
+  // Fetch lessons when classroom (grade) changes
+  useEffect(() => {
+    if (grade) {
+      dispatch(
+        fetchLessons({
+          filters: {
+            classroomId: grade,
+            gradeId: stage,
+          },
+        })
+      );
+    } else {
+      dispatch(fetchLessons());
+    }
     dispatch(fetchMonthlyCalendarEvents({ page: 1, limit: 100 }));
-  }, [dispatch]);
+  }, [dispatch, grade, stage]);
+
+  // Fetch classrooms when stage changes
+  useEffect(() => {
+    if (stage) {
+      fetchClassroomsData(stage);
+    } else {
+      setClassrooms([]);
+      setGrade('');
+    }
+  }, [stage, fetchClassroomsData]);
 
   useEffect(() => {
     dispatch(
@@ -624,6 +834,29 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       })
     );
   }, [dispatch, currentWeekStart, schoolBranchId]);
+
+  // Computed options for filters
+  const educationSystemOptions = useMemo(() => {
+    return academicSystems.map((sys) => ({
+      value: sys.id,
+      label: isArabic ? sys.nameAr : sys.nameEn,
+      subSystems: sys.academicSubSystemDto || [],
+    }));
+  }, [academicSystems, isArabic]);
+
+  const stageOptions = useMemo(() => {
+    return stages.map((s) => ({
+      value: s.id,
+      label: isArabic ? s.nameAr : s.nameEn,
+    }));
+  }, [stages, isArabic]);
+
+  const classroomOptions = useMemo(() => {
+    return classrooms.map((c) => ({
+      value: c.id,
+      label: isArabic ? c.name : c.nameEn || c.name,
+    }));
+  }, [classrooms, isArabic]);
 
   // Transform API lessons to ScheduleLesson format with weekly repetition
   const transformedLessons: ScheduleLesson[] = useMemo(() => {
@@ -657,8 +890,24 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     setCurrentWeekStart(weekStart);
   }, []);
 
-  const handleEmptyCellClick = (dayIndex: number, periodIndex: number) => {
-    navigate(`/calendar/weekly/add-lesson?day=${dayIndex}&period=${periodIndex}`);
+  const handleEmptyCellClick = (
+    dayIndex: number,
+    _periodIndex: number,
+    startTime: string,
+    endTime: string
+  ) => {
+    // Calculate the actual date for this cell
+    const cellDate = addDays(currentWeekStart, dayIndex);
+
+    // Format date in local timezone (YYYY-MM-DD) without UTC conversion
+    const year = cellDate.getFullYear();
+    const month = (cellDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = cellDate.getDate().toString().padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
+    navigate(
+      `/calendar/weekly/add-lesson?date=${dateStr}&startTime=${startTime}&endTime=${endTime}`
+    );
   };
 
   // Expose methods to parent via ref
@@ -754,71 +1003,92 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
   return (
     <>
-      {/* Filters Row - matching design order from right to left */}
-      <div className="mb-4 flex flex-wrap items-center justify-start gap-3">
-        {/* اختر النظام التعليم */}
-        <div className="min-w-[160px]">
+      {/* Filters Row - Three separate grouped containers */}
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        {/* Group 1: Education System */}
+        <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+          <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+            {t('weeklyCalendar.filters.educationSystem') || 'اختر النظام التعليم'}
+          </span>
+          <div className="h-full border-e border-gray-200" />
           <CustomSelect
             value={educationSystem}
-            onChange={(val) => setEducationSystem(val as string)}
+            onChange={(val) => {
+              const selectedSystem = academicSystems.find((s) => s.id === val);
+              setEducationSystem(val as string);
+              // Reset dependent filters
+              setStage('');
+              setGrade('');
+              setClassrooms([]);
+              // If the selected system has sub-systems, use the first one to filter stages
+              if (selectedSystem?.academicSubSystemDto?.length) {
+                setSubSystemId(selectedSystem.academicSubSystemDto[0].id);
+              } else {
+                setSubSystemId('');
+              }
+            }}
             options={educationSystemOptions}
-            placeholder="اختر النظام التعليم"
+            placeholder={
+              isLoadingAcademicSystems
+                ? t('common.loading')
+                : educationSystemOptions.find((s) => s.value === educationSystem)?.label ||
+                  t('weeklyCalendar.filters.selectSystem') ||
+                  'اختر النظام'
+            }
+            disabled={isLoadingAcademicSystems}
+            variant="ghost"
+            showSearch={false}
+            className="min-w-[100px]"
           />
         </div>
 
-        {/* عالمي */}
-        <div className="min-w-[100px]">
-          <CustomSelect
-            value={systemType}
-            onChange={(val) => setSystemType(val as string)}
-            options={systemTypeOptions}
-            placeholder="عالمي"
-          />
-        </div>
-
-        {/* اختر المرحلة */}
-        <div className="min-w-[130px]">
+        {/* Group 2: Stage Selection */}
+        <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+          <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+            {t('weeklyCalendar.filters.selectStage') || 'اختر المرحلة'}
+          </span>
+          <div className="h-full border-e border-gray-200" />
           <CustomSelect
             value={stage}
             onChange={(val) => setStage(val as string)}
             options={stageOptions}
-            placeholder="اختر المرحلة"
+            placeholder={
+              isLoadingStages
+                ? t('common.loading')
+                : stageOptions.find((s) => s.value === stage)?.label || 'الأول الأعدادي'
+            }
+            disabled={isLoadingStages}
+            variant="ghost"
+            showSearch={false}
+            className="min-w-[140px]"
           />
         </div>
 
-        {/* الأول الأعدادي */}
-        <div className="min-w-[130px]">
-          <CustomSelect
-            value={stageValue}
-            onChange={(val) => setStageValue(val as string)}
-            options={stageValueOptions}
-            placeholder="الأول الأعدادي"
-          />
-        </div>
-
-        {/* الصف الدراسي */}
-        <div className="min-w-[120px]">
+        {/* Group 3: Classroom Selection */}
+        <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+          <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+            {t('weeklyCalendar.filters.classroom') || 'الصف الدراسي'}
+          </span>
+          <div className="h-full border-e border-gray-200" />
           <CustomSelect
             value={grade}
             onChange={(val) => setGrade(val as string)}
-            options={gradeOptions}
-            placeholder="الصف الدراسي"
-          />
-        </div>
-
-        {/* 1/1 ع */}
-        <div className="min-w-[90px]">
-          <CustomSelect
-            value={division}
-            onChange={(val) => setDivision(val as string)}
-            options={divisionOptions}
-            placeholder="1/1 ع"
+            options={classroomOptions}
+            placeholder={
+              isLoadingClassrooms
+                ? t('common.loading')
+                : classroomOptions.find((c) => c.value === grade)?.label || '1/1 ع'
+            }
+            disabled={!stage || isLoadingClassrooms}
+            variant="ghost"
+            showSearch={false}
+            className="min-w-[100px]"
           />
         </div>
       </div>
 
       {/* Calendar Component */}
-      <div className="rounded-xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl bg-white shadow-sm">
         {isLoading ? (
           <div className="flex h-96 items-center justify-center">
             <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary-500"></div>
