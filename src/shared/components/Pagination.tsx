@@ -49,7 +49,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 pt-4 text-sm">
-      <div className="text-gray-600">
+      <div className="text-gray-500">
         <span>{t('actions.view')} </span>
         <span className="font-semibold">{currentPage}</span>
         <span className="mx-1">{t('actions.to')}</span>
@@ -75,7 +75,11 @@ const Pagination: React.FC<PaginationProps> = ({
               alt="ArrowIcon"
               className={currentPage === 1 ? 'opacity-50' : ''}
             />
-            <span>{t('actions.previous')}</span>
+            <span
+              className={` ${currentPage === 1 ? 'text-gray-500' : 'text-black-900'} `}
+            >
+              {t('actions.previous')}
+            </span>
           </span>
         </button>
 
@@ -93,8 +97,8 @@ const Pagination: React.FC<PaginationProps> = ({
                 disabled={currentPage === page}
                 className={`rounded border px-3 py-1 transition-colors ${
                   currentPage === page
-                    ? 'cursor-default border-green-600 bg-green-600 text-white'
-                    : 'cursor-pointer border-gray-300 hover:bg-gray-50'
+                    ? 'cursor-default border-green-500 bg-green-500 text-white'
+                    : 'cursor-pointer border-gray-300 text-green-500 hover:bg-gray-50'
                 }`}
               >
                 {page}
@@ -111,7 +115,11 @@ const Pagination: React.FC<PaginationProps> = ({
           }`}
         >
           <span className="flex items-center gap-1 text-center">
-            <span>{t('actions.next')}</span>
+            <span
+              className={` ${currentPage === totalPages ? 'text-gray-500' : 'text-black-900'} `}
+            >
+              {t('actions.next')}
+            </span>
             <CustomImage
               src={isRTL ? ArrowLeftIcon : ArrowRightIcon}
               alt="ArrowIcon"
@@ -125,5 +133,3 @@ const Pagination: React.FC<PaginationProps> = ({
 };
 
 export default Pagination;
-
-

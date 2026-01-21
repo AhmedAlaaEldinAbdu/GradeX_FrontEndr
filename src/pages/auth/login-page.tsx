@@ -85,14 +85,14 @@ const LoginPage: React.FC = () => {
                   <span className="text-2xl font-bold text-white">G</span>
                 </div>
               </div> */}
-              <h1 className="mb-2 text-3xl font-bold text-gray-900">{t('login.title')}</h1>
+              <h1 className="mb-2 text-3xl font-bold text-gray-700">{t('login.title')}</h1>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="space-y-6">
               {/* Email Field */}
               <div>
-                <label className="mb-2 block text-start text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-start text-md font-medium text-gray-800">
                   {t('login.emailLabel')}
                 </label>
                 <div className="relative">
@@ -139,7 +139,7 @@ const LoginPage: React.FC = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="mb-2 block text-start text-sm font-medium text-gray-700"
+                  className="mb-2 block text-start text-md font-medium text-gray-800"
                 >
                   {t('login.passwordLabel')}
                 </label>
@@ -229,7 +229,7 @@ const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/auth/forgot-password')}
-                  className="text-sm font-medium text-[#1FAD6C] transition-colors hover:text-[#178f5a]"
+                  className="text-sm font-medium text-green-500 transition-colors hover:text-green-800"
                 >
                   {t('login.forgotPassword')}
                 </button>
@@ -239,7 +239,7 @@ const LoginPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-lg bg-[#1FAD6C] px-4 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-lg bg-green-500 px-4 py-3 font-medium text-white transition-all hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <div className="flex items-center justify-center gap-2">
@@ -253,7 +253,7 @@ const LoginPage: React.FC = () => {
 
               {/* Error Message */}
               {loginError && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+                <div className="rounded-lg border border-red-200 bg-red-100 p-3 text-sm text-red-500">
                   {loginError}
                 </div>
               )}
@@ -276,10 +276,10 @@ const LoginPage: React.FC = () => {
             </div>
 
             {/* Text */}
-            <h2 className="mb-4 text-3xl font-bold text-green-900">
+            <h2 className="mb-4 text-3xl font-bold text-green-500">
               {t('login.manageSchoolTitle')}
             </h2>
-            <p className="text-green/90 text-lg">{t('login.manageSchoolSubtitle')}</p>
+            <p className="text-green-500 text-lg">{t('login.manageSchoolSubtitle')}</p>
           </div>
         </div>
       </div>

@@ -47,7 +47,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   const inputClasses = useMemo(
     () =>
       className ??
-      `h-[40px] w-full rounded-lg border border-gray-300 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+      `h-[40px] w-full rounded-lg border border-gray-300 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-400 ${
         isRTL ? 'pl-4 pr-10' : 'pl-10 pr-4'
       }`,
     [className, isRTL]
