@@ -97,6 +97,7 @@ function mapLessonToFormData(lesson: Lesson): LessonData {
       lesson.lessonsStudent?.map((s) => ({
         id: s.studentId,
         name: s.studentName || '',
+        avatar: s.studentProfilePicture || '',
       })) || [],
   };
 }
@@ -448,79 +449,22 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     <>
       <Card>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {mode === 'add' && (
-            <>
-              <Controller
-                name="date"
-                control={control}
-                render={({ field }) => <input {...field} type="hidden" />}
-              />
-              <Controller
-                name="startTime"
-                control={control}
-                render={({ field }) => <input {...field} type="hidden" />}
-              />
-              <Controller
-                name="endTime"
-                control={control}
-                render={({ field }) => <input {...field} type="hidden" />}
-              />
-            </>
-          )}
-
-          {mode === 'edit' && (
-            <div className="mb-6 rounded-xl border border-gray-200 p-4">
-              <h3 className="mb-4 text-start text-sm font-semibold text-gray-700">
-                {t('lesson.scheduleInfo')}
-              </h3>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                {/* Date */}
-                <FormField
-                  label={t('lesson.date')}
-                  required
-                  error={errors.date?.message}
-                  htmlFor="date"
-                >
-                  <Controller
-                    name="date"
-                    control={control}
-                    rules={{ required: t('validation.required') }}
-                    render={({ field }) => <Input {...field} type="date" id="date" />}
-                  />
-                </FormField>
-
-                {/* Start Time */}
-                <FormField
-                  label={t('lesson.startTime')}
-                  required
-                  error={errors.startTime?.message}
-                  htmlFor="startTime"
-                >
-                  <Controller
-                    name="startTime"
-                    control={control}
-                    rules={{ required: t('validation.required') }}
-                    render={({ field }) => <Input {...field} type="time" id="startTime" />}
-                  />
-                </FormField>
-
-                {/* End Time */}
-                <FormField
-                  label={t('lesson.endTime')}
-                  required
-                  error={errors.endTime?.message}
-                  htmlFor="endTime"
-                >
-                  <Controller
-                    name="endTime"
-                    control={control}
-                    rules={{ required: t('validation.required') }}
-                    render={({ field }) => <Input {...field} type="time" id="endTime" />}
-                  />
-                </FormField>
-              </div>
-            </div>
-          )}
+          {/* Hidden date/time fields - values come from URL params (add) or initialData (edit) */}
+          <Controller
+            name="date"
+            control={control}
+            render={({ field }) => <input {...field} type="hidden" />}
+          />
+          <Controller
+            name="startTime"
+            control={control}
+            render={({ field }) => <input {...field} type="hidden" />}
+          />
+          <Controller
+            name="endTime"
+            control={control}
+            render={({ field }) => <input {...field} type="hidden" />}
+          />
 
           {/* Grade & Classroom Section */}
           <div className="mb-6 rounded-xl border border-gray-200 p-4">
