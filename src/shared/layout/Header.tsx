@@ -71,7 +71,7 @@ const Header: React.FC = () => {
                       setShowDropdown(false);
                       // Navigate to profile page if exists
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-gray-500 transition-colors hover:bg-gray-100"
                   >
                     <FaUser className="text-gray-500" />
                     <span>{t('header.profile') || 'الملف الشخصي'}</span>
@@ -82,7 +82,7 @@ const Header: React.FC = () => {
                       setShowDropdown(false);
                       handleLogout();
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-red-600 transition-colors hover:bg-red-50"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-red-500 transition-colors hover:bg-red-100"
                   >
                     <FaSignOutAlt className="text-red-500" />
                     <span>{t('header.logout') || 'تسجيل الخروج'}</span>

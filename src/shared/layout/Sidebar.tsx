@@ -299,14 +299,14 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             onClick={() => toggleExpand(item.key, firstSubItemPath)}
             className={`flex w-full items-center justify-between rounded-lg px-4 py-3 transition-colors duration-200 ${
               isAnySubItemActive
-                ? 'bg-green-700 font-semibold text-white'
-                : 'text-gray-700 hover:bg-gray-100'
+                ? 'linear-green font-semibold text-white'
+                : 'text-black-700 hover:bg-gray-100'
             }`}
             style={{ borderRadius: isRTL ? '20px 0 0 20px' : '0 20px 20px 0' }}
           >
             <div className="flex items-center gap-3">
               <span
-                className={isAnySubItemActive ? 'text-white' : 'text-gray-700'}
+                className={isAnySubItemActive ? 'text-white' : 'text-black-700'}
                 style={
                   isAnySubItemActive
                     ? {
@@ -319,7 +319,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
               </span>
               <span className="text-sm font-semibold">{t(`sidebar.${item.key}`)}</span>
             </div>
-            <span className={isAnySubItemActive ? 'text-white' : 'text-gray-700'}>
+            <span className={isAnySubItemActive ? 'text-white' : 'text-black-700'}>
               {isExpanded ? (
                 <CustomImage
                   src={ChevronUp}
@@ -369,7 +369,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                         {subItem.icon}
                       </span>
                     )}
-                    <span>{t(`sidebar.${subItem.key}`)}</span>
+                    <span className='text-green-500'>{t(`sidebar.${subItem.key}`)}</span>
                   </NavLink>
                 );
               })}
@@ -387,8 +387,8 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         className={({ isActive }) =>
           `mb-1 flex items-center gap-3 rounded-lg px-4 py-3 transition-colors duration-200 ${
             isActive
-              ? 'bg-green-700 font-medium text-white'
-              : 'text-gray-700 hover:bg-gray-50 hover:text-green-700'
+              ? 'linear-green font-medium text-white'
+              : 'text-black-700 hover:bg-green-100 hover:text-green-500'
           }`
         }
         style={{ borderRadius: isRTL ? '20px 0 0 20px' : '0 20px 20px 0' }}
