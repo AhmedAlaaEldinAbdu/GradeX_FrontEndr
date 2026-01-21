@@ -80,7 +80,7 @@ export default function HolidayCard({
             id: 'view-attachment',
             label: t('actions.viewAttachment'),
             icon: EyeIcon,
-            color: 'text-blue-600 hover:bg-blue-50',
+            color: 'text-blue-500 hover:bg-blue-100',
             onClick: () => {
               setShowAttachmentPopup(true);
             },
@@ -91,14 +91,14 @@ export default function HolidayCard({
       id: 'edit',
       label: t('actions.edit'),
       icon: EditFilledIcon,
-      color: 'text-gray-700 hover:bg-gray-100',
+      color: 'text-gray-500 hover:bg-gray-100',
       onClick: () => navigate(`/official-holidays/edit-holiday/${holiday.id}`),
     },
     {
       id: 'delete',
       label: t('actions.delete'),
       icon: TrashIcon,
-      color: 'text-red-600 hover:bg-red-50',
+      color: 'text-red-500 hover:bg-red-100',
       onClick: () => {
         setShowDeletePopup(true);
       },

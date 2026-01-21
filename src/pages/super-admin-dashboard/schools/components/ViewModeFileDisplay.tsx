@@ -233,7 +233,7 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
       {/* Image Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 bg-opacity-75 p-4"
           onClick={closeModal}
         >
           <div className="relative max-h-[90vh] max-w-[90vw]">

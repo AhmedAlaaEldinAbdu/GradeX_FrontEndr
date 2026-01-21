@@ -557,7 +557,6 @@ const JobApplicantsTable = ({
     {
       header: '#',
       accessor: (_row, index) => startIndex + (index ?? 0) + 1,
-      className: 'text-center text-sm text-gray-600',
       headerClassName: 'w-16',
     },
     {
@@ -570,7 +569,7 @@ const JobApplicantsTable = ({
               alt={getApplicantName(row)}
               className="h-10 w-10 rounded-lg object-cover"
             />
-            <p className="text-sm font-semibold text-gray-900">{getApplicantName(row)}</p>
+            <p>{getApplicantName(row)}</p>
           </div>
           <div className="flex items-center">
             <IconButton
@@ -617,7 +616,7 @@ const JobApplicantsTable = ({
       accessor: (row) => (
         <span
           className={`rounded-full px-3 py-1 text-xs font-semibold ${
-            WORK_TYPE_BADGES[row.workShedule]?.bg || 'bg-gray-100 text-gray-600'
+            WORK_TYPE_BADGES[row.workShedule]?.bg || 'text-gray-500'
           }`}
         >
           {t(WORK_TYPE_BADGES[row.workShedule]?.label || 'jobAnnouncement.workType')}
@@ -629,14 +628,14 @@ const JobApplicantsTable = ({
     {
       header: 'jobAnnouncement.applicantsPage.table.qualification',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">{getQualificationLabel(row)}</span>
+        <span>{getQualificationLabel(row)}</span>
       ),
       headerClassName: 'min-w-[160px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.experience',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">
+        <span>
           {(row.experienceYears || 0).toLocaleString(numberLocale)}
         </span>
       ),
@@ -645,17 +644,17 @@ const JobApplicantsTable = ({
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.country',
-      accessor: (row) => <span className="text-sm text-gray-700">{getCountryLabel(row)}</span>,
+      accessor: (row) => <span>{getCountryLabel(row)}</span>,
       headerClassName: 'min-w-[140px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.nationality',
-      accessor: (row) => <span className="text-sm text-gray-700">{getNationalityLabel(row)}</span>,
+      accessor: (row) => <span>{getNationalityLabel(row)}</span>,
       headerClassName: 'min-w-[140px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.address',
-      accessor: (row) => <span className="text-sm text-gray-700">{getAddress(row)}</span>,
+      accessor: (row) => <span>{getAddress(row)}</span>,
       headerClassName: 'min-w-[200px]',
     },
     {
@@ -666,7 +665,7 @@ const JobApplicantsTable = ({
             href={row.phoneNumber ? `tel:${row.phoneNumber}` : undefined}
             className={`flex h-8 w-8 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 ${
               row.phoneNumber
-                ? 'bg-emerald-50 hover:bg-emerald-100'
+                ? 'bg-green-100 hover:bg-green-300'
                 : 'pointer-events-none cursor-not-allowed bg-gray-100 opacity-50'
             }`}
             title={row.phoneNumber || phoneLabel}
@@ -678,7 +677,7 @@ const JobApplicantsTable = ({
             href={row.email ? `mailto:${row.email}` : undefined}
             className={`flex h-8 w-8 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 ${
               row.email
-                ? 'bg-orange-50 hover:bg-orange-100'
+                ? 'bg-orange-100 hover:bg-orange-200'
                 : 'pointer-events-none cursor-not-allowed bg-gray-100 opacity-50'
             }`}
             title={row.email || emailLabel}

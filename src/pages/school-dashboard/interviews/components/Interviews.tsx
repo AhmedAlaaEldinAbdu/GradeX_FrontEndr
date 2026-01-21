@@ -367,6 +367,7 @@ export default function Interviews() {
       onClick: (date) => {
         handleOpenAddPopup(date);
       },
+      color: 'green',
     },
     {
       label: t('interviews.editInterview'),

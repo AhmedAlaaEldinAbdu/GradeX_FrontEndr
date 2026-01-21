@@ -377,7 +377,7 @@ export default function AttendanceManagement() {
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-300"
             onClick={() =>
               handleIndividualAction(
                 row.id,

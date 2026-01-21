@@ -23,17 +23,17 @@ import type { JobAdvertisment } from '@/services/api/types/job-advertisment.type
 import { JobAdvertismentWorkShedule } from '@/services/api/types/job-advertisment.types';
 import CustomImage from '@/shared/components/CustomImage';
 
-const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg: string; text: string }> = {
+const WORK_TYPE_BADGES: Record<JobAdvertismentWorkShedule, { bg?: string; text: string }> = {
   [JobAdvertismentWorkShedule.FULL_TIME]: {
-    bg: 'bg-blue-50 text-blue-700',
+    // bg: 'bg-blue-50 text-blue-700',
     text: 'jobAnnouncement.form.contractFullTime',
   },
   [JobAdvertismentWorkShedule.PART_TIME]: {
-    bg: 'bg-emerald-50 text-emerald-700',
+    // bg: 'bg-emerald-50 text-emerald-700',
     text: 'jobAnnouncement.form.contractPartTime',
   },
   [JobAdvertismentWorkShedule.BOTH]: {
-    bg: 'bg-violet-50 text-violet-700',
+    // bg: 'bg-violet-50 text-violet-700',
     text: 'jobAnnouncement.form.contractBoth',
   },
 };
@@ -316,7 +316,7 @@ export default function JobAnnouncementsList() {
       header:
         currentLang === 'ar' ? 'jobAnnouncement.form.jobNameAr' : 'jobAnnouncement.form.jobNameEn',
       accessor: (row) => (
-        <span className="text-sm font-medium text-gray-900">
+        <span>
           {currentLang === 'ar'
             ? (normalizeText(row.name) ?? normalizeText(row.nameEn) ?? '--')
             : (normalizeText(row.nameEn) ?? normalizeText(row.name) ?? '--')}
@@ -327,7 +327,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.jobGrade',
       accessor: (row) => (
-        <span className="text-sm font-medium text-gray-900">
+        <span>
           {(() => {
             const keys =
               currentLang === 'ar'
@@ -347,7 +347,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.jobType',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">
+        <span>
           {(() => {
             const qualificationTypeLabel =
               row.qualificationType === 1
@@ -382,7 +382,7 @@ export default function JobAnnouncementsList() {
           {row.workShedule !== undefined && row.workShedule !== null ? (
             <span
               className={`rounded-full px-3 py-1 text-sm font-medium ${
-                WORK_TYPE_BADGES[row.workShedule]?.bg || 'bg-gray-100 text-gray-700'
+                WORK_TYPE_BADGES[row.workShedule]?.bg || 'text-gray-500'
               }`}
             >
               {WORK_TYPE_BADGES[row.workShedule]
@@ -430,7 +430,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.subjectName',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">
+        <span>
           {(() => {
             const materialLabel = buildLocalizedList(
               row.jobAdvertismentMaterialDto,
@@ -462,7 +462,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.country',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">
+        <span>
           {(() => {
             const countryLabel = buildLocalizedList(
               row.jobAdvertisementCountryDto,
@@ -485,7 +485,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.educationalStages',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">
+        <span>
           {(() => {
             const stageLabel = buildLocalizedList(
               row.jobAdvertisementSchoolStageDto,
@@ -513,7 +513,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.academicQualification',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">
+        <span>
           {(() => {
             const qualificationLabel = buildLocalizedList(
               row.jobAdvertisementQualificationDto,
@@ -547,7 +547,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.yearsOfExperience',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">
+        <span>
           {typeof row.yearsExperience === 'number'
             ? row.yearsExperience.toLocaleString(numberLocale)
             : '--'}
@@ -558,7 +558,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.salary',
       accessor: (row) => (
-        <span className="text-sm text-gray-700">
+        <span>
           {(() => {
             const hasMin = typeof row.minimumSalary === 'number';
             const hasMax = typeof row.maximumSalary === 'number';

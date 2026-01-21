@@ -185,7 +185,7 @@ export default function TeachersList() {
             row.classrooms.map((classroom) => (
               <span
                 key={classroom.id}
-                className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800"
+                className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-500"
               >
                 {currentLang === 'ar' ? classroom.nameAR : classroom.nameEN || classroom.nameAR}
               </span>

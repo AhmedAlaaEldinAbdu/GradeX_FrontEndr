@@ -190,11 +190,11 @@ const PendingSchoolDetailsPage: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => setShowRejectPopup(true)}
-              className="border-none !bg-red-600 text-white"
+              className="border-none !bg-red-500 text-white"
             >
               {t('actions.reject')}
             </Button>
-            <Button variant="outline" onClick={handleAccept} className="!bg-green-600 text-white">
+            <Button variant="outline" onClick={handleAccept} className="!bg-green-500 text-white">
               {t('actions.accept')}
             </Button>
           </div>

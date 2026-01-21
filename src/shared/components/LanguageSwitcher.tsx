@@ -60,7 +60,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     return (
       <button
         onClick={toggleLanguage}
-        className={`${baseClasses} rounded-full p-2 text-gray-700 hover:bg-gray-100 hover:text-green-600 ${className}`}
+        className={`${baseClasses} rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-green-500 ${className}`}
         aria-label={currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
         title={currentLanguage === 'ar' ? 'English' : 'العربية'}
       >
@@ -73,7 +73,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     return (
       <button
         onClick={toggleLanguage}
-        className={`${baseClasses} ${sizeClasses[size]} rounded-lg text-gray-700 hover:text-green-600 ${className}`}
+        className={`${baseClasses} ${sizeClasses[size]} rounded-lg text-gray-500 hover:text-green-500 ${className}`}
         aria-label={currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
       >
         <span>{currentLanguage === 'ar' ? 'EN' : 'عربي'}</span>
@@ -85,7 +85,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   return (
     <button
       onClick={toggleLanguage}
-      className={`${baseClasses} ${sizeClasses[size]} rounded-lg border border-gray-300 text-gray-700 hover:border-green-500 hover:text-green-600 ${className}`}
+      className={`${baseClasses} ${sizeClasses[size]} rounded-lg border border-gray-300 text-gray-500 hover:border-green-500 hover:text-green-600 ${className}`}
       aria-label={currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
     >
       <GlobeIcon className={iconSizeClasses[size]} />
