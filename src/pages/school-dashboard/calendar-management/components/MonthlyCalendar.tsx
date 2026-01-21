@@ -563,15 +563,16 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
 
         {isLoading ? (
           <Loading size="lg" />
-        ) : showEmptyState ? (
-          <EmptyState
-            imgSrc={StyledCalendarIcon}
-            title={t('monthlyCalendar.emptyStateTitle')}
-            description={t('monthlyCalendar.emptyStateDescription')}
-            actionLabel={t('monthlyCalendar.addEventButton')}
-            blend
-          />
         ) : (
+          // : showEmptyState ? (
+          //   <EmptyState
+          //     imgSrc={StyledCalendarIcon}
+          //     title={t('monthlyCalendar.emptyStateTitle')}
+          //     description={t('monthlyCalendar.emptyStateDescription')}
+          //     actionLabel={t('monthlyCalendar.addEventButton')}
+          //     blend
+          //   />
+          // )
           <SharedCalendar
             events={calendarEvents}
             onSelectEvent={(calendarEvent) => {
