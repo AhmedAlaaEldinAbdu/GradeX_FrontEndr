@@ -18,6 +18,7 @@ interface CustomSelectProps {
   error?: boolean;
   showSearch?: boolean;
   id?: string;
+  variant?: 'default' | 'ghost';
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -32,6 +33,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   error = false,
   showSearch = true,
   id = '',
+  variant = 'default',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -113,14 +115,18 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`min-h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50 ${
-          error
-            ? 'border-red-500 focus-within:ring-2 focus-within:ring-red-500'
-            : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-500'
-        } ${isOpen ? 'ring-2 ring-green-500' : ''} ${isRTL ? 'text-right' : 'text-left'} ${disabled ? 'cursor-not-allowed bg-gray-50 opacity-60' : 'bg-white hover:border-gray-400'}`}
+        className={`w-full text-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+          variant === 'ghost'
+            ? 'min-h-[40px] border-0 bg-transparent px-4 py-2.5 font-medium text-gray-800 hover:bg-gray-50'
+            : `min-h-[40px] rounded-lg border bg-white px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-green-500 ${
+                error
+                  ? 'border-red-500 focus-within:ring-2 focus-within:ring-red-500'
+                  : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-500'
+              } ${isOpen ? 'ring-2 ring-green-500' : ''} ${disabled ? 'bg-gray-50' : 'hover:border-gray-400'}`
+        } ${isRTL ? 'text-right' : 'text-left'}`}
       >
         <div
-          className={`flex flex-row${isRTL ? '-reverse' : ''} items-center justify-between gap-2`}
+          className={`flex flex-row${isRTL ? '-reverse' : ''} items-center justify-between ${variant === 'ghost' ? 'gap-1' : 'gap-2'}`}
         >
           {/* Display selected items */}
           <div className="flex-1 overflow-hidden">
@@ -166,7 +172,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             )}
           </div>
           <svg
-            className={`h-5 w-5 flex-shrink-0 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''} ${isRTL ? 'order-first' : ''}`}
+            className={`${variant === 'ghost' ? 'h-4 w-4' : 'h-5 w-5'} flex-shrink-0 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''} ${isRTL ? 'order-first' : ''}`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
