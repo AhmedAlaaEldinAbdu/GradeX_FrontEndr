@@ -28,7 +28,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
   disabled = false,
   className,
   inputClassName,
-  textClassName = 'text-sm text-gray-700',
+  textClassName = 'text-sm text-gray-500',
   inputProps,
 }) => {
   return (
@@ -43,7 +43,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
           disabled={disabled}
-          className={`peer h-6 w-6 appearance-none rounded-md border border-gray-400 transition duration-150 checked:border-green-600 checked:bg-green-600 focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed ${inputClassName ?? ''}`}
+          className={`peer h-6 w-6 appearance-none rounded-md border border-gray-400 transition duration-150 checked:border-green-500 checked:bg-green-500 focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed ${inputClassName ?? ''}`}
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +58,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
           />
         </svg>
       </div>
-      <span className={`${textClassName || 'text-sm text-gray-700'} `}>{label}</span>
+      <span className={`${textClassName || 'text-sm text-gray-500'} `}>{label}</span>
     </label>
   );
 };

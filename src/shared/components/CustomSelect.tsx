@@ -118,11 +118,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         className={`w-full text-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
           variant === 'ghost'
             ? 'min-h-[40px] border-0 bg-transparent px-4 py-2.5 font-medium text-gray-800 hover:bg-gray-50'
-            : `min-h-[40px] rounded-lg border bg-white px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-green-500 ${
+            : `min-h-[40px] rounded-lg border bg-white px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-green-400 ${
                 error
                   ? 'border-red-500 focus-within:ring-2 focus-within:ring-red-500'
-                  : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-500'
-              } ${isOpen ? 'ring-2 ring-green-500' : ''} ${disabled ? 'bg-gray-50' : 'hover:border-gray-400'}`
+                  : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-400'
+              } ${isOpen ? 'ring-2 ring-green-400' : ''} ${disabled ? 'bg-gray-50' : 'hover:border-gray-400'}`
         } ${isRTL ? 'text-right' : 'text-left'}`}
       >
         <div
@@ -166,13 +166,13 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 <span className="text-gray-800">{placeholder}</span>
               )
             ) : (
-              <span className={selectedOption ? 'text-gray-900' : 'text-gray-400'}>
+              <span className={selectedOption ? 'text-gray-900' : 'text-gray-500'}>
                 {selectedOption ? selectedOption.label : placeholder}
               </span>
             )}
           </div>
           <svg
-            className={`${variant === 'ghost' ? 'h-4 w-4' : 'h-5 w-5'} flex-shrink-0 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''} ${isRTL ? 'order-first' : ''}`}
+            className={`${variant === 'ghost' ? 'h-4 w-4' : 'h-5 w-5'} flex-shrink-0 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''} ${isRTL ? 'order-first' : ''}`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -202,12 +202,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder={t('common.search') || 'Search...'}
-                  className={`w-full rounded-md border border-gray-300 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                  className={`w-full rounded-md border border-gray-300 py-2 text-sm focus:border-green-400 focus:outline-none focus:ring-1 focus:ring-green-400 ${
                     isRTL ? 'pl-4 pr-7 text-right' : 'pl-7 pr-4 text-left'
                   }`}
                 />
                 <svg
-                  className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 ${isRTL ? 'right-2' : 'left-2'}`}
+                  className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 ${isRTL ? 'right-2' : 'left-2'}`}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"

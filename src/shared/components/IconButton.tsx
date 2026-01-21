@@ -15,10 +15,10 @@ type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variantClasses: Record<Variant, string> = {
-  danger: 'bg-red-50 text-red-600 hover:bg-red-100',
-  success: 'bg-green-50 text-green-600 hover:bg-green-100',
-  blue: 'bg-blue-50 text-blue-600 hover:bg-blue-100',
-  yellow: 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100',
+  danger: 'bg-red-100 text-red-600 hover:bg-red-200',
+  success: 'bg-green-100 text-green-600 hover:bg-green-300',
+  blue: 'bg-blue-100 text-blue-600 hover:bg-blue-300',
+  yellow: 'bg-yellow-100 text-yellow-600 hover:bg-yellow-300',
   default: 'bg-gray-50 text-gray-700 hover:bg-gray-100',
 };
 
