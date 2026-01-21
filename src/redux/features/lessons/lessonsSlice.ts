@@ -139,10 +139,11 @@ export const recoverAllLessons = createAsyncThunk<
       return [];
     }
 
-    const updatePromises = lessons.map(async (lesson) => {
+    // Prepare bulk update data - set endTime to startTime + 45 minutes
+    const updateRequests: UpdateLessonRequest[] = lessons.map((lesson) => {
       const newEndTime = addMinutesToTime(lesson.startTime, 45);
 
-      const updateData: UpdateLessonRequest = {
+      return {
         id: lesson.id,
         materialId: lesson.materialId,
         teacherId: lesson.teacherId,
@@ -163,12 +164,17 @@ export const recoverAllLessons = createAsyncThunk<
         lessonsStudent: lesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
         attachments: lesson.attachments.map((a) => ({ fileName: a.fileName, fileUrl: a.fileUrl })),
       };
-
-      await lessonsApiService.updateLesson(updateData);
-      return { ...lesson, endTime: newEndTime };
     });
 
-    const updatedLessons = await Promise.all(updatePromises);
+    // Use bulk update for single API call
+    await lessonsApiService.bulkUpdateLessons(updateRequests);
+
+    // Return updated lessons with new endTime
+    const updatedLessons = lessons.map((lesson) => ({
+      ...lesson,
+      endTime: addMinutesToTime(lesson.startTime, 45),
+    }));
+
     return updatedLessons;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
