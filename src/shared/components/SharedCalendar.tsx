@@ -36,7 +36,7 @@ export interface ContextMenuAction {
   label: string;
   icon: string;
   onClick: (date?: Date, event?: CalendarEvent) => void;
-  color?: 'default' | 'success' | 'primary' | 'danger';
+  color?: 'default' | 'green' | 'success' | 'primary' | 'danger';
   showOnDate?: boolean;
   showOnEvent?: boolean;
   hidden?: (date?: Date, event?: CalendarEvent) => boolean;
@@ -223,14 +223,16 @@ export default function SharedCalendar({
 
   const getColorClass = (color?: string) => {
     switch (color) {
+      case 'green':
+        return 'text-green-500 hover:bg-green-100';
       case 'success':
-        return 'text-green-600 hover:bg-green-50';
+        return 'text-lightGreen-500 hover:bg-lightGreen-100';
       case 'primary':
-        return 'text-blue-600 hover:bg-blue-50';
+        return 'text-blue-500 hover:bg-blue-100';
       case 'danger':
-        return 'text-red-600 hover:bg-red-50';
+        return 'text-red-500 hover:bg-red-100';
       default:
-        return 'text-gray-700 hover:bg-gray-100';
+        return 'text-gray-500 hover:bg-gray-100';
     }
   };
 

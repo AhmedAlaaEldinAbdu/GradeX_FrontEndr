@@ -30,7 +30,7 @@
   height: 2.5rem;
   border-radius: 100%;
   border: none;
-  background-color: #f9fafb;
+  background-color: #F2F2F2;
   color: #6b7280;
   cursor: pointer;
   transition: all 0.2s;
@@ -42,9 +42,9 @@
 }
 
 .toolbar-label {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: #0E1F1F;
   min-width: 150px;
   text-align: center;
 }
@@ -87,7 +87,7 @@
   position: relative;
   border: 0 !important;
   border-radius: 6px;
-  background-color: #f9fafb;
+  background-color: #F6F6F6;
 }
 
 .rtl .rbc-day-bg {
@@ -104,7 +104,7 @@
 }
 
 .rbc-today {
-  background-color: #dcfce7;
+  background-color: #5FA8960D;
 }
 .rbc-day-bg:hover {
   background-color: #dcfce7;
