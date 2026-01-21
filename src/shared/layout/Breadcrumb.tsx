@@ -31,7 +31,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
             </Link>
           ) : (
             <span
-              className={`font-medium ${items.length === index + 1 ? 'text-gray-800' : 'text-gray-500'}`}
+              className={`font-medium ${items.length === index + 1 ? 'text-gray-900' : 'text-gray-500'}`}
             >
               {t(item.label)}
             </span>
