@@ -129,7 +129,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   }>({ show: false, type: 'success', message: '' });
 
   const [sendTo, setSendTo] = useState<'all' | 'specific'>(
-    normalizedInitialData?.isHomeworkForAllStudents === false ? 'specific' : 'all'
+    // If there are selected students, set to 'specific', otherwise 'all'
+    normalizedInitialData?.selectedStudents && normalizedInitialData.selectedStudents.length > 0
+      ? 'specific'
+      : 'all'
   );
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [existingAttachments, setExistingAttachments] = useState<LessonAttachmentData[]>(
@@ -346,7 +349,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         startTime: normalizedInitialData.startTime,
         endTime: normalizedInitialData.endTime,
       });
-      setSendTo(normalizedInitialData.isHomeworkForAllStudents === false ? 'specific' : 'all');
+      // If there are selected students, set to 'specific', otherwise 'all'
+      const hasStudents =
+        normalizedInitialData.selectedStudents && normalizedInitialData.selectedStudents.length > 0;
+      setSendTo(hasStudents ? 'specific' : 'all');
       setExistingAttachments(normalizedInitialData.attachments || []);
       setSelectedStudents(normalizedInitialData.selectedStudents || []);
     }
