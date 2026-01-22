@@ -83,11 +83,11 @@ export default function SubjectsList() {
   const getLevelBadgeColor = (level: number) => {
     switch (level) {
       case 1:
-        return 'bg-green-100 text-green-800';
+        return 'bg-[#1A9F58]/10 text-[#1A9F58] border border-[#1A9F58]/20';
       case 2:
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-[#A96908]/10 text-[#A96908] border border-[#A96908]/20';
       case 3:
-        return 'bg-red-100 text-red-800';
+        return 'bg-[#0491DD]/10 text-[#0491DD] border border-[#0491DD]/20';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -112,7 +112,7 @@ export default function SubjectsList() {
       header: 'subjects.level',
       accessor: (row) => (
         <span
-          className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getLevelBadgeColor(row.materialLevel)}`}
+          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getLevelBadgeColor(row.materialLevel)}`}
         >
           {getLevelLabel(row.materialLevel)}
         </span>
@@ -123,18 +123,13 @@ export default function SubjectsList() {
     {
       header: 'subjects.schoolStages',
       accessor: (row) => (
-        <div className="flex flex-wrap gap-1">
+        <div className="text-sm text-gray-700">
           {row.schoolStages && row.schoolStages.length > 0 ? (
-            row.schoolStages.map((stage) => (
-              <span
-                key={stage.id}
-                className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800"
-              >
-                {currentLang === 'ar' ? stage.nameAr : stage.nameEn}
-              </span>
-            ))
+            row.schoolStages
+              .map((stage) => (currentLang === 'ar' ? stage.nameAr : stage.nameEn))
+              .join(' - ')
           ) : (
-            <span className="text-sm text-gray-400">-</span>
+            <span className="text-gray-400">-</span>
           )}
         </div>
       ),
