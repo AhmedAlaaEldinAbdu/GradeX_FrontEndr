@@ -5,6 +5,7 @@ import SearchInput from '@/shared/components/SearchInput';
 import CustomImage from '@/shared/components/CustomImage';
 import Loading from '@/shared/components/Loading';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import EditIcon from '@gradex/assets/icons/Edit.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherAssignment,
@@ -173,7 +174,7 @@ export default function EducationalStagesTab({
       </div>
 
       {/* Summary Cards - Second Row */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {/* Total Subjects */}
         <Card className="flex items-center justify-between">
           <div>
@@ -238,47 +239,65 @@ export default function EducationalStagesTab({
 
         {/* Educational Stages Table */}
         <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="w-full">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="px-6 py-3 text-center text-sm font-medium text-gray-700">#</th>
-                <th className="px-6 py-3 text-center text-sm font-medium text-gray-700">
+              <tr className="bg-green-50">
+                <th className="w-16 border border-gray-200 px-6 py-3 text-center text-sm font-medium text-gray-700">
+                  #
+                </th>
+                <th className="border border-gray-200 px-6 py-3 text-center text-sm font-medium text-gray-700">
                   {t('teachers.details.educationalStage')}
                 </th>
-                <th className="px-6 py-3 text-start text-sm font-medium text-gray-700">
+                <th className="border border-gray-200 px-6 py-3 text-center text-sm font-medium text-gray-700">
                   {t('teachers.details.classrooms')}
+                </th>
+                <th className="w-24 border border-gray-200 px-6 py-3 text-center text-sm font-medium text-gray-700">
+                  {t('common.actions')}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody className="bg-white">
               {filteredStages.map((stage, index) => (
                 <tr key={stage.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-center text-sm text-gray-600">{index + 1}</td>
-                  <td className="px-6 py-4 text-center text-sm font-medium text-gray-900">
+                  <td className="border border-gray-200 px-6 py-4 text-center text-sm text-gray-600">
+                    {index + 1}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-4 text-center text-sm font-medium text-gray-900">
                     {currentLang === 'ar' ? stage.name : stage.nameEN}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex flex-wrap gap-2">
+                  <td className="border border-gray-200 px-6 py-4">
+                    <div className="flex flex-wrap justify-center gap-2">
                       {stage.classRooms.map((classroom) => (
                         <span
                           key={classroom.id}
-                          className="inline-flex items-center rounded-md bg-cyan-50 px-2.5 py-1 text-sm font-medium text-cyan-700 ring-1 ring-inset ring-cyan-600/20"
+                          className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700"
                         >
-                          {currentLang === 'ar' ? classroom.name : classroom.nameEN}
                           <CustomImage
                             src={EyeStyledIcon}
                             alt="classroom"
-                            className="ms-1.5 h-4 w-4"
+                            className="me-1.5 h-4 w-4"
                           />
+                          {currentLang === 'ar' ? classroom.name : classroom.nameEN}
                         </span>
                       ))}
                     </div>
+                  </td>
+                  <td className="border border-gray-200 px-6 py-4 text-center">
+                    <button
+                      className="inline-flex items-center justify-center"
+                      title={t('common.edit')}
+                    >
+                      <CustomImage src={EditIcon} alt="edit" className="h-5 w-5" />
+                    </button>
                   </td>
                 </tr>
               ))}
               {filteredStages.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-6 py-8 text-center text-sm text-gray-500">
+                  <td
+                    colSpan={4}
+                    className="border border-gray-200 px-6 py-8 text-center text-sm text-gray-500"
+                  >
                     {t('common.noResults')}
                   </td>
                 </tr>
