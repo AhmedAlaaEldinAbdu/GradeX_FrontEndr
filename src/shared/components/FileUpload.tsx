@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
+import MultiFiles from '@/assets/icons/MultiFiles.svg';
+import useLanguage from '@/hooks/useLanguage';
 
 interface FileInfo {
   file: File;
@@ -31,7 +33,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onDelete,
   fileName,
   fileNames,
-  uploadText = 'ارفع الوسائط من هنا',
+  uploadText,
   formatHints = ['GIF', 'SVG', 'JPG', 'PNG', 'PDF'],
   required = false,
   optional = false,
@@ -40,6 +42,21 @@ const FileUpload: React.FC<FileUploadProps> = ({
   id = '',
 }) => {
   const { t } = useTranslation();
+  const { isArabic } = useLanguage();
+
+  // Use translation if uploadText is not provided
+  const displayUploadText = uploadText || t('fileUpload.uploadText');
+  const orSeparator = t('fileUpload.formatSeparator');
+
+  // Format hints with commas and 'or' after the first item
+  const formatHintsText = () => {
+    if (formatHints.length === 0) return '';
+    if (formatHints.length === 1) return formatHints[0];
+    const firstItem = formatHints[0];
+    const rest = formatHints.slice(1).join(', ');
+    return `${firstItem}${orSeparator}${rest}`;
+  };
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [filePreview, setFilePreview] = useState<string | null>(null);
@@ -176,9 +193,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* Upload Area */}
       <div
-        className={`relative rounded-lg border-2 border-dashed bg-gray-50 p-8 text-center transition-all ${
-          error ? 'border-red-500 hover:border-red-600' : 'border-gray-300 hover:border-green-500'
+        className={`relative rounded-xl border-2 border-dashed p-8 text-center transition-all ${
+          error
+            ? 'border-red-500 bg-red-50 hover:border-red-600'
+            : 'border-[#1E8A73] bg-[#F2F2F2] hover:border-[#166b5a]'
         }`}
+        style={{ borderStyle: 'dashed', borderSpacing: '8px' }}
       >
         <input
           id={id}
@@ -189,26 +209,16 @@ const FileUpload: React.FC<FileUploadProps> = ({
           multiple={multiple}
           className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
         />
-        <div className="flex flex-col items-center gap-2">
-          <svg
-            width="48"
-            height="48"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-gray-400"
-          >
-            <path
-              d="M24 16V32M16 24H32"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <rect x="8" y="8" width="32" height="32" rx="4" stroke="currentColor" strokeWidth="2" />
-          </svg>
-          <p className="text-sm text-green-600">{uploadText}</p>
+        <div className="flex flex-col items-center gap-3">
+          {/* Icon Container */}
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-sm">
+            <img src={MultiFiles} alt="Upload Icon" className="h-6 w-6 object-contain" />
+          </div>
+          <p className="text-sm font-medium text-[#1E8A73]">{displayUploadText}</p>
           {formatHints.length > 0 && (
-            <p className="text-sm text-gray-500">{formatHints.join(', ')}</p>
+            <p className="text-sm text-gray-500" dir={isArabic ? 'ltr' : 'rtl'}>
+              {formatHintsText()}
+            </p>
           )}
         </div>
       </div>
