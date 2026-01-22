@@ -461,7 +461,7 @@ export default function TeacherPlacementDetails({
           </div>
           <div className="text-start">
             <p className="mb-2 text-sm text-gray-600">{t('teachers.details.computerSkills')}</p>
-            {technicalSkill.technicalApps.length > 0 ? (
+            {technicalSkill?.technicalApps?.length > 0 ? (
               <ul className="space-y-1 text-gray-900">
                 {technicalSkill.technicalApps.map((skill, index) => (
                   <li key={index}>{skill.level ? `${skill.name} — ${skill.level}` : skill.name}</li>
