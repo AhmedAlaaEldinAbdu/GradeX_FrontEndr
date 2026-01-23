@@ -32,11 +32,10 @@ export const restoreSession = createAsyncThunk('auth/restoreSession', async () =
   logger.info('Attempting to restore session', {
     hasToken: !!token,
     hasUserData: !!userData,
-    isExpired: token ? tokenManager.isTokenExpired() : 'no token',
   });
 
-  if (!token || !userData || tokenManager.isTokenExpired()) {
-    logger.warn('Session restore failed - clearing tokens');
+  if (!token || !userData) {
+    logger.warn('Session restore failed - no token or user data');
     tokenManager.clearTokens();
     throw new Error('No valid session found');
   }
