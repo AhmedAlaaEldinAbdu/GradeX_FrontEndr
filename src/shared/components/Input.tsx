@@ -20,7 +20,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const isDateInput = type === 'date';
 
     // For time inputs: hide native icon, show custom icon
-    // Position: right side for Arabic (RTL), left side for English (LTR)
     const showTimeIcon = isTimeInput && icon;
     const showIconAtEnd = icon && !isTimeInput && !isDateInput;
 
@@ -29,7 +28,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       ? '[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden'
       : '';
 
-    // For time input: use right positioning in RTL (Arabic), left positioning in LTR (English)
     const timeIconPositionClass = isRTL ? 'left-3' : 'right-3';
 
     return (
@@ -65,6 +63,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={inputRef}
             type={type}
+            onClick={() => {
+              if (isTimeInput || isDateInput) {
+                inputRef.current?.showPicker?.();
+              }
+            }}
             className={`w-full rounded-lg border px-4 py-2 transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
               showTimeIcon ? (isRTL ? 'pl-10' : 'pr-10') : ''
             } ${showIconAtEnd ? 'pr-10' : ''} ${timeInputClasses} ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'} ${className}`}
