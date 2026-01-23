@@ -292,7 +292,7 @@ export default function AttendanceManagement() {
             }
           }}
           onChange={(e) => handleSelectAll(e.target.checked)}
-          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-600 focus:ring-green-500"
+          className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1"
         />
       ),
       accessor: (row) => (
@@ -300,7 +300,7 @@ export default function AttendanceManagement() {
           type="checkbox"
           checked={selectedStudents.includes(row.id)}
           onChange={(e) => handleSelectStudent(row.id, e.target.checked)}
-          className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-600 focus:ring-green-500"
+          className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1"
         />
       ),
       headerClassName: 'w-12',
