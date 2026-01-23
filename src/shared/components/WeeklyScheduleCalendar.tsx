@@ -392,16 +392,32 @@ export default function WeeklyScheduleCalendar({
       <p className="mt-0.5 text-start text-[10px] text-gray-400">
         {lesson.startTime}ص - {lesson.endTime}ص
       </p>
-      {/* Duration Badge */}
-      <div className="mt-2 flex items-center gap-1">
-        <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
-        <span className="text-[9px] text-gray-600">
-          <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
-            {lesson.duration}
-          </span>
-          {t('weeklyCalendar.minutes')}
-        </span>
-        <div className="ms-auto flex h-5 w-5 items-center justify-center rounded border border-gray-200 text-emerald-600">
+      {/* Duration Badge - stacked if <=60min, inline if >60min */}
+      <div className="mt-2 flex items-start justify-between gap-1">
+        {lesson.duration <= 60 ? (
+          /* Stacked layout for short lessons */
+          <div className="flex flex-col text-start">
+            <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
+            <span className="text-[9px] text-gray-600">
+              <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
+                {lesson.duration}
+              </span>
+              {t('weeklyCalendar.minutes')}
+            </span>
+          </div>
+        ) : (
+          /* Inline layout for longer lessons */
+          <div className="flex items-center gap-1 text-start">
+            <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
+            <span className="text-[9px] text-gray-600">
+              <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
+                {lesson.duration}
+              </span>
+              {t('weeklyCalendar.minutes')}
+            </span>
+          </div>
+        )}
+        <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border border-gray-200 text-emerald-600">
           <svg
             className="h-2.5 w-2.5"
             viewBox="0 0 24 24"
