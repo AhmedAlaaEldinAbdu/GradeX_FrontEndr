@@ -33,7 +33,8 @@ const ATTENDANCE_STATUS_OPTIONS = [
 ];
 
 export default function AttendanceTab({ teacherId, isActive = true }: AttendanceTabProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
@@ -132,13 +133,13 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
     },
     {
       header: 'teachers.details.checkInTime',
-      accessor: (row) => formatTime(row.checkInTime),
+      accessor: (row) => formatTime(row.checkInTime, currentLang),
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: 'teachers.details.checkOutTime',
-      accessor: (row) => formatTime(row.checkOutTime),
+      accessor: (row) => formatTime(row.checkOutTime, currentLang),
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
@@ -152,7 +153,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
                 <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-yellow-100">
                   <span className="text-yellow-600">⚠</span>
                 </span>
-                <span>{formatTime(row.earlyLeaveTime)}</span>
+                <span>{formatTime(row.earlyLeaveTime, currentLang)}</span>
               </div>
               {row.earlyLeaveReason && (
                 <span className="text-xs text-gray-500">{row.earlyLeaveReason}</span>

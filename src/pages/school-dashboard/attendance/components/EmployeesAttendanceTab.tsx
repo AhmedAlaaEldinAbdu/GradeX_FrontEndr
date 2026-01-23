@@ -440,7 +440,7 @@ export default function EmployeesAttendanceTab({
       accessor: (row) => {
         return (
           <div className="flex flex-col items-center">
-            <span className="text-sm">{formatTime(row.checkInTime)}</span>
+            <span className="text-sm">{formatTime(row.checkInTime, currentLang)}</span>
           </div>
         );
       },
@@ -518,7 +518,7 @@ export default function EmployeesAttendanceTab({
   ];
 
   const filterConfigs: FilterConfig[] = [
-     {
+    {
       type: 'custom',
       name: 'educational-stage-filter',
       placeholder: '',
