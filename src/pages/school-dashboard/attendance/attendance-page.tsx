@@ -52,10 +52,7 @@ export default function AttendancePage() {
     }
   };
 
-  const breadcrumbItems = [
-    { label: t('sidebar.studentManagement') },
-    { label: t('attendance.title') },
-  ];
+  const breadcrumbItems = [{ label: t('sidebar.attendance') }, { label: t('attendance.title') }];
 
   return (
     <div>

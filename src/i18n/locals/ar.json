@@ -1835,5 +1835,9 @@
     "noTeachersAvailable": "لا يوجد معلمون متاحون",
     "noGradesAvailable": "لا توجد صفوف متاحة",
     "noMaterialsAvailable": "لا توجد مواد متاحة"
+  },
+  "fileUpload": {
+    "uploadText": "اضغط هنا للإضافة صورة أو ملف",
+    "formatSeparator": " أو "
   }
 }

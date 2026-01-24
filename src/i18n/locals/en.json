@@ -1837,5 +1837,9 @@
     "noTeachersAvailable": "No teachers available",
     "noGradesAvailable": "No grades available",
     "noMaterialsAvailable": "No subjects available"
+  },
+  "fileUpload": {
+    "uploadText": "Click here to add image or file",
+    "formatSeparator": " or "
   }
 }

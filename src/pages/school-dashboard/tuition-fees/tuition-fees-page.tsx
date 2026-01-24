@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import PageHeader from '@/shared/components/PageHeader';
-import PlusIcon from '@/assets/icons/Plus.svg';
-import TuitionFees, { TUITION_TAB, type TuitionFeesTabId } from './components/TuitionFees';
+// import { useState } from 'react';
+// import PageHeader from '@/shared/components/PageHeader';
+// import PlusIcon from '@/assets/icons/Plus.svg';
+// import TuitionFees, { TUITION_TAB, type TuitionFeesTabId } from './components/TuitionFees';
 
 export default function TuitionFeesPage() {
-  const [selectedTab, setSelectedTab] = useState<TuitionFeesTabId>(TUITION_TAB);
+  // const [selectedTab, setSelectedTab] = useState<TuitionFeesTabId>(TUITION_TAB);
 
   return (
     <div>

@@ -4,11 +4,25 @@ export const parseDate = (date?: string): string => {
   return date ? new Date(date).toISOString().split('T')[0] : '';
 };
 
-export const formatTime = (time: string | null): string => {
+export const formatTime = (time: string | null, lang: 'ar' | 'en' = 'en'): string => {
   if (!time) return '-';
   const parts = time.split(':');
   if (parts.length >= 2) {
-    return `${parts[0]}:${parts[1]}`;
+    let hours = parseInt(parts[0], 10);
+    const minutes = parts[1];
+
+    const isAM = hours < 12;
+    const periodAr = isAM ? 'ص' : 'م';
+    const periodEn = isAM ? 'AM' : 'PM';
+
+    if (hours === 0) {
+      hours = 12;
+    } else if (hours > 12) {
+      hours = hours - 12;
+    }
+
+    const period = lang === 'ar' ? periodAr : periodEn;
+    return `${hours}:${minutes} ${period}`;
   }
   return time;
 };

@@ -338,7 +338,7 @@ export default function WeeklyScheduleCalendar({
 
   // Three dots menu icon (vertical)
   const DotsIcon = () => (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
+    <svg className="h-3 w-3" viewBox="0 0 16 16" fill="currentColor">
       <circle cx="8" cy="3" r="1.5" />
       <circle cx="8" cy="8" r="1.5" />
       <circle cx="8" cy="13" r="1.5" />
@@ -366,12 +366,12 @@ export default function WeeklyScheduleCalendar({
   // Lesson Card matching the design exactly
   const LessonCard = ({ lesson }: { lesson: ScheduleLesson }) => (
     <div
-      className="h-full cursor-pointer rounded-lg border border-gray-200 bg-white p-3 transition-shadow hover:shadow-md"
+      className="h-full cursor-pointer rounded-lg border border-gray-200 bg-white p-2 transition-shadow hover:shadow-md"
       onClick={() => onLessonClick?.(lesson)}
     >
       {/* Header: Subject + Dots */}
       <div className="flex items-start justify-between gap-1">
-        <span className="text-base font-bold text-gray-800">{lesson.subject}</span>
+        <span className="text-xs font-bold text-gray-800">{lesson.subject}</span>
         <button
           className="flex-shrink-0 text-gray-400 hover:text-gray-600"
           onClick={(e) => {
@@ -387,23 +387,39 @@ export default function WeeklyScheduleCalendar({
         </button>
       </div>
       {/* Teacher Name */}
-      <p className="mt-1.5 text-start text-xs text-gray-500">{lesson.teacherName}</p>
+      <p className="mt-1 text-start text-[10px] text-gray-500">{lesson.teacherName}</p>
       {/* Time Range */}
-      <p className="mt-1 text-start text-xs text-gray-400">
+      <p className="mt-0.5 text-start text-[10px] text-gray-400">
         {lesson.startTime}ص - {lesson.endTime}ص
       </p>
-      {/* Duration Badge */}
-      <div className="mt-3 flex items-center gap-2">
-        <span className="text-[11px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
-        <span className="text-[11px] text-gray-600">
-          <span className="me-1 inline-block rounded border border-gray-200 px-1 py-0.5">
-            {lesson.duration}
-          </span>
-          {t('weeklyCalendar.minutes')}
-        </span>
-        <div className="ms-auto flex h-6 w-6 items-center justify-center rounded border border-gray-200 text-emerald-600">
+      {/* Duration Badge - stacked if <=60min, inline if >60min */}
+      <div className="mt-2 flex items-start justify-between gap-1">
+        {lesson.duration <= 60 ? (
+          /* Stacked layout for short lessons */
+          <div className="flex flex-col text-start">
+            <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
+            <span className="text-[9px] text-gray-600">
+              <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
+                {lesson.duration}
+              </span>
+              {t('weeklyCalendar.minutes')}
+            </span>
+          </div>
+        ) : (
+          /* Inline layout for longer lessons */
+          <div className="flex items-center gap-1 text-start">
+            <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
+            <span className="text-[9px] text-gray-600">
+              <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
+                {lesson.duration}
+              </span>
+              {t('weeklyCalendar.minutes')}
+            </span>
+          </div>
+        )}
+        <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border border-gray-200 text-emerald-600">
           <svg
-            className="h-3.5 w-3.5"
+            className="h-2.5 w-2.5"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -512,13 +528,13 @@ export default function WeeklyScheduleCalendar({
       dir={isRTL ? 'rtl' : 'ltr'}
     >
       {/* Date Navigation Header */}
-      <div className="flex items-center justify-center gap-6 border-b border-gray-100 py-4">
+      <div className="flex items-center justify-center gap-4 border-b border-gray-100 py-3">
         <button
           onClick={handlePrevWeek}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
           aria-label="Previous week"
         >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -527,13 +543,13 @@ export default function WeeklyScheduleCalendar({
             />
           </svg>
         </button>
-        <span className="text-sm font-semibold text-gray-700">{dateRangeLabel}</span>
+        <span className="text-xs font-semibold text-gray-700">{dateRangeLabel}</span>
         <button
           onClick={handleNextWeek}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
           aria-label="Next week"
         >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -545,10 +561,10 @@ export default function WeeklyScheduleCalendar({
       </div>
 
       {/* Calendar Grid */}
-      <div className="overflow-x-auto p-4">
+      <div className="overflow-x-auto p-2">
         <div className="relative">
           {/* Header Row - Period/Time columns */}
-          <div className="relative mb-2 grid grid-cols-[120px_repeat(9,minmax(150px,1fr))] gap-2">
+          <div className="relative mb-2 grid grid-cols-[80px_repeat(9,minmax(90px,1fr))] gap-2">
             {/* Row label header - empty space */}
             <div className="flex items-center justify-center" />
             {/* Period headers - 9 columns for time slots */}
@@ -560,10 +576,10 @@ export default function WeeklyScheduleCalendar({
               return (
                 <div
                   key={idx}
-                  className={`flex flex-col items-center justify-center rounded-xl border py-4`}
+                  className={`flex flex-col items-center justify-center rounded-lg border py-2`}
                 >
-                  <span className={`text-lg font-bold ${labelClass}`}>{period.label}</span>
-                  <span className="mt-1 text-[11px] text-gray-400">{period.time}</span>
+                  <span className={`text-sm font-bold ${labelClass}`}>{period.label}</span>
+                  <span className="mt-0.5 text-[9px] text-gray-400">{period.time}</span>
                 </div>
               );
             })}
@@ -587,22 +603,22 @@ export default function WeeklyScheduleCalendar({
             return (
               <div
                 key={dayIndex}
-                className="relative mb-2 grid grid-cols-[120px_repeat(9,minmax(150px,1fr))] gap-2 overflow-visible"
+                className="relative mb-2 grid grid-cols-[80px_repeat(9,minmax(90px,1fr))] gap-2 overflow-visible"
               >
                 {/* Day label on the right */}
                 {isCurrentDay ? (
                   // Current day - green badge with menu icon and border
-                  <div className="z-10 flex flex-col items-center justify-center rounded-xl border border-emerald-500 bg-white py-4">
-                    <div className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-emerald-500">
+                  <div className="z-10 flex flex-col items-center justify-center rounded-lg border border-emerald-500 bg-white py-2">
+                    <div className="flex items-center gap-1 rounded-lg px-2 py-1 text-emerald-500">
                       {/* <MenuIcon /> */}
-                      <img src={MenuICon} alt="menu" className="h-4 w-4" />
-                      <span className="text-xs font-bold">{getRowLabel(dayIndex)}</span>
+                      <img src={MenuICon} alt="menu" className="h-3 w-3" />
+                      <span className="text-[10px] font-bold">{getRowLabel(dayIndex)}</span>
                     </div>
                   </div>
                 ) : (
                   // Other days - just plain text
-                  <div className="z-10 flex items-center justify-center py-3">
-                    <span className="text-sm text-gray-500">{getRowLabel(dayIndex)}</span>
+                  <div className="z-10 flex items-center justify-center py-2">
+                    <span className="text-[10px] text-gray-500">{getRowLabel(dayIndex)}</span>
                   </div>
                 )}
                 {/* Period cells (9 columns) */}
@@ -665,12 +681,12 @@ export default function WeeklyScheduleCalendar({
                     return (
                       <div
                         key={periodIndex}
-                        className={`flex min-h-[160px] items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
+                        className={`flex min-h-[100px] items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
                         style={{ marginBottom: isLastRow ? 0 : undefined }}
                       >
                         {isMiddleRow && (
                           <span
-                            className={`text-lg font-bold ${specialCol.textColor || 'text-gray-700'}`}
+                            className={`text-sm font-bold ${specialCol.textColor || 'text-gray-700'}`}
                           >
                             {specialCol.label}
                           </span>
@@ -689,11 +705,11 @@ export default function WeeklyScheduleCalendar({
                       return (
                         <div
                           key={periodIndex}
-                          className={`z-10 flex min-h-[160px] items-center gap-2 rounded-s-xl ps-4 ${getEventBgClasses(fullRowEvent.color)}`}
+                          className={`z-10 flex min-h-[100px] items-center gap-2 rounded-s-xl ps-3 ${getEventBgClasses(fullRowEvent.color)}`}
                         >
-                          <span className="text-lg font-bold">{fullRowEvent.title}</span>
+                          <span className="text-sm font-bold">{fullRowEvent.title}</span>
                           {fullRowEvent.hasArrow && (
-                            <CustomImage src={UpLeftArrow} alt="check" className="h-4 w-4" />
+                            <CustomImage src={UpLeftArrow} alt="check" className="h-3 w-3" />
                           )}
                         </div>
                       );
@@ -703,7 +719,7 @@ export default function WeeklyScheduleCalendar({
                       return (
                         <div
                           key={periodIndex}
-                          className={`z-10 min-h-[160px] rounded-e-xl ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
+                          className={`z-10 min-h-[100px] rounded-e-xl ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
                         />
                       );
                     }
@@ -711,7 +727,7 @@ export default function WeeklyScheduleCalendar({
                     return (
                       <div
                         key={periodIndex}
-                        className={`z-10 min-h-[160px] ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
+                        className={`z-10 min-h-[100px] ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
                       />
                     );
                   }
@@ -724,7 +740,7 @@ export default function WeeklyScheduleCalendar({
                     return (
                       <div
                         key={periodIndex}
-                        className={`min-h-[160px] rounded-xl ${cellBgClass}`}
+                        className={`min-h-[100px] rounded-xl ${cellBgClass}`}
                       />
                     );
                   }
@@ -733,7 +749,7 @@ export default function WeeklyScheduleCalendar({
                     return (
                       <div
                         key={periodIndex}
-                        className="pointer-events-none min-h-[160px]"
+                        className="pointer-events-none min-h-[100px]"
                         aria-hidden="true"
                       />
                     );
@@ -759,7 +775,7 @@ export default function WeeklyScheduleCalendar({
                     return (
                       <div
                         key={periodIndex}
-                        className="relative z-10 min-h-[160px]"
+                        className="relative z-10 min-h-[100px] p-0.5"
                         style={{ width: widthStyle }}
                       >
                         <LessonCard lesson={lessonStartingHere} />
@@ -779,7 +795,7 @@ export default function WeeklyScheduleCalendar({
                     );
 
                     return (
-                      <div key={periodIndex} className="flex min-h-[160px]" style={{ gap: '8px' }}>
+                      <div key={periodIndex} className="flex min-h-[100px]" style={{ gap: '4px' }}>
                         <div
                           style={{ width: `${fractionalPart * 100}%` }}
                           className="flex-shrink-0"
@@ -795,9 +811,9 @@ export default function WeeklyScheduleCalendar({
                               }
                               className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
                             >
-                              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
+                              <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
                                 <svg
-                                  className="h-5 w-5"
+                                  className="h-3.5 w-3.5"
                                   fill="none"
                                   stroke="currentColor"
                                   viewBox="0 0 24 24"
@@ -823,7 +839,7 @@ export default function WeeklyScheduleCalendar({
                   return (
                     <div
                       key={periodIndex}
-                      className={`group relative min-h-[160px] overflow-visible rounded-xl ${cellBgClass}`}
+                      className={`group relative min-h-[100px] overflow-visible rounded-lg ${cellBgClass}`}
                     >
                       {/* Event block (can span horizontally and vertically) */}
                       {eventAtCell && isEventStart && (
@@ -841,9 +857,9 @@ export default function WeeklyScheduleCalendar({
                           }
                           className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
                         >
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
                             <svg
-                              className="h-5 w-5"
+                              className="h-3.5 w-3.5"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
