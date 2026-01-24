@@ -16,7 +16,6 @@ import SharedCalendar, {
 } from '@/shared/components/SharedCalendar';
 import SearchInput from '@/shared/components/SearchInput';
 import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
-import EmptyState from '@/shared/components/EmptyState';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import AddEditMonthlyEventPopup from '../popups/AddEditMonthlyEventPopup';
 import MonthlyEventDetailsPopup from '../popups/MonthlyEventDetailsPopup';
@@ -25,7 +24,6 @@ import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import StyledCalendarIcon from '@gradex/assets/icons/StyledCalendar.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import {
   createMonthlyCalendarEvent,
@@ -507,8 +505,6 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     setStageFilter('');
   };
 
-  const showEmptyState = !isLoading && calendarEvents.length === 0;
-
   return (
     <>
       <Card>
@@ -564,15 +560,6 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         {isLoading ? (
           <Loading size="lg" />
         ) : (
-          // : showEmptyState ? (
-          //   <EmptyState
-          //     imgSrc={StyledCalendarIcon}
-          //     title={t('monthlyCalendar.emptyStateTitle')}
-          //     description={t('monthlyCalendar.emptyStateDescription')}
-          //     actionLabel={t('monthlyCalendar.addEventButton')}
-          //     blend
-          //   />
-          // )
           <SharedCalendar
             events={calendarEvents}
             onSelectEvent={(calendarEvent) => {
