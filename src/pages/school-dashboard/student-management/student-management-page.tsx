@@ -2,10 +2,10 @@ import React from 'react';
 // import { Breadcrumb } from '@gradex/shared/layout/layout';
 // import { Button } from '@gradex/shared/components/components';
 // import StudentManagement from './components/StudentManagement';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 
 const StudentManagementPage: React.FC = () => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   return (
     <div>
