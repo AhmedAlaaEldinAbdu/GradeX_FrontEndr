@@ -10,16 +10,21 @@ const StudentManagementPage: React.FC = () => {
   return (
     <div>
       {/* Breadcrumb */}
-      <Breadcrumb items={[{ label: t('studentManagement.students') }]} />
+      {/* <Breadcrumb items={[{ label: t('studentManagement.students') }]} /> */}
 
       {/* Page Header */}
-      <div className="mb-6 flex items-center justify-between">
+      {/* <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">الطلاب</h1>
         <Button icon={<span className="text-lg">+</span>}>إضافة طالب</Button>
-      </div>
+      </div> */}
 
       {/* Main Content */}
-      <StudentManagement />
+      {/* <StudentManagement /> */}
+
+      <div className="py-16 text-center">
+        <h2 className="text-2xl font-bold text-gray-800">الطلاب</h2>
+        <p className="mt-4 text-gray-600">قريباً...</p>
+      </div>
     </div>
   );
 };
