@@ -1,7 +1,7 @@
 import React from 'react';
-import { Breadcrumb } from '@gradex/shared/layout/layout';
-import { Button } from '@gradex/shared/components/components';
-import StudentManagement from './components/StudentManagement';
+// import { Breadcrumb } from '@gradex/shared/layout/layout';
+// import { Button } from '@gradex/shared/components/components';
+// import StudentManagement from './components/StudentManagement';
 import { useTranslation } from 'react-i18next';
 
 const StudentManagementPage: React.FC = () => {

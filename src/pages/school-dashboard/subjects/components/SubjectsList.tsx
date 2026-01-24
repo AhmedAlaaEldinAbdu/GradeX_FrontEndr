@@ -83,11 +83,11 @@ export default function SubjectsList() {
   const getLevelBadgeColor = (level: number) => {
     switch (level) {
       case 1:
-        return 'bg-[#1A9F58]/10 text-[#1A9F58] border border-[#1A9F58]/20';
+        return 'bg-lightGreen-100 text-lightGreen-500';
       case 2:
-        return 'bg-[#A96908]/10 text-[#A96908] border border-[#A96908]/20';
+        return 'bg-orange-100 text-orange-500';
       case 3:
-        return 'bg-[#0491DD]/10 text-[#0491DD] border border-[#0491DD]/20';
+        return 'bg-sky-100 text-sky-500';
       default:
         return 'bg-gray-100 text-gray-500';
     }
