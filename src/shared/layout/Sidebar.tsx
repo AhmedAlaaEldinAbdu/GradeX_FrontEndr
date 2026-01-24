@@ -290,7 +290,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       return (
         <div
           key={item.key}
-          className={`mb-1 ${isExpanded ? 'rounded-lg bg-green-50' : ''}`}
+          className={`mb-2 ${isExpanded ? 'rounded-lg bg-green-50' : ''}`}
           style={
             isExpanded ? { borderRadius: isRTL ? '20px 0 0 20px' : '0 20px 20px 0' } : undefined
           }
@@ -385,7 +385,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         to={item.path!}
         onClick={() => setExpandedItems([])}
         className={({ isActive }) =>
-          `mb-1 flex items-center gap-3 rounded-lg px-4 py-3 transition-colors duration-200 ${
+          `mb-2 flex items-center gap-3 rounded-lg px-4 py-3 transition-colors duration-200 ${
             isActive
               ? 'linear-green font-medium text-white'
               : 'text-black-700 hover:bg-green-100 hover:text-green-500'
