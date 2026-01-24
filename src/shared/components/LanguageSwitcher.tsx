@@ -60,7 +60,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     return (
       <button
         onClick={toggleLanguage}
-        className={`${baseClasses} rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-green-500 ${className}`}
+        className={`${baseClasses} flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-green-500 ${className}`}
         aria-label={currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
         title={currentLanguage === 'ar' ? 'English' : 'العربية'}
       >

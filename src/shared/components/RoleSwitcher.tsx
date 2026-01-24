@@ -132,7 +132,7 @@ const RoleSwitcher: React.FC<RoleSwitcherProps> = ({
       <button
         type="button"
         onClick={onToggle}
-        className={`${baseClasses} rounded-full bg-gray-50 flex items-center justify-center w-[45px] h-[45px] text-gray-700 hover:bg-gray-100 hover:text-green-600 ${className}`}
+        className={`${baseClasses} flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-green-600 ${className}`}
         aria-label={ariaLabel}
         title={title}
       >
