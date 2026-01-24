@@ -46,6 +46,30 @@ function writeStoredUserData(storage: Storage, data: StoredUserDataLike): void {
   storage.setItem('userData', JSON.stringify(data));
 }
 
+function getRoleSwitcherOverrideEnabled(): boolean {
+  // Temporary escape hatch for deployed builds.
+  // Enable by visiting: ?enableRoleSwitcher=1 (persists in localStorage)
+  // Disable by visiting: ?enableRoleSwitcher=0
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const param = params.get('enableRoleSwitcher');
+
+    if (param === '1' || param === 'true') {
+      localStorage.setItem('enableRoleSwitcher', 'true');
+      return true;
+    }
+
+    if (param === '0' || param === 'false') {
+      localStorage.setItem('enableRoleSwitcher', 'false');
+      return false;
+    }
+
+    return localStorage.getItem('enableRoleSwitcher') === 'true';
+  } catch {
+    return false;
+  }
+}
+
 const RoleSwitcher: React.FC<RoleSwitcherProps> = ({
   variant = 'minimal',
   className = '',
@@ -57,7 +81,11 @@ const RoleSwitcher: React.FC<RoleSwitcherProps> = ({
 
   const isEnabled = useMemo(() => {
     if (typeof enabled === 'boolean') return enabled;
-    return import.meta.env.DEV || import.meta.env.VITE_ENABLE_ROLE_SWITCHER === 'true';
+    return (
+      import.meta.env.DEV ||
+      import.meta.env.VITE_ENABLE_ROLE_SWITCHER === 'true' ||
+      getRoleSwitcherOverrideEnabled()
+    );
   }, [enabled]);
 
   const currentRole = useMemo<UserRoleType>(() => {
