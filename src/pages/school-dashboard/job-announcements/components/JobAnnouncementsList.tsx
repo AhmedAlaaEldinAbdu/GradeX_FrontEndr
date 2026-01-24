@@ -313,8 +313,7 @@ export default function JobAnnouncementsList() {
       className: 'text-center',
     },
     {
-      header:
-        currentLang === 'ar' ? 'jobAnnouncement.form.jobNameAr' : 'jobAnnouncement.form.jobNameEn',
+      header: 'jobAnnouncement.form.jobName',
       accessor: (row) => (
         <span>
           {currentLang === 'ar'

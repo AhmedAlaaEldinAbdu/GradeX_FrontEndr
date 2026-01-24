@@ -1414,6 +1414,7 @@
       "selectSchoolBranch": "Select school branch",
       "jobTitleAr": "Job title (Arabic)",
       "jobTitleEn": "Job title (English)",
+      "jobName": "Job announcement name",
       "jobNameAr": "Job announcement name (Arabic)",
       "jobNameEn": "Job announcement name (English)",
       "enterJobNameAr": "Enter job announcement name (Arabic)",
