@@ -378,20 +378,31 @@ export default function TeachersList() {
     if (!selectedTeacherId) return;
 
     try {
-      await dispatch(deleteTeacherAction(selectedTeacherId)).unwrap();
-      setShowDeletePopup(false);
-      showToast({
-        message: 'teachers.teacherDeletedSuccessfully',
-        type: 'success',
-      });
-      // Refresh the list after deletion
-      dispatch(
-        fetchTeacherAssignmentList({
-          schoolBranchesId: SCHOOL_BRANCH_ID,
-          page: pagination.page,
-          limit: pagination.limit,
-        })
-      );
+      await dispatch(deleteTeacherAction(selectedTeacherId))
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess || res === selectedTeacherId) {
+            setShowDeletePopup(false);
+            showToast({
+              message: 'teachers.teacherDeletedSuccessfully',
+              type: 'success',
+            });
+            dispatch(
+              fetchTeacherAssignmentList({
+                schoolBranchesId: SCHOOL_BRANCH_ID,
+                page: pagination.page,
+                limit: pagination.limit,
+              })
+            );
+          } else {
+            setShowDeletePopup(false);
+            showToast({
+              message: res.message || 'common.errorOccurred',
+              type: 'error',
+              isRaw: !!res.message,
+            });
+          }
+        });
     } catch (error) {
       setShowDeletePopup(false);
       const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
