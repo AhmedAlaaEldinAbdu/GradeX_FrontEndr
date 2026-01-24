@@ -21,6 +21,9 @@ import { fetchSchoolStages } from '@/redux/features/lookups';
 import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
 import CustomImage from '@/shared/components/CustomImage';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import ProfileImage from '@gradex/assets/images/profile.png';
+import WhatsAppIcon from '@gradex/assets/icons/WhatsApp.svg';
+import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
 
 // Static school branch ID
 const SCHOOL_BRANCH_ID = 'D18C45EA-EEEE-4A41-D35E-08DE1D686083';
@@ -131,6 +134,16 @@ export default function TeachersList() {
       header: 'teachers.teacherName',
       accessor: (row) => (
         <div className="flex items-center gap-2">
+          <div className="">
+            <CustomImage
+              src={ProfileImage}
+              alt={row.teacherName}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = ProfileImage;
+              }}
+              className="h-8 w-8 rounded-md object-cover"
+            />
+          </div>
           {row.teacherName}
           <IconButton
             variant="blue"
@@ -152,6 +165,54 @@ export default function TeachersList() {
       headerClassName: 'min-w-[200px]',
     },
     {
+      header: 'teachers.mobile',
+      accessor: (row) => {
+        const phone = row?.phone?.trim();
+        const countryCode = row?.countryCode?.trim();
+
+        if (!phone && !countryCode) return <span className="text-gray-400">-</span>;
+        if (!countryCode) return <span dir="ltr">{phone}</span>;
+        if (!phone) return <span dir="ltr">{countryCode}</span>;
+
+        return <span dir="ltr">{`${countryCode} ${phone}`}</span>;
+      },
+      headerClassName: 'min-w-[170px]',
+      className: 'text-center',
+    },
+    {
+      header: 'teachers.contactMethods',
+      accessor: (row) => {
+        const phone = row?.phone?.trim();
+        const countryCode = row?.countryCode?.trim();
+        const tel = phone ? `${countryCode ?? ''}${phone}`.replace(/\s+/g, '') : '';
+
+        if (!row?.email && !tel) return <span className="text-gray-400">-</span>;
+
+        return (
+          <div className="flex items-center justify-center gap-3">
+            {tel && (
+              <a
+                href={`tel:${tel}`}
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-lightGreen-100 hover:bg-green-200"
+              >
+                <CustomImage src={WhatsAppIcon} alt="Phone" className="h-6 w-6" />
+              </a>
+            )}
+            {row?.email && (
+              <a
+                href={`mailto:${row.email}`}
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-yellow-100 hover:bg-orange-200"
+              >
+                <CustomImage src={EmailYellowIcon} alt="Email" className="h-6 w-6" />
+              </a>
+            )}
+          </div>
+        );
+      },
+      headerClassName: 'min-w-[150px]',
+      className: 'text-center',
+    },
+    {
       header: 'teachers.subjectName',
       accessor: (row) => {
         const materialName = currentLang === 'ar' ? row.materialNameAR : row.materialNameEN;
@@ -161,7 +222,7 @@ export default function TeachersList() {
           <span className="text-gray-400">-</span>
         );
       },
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[180px]',
     },
     {
       header: 'teachers.educationalStages',
@@ -195,7 +256,7 @@ export default function TeachersList() {
           )}
         </div>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[220px]',
     },
     {
       header: 'common.actions',

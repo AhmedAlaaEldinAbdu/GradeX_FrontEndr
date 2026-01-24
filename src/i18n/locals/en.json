@@ -885,6 +885,8 @@
     "noTeachersMessage": "No teachers have been added yet. You can start by adding teachers to organize the teaching staff and manage education better.",
     "teacher": "Teacher",
     "teacherName": "Teacher Name",
+    "mobile": "Mobile Number",
+    "contactMethods": "Contact Methods",
     "email": "Email",
     "phone": "Phone Number",
     "nationality": "Nationality",
