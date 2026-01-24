@@ -564,8 +564,8 @@ export default function JobAnnouncementsList() {
             const hasMax = typeof row.maximumSalary === 'number';
             if (hasMin && hasMax) {
               const min = row.minimumSalary.toLocaleString(numberLocale);
-              const max = row.maximumSalary.toLocaleString(numberLocale);
-              return `${min} - ${max}`;
+              const max = row.maximumSalary && row.maximumSalary.toLocaleString(numberLocale);
+              return max ? `${min} - ${max}` : `${min}`;
             }
             if (typeof row.salary === 'number') {
               return row.salary.toLocaleString(numberLocale);
