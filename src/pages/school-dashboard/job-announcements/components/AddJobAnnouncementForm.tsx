@@ -45,6 +45,7 @@ import {
 } from '@/validations/job-announcements-validations';
 import CustomImage from '@/shared/components/CustomImage';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
+import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import { USE_MOCK_DATA, getMockJobAdvertismentById } from '../mock';
 import { PopupMessage } from '@/shared/popups/popups';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
@@ -99,7 +100,7 @@ const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
   workEndTime: '',
   salary: SalaryOption.TBD,
   minimumSalary: 0,
-  maximumSalary: 0,
+  maximumSalary: undefined,
   teacherGender: 'ANY',
   contractType: ContractType.FULL_TIME as ContractTypeValue,
   technicalSkillIds: '',
@@ -404,7 +405,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     setValue('workEndTime', job.workEndTime ?? '');
     setValue('salary', salOption);
     setValue('minimumSalary', job.minimumSalary ?? 0);
-    setValue('maximumSalary', job.maximumSalary ?? 0);
+    setValue('maximumSalary', job.maximumSalary ?? undefined);
     setValue('teacherGender', gender);
     setValue('technicalSkillIds', technicalSkillsText);
     setValue('personalSkillIds', personalSkillsText);
@@ -467,7 +468,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   useEffect(() => {
     if (salaryOption === SalaryOption.TBD) {
       setValue('minimumSalary', 0);
-      setValue('maximumSalary', 0);
+      setValue('maximumSalary', undefined);
     }
   }, [salaryOption, setValue]);
 
@@ -659,7 +660,10 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const personalSkills = extractListFromInput(values.personalSkillIds);
 
     const salaryMin = Number(values.minimumSalary || 0);
-    const salaryMax = Number(values.maximumSalary || 0);
+    const salaryMax =
+      typeof values.maximumSalary === 'number' && !Number.isNaN(values.maximumSalary)
+        ? values.maximumSalary
+        : undefined;
 
     const rawPayload: CreateJobAdvertismentRequest = {
       name: values.name,
@@ -676,7 +680,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       nationality: nationalityValue,
       salary: values.salary === SalaryOption.RANGE ? 2 : 1,
       minimumSalary: values.salary === SalaryOption.RANGE ? salaryMin : 0,
-      maximumSalary: values.salary === SalaryOption.RANGE ? salaryMax : 0,
+      maximumSalary: values.salary === SalaryOption.RANGE ? salaryMax : undefined,
       teacherGender:
         values.teacherGender === 'MALE' ? 1 : values.teacherGender === 'FEMALE' ? 2 : 3,
       yearsExperience: Number(values.yearsExperience || 0),
@@ -1267,11 +1271,19 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
               </FormField>
               <FormField
                 label={t('jobAnnouncement.form.maximumSalary')}
-                required
+                optional
                 error={errors.maximumSalary?.message as string | undefined}
                 htmlFor="maximumSalary"
               >
-                <Input id="maximumSalary" type="number" min={0} {...register('maximumSalary')} />
+                <Input
+                  id="maximumSalary"
+                  type="number"
+                  min={0}
+                  {...register('maximumSalary', {
+                    setValueAs: (value) =>
+                      value === '' || value === null ? undefined : Number(value),
+                  })}
+                />
               </FormField>
             </div>
           )}
@@ -1392,7 +1404,11 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     disabled={!canAddTechnicalSkill}
                     aria-label={`${t('common.add')} ${t('jobAnnouncement.form.technicalSkills')}`}
                   >
-                    <CustomImage src={GreenPlusIcon} alt={t('common.add')} className="h-5 w-5" />
+                    <CustomImage
+                      src={GreenPlusCircleIcon}
+                      alt={t('common.add')}
+                      className={`${technicalSkillInput ? '' : 'opacity-50'} h-5 w-5`}
+                    />
                   </button>
                 </div>
                 <Controller
@@ -1451,7 +1467,11 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     disabled={!canAddPersonalSkill}
                     aria-label={`${t('common.add')} ${t('jobAnnouncement.form.personalSkills')}`}
                   >
-                    <CustomImage src={GreenPlusIcon} alt={t('common.add')} className="h-5 w-5" />
+                    <CustomImage
+                      src={GreenPlusCircleIcon}
+                      alt={t('common.add')}
+                      className={`${personalSkillInput ? '' : 'opacity-50'} h-5 w-5`}
+                    />
                   </button>
                 </div>
                 <Controller

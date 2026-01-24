@@ -94,7 +94,7 @@ export interface JobAdvertismentBase {
   nationality: number;
   salary: number;
   minimumSalary: number;
-  maximumSalary: number;
+  maximumSalary?: number;
   teacherGender: number;
   yearsExperience: number;
   workShedule: JobAdvertismentWorkShedule;

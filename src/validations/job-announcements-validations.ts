@@ -140,14 +140,18 @@ export const AddJobAnnouncementSchema = object({
       otherwise: (schema) => schema.nullable().optional(),
     }),
   maximumSalary: number()
+    .transform((value, originalValue) => (originalValue === '' ? undefined : value))
     .typeError('jobAnnouncement.validation.maximumSalaryRequired')
     .when('salary', {
       is: SalaryOption.RANGE,
       then: (schema) =>
         schema
-          .required('jobAnnouncement.validation.maximumSalaryRequired')
+          .optional()
           .min(0)
-          .test('max-greater-min', 'jobAnnouncement.validation.maximumSalaryRequired', function (value) {
+          .test(
+            'max-greater-min',
+            'jobAnnouncement.validation.maximumSalaryRequired',
+            function (value) {
             const rawMin = this?.parent?.minimumSalary;
             const min =
               typeof rawMin === 'number'
@@ -156,8 +160,9 @@ export const AddJobAnnouncementSchema = object({
                   ? Number(rawMin)
                   : undefined;
 
+            // Optional: if max isn't provided, that's OK.
             if (value === undefined || value === null) {
-              return false;
+              return true;
             }
 
             if (min === undefined || Number.isNaN(min)) {
@@ -165,7 +170,8 @@ export const AddJobAnnouncementSchema = object({
             }
 
             return Number(value) >= min;
-          }),
+          }
+          ),
       otherwise: (schema) => schema.nullable().optional(),
     }),
   teacherGender: string().required('jobAnnouncement.validation.teacherGenderRequired'),
