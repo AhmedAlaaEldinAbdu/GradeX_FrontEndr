@@ -528,10 +528,10 @@ export default function WeeklyScheduleCalendar({
       dir={isRTL ? 'rtl' : 'ltr'}
     >
       {/* Date Navigation Header */}
-      <div className="flex items-center justify-center gap-4 border-b border-gray-100 py-3">
+      <div className="flex items-center justify-center gap-4 py-3">
         <button
           onClick={handlePrevWeek}
-          className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
           aria-label="Previous week"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -546,7 +546,7 @@ export default function WeeklyScheduleCalendar({
         <span className="text-xs font-semibold text-gray-700">{dateRangeLabel}</span>
         <button
           onClick={handleNextWeek}
-          className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
           aria-label="Next week"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
