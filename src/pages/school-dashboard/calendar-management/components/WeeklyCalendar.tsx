@@ -1003,95 +1003,96 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
   return (
     <>
-      {/* Filters Row - Three separate grouped containers */}
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        {/* Group 1: Education System */}
-        <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
-          <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
-            {t('weeklyCalendar.filters.educationSystem') || 'اختر النظام التعليم'}
-          </span>
-          <div className="h-full border-e border-gray-200" />
-          <CustomSelect
-            value={educationSystem}
-            onChange={(val) => {
-              const selectedSystem = academicSystems.find((s) => s.id === val);
-              setEducationSystem(val as string);
-              // Reset dependent filters
-              setStage('');
-              setGrade('');
-              setClassrooms([]);
-              // If the selected system has sub-systems, use the first one to filter stages
-              if (selectedSystem?.academicSubSystemDto?.length) {
-                setSubSystemId(selectedSystem.academicSubSystemDto[0].id);
-              } else {
-                setSubSystemId('');
-              }
-            }}
-            options={educationSystemOptions}
-            placeholder={
-              isLoadingAcademicSystems
-                ? t('common.loading')
-                : educationSystemOptions.find((s) => s.value === educationSystem)?.label ||
-                  t('weeklyCalendar.filters.selectSystem') ||
-                  'اختر النظام'
-            }
-            disabled={isLoadingAcademicSystems}
-            variant="ghost"
-            showSearch={false}
-            className="min-w-[100px]"
-          />
-        </div>
-
-        {/* Group 2: Stage Selection */}
-        <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
-          <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
-            {t('weeklyCalendar.filters.selectStage') || 'اختر المرحلة'}
-          </span>
-          <div className="h-full border-e border-gray-200" />
-          <CustomSelect
-            value={stage}
-            onChange={(val) => setStage(val as string)}
-            options={stageOptions}
-            placeholder={
-              isLoadingStages
-                ? t('common.loading')
-                : stageOptions.find((s) => s.value === stage)?.label || 'الأول الأعدادي'
-            }
-            disabled={isLoadingStages}
-            variant="ghost"
-            showSearch={false}
-            className="min-w-[140px]"
-          />
-        </div>
-
-        {/* Group 3: Classroom Selection */}
-        <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
-          <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
-            {t('weeklyCalendar.filters.classroom') || 'الصف الدراسي'}
-          </span>
-          <div className="h-full border-e border-gray-200" />
-          <CustomSelect
-            value={grade}
-            onChange={(val) => setGrade(val as string)}
-            options={classroomOptions}
-            placeholder={
-              isLoadingClassrooms
-                ? t('common.loading')
-                : classroomOptions.find((c) => c.value === grade)?.label || '1/1 ع'
-            }
-            disabled={!stage || isLoadingClassrooms}
-            variant="ghost"
-            showSearch={false}
-            className="min-w-[100px]"
-          />
-        </div>
-      </div>
-
-      {/* Calendar Component */}
+      {/* Calendar Component with Filters Inside */}
       <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+        {/* Filters Row - Inside calendar frame, above the calendar */}
+        <div className="flex flex-wrap items-center gap-3 p-4">
+          {/* Group 1: Education System */}
+          <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+              {t('weeklyCalendar.filters.educationSystem') || 'اختر النظام التعليم'}
+            </span>
+            <div className="h-full border-e border-gray-200" />
+            <CustomSelect
+              value={educationSystem}
+              onChange={(val) => {
+                const selectedSystem = academicSystems.find((s) => s.id === val);
+                setEducationSystem(val as string);
+                // Reset dependent filters
+                setStage('');
+                setGrade('');
+                setClassrooms([]);
+                // If the selected system has sub-systems, use the first one to filter stages
+                if (selectedSystem?.academicSubSystemDto?.length) {
+                  setSubSystemId(selectedSystem.academicSubSystemDto[0].id);
+                } else {
+                  setSubSystemId('');
+                }
+              }}
+              options={educationSystemOptions}
+              placeholder={
+                isLoadingAcademicSystems
+                  ? t('common.loading')
+                  : educationSystemOptions.find((s) => s.value === educationSystem)?.label ||
+                    t('weeklyCalendar.filters.selectSystem') ||
+                    'اختر النظام'
+              }
+              disabled={isLoadingAcademicSystems}
+              variant="ghost"
+              showSearch={false}
+              className="min-w-[100px]"
+            />
+          </div>
+
+          {/* Group 2: Stage Selection */}
+          <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+              {t('weeklyCalendar.filters.selectStage') || 'اختر المرحلة'}
+            </span>
+            <div className="h-full border-e border-gray-200" />
+            <CustomSelect
+              value={stage}
+              onChange={(val) => setStage(val as string)}
+              options={stageOptions}
+              placeholder={
+                isLoadingStages
+                  ? t('common.loading')
+                  : stageOptions.find((s) => s.value === stage)?.label || 'الأول الأعدادي'
+              }
+              disabled={isLoadingStages}
+              variant="ghost"
+              showSearch={false}
+              className="min-w-[140px]"
+            />
+          </div>
+
+          {/* Group 3: Classroom Selection */}
+          <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+              {t('weeklyCalendar.filters.classroom') || 'الصف الدراسي'}
+            </span>
+            <div className="h-full border-e border-gray-200" />
+            <CustomSelect
+              value={grade}
+              onChange={(val) => setGrade(val as string)}
+              options={classroomOptions}
+              placeholder={
+                isLoadingClassrooms
+                  ? t('common.loading')
+                  : classroomOptions.find((c) => c.value === grade)?.label || '1/1 ع'
+              }
+              disabled={!stage || isLoadingClassrooms}
+              variant="ghost"
+              showSearch={false}
+              className="min-w-[100px]"
+            />
+          </div>
+        </div>
+
+        {/* Calendar Content */}
         {isLoading ? (
           <div className="flex h-96 items-center justify-center">
-            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary-500"></div>
+            <div className="border-primary-500 h-12 w-12 animate-spin rounded-full border-b-2"></div>
           </div>
         ) : (
           <WeeklyScheduleCalendar
