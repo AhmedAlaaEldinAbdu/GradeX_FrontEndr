@@ -680,22 +680,37 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     }
   }, [subSystemId, fetchStagesData]);
 
-  // Fetch lessons when classroom (grade) changes
+  // Fetch lessons when classroom (grade) or stage changes
   useEffect(() => {
+    // Build filters based on selected values
+    const filters: { classroomId?: string; gradeId?: string } = {};
+
+    if (stage) {
+      filters.gradeId = stage;
+    }
     if (grade) {
-      dispatch(
-        fetchLessons({
-          filters: {
-            classroomId: grade,
-            gradeId: stage,
-          },
-        })
-      );
+      filters.classroomId = grade;
+    }
+
+    // Fetch lessons with filters (or no filters if nothing selected)
+    if (Object.keys(filters).length > 0) {
+      dispatch(fetchLessons({ filters }));
     } else {
       dispatch(fetchLessons());
     }
-    dispatch(fetchMonthlyCalendarEvents({ page: 1, limit: 100 }));
-  }, [dispatch, grade, stage]);
+
+    // Fetch monthly calendar events with schoolBranchId and optional grade filter
+    dispatch(
+      fetchMonthlyCalendarEvents({
+        page: 1,
+        limit: 100,
+        filters: {
+          schoolBranchId,
+          grade: stage || undefined,
+        },
+      })
+    );
+  }, [dispatch, grade, stage, schoolBranchId]);
 
   // Fetch classrooms when stage changes (filter by stage if selected, otherwise fetch all)
   useEffect(() => {
@@ -984,7 +999,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
                 setSubSystemId('');
                 setStage('');
                 setGrade('');
-                setClassrooms([]);
+                fetchClassroomsData();
               }}
               className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
               title={t('actions.clearFilter')}
@@ -1019,7 +1034,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         {/* Calendar Content */}
         {isLoading ? (
           <div className="flex h-96 items-center justify-center">
-            <div className="border-primary-500 h-12 w-12 animate-spin rounded-full border-b-2"></div>
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-500"></div>
           </div>
         ) : (
           <WeeklyScheduleCalendar
