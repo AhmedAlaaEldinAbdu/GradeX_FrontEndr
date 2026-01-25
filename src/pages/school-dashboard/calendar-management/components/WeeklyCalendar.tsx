@@ -37,10 +37,12 @@ import {
 } from '@/services/api/educational-stages/educational-stages.service';
 import { getClassrooms } from '@/services/api/classrooms/classrooms.service';
 import { getAcademicSystem } from '@/services/api/academic-system/academic-system.service';
+import { lessonsApiService } from '@/services/api/lessons/lessons.service';
 import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
 import type { Classroom } from '@/services/api/types/classrooms.types';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
 import { useLanguage } from '@/hooks/useLanguage';
+import { addMinutesToTime } from '@/lib/utils/date-utils';
 import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance';
 
 // Period time slots for mapping API times to periodIndex
@@ -605,6 +607,12 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const [lessonPendingDelete, setLessonPendingDelete] = useState<ScheduleLesson | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Extend lesson state
+  const [extendingLessonId, setExtendingLessonId] = useState<string | null>(null);
+  const [optimisticLessons, setOptimisticLessons] = useState<
+    Map<string, { endTime: string; duration: number }>
+  >(new Map());
+
   // TODO: Replace with actual school branch ID from user context/auth state
   const schoolBranchId = STATIC_SCHOOL_BRANCH_ID;
 
@@ -760,8 +768,25 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       return [];
     }
 
-    return transformLessonsForWeek(apiLessons, currentWeekStart, currentLang);
-  }, [apiLessons, currentWeekStart, currentLang]);
+    const lessons = transformLessonsForWeek(apiLessons, currentWeekStart, currentLang);
+
+    // Apply optimistic updates
+    if (optimisticLessons.size > 0) {
+      return lessons.map((lesson) => {
+        const optimistic = optimisticLessons.get(lesson.id);
+        if (optimistic) {
+          return {
+            ...lesson,
+            endTime: optimistic.endTime,
+            duration: optimistic.duration,
+          };
+        }
+        return lesson;
+      });
+    }
+
+    return lessons;
+  }, [apiLessons, currentWeekStart, currentLang, optimisticLessons]);
 
   // Transform API events to ScheduleEvent format for current week
   const transformedEvents: ScheduleEvent[] = useMemo(() => {
@@ -875,7 +900,101 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     }
   };
 
-  // Context menu actions for lessons
+  // Handle extending lesson by 45 minutes
+  const handleExtendLesson = async (lesson: ScheduleLesson) => {
+    // Set loading state
+    setExtendingLessonId(lesson.id);
+
+    // Apply optimistic update immediately
+    const newDuration = lesson.duration + 45;
+    const [hours, minutes] = lesson.endTime.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes + 45;
+    const newHours = Math.floor(totalMinutes / 60) % 24;
+    const newMinutes = totalMinutes % 60;
+    const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+
+    setOptimisticLessons((prev) => {
+      const newMap = new Map(prev);
+      newMap.set(lesson.id, { endTime: newEndTime, duration: newDuration });
+      return newMap;
+    });
+
+    try {
+      // Fetch the full lesson data from API
+      const fullLesson = await lessonsApiService.getLessonById(lesson.id);
+
+      // Calculate new end time (add 45 minutes)
+      const apiNewEndTime = addMinutesToTime(fullLesson.endTime, 45);
+
+      // Update the lesson with extended end time
+      await lessonsApiService.updateLesson({
+        id: fullLesson.id,
+        materialId: fullLesson.materialId,
+        teacherId: fullLesson.teacherId,
+        bookId: fullLesson.bookId,
+        gradeId: fullLesson.gradeId,
+        classroomId: fullLesson.classroomId,
+        schoolBranchesId: fullLesson.schoolBranchesId,
+        date: fullLesson.date,
+        startTime: fullLesson.startTime,
+        endTime: apiNewEndTime,
+        classworkFromPage: fullLesson.classworkFromPage,
+        classworkToPage: fullLesson.classworkToPage,
+        homeworkFromPage: fullLesson.homeworkFromPage,
+        homeworkToPage: fullLesson.homeworkToPage,
+        homeworkDescriptionAr: fullLesson.homeworkDescriptionAr || '',
+        homeworkDescriptionEn: fullLesson.homeworkDescriptionEn || '',
+        isHomeworkForAllStudents: fullLesson.isHomeworkForAllStudents,
+        lessonsStudent: fullLesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
+        attachments: fullLesson.attachments.map((a) => ({
+          fileName: a.fileName,
+          fileUrl: a.fileUrl,
+        })),
+      });
+
+      showToast({
+        message: t('weeklyCalendar.lessonExtendedSuccessfully'),
+        type: 'success',
+      });
+
+      // Refresh lessons to get actual data from server
+      dispatch(
+        fetchLessons({
+          filters: {
+            gradeId: stage || undefined,
+            classroomId: grade || undefined,
+          },
+        })
+      );
+
+      // Clear optimistic update after refresh
+      setOptimisticLessons((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(lesson.id);
+        return newMap;
+      });
+    } catch (error) {
+      // Revert optimistic update on error
+      setOptimisticLessons((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(lesson.id);
+        return newMap;
+      });
+
+      const message =
+        typeof error === 'string'
+          ? error
+          : (error as { message?: string })?.message || t('common.error');
+      showToast({
+        message,
+        type: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setExtendingLessonId(null);
+    }
+  };
+
   const lessonContextActions: LessonContextAction[] = [
     {
       label: t('weeklyCalendar.viewDetails'),
@@ -1045,6 +1164,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
             lessonContextActions={lessonContextActions}
             onLessonClick={handleViewDetails}
             onEmptyCellClick={handleEmptyCellClick}
+            onExtendLesson={handleExtendLesson}
+            extendingLessonId={extendingLessonId}
             onWeekChange={handleWeekChange}
             weekStart={currentWeekStart}
           />
