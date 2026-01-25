@@ -3,14 +3,23 @@ import { ar, enUS } from 'date-fns/locale';
 
 const getLocale = (lang: string) => (lang === 'ar' ? ar : enUS);
 
-export const formatTimeDisplay = (timeStr: string, lang: string = 'ar'): string => {
-  const parts = timeStr.split(':');
-  const hours = parseInt(parts[0], 10);
+export const formatTimeDisplay = (
+  timeStr: string,
+  lang: string = 'ar',
+  showMinutes: boolean = true
+): string => {
+  const [hourStr, minuteStr = '00'] = timeStr.split(':');
+  const hours = parseInt(hourStr, 10);
 
   const suffix = lang === 'ar' ? (hours < 12 ? 'ص' : 'م') : hours < 12 ? 'AM' : 'PM';
+
   const displayHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
 
-  return `${displayHours}${suffix}`;
+  if (!showMinutes) {
+    return `${displayHours}${suffix}`;
+  }
+
+  return `${displayHours}:${minuteStr}${suffix}`;
 };
 
 export const formatDateDisplay = (dateStr: string, lang: string = 'ar'): string => {
