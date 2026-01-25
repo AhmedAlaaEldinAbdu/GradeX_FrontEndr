@@ -49,7 +49,6 @@ export default function PersonalDataTab({ student }: PersonalDataTabProps) {
   const SectionHeader = ({ title }: { title: string }) => (
     <div className="mb-6 flex items-center gap-4">
       <h2 className="whitespace-nowrap text-lg font-semibold text-gray-900">{title}</h2>
-      <div className="h-px flex-1 bg-gray-200" />
     </div>
   );
 
