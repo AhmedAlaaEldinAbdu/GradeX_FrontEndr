@@ -46,7 +46,6 @@ import {
 import CustomImage from '@/shared/components/CustomImage';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
-import { USE_MOCK_DATA, getMockJobAdvertismentById } from '../mock';
 import { PopupMessage } from '@/shared/popups/popups';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
@@ -418,21 +417,13 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   // Fetch job data when in edit mode
   useEffect(() => {
     if (isEditMode && jobId && !isFormReady) {
-      if (USE_MOCK_DATA) {
-        // Use mock data directly - no API call
-        const mockJob = getMockJobAdvertismentById(jobId);
-        if (mockJob) {
-          populateFormWithJobData(mockJob);
-        }
-      } else {
-        dispatch(fetchJobAdvertismentById(jobId));
-      }
+      dispatch(fetchJobAdvertismentById(jobId));
     }
   }, [dispatch, isEditMode, jobId, isFormReady]);
 
   // Populate form with existing job data when editing (for API response)
   useEffect(() => {
-    if (isEditMode && currentJobAdvertisment && !isFormReady && !USE_MOCK_DATA) {
+    if (isEditMode && currentJobAdvertisment && !isFormReady) {
       populateFormWithJobData(currentJobAdvertisment);
     }
   }, [isEditMode, currentJobAdvertisment, isFormReady]);
