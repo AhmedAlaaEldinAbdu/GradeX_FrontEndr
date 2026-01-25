@@ -542,104 +542,6 @@ const DEFAULT_PERIOD_HEADERS: PeriodHeader[] = [
 // Fallback special columns when no academic calendar data is available
 const FALLBACK_SPECIAL_COLUMNS: SpecialColumn[] = [];
 
-// Dummy/Fallback data for filters when API returns empty
-const DUMMY_ACADEMIC_SYSTEMS: AcademicSubSystemResponse[] = [
-  {
-    id: 'dummy-system-1',
-    nameAr: 'عالمي',
-    nameEn: 'International',
-    academicSubSystemDto: [
-      { id: 'dummy-subsystem-1', nameAr: 'النظام العالمي', nameEn: 'International System' },
-    ],
-    lkCountriesDto: [],
-    created: new Date().toISOString(),
-    gradeCount: 3,
-  },
-  {
-    id: 'dummy-system-2',
-    nameAr: 'وطني',
-    nameEn: 'National',
-    academicSubSystemDto: [
-      { id: 'dummy-subsystem-2', nameAr: 'النظام الوطني', nameEn: 'National System' },
-    ],
-    lkCountriesDto: [],
-    created: new Date().toISOString(),
-    gradeCount: 3,
-  },
-];
-
-const DUMMY_STAGES: EducationalStageResponse[] = [
-  {
-    id: 'dummy-stage-1',
-    nameAr: 'الأول الإعدادي',
-    nameEn: 'First Preparatory',
-    academicSubSystemGradeId: 'dummy-subsystem-1',
-  },
-  {
-    id: 'dummy-stage-2',
-    nameAr: 'الثاني الإعدادي',
-    nameEn: 'Second Preparatory',
-    academicSubSystemGradeId: 'dummy-subsystem-1',
-  },
-  {
-    id: 'dummy-stage-3',
-    nameAr: 'الثالث الإعدادي',
-    nameEn: 'Third Preparatory',
-    academicSubSystemGradeId: 'dummy-subsystem-1',
-  },
-];
-
-const DUMMY_CLASSROOMS: Classroom[] = [
-  {
-    id: 'dummy-class-1',
-    name: '1/1 ع',
-    nameEn: '1/1 P',
-    gradeId: 'dummy-stage-1',
-    academicSystemId: 'dummy-system-1',
-    academicSystemName: 'عالمي',
-    gradeName: 'الأول الإعدادي',
-    alias: null,
-    aliasEn: null,
-    studentNumber: 30,
-    note: null,
-    noteEn: null,
-    imagePath: null,
-    creationDate: new Date().toISOString(),
-  },
-  {
-    id: 'dummy-class-2',
-    name: '1/2 ع',
-    nameEn: '1/2 P',
-    gradeId: 'dummy-stage-1',
-    academicSystemId: 'dummy-system-1',
-    academicSystemName: 'عالمي',
-    gradeName: 'الأول الإعدادي',
-    alias: null,
-    aliasEn: null,
-    studentNumber: 28,
-    note: null,
-    noteEn: null,
-    imagePath: null,
-    creationDate: new Date().toISOString(),
-  },
-  {
-    id: 'dummy-class-3',
-    name: '1/3 ع',
-    nameEn: '1/3 P',
-    gradeId: 'dummy-stage-1',
-    academicSystemId: 'dummy-system-1',
-    academicSystemName: 'عالمي',
-    gradeName: 'الأول الإعدادي',
-    alias: null,
-    aliasEn: null,
-    studentNumber: 25,
-    note: null,
-    noteEn: null,
-    imagePath: null,
-    creationDate: new Date().toISOString(),
-  },
-];
-
 // Filter options - education system options now fetched from API
 
 // Export handle type for parent ref access
@@ -712,13 +614,10 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     try {
       const response = await getAcademicSystem({ pageIndex: 1, pageSize: 100 });
       const systems = response?.academicSubSystemResponse || [];
-      // Use dummy data if API returns empty
-      const finalSystems = systems.length > 0 ? systems : DUMMY_ACADEMIC_SYSTEMS;
-      setAcademicSystems(finalSystems);
+      setAcademicSystems(systems);
     } catch (error) {
       console.error('Failed to fetch academic systems:', error);
-      // Use dummy data on error
-      setAcademicSystems(DUMMY_ACADEMIC_SYSTEMS);
+      setAcademicSystems([]);
     } finally {
       setIsLoadingAcademicSystems(false);
     }
@@ -738,36 +637,29 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         response = await fetchEducationalStages({ pageIndex: 1, pageSize: 100 });
       }
       const stagesData = response?.gradeDtos || [];
-      // Use dummy data if API returns empty
-      setStages(stagesData.length > 0 ? stagesData : DUMMY_STAGES);
+      setStages(stagesData);
       // Reset stage selection when stages change
       setStage('');
       setGrade('');
     } catch (error) {
       console.error('Failed to fetch stages:', error);
-      // Use dummy data on error
-      setStages(DUMMY_STAGES);
+      setStages([]);
     } finally {
       setIsLoadingStages(false);
     }
   }, []);
 
-  // Fetch Classrooms (الصف) - depends on stage selection
-  const fetchClassroomsData = useCallback(async (gradeId: string) => {
-    if (!gradeId) {
-      setClassrooms([]);
-      return;
-    }
+  // Fetch Classrooms (الصف) - can work independently or filtered by stage
+  const fetchClassroomsData = useCallback(async (gradeId?: string) => {
     setIsLoadingClassrooms(true);
     try {
-      const response = await getClassrooms({ gradeId: gradeId });
+      // Fetch classrooms - if gradeId provided, filter by it; otherwise fetch all
+      const response = await getClassrooms(gradeId ? { gradeId } : {});
       const classroomsData = response.data?.classroomDto || [];
-      // Use dummy data if API returns empty
-      setClassrooms(classroomsData.length > 0 ? classroomsData : DUMMY_CLASSROOMS);
+      setClassrooms(classroomsData);
     } catch (error) {
       console.error('Failed to fetch classrooms:', error);
-      // Use dummy data on error
-      setClassrooms(DUMMY_CLASSROOMS);
+      setClassrooms([]);
     } finally {
       setIsLoadingClassrooms(false);
     }
@@ -776,7 +668,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   // Initial data fetches
   useEffect(() => {
     fetchAcademicSystemsData();
-  }, [fetchAcademicSystemsData]);
+    fetchClassroomsData(); // Fetch all classrooms on initial load
+  }, [fetchAcademicSystemsData, fetchClassroomsData]);
 
   // Fetch stages when subSystemId changes
   useEffect(() => {
@@ -804,12 +697,13 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     dispatch(fetchMonthlyCalendarEvents({ page: 1, limit: 100 }));
   }, [dispatch, grade, stage]);
 
-  // Fetch classrooms when stage changes
+  // Fetch classrooms when stage changes (filter by stage if selected, otherwise fetch all)
   useEffect(() => {
     if (stage) {
       fetchClassroomsData(stage);
     } else {
-      setClassrooms([]);
+      // When stage is cleared, fetch all classrooms again
+      fetchClassroomsData();
       setGrade('');
     }
   }, [stage, fetchClassroomsData]);
@@ -1072,7 +966,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
                     ? classroomOptions.find((c) => c.value === grade)?.label || ''
                     : ''
               }
-              disabled={!stage || isLoadingClassrooms}
+              disabled={isLoadingClassrooms}
               variant="ghost"
               showSearch={false}
               className="min-w-[100px]"
