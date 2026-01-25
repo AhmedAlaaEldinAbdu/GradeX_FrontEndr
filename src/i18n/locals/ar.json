@@ -1795,7 +1795,7 @@
     "teacherName": "اسم المعلم",
     "selectTeacher": "اسم المعلم",
     "book": "الكتاب",
-    "bookName": "اسم الكتاب (اختياري)",
+    "bookName": "اسم الكتاب",
     "selectBook": "اختر اسم الكتاب",
     "classwork": "عمل الصف",
     "fromPage": "من صفحة (اختياري)",
@@ -1840,7 +1840,14 @@
     "noClassroomsAvailable": "لا توجد فصول متاحة للصف المحدد",
     "noTeachersAvailable": "لا يوجد معلمون متاحون",
     "noGradesAvailable": "لا توجد صفوف متاحة",
-    "noMaterialsAvailable": "لا توجد مواد متاحة"
+    "noMaterialsAvailable": "لا توجد مواد متاحة",
+    "validation": {
+      "gradeRequired": "الصف مطلوب",
+      "classroomRequired": "الفصل مطلوب",
+      "subjectRequired": "المادة مطلوبة",
+      "teacherRequired": "المعلم مطلوب",
+      "bookNameRequired": "اسم الكتاب مطلوب"
+    }
   },
   "fileUpload": {
     "uploadText": "اضغط هنا للإضافة صورة أو ملف",

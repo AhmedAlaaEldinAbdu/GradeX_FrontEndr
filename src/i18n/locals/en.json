@@ -1797,7 +1797,7 @@
     "teacherName": "Teacher Name",
     "selectTeacher": "Teacher Name",
     "book": "Book",
-    "bookName": "Book Name (Optional)",
+    "bookName": "Book Name",
     "selectBook": "Select Book Name",
     "classwork": "Classwork",
     "fromPage": "From Page (Optional)",
@@ -1842,7 +1842,14 @@
     "noClassroomsAvailable": "No classrooms available for selected grade",
     "noTeachersAvailable": "No teachers available",
     "noGradesAvailable": "No grades available",
-    "noMaterialsAvailable": "No subjects available"
+    "noMaterialsAvailable": "No subjects available",
+    "validation": {
+      "gradeRequired": "Grade is required",
+      "classroomRequired": "Classroom is required",
+      "subjectRequired": "Subject is required",
+      "teacherRequired": "Teacher is required",
+      "bookNameRequired": "Book name is required"
+    }
   },
   "fileUpload": {
     "uploadText": "Click here to add image or file",
