@@ -345,21 +345,21 @@ export default function WeeklyScheduleCalendar({
     </svg>
   );
 
-  // Get background color classes for events
+  // Get background color classes for events - using solid backgrounds
   const getEventBgClasses = (color?: string) => {
     switch (color) {
       case 'green':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-emerald-100/100 text-emerald-700';
       case 'orange':
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-amber-100/100 text-amber-700';
       case 'blue':
-        return 'bg-sky-100 text-sky-700';
+        return 'bg-sky-100/100 text-sky-700';
       case 'teal':
-        return 'bg-teal-100 text-teal-700';
+        return 'bg-teal-100/100 text-teal-700';
       case 'yellow':
-        return 'bg-yellow-100 text-yellow-700';
+        return 'bg-yellow-100/100 text-yellow-700';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-gray-100/100 text-gray-700';
     }
   };
 
@@ -489,7 +489,21 @@ export default function WeeklyScheduleCalendar({
       return (
         <div
           className={`absolute inset-1 z-20 flex flex-col items-center justify-center rounded-xl ${getEventBgClasses(event.color)}`}
-          style={{ width: colSpan > 1 ? widthPx : undefined }}
+          style={{
+            width: colSpan > 1 ? widthPx : undefined,
+            backgroundColor:
+              event.color === 'blue'
+                ? '#e0f2fe'
+                : event.color === 'orange'
+                  ? '#fef3c7'
+                  : event.color === 'green'
+                    ? '#d1fae5'
+                    : event.color === 'teal'
+                      ? '#ccfbf1'
+                      : event.color === 'yellow'
+                        ? '#fef9c3'
+                        : '#f3f4f6',
+          }}
         >
           <div className="flex flex-row-reverse">
             {event.hasArrow && (
