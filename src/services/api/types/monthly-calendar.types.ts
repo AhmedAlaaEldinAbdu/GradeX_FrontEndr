@@ -67,6 +67,7 @@ export interface MonthlyCalendarListResponse {
 export interface MonthlyCalendarQueryParams {
   PageIndex?: number;
   PageSize?: number;
+  SchoolBrancheId?: string;
   Grade?: string;
   ClassRoomId?: string;
   Search?: string;
@@ -85,7 +86,7 @@ export interface BaseMonthlyCalendarRequest {
   classRomms: string[];
 }
 
-export interface CreateMonthlyCalendarRequest extends BaseMonthlyCalendarRequest { }
+export interface CreateMonthlyCalendarRequest extends BaseMonthlyCalendarRequest {}
 
 export interface UpdateMonthlyCalendarRequest extends BaseMonthlyCalendarRequest {
   id?: string;

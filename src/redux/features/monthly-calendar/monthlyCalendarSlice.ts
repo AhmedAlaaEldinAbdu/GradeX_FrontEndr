@@ -16,6 +16,7 @@ import type { ApiResponseModel } from '@/services/api';
 
 export interface MonthlyCalendarFilters {
   searchTerm?: string;
+  schoolBranchId?: string;
   grade?: string;
   classroomId?: string;
   date?: string;
@@ -94,8 +95,9 @@ export const fetchMonthlyCalendarEvents = createAsyncThunk<
       if (payload.limit !== undefined) params.PageSize = payload.limit;
 
       if (payload.filters) {
-        const { searchTerm, grade, classroomId, date } = payload.filters;
+        const { searchTerm, schoolBranchId, grade, classroomId, date } = payload.filters;
         if (searchTerm) params.Search = searchTerm;
+        if (schoolBranchId) params.SchoolBrancheId = schoolBranchId;
         if (grade) params.Grade = grade;
         if (classroomId) params.ClassRoomId = classroomId;
         if (date) params.Date = date;
@@ -277,11 +279,11 @@ const monthlyCalendarSlice = createSlice({
       .addCase(
         createMonthlyCalendarEvent.fulfilled,
         (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isCreating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess && validationErrors) {
-          state.validationErrors = validationErrors as any;
-        }
+          state.isCreating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess && validationErrors) {
+            state.validationErrors = validationErrors as any;
+          }
         }
       )
       .addCase(createMonthlyCalendarEvent.rejected, (state, action) => {
@@ -301,11 +303,11 @@ const monthlyCalendarSlice = createSlice({
       .addCase(
         updateMonthlyCalendarEvent.fulfilled,
         (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isUpdating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess && validationErrors) {
-          state.validationErrors = validationErrors as any;
-        }
+          state.isUpdating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess && validationErrors) {
+            state.validationErrors = validationErrors as any;
+          }
         }
       )
       .addCase(updateMonthlyCalendarEvent.rejected, (state, action) => {
