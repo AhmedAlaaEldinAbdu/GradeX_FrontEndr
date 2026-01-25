@@ -1740,6 +1740,8 @@
     "allStudents": "جميع الطلاب",
     "educationalStages": "المراحل التعليمية",
     "classrooms": "الصفوف الدراسية",
+    "extendLesson": "تمديد الحصة",
+    "lessonExtendedSuccessfully": "تم تمديد الحصة بنجاح",
     "specialColumns": {
       "breakfast": "الفطار",
       "break": "استراحة",

@@ -1742,6 +1742,8 @@
     "allStudents": "All Students",
     "educationalStages": "Educational Stages",
     "classrooms": "Classrooms",
+    "extendLesson": "Extend Lesson",
+    "lessonExtendedSuccessfully": "Lesson extended successfully",
     "specialColumns": {
       "breakfast": "Breakfast",
       "break": "Break",
