@@ -4,7 +4,7 @@ import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import UpLeftArrow from '@gradex/assets/icons/UpLeftArrow.svg';
 import CustomImage from './CustomImage';
-import { ARABIC_DAY_NAMES, ENGLISH_DAY_NAMES } from '@/lib/utils/date-utils';
+import { ARABIC_DAY_NAMES, ENGLISH_DAY_NAMES, formatTimeDisplay } from '@/lib/utils/date-utils';
 import MenuICon from '@gradex/assets/icons/Menu.svg';
 
 // Types
@@ -136,6 +136,7 @@ export default function WeeklyScheduleCalendar({
 }: WeeklyScheduleCalendarProps) {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
+  const currentLang = i18n.language;
   const [internalWeek, setInternalWeek] = useState(() => controlledWeekStart ?? new Date());
 
   const currentWeek = controlledWeekStart ?? internalWeek;
@@ -390,7 +391,8 @@ export default function WeeklyScheduleCalendar({
       <p className="mt-1 text-start text-[10px] text-gray-500">{lesson.teacherName}</p>
       {/* Time Range */}
       <p className="mt-0.5 text-start text-[10px] text-gray-400">
-        {lesson.startTime}ص - {lesson.endTime}ص
+        {formatTimeDisplay(lesson.startTime, currentLang)} -{' '}
+        {formatTimeDisplay(lesson.endTime, currentLang)}
       </p>
       {/* Duration Badge - stacked if <=60min, inline if >60min */}
       <div className="mt-2 flex items-start justify-between gap-1">
