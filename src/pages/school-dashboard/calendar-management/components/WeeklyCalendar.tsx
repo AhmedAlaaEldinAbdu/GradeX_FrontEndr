@@ -715,23 +715,10 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       // Use dummy data if API returns empty
       const finalSystems = systems.length > 0 ? systems : DUMMY_ACADEMIC_SYSTEMS;
       setAcademicSystems(finalSystems);
-      // If there are systems, select the first one by default
-      if (finalSystems.length > 0) {
-        const firstSystem = finalSystems[0];
-        setEducationSystem(firstSystem.id);
-        // If the system has sub-systems, use the first one to fetch stages
-        if (firstSystem.academicSubSystemDto?.length > 0) {
-          setSubSystemId(firstSystem.academicSubSystemDto[0].id);
-        }
-      }
     } catch (error) {
       console.error('Failed to fetch academic systems:', error);
       // Use dummy data on error
       setAcademicSystems(DUMMY_ACADEMIC_SYSTEMS);
-      setEducationSystem(DUMMY_ACADEMIC_SYSTEMS[0].id);
-      if (DUMMY_ACADEMIC_SYSTEMS[0].academicSubSystemDto?.length > 0) {
-        setSubSystemId(DUMMY_ACADEMIC_SYSTEMS[0].academicSubSystemDto[0].id);
-      }
     } finally {
       setIsLoadingAcademicSystems(false);
     }
@@ -1033,9 +1020,9 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
               placeholder={
                 isLoadingAcademicSystems
                   ? t('common.loading')
-                  : educationSystemOptions.find((s) => s.value === educationSystem)?.label ||
-                    t('weeklyCalendar.filters.selectSystem') ||
-                    'اختر النظام'
+                  : educationSystem
+                    ? educationSystemOptions.find((s) => s.value === educationSystem)?.label || ''
+                    : ''
               }
               disabled={isLoadingAcademicSystems}
               variant="ghost"
@@ -1057,7 +1044,9 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
               placeholder={
                 isLoadingStages
                   ? t('common.loading')
-                  : stageOptions.find((s) => s.value === stage)?.label || 'الأول الأعدادي'
+                  : stage
+                    ? stageOptions.find((s) => s.value === stage)?.label || ''
+                    : ''
               }
               disabled={isLoadingStages}
               variant="ghost"
@@ -1079,7 +1068,9 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
               placeholder={
                 isLoadingClassrooms
                   ? t('common.loading')
-                  : classroomOptions.find((c) => c.value === grade)?.label || '1/1 ع'
+                  : grade
+                    ? classroomOptions.find((c) => c.value === grade)?.label || ''
+                    : ''
               }
               disabled={!stage || isLoadingClassrooms}
               variant="ghost"
@@ -1087,6 +1078,48 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
               className="min-w-[100px]"
             />
           </div>
+
+          {/* Spacer to push clear button to the end */}
+          <div className="flex-1" />
+
+          {/* Clear Filters Button - Only show when at least one filter has a value */}
+          {(educationSystem || stage || grade) && (
+            <button
+              onClick={() => {
+                setEducationSystem('');
+                setSubSystemId('');
+                setStage('');
+                setGrade('');
+                setClassrooms([]);
+              }}
+              className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+              title={t('actions.clearFilter')}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M18 6L6 18"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M6 6L18 18"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Calendar Content */}
