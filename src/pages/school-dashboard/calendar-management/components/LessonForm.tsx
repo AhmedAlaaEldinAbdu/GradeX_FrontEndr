@@ -485,7 +485,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                 <Controller
                   name="gradeId"
                   control={control}
-                  rules={{ required: t('validation.required') }}
+                  rules={{ required: t('lesson.validation.gradeRequired') }}
                   render={({ field }) => (
                     <CustomSelect
                       value={field.value}
@@ -510,7 +510,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                 <Controller
                   name="classroomId"
                   control={control}
-                  rules={{ required: t('validation.required') }}
+                  rules={{ required: t('lesson.validation.classroomRequired') }}
                   render={({ field }) => (
                     <CustomSelect
                       value={field.value}
@@ -546,7 +546,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                 <Controller
                   name="materialId"
                   control={control}
-                  rules={{ required: t('validation.required') }}
+                  rules={{ required: t('lesson.validation.subjectRequired') }}
                   render={({ field }) => (
                     <CustomSelect
                       value={field.value}
@@ -573,7 +573,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                 <Controller
                   name="teacherId"
                   control={control}
-                  rules={{ required: t('validation.required') }}
+                  rules={{ required: t('lesson.validation.teacherRequired') }}
                   render={({ field }) => (
                     <CustomSelect
                       value={field.value}
@@ -595,10 +595,16 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
             <h3 className="mb-4 text-start text-sm font-semibold text-gray-700">
               {t('lesson.book')}
             </h3>
-            <FormField label={t('lesson.bookName')} htmlFor="bookId">
+            <FormField
+              label={t('lesson.bookName')}
+              required
+              error={errors.bookId?.message}
+              htmlFor="bookId"
+            >
               <Controller
                 name="bookId"
                 control={control}
+                rules={{ required: t('lesson.validation.bookNameRequired') }}
                 render={({ field }) => (
                   <CustomSelect
                     value={field.value}
