@@ -547,7 +547,7 @@ export default function WeeklyScheduleCalendar({
           <div className="flex flex-row-reverse">
             {event.hasArrow && (
               <svg
-                className="mb-1 h-5 w-5"
+                className="mx-3 mb-1 inline-block h-5 w-5 rotate-45"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
