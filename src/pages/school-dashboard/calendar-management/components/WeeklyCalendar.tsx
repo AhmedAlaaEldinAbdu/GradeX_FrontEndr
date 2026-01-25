@@ -843,10 +843,15 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           message: t('weeklyCalendar.lessonsRecoveredSuccessfully'),
           type: 'success',
         });
-      } catch {
+      } catch (error) {
+        const errorMessage =
+          typeof error === 'string'
+            ? error
+            : (error as { message?: string })?.message || t('weeklyCalendar.recoverLessonsFailed');
         showToast({
-          message: t('weeklyCalendar.recoverLessonsFailed'),
+          message: errorMessage,
           type: 'error',
+          duration: 5000,
         });
       }
     },
