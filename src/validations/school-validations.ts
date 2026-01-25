@@ -102,10 +102,11 @@ export const basicInfoSchema = yup.object().shape({
   ibanNumber: yup
     .string()
     .required('schools.validation.ibanNumberRequired')
-    .matches(/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/, 'schools.validation.ibanNumberInvalid')
-    .min(15, 'schools.validation.ibanNumberMin')
-    .max(34, 'schools.validation.ibanNumberMax')
-    .uppercase(),
+    // .matches(/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/, 'schools.validation.ibanNumberInvalid')
+    // .min(15, 'schools.validation.ibanNumberMin')
+    // .max(34, 'schools.validation.ibanNumberMax')
+    // .uppercase()
+    ,
 });
 
 /**
