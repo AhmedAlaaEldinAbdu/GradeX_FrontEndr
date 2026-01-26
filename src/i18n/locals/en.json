@@ -545,6 +545,7 @@
     "createdBy": "Created By",
     "date": "Date",
     "studentName": "Student Name",
+    "contract": "Contract",
     "reload": "Reload",
     "exportPdf": "Export PDF",
     "exportExcel": "Export Excel",
