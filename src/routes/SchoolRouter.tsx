@@ -72,6 +72,45 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
+        path="/student-interviews"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">المقابلات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/registration-announcement"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">إعلان التسجيل</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/exam-results"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">نتائج الاختبارات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/educational-stages"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
