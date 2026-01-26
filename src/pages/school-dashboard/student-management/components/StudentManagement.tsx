@@ -9,6 +9,7 @@ import RefreshSolidIcon from '@gradex/assets/icons/RefreshSolid.svg';
 import MaterialPdfIcon from '@gradex/assets/icons/MaterialPdf.svg';
 import ExcelFileIcon from '@gradex/assets/icons/ExcelFile.svg';
 import PrinterIcon from '@gradex/assets/icons/Printer.svg';
+import PdfIcon from '@gradex/assets/icons/pdf.svg';
 
 interface Student {
   id: number;
@@ -100,6 +101,15 @@ export default function StudentManagement() {
       header: 'studentManagement.date',
       accessor: (row: Student) => row.date,
       headerClassName: 'min-w-[150px]',
+    },
+    {
+      header: 'studentManagement.contract',
+      accessor: () => (
+        <div className="flex cursor-pointer items-center justify-center">
+          <img src={PdfIcon} alt="Contract" className="h-8 w-8" />
+        </div>
+      ),
+      headerClassName: 'min-w-[100px]',
     },
     {
       header: 'common.actions',
