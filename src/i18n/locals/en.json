@@ -544,7 +544,11 @@
     "classes": "Classes",
     "createdBy": "Created By",
     "date": "Date",
-    "studentName": "Student Name"
+    "studentName": "Student Name",
+    "reload": "Reload",
+    "exportPdf": "Export PDF",
+    "exportExcel": "Export Excel",
+    "print": "Print"
   },
   "students": {
     "title": "Students",

@@ -543,7 +543,11 @@
     "classes": "الصفوف الدراسية",
     "createdBy": "تم بواسطة",
     "date": "التاريخ",
-    "studentName": "اسم الطالب"
+    "studentName": "اسم الطالب",
+    "reload": "إعادة تحميل",
+    "exportPdf": "تصدير PDF",
+    "exportExcel": "تصدير Excel",
+    "print": "طباعة"
   },
   "students": {
     "title": "الطلاب",
