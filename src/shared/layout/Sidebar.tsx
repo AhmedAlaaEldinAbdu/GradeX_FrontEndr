@@ -24,7 +24,7 @@ import ChevronDown from '@gradex/assets/icons/ChevronDown.svg';
 import ChevronUp from '@gradex/assets/icons/ChevronUp.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
-import MainLogo from '@gradex/assets/identity/MainLogo.webp';
+import MainLogo from '@gradex/assets/identity/MainLogo.png';
 
 interface SidebarProps {
   dashboardType: UserRoleType;
