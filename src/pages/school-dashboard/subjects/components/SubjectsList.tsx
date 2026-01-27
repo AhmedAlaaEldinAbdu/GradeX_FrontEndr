@@ -112,7 +112,7 @@ export default function SubjectsList() {
       header: 'subjects.level',
       accessor: (row) => (
         <span
-          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getLevelBadgeColor(row.materialLevel)}`}
+          className={`inline-flex rounded-full px-3 py-1 ${getLevelBadgeColor(row.materialLevel)}`}
         >
           {getLevelLabel(row.materialLevel)}
         </span>
@@ -123,7 +123,7 @@ export default function SubjectsList() {
     {
       header: 'subjects.schoolStages',
       accessor: (row) => (
-        <div className="text-sm text-gray-700">
+        <div>
           {row.schoolStages && row.schoolStages.length > 0 ? (
             row.schoolStages
               .map((stage) => (currentLang === 'ar' ? stage.nameAr : stage.nameEn))
