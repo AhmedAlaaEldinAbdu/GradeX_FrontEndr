@@ -2,9 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* src/styles/global.css */
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
 @layer base {
   * {
-    font-family: 'Roboto', 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', 'sans-serif';
   }
 
   html,
@@ -39,7 +68,7 @@
 }
 
 .bg-black\/60 {
-    background-color: rgb(0 0 0 / 0.6);
+  background-color: rgb(0 0 0 / 0.6);
 }
 
 /* input[type='date'] {
@@ -98,9 +127,9 @@ input[type='radio']::after {
 input[type='radio']:checked::after {
   background: radial-gradient(
     circle,
-    #00512E 0%,
-    #00512E 45%,
-    #00512E 50%,
+    #00512e 0%,
+    #00512e 45%,
+    #00512e 50%,
     #ffffff 55%,
     #ffffff 70%,
     #ffffff 100%
