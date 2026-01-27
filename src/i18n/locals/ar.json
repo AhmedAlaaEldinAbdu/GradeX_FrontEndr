@@ -571,6 +571,15 @@
     "chooseStartDate": "اختر تاريخ بداية التسجيل",
     "chooseEndDate": "اختر تاريخ نهاية التسجيل"
   },
+  "interviews": {
+    "title": "المقابلات",
+    "searchByTeacherName": "ابحث عن اسم المعلم",
+    "supervisorName": "اسم المشرف",
+    "details": "التفاصيل",
+    "addInterview": "إضافة مقابلة",
+    "editInterview": "تعديل المقابلة",
+    "deleteInterview": "حذف المقابلة"
+  },
   "students": {
     "title": "الطلاب",
     "details": {

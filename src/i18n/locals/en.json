@@ -572,6 +572,15 @@
     "chooseStartDate": "Select start date",
     "chooseEndDate": "Select end date"
   },
+  "interviews": {
+    "title": "Interviews",
+    "searchByTeacherName": "Search by teacher name",
+    "supervisorName": "Supervisor Name",
+    "details": "Details",
+    "addInterview": "Add Interview",
+    "editInterview": "Edit Interview",
+    "deleteInterview": "Delete Interview"
+  },
   "students": {
     "title": "Students",
     "details": {
