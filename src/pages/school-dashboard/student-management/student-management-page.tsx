@@ -14,10 +14,10 @@ const StudentManagementPage: React.FC = () => {
       {/* Main Content */}
       <StudentManagement />
 
-      <div className="py-16 text-center">
+      {/* <div className="py-16 text-center">
         <h2 className="text-2xl font-bold text-gray-800">الطلاب</h2>
         <p className="mt-4 text-gray-600">قريباً...</p>
-      </div>
+      </div> */}
     </div>
   );
 };
