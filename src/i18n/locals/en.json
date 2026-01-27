@@ -553,6 +553,25 @@
     "exportExcel": "Export Excel",
     "print": "Print"
   },
+  "registrationAnnouncement": {
+    "title": "Registration Announcement",
+    "addAnnouncement": "Add Registration Announcement",
+    "searchByStudentName": "Search by student name",
+    "educationalStage": "Educational Stage",
+    "startDate": "Registration Start Date",
+    "endDate": "Registration End Date",
+    "status": "Status",
+    "valid": "Valid",
+    "expired": "Expired",
+    "cancelled": "Cancelled",
+    "addPageTitle": "Add Registration Announcement",
+    "educationalStagesLabel": "Educational Stages",
+    "selectEducationalStages": "Select educational stages",
+    "startDateLabel": "Registration Start Date",
+    "endDateLabel": "Registration End Date",
+    "chooseStartDate": "Select start date",
+    "chooseEndDate": "Select end date"
+  },
   "students": {
     "title": "Students",
     "details": {
