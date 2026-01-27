@@ -468,6 +468,8 @@
       "schoolNameMax": "School name cannot exceed 100 characters",
       "schoolNameArMax": "School name in Arabic cannot exceed 100 characters",
       "schoolNameEnMax": "School name in English cannot exceed 100 characters",
+      "schoolNameArInvalid": "School name must contain only Arabic letters",
+      "schoolNameEnInvalid": "School name must contain only English letters",
       "academicSystemRequired": "Academic system is required",
       "academicSystemInvalid": "Please select a valid academic system",
       "subSystemIdsRequired": "Please select at least one academic subsystem",

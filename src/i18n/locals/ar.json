@@ -467,6 +467,8 @@
       "schoolNameMax": "لا يمكن أن يتجاوز اسم المدرسة 100 حرف",
       "schoolNameArMax": "لا يمكن أن يتجاوز اسم المدرسة بالعربية 100 حرف",
       "schoolNameEnMax": "لا يمكن أن يتجاوز اسم المدرسة بالإنجليزية 100 حرف",
+      "schoolNameArInvalid": "يجب أن يحتوي اسم المدرسة على أحرف عربية فقط",
+      "schoolNameEnInvalid": "يجب أن يحتوي اسم المدرسة على أحرف إنجليزية فقط",
       "academicSystemRequired": "النظام الأكاديمي مطلوب",
       "academicSystemInvalid": "يرجى اختيار نظام أكاديمي صالح",
       "subSystemIdsRequired": "يرجى اختيار نظام فرعي أكاديمي واحد على الأقل",
