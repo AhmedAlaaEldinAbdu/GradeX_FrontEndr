@@ -289,8 +289,11 @@ const SchoolForm = ({
           {currentStep === 1 && (
             <BasicInfoStep
               onLogoUpload={handleFileUpload('license')}
+              onLogoDelete={handleFileDelete('license')}
               licenseFileNames={
-                mode === 'view' ? initialData?.licenseFiles || [] : getFileNames('license')
+                mode === 'view'
+                  ? initialData?.licenseFiles || []
+                  : [...(initialData?.licenseFiles || []), ...getFileNames('license')]
               }
               licenseError={fileErrors.license}
               readOnly={mode === 'view'}
@@ -315,9 +318,15 @@ const SchoolForm = ({
               onCertificateUpload={handleFileUpload('certificate')}
               onImageDelete={handleFileDelete('image')}
               onCertificateDelete={handleFileDelete('certificate')}
-              imageFileNames={mode === 'view' ? [] : getFileNames('image')}
+              imageFileNames={
+                mode === 'view'
+                  ? initialData?.imageFiles || []
+                  : [...(initialData?.imageFiles || []), ...getFileNames('image')]
+              }
               certificateFileNames={
-                mode === 'view' ? initialData?.certificateFiles || [] : getFileNames('certificate')
+                mode === 'view'
+                  ? initialData?.certificateFiles || []
+                  : [...(initialData?.certificateFiles || []), ...getFileNames('certificate')]
               }
               certificateError={fileErrors.certificate}
               readOnly={mode === 'view'}
