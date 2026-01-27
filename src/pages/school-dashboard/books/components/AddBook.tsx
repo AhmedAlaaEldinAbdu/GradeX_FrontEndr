@@ -255,6 +255,12 @@ export default function AddBook() {
       headerClassName: 'min-w-[150px]',
     },
     {
+      header: 'books.bookCode2',
+      accessor: (row) => <span>{row.code || '-'}</span>,
+      headerClassName: 'min-w-[120px]',
+      className: 'text-center',
+    },
+    {
       header: 'books.bookFile',
       accessor: (row) =>
         row.imagePreview ? (
@@ -262,7 +268,7 @@ export default function AddBook() {
         ) : (
           <span className="text-gray-400">-</span>
         ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[110px]',
       className: 'text-center',
     },
     {
@@ -273,9 +279,7 @@ export default function AddBook() {
     },
     {
       header: 'books.bookPrice',
-      accessor: (row) => (
-        <span>{showPriceValue ? `${row.price} ${t('books.currency')}` : '-'}</span>
-      ),
+      accessor: (row) => <span>{showPriceValue ? `${row.price}` : '-'}</span>,
       headerClassName: 'min-w-[100px]',
       className: 'text-center',
     },
@@ -295,7 +299,7 @@ export default function AddBook() {
       headerClassName: 'min-w-[150px]',
     },
     {
-      header: 'books.bookCode',
+      header: 'books.bookCode2',
       accessor: (row) => <span>{row.code || '-'}</span>,
       headerClassName: 'min-w-[100px]',
       className: 'text-center',
@@ -308,11 +312,7 @@ export default function AddBook() {
     },
     {
       header: 'books.bookPrice',
-      accessor: (row) => (
-        <span>
-          {row.price} {t('books.currency')}
-        </span>
-      ),
+      accessor: (row) => <span>{row.price}</span>,
       headerClassName: 'min-w-[100px]',
       className: 'text-center',
     },
@@ -470,7 +470,7 @@ export default function AddBook() {
           <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Book Code */}
             <FormField
-              label={t('books.bookCode')}
+              label={t('books.bookCode2')}
               required
               error={errors.code?.message}
               htmlFor="code"
@@ -482,7 +482,7 @@ export default function AddBook() {
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t('books.enterBookCode')}
+                    placeholder={t('books.enterBookCode2')}
                     className="w-full"
                     id="code"
                   />
@@ -655,9 +655,7 @@ export default function AddBook() {
               {!showPriceValue && (
                 <div className="mt-4 flex items-center justify-between border-t pt-4">
                   <span className="text-lg font-semibold">{t('books.total')}</span>
-                  <span className="text-lg font-semibold text-green-600">
-                    {totalPrice} {t('books.currency')}
-                  </span>
+                  <span className="text-lg font-semibold text-green-600">{totalPrice}</span>
                 </div>
               )}
             </div>

@@ -278,7 +278,7 @@ export default function EditBook() {
           <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Book Code */}
             <FormField
-              label={t('books.bookCode')}
+              label={t('books.bookCode2')}
               required
               error={errors.code?.message}
               htmlFor="code"
@@ -290,7 +290,7 @@ export default function EditBook() {
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t('books.enterBookCode')}
+                    placeholder={t('books.enterBookCode2')}
                     className="w-full"
                     id="code"
                   />
