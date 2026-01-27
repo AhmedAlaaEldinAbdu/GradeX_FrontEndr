@@ -226,9 +226,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
       {/* Files Preview Section (works for both single and multiple) */}
       {hasFiles && (
         <div className="space-y-2">
+          {/* Render files from internal fileInfoList (newly uploaded during this session) */}
           {fileInfoList.map((fileInfo, index) => (
             <div
-              key={index}
+              key={`file-${index}`}
               className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4"
             >
               <div className="flex items-center justify-between">
@@ -335,6 +336,94 @@ const FileUpload: React.FC<FileUploadProps> = ({
               </div>
             </div>
           ))}
+
+          {/* Render files from fileNames prop (when component remounts and fileInfoList is empty) */}
+          {fileInfoList.length === 0 &&
+            displayFiles.map((name, index) => (
+              <div
+                key={`display-${index}`}
+                className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {/* File Icon */}
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
+                      {isPdfFile(name) ? (
+                        <svg
+                          className="h-6 w-6 text-red-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                          <text x="7" y="17" fontSize="6" fill="currentColor" fontWeight="bold">
+                            PDF
+                          </text>
+                        </svg>
+                      ) : (
+                        <svg
+                          className="h-6 w-6 text-green-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                        </svg>
+                      )}
+                    </div>
+
+                    {/* File Info */}
+                    <div className="flex-1 text-start">
+                      <p className="text-sm font-medium text-gray-900">{name}</p>
+                      <p className="text-xs text-gray-500">100%</p>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-2">
+                    {/* Delete Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(multiple ? index : undefined)}
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
+                      title={t('common.delete')}
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Progress Bar (already complete) */}
+                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-green-600 transition-all duration-300"
+                    style={{ width: '100%' }}
+                  ></div>
+                </div>
+              </div>
+            ))}
         </div>
       )}
 
