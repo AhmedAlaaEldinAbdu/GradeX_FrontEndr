@@ -12,6 +12,7 @@ export const basicInfoSchema = yup.object().shape({
     .required('schools.validation.schoolNameArRequired')
     .min(3, 'schools.validation.schoolNameMin')
     .max(100, 'schools.validation.schoolNameMax')
+    .matches(/^[\u0600-\u06FF\s]+$/, 'schools.validation.schoolNameArInvalid')
     .trim(),
 
   schoolNameEn: yup
@@ -19,6 +20,7 @@ export const basicInfoSchema = yup.object().shape({
     .required('schools.validation.schoolNameEnRequired')
     .min(3, 'schools.validation.schoolNameMin')
     .max(100, 'schools.validation.schoolNameMax')
+    .matches(/^[a-zA-Z\s]+$/, 'schools.validation.schoolNameEnInvalid')
     .trim(),
 
   academicSystemIds: yup
@@ -47,7 +49,9 @@ export const basicInfoSchema = yup.object().shape({
         (Array.isArray(academicSystemIds) && academicSystemIds.length > 0);
 
       return hasAcademicSystem
-        ? schema.min(1, 'schools.validation.subSystemIdsRequired').required('schools.validation.subSystemIdsRequired')
+        ? schema
+            .min(1, 'schools.validation.subSystemIdsRequired')
+            .required('schools.validation.subSystemIdsRequired')
         : schema.optional().default([]);
     }),
 
@@ -99,14 +103,11 @@ export const basicInfoSchema = yup.object().shape({
     .min(8, 'schools.validation.accountNumberMin')
     .max(20, 'schools.validation.accountNumberMax'),
 
-  ibanNumber: yup
-    .string()
-    .required('schools.validation.ibanNumberRequired')
-    // .matches(/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/, 'schools.validation.ibanNumberInvalid')
-    // .min(15, 'schools.validation.ibanNumberMin')
-    // .max(34, 'schools.validation.ibanNumberMax')
-    // .uppercase()
-    ,
+  ibanNumber: yup.string().required('schools.validation.ibanNumberRequired'),
+  // .matches(/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/, 'schools.validation.ibanNumberInvalid')
+  // .min(15, 'schools.validation.ibanNumberMin')
+  // .max(34, 'schools.validation.ibanNumberMax')
+  // .uppercase()
 });
 
 /**
