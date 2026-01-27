@@ -17,6 +17,7 @@ interface FileUploadProps {
   onDelete?: (index?: number) => void;
   fileName?: string;
   fileNames?: string[];
+  files?: File[]; // Actual File objects for viewing
   uploadText?: string;
   formatHints?: string[];
   required?: boolean;
@@ -40,6 +41,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   multiple = false,
   error = false,
   id = '',
+  files = [],
 }) => {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
@@ -83,8 +85,27 @@ const FileUpload: React.FC<FileUploadProps> = ({
     return fileName.toLowerCase().endsWith('.pdf');
   };
 
+  // Check if file is an image
+  const isImageFile = (fileName: string): boolean => {
+    const ext = fileName.toLowerCase();
+    return (
+      ext.endsWith('.jpg') ||
+      ext.endsWith('.jpeg') ||
+      ext.endsWith('.png') ||
+      ext.endsWith('.gif') ||
+      ext.endsWith('.webp') ||
+      ext.endsWith('.svg')
+    );
+  };
+
   // Handle opening PDF in new tab
   const handleViewPdf = (file: File) => {
+    const url = URL.createObjectURL(file);
+    window.open(url, '_blank');
+  };
+
+  // Handle opening Image in new tab
+  const handleViewImage = (file: File) => {
     const url = URL.createObjectURL(file);
     window.open(url, '_blank');
   };
@@ -367,40 +388,64 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      {/* File Icon */}
+                      {/* File Icon or Image Preview */}
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
-                        {isPdfFile(name) ? (
-                          <svg
-                            className="h-6 w-6 text-red-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                            />
-                            <text x="7" y="17" fontSize="6" fill="currentColor" fontWeight="bold">
-                              PDF
-                            </text>
-                          </svg>
-                        ) : (
-                          <svg
-                            className="h-6 w-6 text-green-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                            />
-                          </svg>
-                        )}
+                        {(() => {
+                          const matchingFile = files.find((f) => f.name === name);
+                          // Show image preview if it's an image file and we have the File object
+                          if (isImageFile(name) && matchingFile) {
+                            return (
+                              <CustomImage
+                                src={URL.createObjectURL(matchingFile)}
+                                alt="preview"
+                                className="h-full w-full rounded-lg object-cover"
+                              />
+                            );
+                          }
+                          // Show PDF icon for PDFs
+                          if (isPdfFile(name)) {
+                            return (
+                              <svg
+                                className="h-6 w-6 text-red-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                />
+                                <text
+                                  x="7"
+                                  y="17"
+                                  fontSize="6"
+                                  fill="currentColor"
+                                  fontWeight="bold"
+                                >
+                                  PDF
+                                </text>
+                              </svg>
+                            );
+                          }
+                          // Default document icon for other file types
+                          return (
+                            <svg
+                              className="h-6 w-6 text-green-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                              />
+                            </svg>
+                          );
+                        })()}
                       </div>
 
                       {/* File Info */}
@@ -412,6 +457,67 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
                     {/* Action Buttons */}
                     <div className="flex items-center gap-2">
+                      {/* View Button - for PDFs and Images */}
+                      {(() => {
+                        const matchingFile = files.find((f) => f.name === name);
+                        if (matchingFile) {
+                          if (isPdfFile(name)) {
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => handleViewPdf(matchingFile)}
+                                className="flex h-8 w-8 items-center justify-center rounded-md border border-blue-300 bg-white text-blue-600 transition-colors hover:bg-blue-50"
+                                title={t('common.view')}
+                              >
+                                <svg
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                  />
+                                </svg>
+                              </button>
+                            );
+                          }
+                          if (isImageFile(name)) {
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => handleViewImage(matchingFile)}
+                                className="flex h-8 w-8 items-center justify-center rounded-md border border-blue-300 bg-white text-blue-600 transition-colors hover:bg-blue-50"
+                                title={t('common.view')}
+                              >
+                                <svg
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                  />
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                  />
+                                </svg>
+                              </button>
+                            );
+                          }
+                        }
+                        return null;
+                      })()}
                       {/* Delete Button */}
                       <button
                         type="button"
