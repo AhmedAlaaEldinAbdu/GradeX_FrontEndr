@@ -24,6 +24,8 @@ import JobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/job
 import AddJobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/add-job-announcements-page';
 import EditJobAnnouncementPage from '@/pages/school-dashboard/job-announcements/edit-job-announcement-page';
 import JobAnnouncementDetailsPage from '@/pages/school-dashboard/job-announcements/job-announcement-details';
+import RegistrationAnnouncementPage from '@/pages/school-dashboard/registration-announcement/registration-announcement-page';
+import AddRegistrationAnnouncementPage from '@/pages/school-dashboard/registration-announcement/add-registration-announcement-page';
 import WeeklyCalendarPage from '@/pages/school-dashboard/calendar-management/weekly-calendar-page';
 import AddLessonPage from '@/pages/school-dashboard/calendar-management/add-lesson-page';
 import EditLessonPage from '@/pages/school-dashboard/calendar-management/edit-lesson-page';
@@ -89,10 +91,17 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">إعلان التسجيل</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <RegistrationAnnouncementPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/registration-announcement/add-registration-announcement"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddRegistrationAnnouncementPage />
             </MainLayout>
           </ProtectedRoute>
         }
