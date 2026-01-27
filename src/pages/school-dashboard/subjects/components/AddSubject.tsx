@@ -15,7 +15,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import DataTable, { type DataTableColumn } from '@/shared/components/DataTable';
 import { addSubject, fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
-import { fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { AddSubjectSchema, type AddSubjectProps } from '@/validations/subjects-validations';
 import { MATERIAL_LEVELS } from '@/constants';
 
@@ -34,8 +34,8 @@ export default function AddSubject() {
   const existingSubjects = useAppSelector((state) => state.subjects.subjects);
   const isCreating = useAppSelector((state) => state.subjects.isCreating);
 
-  const schoolStages = useAppSelector((state) => state.lookups.schoolStages);
-  const isLoadingSchoolStages = useAppSelector((state) => state.lookups.isLoadingSchoolStages);
+  const grades = useAppSelector((state) => state.educationalStages.educationalStages);
+  const isLoadingGrades = useAppSelector((state) => state.educationalStages.isLoading);
 
   const {
     control,
@@ -59,8 +59,8 @@ export default function AddSubject() {
   const watchedSubjects = watch('subjects');
 
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 100 }));
-    dispatch(fetchSchoolStages());
+    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
   }, [dispatch]);
 
   const onSubmit = async (data: AddSubjectProps) => {
@@ -252,14 +252,14 @@ export default function AddSubject() {
                     onChange={(value) => {
                       field.onChange(value);
                     }}
-                    options={schoolStages.map((stage) => ({
-                      value: stage.id,
-                      label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
+                    options={grades.map((grade) => ({
+                      value: grade.id,
+                      label: currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr,
                     }))}
                     placeholder={
-                      isLoadingSchoolStages ? t('common.loading') : t('subjects.selectSchoolStages')
+                      isLoadingGrades ? t('common.loading') : t('subjects.selectSchoolStages')
                     }
-                    disabled={isLoadingSchoolStages}
+                    disabled={isLoadingGrades}
                     error={!!errors.lKSchoolStageIds}
                     isMulti={true}
                     id="lKSchoolStageIds"
@@ -272,7 +272,7 @@ export default function AddSubject() {
           {/* Added Subjects Preview Table */}
           {allSubjectsForDisplay.length > 0 && (
             <div className="mb-6">
-              <h3 className="mb-4 text-lg font-semibold text-gray-800">
+              <h3 className="mb-4 text-start text-2xl font-medium text-green-500">
                 {t('subjects.addedSubjects')}
               </h3>
               <DataTable
