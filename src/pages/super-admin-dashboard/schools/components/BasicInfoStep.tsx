@@ -33,6 +33,7 @@ interface BasicInfoStepProps {
   onLogoDelete?: (index?: number) => void;
   licenseFileName?: string;
   licenseFileNames?: string[];
+  licenseFiles?: File[];
   licenseError?: string;
   readOnly?: boolean;
   showRejectedLabel?: boolean;
@@ -48,6 +49,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   onLogoDelete,
   licenseFileName: licenseFileName,
   licenseFileNames: licenseFileNames,
+  licenseFiles = [],
   licenseError: licenseError,
   readOnly = false,
   showRejectedLabel = false,
@@ -434,6 +436,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               onChange={onLogoUpload}
               onDelete={onLogoDelete}
               fileNames={licenseFileNames || (licenseFileName ? [licenseFileName] : [])}
+              files={licenseFiles}
               uploadText={t('schools.uploadMedia')}
               required={true}
               multiple={true}

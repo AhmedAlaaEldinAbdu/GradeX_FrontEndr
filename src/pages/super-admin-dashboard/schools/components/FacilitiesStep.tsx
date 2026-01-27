@@ -23,8 +23,10 @@ interface FacilitiesStepProps {
   onCertificateDelete?: (index?: number) => void;
   imageFileName?: string;
   imageFileNames?: string[];
+  imageFiles?: File[];
   certificateFileName?: string;
   certificateFileNames?: string[];
+  certificateFiles?: File[];
   certificateError?: string;
   readOnly?: boolean;
   showValidationErrors?: boolean;
@@ -41,8 +43,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   onCertificateDelete,
   imageFileName,
   imageFileNames,
+  imageFiles = [],
   certificateFileName,
   certificateFileNames,
+  certificateFiles = [],
   certificateError,
   readOnly = false,
   showValidationErrors = false,
@@ -433,6 +437,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               onChange={onImageUpload}
               onDelete={onImageDelete}
               fileNames={imageFileNames || (imageFileName ? imageFileName.split(', ') : [])}
+              files={imageFiles}
               uploadText={t('schools.uploadMedia')}
               multiple={true}
             />
@@ -473,6 +478,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               fileNames={
                 certificateFileNames || (certificateFileName ? certificateFileName.split(', ') : [])
               }
+              files={certificateFiles}
               uploadText={t('schools.uploadMedia')}
               required={true}
               multiple={true}

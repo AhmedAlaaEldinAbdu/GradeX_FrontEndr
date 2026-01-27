@@ -325,6 +325,7 @@ const SchoolForm = ({
                   ? initialData?.licenseFiles || []
                   : [...(initialData?.licenseFiles || []), ...getFileNames('license')]
               }
+              licenseFiles={files.license}
               licenseError={fileErrors.license}
               readOnly={mode === 'view'}
               showRejectedLabel={showRejectedLabel}
@@ -353,11 +354,13 @@ const SchoolForm = ({
                   ? initialData?.imageFiles || []
                   : [...(initialData?.imageFiles || []), ...getFileNames('image')]
               }
+              imageFiles={files.image}
               certificateFileNames={
                 mode === 'view'
                   ? initialData?.certificateFiles || []
                   : [...(initialData?.certificateFiles || []), ...getFileNames('certificate')]
               }
+              certificateFiles={files.certificate}
               certificateError={fileErrors.certificate}
               readOnly={mode === 'view'}
               showValidationErrors={showValidationErrors}
