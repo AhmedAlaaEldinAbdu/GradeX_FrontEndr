@@ -26,7 +26,7 @@ const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-black-900">{t(`${title}`)}</h1>
+        <h1 className="text-[2rem] font-medium text-black-900">{t(`${title}`)}</h1>
       </div>
 
       {actions.length > 0 && (
