@@ -166,6 +166,23 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
         path: '/attendance-requests',
         icon: <CustomImage src={ReportIcon} className="h-5 w-5" alt="Requests" />,
       },
+      {
+        key: 'interviews',
+        path: '/student-interviews',
+        icon: <CustomImage src={CalendarIcon} className="h-5 w-5" alt="Interviews" />,
+      },
+      {
+        key: 'registrationAnnouncement',
+        path: '/registration-announcement',
+        icon: (
+          <CustomImage src={NotificationIcon} className="h-5 w-5" alt="Registration Announcement" />
+        ),
+      },
+      {
+        key: 'examResults',
+        path: '/exam-results',
+        icon: <CustomImage src={ReportsIcon} className="h-5 w-5" alt="Exam Results" />,
+      },
     ],
   },
   {
@@ -369,7 +386,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                         {subItem.icon}
                       </span>
                     )}
-                    <span className='text-green-500'>{t(`sidebar.${subItem.key}`)}</span>
+                    <span className="text-green-500">{t(`sidebar.${subItem.key}`)}</span>
                   </NavLink>
                 );
               })}

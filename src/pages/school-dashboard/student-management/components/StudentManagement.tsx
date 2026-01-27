@@ -5,6 +5,11 @@ import Table from '@gradex/shared/components/Table';
 import { useTranslation } from 'react-i18next';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
 import IconButton from '@/shared/components/IconButton';
+import RefreshSolidIcon from '@gradex/assets/icons/RefreshSolid.svg';
+import MaterialPdfIcon from '@gradex/assets/icons/MaterialPdf.svg';
+import ExcelFileIcon from '@gradex/assets/icons/ExcelFile.svg';
+import PrinterIcon from '@gradex/assets/icons/Printer.svg';
+import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 
 interface Student {
   id: number;
@@ -98,24 +103,45 @@ export default function StudentManagement() {
       headerClassName: 'min-w-[150px]',
     },
     {
+      header: 'studentManagement.contract',
+      accessor: () => (
+        <div className="flex cursor-pointer items-center justify-center">
+          <img src={PdfIcon} alt="Contract" className="h-8 w-8" />
+        </div>
+      ),
+      headerClassName: 'min-w-[100px]',
+    },
+    {
       header: 'common.actions',
       accessor: () => (
         <div className="flex items-center gap-2">
-          <IconButton
-            status="edit"
-            variant="success"
-            ariaLabel="Edit"
-          />
-          <IconButton
-            status="delete"
-            variant="danger"
-            ariaLabel="Delete"
-          />
+          <IconButton status="edit" variant="success" ariaLabel="Edit" />
+          <IconButton status="delete" variant="danger" ariaLabel="Delete" />
         </div>
       ),
       headerClassName: 'min-w-[150px]',
     },
   ];
+
+  const handleReload = () => {
+    // TODO: Implement reload functionality
+    window.location.reload();
+  };
+
+  const handleExportPdf = () => {
+    // TODO: Implement PDF export functionality
+    console.log('Exporting to PDF...');
+  };
+
+  const handleExportExcel = () => {
+    // TODO: Implement Excel export functionality
+    console.log('Exporting to Excel...');
+  };
+
+  const handlePrint = () => {
+    // TODO: Implement print functionality
+    window.print();
+  };
 
   return (
     <Card>
@@ -127,6 +153,38 @@ export default function StudentManagement() {
         />
       ) : (
         <div>
+          {/* Action Buttons */}
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleReload}
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-blue-100"
+            >
+              <img src={RefreshSolidIcon} alt="" className="h-4 w-4" />
+              {t('studentManagement.reload')}
+            </button>
+            <button
+              onClick={handleExportPdf}
+              className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-red-100"
+            >
+              <img src={MaterialPdfIcon} alt="" className="h-4 w-4" />
+              {t('studentManagement.exportPdf')}
+            </button>
+            <button
+              onClick={handleExportExcel}
+              className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-green-100"
+            >
+              <img src={ExcelFileIcon} alt="" className="h-4 w-4" />
+              {t('studentManagement.exportExcel')}
+            </button>
+            <button
+              onClick={handlePrint}
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-blue-100"
+            >
+              <img src={PrinterIcon} alt="" className="h-4 w-4" />
+              {t('studentManagement.print')}
+            </button>
+          </div>
+
           {/* Filters */}
           <div className="mb-6 grid grid-cols-1 gap-4 rounded-lg p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             <div className="relative">

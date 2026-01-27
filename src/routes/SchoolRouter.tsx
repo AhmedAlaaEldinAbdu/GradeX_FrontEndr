@@ -6,6 +6,7 @@ import MainLayout from '@gradex/shared/layout/MainLayout';
 
 import StudentManagementPage from '@/pages/school-dashboard/student-management/student-management-page';
 import StudentDetailsPage from '@/pages/school-dashboard/student-management/student-details-page';
+import StudentInterviewsPage from '@/pages/school-dashboard/student-interviews/student-interviews-page';
 import ClassroomsPage from '@/pages/school-dashboard/classrooms/classrooms-page';
 import AddClassroomPage from '@/pages/school-dashboard/classrooms/add-classroom-page';
 import EditClassroomPage from '@/pages/school-dashboard/classrooms/edit-classroom-page';
@@ -24,6 +25,8 @@ import JobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/job
 import AddJobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/add-job-announcements-page';
 import EditJobAnnouncementPage from '@/pages/school-dashboard/job-announcements/edit-job-announcement-page';
 import JobAnnouncementDetailsPage from '@/pages/school-dashboard/job-announcements/job-announcement-details';
+import RegistrationAnnouncementPage from '@/pages/school-dashboard/registration-announcement/registration-announcement-page';
+import AddRegistrationAnnouncementPage from '@/pages/school-dashboard/registration-announcement/add-registration-announcement-page';
 import WeeklyCalendarPage from '@/pages/school-dashboard/calendar-management/weekly-calendar-page';
 import AddLessonPage from '@/pages/school-dashboard/calendar-management/add-lesson-page';
 import EditLessonPage from '@/pages/school-dashboard/calendar-management/edit-lesson-page';
@@ -67,6 +70,49 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <StudentDetailsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/student-interviews"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <StudentInterviewsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/registration-announcement"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <RegistrationAnnouncementPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/registration-announcement/add-registration-announcement"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddRegistrationAnnouncementPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/exam-results"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">نتائج الاختبارات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
             </MainLayout>
           </ProtectedRoute>
         }
