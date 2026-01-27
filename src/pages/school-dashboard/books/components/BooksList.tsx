@@ -150,13 +150,13 @@ export default function BooksList() {
       className: 'text-center',
     },
     {
-      header: 'books.bookCode',
+      header: 'books.bookCode2',
       accessor: (row) => <span>{row.code || '-'}</span>,
       headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
     {
-      header: 'books.book',
+      header: 'books.bookImages',
       accessor: (row) => (
         <div className="flex justify-center">
           <button
@@ -168,7 +168,7 @@ export default function BooksList() {
             }}
             className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
               row.filePath
-                ? 'cursor-pointer bg-primary-50 hover:bg-primary-100'
+                ? 'bg-primary-50 hover:bg-primary-100 cursor-pointer'
                 : 'cursor-not-allowed bg-gray-100'
             }`}
             disabled={!row.filePath}
@@ -188,9 +188,7 @@ export default function BooksList() {
     {
       header: 'books.status',
       accessor: (row) => (
-        <span
-          className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatusBadgeColor(row.status)}`}
-        >
+        <span className={`inline-flex rounded-full px-2 py-1 ${getStatusBadgeColor(row.status)}`}>
           {getStatusLabel(row.status)}
         </span>
       ),
@@ -217,12 +215,8 @@ export default function BooksList() {
     },
     {
       header: 'books.price',
-      accessor: (row) => (
-        <span>
-          {row.price ?? 0} {t('books.currency')}
-        </span>
-      ),
-      headerClassName: 'min-w-[120px]',
+      accessor: (row) => <span>{row.price ?? 0}</span>,
+      headerClassName: 'min-w-[130px]',
       className: 'text-center',
     },
     {
@@ -247,7 +241,7 @@ export default function BooksList() {
           />
         </div>
       ),
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[130px]',
       className: 'text-center',
     },
   ];

@@ -451,11 +451,15 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           </button>
           {isExpanded && (
             <div className="space-y-0 border rounded-b-[32px]">
-              {item.subItems?.map((subItem) => {
+              {item.subItems?.map((subItem, subIndex) => {
                 // Check if sub-item is active (exact match or nested route)
                 const isSubItemActive =
                   location.pathname === subItem.path ||
                   location.pathname.startsWith(subItem.path + '/');
+
+                const isLastSubItem =
+                  subIndex === (item.subItems ? Math.max(0, item.subItems.length - 1) : 0);
+
                 return (
                   <NavLink
                     key={subItem.path}
@@ -463,7 +467,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-3 text-xl transition-colors duration-200 ${
                         isActive || isSubItemActive
-                          ? 'bg-green-100 font-medium text-green-800'
+                          ? `bg-green-100 font-medium text-green-800 ${isLastSubItem ? 'rounded-b-[32px]' : ''}`
                           : 'hover:bg-green-75 text-green-700'
                       }`
                     }

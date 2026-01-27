@@ -18,7 +18,7 @@ import {
   fetchSubjects,
   updateSubject,
 } from '@/redux/features/subjects/subjectsSlice';
-import { fetchSchoolStages } from '@/redux/features/lookups/lookupsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { EditSubjectSchema, type EditSubjectProps } from '@/validations/subjects-validations';
 import { MATERIAL_LEVELS } from '@/constants';
 import Loading from '@/shared/components/Loading';
@@ -41,25 +41,36 @@ export default function EditSubject() {
   const isLoading = useAppSelector((state) => state.subjects.isLoading);
   const isUpdating = useAppSelector((state) => state.subjects.isUpdating);
 
-  const lookupSchoolStages = useAppSelector((state) => state.lookups.schoolStages);
-  const isLoadingSchoolStages = useAppSelector((state) => state.lookups.isLoadingSchoolStages);
+  const grades = useAppSelector((state) => state.educationalStages.educationalStages);
+  const isLoadingGrades = useAppSelector((state) => state.educationalStages.isLoading);
 
   const schoolStagesOptions = useMemo(() => {
+    type StageOption = { id: string; nameAr: string; nameEn: string };
+
     const subjectStages = currentSubject?.schoolStages || [];
-    const lookupStagesMap = new Map(lookupSchoolStages.map((s) => [s.id, s]));
+    const lookupStagesMap = new Map<string, StageOption>(
+      grades.map((grade) => [
+        grade.id,
+        {
+          id: grade.id,
+          nameAr: grade.nameAr,
+          nameEn: grade.nameEn,
+        },
+      ])
+    );
 
     subjectStages.forEach((stage) => {
       if (!lookupStagesMap.has(stage.id)) {
         lookupStagesMap.set(stage.id, {
           id: stage.id,
-          nameAR: stage.nameAr,
-          nameEN: stage.nameEn,
+          nameAr: stage.nameAr,
+          nameEn: stage.nameEn,
         });
       }
     });
 
     return Array.from(lookupStagesMap.values());
-  }, [lookupSchoolStages, currentSubject?.schoolStages]);
+  }, [grades, currentSubject?.schoolStages]);
 
   const {
     control,
@@ -85,7 +96,7 @@ export default function EditSubject() {
       dispatch(fetchSubjectById(id));
     }
     dispatch(fetchSubjects({ page: 1, limit: 100 }));
-    dispatch(fetchSchoolStages());
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
   }, [dispatch, id]);
 
   useEffect(() => {
@@ -280,12 +291,12 @@ export default function EditSubject() {
                     }}
                     options={schoolStagesOptions.map((stage) => ({
                       value: stage.id,
-                      label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
+                      label: currentLang === 'ar' ? stage.nameAr : stage.nameEn || stage.nameAr,
                     }))}
                     placeholder={
-                      isLoadingSchoolStages ? t('common.loading') : t('subjects.selectSchoolStages')
+                      isLoadingGrades ? t('common.loading') : t('subjects.selectSchoolStages')
                     }
-                    disabled={isLoadingSchoolStages}
+                    disabled={isLoadingGrades}
                     error={!!errors.lKSchoolStageIds}
                     isMulti={true}
                     id="lKSchoolStageIds"
@@ -298,7 +309,7 @@ export default function EditSubject() {
           {/* All Subjects Preview Table */}
           {allSubjectsForDisplay.length > 0 && (
             <div className="mb-6">
-              <h3 className="mb-4 text-lg font-semibold text-gray-800">
+              <h3 className="mb-4 text-start text-2xl font-medium text-green-500">
                 {t('subjects.addedSubjects')}
               </h3>
               <DataTable

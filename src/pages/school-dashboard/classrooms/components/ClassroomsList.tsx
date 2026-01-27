@@ -27,6 +27,13 @@ export default function ClassroomsList() {
   const currentLang = i18n.language as 'ar' | 'en';
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
+  const formatDate = (value?: string | null) => {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-GB');
+  };
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedClassroomId, setSelectedClassroomId] = useState<string>('');
@@ -145,7 +152,7 @@ export default function ClassroomsList() {
           )}
         </div>
       ),
-      headerClassName: 'w-[150px]',
+      headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
     {
@@ -155,7 +162,7 @@ export default function ClassroomsList() {
           <span>{row.academicSystemName}</span>
         </div>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[180px]',
     },
     {
       header: 'grades.educationalStage',
@@ -164,7 +171,27 @@ export default function ClassroomsList() {
           <span>{row.gradeName}</span>
         </div>
       ),
-      headerClassName: 'min-w-[250px]',
+      headerClassName: 'min-w-[260px]',
+    },
+    {
+      header: 'grades.studentCount',
+      accessor: (row) => <span>{typeof row.studentNumber === 'number' ? row.studentNumber : '-'}</span>,
+      headerClassName: 'min-w-[140px]',
+      className: 'text-center',
+    },
+    {
+      header: 'grades.note',
+      accessor: (row) => {
+        const noteValue = currentLang === 'ar' ? row.note : row.noteEn;
+        return <span>{noteValue?.trim() ? noteValue : currentLang === 'ar' ? 'لا يوجد' : 'No note'}</span>;
+      },
+      headerClassName: 'min-w-[220px]',
+    },
+    {
+      header: 'grades.addedDate',
+      accessor: (row) => <span>{formatDate(row.creationDate)}</span>,
+      headerClassName: 'min-w-[160px]',
+      className: 'text-center',
     },
     {
       header: 'common.actions',
@@ -188,7 +215,7 @@ export default function ClassroomsList() {
           />
         </div>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
   ];
