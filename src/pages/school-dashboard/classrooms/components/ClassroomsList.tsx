@@ -152,7 +152,7 @@ export default function ClassroomsList() {
       header: 'grades.academicSystem',
       accessor: (row) => (
         <div>
-          <span className="text-sm">{row.academicSystemName}</span>
+          <span>{row.academicSystemName}</span>
         </div>
       ),
       headerClassName: 'min-w-[150px]',
@@ -161,7 +161,7 @@ export default function ClassroomsList() {
       header: 'grades.educationalStage',
       accessor: (row) => (
         <div>
-          <span className="text-sm">{row.gradeName}</span>
+          <span>{row.gradeName}</span>
         </div>
       ),
       headerClassName: 'min-w-[250px]',
