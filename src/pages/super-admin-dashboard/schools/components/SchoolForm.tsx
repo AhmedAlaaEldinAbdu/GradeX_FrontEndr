@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { FormProvider } from 'react-hook-form';
@@ -85,6 +85,9 @@ const SchoolForm = ({
       longitude?: number;
     }>
   >([]);
+
+  // Ref to prevent accidental submission immediately after navigation
+  const justNavigatedToStep4Ref = useRef(false);
 
   const isCreating = useSelector(selectIsCreating);
   const validationErrors = useSelector(selectValidationErrors);
@@ -174,6 +177,7 @@ const SchoolForm = ({
    * Handle moving to next step with validation
    */
   const handleNext = async () => {
+    console.log('▶️ handleNext called, currentStep:', currentStep);
     if (currentStep < 4) {
       // In view mode, skip validation and just move to next step
       if (mode === 'view') {
@@ -193,6 +197,16 @@ const SchoolForm = ({
       if (isValid && filesValid) {
         // Clear all errors before moving to next step
         form.clearErrors();
+        console.log('✅ Moving to step:', currentStep + 1);
+
+        // If moving to step 4, set guard to prevent accidental submission
+        if (currentStep === 3) {
+          justNavigatedToStep4Ref.current = true;
+          setTimeout(() => {
+            justNavigatedToStep4Ref.current = false;
+          }, 500); // Reset after 500ms
+        }
+
         setCurrentStep((prev) => prev + 1);
       }
     }
@@ -246,6 +260,22 @@ const SchoolForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log('🚀 handleSubmit called, currentStep:', currentStep);
+
+    // Only allow submission when on the final step (step 4)
+    if (currentStep !== 4) {
+      console.log('❌ Not on step 4, blocking submission');
+      return;
+    }
+
+    // Block accidental submission immediately after navigating to step 4
+    if (justNavigatedToStep4Ref.current) {
+      console.log('❌ Just navigated to step 4, blocking accidental submission');
+      return;
+    }
+
+    console.log('✅ On step 4, proceeding with submission');
     setShowValidationErrors(true);
     await form.trigger([
       'facilities',
@@ -289,7 +319,7 @@ const SchoolForm = ({
           {currentStep === 1 && (
             <BasicInfoStep
               onLogoUpload={handleFileUpload('license')}
-              onLogoDelete={handleFileDelete('license')}
+              onLogoDelete={(index?: number) => handleFileDelete('license', index)()}
               licenseFileNames={
                 mode === 'view'
                   ? initialData?.licenseFiles || []
@@ -316,8 +346,8 @@ const SchoolForm = ({
             <FacilitiesStep
               onImageUpload={handleFileUpload('image')}
               onCertificateUpload={handleFileUpload('certificate')}
-              onImageDelete={handleFileDelete('image')}
-              onCertificateDelete={handleFileDelete('certificate')}
+              onImageDelete={(index?: number) => handleFileDelete('image', index)()}
+              onCertificateDelete={(index?: number) => handleFileDelete('certificate', index)()}
               imageFileNames={
                 mode === 'view'
                   ? initialData?.imageFiles || []
@@ -367,11 +397,11 @@ const SchoolForm = ({
                   </Button>
 
                   {currentStep < 4 ? (
-                    <Button type="button" variant="primary" onClick={handleNext}>
+                    <Button key="next-button" type="button" variant="primary" onClick={handleNext}>
                       {t('common.next')}
                     </Button>
                   ) : (
-                    <Button type="submit" variant="primary" disabled={isCreating}>
+                    <Button key="save-button" type="submit" variant="primary" disabled={isCreating}>
                       {isCreating ? t('common.saving') : t('common.save')}
                     </Button>
                   )}
