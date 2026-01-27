@@ -46,6 +46,32 @@ body {
     @apply bg-gray-50;
     @apply text-gray-500;
   }
+
+  /* ===== Scrollbar (WebKit browsers) ===== */
+  ::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #7ba694;
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #6a9786;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #7ba694 #f3f4f6;
+  }
 }
 
 @layer components {
@@ -134,4 +160,8 @@ input[type='radio']:checked::after {
     #ffffff 70%,
     #ffffff 100%
   );
+}
+
+:focus-visible {
+  outline: 2px solid #00512e;
 }
