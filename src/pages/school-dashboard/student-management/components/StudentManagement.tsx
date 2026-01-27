@@ -9,7 +9,7 @@ import RefreshSolidIcon from '@gradex/assets/icons/RefreshSolid.svg';
 import MaterialPdfIcon from '@gradex/assets/icons/MaterialPdf.svg';
 import ExcelFileIcon from '@gradex/assets/icons/ExcelFile.svg';
 import PrinterIcon from '@gradex/assets/icons/Printer.svg';
-import PdfIcon from '@gradex/assets/icons/pdf.svg';
+import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 
 interface Student {
   id: number;
