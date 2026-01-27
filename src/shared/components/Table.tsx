@@ -38,7 +38,7 @@ function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
               return (
                 <th
                   key={index}
-                  className={`border border-gray-300 bg-gray-100 px-4 py-4 text-center text-sm font-semibold ${column.headerClassName} text-black-900 ${stickyClass}`}
+                  className={`border border-gray-300 bg-gray-100 px-4 py-4 text-center text-lg font-normal ${column.headerClassName} text-black-900 ${stickyClass}`}
                   style={stickyStyle}
                 >
                   {column.headerComponent ? column.headerComponent : t(column.header)}
@@ -62,12 +62,12 @@ function Table<T>({ columns, data, keyExtractor }: TableProps<T>) {
                 return (
                   <td
                     key={colIndex}
-                    className={`border border-gray-300 px-4 py-2 text-center text-sm text-gray-700 ${
+                    className={`border border-gray-300 px-4 py-2 text-center font-normal text-lg text-gray-500 ${
                       column.className || ''
                     } ${stickyClass}`}
                     style={stickyStyle}
                   >
-                    <div className="flex items-center justify-center text-gray-500">
+                    <div className="flex items-center justify-center font-normal text-lg text-gray-500">
                       {typeof column.accessor === 'function'
                         ? column.accessor(row)
                         : String(row[column.accessor])}
