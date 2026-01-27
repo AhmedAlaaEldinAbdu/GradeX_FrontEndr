@@ -6,6 +6,7 @@ import MainLayout from '@gradex/shared/layout/MainLayout';
 
 import StudentManagementPage from '@/pages/school-dashboard/student-management/student-management-page';
 import StudentDetailsPage from '@/pages/school-dashboard/student-management/student-details-page';
+import StudentInterviewsPage from '@/pages/school-dashboard/student-interviews/student-interviews-page';
 import ClassroomsPage from '@/pages/school-dashboard/classrooms/classrooms-page';
 import AddClassroomPage from '@/pages/school-dashboard/classrooms/add-classroom-page';
 import EditClassroomPage from '@/pages/school-dashboard/classrooms/edit-classroom-page';
@@ -78,10 +79,7 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">المقابلات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <StudentInterviewsPage />
             </MainLayout>
           </ProtectedRoute>
         }
