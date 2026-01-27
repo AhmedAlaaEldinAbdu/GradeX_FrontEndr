@@ -30,6 +30,7 @@ import CustomImage from '@/shared/components/CustomImage';
 
 interface BasicInfoStepProps {
   onLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onLogoDelete?: (index?: number) => void;
   licenseFileName?: string;
   licenseFileNames?: string[];
   licenseError?: string;
@@ -44,6 +45,7 @@ interface BasicInfoStepProps {
  */
 const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   onLogoUpload,
+  onLogoDelete,
   licenseFileName: licenseFileName,
   licenseFileNames: licenseFileNames,
   licenseError: licenseError,
@@ -430,6 +432,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               label={t('schools.licenses')}
               accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
               onChange={onLogoUpload}
+              onDelete={onLogoDelete}
               fileNames={licenseFileNames || (licenseFileName ? [licenseFileName] : [])}
               uploadText={t('schools.uploadMedia')}
               required={true}
