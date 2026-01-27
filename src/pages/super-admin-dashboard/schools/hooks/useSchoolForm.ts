@@ -26,7 +26,7 @@ interface UseSchoolFormReturn {
   files: FileState;
   fileErrors: FileErrors;
   handleFileUpload: (type: keyof FileState) => (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleFileDelete: (type: keyof FileState) => (index?: number) => void;
+  handleFileDelete: (type: keyof FileState, index?: number) => () => void;
   validateCurrentStep: (step: number) => Promise<boolean>;
   validateFiles: (step?: number) => boolean;
   resetForm: () => void;
@@ -111,8 +111,7 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
         const allowedTypes = [
           'image/jpeg',
           'image/png',
-          'image/gif',
-          'image/webp',
+          'image/jpg',
           'application/pdf',
           'image/svg+xml',
         ];
@@ -140,9 +139,10 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
   /**
    * File delete handler (supports deleting specific file from multiple files)
    * @param type - Type of file to delete
-   * @returns Delete handler function that accepts an optional index
+   * @param index - Optional index of file to delete (for multiple files)
+   * @returns Delete handler function
    */
-  const handleFileDelete = (type: keyof FileState) => (index?: number) => {
+  const handleFileDelete = (type: keyof FileState, index?: number) => () => {
     if (index !== undefined) {
       setFiles((prev) => ({
         ...prev,
