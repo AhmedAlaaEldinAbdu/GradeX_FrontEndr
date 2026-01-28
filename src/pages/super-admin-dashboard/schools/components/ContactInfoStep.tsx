@@ -85,6 +85,7 @@ const ContactInfoStep: React.FC<ContactInfoStepProps> = ({ readOnly = false }) =
                 onChange={field.onChange}
                 required
                 disabled={readOnly}
+                showDialCodeInField={false}
               />
             )}
           />
