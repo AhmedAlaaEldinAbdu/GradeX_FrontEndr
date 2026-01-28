@@ -163,10 +163,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   ))}
                 </div>
               ) : (
-                <span className="text-gray-800">{placeholder}</span>
+                <span className="text-black-900">{placeholder}</span>
               )
             ) : (
-              <span className={selectedOption ? 'text-gray-900' : 'text-gray-500'}>
+              <span className={selectedOption ? 'text-black-900' : 'text-gray-500'}>
                 {selectedOption ? selectedOption.label : placeholder}
               </span>
             )}
