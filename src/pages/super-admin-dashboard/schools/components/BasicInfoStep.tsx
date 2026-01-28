@@ -13,8 +13,6 @@ import ViewModeFileDisplay from './ViewModeFileDisplay';
 import type { SchoolFormData } from '../types/school.types';
 import {
   fetchCountries,
-  selectCountries,
-  selectIsLoadingCountries,
   fetchApplicationFeatures,
   selectApplicationFeatures,
   selectIsLoadingFeatures,
@@ -73,8 +71,6 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   const selectedFeatures = watch('applicationFeatures');
   const academicSystemIdsValue = watch('academicSystemIds') as unknown as string[] | string;
 
-  const countries = useSelector(selectCountries);
-  const isLoadingCountries = useSelector(selectIsLoadingCountries);
   const academicSystems = useSelector(selectAcademicSystems);
   const isLoadingAcademicSystems = useSelector(selectIsLoadingAcademicSystems);
   const applicationFeatures = useSelector(selectApplicationFeatures);
@@ -292,34 +288,6 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             />
           </FormField>
         </div>
-
-        <FormField
-          label={t('schools.countryWithAl')}
-          required
-          htmlFor="country"
-          error={errors.country?.message && t(errors.country.message)}
-        >
-          <Controller
-            name="country"
-            control={control}
-            render={({ field }) => (
-              <CustomSelect
-                value={field.value || ''}
-                onChange={(value) => {
-                  field.onChange(value);
-                  trigger('country');
-                }}
-                options={countries.map((country) => ({
-                  value: country.id,
-                  label: currentLang === 'ar' ? country.arabicName : country.englishName,
-                }))}
-                placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
-                disabled={isLoadingCountries || readOnly}
-                maxHeight="200px"
-              />
-            )}
-          />
-        </FormField>
 
         {/* Foundation Date */}
         <FormField

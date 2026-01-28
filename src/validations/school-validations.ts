@@ -56,8 +56,6 @@ export const basicInfoSchema = yup.object().shape({
         : schema.optional().default([]);
     }),
 
-  country: yup.string().required('schools.validation.countryRequired'),
-
   foundationDate: yup
     .string()
     .required('schools.validation.foundationDateRequired')
