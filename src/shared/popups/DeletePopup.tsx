@@ -19,7 +19,7 @@ export default function DeletePopup({
   onCancel,
   iconSrc,
   isProcessing,
-  selectedItemName = '"اسم للتجربة"',
+  selectedItemName = '',
 }: DeletePopupProps) {
   const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
@@ -77,7 +77,7 @@ export default function DeletePopup({
           </div>
 
           <p className="w-[100%] font-medium text-black-900 md:text-xl lg:w-[75%] lg:text-2xl">
-            {t(`${message}`)} {selectedItemName}
+            {t(`${message}`)} "{selectedItemName}"
           </p>
         </div>
 
