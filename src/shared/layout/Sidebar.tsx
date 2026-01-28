@@ -54,80 +54,78 @@ const getSuperAdminMenuItems = (): MenuItem[] => [
   {
     key: 'home',
     icon: <CustomImage src={HomeIcon} className="h-6 w-6" alt="Home" />,
-    
+
     path: '/dashboard',
   },
   {
     key: 'academicSystem',
     icon: <CustomImage src={EducationIcon} className="h-6 w-6" alt="Academic System" />,
-    
+
     path: '/academic-system',
   },
   {
     key: 'schools',
     icon: <CustomImage src={SchoolRegularIcon} className="h-6 w-6" alt="Schools" />,
-    
+
     path: '/schools',
   },
   {
     key: 'officialHolidays',
     icon: <CustomImage src={BookIcon} className="h-6 w-6" alt="Official Holidays" />,
-    
+
     path: '/official-holidays',
   },
   {
     key: 'marketing',
     icon: <CustomImage src={PeopleRegularIcon} className="h-6 w-6" alt="Marketing" />,
-    
+
     path: '/marketing',
   },
   {
     key: 'employeesAdministration',
     icon: <CustomImage src={ContactIcon} className="h-6 w-6" alt="Employees & Administration" />,
-    
+
     subItems: [
       {
         key: 'rolesPermissions',
         path: '/employees-administration/roles-permissions',
         icon: <CustomImage src={ContactIcon} className="h-6 w-6" alt="Roles & Permissions" />,
-        
       },
       {
         key: 'systemUsers',
         path: '/employees-administration/system-users',
         icon: <CustomImage src={ContactIcon} className="h-6 w-6" alt="System Users" />,
-        
       },
     ],
   },
   {
     key: 'reports',
     icon: <CustomImage src={ReportsIcon} className="h-6 w-6" alt="Reports" />,
-    
+
     path: '/reports',
   },
   {
     key: 'tickets',
     icon: <CustomImage src={TicketsIcon} className="h-6 w-6" alt="Tickets" />,
-    
+
     path: '/tickets',
   },
   {
     key: 'notifications',
     icon: <CustomImage src={NotificationIcon} className="h-6 w-6" alt="Notifications" />,
-    
+
     path: '/notifications',
   },
   {
     key: 'messages',
     icon: <CustomImage src={SettingsIcon} className="h-6 w-6" alt="Messages" />,
-    
+
     path: '/messages',
   },
   {
     key: 'settings',
     icon: <CustomImage src={SettingsIcon} className="h-6 w-6" alt="Settings" />,
-    
+
     path: '/settings',
   },
 ];
@@ -139,30 +137,30 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'home',
     icon: <CustomImage src={HomeIcon} className="h-6 w-6" alt="Home" />,
-    
+
     path: '/dashboard',
   },
   {
     key: 'educationalStages',
     icon: <CustomImage src={EducationIcon} className="h-6 w-6" alt="Education" />,
-    
+
     subItems: [
       {
         icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teachers" />,
-        
+
         key: 'classrooms',
         path: '/classrooms',
       },
       {
         icon: <CustomImage src={OrdersGreenIcon} className="h-6 w-6" alt="Orders" />,
-        
+
         key: 'subjects',
         path: '/subjects',
       },
       {
         key: 'books',
         icon: <CustomImage src={BookGreenIcon} className="h-6 w-6" alt="Books" />,
-        
+
         path: '/books',
       },
     ],
@@ -170,66 +168,73 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'teachingStaff',
     icon: <CustomImage src={PeopleRegularIcon} className="h-6 w-6" alt="Teaching Staff" />,
-    
+
     subItems: [
       {
-        icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teachers" />,
-        
-        key: 'teachers',
-        path: '/teachers',
-      },
-      {
-        icon: <CustomImage src={UserGreenIcon} className="h-6 w-6" alt="Administrators" />,
-        
-        key: 'administrators',
-        path: '/administrators',
-      },
-      {
         icon: <CustomImage src={WorkGreenIcon} className="h-6 w-6" alt="Work" />,
-        
+
         key: 'jobAnnouncements',
         path: '/job-announcements',
       },
       {
         icon: <CustomImage src={DateGreenIcon} className="h-6 w-6" alt="Date" />,
-        
+
         key: 'interviews',
         path: '/interviews',
       },
     ],
   },
   {
-    key: 'calendarManagement',
-    icon: <CustomImage src={CalendarIcon} className="h-6 w-6" alt="Calendar" />,
-    
+    key: 'employees',
+    icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Employees" />,
+
     subItems: [
       {
         icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teachers" />,
-        
+
+        key: 'teachers',
+        path: '/teachers',
+      },
+      {
+        icon: <CustomImage src={UserGreenIcon} className="h-6 w-6" alt="Administrators" />,
+
+        key: 'administrators',
+        path: '/administrators',
+      },
+    ],
+  },
+  {
+    key: 'calendarManagement',
+    icon: <CustomImage src={CalendarIcon} className="h-6 w-6" alt="Calendar" />,
+
+    subItems: [
+      {
+        icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teachers" />,
+
         key: 'tasks',
         path: '/calendar/tasks',
       },
       {
         icon: <CustomImage src={FilesGreenIcon} className="h-6 w-6" alt="Files" />,
-        
+
         key: 'preparations',
         path: '/calendar/preparations',
       },
       {
         icon: <CustomImage src={DateGreenIcon} className="h-6 w-6" alt="Date" />,
-        
+
         key: 'weeklyCalendar',
         path: '/calendar/weekly',
       },
       {
         icon: <CustomImage src={NoteEditGreenIcon} className="h-6 w-6" alt="Note" />,
-        
+
         key: 'monthlyCalendar',
         path: '/calendar/monthly',
       },
       {
         icon: <CustomImage src={TaskDailyGreenIcon} className="h-6 w-6" alt="Task" />,
-        
+
         key: 'academicCalendar',
         path: '/calendar/academic',
       },
@@ -238,25 +243,22 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'studentManagement',
     icon: <CustomImage src={StudentsIcon} className="h-6 w-6" alt="Students" />,
-    
+
     subItems: [
       {
         key: 'students',
         path: '/students',
         icon: <CustomImage src={PeopleSolidIcon} className="h-6 w-6" alt="Students List" />,
-        
       },
       {
         key: 'attendanceRequests',
         path: '/attendance-requests',
         icon: <CustomImage src={ReportIcon} className="h-6 w-6" alt="Requests" />,
-        
       },
       {
         key: 'interviews',
         path: '/student-interviews',
         icon: <CustomImage src={CalendarIcon} className="h-6 w-6" alt="Interviews" />,
-        
       },
       {
         key: 'registrationAnnouncement',
@@ -450,7 +452,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             </span>
           </button>
           {isExpanded && (
-            <div className="space-y-0 border rounded-b-[32px]">
+            <div className="space-y-0 rounded-b-[32px] border">
               {item.subItems?.map((subItem, subIndex) => {
                 // Check if sub-item is active (exact match or nested route)
                 const isSubItemActive =
@@ -493,7 +495,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         to={item.path!}
         onClick={() => setExpandedItems([])}
         className={({ isActive }) =>
-          `text-xl mb-2 flex items-center gap-3 rounded-lg px-4 py-3 transition-colors duration-200 ${
+          `mb-2 flex items-center gap-3 rounded-lg px-4 py-3 text-xl transition-colors duration-200 ${
             isActive
               ? 'linear-green font-medium text-white'
               : 'text-black-700 hover:bg-green-100 hover:text-green-500'
