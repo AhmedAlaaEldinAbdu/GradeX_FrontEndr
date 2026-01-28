@@ -9,6 +9,7 @@ interface DeletePopupProps {
   onCancel: () => void;
   iconSrc: string;
   isProcessing?: boolean;
+  selectedItemName?: string;
 }
 
 export default function DeletePopup({
@@ -18,6 +19,7 @@ export default function DeletePopup({
   onCancel,
   iconSrc,
   isProcessing,
+  selectedItemName = '"اسم للتجربة"',
 }: DeletePopupProps) {
   const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
@@ -51,7 +53,7 @@ export default function DeletePopup({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
+    <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
       <div
         ref={popupRef}
         className={`relative w-[420px] transform rounded-2xl bg-white p-6 py-7 text-center shadow-lg transition-all duration-300 ease-out ${
@@ -60,7 +62,7 @@ export default function DeletePopup({
       >
         <button
           onClick={handleClose}
-          className="absolute start-3 top-2 text-xl text-gray-400 hover:text-gray-600"
+          className="absolute start-3 top-2 text-xl text-gray-500 hover:text-gray-700"
         >
           ✕
         </button>
@@ -74,22 +76,22 @@ export default function DeletePopup({
             />
           </div>
 
-          <p className="w-[100%] font-medium text-gray-800 md:text-xl lg:w-[75%] lg:text-2xl">
-            {t(`${message}`)}
+          <p className="w-[100%] font-medium text-black-900 md:text-xl lg:w-[75%] lg:text-2xl">
+            {t(`${message}`)} {selectedItemName}
           </p>
         </div>
 
         <div className="flex justify-center gap-3">
           <button
             onClick={handleClose}
-            className="flex-grow rounded-xl border border-green-700 px-5 py-2 text-green-700 transition-colors duration-200 hover:bg-green-50"
+            className="flex-grow rounded-xl border border-green-500 px-5 py-2 text-green-500 transition-colors duration-200 hover:bg-green-50"
           >
             {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
             disabled={isProcessing}
-            className="flex-grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-grow rounded-xl bg-red-500 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isProcessing ? t('common.deleting') : t('common.delete')}
           </button>
