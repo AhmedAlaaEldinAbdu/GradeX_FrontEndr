@@ -54,7 +54,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      <div className="phone-input-wrapper">
+      <div className="phone-input-wrapper" dir="rtl">
         <ReactPhoneInput
           {...props}
           defaultCountry="sa"

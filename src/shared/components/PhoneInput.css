@@ -108,7 +108,7 @@
   max-height: 200px;
   overflow-y: auto;
   z-index: 9999 !important;
-  min-width: 280px;
+  max-width: 200px;
 }
 
 .react-international-phone-country-selector-dropdown__list-item {
