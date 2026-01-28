@@ -75,7 +75,7 @@ const Modal: React.FC<ModalProps> = ({
             {title && (
               <div className="flex-1 text-center">
                 {typeof title === 'string' ? (
-                  <h2 className={`text-xl font-semibold text-gray-800 ${titleClassName}`}>
+                  <h2 className={`text-3xl font-medium text-black-900 ${titleClassName}`}>
                     {title}
                   </h2>
                 ) : (
