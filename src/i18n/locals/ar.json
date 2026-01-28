@@ -40,7 +40,8 @@
     "employeesAdministration": "الموظفين والإدارة",
     "rolesPermissions": "الأدوار والصلاحيات",
     "systemUsers": "مستخدمي النظام",
-    "messages": "الرسائل"
+    "messages": "الرسائل",
+    "employees": "الموظفين"
   },
   "header": {
     "search": "ابحث بسهولة عما تريد",

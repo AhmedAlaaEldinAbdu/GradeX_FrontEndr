@@ -40,7 +40,8 @@
     "employeesAdministration": "Employees & Administration",
     "rolesPermissions": "Roles & Permissions",
     "systemUsers": "System Users",
-    "messages": "Messages"
+    "messages": "Messages",
+    "employees": "Employees"
   },
   "header": {
     "search": "Search easily for what you want",
