@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { isValidLandlineNumber, isValidMobileNumber } from './phone-utils';
 
 /**
  * Validation schema for Basic Info step
@@ -127,16 +128,18 @@ export const contactInfoSchema = yup.object().shape({
   landline: yup
     .string()
     .required('schools.validation.landlineRequired')
-    .matches(/^\+?[1-9]\d{1,14}$/, 'schools.validation.landlineInvalid')
-    .min(10, 'schools.validation.phoneNumberMin')
-    .max(15, 'schools.validation.phoneNumberMax'),
+    .test('is-valid-landline', 'schools.validation.landlineInvalid', (value) => {
+      if (!value) return false;
+      return isValidLandlineNumber(value);
+    }),
 
   phoneNumber: yup
     .string()
     .required('schools.validation.phoneNumberRequired')
-    .matches(/^\+?[1-9]\d{1,14}$/, 'schools.validation.phoneNumberInvalid')
-    .min(10, 'schools.validation.phoneNumberMin')
-    .max(15, 'schools.validation.phoneNumberMax'),
+    .test('is-valid-mobile', 'schools.validation.phoneNumberInvalid', (value) => {
+      if (!value) return false;
+      return isValidMobileNumber(value);
+    }),
 
   contactPerson: yup
     .string()
