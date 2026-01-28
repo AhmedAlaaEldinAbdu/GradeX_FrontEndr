@@ -149,11 +149,11 @@ export default function SharedCalendar({
   }) => (
     <div className="flex items-center justify-center gap-2">
       {typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0 ? (
-        <span className="line-clamp-2 text-center text-sm font-bold text-green-800">
+        <span className="line-clamp-2 text-center text-sm font-bold text-green-500">
           +{event.extraEventsCount}
         </span>
       ) : (
-        <span className="line-clamp-2 text-center text-xs font-bold text-green-800">{title}</span>
+        <span className="line-clamp-2 text-center text-xs font-bold text-green-500">{title}</span>
       )}
     </div>
   );
@@ -321,7 +321,7 @@ export default function SharedCalendar({
                       return (
                         <div className="relative flex-col">
                           <div className="relative flex items-center justify-between p-1">
-                            <span className="px-1 text-sm">{props.label}</span>
+                            <span className="px-1 text-sm text-black-700 font-normal">{props.label}</span>
                             <CustomDateCell date={props.date} event={dateEvents[0]} />
                           </div>
                         </div>

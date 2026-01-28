@@ -100,14 +100,14 @@
 }
 
 .rbc-off-range-bg {
-  background-color: #e5e7eb;
+  background-color: #F6F6F6;
 }
 
 .rbc-today {
   background-color: #5FA8960D;
 }
 .rbc-day-bg:hover {
-  background-color: #dcfce7;
+  background-color: rgba(95, 168, 150, 0.10);
 }
 .rbc-date-cell {
   padding: 0.5rem;
@@ -190,11 +190,11 @@
 }
 
 .shared-calendar-event {
-  background-color: #ecfdf5;
-  border: 1px solid #15803d;
+  background-color: #5FA8960D;
+  border: 1px solid #00512E;
   border-radius: 0.75rem;
   padding: 0.35rem 0.5rem;
-  color: #15803d;
+  color: #00512E;
   font-size: 0.75rem;
   font-weight: 600;
   display: flex;
@@ -205,7 +205,7 @@
 }
 
 .shared-calendar-event:hover {
-  background-color: #dcfce7;
+  background-color: rgba(95, 168, 150, 0.10);
   box-shadow: 0 2px 6px rgba(15, 118, 110, 0.15);
 }
 
@@ -216,11 +216,11 @@
 
 /* Selected Event */
 .rbc-selected {
-  background-color: #dcfce7;
+  background-color: rgba(95, 168, 150, 0.10);
 }
 .rbc-event.rbc-selected,
 .rbc-day-slot .rbc-selected.rbc-background-event {
-  background-color: #dcfce7;
+  background-color: rgba(95, 168, 150, 0.10);
 }
 
 /* Time Views */
