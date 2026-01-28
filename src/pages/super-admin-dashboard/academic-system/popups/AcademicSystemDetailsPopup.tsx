@@ -72,13 +72,13 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3 font-semibold text-gray-800">
               <span className="flex flex-shrink-0">{t('academicSystem.academicSystemName')}:</span>
-              <span className="py-1 text-sm text-gray-700">
+              <span className="py-1 text-base text-black-800">
                 {currentLang === 'ar' ? system.nameAr : system.nameEn}
               </span>
             </div>
             <div className="flex items-start gap-3 font-semibold text-gray-800">
               <span className="flex flex-shrink-0">{t('academicSystem.systemType')}:</span>{' '}
-              <span className="flex py-1 text-sm text-gray-700">
+              <span className="flex py-1 text-base text-black-800">
                 {systemTypes?.join(' - ') || '-'}
               </span>
             </div>
@@ -86,11 +86,11 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
               <span className="flex flex-shrink-0">
                 {t('academicSystem.educationalStagesCount')}:
               </span>{' '}
-              <span className="py-1 text-sm text-gray-700">{gradeCount}</span>
+              <span className="py-1 text-base text-black-800">{gradeCount}</span>
               {/* <span className="flex flex-shrink-0">{t('academicSystem.educationalStages')}:</span>{' '}
               <span className="flex flex-wrap items-start gap-2">
                 {dummyData.eduStages?.map((stage) => (
-                  <span className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-sm text-gray-700">
+                  <span className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-base text-black-800">
                   {stage}
                     <CustomImage src={XmarkCircleIcon} className="cursor-pointer" alt="Xmark" />
                   </span>
@@ -104,13 +104,13 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
                   countries.map((country, index) => (
                     <span
                       key={index}
-                      className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-sm text-gray-700"
+                      className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-base text-black-800"
                     >
                       {country}
                     </span>
                   ))
                 ) : (
-                  <span className="text-sm text-gray-700">-</span>
+                  <span className="text-base text-black-800">-</span>
                 )}
               </span>
             </div>

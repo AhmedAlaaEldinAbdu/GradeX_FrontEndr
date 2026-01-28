@@ -31,7 +31,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({ checked, onChange, labe
           />
         </svg>
       </div>
-      <span className="text-sm text-gray-700">{label}</span>
+      <span className="text-base text-black-800">{label}</span>
     </label>
   );
 };

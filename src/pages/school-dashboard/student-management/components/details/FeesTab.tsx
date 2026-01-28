@@ -186,7 +186,7 @@ export default function FeesTab({ studentId }: FeesTabProps) {
                 onChange={() => setSelectedPaymentOption('equal')}
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">{t('fees.equalPayments')}</span>
+              <span className="text-base text-black-800">{t('fees.equalPayments')}</span>
             </label>
             <label className="flex cursor-pointer items-center gap-2">
               <input
@@ -197,7 +197,7 @@ export default function FeesTab({ studentId }: FeesTabProps) {
                 onChange={() => setSelectedPaymentOption('ratio')}
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">{t('fees.ratioPerPayment')}</span>
+              <span className="text-base text-black-800">{t('fees.ratioPerPayment')}</span>
             </label>
           </div>
         </div>

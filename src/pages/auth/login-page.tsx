@@ -222,7 +222,7 @@ const LoginPage: React.FC = () => {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-gray-300 text-[#1FAD6C] focus:ring-[#1FAD6C]"
                   />
-                  <span className={`text-sm text-gray-700 ${isRTL ? 'mr-2' : 'ml-2'}`}>
+                  <span className={`text-base text-black-800 ${isRTL ? 'mr-2' : 'ml-2'}`}>
                     {t('login.saveLoginData')}
                   </span>
                 </label> */}
