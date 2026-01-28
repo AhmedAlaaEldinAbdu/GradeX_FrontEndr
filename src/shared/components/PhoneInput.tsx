@@ -30,7 +30,12 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   const translatedCountries = useMemo(() => {
     try {
       const regionNames = new Intl.DisplayNames([i18n.language], { type: 'region' });
-      return defaultCountries.map((country) => {
+      const targetCountries = defaultCountries.filter((country) => {
+        const iso2 = country[1];
+        return iso2 === 'sa' || iso2 === 'eg';
+      });
+
+      return targetCountries.map((country) => {
         const iso2 = country[1];
         const translatedName = regionNames.of(iso2.toUpperCase());
         if (translatedName) {
@@ -42,7 +47,10 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
       });
     } catch {
       // Fallback if Intl.DisplayNames is not supported or fails
-      return defaultCountries;
+      return defaultCountries.filter((country) => {
+        const iso2 = country[1];
+        return iso2 === 'sa' || iso2 === 'eg';
+      });
     }
   }, [i18n.language]);
 
