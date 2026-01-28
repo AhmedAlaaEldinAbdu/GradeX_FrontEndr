@@ -11,6 +11,7 @@ interface PhoneInputProps extends Omit<ReactPhoneInputProps, 'onChange'> {
   error?: string;
   required?: boolean;
   onChange?: (value: string) => void;
+  showDialCodeInField?: boolean;
 }
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
@@ -18,6 +19,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   error,
   required = false,
   onChange,
+  showDialCodeInField = true,
   ...props
 }) => {
   return (
@@ -40,7 +42,14 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           inputClassName={`phone-input-field ${error ? 'phone-input-error' : ''}`}
           countrySelectorStyleProps={{
             buttonClassName: `phone-country-selector ${error ? 'phone-country-selector-error' : ''}`,
+            dropdownStyleProps: {
+              listItemDialCodeStyle: !showDialCodeInField ? { display: 'none' } : undefined,
+            },
           }}
+          // When showDialCodeInField is false, hide the dial code from input
+          disableDialCodePrefill={!showDialCodeInField}
+          disableDialCodeAndPrefix={!showDialCodeInField}
+          showDisabledDialCodeAndPrefix={false}
         />
       </div>
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
