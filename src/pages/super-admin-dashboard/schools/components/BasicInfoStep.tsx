@@ -370,7 +370,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         </FormField>
 
         {/* Has Current System Toggle */}
-        <FormField label={t('schools.hasCurrentSystem')} required>
+        <FormField label={t('schools.hasCurrentSystem')}>
           <Controller
             name="hasCurrentSystem"
             control={control}
