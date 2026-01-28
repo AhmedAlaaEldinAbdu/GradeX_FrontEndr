@@ -115,7 +115,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full text-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`w-full text-base focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
           variant === 'ghost'
             ? 'min-h-[40px] border-0 bg-transparent px-4 py-2.5 font-medium text-gray-800 hover:bg-gray-50'
             : `min-h-[40px] rounded-lg border bg-white px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-green-500 ${
@@ -138,7 +138,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                       key={opt.value}
                       className="flex items-center gap-1.5 rounded-lg bg-teal-50 px-2.5 py-1"
                     >
-                      <span className="text-sm font-medium text-teal-800">{opt.label}</span>
+                      <span className="text-base font-medium text-teal-800">{opt.label}</span>
                       <button
                         type="button"
                         onClick={(e) => handleRemoveTag(opt.value, e)}
@@ -202,7 +202,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder={t('common.search') || 'Search...'}
-                  className={`w-full rounded-md border border-gray-300 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                  className={`w-full rounded-md border border-gray-300 py-2 text-base focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
                     isRTL ? 'pl-4 pr-7 text-right' : 'pl-7 pr-4 text-left'
                   }`}
                 />
@@ -237,7 +237,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                     type="button"
                     data-value={option.value}
                     onClick={() => handleSelect(option.value)}
-                    className={`w-full px-3 py-2 text-sm hover:bg-green-50 focus:bg-green-50 focus:outline-none ${
+                    className={`w-full px-3 py-2 text-base hover:bg-green-50 focus:bg-green-50 focus:outline-none ${
                       isSelected ? 'bg-green-100 text-green-900' : 'text-gray-900'
                     } ${isRTL ? 'text-right' : 'text-left'}`}
                   >
@@ -247,7 +247,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
               })
             ) : (
               <div
-                className={`px-3 py-4 text-center text-sm text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}
+                className={`px-3 py-4 text-center text-base text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}
               >
                 {isMulti && selectedOptions.length > 0
                   ? t('common.noMoreOptions') || 'All options selected'
