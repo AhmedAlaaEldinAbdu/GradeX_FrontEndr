@@ -882,6 +882,18 @@
       "atLeastOne": "At least one grade must be added"
     }
   },
+  "classrooms": {
+    "validation": {
+      "academicSystemRequired": "Academic system is required",
+      "educationalStageRequired": "Educational stage is required",
+      "classroomNameRequired": "Classroom name is required",
+      "maxStudentsRequired": "Maximum number of students is required",
+      "maxStudentsMustBePositive": "Maximum students must be a positive number",
+      "maxStudentsMustBeInteger": "Maximum students must be an integer",
+      "requiredList": "Classrooms list is required",
+      "atLeastOne": "At least one classroom must be added"
+    }
+  },
   "subjects": {
     "title": "Subjects",
     "subtitle": "Manage academic subjects",
@@ -1575,6 +1587,8 @@
       "workModeRequired": "Select a work mode",
       "workStartTimeRequired": "Work start time is required",
       "workEndTimeRequired": "Work end time is required",
+      "workingHoursFromRequired": "Working hours from is required",
+      "workingHoursToRequired": "Working hours to is required",
       "workingHoursToAfterFrom": "End time must be after start time",
       "salaryRangeRequired": "Enter salary information",
       "minimumSalaryRequired": "Minimum salary is required",
