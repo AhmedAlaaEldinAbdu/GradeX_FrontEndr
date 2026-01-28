@@ -173,8 +173,10 @@ export default function AddEditInterviewPopup({
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         {formattedSelectedDate && (
-          <div className="rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-600">
-            <span className="font-medium text-gray-900">{t('interviews.interviewDate')}:</span>{' '}
+          <div className="rounded-lg bg-gray-50 p-4 text-center text-base text-gray-500">
+            <span className="text-base font-medium text-black-800">
+              {t('interviews.interviewDate')}:
+            </span>{' '}
             {formattedSelectedDate}
           </div>
         )}
