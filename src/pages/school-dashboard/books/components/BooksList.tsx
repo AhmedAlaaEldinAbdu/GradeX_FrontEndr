@@ -250,7 +250,7 @@ export default function BooksList() {
     {
       type: 'search',
       name: 'searchBook',
-      placeholder: t('books.searchBook'),
+      placeholder: t('books.searchByBookNameOrCode'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
       width: '30%',
