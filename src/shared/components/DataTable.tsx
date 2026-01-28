@@ -4,6 +4,7 @@ import Pagination from './Pagination';
 import Loading from './Loading';
 import SearchInput from './SearchInput';
 import NotFoundMessage from './NotFoundMessage';
+import TableActionButtons from './TableActionButtons';
 
 export interface FilterConfig {
   type: 'search' | 'select' | 'custom';
@@ -62,6 +63,9 @@ export interface DataTableProps<T> {
 
   // Translation
   t: (key: string) => string;
+
+  // Visibility
+  showActionButtons?: boolean;
 }
 
 export default function DataTable<T>({
@@ -78,7 +82,27 @@ export default function DataTable<T>({
   isLoading = false,
   emptyMessage,
   t,
+  showActionButtons = true,
 }: DataTableProps<T>) {
+  const handleReload = () => {
+    // TODO: Implement reload functionality
+    console.log('Reloading...');
+  };
+
+  const handleExportPdf = () => {
+    // TODO: Implement PDF export using the 'data' prop
+    console.log('Exporting PDF...');
+  };
+
+  const handleExportExcel = () => {
+    // TODO: Implement Excel export using the 'data' prop
+    console.log('Exporting Excel...');
+  };
+
+  const handlePrint = () => {
+    // TODO: Implement print functionality
+    console.log('Printing...');
+  };
   const renderFilter = (filter: FilterConfig, index: number) => {
     switch (filter.type) {
       case 'search':
@@ -151,6 +175,18 @@ export default function DataTable<T>({
 
   return (
     <div>
+      {/* Action Buttons */}
+      {showActionButtons && (
+        <div className="mb-6">
+          <TableActionButtons
+            onReload={handleReload}
+            onExportPdf={handleExportPdf}
+            onExportExcel={handleExportExcel}
+            onPrint={handlePrint}
+          />
+        </div>
+      )}
+
       {/* Filters Section */}
       {showFilters && ((Array.isArray(filters) && filters.length) || !!filterComponent) && (
         <div className="flex justify-between gap-3">
