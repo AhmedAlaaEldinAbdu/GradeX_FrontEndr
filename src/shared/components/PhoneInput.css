@@ -44,15 +44,15 @@
 .phone-country-selector {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  gap: 2px;
+  padding: 0.5rem 4px;
   border: none !important;
   border-left: 1px solid #e5e7eb !important;
   border-radius: 0.5rem 0 0 0.5rem !important; /* Rounded corners on the left side */
   background-color: #f9fafb;
   cursor: pointer;
   transition: background-color 0.15s ease-in-out;
-  min-width: 80px;
+  min-width: auto;
 }
 
 .phone-country-selector:hover {

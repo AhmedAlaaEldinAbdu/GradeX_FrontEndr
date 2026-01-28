@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   PhoneInput as ReactPhoneInput,
   type PhoneInputProps as ReactPhoneInputProps,
+  defaultCountries,
+  type CountryData,
 } from 'react-international-phone';
 import 'react-international-phone/style.css';
 import './PhoneInput.css';
@@ -22,6 +25,27 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   showDialCodeInField = true,
   ...props
 }) => {
+  const { i18n } = useTranslation();
+
+  const translatedCountries = useMemo(() => {
+    try {
+      const regionNames = new Intl.DisplayNames([i18n.language], { type: 'region' });
+      return defaultCountries.map((country) => {
+        const iso2 = country[1];
+        const translatedName = regionNames.of(iso2.toUpperCase());
+        if (translatedName) {
+          const newCountry = [...country];
+          newCountry[0] = translatedName;
+          return newCountry as CountryData;
+        }
+        return country;
+      });
+    } catch {
+      // Fallback if Intl.DisplayNames is not supported or fails
+      return defaultCountries;
+    }
+  }, [i18n.language]);
+
   return (
     <div className="w-full">
       {label && (
@@ -34,6 +58,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
         <ReactPhoneInput
           {...props}
           defaultCountry="sa"
+          countries={translatedCountries}
           onChange={(phone) => {
             if (onChange) {
               onChange(phone);
