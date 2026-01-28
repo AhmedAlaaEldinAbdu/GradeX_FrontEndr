@@ -18,7 +18,7 @@ const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', size = 'md
   const sizes = {
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-3 py-1 text-sm',
-    lg: 'px-5 py-2 text-md',
+    lg: 'px-5 py-2 text-base',
   };
 
   return (

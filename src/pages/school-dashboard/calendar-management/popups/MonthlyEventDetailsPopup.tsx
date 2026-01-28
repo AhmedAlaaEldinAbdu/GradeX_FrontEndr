@@ -313,7 +313,7 @@ export default function MonthlyEventDetailsPopup({
                           stageLabels.map((stage) => (
                             <span
                               key={stage}
-                              className="text-md rounded-md bg-emerald-50 px-3 py-1 font-semibold text-emerald-700"
+                              className="text-base rounded-md bg-emerald-50 px-3 py-1 font-semibold text-emerald-700"
                             >
                               {stage}
                             </span>
@@ -333,7 +333,7 @@ export default function MonthlyEventDetailsPopup({
                           classroomLabels.map((classroom) => (
                             <span
                               key={classroom}
-                              className="text-md rounded-md bg-emerald-50 px-3 py-1 font-semibold text-emerald-700"
+                              className="text-base rounded-md bg-emerald-50 px-3 py-1 font-semibold text-emerald-700"
                             >
                               {classroom}
                             </span>
