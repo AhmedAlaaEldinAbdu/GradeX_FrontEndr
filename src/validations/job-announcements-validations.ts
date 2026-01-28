@@ -82,10 +82,10 @@ export const AddJobAnnouncementSchema = object({
         ),
       otherwise: (schema) => schema.optional(),
     }),
-  jobDescriptionAr: string().required('jobAnnouncement.validation.jobDescriptionRequired'),
-  jobDescriptionEn: string().required('jobAnnouncement.validation.jobDescriptionEnRequired'),
-  jobResponsibilitiesAr: string().required('jobAnnouncement.validation.jobResponsibilitiesRequired'),
-  jobResponsibilitiesEn: string().required('jobAnnouncement.validation.jobResponsibilitiesEnRequired'),
+  jobDescriptionAr: string().nullable().optional(),
+  jobDescriptionEn: string().nullable().optional(),
+  jobResponsibilitiesAr: string().nullable().optional(),
+  jobResponsibilitiesEn: string().nullable().optional(),
   applicationStartDate: string().required('jobAnnouncement.validation.applicationStartDateRequired'),
   applicationEndDate: string().required('jobAnnouncement.validation.applicationEndDateRequired'),
   nationalityMode: mixed<NationalityModeValue>()
@@ -136,7 +136,10 @@ export const AddJobAnnouncementSchema = object({
     .typeError('jobAnnouncement.validation.minimumSalaryRequired')
     .when('salary', {
       is: SalaryOption.RANGE,
-      then: (schema) => schema.required('jobAnnouncement.validation.minimumSalaryRequired').min(0),
+      then: (schema) =>
+        schema
+          .required('jobAnnouncement.validation.minimumSalaryRequired')
+          .min(1, 'jobAnnouncement.validation.minimumSalaryMustBePositive'),
       otherwise: (schema) => schema.nullable().optional(),
     }),
   maximumSalary: number()
@@ -152,25 +155,25 @@ export const AddJobAnnouncementSchema = object({
             'max-greater-min',
             'jobAnnouncement.validation.maximumSalaryRequired',
             function (value) {
-            const rawMin = this?.parent?.minimumSalary;
-            const min =
-              typeof rawMin === 'number'
-                ? rawMin
-                : rawMin !== undefined && rawMin !== null
-                  ? Number(rawMin)
-                  : undefined;
+              const rawMin = this?.parent?.minimumSalary;
+              const min =
+                typeof rawMin === 'number'
+                  ? rawMin
+                  : rawMin !== undefined && rawMin !== null
+                    ? Number(rawMin)
+                    : undefined;
 
-            // Optional: if max isn't provided, that's OK.
-            if (value === undefined || value === null) {
-              return true;
+              // Optional: if max isn't provided, that's OK.
+              if (value === undefined || value === null) {
+                return true;
+              }
+
+              if (min === undefined || Number.isNaN(min)) {
+                return true;
+              }
+
+              return Number(value) >= min;
             }
-
-            if (min === undefined || Number.isNaN(min)) {
-              return true;
-            }
-
-            return Number(value) >= min;
-          }
           ),
       otherwise: (schema) => schema.nullable().optional(),
     }),

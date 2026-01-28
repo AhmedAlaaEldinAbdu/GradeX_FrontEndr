@@ -1583,6 +1583,7 @@
       "workingHoursToAfterFrom": "وقت الانتهاء يجب أن يكون بعد وقت البدء",
       "salaryRangeRequired": "الرجاء إدخال بيانات الراتب",
       "minimumSalaryRequired": "الحد الأدنى للراتب مطلوب",
+      "minimumSalaryMustBePositive": "الحد الأدنى للراتب يجب أن يكون رقم موجب",
       "maximumSalaryRequired": "الحد الأعلى للراتب مطلوب",
       "teacherGenderRequired": "يرجى تحديد جنس المعلم",
       "contractTypeRequired": "يرجى تحديد نوع الدوام",

@@ -1594,6 +1594,7 @@
       "workingHoursToAfterFrom": "End time must be after start time",
       "salaryRangeRequired": "Enter salary information",
       "minimumSalaryRequired": "Minimum salary is required",
+      "minimumSalaryMustBePositive": "Minimum salary must be a positive number",
       "maximumSalaryRequired": "Maximum salary is required",
       "teacherGenderRequired": "Select teacher gender",
       "contractTypeRequired": "Select at least one contract type",
