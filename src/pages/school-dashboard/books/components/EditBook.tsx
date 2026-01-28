@@ -315,7 +315,7 @@ export default function EditBook() {
                       onChange={() => setValue('packageType', pkg.value as '1' | '2')}
                       className="h-4 w-4 accent-green-600 focus:ring-green-500"
                     />
-                    <span className="text-sm text-gray-700">{t(pkg.labelKey)}</span>
+                    <span className="text-base text-black-800">{t(pkg.labelKey)}</span>
                   </label>
                 ))}
               </div>
@@ -369,7 +369,7 @@ export default function EditBook() {
                         onChange={() => setValue('priceView', option.value as '1' | '2')}
                         className="h-4 w-4 accent-green-600 focus:ring-green-500"
                       />
-                      <span className="text-sm text-gray-700">{t(option.labelKey)}</span>
+                      <span className="text-base text-black-800">{t(option.labelKey)}</span>
                     </label>
                   ))}
                 </div>

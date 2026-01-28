@@ -12,7 +12,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className = '', ...props }) 
         className={`h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 ${className}`}
         {...props}
       />
-      <span className="text-sm text-gray-700">{label}</span>
+      <span className="text-base text-black-800">{label}</span>
     </label>
   );
 };

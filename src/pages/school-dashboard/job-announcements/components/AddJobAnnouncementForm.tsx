@@ -782,7 +782,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     onChange={() => setValue('qualificationType', JobCategory.ADMIN)}
                     className="h-4 w-4"
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-base text-black-800">
                     {t('jobAnnouncement.form.jobCategoryAdmin')}
                   </span>
                 </label>
@@ -794,7 +794,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                     onChange={() => setValue('qualificationType', JobCategory.TEACHER)}
                     className="h-4 w-4"
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-base text-black-800">
                     {t('jobAnnouncement.form.jobCategoryTeacher')}
                   </span>
                 </label>
@@ -1060,7 +1060,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 {NATIONALITY_OPTIONS.map((option) => (
                   <label
                     key={option.value}
-                    className="flex items-center gap-3 text-sm text-gray-700"
+                    className="flex items-center gap-3 text-base text-black-800"
                   >
                     <input
                       type="radio"
@@ -1116,7 +1116,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                 {WORK_START_OPTIONS.map((option) => (
                   <label
                     key={option.value}
-                    className="flex items-center gap-3 text-sm text-gray-700"
+                    className="flex items-center gap-3 text-base text-black-800"
                   >
                     <input
                       type="radio"
@@ -1244,7 +1244,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                       onChange={() => setValue('salary', option.value)}
                       className="h-4 w-4"
                     />
-                    <span className="text-sm text-gray-700">{t(option.labelKey)}</span>
+                    <span className="text-base text-black-800">{t(option.labelKey)}</span>
                   </label>
                 ))}
               </div>

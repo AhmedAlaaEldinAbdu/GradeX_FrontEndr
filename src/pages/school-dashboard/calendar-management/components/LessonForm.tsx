@@ -761,7 +761,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                     }}
                     className="h-4 w-4 accent-emerald-600"
                   />
-                  <span className="text-sm text-gray-700">{t('lesson.all')}</span>
+                  <span className="text-base text-black-800">{t('lesson.all')}</span>
                 </label>
                 <label className="flex cursor-pointer items-center gap-2">
                   <input
@@ -775,7 +775,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                     }}
                     className="h-4 w-4 accent-emerald-600"
                   />
-                  <span className="text-sm text-gray-700">{t('lesson.specificStudents')}</span>
+                  <span className="text-base text-black-800">{t('lesson.specificStudents')}</span>
                 </label>
               </div>
             </FormField>

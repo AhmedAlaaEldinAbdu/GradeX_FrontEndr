@@ -375,7 +375,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ breakBetweenClassesMode: 'year' })}
                       value={'year'}
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-base text-black-800">
                       {t('academicCalendar.form.yearMode')}
                     </span>
                   </label>
@@ -386,7 +386,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ breakBetweenClassesMode: 'custom' })}
                       value={'custom'}
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-base text-black-800">
                       {t('academicCalendar.form.customMode')}
                     </span>
                   </label>
@@ -469,7 +469,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ morningLineMode: 'year' })}
                       value={'year'}
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-base text-black-800">
                       {t('academicCalendar.form.yearMode')}
                     </span>
                   </label>
@@ -480,7 +480,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ morningLineMode: 'custom' })}
                       value={'custom'}
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-base text-black-800">
                       {t('academicCalendar.form.customMode')}
                     </span>
                   </label>
@@ -553,7 +553,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ breakfastMode: 'year' })}
                       value={'year'}
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-base text-black-800">
                       {t('academicCalendar.form.yearMode')}
                     </span>
                   </label>
@@ -564,7 +564,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ breakfastMode: 'custom' })}
                       value={'custom'}
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-base text-black-800">
                       {t('academicCalendar.form.customMode')}
                     </span>
                   </label>

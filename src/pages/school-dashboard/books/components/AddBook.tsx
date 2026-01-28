@@ -338,7 +338,7 @@ export default function AddBook() {
                     onChange={() => setValue('restorePreviousCurriculum', 'no')}
                     className="h-4 w-4 accent-green-600 focus:ring-green-500"
                   />
-                  <span className="text-sm text-gray-700">{t('common.no')}</span>
+                  <span className="text-base text-black-800">{t('common.no')}</span>
                 </label>
                 <label className="flex cursor-pointer items-center gap-2">
                   <input
@@ -348,7 +348,7 @@ export default function AddBook() {
                     onChange={() => setValue('restorePreviousCurriculum', 'yes')}
                     className="h-4 w-4 accent-green-600 focus:ring-green-500"
                   />
-                  <span className="text-sm text-gray-700">{t('common.yes')}</span>
+                  <span className="text-base text-black-800">{t('common.yes')}</span>
                 </label>
               </div>
             </FormField>
@@ -507,7 +507,7 @@ export default function AddBook() {
                       onChange={() => setValue('packageType', pkg.value as '1' | '2')}
                       className="h-4 w-4 accent-green-600 focus:ring-green-500"
                     />
-                    <span className="text-sm text-gray-700">{t(pkg.labelKey)}</span>
+                    <span className="text-base text-black-800">{t(pkg.labelKey)}</span>
                   </label>
                 ))}
               </div>
@@ -561,7 +561,7 @@ export default function AddBook() {
                         onChange={() => setValue('priceView', option.value as '1' | '2')}
                         className="h-4 w-4 accent-green-600 focus:ring-green-500"
                       />
-                      <span className="text-sm text-gray-700">{t(option.labelKey)}</span>
+                      <span className="text-base text-black-800">{t(option.labelKey)}</span>
                     </label>
                   ))}
                 </div>

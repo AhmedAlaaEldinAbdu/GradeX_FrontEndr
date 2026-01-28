@@ -167,7 +167,7 @@ export default function SubjectsList() {
     {
       type: 'search',
       name: 'searchSubject',
-      placeholder: t('subjects.searchSubject'),
+      placeholder: t('subjects.searchByMaterialOrStageName'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
       width: '60%',
