@@ -37,7 +37,9 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         )}
       </div>
       <h3 className="mb-2 text-xl font-semibold text-gray-800">{title}</h3>
-      <p className={`max-w-md text-center text-gray-600 ${onAction ? 'mb-6' : ''}`}>
+      <p
+        className={`max-w-md text-center text-lg font-normal text-black-700 ${onAction ? 'mb-6' : ''}`}
+      >
         {description}
       </p>
       {actionLabel && onAction && (
