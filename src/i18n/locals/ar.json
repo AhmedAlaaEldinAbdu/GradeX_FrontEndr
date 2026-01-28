@@ -872,6 +872,18 @@
       "atLeastOne": "يجب إضافة صف واحد على الأقل"
     }
   },
+  "classrooms": {
+    "validation": {
+      "academicSystemRequired": "النظام التعليمي مطلوب",
+      "educationalStageRequired": "المرحلة التعليمية مطلوبة",
+      "classroomNameRequired": "اسم الصف مطلوب",
+      "maxStudentsRequired": "العدد الأقصى للطلاب مطلوب",
+      "maxStudentsMustBePositive": "العدد الأقصى للطلاب يجب أن يكون رقم موجب",
+      "maxStudentsMustBeInteger": "العدد الأقصى للطلاب يجب أن يكون رقم صحيح",
+      "requiredList": "قائمة الصفوف مطلوبة",
+      "atLeastOne": "يجب إضافة صف واحد على الأقل"
+    }
+  },
   "subjects": {
     "title": "المواد الدراسية",
     "subtitle": "إدارة المواد الدراسية",
@@ -1564,6 +1576,8 @@
       "workModeRequired": "يرجى اختيار أسلوب العمل",
       "workStartTimeRequired": "وقت بدء العمل مطلوب",
       "workEndTimeRequired": "وقت انتهاء العمل مطلوب",
+      "workingHoursFromRequired": "موعد الدوام من مطلوب",
+      "workingHoursToRequired": "موعد الدوام إلى مطلوب",
       "workingHoursToAfterFrom": "وقت الانتهاء يجب أن يكون بعد وقت البدء",
       "salaryRangeRequired": "الرجاء إدخال بيانات الراتب",
       "minimumSalaryRequired": "الحد الأدنى للراتب مطلوب",

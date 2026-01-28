@@ -24,12 +24,14 @@ const FormField: React.FC<FormFieldProps> = ({
   return (
     <div>
       <label
-        className={`mb-2 block text-start text-sm font-medium text-gray-700 ${required && 'required'}`}
+        className={`mb-2 block text-start text-base font-normal text-black-800 ${required && 'required'}`}
         htmlFor={htmlFor}
       >
         {label}
         {/* {required && <span className="text-red-500">*</span>} */}
-        {optional && <span className="text-xs text-gray-400"> ({t('schools.optional')}) </span>}
+        {optional && (
+          <span className="text-sm font-normal text-gray-500"> ({t('schools.optional')}) </span>
+        )}
       </label>
       {children}
       {/* {error && <p className="mt-1 text-right text-xs text-red-600">{error}</p>} */}

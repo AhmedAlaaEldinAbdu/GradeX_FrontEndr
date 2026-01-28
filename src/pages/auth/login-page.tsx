@@ -92,7 +92,7 @@ const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="space-y-6">
               {/* Email Field */}
               <div>
-                <label className="mb-2 block text-start text-md font-medium text-gray-800">
+                <label className="mb-2 block text-start text-base font-medium text-gray-800">
                   {t('login.emailLabel')}
                 </label>
                 <div className="relative">
@@ -139,7 +139,7 @@ const LoginPage: React.FC = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="mb-2 block text-start text-md font-medium text-gray-800"
+                  className="mb-2 block text-start text-base font-medium text-gray-800"
                 >
                   {t('login.passwordLabel')}
                 </label>

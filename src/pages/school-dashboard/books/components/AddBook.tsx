@@ -238,9 +238,9 @@ export default function AddBook() {
   };
 
   // Preview table columns
-  // priceView === '1' (Individual) = show price in each row
-  // priceView === '2' (Set) = show empty/dash in price column
-  const showPriceValue = watchedPackageType !== '2' || watchedPriceView === '1';
+  // Always show the entered price in the table.
+  // If packageType is Set and priceView is Set, we additionally show the total footer below.
+  const showTotalFooter = watchedPackageType === '2' && watchedPriceView === '2';
 
   const previewColumns: DataTableColumn<BookItem>[] = [
     {
@@ -279,7 +279,7 @@ export default function AddBook() {
     },
     {
       header: 'books.bookPrice',
-      accessor: (row) => <span>{showPriceValue ? `${row.price}` : '-'}</span>,
+      accessor: (row) => <span>{row.price}</span>,
       headerClassName: 'min-w-[100px]',
       className: 'text-center',
     },
@@ -651,8 +651,8 @@ export default function AddBook() {
                 t={t}
               />
 
-              {/* Total Price - only show when priceView is Set (not Individual) */}
-              {!showPriceValue && (
+              {/* Total Price - only show for Set package with Set price view */}
+              {showTotalFooter && (
                 <div className="mt-4 flex items-center justify-between border-t pt-4">
                   <span className="text-lg font-semibold">{t('books.total')}</span>
                   <span className="text-lg font-semibold text-green-600">{totalPrice}</span>
