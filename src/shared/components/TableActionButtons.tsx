@@ -32,7 +32,7 @@ const TableActionButtons: React.FC<TableActionButtonsProps> = ({
       {onReload && (
         <button
           onClick={onReload}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-lg font-medium text-gray-900 transition-colors hover:bg-blue-100"
+          className="inline-flex items-center gap-2 rounded-[10px] bg-blue-50 px-4 py-2 text-base font-normal text-black-900 transition-colors hover:bg-blue-100"
         >
           <img src={RefreshSolidIcon} alt="" className="h-4 w-4" />
           {labels?.reload || t('studentManagement.reload')}
@@ -41,7 +41,7 @@ const TableActionButtons: React.FC<TableActionButtonsProps> = ({
       {onExportPdf && (
         <button
           onClick={onExportPdf}
-          className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-4 py-2 text-lg font-medium text-gray-900 transition-colors hover:bg-red-100"
+          className="inline-flex items-center gap-2 rounded-[10px] bg-red-50 px-4 py-2 text-base font-normal text-black-900 transition-colors hover:bg-red-100"
         >
           <img src={MaterialPdfIcon} alt="" className="h-4 w-4" />
           {labels?.exportPdf || t('studentManagement.exportPdf')}
@@ -50,7 +50,7 @@ const TableActionButtons: React.FC<TableActionButtonsProps> = ({
       {onExportExcel && (
         <button
           onClick={onExportExcel}
-          className="inline-flex items-center gap-2 rounded-lg bg-green-50 px-4 py-2 text-lg font-medium text-gray-900 transition-colors hover:bg-green-100"
+          className="inline-flex items-center gap-2 rounded-[10px] bg-green-50 px-4 py-2 text-base font-normal text-black-900 transition-colors hover:bg-green-100"
         >
           <img src={ExcelFileIcon} alt="" className="h-4 w-4" />
           {labels?.exportExcel || t('studentManagement.exportExcel')}
@@ -59,7 +59,7 @@ const TableActionButtons: React.FC<TableActionButtonsProps> = ({
       {onPrint && (
         <button
           onClick={onPrint}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-lg font-medium text-gray-900 transition-colors hover:bg-blue-100"
+          className="inline-flex items-center gap-2 rounded-[10px] bg-blue-50 px-4 py-2 text-base font-normal text-black-900 transition-colors hover:bg-blue-100"
         >
           <img src={PrinterIcon} alt="" className="h-4 w-4" />
           {labels?.print || t('studentManagement.print')}
