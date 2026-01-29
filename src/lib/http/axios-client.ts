@@ -13,7 +13,7 @@ import { logger } from '../utils/logger';
 
 const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://gradexpro.runasp.net/api',
-  TIMEOUT: 30000,
+  TIMEOUT: 40000,
 } as const;
 
 // ============================================================================

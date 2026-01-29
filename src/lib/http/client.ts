@@ -17,7 +17,7 @@ export class HttpClient {
   constructor(config: FetchConfig = {}) {
     this.baseURL = config.baseURL || '';
     this.defaultConfig = {
-      timeout: 30000,
+      timeout: 40000,
       retry: {
         maxRetries: 0,
         retryDelay: 1000,
@@ -90,7 +90,7 @@ export class HttpClient {
   }
 
   private async fetchWithTimeout(url: string, config: FetchConfig): Promise<Response> {
-    const timeout = config.timeout || this.defaultConfig.timeout || 30000;
+    const timeout = config.timeout || this.defaultConfig.timeout || 40000;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
