@@ -7,11 +7,13 @@
     "classrooms": "الصفوف الدراسية",
     "subjects": "المواد الدراسية",
     "books": "الكتب الدراسية",
-    "teachingStaff": "الكادر التعليمي",
+    "teachingStaff": "الموظفين",
+    "staff": "الموظفين",
     "teachers": "المعلمين",
     "administrators": "الإداريين",
     "jobAnnouncements": "إعلانات توظيف",
     "interviews": "المقابلات",
+
     "calendarManagement": "إدارة التقويم",
     "tasks": "المهام",
     "preparations": "التحضيرات",
@@ -1033,6 +1035,14 @@
         "secondBookName": "اسم الكتاب الثاني"
       }
     }
+  },
+  "administrators": {
+    "title": "الإداريين",
+    "searchAdministrator": "ابحث عن اسم الإداري",
+    "noAdministratorsMessage": "لم يتم إضافة أي إداري حتى الآن. يمكنك البدء بإضافة الإداريين لتنظيم العمل الإداري.",
+    "administratorDeletedSuccessfully": "تم حذف الإداري بنجاح",
+    "confirmDeleteAdministrator": "هل أنت متأكد من حذف هذا الإداري؟",
+    "addAdministrator": "إضافة إداري"
   },
   "books": {
     "title": "الكتب الدراسية",

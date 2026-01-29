@@ -7,11 +7,13 @@
     "classrooms": "Classrooms",
     "subjects": "Subjects",
     "books": "Books",
-    "teachingStaff": "Teaching Staff",
+    "teachingStaff": "Employees",
+    "staff": "Employees",
     "teachers": "Teachers",
     "administrators": "Administrators",
     "jobAnnouncements": "Job Announcements",
     "interviews": "Interviews",
+
     "calendarManagement": "Calendar Management",
     "tasks": "Tasks",
     "preparations": "Preparations",
@@ -1035,6 +1037,14 @@
         "secondBookName": "Second Book Name"
       }
     }
+  },
+  "administrators": {
+    "title": "Administrators",
+    "searchAdministrator": "Search for administrator name",
+    "noAdministratorsMessage": "No administrators have been added yet. You can start by adding administrators to organize administrative work.",
+    "administratorDeletedSuccessfully": "Administrator deleted successfully",
+    "confirmDeleteAdministrator": "Are you sure you want to delete this administrator?",
+    "addAdministrator": "Add Administrator"
   },
   "books": {
     "title": "Books",
