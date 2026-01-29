@@ -193,6 +193,13 @@ export default function MonthlyEventDetailsPopup({
     [popupEvents, mapApiEventToEntity]
   );
 
+  const eventNamePendingDelete = useMemo(() => {
+    if (!eventIdPendingDelete) return '';
+    const target = normalizedPopupEvents.find((item) => item.id === eventIdPendingDelete);
+    if (!target) return '';
+    return isRTL ? target.nameAr : target.nameEn || target.nameAr;
+  }, [eventIdPendingDelete, isRTL, normalizedPopupEvents]);
+
   if (!event) {
     return null;
   }
@@ -356,6 +363,7 @@ export default function MonthlyEventDetailsPopup({
       <DeletePopup
         open={showDeletePopup}
         message="monthlyCalendar.actions.confirmDelete"
+        itemName={eventNamePendingDelete}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         iconSrc={BigTrashIcon}

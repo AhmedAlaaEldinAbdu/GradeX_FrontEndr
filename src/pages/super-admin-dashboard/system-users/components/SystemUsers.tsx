@@ -248,6 +248,7 @@ export default function SystemUsers() {
         <DeletePopup
           open={showDeletePopup}
           message="rolesManagement.confirmDeleteUser"
+          itemName={users.find((user) => user.id === selectedUserId)?.fullName ?? ''}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setShowDeletePopup(false)}
           iconSrc={BigTrashIcon}

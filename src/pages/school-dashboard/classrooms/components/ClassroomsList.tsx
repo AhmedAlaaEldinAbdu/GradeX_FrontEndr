@@ -338,6 +338,12 @@ export default function ClassroomsList() {
           <DeletePopup
             open={showDeletePopup}
             message="grades.confirmDeleteGrade"
+            itemName={
+              (() => {
+                const selected = classrooms.find((c) => c.id === selectedClassroomId);
+                return currentLang === 'ar' ? selected?.name ?? '' : selected?.nameEn ?? selected?.name ?? '';
+              })()
+            }
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}

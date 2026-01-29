@@ -29,6 +29,7 @@ export default function Notifications() {
   const [hasNotifications] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRecipient, setSelectedRecipient] = useState('');
+  const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
     type: 'success' | 'error';
@@ -39,6 +40,7 @@ export default function Notifications() {
 
   const handleDeleteConfirm = () => {
     setShowDelete(false);
+    setSelectedNotification(null);
     setShowPopupMessage({
       show: true,
       type: 'success',
@@ -134,7 +136,10 @@ export default function Notifications() {
           <IconButton
             status="delete"
             variant="danger"
-            onClick={() => setShowDelete(true)}
+            onClick={() => {
+              setSelectedNotification(row);
+              setShowDelete(true);
+            }}
             ariaLabel="Delete"
           />
         </div>
@@ -212,6 +217,7 @@ export default function Notifications() {
           <DeletePopup
             open={showDelete}
             message="notifications.confirmDelete"
+            itemName={selectedNotification?.topic ?? ''}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDelete(false)}
             iconSrc={BigTrashIcon}

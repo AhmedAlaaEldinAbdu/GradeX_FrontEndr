@@ -101,6 +101,7 @@ export default function StudentInterviewDetailsPopup({
       <DeletePopup
         open={showDeletePopup}
         message="interviews.confirmDeleteInterview"
+        itemName={interview.studentName ?? ''}
         onConfirm={confirmDelete}
         onCancel={() => setShowDeletePopup(false)}
         iconSrc={BigTrashIcon}

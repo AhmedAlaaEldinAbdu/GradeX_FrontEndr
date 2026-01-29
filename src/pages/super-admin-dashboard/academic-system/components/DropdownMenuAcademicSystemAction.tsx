@@ -16,13 +16,15 @@ interface ActionProps {
 }
 
 export default function DropdownMenuAcademicSystemAction({ id, onActionComplete }: ActionProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const isDeleting = useAppSelector((state) => state.academicSystems.isDeleting);
+  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
+  const currentLang = i18n.language as 'ar' | 'en';
 
   const handleEdit = () => {
     navigate(`/academic-system/edit-academic-system/${id}`);
@@ -74,6 +76,11 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
       <DeletePopup
         open={showDeletePopup}
         message="academicSystem.confirmDeleteSystem"
+        itemName={(() => {
+          const system = academicSystems.find((sys) => sys.id === id);
+          if (!system) return '';
+          return currentLang === 'ar' ? system.nameAr : system.nameEn;
+        })()}
         onConfirm={handleConfirmDelete}
         onCancel={() => setShowDeletePopup(false)}
         iconSrc={BigTrashIcon}

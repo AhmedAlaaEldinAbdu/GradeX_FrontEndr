@@ -5,25 +5,27 @@ import CustomImage from '../components/CustomImage';
 interface DeletePopupProps {
   open: boolean;
   message: string;
+  itemName: string;
   onConfirm: () => void;
   onCancel: () => void;
   iconSrc: string;
   isProcessing?: boolean;
-  selectedItemName?: string;
 }
 
 export default function DeletePopup({
   open,
   message,
+  itemName,
   onConfirm,
   onCancel,
   iconSrc,
   isProcessing,
-  selectedItemName = '',
 }: DeletePopupProps) {
   const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  const resolvedItemName = itemName || '';
 
   useEffect(() => {
     if (open) {
@@ -77,7 +79,7 @@ export default function DeletePopup({
           </div>
 
           <p className="w-[100%] font-medium text-black-900 md:text-xl lg:w-[75%] lg:text-2xl">
-            {t(`${message}`)} "{selectedItemName}"
+            {t(`${message}`)} "{resolvedItemName}"
           </p>
         </div>
 

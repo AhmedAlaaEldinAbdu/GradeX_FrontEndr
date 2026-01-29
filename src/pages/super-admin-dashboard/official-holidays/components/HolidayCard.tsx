@@ -205,7 +205,8 @@ export default function HolidayCard({
       {/* Popups */}
       <DeletePopup
         open={showDeletePopup}
-        message={t('officialHolidays.confirmDeleteHoliday')}
+        message="officialHolidays.confirmDeleteHoliday"
+        itemName={holiday.reason}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setShowDeletePopup(false)}
         iconSrc={BigTrashIcon}

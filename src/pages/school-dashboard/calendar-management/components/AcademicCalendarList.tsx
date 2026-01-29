@@ -276,6 +276,13 @@ export default function AcademicCalendarList() {
           <DeletePopup
             open={showDeletePopup}
             message="academicCalendar.confirmDelete"
+            itemName={
+              (tableRows.find((row) => row.id === selectedId)
+                ? currentLang === 'ar'
+                  ? tableRows.find((row) => row.id === selectedId)!.stageNameAr
+                  : tableRows.find((row) => row.id === selectedId)!.stageNameEn
+                : '')
+            }
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}

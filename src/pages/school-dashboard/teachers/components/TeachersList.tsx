@@ -448,6 +448,9 @@ export default function TeachersList() {
           <DeletePopup
             open={showDeletePopup}
             message="teachers.confirmDeleteTeacher"
+            itemName={
+              filteredTeachers.find((t) => t.teacherId === selectedTeacherId)?.teacherName ?? ''
+            }
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}

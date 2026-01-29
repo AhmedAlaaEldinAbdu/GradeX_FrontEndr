@@ -336,6 +336,12 @@ export default function InterviewDetailsPopup({
       <DeletePopup
         open={showDeletePopup}
         message="interviews.confirmDeleteInterview"
+        itemName={(() => {
+          if (!interviewIdPendingDelete) return '';
+          const detail = popupInterviews.find((d) => d.id === interviewIdPendingDelete);
+          if (!detail) return '';
+          return detail.jobAdvertisementName || detail.jobAdvertisementTitle || '';
+        })()}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         iconSrc={BigTrashIcon}

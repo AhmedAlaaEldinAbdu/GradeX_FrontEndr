@@ -512,6 +512,9 @@ export default function Interviews() {
       <DeletePopup
         open={showDeletePopup}
         message="interviews.confirmDeleteInterview"
+        itemName={
+          calendarInterviews.find((item) => item.id === interviewIdPendingDelete)?.title ?? ''
+        }
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         iconSrc={BigTrashIcon}

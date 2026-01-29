@@ -221,7 +221,13 @@ export default function CountryHolidays() {
 
       <DeletePopup
         open={showDeletePopup}
-        message={t('officialHolidays.confirmDeleteHoliday')}
+        message="officialHolidays.confirmDeleteHoliday"
+        itemName={(() => {
+          if (!selectedHolidayId) return '';
+          const found = holidays.find((h) => h.id === selectedHolidayId);
+          if (!found) return '';
+          return (currentLang === 'ar' ? found.reasonAr : found.reasonEN) || found.reasonEN || '';
+        })()}
         iconSrc={BigTrashIcon}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setShowDeletePopup(false)}

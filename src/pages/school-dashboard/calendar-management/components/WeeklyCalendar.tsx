@@ -1190,6 +1190,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       <DeletePopup
         open={showDeletePopup}
         message="weeklyCalendar.confirmDeleteLesson"
+        itemName={lessonPendingDelete?.subject ?? ''}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         iconSrc={BigTrashIcon}

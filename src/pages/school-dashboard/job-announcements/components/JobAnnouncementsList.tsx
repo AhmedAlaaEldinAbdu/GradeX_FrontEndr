@@ -772,6 +772,14 @@ export default function JobAnnouncementsList() {
           <DeletePopup
             open={showDeletePopup}
             message="jobAnnouncement.confirmDeleteAnnouncement"
+            itemName={
+              (() => {
+                const selected = dataSource.find((j) => j.id === selectedJobId);
+                const nameAr = (selected as any)?.name;
+                const nameEn = (selected as any)?.nameEn;
+                return currentLang === 'ar' ? nameAr ?? '' : nameEn ?? nameAr ?? '';
+              })()
+            }
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}

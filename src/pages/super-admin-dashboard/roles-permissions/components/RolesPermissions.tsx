@@ -179,6 +179,7 @@ export default function RolesPermissions() {
         <DeletePopup
           open={showDeletePopup}
           message="rolesManagement.confirmDeleteRole"
+          itemName={roles.find((r) => r.id === selectedRoleId)?.name ?? ''}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setShowDeletePopup(false)}
           iconSrc={BigTrashIcon}

@@ -605,6 +605,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       <DeletePopup
         open={Boolean(eventIdPendingDelete)}
         message="monthlyCalendar.actions.confirmDelete"
+        itemName={calendarEvents.find((event) => event.id === eventIdPendingDelete)?.title ?? ''}
         onConfirm={handleConfirmDelete}
         onCancel={() => setEventIdPendingDelete(null)}
         iconSrc={BigTrashIcon}

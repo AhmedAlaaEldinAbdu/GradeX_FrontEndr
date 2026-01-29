@@ -346,6 +346,12 @@ export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
       <DeletePopup
         open={isDeletePopupOpen}
         message="actions.confirmDelete"
+        itemName={(() => {
+          if (!pendingDeleteId) return '';
+          const row = rows.find((r) => r.id === pendingDeleteId);
+          if (!row) return '';
+          return getStageName(row.educationalStageId);
+        })()}
         onConfirm={handleDeleteConfirm}
         onCancel={() => {
           setIsDeletePopupOpen(false);

@@ -303,6 +303,11 @@ export default function EducationalStagesTab() {
           <DeletePopup
             open={showDeletePopup}
             message="academicSystem.confirmDeleteSystem"
+            itemName={(() => {
+              const stage = educationalStages.find((s) => s.id === selectedStageId);
+              if (!stage) return '';
+              return currentLang === 'ar' ? stage.nameAr : stage.nameEn;
+            })()}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}

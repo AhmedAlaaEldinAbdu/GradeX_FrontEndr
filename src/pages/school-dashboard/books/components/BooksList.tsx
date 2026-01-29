@@ -377,6 +377,7 @@ export default function BooksList() {
           <DeletePopup
             open={showDeletePopup}
             message="books.confirmDeleteBook"
+            itemName={flattenedBooks.find((b) => b.id === selectedBookId)?.name ?? ''}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
