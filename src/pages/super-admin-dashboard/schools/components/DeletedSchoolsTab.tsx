@@ -1,12 +1,12 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import DataTable, { type DataTableColumn } from '@gradex/shared/components/DataTable';
 import { useTranslation } from 'react-i18next';
 import Badge from '@gradex/shared/components/Badge';
 import DropdownMenuSchoolsAction from './DropdownMenuSchoolsAction';
-import PhoneIcon from '@gradex/assets/icons/Phone.svg';
-import EmailIcon from '@gradex/assets/icons/Email.svg';
+import WhatsAppIcon from '@gradex/assets/icons/WhatsApp.svg';
+import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
 import {
   fetchDeletedSchools,
   selectSchools,
@@ -22,6 +22,8 @@ import { Link } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 
+import { type FilterConfig } from '@gradex/shared/components/DataTable';
+
 interface DeletedSchoolsTabProps {
   filters?: {
     searchTerm?: string;
@@ -30,13 +32,15 @@ interface DeletedSchoolsTabProps {
     region?: string;
     neighborhood?: string;
   };
-  filterComponent?: ReactNode;
+  filterConfigs?: FilterConfig[];
+  onResetFilters?: () => void;
   isActive?: boolean;
 }
 
 export default function DeletedSchoolsTab({
   filters,
-  filterComponent,
+  filterConfigs,
+  onResetFilters,
   isActive = true,
 }: DeletedSchoolsTabProps) {
   const { t, i18n } = useTranslation();
@@ -220,14 +224,20 @@ export default function DeletedSchoolsTab({
         if (!row) return null;
         return (
           <div className="flex items-center justify-center gap-3">
-            {row?.email && (
-              <a href={`mailto:${row.email}`} className="cursor-pointer">
-                <CustomImage src={EmailIcon} alt="EmailIcon" className="h-[24px] w-[24px]" />
+            {row?.phoneNumber && (
+              <a
+                href={`tel:${row.phoneNumber}`}
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-lightGreen-100 hover:bg-green-200"
+              >
+                <CustomImage src={WhatsAppIcon} alt="Phone" className="h-6 w-6" />
               </a>
             )}
-            {row?.phoneNumber && (
-              <a href={`tel:${row.phoneNumber}`} className="cursor-pointer">
-                <CustomImage src={PhoneIcon} alt="PhoneIcon" className="h-[24px] w-[24px]" />
+            {row?.email && (
+              <a
+                href={`mailto:${row.email}`}
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-yellow-100 hover:bg-orange-200"
+              >
+                <CustomImage src={EmailYellowIcon} alt="Email" className="h-6 w-6" />
               </a>
             )}
           </div>
@@ -269,7 +279,8 @@ export default function DeletedSchoolsTab({
         pagination={pagination}
         onPageChange={handlePageChange}
         showFilters={true}
-        filterComponent={filterComponent}
+        filters={filterConfigs}
+        onResetFilters={onResetFilters}
         isLoading={isLoading}
         emptyMessage={t('schools.noSchoolsFound')}
         t={t}
