@@ -905,19 +905,39 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     }
   };
 
-  // Handle extending lesson by 45 minutes
-  const handleExtendLesson = async (lesson: ScheduleLesson) => {
+  const handleChangeDuration = async (lesson: ScheduleLesson, deltaMinutes: number) => {
+    const newDuration = lesson.duration + deltaMinutes;
+
+    if (newDuration < 5) {
+      return;
+    }
+
+    const [hours, minutes] = lesson.endTime.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes + deltaMinutes;
+    const newHours = Math.floor(totalMinutes / 60) % 24;
+    const newMinutes = totalMinutes % 60;
+
+    const MAX_TIME_MINUTES = 15 * 60 + 15;
+    if (totalMinutes > MAX_TIME_MINUTES) {
+      showToast({
+        message: t('weeklyCalendar.cannotExceedTimeLimit'),
+        type: 'error',
+      });
+      return;
+    }
+
+    // 3. Validate End Time > Start Time
+    const [startH, startM] = lesson.startTime.split(':').map(Number);
+    const startTotalMinutes = startH * 60 + startM;
+    if (totalMinutes <= startTotalMinutes) {
+      return;
+    }
+    const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+
     // Set loading state
     setExtendingLessonId(lesson.id);
 
     // Apply optimistic update immediately
-    const newDuration = lesson.duration + 45;
-    const [hours, minutes] = lesson.endTime.split(':').map(Number);
-    const totalMinutes = hours * 60 + minutes + 45;
-    const newHours = Math.floor(totalMinutes / 60) % 24;
-    const newMinutes = totalMinutes % 60;
-    const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
-
     setOptimisticLessons((prev) => {
       const newMap = new Map(prev);
       newMap.set(lesson.id, { endTime: newEndTime, duration: newDuration });
@@ -928,10 +948,10 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       // Fetch the full lesson data from API
       const fullLesson = await lessonsApiService.getLessonById(lesson.id);
 
-      // Calculate new end time (add 45 minutes)
-      const apiNewEndTime = addMinutesToTime(fullLesson.endTime, 45);
+      // Calculcate new key for Backend (it expects end time string)
+      const apiNewEndTime = addMinutesToTime(fullLesson.endTime, deltaMinutes);
 
-      // Update the lesson with extended end time
+      // Update the lesson with new end time
       await lessonsApiService.updateLesson({
         id: fullLesson.id,
         materialId: fullLesson.materialId,
@@ -958,7 +978,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       });
 
       showToast({
-        message: t('weeklyCalendar.lessonExtendedSuccessfully'),
+        message: t('weeklyCalendar.lessonUpdatedSuccessfully'),
         type: 'success',
       });
 
@@ -1169,7 +1189,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
             lessonContextActions={lessonContextActions}
             onLessonClick={handleViewDetails}
             onEmptyCellClick={handleEmptyCellClick}
-            onExtendLesson={handleExtendLesson}
+            onChangeDuration={handleChangeDuration}
             extendingLessonId={extendingLessonId}
             onWeekChange={handleWeekChange}
             weekStart={currentWeekStart}

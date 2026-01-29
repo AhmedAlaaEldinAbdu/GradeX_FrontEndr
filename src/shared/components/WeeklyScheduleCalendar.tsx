@@ -77,7 +77,7 @@ interface WeeklyScheduleCalendarProps {
     startTime: string,
     endTime: string
   ) => void; // Callback when clicking empty cell plus icon with time slot
-  onExtendLesson?: (lesson: ScheduleLesson) => void; // Callback when clicking expand button to extend lesson by 45 min
+  onChangeDuration?: (lesson: ScheduleLesson, deltaMinutes: number) => void; // Callback to change duration (+/- minutes)
   extendingLessonId?: string | null; // ID of lesson currently being extended (for loading state)
   weekStart?: Date;
   className?: string;
@@ -128,7 +128,7 @@ export default function WeeklyScheduleCalendar({
   lessonContextActions = [],
   onDotsClick,
   onEmptyCellClick,
-  onExtendLesson,
+  onChangeDuration,
   extendingLessonId,
   onWeekChange,
   weekStart: controlledWeekStart,
@@ -443,22 +443,8 @@ export default function WeeklyScheduleCalendar({
             </span>
           </div>
         )}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (extendingLessonId !== lesson.id) {
-              onExtendLesson?.(lesson);
-            }
-          }}
-          disabled={extendingLessonId === lesson.id}
-          className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded border transition-colors ${
-            extendingLessonId === lesson.id
-              ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
-              : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
-          }`}
-          title={t('weeklyCalendar.extendLesson')}
-        >
-          {extendingLessonId === lesson.id ? (
+        {extendingLessonId === lesson.id ? (
+          <div className="flex h-5 w-5 items-center justify-center rounded border border-emerald-300 bg-emerald-50 text-emerald-600">
             <svg
               className="h-3 w-3 animate-spin"
               viewBox="0 0 24 24"
@@ -479,18 +465,86 @@ export default function WeeklyScheduleCalendar({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-          ) : (
-            <svg
-              className="h-2.5 w-2.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
-            </svg>
-          )}
-        </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-0.5">
+            {/* Up Arrow (Increase Duration) */}
+            {(() => {
+              // Calculate limits for Increase
+              const [endH, endM] = lesson.endTime.split(':').map(Number);
+              const currentEndMinutes = endH * 60 + endM;
+              const MAX_TIME_MINUTES = 15 * 60 + 15; // 15:15 (3:15 PM)
+              const isIncreaseDisabled = currentEndMinutes >= MAX_TIME_MINUTES;
+
+              return (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isIncreaseDisabled) {
+                      onChangeDuration?.(lesson, 5);
+                    }
+                  }}
+                  disabled={isIncreaseDisabled}
+                  className={`flex h-2.5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-t border border-b-0 transition-colors ${
+                    isIncreaseDisabled
+                      ? 'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300'
+                      : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
+                  }`}
+                  title={
+                    isIncreaseDisabled
+                      ? t('weeklyCalendar.cannotExceedTimeLimit')
+                      : t('weeklyCalendar.increaseDuration')
+                  }
+                >
+                  <svg
+                    className="h-2 w-2"
+                    viewBox="0 0 24 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M7 10l5-5 5 5" />
+                  </svg>
+                </button>
+              );
+            })()}
+
+            {/* Down Arrow (Decrease Duration) */}
+            {(() => {
+              // Calculate limits for Decrease
+              const isDecreaseDisabled = lesson.duration <= 5;
+
+              return (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isDecreaseDisabled) {
+                      onChangeDuration?.(lesson, -5);
+                    }
+                  }}
+                  disabled={isDecreaseDisabled}
+                  className={`flex h-2.5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-b border border-t-0 transition-colors ${
+                    isDecreaseDisabled
+                      ? 'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300'
+                      : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
+                  }`}
+                  title={t('weeklyCalendar.decreaseDuration')}
+                >
+                  <svg
+                    className="h-2 w-2"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M7 14l5 5 5-5" transform="translate(0, -6)" />
+                    <path d="M7 6l5 5 5-5" />
+                  </svg>
+                </button>
+              );
+            })()}
+          </div>
+        )}
       </div>
     </div>
   );
