@@ -1905,7 +1905,11 @@
       "classroomRequired": "الفصل مطلوب",
       "subjectRequired": "المادة مطلوبة",
       "teacherRequired": "المعلم مطلوب",
-      "bookNameRequired": "اسم الكتاب مطلوب"
+      "bookNameRequired": "اسم الكتاب مطلوب",
+      "startTimeMin": "وقت البدء يجب أن يكون 08:30 صباحاً أو بعد ذلك",
+      "endTimeMax": "وقت الانتهاء يجب أن يكون 03:15 مساءً أو قبل ذلك",
+      "timeEquality": "لا يمكن أن يكون وقت البدء والانتهاء متطابقين",
+      "endTimeBeforeStart": "وقت الانتهاء يجب أن يكون بعد وقت البدء"
     }
   },
   "fileUpload": {

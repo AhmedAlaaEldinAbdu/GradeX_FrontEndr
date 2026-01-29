@@ -1916,7 +1916,11 @@
       "classroomRequired": "Classroom is required",
       "subjectRequired": "Subject is required",
       "teacherRequired": "Teacher is required",
-      "bookNameRequired": "Book name is required"
+      "bookNameRequired": "Book name is required",
+      "startTimeMin": "Start time must be 08:30 AM or later",
+      "endTimeMax": "End time must be 03:15 PM or earlier",
+      "timeEquality": "Start and end time cannot be the same",
+      "endTimeBeforeStart": "End time must be after start time"
     }
   },
   "fileUpload": {
