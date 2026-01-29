@@ -15,7 +15,8 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import DataTable, { type DataTableColumn } from '@/shared/components/DataTable';
 import { addSubject, fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
-import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import lookupsApiService from '@/services/api/lookups/lookups.service';
+import type { SchoolStage as SchoolStageType } from '@/services/api/types/lookup.types';
 import { AddSubjectSchema, type AddSubjectProps } from '@/validations/subjects-validations';
 import { MATERIAL_LEVELS } from '@/constants';
 
@@ -34,8 +35,8 @@ export default function AddSubject() {
   const existingSubjects = useAppSelector((state) => state.subjects.subjects);
   const isCreating = useAppSelector((state) => state.subjects.isCreating);
 
-  const grades = useAppSelector((state) => state.educationalStages.educationalStages);
-  const isLoadingGrades = useAppSelector((state) => state.educationalStages.isLoading);
+  const [schoolStages, setSchoolStages] = useState<SchoolStageType[]>([]);
+  const [isLoadingStages, setIsLoadingStages] = useState(false);
 
   const {
     control,
@@ -60,7 +61,20 @@ export default function AddSubject() {
 
   useEffect(() => {
     dispatch(fetchSubjects({ page: 1, limit: 10000 }));
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
+
+    const fetchStages = async () => {
+      setIsLoadingStages(true);
+      try {
+        const stages = await lookupsApiService.getSchoolStages();
+        setSchoolStages(stages);
+      } catch (error) {
+        console.error('Failed to fetch school stages', error);
+      } finally {
+        setIsLoadingStages(false);
+      }
+    };
+
+    fetchStages();
   }, [dispatch]);
 
   const onSubmit = async (data: AddSubjectProps) => {
@@ -252,14 +266,14 @@ export default function AddSubject() {
                     onChange={(value) => {
                       field.onChange(value);
                     }}
-                    options={grades.map((grade) => ({
-                      value: grade.id,
-                      label: currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr,
+                    options={schoolStages.map((stage) => ({
+                      value: stage.id,
+                      label: currentLang === 'ar' ? stage.nameAR : stage.nameEN || stage.nameAR,
                     }))}
                     placeholder={
-                      isLoadingGrades ? t('common.loading') : t('subjects.selectSchoolStages')
+                      isLoadingStages ? t('common.loading') : t('subjects.selectSchoolStages')
                     }
-                    disabled={isLoadingGrades}
+                    disabled={isLoadingStages}
                     error={!!errors.lKSchoolStageIds}
                     isMulti={true}
                     id="lKSchoolStageIds"
