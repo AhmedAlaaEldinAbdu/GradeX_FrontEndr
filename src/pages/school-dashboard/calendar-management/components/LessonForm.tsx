@@ -32,6 +32,7 @@ import type { EducationalStageResponse } from '@/services/api/types/educational-
 import type { Book, BookGrade } from '@/types/books';
 import type { Classroom } from '@/services/api/types/classrooms.types';
 import type { CreateLessonRequest, Lesson } from '@/services/api/types/lessons.types';
+import { useLessonValidations } from '@/validations/lessons-validations';
 
 export interface LessonFormData {
   materialId: string;
@@ -107,6 +108,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const { isArabic } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { validateStartTime, validateEndTime } = useLessonValidations();
 
   // Get date and time from URL params if available (for add mode)
   const dateParam = searchParams.get('date');
@@ -455,22 +457,71 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     <>
       <Card>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Hidden date/time fields - values come from URL params (add) or initialData (edit) */}
+          {/* Hidden date field */}
           <Controller
             name="date"
             control={control}
             render={({ field }) => <input {...field} type="hidden" />}
           />
-          <Controller
-            name="startTime"
-            control={control}
-            render={({ field }) => <input {...field} type="hidden" />}
-          />
-          <Controller
-            name="endTime"
-            control={control}
-            render={({ field }) => <input {...field} type="hidden" />}
-          />
+
+          {mode === 'edit' ? (
+            <div className="mb-6 rounded-xl border border-gray-200 p-4">
+              <h3 className="mb-4 text-start text-sm font-semibold text-gray-700">
+                {t('lesson.scheduleInfo')}
+              </h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Start Time */}
+                <FormField
+                  label={t('lesson.startTime')}
+                  required
+                  error={errors.startTime?.message}
+                  htmlFor="startTime"
+                >
+                  <Controller
+                    name="startTime"
+                    control={control}
+                    rules={{
+                      required: t('common.required'),
+                      validate: validateStartTime,
+                    }}
+                    render={({ field }) => <Input {...field} type="time" id="startTime" />}
+                  />
+                </FormField>
+
+                {/* End Time */}
+                <FormField
+                  label={t('lesson.endTime')}
+                  required
+                  error={errors.endTime?.message}
+                  htmlFor="endTime"
+                >
+                  <Controller
+                    name="endTime"
+                    control={control}
+                    rules={{
+                      required: t('common.required'),
+                      validate: (value) => validateEndTime(value, watch('startTime')),
+                    }}
+                    render={({ field }) => <Input {...field} type="time" id="endTime" />}
+                  />
+                </FormField>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Hidden time fields for Add mode (values from URL) */}
+              <Controller
+                name="startTime"
+                control={control}
+                render={({ field }) => <input {...field} type="hidden" />}
+              />
+              <Controller
+                name="endTime"
+                control={control}
+                render={({ field }) => <input {...field} type="hidden" />}
+              />
+            </>
+          )}
 
           {/* Grade & Classroom Section */}
           <div className="mb-6 rounded-xl border border-gray-200 p-4">
