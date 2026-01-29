@@ -66,6 +66,7 @@ export interface DataTableProps<T> {
 
   // Visibility
   showActionButtons?: boolean;
+  floatingActions?: boolean;
 }
 
 export default function DataTable<T>({
@@ -83,6 +84,7 @@ export default function DataTable<T>({
   emptyMessage,
   t,
   showActionButtons = true,
+  floatingActions = true,
 }: DataTableProps<T>) {
   const handleReload = () => {
     // TODO: Implement reload functionality
@@ -284,13 +286,22 @@ export default function DataTable<T>({
       ) : (
         <>
           {/* Table */}
-          <div className="overflow-x-auto">
-            {!Array.isArray(data) || data.length === 0 ? (
-              <NotFoundMessage message={emptyMessage} />
-            ) : (
-              <Table columns={columns} data={data} keyExtractor={keyExtractor} />
-            )}
-          </div>
+          {!Array.isArray(data) || data.length === 0 ? (
+            <NotFoundMessage message={emptyMessage} />
+          ) : (
+            <Table
+              columns={
+                floatingActions
+                  ? columns.map((col, index) =>
+                      index === columns.length - 1 ? { ...col, sticky: 'right' as const } : col
+                    )
+                  : columns
+              }
+              data={data}
+              keyExtractor={keyExtractor}
+              floatingActions={floatingActions}
+            />
+          )}
 
           {/* Pagination */}
           {Array.isArray(data) &&
