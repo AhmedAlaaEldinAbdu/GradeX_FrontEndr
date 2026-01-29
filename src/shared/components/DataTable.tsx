@@ -149,27 +149,27 @@ export default function DataTable<T>({
       case 'full':
         return 'w-full';
       case '70%':
-        return 'w-full xl:w-[70%]';
+        return 'w-full lg:w-[70%]';
       case '60%':
-        return 'w-full xl:w-[60%]';
+        return 'w-full lg:w-[60%]';
       case '50%':
-        return 'w-full xl:w-[50%]';
+        return 'w-full lg:w-[50%]';
       case '40%':
-        return 'w-full xl:w-[40%]';
+        return 'w-full lg:w-[40%]';
       case '35%':
-        return 'w-full xl:w-[35%]';
+        return 'w-full lg:w-[35%]';
       case '30%':
-        return 'w-full xl:w-[30%]';
+        return 'w-full lg:w-[30%]';
       case '25%':
-        return 'w-full xl:w-[25%]';
+        return 'w-full lg:w-[25%]';
       case '20%':
-        return 'w-full xl:w-[20%]';
+        return 'w-full lg:w-[20%]';
       case '15%':
-        return 'w-full xl:w-[15%]';
+        return 'w-full lg:w-[15%]';
       case 'auto':
-        return 'w-auto min-w-[200px]';
+        return 'w-auto min-w-[120px]';
       default:
-        return 'flex-1 min-w-[200px]';
+        return 'flex-1 min-w-[150px]';
     }
   };
 
