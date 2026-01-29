@@ -233,58 +233,6 @@ const SuperAdminRouter: React.FC = () => {
         }
       />
       <Route
-        path="/teaching-staff"
-        element={
-          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
-            <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الكادر التعليمي</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/academic-calendar"
-        element={
-          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
-            <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">التقويم الأكاديمي</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/students"
-        element={
-          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
-            <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">إدارة الطلاب</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/attendance-requests"
-        element={
-          <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
-            <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">طلبات الحضور</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/attendance"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SUPER_ADMIN]}>
