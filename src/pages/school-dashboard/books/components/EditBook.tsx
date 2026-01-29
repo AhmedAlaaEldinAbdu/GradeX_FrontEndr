@@ -448,7 +448,7 @@ export default function EditBook() {
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-6 flex items-center gap-3 rtl:justify-end">
+          <div className="mt-6 flex items-center justify-end gap-3">
             <Button
               type="button"
               variant="outline"

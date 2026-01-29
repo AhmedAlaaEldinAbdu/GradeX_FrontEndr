@@ -182,7 +182,7 @@ export default function BooksList() {
           </button>
         </div>
       ),
-      headerClassName: 'min-w-[130px]',
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
@@ -204,7 +204,7 @@ export default function BooksList() {
     {
       header: 'books.remainingQuantity',
       accessor: (row) => <span>{row.remainingQuantity ?? 0}</span>,
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
     {
@@ -253,7 +253,7 @@ export default function BooksList() {
       placeholder: t('books.searchByBookNameOrCode'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
-      width: '30%',
+      width: '40%',
     },
     {
       type: 'custom',
@@ -261,7 +261,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedMaterialId,
       onChange: () => {},
-      width: '20%',
+      width: '25%',
       customComponent: (
         <CustomSelect
           value={selectedMaterialId}
@@ -284,7 +284,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedSchoolStageId,
       onChange: () => {},
-      width: '20%',
+      width: '30%',
       customComponent: (
         <CustomSelect
           value={selectedSchoolStageId}
@@ -307,7 +307,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedStatus,
       onChange: () => {},
-      width: '20%',
+      width: '25%',
       customComponent: (
         <CustomSelect
           value={selectedStatus}
