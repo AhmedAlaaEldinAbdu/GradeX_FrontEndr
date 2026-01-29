@@ -28,8 +28,8 @@ import {
   selectIsLoadingAcademicSystems,
 } from '@gradex/redux/features/academic-system';
 import { resetPagination, clearSchools } from '@gradex/redux/features/schools';
-import SearchInput from '@/shared/components/SearchInput';
 import Tabs from '@/shared/components/Tabs';
+import type { FilterConfig } from '@/shared/components/DataTable';
 
 export default function Schools() {
   const { t, i18n } = useTranslation();
@@ -121,147 +121,121 @@ export default function Schools() {
     setActiveTab(tabId);
   };
 
-  // Build a reusable filter component to pass into each tab (so filters are defined once)
-  const filterComponent = (
-    <div className="flex justify-between gap-4">
-      <div className="flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
-        <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:w-[35%]">
-          <div className="relative">
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder={t('schools.searchBySchoolName')}
-              name="school-search"
-            />
-          </div>
-        </div>
-        <div className="grid w-[100%] grid-cols-1 gap-4 rounded-lg sm:w-[65%] sm:grid-cols-2 xl:grid-cols-4">
-          <div className="xl:col-span-1">
-            <CustomSelect
-              value={academicSystem}
-              onChange={(value) =>
-                setAcademicSystem(Array.isArray(value) ? (value[0] ?? '') : value)
-              }
-              options={
-                Array.isArray(academicSystems)
-                  ? academicSystems.map((system) => ({ value: system.id, label: system.nameAr }))
-                  : []
-              }
-              placeholder={
-                isLoadingAcademicSystems ? t('common.loading') : t('schools.academicSystem')
-              }
-              disabled={isLoadingAcademicSystems}
-              maxHeight="200px"
-            />
-          </div>
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setAcademicSystem('');
+    setSelectedCountry('');
+    setSelectedRegion('');
+    setSelectedCity('');
+    dispatch(fetchAllRegions());
+    dispatch(fetchAllCities());
+  };
 
-          <div>
-            <CustomSelect
-              value={selectedCountry}
-              onChange={(value) =>
-                setSelectedCountry(Array.isArray(value) ? (value[0] ?? '') : value)
-              }
-              options={
-                Array.isArray(countries)
-                  ? countries.map((country) => ({
-                      value: country?.id || '',
-                      label:
-                        currentLang === 'ar'
-                          ? country?.arabicName || ''
-                          : country?.englishName || '',
-                    }))
-                  : []
-              }
-              placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
-              disabled={isLoadingCountries}
-              maxHeight="200px"
-            />
-          </div>
-
-          <div>
-            <CustomSelect
-              value={selectedRegion}
-              onChange={(value) =>
-                setSelectedRegion(Array.isArray(value) ? (value[0] ?? '') : value)
-              }
-              options={
-                Array.isArray(regions)
-                  ? regions.map((region) => ({
-                      value: region?.id || '',
-                      label:
-                        currentLang === 'ar' ? region?.arabicName || '' : region?.englishName || '',
-                    }))
-                  : []
-              }
-              placeholder={isLoadingRegions ? t('common.loading') : t('schools.region')}
-              disabled={isLoadingRegions}
-              maxHeight="200px"
-            />
-          </div>
-
-          <div>
-            <CustomSelect
-              value={selectedCity}
-              onChange={(value) => setSelectedCity(Array.isArray(value) ? (value[0] ?? '') : value)}
-              options={
-                Array.isArray(cities)
-                  ? cities.map((city) => ({
-                      value: city?.id || '',
-                      label:
-                        currentLang === 'ar' ? city?.arabicName || '' : city?.englishName || '',
-                    }))
-                  : []
-              }
-              placeholder={isLoadingCities ? t('common.loading') : t('schools.neighborhood')}
-              disabled={isLoadingCities}
-              maxHeight="200px"
-            />
-          </div>
-        </div>
-      </div>
-      <div>
-        {/* Reset Button */}
-        <button
-          onClick={() => {
-            setSearchTerm('');
-            setAcademicSystem('');
-            setSelectedCountry('');
-            setSelectedRegion('');
-            setSelectedCity('');
-            dispatch(fetchAllRegions());
-            dispatch(fetchAllCities());
-          }}
-          className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          title={t('actions.clearFilter')}
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className=""
-            aria-hidden="true"
-          >
-            <path
-              d="M21 12a9 9 0 1 0-3.46 6.54"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M21 3v6h-6"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
-  );
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'search',
+      name: 'school-search',
+      placeholder: t('schools.searchBySchoolName'),
+      value: searchTerm,
+      onChange: (value) => setSearchTerm(value as string),
+      width: '25%',
+    },
+    {
+      type: 'custom',
+      name: 'academic-system-filter',
+      value: academicSystem,
+      onChange: () => {},
+      width: 'auto',
+      customComponent: (
+        <CustomSelect
+          value={academicSystem}
+          onChange={(value) => setAcademicSystem(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={
+            Array.isArray(academicSystems)
+              ? academicSystems.map((system) => ({ value: system.id, label: system.nameAr }))
+              : []
+          }
+          placeholder={isLoadingAcademicSystems ? t('common.loading') : t('schools.academicSystem')}
+          disabled={isLoadingAcademicSystems}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'country-filter',
+      value: selectedCountry,
+      onChange: () => {},
+      width: 'auto',
+      customComponent: (
+        <CustomSelect
+          value={selectedCountry}
+          onChange={(value) => setSelectedCountry(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={
+            Array.isArray(countries)
+              ? countries.map((country) => ({
+                  value: country?.id || '',
+                  label:
+                    currentLang === 'ar' ? country?.arabicName || '' : country?.englishName || '',
+                }))
+              : []
+          }
+          placeholder={isLoadingCountries ? t('common.loading') : t('schools.country')}
+          disabled={isLoadingCountries}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'region-filter',
+      value: selectedRegion,
+      onChange: () => {},
+      width: 'auto',
+      customComponent: (
+        <CustomSelect
+          value={selectedRegion}
+          onChange={(value) => setSelectedRegion(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={
+            Array.isArray(regions)
+              ? regions.map((region) => ({
+                  value: region?.id || '',
+                  label:
+                    currentLang === 'ar' ? region?.arabicName || '' : region?.englishName || '',
+                }))
+              : []
+          }
+          placeholder={isLoadingRegions ? t('common.loading') : t('schools.region')}
+          disabled={isLoadingRegions}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'city-filter',
+      value: selectedCity,
+      onChange: () => {},
+      width: 'auto',
+      customComponent: (
+        <CustomSelect
+          value={selectedCity}
+          onChange={(value) => setSelectedCity(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={
+            Array.isArray(cities)
+              ? cities.map((city) => ({
+                  value: city?.id || '',
+                  label: currentLang === 'ar' ? city?.arabicName || '' : city?.englishName || '',
+                }))
+              : []
+          }
+          placeholder={isLoadingCities ? t('common.loading') : t('schools.neighborhood')}
+          disabled={isLoadingCities}
+          maxHeight="200px"
+        />
+      ),
+    },
+  ];
 
   const tabs = [
     {
@@ -276,7 +250,8 @@ export default function Schools() {
             region: selectedRegion || undefined,
             neighborhood: selectedCity || undefined,
           }}
-          filterComponent={filterComponent}
+          filterConfigs={filterConfigs}
+          onResetFilters={handleResetFilters}
           isActive={activeTab === 'RegisteredSchools'}
         />
       ),
@@ -293,7 +268,8 @@ export default function Schools() {
             region: selectedRegion || undefined,
             neighborhood: selectedCity || undefined,
           }}
-          filterComponent={filterComponent}
+          filterConfigs={filterConfigs}
+          onResetFilters={handleResetFilters}
           isActive={activeTab === 'PendingSchools'}
         />
       ),
@@ -310,7 +286,8 @@ export default function Schools() {
             region: selectedRegion || undefined,
             neighborhood: selectedCity || undefined,
           }}
-          filterComponent={filterComponent}
+          filterConfigs={filterConfigs}
+          onResetFilters={handleResetFilters}
           isActive={activeTab === 'DeletedSchools'}
         />
       ),
