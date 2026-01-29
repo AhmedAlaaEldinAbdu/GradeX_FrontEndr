@@ -250,12 +250,12 @@ export default function SubjectsList() {
           <DeletePopup
             open={showDeletePopup}
             message="subjects.confirmDeleteSubject"
-            itemName={
-              (() => {
-                const selected = subjects.find((s) => s.id === selectedSubjectId);
-                return currentLang === 'ar' ? selected?.name ?? '' : selected?.nameEn ?? selected?.name ?? '';
-              })()
-            }
+            itemName={(() => {
+              const selected = subjects.find((s) => s.id === selectedSubjectId);
+              return currentLang === 'ar'
+                ? (selected?.name ?? '')
+                : (selected?.nameEn ?? selected?.name ?? '');
+            })()}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}

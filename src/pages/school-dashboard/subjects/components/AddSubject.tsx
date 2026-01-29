@@ -282,6 +282,7 @@ export default function AddSubject() {
                 showFilters={false}
                 t={t}
                 emptyMessage={t('common.noResults')}
+                showActionButtons={false}
               />
             </div>
           )}

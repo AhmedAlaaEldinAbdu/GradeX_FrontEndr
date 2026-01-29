@@ -319,6 +319,7 @@ export default function EditSubject() {
                 showFilters={false}
                 t={t}
                 emptyMessage={t('common.noResults')}
+                showActionButtons={false}
               />
             </div>
           )}
