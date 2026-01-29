@@ -319,7 +319,9 @@ export default function AttendanceManagement() {
             ariaLabel={t('jobAnnouncement.viewApplicants')}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/students/${row.id}?tab=attendance`);
+              navigate(`/students/${row.id}?tab=attendance`, {
+                state: { from: 'attendance' },
+              });
             }}
             className="h-8 w-8"
           >
