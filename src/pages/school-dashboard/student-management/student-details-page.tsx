@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import PersonalDataTab from '@/pages/school-dashboard/student-management/components/details/PersonalDataTab';
@@ -42,15 +42,24 @@ const mockStudentDetails = {
 export default function StudentDetailsPage() {
   const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const currentLang = i18n.language as 'ar' | 'en';
 
   const student = mockStudentDetails;
 
-  const breadcrumbItems = [
-    { label: t('sidebar.studentManagement') },
-    { label: t('students.title'), path: '/students' },
-    { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
-  ];
+  const isFromAttendance = location.state?.from === 'attendance';
+
+  const breadcrumbItems = isFromAttendance
+    ? [
+        { label: t('sidebar.attendance') },
+        { label: t('attendance.students'), path: '/attendance?tab=students' },
+        { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+      ]
+    : [
+        { label: t('sidebar.studentManagement') },
+        { label: t('students.title'), path: '/students' },
+        { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+      ];
 
   const tabItems: TabItem[] = [
     {
