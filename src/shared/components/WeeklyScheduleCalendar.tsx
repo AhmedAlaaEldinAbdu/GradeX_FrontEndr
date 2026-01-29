@@ -151,6 +151,30 @@ export default function WeeklyScheduleCalendar({
     return startOfWeek(currentWeek, { weekStartsOn: 6 }); // Saturday start
   }, [currentWeek]);
 
+  // Filter out lessons that conflict with special columns (ghost lessons)
+  // If a lesson starts in a slot occupied by a special column, it is not rendered,
+  // so it should not be considered for spanning logic either.
+  const visibleLessons = useMemo(() => {
+    return lessons.filter((lesson) => {
+      // Check if there is a special column at this lesson's start position
+      const isBlockedBySpecialCol = specialColumns.some((sc) => {
+        if (sc.columnIndex !== lesson.periodIndex) return false;
+
+        // Check if special column applies to this day
+        // Handle potential type mismatch (string vs number) in days array
+        if (sc.days && sc.days.length > 0) {
+          return sc.days.some((d) => Number(d) === Number(lesson.dayIndex));
+        }
+
+        const startDay = sc.startDayIndex ?? 1;
+        const endDay = sc.endDayIndex ?? 5;
+        return lesson.dayIndex >= startDay && lesson.dayIndex <= endDay;
+      });
+
+      return !isBlockedBySpecialCol;
+    });
+  }, [lessons, specialColumns]);
+
   const dateLocale = isRTL ? ar : enUS;
 
   // Generate localized period headers
@@ -235,12 +259,12 @@ export default function WeeklyScheduleCalendar({
 
   // Get lessons for a specific cell (dayIndex = row, periodIndex = column)
   const getLessonsForCell = (dayIndex: number, periodIndex: number) => {
-    return lessons.filter((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
+    return visibleLessons.filter((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
   };
 
   // Check if a cell is covered by a spanning lesson (not the start cell)
   const isLessonSpanCell = (dayIndex: number, periodIndex: number) => {
-    return lessons.some((l) => {
+    return visibleLessons.some((l) => {
       const span = l.colSpan || 1;
       const fullSpan = Math.floor(span); // Only full cells, not including fractional
       return (
@@ -253,12 +277,12 @@ export default function WeeklyScheduleCalendar({
 
   // Check if a lesson starts at this cell
   const getLessonStartingAtCell = (dayIndex: number, periodIndex: number) => {
-    return lessons.find((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
+    return visibleLessons.find((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
   };
 
   // Check if this cell should show the fractional part of a lesson from previous cells
   const getFractionalLessonForCell = (dayIndex: number, periodIndex: number) => {
-    return lessons.find((l) => {
+    return visibleLessons.find((l) => {
       if (l.dayIndex !== dayIndex) return false;
       const span = l.colSpan || 1;
       const fullCells = Math.floor(span);
