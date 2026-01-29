@@ -1797,6 +1797,10 @@
     "classrooms": "الصفوف الدراسية",
     "extendLesson": "تمديد الحصة",
     "lessonExtendedSuccessfully": "تم تمديد الحصة بنجاح",
+    "increaseDuration": "زيادة المدة (+5 دقائق)",
+    "decreaseDuration": "إنقاص المدة (-5 دقائق)",
+    "cannotExceedTimeLimit": "لا يمكن تجاوز الوقت المحدد (03:15 م)",
+    "lessonUpdatedSuccessfully": "تم تحديث وقت الحصة بنجاح",
     "specialColumns": {
       "breakfast": "الفطار",
       "break": "استراحة",
