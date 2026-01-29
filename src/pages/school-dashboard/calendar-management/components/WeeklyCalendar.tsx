@@ -239,6 +239,22 @@ const findApplicableLessonForSlot = (
   // Use precise calculation: 45min=1.0, 90min=2.0, 108min=2.4
   const colSpan = Math.max(1, duration / 45);
 
+  // Calculate start offset for lessons not starting at period boundaries
+  let startOffset = 0;
+  const slot = PERIOD_TIME_SLOTS[periodIndex];
+
+  if (slot) {
+    const slotStartMinutes = slot.startHour * 60 + slot.startMin;
+    const lessonStartParts = parseTimeString(mostRecentLesson.startTime);
+    const lessonStartMinutes = lessonStartParts.hours * 60 + lessonStartParts.minutes;
+
+    const diffMinutes = lessonStartMinutes - slotStartMinutes;
+    // Only apply offset if positive and less than period duration (mostly 45 min)
+    if (diffMinutes > 0 && diffMinutes < 45) {
+      startOffset = diffMinutes / 45;
+    }
+  }
+
   return {
     id: mostRecentLesson.id,
     subject: subjectName,
@@ -249,6 +265,7 @@ const findApplicableLessonForSlot = (
     dayIndex,
     periodIndex,
     colSpan,
+    startOffset,
     color: getSubjectColor(subjectName),
   };
 };
