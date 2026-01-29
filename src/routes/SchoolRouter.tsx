@@ -16,10 +16,9 @@ import EditSubjectPage from '@/pages/school-dashboard/subjects/edit-subject-page
 import BooksPage from '@/pages/school-dashboard/books/books-page';
 import AddBookPage from '@/pages/school-dashboard/books/add-book-page';
 import EditBookPage from '@/pages/school-dashboard/books/edit-book-page';
-import TeachersPage from '@/pages/school-dashboard/teachers/teachers-page';
 import TeacherDetailsPage from '@/pages/school-dashboard/teachers/teacher-details-page';
 import TeacherPlacementPage from '@/pages/school-dashboard/teachers/teacher-placement-page';
-import AdministratorsPage from '@/pages/school-dashboard/administrators/administrators-page';
+import TeachingStaffPage from '@/pages/school-dashboard/teaching-staff/TeachingStaffPage';
 import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page';
 import AttendancePage from '@/pages/school-dashboard/attendance/attendance-page';
 import JobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/job-announcements-page';
@@ -221,16 +220,7 @@ const SchoolRouter: React.FC = () => {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/teachers"
-        element={
-          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
-            <MainLayout>
-              <TeachersPage />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/teachers" element={<Navigate to="/teaching-staff?tab=teachers" replace />} />
       <Route
         path="/teachers/:id"
         element={
@@ -262,14 +252,18 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/administrators"
+        path="/teaching-staff"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <AdministratorsPage />
+              <TeachingStaffPage />
             </MainLayout>
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/administrators"
+        element={<Navigate to="/teaching-staff?tab=administrators" replace />}
       />
       <Route
         path="/job-announcements"
