@@ -52,13 +52,8 @@ export default function AttendancePage() {
     }
   };
 
-  const breadcrumbItems = [{ label: t('sidebar.attendance') }, { label: t('attendance.title') }];
-
   return (
     <div>
-      {/* Breadcrumb */}
-      <Breadcrumb items={breadcrumbItems} />
-
       {/* Page Header */}
       <PageHeader
         title="attendance.title"

@@ -59,10 +59,10 @@ const Tabs: React.FC<TabsProps> = ({
   // Sync with URL search params when they change
   useEffect(() => {
     if (!searchParamKey) return;
-    
+
     const tabFromUrl = searchParams.get(searchParamKey);
     const defaultTab = defaultValue ?? ids[0];
-    
+
     // If tab param exists in URL and is valid
     if (tabFromUrl && ids.includes(tabFromUrl)) {
       if (tabFromUrl !== active) {
@@ -105,7 +105,7 @@ const Tabs: React.FC<TabsProps> = ({
 
   const baseTab =
     tabClassName ??
-    'flex-1 py-2 text-center font-medium transition-colors duration-200 text-gray-500 hover:text-green-500 focus:outline-none';
+    'flex-1 py-2 text-center font-normal text-lg transition-colors duration-200 text-gray-500 hover:text-green-500 focus:outline-none';
   const activeTab =
     activeTabClassName ??
     (variant === 'underline'
