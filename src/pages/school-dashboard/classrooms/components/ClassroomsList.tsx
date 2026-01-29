@@ -176,7 +176,7 @@ export default function ClassroomsList() {
     {
       header: 'grades.studentCount',
       accessor: (row) => <span>{typeof row.studentNumber === 'number' ? row.studentNumber : '-'}</span>,
-      headerClassName: 'min-w-[140px]',
+      headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
     {

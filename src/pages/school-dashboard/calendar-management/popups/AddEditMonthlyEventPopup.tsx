@@ -246,19 +246,19 @@ export default function AddEditMonthlyEventPopup({
           </FormField>
           <FormField label={t('monthlyCalendar.form.duration')}>
             <div className="flex flex-wrap gap-3">
-              <label className="flex cursor-pointer items-center gap-2 px-4 py-2 text-sm font-medium">
+              <label className="flex cursor-pointer items-center gap-2 px-4 py-2 text-base font-normal text-black-800">
                 <input
                   type="radio"
-                  className="accent-green-600"
+                  className="h-4 w-4 accent-green-600 focus:ring-green-500"
                   checked={isFullDay}
                   onChange={() => handleDurationChange(true)}
                 />
                 {t('monthlyCalendar.form.fullDay')}
               </label>
-              <label className="flex cursor-pointer items-center gap-2 px-4 py-2 text-sm font-medium">
+              <label className="flex cursor-pointer items-center gap-2 px-4 py-2 text-base font-normal text-black-800">
                 <input
                   type="radio"
-                  className="accent-green-600"
+                  className="h-4 w-4 accent-green-600 focus:ring-green-500"
                   checked={!isFullDay}
                   onChange={() => handleDurationChange(false)}
                 />

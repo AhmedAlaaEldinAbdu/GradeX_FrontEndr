@@ -609,7 +609,7 @@ export default function JobAnnouncementsList() {
       placeholder: t('jobAnnouncement.searchTeacherName'),
       value: filtered?.name ? filtered?.name : searchTerm,
       onChange: (value) => setSearchTerm((value as string) ?? ''),
-      width: '40%',
+      width: '30%',
     },
     {
       type: 'custom',
@@ -639,7 +639,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedStageId,
       onChange: () => {},
-      width: '30%',
+      width: '25%',
       customComponent: (
         <CustomSelect
           value={selectedStageId}
@@ -772,14 +772,12 @@ export default function JobAnnouncementsList() {
           <DeletePopup
             open={showDeletePopup}
             message="jobAnnouncement.confirmDeleteAnnouncement"
-            itemName={
-              (() => {
-                const selected = dataSource.find((j) => j.id === selectedJobId);
-                const nameAr = (selected as any)?.name;
-                const nameEn = (selected as any)?.nameEn;
-                return currentLang === 'ar' ? nameAr ?? '' : nameEn ?? nameAr ?? '';
-              })()
-            }
+            itemName={(() => {
+              const selected = dataSource.find((j) => j.id === selectedJobId);
+              const nameAr = (selected as any)?.name;
+              const nameEn = (selected as any)?.nameEn;
+              return currentLang === 'ar' ? (nameAr ?? '') : (nameEn ?? nameAr ?? '');
+            })()}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
