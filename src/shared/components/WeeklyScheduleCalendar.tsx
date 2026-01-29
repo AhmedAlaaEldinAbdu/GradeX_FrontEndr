@@ -19,6 +19,7 @@ export interface ScheduleLesson {
   dayIndex: number; // 0-6 (row index: السبت to الجمعة)
   periodIndex: number; // 0-8 (column index: time slots)
   colSpan?: number; // Number of columns to span (default 1, use 2 for 60+ min lessons)
+  startOffset?: number; // Visual offset from the start of the cell (0-1), for lessons starting mid-period
   color?: 'arabic' | 'math' | 'science' | 'english' | 'default';
 }
 
@@ -903,6 +904,76 @@ export default function WeeklyScheduleCalendar({
                       const totalCells = fullCells + (fractionalPart > 0 ? fractionalPart : 0);
                       const gapCount = fullCells - 1 + (fractionalPart > 0 ? 1 : 0);
                       widthStyle = `calc(${totalCells * 100}% + ${gapCount * 8}px)`;
+                    }
+
+                    // If there is a start offset, we need to render the empty space before the lesson as an interactive cell
+                    if (lessonStartingHere.startOffset && lessonStartingHere.startOffset > 0) {
+                      const offsetPercent = lessonStartingHere.startOffset;
+
+                      // Calculate times for the gap
+                      const slot = PERIOD_TIME_SLOTS[periodIndex];
+                      let gapStartTime = '00:00';
+                      let gapEndTime = '00:00';
+
+                      if (slot) {
+                        gapStartTime = formatTime(slot.startHour, slot.startMin);
+                        // Gap ends when lesson starts
+                        gapEndTime = lessonStartingHere.startTime;
+                      }
+
+                      return (
+                        <div
+                          key={periodIndex}
+                          className="flex min-h-[100px]"
+                          style={{ gap: '0px' }}
+                        >
+                          {' '}
+                          {/* Zero gap inside the shared cell container */}
+                          {/* Empty Gap Slot */}
+                          <div
+                            style={{ width: `${offsetPercent * 100}%` }}
+                            className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors"
+                          >
+                            {onEmptyCellClick && (
+                              <button
+                                onClick={() =>
+                                  onEmptyCellClick(dayIndex, periodIndex, gapStartTime, gapEndTime)
+                                }
+                                className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                              >
+                                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
+                                  <svg
+                                    className="h-3.5 w-3.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 4v16m8-8H4"
+                                    />
+                                  </svg>
+                                </div>
+                              </button>
+                            )}
+                          </div>
+                          {/* Lesson Card */}
+                          <div
+                            className="relative z-10 flex-shrink-0 p-0.5"
+                            style={{
+                              width: widthStyle || `${(1 - offsetPercent) * 100}%`,
+                              // If span > 1, widthStyle is absolute relative to cell, but we are in flex.
+                              // However, widthStyle uses % which is relative to parent.
+                              // If parent is the flex container (1 cell wide), 233% width is correct.
+                              // But we need to ensure it doesn't shrink.
+                            }}
+                          >
+                            <LessonCard lesson={lessonStartingHere} />
+                          </div>
+                        </div>
+                      );
                     }
 
                     return (
