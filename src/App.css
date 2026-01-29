@@ -71,18 +71,109 @@
 
 .sticky-cell {
   position: sticky;
-  z-index: 10;
+  z-index: 20;
   background-color: white;
-  box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.15); */
   outline: 1px solid rgba(229, 231, 235, 1);
 }
 .sticky-header {
   position: sticky;
-  z-index: 10;
+  z-index: 20;
   background-color: rgb(243, 244, 246);
-  box-shadow: 2px 0 5px -2px #d1d5db;
+  /* box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.15); */
 }
 tr:hover .sticky-cell {
+  background-color: rgb(249, 250, 251);
+}
+
+.sticky-cell-right {
+  position: sticky;
+  z-index: 20;
+  background-color: white;
+  /* box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.15);*/ /* Left-side shadow */
+  outline: 1px solid rgba(229, 231, 235, 1);
+}
+.sticky-header-right {
+  position: sticky;
+  z-index: 20;
+  background-color: rgb(243, 244, 246);
+  /* box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.15);*/ /* Left-side shadow */
+}
+tr:hover .sticky-cell-right {
+  background-color: rgb(249, 250, 251);
+}
+
+/* Floating Actions Overlay */
+.floating-actions-overlay {
+  position: absolute;
+  top: 0;
+  z-index: 30;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
+  display: flex;
+  flex-direction: column;
+}
+
+.floating-actions-left {
+  left: 0;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.floating-actions-right {
+  right: 0;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.floating-actions-header {
+  background-color: rgb(243, 244, 246);
+  padding: 16px;
+  text-align: center;
+  font-weight: 500;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.floating-actions-left .floating-actions-header {
+  border-top-left-radius: 16px;
+}
+
+.floating-actions-right .floating-actions-header {
+  border-top-right-radius: 16px;
+}
+
+.floating-actions-cell {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: white;
+}
+
+.floating-actions-cell:last-child {
+  border-bottom: none;
+}
+
+.floating-actions-left .floating-actions-cell:last-child {
+  border-bottom-left-radius: 16px;
+}
+
+.floating-actions-right .floating-actions-cell:last-child {
+  border-bottom-right-radius: 16px;
+}
+
+.floating-actions-cell:hover {
   background-color: rgb(249, 250, 251);
 }
 
