@@ -19,6 +19,7 @@ export interface ScheduleLesson {
   dayIndex: number; // 0-6 (row index: السبت to الجمعة)
   periodIndex: number; // 0-8 (column index: time slots)
   colSpan?: number; // Number of columns to span (default 1, use 2 for 60+ min lessons)
+  startOffset?: number; // Visual offset from the start of the cell (0-1), for lessons starting mid-period
   color?: 'arabic' | 'math' | 'science' | 'english' | 'default';
 }
 
@@ -77,7 +78,7 @@ interface WeeklyScheduleCalendarProps {
     startTime: string,
     endTime: string
   ) => void; // Callback when clicking empty cell plus icon with time slot
-  onExtendLesson?: (lesson: ScheduleLesson) => void; // Callback when clicking expand button to extend lesson by 45 min
+  onChangeDuration?: (lesson: ScheduleLesson, deltaMinutes: number) => void; // Callback to change duration (+/- minutes)
   extendingLessonId?: string | null; // ID of lesson currently being extended (for loading state)
   weekStart?: Date;
   className?: string;
@@ -128,7 +129,7 @@ export default function WeeklyScheduleCalendar({
   lessonContextActions = [],
   onDotsClick,
   onEmptyCellClick,
-  onExtendLesson,
+  onChangeDuration,
   extendingLessonId,
   onWeekChange,
   weekStart: controlledWeekStart,
@@ -150,6 +151,30 @@ export default function WeeklyScheduleCalendar({
   const weekStart = useMemo(() => {
     return startOfWeek(currentWeek, { weekStartsOn: 6 }); // Saturday start
   }, [currentWeek]);
+
+  // Filter out lessons that conflict with special columns (ghost lessons)
+  // If a lesson starts in a slot occupied by a special column, it is not rendered,
+  // so it should not be considered for spanning logic either.
+  const visibleLessons = useMemo(() => {
+    return lessons.filter((lesson) => {
+      // Check if there is a special column at this lesson's start position
+      const isBlockedBySpecialCol = specialColumns.some((sc) => {
+        if (sc.columnIndex !== lesson.periodIndex) return false;
+
+        // Check if special column applies to this day
+        // Handle potential type mismatch (string vs number) in days array
+        if (sc.days && sc.days.length > 0) {
+          return sc.days.some((d) => Number(d) === Number(lesson.dayIndex));
+        }
+
+        const startDay = sc.startDayIndex ?? 1;
+        const endDay = sc.endDayIndex ?? 5;
+        return lesson.dayIndex >= startDay && lesson.dayIndex <= endDay;
+      });
+
+      return !isBlockedBySpecialCol;
+    });
+  }, [lessons, specialColumns]);
 
   const dateLocale = isRTL ? ar : enUS;
 
@@ -235,12 +260,12 @@ export default function WeeklyScheduleCalendar({
 
   // Get lessons for a specific cell (dayIndex = row, periodIndex = column)
   const getLessonsForCell = (dayIndex: number, periodIndex: number) => {
-    return lessons.filter((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
+    return visibleLessons.filter((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
   };
 
   // Check if a cell is covered by a spanning lesson (not the start cell)
   const isLessonSpanCell = (dayIndex: number, periodIndex: number) => {
-    return lessons.some((l) => {
+    return visibleLessons.some((l) => {
       const span = l.colSpan || 1;
       const fullSpan = Math.floor(span); // Only full cells, not including fractional
       return (
@@ -253,12 +278,12 @@ export default function WeeklyScheduleCalendar({
 
   // Check if a lesson starts at this cell
   const getLessonStartingAtCell = (dayIndex: number, periodIndex: number) => {
-    return lessons.find((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
+    return visibleLessons.find((l) => l.dayIndex === dayIndex && l.periodIndex === periodIndex);
   };
 
   // Check if this cell should show the fractional part of a lesson from previous cells
   const getFractionalLessonForCell = (dayIndex: number, periodIndex: number) => {
-    return lessons.find((l) => {
+    return visibleLessons.find((l) => {
       if (l.dayIndex !== dayIndex) return false;
       const span = l.colSpan || 1;
       const fullCells = Math.floor(span);
@@ -419,22 +444,8 @@ export default function WeeklyScheduleCalendar({
             </span>
           </div>
         )}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (extendingLessonId !== lesson.id) {
-              onExtendLesson?.(lesson);
-            }
-          }}
-          disabled={extendingLessonId === lesson.id}
-          className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded border transition-colors ${
-            extendingLessonId === lesson.id
-              ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
-              : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
-          }`}
-          title={t('weeklyCalendar.extendLesson')}
-        >
-          {extendingLessonId === lesson.id ? (
+        {extendingLessonId === lesson.id ? (
+          <div className="flex h-5 w-5 items-center justify-center rounded border border-emerald-300 bg-emerald-50 text-emerald-600">
             <svg
               className="h-3 w-3 animate-spin"
               viewBox="0 0 24 24"
@@ -455,18 +466,86 @@ export default function WeeklyScheduleCalendar({
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-          ) : (
-            <svg
-              className="h-2.5 w-2.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
-            </svg>
-          )}
-        </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-0.5">
+            {/* Up Arrow (Increase Duration) */}
+            {(() => {
+              // Calculate limits for Increase
+              const [endH, endM] = lesson.endTime.split(':').map(Number);
+              const currentEndMinutes = endH * 60 + endM;
+              const MAX_TIME_MINUTES = 15 * 60 + 15; // 15:15 (3:15 PM)
+              const isIncreaseDisabled = currentEndMinutes >= MAX_TIME_MINUTES;
+
+              return (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isIncreaseDisabled) {
+                      onChangeDuration?.(lesson, 5);
+                    }
+                  }}
+                  disabled={isIncreaseDisabled}
+                  className={`flex h-2.5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-t border border-b-0 transition-colors ${
+                    isIncreaseDisabled
+                      ? 'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300'
+                      : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
+                  }`}
+                  title={
+                    isIncreaseDisabled
+                      ? t('weeklyCalendar.cannotExceedTimeLimit')
+                      : t('weeklyCalendar.increaseDuration')
+                  }
+                >
+                  <svg
+                    className="h-2 w-2"
+                    viewBox="0 0 24 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M7 10l5-5 5 5" />
+                  </svg>
+                </button>
+              );
+            })()}
+
+            {/* Down Arrow (Decrease Duration) */}
+            {(() => {
+              // Calculate limits for Decrease
+              const isDecreaseDisabled = lesson.duration <= 5;
+
+              return (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isDecreaseDisabled) {
+                      onChangeDuration?.(lesson, -5);
+                    }
+                  }}
+                  disabled={isDecreaseDisabled}
+                  className={`flex h-2.5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-b border border-t-0 transition-colors ${
+                    isDecreaseDisabled
+                      ? 'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300'
+                      : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
+                  }`}
+                  title={t('weeklyCalendar.decreaseDuration')}
+                >
+                  <svg
+                    className="h-2 w-2"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M7 14l5 5 5-5" transform="translate(0, -6)" />
+                    <path d="M7 6l5 5 5-5" />
+                  </svg>
+                </button>
+              );
+            })()}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -825,6 +904,76 @@ export default function WeeklyScheduleCalendar({
                       const totalCells = fullCells + (fractionalPart > 0 ? fractionalPart : 0);
                       const gapCount = fullCells - 1 + (fractionalPart > 0 ? 1 : 0);
                       widthStyle = `calc(${totalCells * 100}% + ${gapCount * 8}px)`;
+                    }
+
+                    // If there is a start offset, we need to render the empty space before the lesson as an interactive cell
+                    if (lessonStartingHere.startOffset && lessonStartingHere.startOffset > 0) {
+                      const offsetPercent = lessonStartingHere.startOffset;
+
+                      // Calculate times for the gap
+                      const slot = PERIOD_TIME_SLOTS[periodIndex];
+                      let gapStartTime = '00:00';
+                      let gapEndTime = '00:00';
+
+                      if (slot) {
+                        gapStartTime = formatTime(slot.startHour, slot.startMin);
+                        // Gap ends when lesson starts
+                        gapEndTime = lessonStartingHere.startTime;
+                      }
+
+                      return (
+                        <div
+                          key={periodIndex}
+                          className="flex min-h-[100px]"
+                          style={{ gap: '0px' }}
+                        >
+                          {' '}
+                          {/* Zero gap inside the shared cell container */}
+                          {/* Empty Gap Slot */}
+                          <div
+                            style={{ width: `${offsetPercent * 100}%` }}
+                            className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors"
+                          >
+                            {onEmptyCellClick && (
+                              <button
+                                onClick={() =>
+                                  onEmptyCellClick(dayIndex, periodIndex, gapStartTime, gapEndTime)
+                                }
+                                className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                              >
+                                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
+                                  <svg
+                                    className="h-3.5 w-3.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 4v16m8-8H4"
+                                    />
+                                  </svg>
+                                </div>
+                              </button>
+                            )}
+                          </div>
+                          {/* Lesson Card */}
+                          <div
+                            className="relative z-10 flex-shrink-0 p-0.5"
+                            style={{
+                              width: widthStyle || `${(1 - offsetPercent) * 100}%`,
+                              // If span > 1, widthStyle is absolute relative to cell, but we are in flex.
+                              // However, widthStyle uses % which is relative to parent.
+                              // If parent is the flex container (1 cell wide), 233% width is correct.
+                              // But we need to ensure it doesn't shrink.
+                            }}
+                          >
+                            <LessonCard lesson={lessonStartingHere} />
+                          </div>
+                        </div>
+                      );
                     }
 
                     return (

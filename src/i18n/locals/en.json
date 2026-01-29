@@ -40,7 +40,8 @@
     "employeesAdministration": "Employees & Administration",
     "rolesPermissions": "Roles & Permissions",
     "systemUsers": "System Users",
-    "messages": "Messages"
+    "messages": "Messages",
+    "employees": "Employees"
   },
   "header": {
     "search": "Search easily for what you want",
@@ -1798,6 +1799,10 @@
     "classrooms": "Classrooms",
     "extendLesson": "Extend Lesson",
     "lessonExtendedSuccessfully": "Lesson extended successfully",
+    "increaseDuration": "Increase Duration (+5 min)",
+    "decreaseDuration": "Decrease Duration (-5 min)",
+    "cannotExceedTimeLimit": "Cannot exceed time limit (03:15 PM)",
+    "lessonUpdatedSuccessfully": "Lesson time updated successfully",
     "specialColumns": {
       "breakfast": "Breakfast",
       "break": "Break",
@@ -1902,7 +1907,11 @@
       "classroomRequired": "Classroom is required",
       "subjectRequired": "Subject is required",
       "teacherRequired": "Teacher is required",
-      "bookNameRequired": "Book name is required"
+      "bookNameRequired": "Book name is required",
+      "startTimeMin": "Start time must be 08:30 AM or later",
+      "endTimeMax": "End time must be 03:15 PM or earlier",
+      "timeEquality": "Start and end time cannot be the same",
+      "endTimeBeforeStart": "End time must be after start time"
     }
   },
   "fileUpload": {

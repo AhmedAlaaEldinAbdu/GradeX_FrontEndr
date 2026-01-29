@@ -662,10 +662,10 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       schoolBranchId: DummySchoolBranchId, // Temporary static value for school branch ID
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,
-      jobDescription: values.jobDescriptionAr,
-      jobDescriptionEn: values.jobDescriptionEn,
-      jobResponsibilities: values.jobResponsibilitiesAr,
-      jobResponsibilitiesEn: values.jobResponsibilitiesEn,
+      jobDescription: values.jobDescriptionAr ?? '',
+      jobDescriptionEn: values.jobDescriptionEn ?? '',
+      jobResponsibilities: values.jobResponsibilitiesAr ?? '',
+      jobResponsibilitiesEn: values.jobResponsibilitiesEn ?? '',
       advertisementStartDate: values.applicationStartDate,
       advertisementEndDate: values.applicationEndDate,
       nationality: nationalityValue,
@@ -963,6 +963,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                   <TextArea
                     id="jobDescriptionAr"
                     {...field}
+                    value={field.value ?? ''}
                     placeholder={t('jobAnnouncement.form.enterJobDescription')}
                   />
                 )}
@@ -982,6 +983,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                   <TextArea
                     id="jobDescriptionEn"
                     {...field}
+                    value={field.value ?? ''}
                     placeholder={t('jobAnnouncement.form.enterJobDescription')}
                   />
                 )}
@@ -1001,6 +1003,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                   <TextArea
                     id="jobResponsibilitiesAr"
                     {...field}
+                    value={field.value ?? ''}
                     placeholder={t('jobAnnouncement.form.describeJobResponsibilities')}
                   />
                 )}
@@ -1020,6 +1023,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
                   <TextArea
                     id="jobResponsibilitiesEn"
                     {...field}
+                    value={field.value ?? ''}
                     placeholder={t('jobAnnouncement.form.describeJobResponsibilities')}
                   />
                 )}

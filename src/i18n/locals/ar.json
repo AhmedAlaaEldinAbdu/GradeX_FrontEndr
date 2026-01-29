@@ -40,7 +40,8 @@
     "employeesAdministration": "الموظفين والإدارة",
     "rolesPermissions": "الأدوار والصلاحيات",
     "systemUsers": "مستخدمي النظام",
-    "messages": "الرسائل"
+    "messages": "الرسائل",
+    "employees": "الموظفين"
   },
   "header": {
     "search": "ابحث بسهولة عما تريد",
@@ -1796,6 +1797,10 @@
     "classrooms": "الصفوف الدراسية",
     "extendLesson": "تمديد الحصة",
     "lessonExtendedSuccessfully": "تم تمديد الحصة بنجاح",
+    "increaseDuration": "زيادة المدة (+5 دقائق)",
+    "decreaseDuration": "إنقاص المدة (-5 دقائق)",
+    "cannotExceedTimeLimit": "لا يمكن تجاوز الوقت المحدد (03:15 م)",
+    "lessonUpdatedSuccessfully": "تم تحديث وقت الحصة بنجاح",
     "specialColumns": {
       "breakfast": "الفطار",
       "break": "استراحة",
@@ -1900,7 +1905,11 @@
       "classroomRequired": "الفصل مطلوب",
       "subjectRequired": "المادة مطلوبة",
       "teacherRequired": "المعلم مطلوب",
-      "bookNameRequired": "اسم الكتاب مطلوب"
+      "bookNameRequired": "اسم الكتاب مطلوب",
+      "startTimeMin": "وقت البدء يجب أن يكون 08:30 صباحاً أو بعد ذلك",
+      "endTimeMax": "وقت الانتهاء يجب أن يكون 03:15 مساءً أو قبل ذلك",
+      "timeEquality": "لا يمكن أن يكون وقت البدء والانتهاء متطابقين",
+      "endTimeBeforeStart": "وقت الانتهاء يجب أن يكون بعد وقت البدء"
     }
   },
   "fileUpload": {
