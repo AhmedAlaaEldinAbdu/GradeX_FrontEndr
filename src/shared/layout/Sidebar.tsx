@@ -28,7 +28,6 @@ import MainLogo from '@gradex/assets/identity/MainLogo.png';
 import TeachersIcon from '@gradex/assets/icons/Teachers.svg';
 import OrdersGreenIcon from '@gradex/assets/icons/OrdersGreen.svg';
 import BookGreenIcon from '@gradex/assets/icons/BookGreen.svg';
-import UserGreenIcon from '@gradex/assets/icons/UserGreen.svg';
 import WorkGreenIcon from '@gradex/assets/icons/WorkGreen.svg';
 import DateGreenIcon from '@gradex/assets/icons/DateGreen.svg';
 import FilesGreenIcon from '@gradex/assets/icons/FilesGreen.svg';
@@ -171,6 +170,12 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
 
     subItems: [
       {
+        icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teaching Staff" />,
+
+        key: 'staff',
+        path: '/teaching-staff',
+      },
+      {
         icon: <CustomImage src={WorkGreenIcon} className="h-6 w-6" alt="Work" />,
 
         key: 'jobAnnouncements',
@@ -181,25 +186,6 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
 
         key: 'interviews',
         path: '/interviews',
-      },
-    ],
-  },
-  {
-    key: 'employees',
-    icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Employees" />,
-
-    subItems: [
-      {
-        icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teachers" />,
-
-        key: 'teachers',
-        path: '/teachers',
-      },
-      {
-        icon: <CustomImage src={UserGreenIcon} className="h-6 w-6" alt="Administrators" />,
-
-        key: 'administrators',
-        path: '/administrators',
       },
     ],
   },
