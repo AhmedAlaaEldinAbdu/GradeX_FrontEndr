@@ -114,7 +114,7 @@ export default function HolidayCard({
           <div
             className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-medium ${
               !isUpcomingHoliday(holiday.date)
-                ? 'bg-green-600 text-white'
+                ? 'bg-green-500 text-white'
                 : 'border border-gray-300 bg-white text-gray-500'
             }`}
           >
@@ -133,7 +133,7 @@ export default function HolidayCard({
           {showConnector && (
             <div
               className={`mt-2 w-[2px] flex-1 ${
-                !isUpcomingHoliday(holiday.date) ? 'bg-green-600' : 'bg-gray-200'
+                !isUpcomingHoliday(holiday.date) ? 'bg-green-500' : 'bg-gray-200'
               }`}
               style={{ height: 'calc(100% + 1rem)', width: '2px' }}
             ></div>
