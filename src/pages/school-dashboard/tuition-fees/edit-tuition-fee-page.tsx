@@ -37,41 +37,38 @@ export default function EditTuitionFeePage() {
     };
   }, [dispatch, id]);
 
-  const initialValues = useMemo<Partial<TuitionFeeFormValues>>(
-    () => {
-      if (!tuitionFeesDetails) return {};
+  const initialValues = useMemo<Partial<TuitionFeeFormValues>>(() => {
+    if (!tuitionFeesDetails) return {};
 
-      return {
-        educationalStageId: tuitionFeesDetails.gradeId,
-        tuitionAmount: String(tuitionFeesDetails.tuitionAmount ?? ''),
-        includedServices: (tuitionFeesDetails.tuitionFeesServicesDto ?? []).map((s, idx) => ({
-          id: `inc-${idx}`,
-          nameAr: s.nameAr,
-          nameEn: s.nameEn,
+    return {
+      educationalStageId: tuitionFeesDetails.gradeId,
+      tuitionAmount: String(tuitionFeesDetails.tuitionAmount ?? ''),
+      includedServices: (tuitionFeesDetails.tuitionFeesServicesDto ?? []).map((s, idx) => ({
+        id: `inc-${idx}`,
+        nameAr: s.nameAr,
+        nameEn: s.nameEn,
+      })),
+      paidServices: (tuitionFeesDetails.tuitionFeesPaidServicesDto ?? []).map((s, idx) => ({
+        id: s.id ?? `paid-${idx}`,
+        nameAr: s.nameAr,
+        nameEn: s.nameEn,
+        amount: String(s.amount ?? ''),
+      })),
+      paymentMethodIds: (tuitionFeesDetails.paymentMethodIds ?? [])
+        .map((m) => m.paymentMethodId)
+        .filter((x): x is string => !!x),
+      installmentPlans: (tuitionFeesDetails.installmentPlansDto ?? []).map((p, planIdx) => ({
+        id: p.id ?? `plan-${planIdx}`,
+        paymentsCount: p.installmentsCount,
+        dueMode: p.distributionType === 1 ? 'equal' : 'ratio',
+        rows: (p.installmentDto ?? []).map((r, idx) => ({
+          id: `${p.id ?? `plan-${planIdx}`}-${idx}`,
+          dueDate: (r.dueDate ?? '').split('T')[0],
+          percentage: String(r.percentage ?? ''),
         })),
-        paidServices: (tuitionFeesDetails.tuitionFeesPaidServicesDto ?? []).map((s, idx) => ({
-          id: s.id ?? `paid-${idx}`,
-          nameAr: s.nameAr,
-          nameEn: s.nameEn,
-          amount: String(s.amount ?? ''),
-        })),
-        paymentMethodIds: (tuitionFeesDetails.paymentMethodIds ?? [])
-          .map((m) => m.paymentMethodId)
-          .filter((x): x is string => !!x),
-        installmentPlans: (tuitionFeesDetails.installmentPlansDto ?? []).map((p, planIdx) => ({
-          id: p.id ?? `plan-${planIdx}`,
-          paymentsCount: p.installmentsCount,
-          dueMode: p.distributionType === 1 ? 'equal' : 'ratio',
-          rows: (p.installmentDto ?? []).map((r, idx) => ({
-            id: `${p.id ?? `plan-${planIdx}`}-${idx}`,
-            dueDate: (r.dueDate ?? '').split('T')[0],
-            percentage: String(r.percentage ?? ''),
-          })),
-        })),
-      };
-    },
-    [tuitionFeesDetails]
-  );
+      })),
+    };
+  }, [tuitionFeesDetails]);
 
   return (
     <div className="space-y-6">
