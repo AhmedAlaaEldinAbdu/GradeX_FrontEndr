@@ -33,13 +33,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="mb-2 block text-start text-sm font-medium text-gray-700">{label}</label>
+          <label className="mb-2 block text-start text-sm font-medium text-gray-500">{label}</label>
         )}
         <div className="relative">
           {/* Icon for time inputs - positioned based on language */}
           {showTimeIcon && (
             <div
-              className={`absolute ${timeIconPositionClass} top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-gray-600`}
+              className={`absolute ${timeIconPositionClass} top-1/2 -translate-y-1/2 transform text-gray-500 hover:text-gray-600`}
               onClick={() => {
                 inputRef.current?.focus();
                 inputRef.current?.showPicker?.();
@@ -51,7 +51,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {/* Icon at end for regular inputs */}
           {showIconAtEnd && (
             <div
-              className="absolute end-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-gray-600"
+              className="absolute end-3 top-1/2 -translate-y-1/2 transform text-gray-500 hover:text-gray-600"
               onClick={() => {
                 inputRef.current?.focus();
                 inputRef.current?.showPicker?.();
@@ -68,13 +68,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 inputRef.current?.showPicker?.();
               }
             }}
-            className={`w-full rounded-lg border px-4 py-2 transition-all placeholder:text-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+            className={`w-full rounded-lg border px-4 py-2 transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
               showTimeIcon ? (isRTL ? 'pl-10' : 'pr-10') : ''
             } ${showIconAtEnd ? 'pr-10' : ''} ${timeInputClasses} ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'} ${className}`}
             {...props}
           />
         </div>
-        {error && <p className="mt-1 text-start text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-1 text-start text-sm text-red-500">{error}</p>}
       </div>
     );
   }
