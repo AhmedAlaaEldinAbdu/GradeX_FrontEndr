@@ -314,11 +314,14 @@ const getMenuItemsForDashboard = (dashboardType: UserRoleType): MenuItem[] => {
  * This allows the same sidebar component to work for all dashboard types
  */
 const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isRTL } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const isEnglish = i18n.language?.toLowerCase().startsWith('en');
+  const menuTextSizeClass = isEnglish ? 'text-sm' : 'text-xl';
 
   // Get menu items based on dashboard type or use custom items
   const menuItems = customMenuItems || getMenuItemsForDashboard(dashboardType);
@@ -409,7 +412,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
               >
                 {item.icon}
               </span>
-              <span className="text-xl font-medium">{t(`sidebar.${item.key}`)}</span>
+              <span className={`${menuTextSizeClass} font-medium`}>{t(`sidebar.${item.key}`)}</span>
             </div>
             <span className={isAnySubItemActive ? 'text-white' : 'text-black-700'}>
               {isExpanded ? (
@@ -453,7 +456,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                     key={subItem.path}
                     to={subItem.path}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-4 py-3 text-xl transition-colors duration-200 ${
+                      `flex items-center gap-3 px-4 py-3 ${menuTextSizeClass} transition-colors duration-200 ${
                         isActive || isSubItemActive
                           ? `bg-green-100 font-medium text-green-800 ${isLastSubItem ? 'rounded-b-[32px]' : ''}`
                           : 'hover:bg-green-75 text-green-700'
@@ -481,7 +484,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         to={item.path!}
         onClick={() => setExpandedItems([])}
         className={({ isActive }) =>
-          `mb-2 flex items-center gap-3 rounded-lg px-4 py-3 text-xl transition-colors duration-200 ${
+          `mb-2 flex items-center gap-3 rounded-lg px-4 py-3 ${menuTextSizeClass} transition-colors duration-200 ${
             isActive
               ? 'linear-green font-medium text-white'
               : 'text-black-700 hover:bg-green-100 hover:text-green-500'
