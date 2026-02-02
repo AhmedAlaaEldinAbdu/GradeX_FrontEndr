@@ -78,6 +78,23 @@ const createInstallmentPlan = (): InstallmentPlan => ({
   rows: [createInstallmentRow(), createInstallmentRow(), createInstallmentRow()],
 });
 
+const normalizeInstallmentRows = (plan: InstallmentPlan): InstallmentPlan => {
+  if (plan.dueMode === 'equal') {
+    return {
+      ...plan,
+      rows: [plan.rows?.[0] ?? createInstallmentRow()],
+    };
+  }
+
+  const safe =
+    Number.isFinite(plan.paymentsCount) && plan.paymentsCount > 0 ? plan.paymentsCount : 1;
+  const nextRows = Array.from(
+    { length: safe },
+    (_, idx) => plan.rows[idx] ?? createInstallmentRow()
+  );
+  return { ...plan, paymentsCount: safe, rows: nextRows };
+};
+
 const buildInitialValues = (initial?: Partial<TuitionFeeFormValues>): TuitionFeeFormValues => {
   const includedServices =
     initial?.includedServices && initial.includedServices.length > 0
@@ -98,7 +115,9 @@ const buildInitialValues = (initial?: Partial<TuitionFeeFormValues>): TuitionFee
         }))
       : [createPaidServiceRow()];
 
-  const paymentMethodIds = Array.isArray(initial?.paymentMethodIds) ? initial?.paymentMethodIds : [];
+  const paymentMethodIds = Array.isArray(initial?.paymentMethodIds)
+    ? initial?.paymentMethodIds
+    : [];
 
   const installmentPlans =
     initial?.installmentPlans && initial.installmentPlans.length > 0
@@ -182,6 +201,8 @@ export default function TuitionFeeForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [didAutoSelectPaymentMethods, setDidAutoSelectPaymentMethods] = useState(false);
 
+  const hasEqualInstallmentPlan = values.installmentPlans.some((p) => p.dueMode === 'equal');
+
   useEffect(() => {
     if (formKey === undefined) return;
     setValues(buildInitialValues(initialValues));
@@ -193,11 +214,20 @@ export default function TuitionFeeForm({
     if (didAutoSelectPaymentMethods) return;
     if (values.paymentMethodIds.length > 0) return;
     if (lkPaymentMethods.length === 0) return;
-    if (Array.isArray(initialValues?.paymentMethodIds) && initialValues?.paymentMethodIds.length > 0) return;
+    if (
+      Array.isArray(initialValues?.paymentMethodIds) &&
+      initialValues?.paymentMethodIds.length > 0
+    )
+      return;
 
     setValues((prev) => ({ ...prev, paymentMethodIds: lkPaymentMethods.map((m) => m.id) }));
     setDidAutoSelectPaymentMethods(true);
-  }, [didAutoSelectPaymentMethods, initialValues?.paymentMethodIds, lkPaymentMethods, values.paymentMethodIds.length]);
+  }, [
+    didAutoSelectPaymentMethods,
+    initialValues?.paymentMethodIds,
+    lkPaymentMethods,
+    values.paymentMethodIds.length,
+  ]);
 
   const patch = (partial: Partial<TuitionFeeFormValues>) =>
     setValues((prev) => ({ ...prev, ...partial }));
@@ -245,10 +275,14 @@ export default function TuitionFeeForm({
     }));
 
   const addPlan = () =>
-    setValues((prev) => ({
-      ...prev,
-      installmentPlans: [...prev.installmentPlans, createInstallmentPlan()],
-    }));
+    setValues((prev) => {
+      // When using equal payments, only one plan is allowed.
+      if (prev.installmentPlans.some((p) => p.dueMode === 'equal')) return prev;
+      return {
+        ...prev,
+        installmentPlans: [...prev.installmentPlans, createInstallmentPlan()],
+      };
+    });
   const removePlan = (id: string) =>
     setValues((prev) => ({
       ...prev,
@@ -259,10 +293,25 @@ export default function TuitionFeeForm({
     }));
 
   const updatePlan = (id: string, partial: Partial<InstallmentPlan>) => {
-    setValues((prev) => ({
-      ...prev,
-      installmentPlans: prev.installmentPlans.map((p) => (p.id === id ? { ...p, ...partial } : p)),
-    }));
+    setValues((prev) => {
+      const updatedPlans = prev.installmentPlans.map((p) =>
+        p.id === id ? normalizeInstallmentRows({ ...p, ...partial }) : p
+      );
+
+      // If user chooses equal payments, keep only one plan.
+      if (partial.dueMode === 'equal') {
+        const selected = updatedPlans.find((p) => p.id === id);
+        return {
+          ...prev,
+          installmentPlans: selected ? [selected] : updatedPlans.slice(0, 1),
+        };
+      }
+
+      return {
+        ...prev,
+        installmentPlans: updatedPlans,
+      };
+    });
   };
 
   const updatePlanRow = (planId: string, rowId: string, partial: Partial<InstallmentRow>) => {
@@ -277,6 +326,16 @@ export default function TuitionFeeForm({
 
   const handleChangePaymentsCount = (plan: InstallmentPlan, count: number) => {
     const safe = Number.isFinite(count) && count > 0 ? Math.floor(count) : 1;
+
+    // In equal mode, the due date + percentage UI should be a single row.
+    if (plan.dueMode === 'equal') {
+      updatePlan(plan.id, {
+        paymentsCount: safe,
+        rows: [plan.rows?.[0] ?? createInstallmentRow()],
+      });
+      return;
+    }
+
     const nextRows = Array.from(
       { length: safe },
       (_, idx) => plan.rows[idx] ?? createInstallmentRow()
@@ -324,7 +383,7 @@ export default function TuitionFeeForm({
 
       <Card className="rounded-2xl" padding="lg">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">{t('fees.servicesIncluded')}</h3>
+          <h3 className="text-2xl font-medium text-black-700">{t('fees.servicesIncluded')}</h3>
           <button type="button" onClick={addIncluded} className="flex items-center gap-2">
             <CustomImage src={GreenPlusIcon} className="h-8 w-8" alt="Add" />
           </button>
@@ -332,29 +391,34 @@ export default function TuitionFeeForm({
 
         <div className="space-y-4">
           {values.includedServices.map((row) => (
-            <div key={row.id} className="grid grid-cols-1 items-end gap-4 md:grid-cols-3">
-              <FormField label={t('fees.tuition.form.serviceArLabel')} required>
-                <Input
-                  value={row.nameAr}
-                  onChange={(e) => updateIncluded(row.id, { nameAr: e.target.value })}
-                  placeholder={t('fees.tuition.form.serviceArPlaceholder')}
-                />
-              </FormField>
-              <FormField label={t('fees.tuition.form.serviceEnLabel')} required>
-                <Input
-                  value={row.nameEn}
-                  onChange={(e) => updateIncluded(row.id, { nameEn: e.target.value })}
-                  placeholder={t('fees.tuition.form.serviceEnPlaceholder')}
-                />
-              </FormField>
+            <div key={row.id} className="flex items-start">
+              <div className="grid flex-grow grid-cols-1 gap-4 md:grid-cols-2">
+                <FormField label={t('fees.tuition.form.serviceArLabel')} required>
+                  <Input
+                    value={row.nameAr}
+                    onChange={(e) => updateIncluded(row.id, { nameAr: e.target.value })}
+                    placeholder={t('fees.tuition.form.serviceArPlaceholder')}
+                  />
+                </FormField>
+                <FormField label={t('fees.tuition.form.serviceEnLabel')} required>
+                  <Input
+                    value={row.nameEn}
+                    onChange={(e) => updateIncluded(row.id, { nameEn: e.target.value })}
+                    placeholder={t('fees.tuition.form.serviceEnPlaceholder')}
+                  />
+                </FormField>
+              </div>
+
               <div className="flex justify-end">
-                {values.includedServices.length > 1 && (
+                {values.includedServices.length > 1 ? (
                   <IconButton
                     status="delete"
                     variant="danger"
                     ariaLabel="Delete"
                     onClick={() => removeIncluded(row.id)}
                   />
+                ) : (
+                  <div className="h-8 w-8"></div>
                 )}
               </div>
             </div>
@@ -364,46 +428,55 @@ export default function TuitionFeeForm({
 
       <Card className="rounded-2xl" padding="lg">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">{t('fees.paidServices')}</h3>
+          <h3 className="text-2xl font-medium text-black-700">{t('fees.paidServices')}</h3>
           <button type="button" onClick={addPaid} className="flex items-center gap-2">
             <CustomImage src={GreenPlusIcon} className="h-8 w-8" alt="Add" />
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-8">
           {values.paidServices.map((row) => (
-            <div key={row.id} className="grid grid-cols-1 items-end gap-4 md:grid-cols-4">
-              <FormField label={t('fees.tuition.form.serviceArLabel')} required>
-                <Input
-                  value={row.nameAr}
-                  onChange={(e) => updatePaid(row.id, { nameAr: e.target.value })}
-                  placeholder={t('fees.tuition.form.serviceArPlaceholder')}
-                />
-              </FormField>
-              <FormField label={t('fees.tuition.form.serviceEnLabel')} required>
-                <Input
-                  value={row.nameEn}
-                  onChange={(e) => updatePaid(row.id, { nameEn: e.target.value })}
-                  placeholder={t('fees.tuition.form.serviceEnPlaceholder')}
-                />
-              </FormField>
-              <FormField label={t('fees.amount')} required>
-                <Input
-                  type="number"
-                  min={0}
-                  value={row.amount}
-                  onChange={(e) => updatePaid(row.id, { amount: e.target.value })}
-                  placeholder={t('fees.tuition.form.amountPlaceholder')}
-                />
-              </FormField>
+            <div key={row.id} className="flex items-start">
+              <div className="flex flex-grow flex-col gap-4">
+                <div className="grid flex-grow grid-cols-1 gap-4 md:grid-cols-2">
+                  <FormField label={t('fees.tuition.form.serviceArLabel')} required>
+                    <Input
+                      value={row.nameAr}
+                      onChange={(e) => updatePaid(row.id, { nameAr: e.target.value })}
+                      placeholder={t('fees.tuition.form.serviceArPlaceholder')}
+                    />
+                  </FormField>
+                  <FormField label={t('fees.tuition.form.serviceEnLabel')} required>
+                    <Input
+                      value={row.nameEn}
+                      onChange={(e) => updatePaid(row.id, { nameEn: e.target.value })}
+                      placeholder={t('fees.tuition.form.serviceEnPlaceholder')}
+                    />
+                  </FormField>
+                </div>
+
+                <div className="grid flex-grow grid-cols-1">
+                  <FormField label={t('fees.amount')} required>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={row.amount}
+                      onChange={(e) => updatePaid(row.id, { amount: e.target.value })}
+                      placeholder={t('fees.tuition.form.amountPlaceholder')}
+                    />
+                  </FormField>
+                </div>
+              </div>
               <div className="flex justify-end">
-                {values.paidServices.length > 1 && (
+                {values.paidServices.length > 1 ? (
                   <IconButton
                     status="delete"
                     variant="danger"
                     ariaLabel="Delete"
                     onClick={() => removePaid(row.id)}
                   />
+                ) : (
+                  <div className="h-8 w-8"></div>
                 )}
               </div>
             </div>
@@ -412,10 +485,10 @@ export default function TuitionFeeForm({
       </Card>
 
       <Card className="rounded-2xl" padding="lg">
-        <h3 className="mb-4 text-lg font-semibold text-gray-800">
+        <h3 className="mb-4 flex text-2xl font-medium text-black-700">
           {t('fees.tuition.form.paymentMethodsTitle')}
         </h3>
-        <div className="flex flex-wrap gap-6">
+        <div className="flex flex-col gap-3">
           {lkPaymentMethods.map((method) => {
             const label =
               (currentLang === 'ar' ? method.arabicName : method.englishName) ||
@@ -447,10 +520,10 @@ export default function TuitionFeeForm({
 
       <Card className="rounded-2xl" padding="lg">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-2xl font-medium text-black-700">
             {t('fees.tuition.form.installmentsTitle')}
           </h3>
-          <button type="button" onClick={addPlan}>
+          <button type="button" onClick={addPlan} disabled={hasEqualInstallmentPlan}>
             <CustomImage src={GreenPlusIcon} className="h-8 w-8" alt="Add" />
           </button>
         </div>
@@ -459,7 +532,7 @@ export default function TuitionFeeForm({
           {values.installmentPlans.map((plan, idx) => (
             <Card key={plan.id} className="rounded-2xl" padding="lg">
               <div className="mb-4 flex items-center justify-between">
-                <h4 className="text-lg font-semibold text-gray-800">
+                <h4 className="text-2xl font-medium text-black-700">
                   {t('fees.tuition.form.planTitle')} {idx + 1}
                 </h4>
                 {values.installmentPlans.length > 1 && (
@@ -472,7 +545,7 @@ export default function TuitionFeeForm({
                 )}
               </div>
 
-              <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="mb-6 grid grid-cols-1 gap-4">
                 <FormField label={t('fees.numberOfPayments')} required>
                   <Input
                     type="number"

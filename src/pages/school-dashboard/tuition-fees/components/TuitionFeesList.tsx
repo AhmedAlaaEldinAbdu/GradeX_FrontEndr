@@ -113,9 +113,7 @@ export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
   }, [currentLang, tuitionFees]);
 
   const paymentMethodOptions = useMemo<CustomSelectOption[]>(() => {
-    const base: CustomSelectOption[] = [
-      { value: 'all', label: t('fees.tuition.list.filters.paymentMethodsAll') },
-    ];
+    const base: CustomSelectOption[] = [];
 
     const opts = lkPaymentMethods.map((m) => ({
       value: m.id,
@@ -160,11 +158,9 @@ export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
       {
         header: 'fees.tuition.list.table.columns.includes',
         accessor: (row: TuitionFeeRow) => (
-          <div className="flex flex-col items-start gap-1">
+          <div className="flex flex-col gap-1">
             {row.includes.map((v, idx) => (
-              <span key={idx} className="text-gray-700">
-                {v}
-              </span>
+              <span key={idx}>{v}</span>
             ))}
           </div>
         ),
@@ -172,11 +168,9 @@ export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
       {
         header: 'fees.tuition.list.table.columns.excludes',
         accessor: (row: TuitionFeeRow) => (
-          <div className="flex flex-col items-start gap-1">
+          <div className="flex flex-col gap-1">
             {row.excludes.map((v, idx) => (
-              <span key={idx} className="text-gray-700">
-                {v}
-              </span>
+              <span key={idx}>{v}</span>
             ))}
           </div>
         ),
@@ -184,7 +178,7 @@ export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
       {
         header: 'fees.tuition.list.table.columns.paymentMethods',
         accessor: (row: TuitionFeeRow) => (
-          <span className="text-gray-700">
+          <span>
             {row.paymentMethods
               .map((m) =>
                 m === 'cash'
@@ -239,6 +233,17 @@ export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
   const filterComponent = useMemo(
     () => (
       <div className="flex flex-wrap items-center gap-4">
+        <div className="w-[300px]">
+          <SearchInput
+            value={search}
+            onChange={(v) => {
+              setSearch(v);
+              setPage(1);
+            }}
+            placeholder={t('fees.tuition.list.filters.searchPlaceholder')}
+          />
+        </div>
+
         <div className="w-[220px]">
           <CustomSelect
             value={paymentMethod}
@@ -250,17 +255,6 @@ export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
             placeholder={t('fees.tuition.list.filters.paymentMethodsPlaceholder')}
             showSearch={false}
             disabled={isLoadingLKPaymentMethods}
-          />
-        </div>
-
-        <div className="w-[300px]">
-          <SearchInput
-            value={search}
-            onChange={(v) => {
-              setSearch(v);
-              setPage(1);
-            }}
-            placeholder={t('fees.tuition.list.filters.searchPlaceholder')}
           />
         </div>
       </div>
@@ -335,11 +329,26 @@ export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
         columns={columns}
         keyExtractor={(row) => row.id}
         isLoading={isLoading}
+        filters={[
+          {
+            type: 'search',
+            name: 'search',
+            value: search,
+            onChange: (v) => setSearch(v as string),
+          },
+          {
+            type: 'select',
+            name: 'paymentMethod',
+            value: paymentMethod === 'all' ? '' : paymentMethod,
+            onChange: (v) => setPaymentMethod(v as PaymentMethodFilter),
+          },
+        ]}
         filterComponent={filterComponent}
         pagination={tablePagination}
         onPageChange={(p) => setPage(p)}
+        showFilters={true}
         onResetFilters={handleResetFilters}
-        emptyMessage={hasActiveFilters ? 'common.noResults' : 'common.noData'}
+        emptyMessage={t('common.noResults')}
         t={t}
       />
 
