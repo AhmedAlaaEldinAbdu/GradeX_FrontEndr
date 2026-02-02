@@ -1315,6 +1315,26 @@
     "discounts": {
       "tabTitle": "Discounts & Offers",
       "addAction": "Add Offer",
+      "modal": {
+        "addTitle": "Add Offer",
+        "editTitle": "Edit Offer",
+        "sectionTitle": "Offers",
+        "addAnother": "Add another offer",
+        "nameArLabel": "Offer name (Arabic)",
+        "nameArPlaceholder": "Type offer name in Arabic",
+        "nameEnLabel": "Offer name (English)",
+        "nameEnPlaceholder": "Type offer name in English",
+        "discountTypeLabel": "Offer type",
+        "typeValue": "Value",
+        "typePercentage": "Percentage",
+        "discountValueLabel": "Offer value",
+        "discountValuePlaceholder": "Type offer value",
+        "startDateLabel": "Offer start date",
+        "endDateLabel": "Offer end date",
+        "statusLabel": "Offer status",
+        "statusHint": "When activated, the offer will be visible to all users.",
+        "invalidEndDate": "End date must be after start date"
+      },
       "filters": {
         "searchPlaceholder": "Search by offer name",
         "statusPlaceholder": "Offer status",
