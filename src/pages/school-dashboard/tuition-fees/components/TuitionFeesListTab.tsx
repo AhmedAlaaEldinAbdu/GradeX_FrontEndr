@@ -38,7 +38,7 @@ type TuitionFeesListProps = {
   onAdd?: () => void;
 };
 
-export default function TuitionFeesList({ onAdd }: TuitionFeesListProps) {
+export default function TuitionFeesListTab({ onAdd }: TuitionFeesListProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
