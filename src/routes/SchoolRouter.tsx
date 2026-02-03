@@ -37,6 +37,8 @@ import EditAcademicCalendarPage from '@/pages/school-dashboard/calendar-manageme
 import TuitionFeesPage from '@/pages/school-dashboard/tuition-fees/tuition-fees-page';
 import AddTuitionFeePage from '@/pages/school-dashboard/tuition-fees/add-tuition-fee-page';
 import EditTuitionFeePage from '@/pages/school-dashboard/tuition-fees/edit-tuition-fee-page';
+import AddDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/add-discount-offer-page';
+import EditDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/edit-discount-offer-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -460,6 +462,26 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <EditTuitionFeePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/add-discount-offer"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddDiscountOfferPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/edit-discount-offer/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditDiscountOfferPage />
             </MainLayout>
           </ProtectedRoute>
         }

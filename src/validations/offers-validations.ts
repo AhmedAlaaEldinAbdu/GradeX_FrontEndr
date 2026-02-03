@@ -1,9 +1,15 @@
 import * as yup from 'yup';
+import { OfferApplyOn, OfferField, OfferOperator } from '@/shared/enums/enums';
 
 export const OfferConditionSchema = yup.object({
-  field: yup.number().typeError('common.validation.required').required('common.validation.required'),
+  field: yup
+    .number()
+    .oneOf(Object.values(OfferField) as number[], 'common.validation.required')
+    .typeError('common.validation.required')
+    .required('common.validation.required'),
   operator: yup
     .number()
+    .oneOf(Object.values(OfferOperator) as number[], 'common.validation.required')
     .typeError('common.validation.required')
     .required('common.validation.required'),
   value: yup.string().trim().required('common.validation.required'),
@@ -15,7 +21,11 @@ export const OfferSchema = yup
     nameAr: yup.string().trim().required('common.validation.required'),
     nameEn: yup.string().trim().required('common.validation.required'),
     offerType: yup.number().typeError('common.validation.required').required('common.validation.required'),
-    applyOn: yup.number().typeError('common.validation.required').required('common.validation.required'),
+    applyOn: yup
+      .number()
+      .oneOf(Object.values(OfferApplyOn) as number[], 'common.validation.required')
+      .typeError('common.validation.required')
+      .required('common.validation.required'),
     amount: yup
       .number()
       .nullable()
