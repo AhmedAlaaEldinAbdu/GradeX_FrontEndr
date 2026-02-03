@@ -38,7 +38,7 @@ type TuitionFeesListProps = {
   onAdd?: () => void;
 };
 
-export default function TuitionFeesListTab({ onAdd }: TuitionFeesListProps) {
+export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -68,7 +68,7 @@ export default function TuitionFeesListTab({ onAdd }: TuitionFeesListProps) {
 
   useEffect(() => {
     if (lkPaymentMethods.length > 0) return;
-    dispatch(fetchLKPaymentMethods({ params: { PageIndex: 1, PageSize: 1000 } }));
+    dispatch(fetchLKPaymentMethods({ params: { PageIndex: 1, PageSize: 10000 } }));
   }, [dispatch, lkPaymentMethods.length]);
 
   useEffect(() => {

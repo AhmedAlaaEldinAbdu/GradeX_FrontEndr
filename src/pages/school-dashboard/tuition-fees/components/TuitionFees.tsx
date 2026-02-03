@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
-import TuitionFeesListTab from './TuitionFeesListTab';
+import TuitionFeesTab from './TuitionFeesTab';
 import DiscountsAndOffersTab from './DiscountsAndOffersTab';
 
 const TUITION_TAB = 'tuition' as const;
@@ -25,7 +25,7 @@ export default function TuitionFees({ setSelectedTab, discountsAddSignal }: Tuit
       {
         id: TUITION_TAB,
         label: t('fees.tuition.tabTitle'),
-        content: <TuitionFeesListTab />,
+        content: <TuitionFeesTab />,
       },
       {
         id: DISCOUNTS_TAB,
