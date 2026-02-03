@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
-import TuitionFeeForm, { type TuitionFeeFormValues } from './components/TuitionFeeForm';
+import AddEditTuitionFeeForm, {
+  type TuitionFeeFormValues,
+} from './components/AddEditTuitionFeeForm';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import { createTuitionFees } from '@/redux/features/tuition-fees/tuitionFeesSlice';
@@ -27,7 +29,7 @@ export default function AddTuitionFeePage() {
       <PageHeader title="fees.tuition.addTitle" />
 
       <Card className="rounded-2xl" padding="lg">
-        <TuitionFeeForm
+        <AddEditTuitionFeeForm
           schoolBranchId={schoolBranchId}
           onCancel={() => navigate('/fees')}
           onSubmit={async (values: TuitionFeeFormValues) => {

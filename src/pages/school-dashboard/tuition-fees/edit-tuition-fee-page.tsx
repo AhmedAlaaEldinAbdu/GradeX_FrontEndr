@@ -4,7 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
-import TuitionFeeForm, { type TuitionFeeFormValues } from './components/TuitionFeeForm';
+import AddEditTuitionFeeForm, {
+  type TuitionFeeFormValues,
+} from './components/AddEditTuitionFeeForm';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import {
@@ -76,7 +78,7 @@ export default function EditTuitionFeePage() {
       <PageHeader title="fees.tuition.editTitle" />
 
       <Card className="rounded-2xl" padding="lg">
-        <TuitionFeeForm
+        <AddEditTuitionFeeForm
           schoolBranchId={schoolBranchId}
           mode="edit"
           formKey={id}
