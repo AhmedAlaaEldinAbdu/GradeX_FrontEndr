@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import DataTable, {
@@ -12,17 +13,14 @@ import ToggleSwitch from '@/shared/components/ToggleSwitch';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import { useToast } from '@/shared/context/ToastContext';
-import {
-  createOffer,
-  deleteOffer,
-  fetchOffers,
-  updateOffer,
-} from '@/redux/features/offers/offersSlice';
+import { deleteOffer, fetchOffers, updateOffer } from '@/redux/features/offers/offersSlice';
 import type { OfferDto } from '@/services/api/types/offer.types';
-
-import AddEditDiscountOfferPopup, {
-  type DiscountOfferFormValues,
-} from '../popups/AddEditDiscountOfferPopup';
+import type { DiscountOfferFormValues } from './AddEditDiscountOfferForm';
+import {
+  offerDtoToFormValues,
+  formValuesToOfferPayload,
+  toInputDate,
+} from '../utils/discount-offer-mappers';
 
 type OfferStatusFilter = 'all' | 'active' | 'inactive';
 
@@ -37,13 +35,10 @@ type DiscountOfferRow = {
   isActive: boolean;
 };
 
-type DiscountsAndOffersTabProps = {
-  openAddSignal?: number;
-};
-
-export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOffersTabProps) {
+export default function DiscountsAndOffersTab() {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
+  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
@@ -63,13 +58,6 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
     ],
     [t]
   );
-
-  const toInputDate = (value: string) => {
-    if (!value) return '';
-    // Supports both ISO timestamps and YYYY-MM-DD.
-    const isoDate = value.split('T')[0];
-    return /^\d{4}-\d{2}-\d{2}$/.test(isoDate) ? isoDate : value;
-  };
 
   useEffect(() => {
     if (!schoolBranchId) return;
@@ -125,83 +113,13 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
   const getRowName = (row: DiscountOfferRow) =>
     (currentLang === 'ar' ? row.nameAr : row.nameEn) || row.nameAr || row.nameEn;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
-  const [editingRowId, setEditingRowId] = useState<string | null>(null);
+  const buildPayload = (form: DiscountOfferFormValues, base?: OfferDto) =>
+    formValuesToOfferPayload(schoolBranchId, form, base);
 
   const findOfferById = (id: string | null | undefined) => {
     if (!id) return undefined;
     return (offers ?? []).find((o) => o.id === id);
   };
-
-  const offerDtoToFormValues = (o: OfferDto): DiscountOfferFormValues => {
-    const discountType: DiscountOfferFormValues['discountType'] =
-      o.percentage !== null && o.percentage !== undefined ? 'percentage' : 'value';
-
-    return {
-      id: o.id,
-      nameAr: o.nameAr,
-      nameEn: o.nameEn,
-      discountType,
-      discountValue:
-        discountType === 'percentage' ? String(o.percentage ?? '') : String(o.amount ?? ''),
-      startDate: toInputDate(o.startDate),
-      endDate: toInputDate(o.endDate),
-      isActive: !!o.isActive,
-    };
-  };
-
-  const formValuesToOfferPayload = (form: DiscountOfferFormValues, base?: OfferDto) => {
-    const numericValue = form.discountValue === '' ? null : Number(form.discountValue);
-
-    return {
-      schoolBranchId: base?.schoolBranchId ?? schoolBranchId,
-      nameAr: form.nameAr,
-      nameEn: form.nameEn,
-      offerType: base?.offerType ?? 1,
-      amount: form.discountType === 'value' ? numericValue : null,
-      percentage: form.discountType === 'percentage' ? numericValue : null,
-      applyOn: base?.applyOn ?? 1,
-      startDate: form.startDate ? new Date(form.startDate).toISOString() : (base?.startDate ?? ''),
-      endDate: form.endDate ? new Date(form.endDate).toISOString() : (base?.endDate ?? ''),
-      isActive: !!form.isActive,
-      matchAllConditions: base?.matchAllConditions ?? true,
-      conditions: (base?.conditions ?? []).map((c) => ({
-        field: c.field,
-        operator: c.operator,
-        value: c.value,
-      })),
-    };
-  };
-
-  const editingOffer = useMemo<DiscountOfferFormValues | undefined>(() => {
-    const o = findOfferById(editingRowId);
-    return o ? offerDtoToFormValues(o) : undefined;
-  }, [editingRowId, offers]);
-
-  const prevOpenAddSignal = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    // IMPORTANT: do not auto-open on first mount.
-    // Only open when the signal actually changes (e.g., header "Add Offer" click increments it).
-    // This avoids opening the popup when switching tabs.
-    if (openAddSignal === undefined) {
-      prevOpenAddSignal.current = undefined;
-      return;
-    }
-
-    if (prevOpenAddSignal.current === undefined) {
-      prevOpenAddSignal.current = openAddSignal;
-      return;
-    }
-
-    if (openAddSignal === prevOpenAddSignal.current) return;
-    prevOpenAddSignal.current = openAddSignal;
-
-    setModalMode('add');
-    setEditingRowId(null);
-    setIsModalOpen(true);
-  }, [openAddSignal]);
 
   const total = pagination?.totalItems ?? rows.length;
   const totalPages = Math.max(1, pagination?.totalPages ?? Math.ceil(total / limit));
@@ -244,7 +162,7 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
                 await dispatch(
                   updateOffer({
                     id: base.id,
-                    ...formValuesToOfferPayload(
+                    ...buildPayload(
                       {
                         ...offerDtoToFormValues(base),
                         isActive: next,
@@ -299,9 +217,7 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
               status="edit"
               ariaLabel={t('actions.edit')}
               onClick={() => {
-                setModalMode('edit');
-                setEditingRowId(row.id);
-                setIsModalOpen(true);
+                navigate(`/fees/edit-discount-offer/${row.id}`);
               }}
             />
           </div>
@@ -402,62 +318,6 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
           t={t}
         />
       </Card>
-
-      <AddEditDiscountOfferPopup
-        open={isModalOpen}
-        mode={modalMode}
-        initialOffer={modalMode === 'edit' ? editingOffer : undefined}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingRowId(null);
-        }}
-        onSubmit={(offers) => {
-          (async () => {
-            try {
-              if (modalMode === 'add') {
-                // API currently expects more fields than the popup shows.
-                // We send sensible defaults for now and no conditions.
-                await Promise.all(
-                  offers.map((o) =>
-                    dispatch(
-                      createOffer({
-                        ...formValuesToOfferPayload(o),
-                        conditions: [],
-                      })
-                    ).unwrap()
-                  )
-                );
-              } else if (editingRowId) {
-                const base = findOfferById(editingRowId);
-                if (!base) return;
-                const o = offers[0];
-                await dispatch(
-                  updateOffer({
-                    id: base.id,
-                    ...formValuesToOfferPayload(o, base),
-                  })
-                ).unwrap();
-              }
-
-              showToast({ message: t('common.success'), type: 'success' });
-              dispatch(
-                fetchOffers({
-                  SchoolBranchId: schoolBranchId,
-                  Search: search || undefined,
-                  IsActive: status === 'all' ? undefined : status === 'active',
-                  PageIndex: 1,
-                  PageSize: limit,
-                })
-              );
-              setPage(1);
-              setIsModalOpen(false);
-              setEditingRowId(null);
-            } catch (e) {
-              showToast({ message: t('common.error'), type: 'error' });
-            }
-          })();
-        }}
-      />
     </div>
   );
 }
