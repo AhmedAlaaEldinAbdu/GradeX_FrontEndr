@@ -5,7 +5,6 @@ import TuitionFees, { TUITION_TAB, type TuitionFeesTabId } from './components/Tu
 
 export default function TuitionFeesPage() {
   const [selectedTab, setSelectedTab] = useState<TuitionFeesTabId>(TUITION_TAB);
-  const [discountsAddSignal, setDiscountsAddSignal] = useState(0);
 
   // TODO: Remove this temporary DEV check when the page is ready
   if (!import.meta.env.DEV) {
@@ -35,7 +34,7 @@ export default function TuitionFeesPage() {
             : [
                 {
                   label: 'fees.discounts.addAction',
-                  onClick: () => setDiscountsAddSignal((n) => n + 1),
+                  to: '/fees/add-discount-offer',
                   variant: 'primary',
                   imgSrc: PlusIcon,
                   imgClassName: 'h-5 w-5',
@@ -44,7 +43,7 @@ export default function TuitionFeesPage() {
         }
       />
 
-      <TuitionFees setSelectedTab={setSelectedTab} discountsAddSignal={discountsAddSignal} />
+      <TuitionFees setSelectedTab={setSelectedTab} />
     </div>
   );
 }

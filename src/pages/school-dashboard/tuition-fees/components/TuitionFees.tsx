@@ -12,10 +12,9 @@ type TuitionFeesTabId = typeof TUITION_TAB | typeof DISCOUNTS_TAB;
 
 type TuitionFeesProps = {
   setSelectedTab: (tabId: TuitionFeesTabId) => void;
-  discountsAddSignal?: number;
 };
 
-export default function TuitionFees({ setSelectedTab, discountsAddSignal }: TuitionFeesProps) {
+export default function TuitionFees({ setSelectedTab }: TuitionFeesProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TuitionFeesTabId>(TUITION_TAB);
@@ -30,10 +29,10 @@ export default function TuitionFees({ setSelectedTab, discountsAddSignal }: Tuit
       {
         id: DISCOUNTS_TAB,
         label: t('fees.discounts.tabTitle'),
-        content: <DiscountsAndOffersTab openAddSignal={discountsAddSignal} />,
+        content: <DiscountsAndOffersTab />,
       },
     ],
-    [discountsAddSignal, navigate, t]
+    [navigate, t]
   );
 
   return (
