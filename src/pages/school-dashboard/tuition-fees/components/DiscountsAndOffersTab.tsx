@@ -8,6 +8,17 @@ import DataTable, {
 } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
 import SearchInput from '@/shared/components/SearchInput';
+import ToggleSwitch from '@/shared/components/ToggleSwitch';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { tokenManager } from '@/lib/auth';
+import { useToast } from '@/shared/context/ToastContext';
+import {
+  createOffer,
+  deleteOffer,
+  fetchOffers,
+  updateOffer,
+} from '@/redux/features/offers/offersSlice';
+import type { OfferDto } from '@/services/api/types/offer.types';
 
 import AddEditDiscountOfferPopup, {
   type DiscountOfferFormValues,
@@ -30,31 +41,15 @@ type DiscountsAndOffersTabProps = {
   openAddSignal?: number;
 };
 
-function StatusToggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-        checked ? 'bg-green-600' : 'bg-gray-300'
-      }`}
-    >
-      <span
-        className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-          checked ? 'translate-x-5' : 'translate-x-1'
-        }`}
-      />
-    </button>
-  );
-}
-
-const createId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
 export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOffersTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
+
+  const dispatch = useAppDispatch();
+  const { showToast } = useToast();
+  const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
+
+  const { offers, isLoading, pagination } = useAppSelector((state) => state.offers);
 
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<OfferStatusFilter>('all');
@@ -69,50 +64,47 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
     [t]
   );
 
-  const [rows, setRows] = useState<DiscountOfferRow[]>(() => {
-    // Mock data to match the Figma/table layout. Replace with API integration later.
-    const base: DiscountOfferRow[] = [
-      {
-        id: '1',
-        nameAr: t('fees.discounts.mock.siblingsOffer'),
-        nameEn: "Brothers' Offer",
-        discountType: 'value',
-        discountValue: '200',
-        startDate: '2020-01-01',
-        endDate: '2020-01-01',
-        isActive: true,
-      },
-      {
-        id: '2',
-        nameAr: t('fees.discounts.mock.earlyPaymentOffer'),
-        nameEn: 'Early Pay Offer',
-        discountType: 'percentage',
-        discountValue: '12',
-        startDate: '2020-01-01',
-        endDate: '2020-01-01',
-        isActive: true,
-      },
-    ];
+  const toInputDate = (value: string) => {
+    if (!value) return '';
+    // Supports both ISO timestamps and YYYY-MM-DD.
+    const isoDate = value.split('T')[0];
+    return /^\d{4}-\d{2}-\d{2}$/.test(isoDate) ? isoDate : value;
+  };
 
-    // Expand to show pagination in UI.
-    const extra = Array.from({ length: 10 }).map((_, i) => ({
-      ...base[i % base.length],
-      id: String(i + 3),
-    }));
+  useEffect(() => {
+    if (!schoolBranchId) return;
 
-    return [...base, ...extra];
-  });
+    dispatch(
+      fetchOffers({
+        SchoolBranchId: schoolBranchId,
+        Search: search || undefined,
+        IsActive: status === 'all' ? undefined : status === 'active',
+        PageIndex: page,
+        PageSize: limit,
+      })
+    );
+  }, [dispatch, limit, page, schoolBranchId, search, status]);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return rows.filter((r) => {
-      const name = (currentLang === 'ar' ? r.nameAr : r.nameEn) || r.nameAr || r.nameEn;
-      const matchSearch = !q || name.toLowerCase().includes(q);
-      const matchStatus =
-        status === 'all' ? true : status === 'active' ? r.isActive === true : r.isActive === false;
-      return matchSearch && matchStatus;
+  const rows = useMemo<DiscountOfferRow[]>(() => {
+    return (offers ?? []).map((o) => {
+      const discountType: DiscountOfferRow['discountType'] =
+        o.percentage !== null && o.percentage !== undefined ? 'percentage' : 'value';
+
+      const discountValue =
+        discountType === 'percentage' ? String(o.percentage ?? '') : String(o.amount ?? '');
+
+      return {
+        id: o.id,
+        nameAr: o.nameAr,
+        nameEn: o.nameEn,
+        discountType,
+        discountValue,
+        startDate: toInputDate(o.startDate),
+        endDate: toInputDate(o.endDate),
+        isActive: !!o.isActive,
+      };
     });
-  }, [currentLang, rows, search, status]);
+  }, [offers]);
 
   const formatDiscount = (row: DiscountOfferRow) => {
     if (row.discountType === 'percentage') {
@@ -122,10 +114,11 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
   };
 
   const formatDisplayDate = (value: string) => {
-    // Convert YYYY-MM-DD -> D-M-YYYY to match existing table mock format.
+    // Convert YYYY-MM-DD or ISO -> D-M-YYYY to match existing table mock format.
+    const date = toInputDate(value);
     const iso = /^\d{4}-\d{2}-\d{2}$/;
-    if (!iso.test(value)) return value;
-    const [y, m, d] = value.split('-');
+    if (!iso.test(date)) return value;
+    const [y, m, d] = date.split('-');
     return `${Number(d)}-${Number(m)}-${y}`;
   };
 
@@ -136,21 +129,55 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
   const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
 
-  const editingOffer = useMemo<DiscountOfferFormValues | undefined>(() => {
-    if (!editingRowId) return undefined;
-    const row = rows.find((r) => r.id === editingRowId);
-    if (!row) return undefined;
+  const findOfferById = (id: string | null | undefined) => {
+    if (!id) return undefined;
+    return (offers ?? []).find((o) => o.id === id);
+  };
+
+  const offerDtoToFormValues = (o: OfferDto): DiscountOfferFormValues => {
+    const discountType: DiscountOfferFormValues['discountType'] =
+      o.percentage !== null && o.percentage !== undefined ? 'percentage' : 'value';
+
     return {
-      id: row.id,
-      nameAr: row.nameAr,
-      nameEn: row.nameEn,
-      discountType: row.discountType,
-      discountValue: row.discountValue,
-      startDate: row.startDate,
-      endDate: row.endDate,
-      isActive: row.isActive,
+      id: o.id,
+      nameAr: o.nameAr,
+      nameEn: o.nameEn,
+      discountType,
+      discountValue:
+        discountType === 'percentage' ? String(o.percentage ?? '') : String(o.amount ?? ''),
+      startDate: toInputDate(o.startDate),
+      endDate: toInputDate(o.endDate),
+      isActive: !!o.isActive,
     };
-  }, [editingRowId, rows]);
+  };
+
+  const formValuesToOfferPayload = (form: DiscountOfferFormValues, base?: OfferDto) => {
+    const numericValue = form.discountValue === '' ? null : Number(form.discountValue);
+
+    return {
+      schoolBranchId: base?.schoolBranchId ?? schoolBranchId,
+      nameAr: form.nameAr,
+      nameEn: form.nameEn,
+      offerType: base?.offerType ?? 1,
+      amount: form.discountType === 'value' ? numericValue : null,
+      percentage: form.discountType === 'percentage' ? numericValue : null,
+      applyOn: base?.applyOn ?? 1,
+      startDate: form.startDate ? new Date(form.startDate).toISOString() : (base?.startDate ?? ''),
+      endDate: form.endDate ? new Date(form.endDate).toISOString() : (base?.endDate ?? ''),
+      isActive: !!form.isActive,
+      matchAllConditions: base?.matchAllConditions ?? true,
+      conditions: (base?.conditions ?? []).map((c) => ({
+        field: c.field,
+        operator: c.operator,
+        value: c.value,
+      })),
+    };
+  };
+
+  const editingOffer = useMemo<DiscountOfferFormValues | undefined>(() => {
+    const o = findOfferById(editingRowId);
+    return o ? offerDtoToFormValues(o) : undefined;
+  }, [editingRowId, offers]);
 
   const prevOpenAddSignal = useRef<number | undefined>(undefined);
 
@@ -176,13 +203,9 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
     setIsModalOpen(true);
   }, [openAddSignal]);
 
-  const total = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const total = pagination?.totalItems ?? rows.length;
+  const totalPages = Math.max(1, pagination?.totalPages ?? Math.ceil(total / limit));
   const safePage = Math.min(page, totalPages);
-  const pagedRows = useMemo(
-    () => filtered.slice((safePage - 1) * limit, safePage * limit),
-    [filtered, limit, safePage]
-  );
 
   const columns = useMemo<DataTableColumn<DiscountOfferRow>[]>(
     () => [
@@ -211,11 +234,39 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
       {
         header: 'fees.discounts.table.columns.status',
         accessor: (row: DiscountOfferRow) => (
-          <StatusToggle
+          <ToggleSwitch
             checked={row.isActive}
-            onChange={(next) =>
-              setRows((prev) => prev.map((p) => (p.id === row.id ? { ...p, isActive: next } : p)))
-            }
+            onChange={async (next) => {
+              const base = findOfferById(row.id);
+              if (!base) return;
+
+              try {
+                await dispatch(
+                  updateOffer({
+                    id: base.id,
+                    ...formValuesToOfferPayload(
+                      {
+                        ...offerDtoToFormValues(base),
+                        isActive: next,
+                      },
+                      base
+                    ),
+                  })
+                ).unwrap();
+
+                dispatch(
+                  fetchOffers({
+                    SchoolBranchId: schoolBranchId,
+                    Search: search || undefined,
+                    IsActive: status === 'all' ? undefined : status === 'active',
+                    PageIndex: page,
+                    PageSize: limit,
+                  })
+                );
+              } catch (e) {
+                showToast({ message: t('common.error'), type: 'error' });
+              }
+            }}
           />
         ),
       },
@@ -226,7 +277,23 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
             <IconButton
               status="delete"
               ariaLabel={t('actions.delete')}
-              onClick={() => setRows((prev) => prev.filter((p) => p.id !== row.id))}
+              onClick={async () => {
+                try {
+                  await dispatch(deleteOffer(row.id)).unwrap();
+                  showToast({ message: t('common.success'), type: 'success' });
+                  dispatch(
+                    fetchOffers({
+                      SchoolBranchId: schoolBranchId,
+                      Search: search || undefined,
+                      IsActive: status === 'all' ? undefined : status === 'active',
+                      PageIndex: page,
+                      PageSize: limit,
+                    })
+                  );
+                } catch (e) {
+                  showToast({ message: t('common.error'), type: 'error' });
+                }
+              }}
             />
             <IconButton
               status="edit"
@@ -242,7 +309,19 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentLang, limit, safePage, setRows, t]
+    [
+      currentLang,
+      dispatch,
+      limit,
+      offers,
+      page,
+      safePage,
+      schoolBranchId,
+      search,
+      showToast,
+      status,
+      t,
+    ]
   );
 
   const tablePagination = useMemo<PaginationData>(
@@ -295,7 +374,7 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
     <div className="space-y-4">
       <Card className="rounded-2xl" padding="lg">
         <DataTable
-          data={pagedRows}
+          data={rows}
           columns={columns}
           keyExtractor={(row) => row.id}
           filters={[
@@ -318,6 +397,7 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
           onPageChange={(p) => setPage(p)}
           showFilters={true}
           onResetFilters={handleResetFilters}
+          isLoading={isLoading}
           emptyMessage={t('common.noResults')}
           t={t}
         />
@@ -332,42 +412,50 @@ export default function DiscountsAndOffersTab({ openAddSignal }: DiscountsAndOff
           setEditingRowId(null);
         }}
         onSubmit={(offers) => {
-          if (modalMode === 'add') {
-            setRows((prev) => [
-              ...offers.map((o) => ({
-                id: createId(),
-                nameAr: o.nameAr,
-                nameEn: o.nameEn,
-                discountType: o.discountType,
-                discountValue: o.discountValue,
-                startDate: o.startDate,
-                endDate: o.endDate,
-                isActive: o.isActive,
-              })),
-              ...prev,
-            ]);
-          } else if (editingRowId) {
-            const o = offers[0];
-            setRows((prev) =>
-              prev.map((r) =>
-                r.id === editingRowId
-                  ? {
-                      ...r,
-                      nameAr: o.nameAr,
-                      nameEn: o.nameEn,
-                      discountType: o.discountType,
-                      discountValue: o.discountValue,
-                      startDate: o.startDate,
-                      endDate: o.endDate,
-                      isActive: o.isActive,
-                    }
-                  : r
-              )
-            );
-          }
+          (async () => {
+            try {
+              if (modalMode === 'add') {
+                // API currently expects more fields than the popup shows.
+                // We send sensible defaults for now and no conditions.
+                await Promise.all(
+                  offers.map((o) =>
+                    dispatch(
+                      createOffer({
+                        ...formValuesToOfferPayload(o),
+                        conditions: [],
+                      })
+                    ).unwrap()
+                  )
+                );
+              } else if (editingRowId) {
+                const base = findOfferById(editingRowId);
+                if (!base) return;
+                const o = offers[0];
+                await dispatch(
+                  updateOffer({
+                    id: base.id,
+                    ...formValuesToOfferPayload(o, base),
+                  })
+                ).unwrap();
+              }
 
-          setIsModalOpen(false);
-          setEditingRowId(null);
+              showToast({ message: t('common.success'), type: 'success' });
+              dispatch(
+                fetchOffers({
+                  SchoolBranchId: schoolBranchId,
+                  Search: search || undefined,
+                  IsActive: status === 'all' ? undefined : status === 'active',
+                  PageIndex: 1,
+                  PageSize: limit,
+                })
+              );
+              setPage(1);
+              setIsModalOpen(false);
+              setEditingRowId(null);
+            } catch (e) {
+              showToast({ message: t('common.error'), type: 'error' });
+            }
+          })();
         }}
       />
     </div>

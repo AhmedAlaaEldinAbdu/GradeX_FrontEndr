@@ -7,6 +7,7 @@ import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
+import ToggleSwitch from '@/shared/components/ToggleSwitch';
 import PercentIcon from '@/assets/icons/Percent.svg';
 import { validateDiscountOffers } from '@/validations/discounts-offers-validations';
 import GreenPlusIcon from '@/assets/icons/GreenPlus.svg';
@@ -122,177 +123,173 @@ export default function AddEditDiscountOfferPopup({
 
   return (
     <Modal isOpen={open} onClose={onClose} title={title} size="md" contentClassName="p-4 md:p-6">
-      <div className="space-y-4 rounded-lg border p-3 md:p-5">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-black-700">
-            {t('fees.discounts.modal.sectionTitle')}
-          </h3>
+      <div className="space-y-4">
+        <div className="space-y-4 rounded-lg border p-3 md:p-5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-medium text-black-700">
+              {t('fees.discounts.modal.sectionTitle')}
+            </h3>
 
-          {canAddMore && (
-            <button
-              type="button"
-              onClick={addOffer}
-              className="flex items-center gap-2"
-              aria-label={t('fees.discounts.modal.addAnother')}
-            >
-              <CustomImage src={GreenPlusIcon} className="h-9 w-9" alt="Add" />
-            </button>
-          )}
-        </div>
+            {canAddMore && (
+              <button
+                type="button"
+                onClick={addOffer}
+                className="flex items-center gap-2"
+                aria-label={t('fees.discounts.modal.addAnother')}
+              >
+                <CustomImage src={GreenPlusIcon} className="h-9 w-9" alt="Add" />
+              </button>
+            )}
+          </div>
 
-        {offers.map((offer, idx) => {
-          const offerErrors = errors[idx] ?? {};
-          const valueIcon =
-            offer.discountType === 'percentage' ? (
-              <span>
-                <CustomImage src={PercentIcon} alt="Percent" />
-              </span>
-            ) : (
-              <span></span>
-            );
+          {offers.map((offer, idx) => {
+            const offerErrors = errors[idx] ?? {};
+            const valueIcon =
+              offer.discountType === 'percentage' ? (
+                <span>
+                  <CustomImage src={PercentIcon} alt="Percent" />
+                </span>
+              ) : (
+                <span></span>
+              );
 
-          return (
-            <Card key={idx} className="rounded-2xl" padding="lg">
-              <div className="flex items-start gap-3">
-                <div className="flex-1 space-y-4">
-                  <FormField
-                    label={t('fees.discounts.modal.nameArLabel')}
-                    required
-                    error={offerErrors.nameAr}
-                  >
-                    <Input
-                      value={offer.nameAr}
-                      onChange={(e) => updateOffer(idx, { nameAr: e.target.value })}
-                      placeholder={t('fees.discounts.modal.nameArPlaceholder')}
-                    />
-                  </FormField>
-
-                  <FormField
-                    label={t('fees.discounts.modal.nameEnLabel')}
-                    required
-                    error={offerErrors.nameEn}
-                  >
-                    <Input
-                      value={offer.nameEn}
-                      onChange={(e) => updateOffer(idx, { nameEn: e.target.value })}
-                      placeholder={t('fees.discounts.modal.nameEnPlaceholder')}
-                    />
-                  </FormField>
-
-                  <FormField label={t('fees.discounts.modal.discountTypeLabel')} required>
-                    <div className="flex items-center gap-6">
-                      <label className="flex cursor-pointer items-center gap-4">
-                        <input
-                          type="radio"
-                          checked={offer.discountType === 'value'}
-                          onChange={() => updateOffer(idx, { discountType: 'value' })}
-                        />
-                        <span className="text-base text-black-900">
-                          {t('fees.discounts.modal.typeValue')}
-                        </span>
-                      </label>
-
-                      <label className="flex cursor-pointer items-center gap-4">
-                        <input
-                          type="radio"
-                          checked={offer.discountType === 'percentage'}
-                          onChange={() => updateOffer(idx, { discountType: 'percentage' })}
-                        />
-                        <span className="text-base text-black-900">
-                          {t('fees.discounts.modal.typePercentage')}
-                        </span>
-                      </label>
-                    </div>
-                  </FormField>
-
-                  <FormField
-                    label={t('fees.discounts.modal.discountValueLabel')}
-                    required
-                    error={offerErrors.discountValue}
-                  >
-                    <Input
-                      type="number"
-                      min={0}
-                      max={offer.discountType === 'percentage' ? 100 : undefined}
-                      value={offer.discountValue}
-                      onChange={(e) => updateOffer(idx, { discountValue: e.target.value })}
-                      placeholder={t('fees.discounts.modal.discountValuePlaceholder')}
-                      icon={valueIcon}
-                      className={isRTL ? 'pl-10 pr-4' : 'pl-4 pr-10'}
-                    />
-                  </FormField>
-
-                  <FormField
-                    label={t('fees.discounts.modal.endDateLabel')}
-                    required
-                    error={offerErrors.endDate}
-                  >
-                    <Input
-                      type="date"
-                      value={offer.endDate}
-                      onChange={(e) => updateOffer(idx, { endDate: e.target.value })}
-                      placeholder={t('common.chooseDate')}
-                    />
-                  </FormField>
-
-                  <FormField
-                    label={t('fees.discounts.modal.startDateLabel')}
-                    required
-                    error={offerErrors.startDate}
-                  >
-                    <Input
-                      type="date"
-                      value={offer.startDate}
-                      onChange={(e) => updateOffer(idx, { startDate: e.target.value })}
-                      placeholder={t('common.chooseDate')}
-                    />
-                  </FormField>
-
-                  <div className="flex flex-col items-start gap-2">
-                    <div className="flex flex-col items-start gap-1">
-                      <div className="required text-base font-normal text-black-800">
-                        {t('fees.discounts.modal.statusLabel')}
-                      </div>
-                      <div className="text-base font-normal text-gray-500">
-                        {t('fees.discounts.modal.statusHint')}
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={offer.isActive}
-                      onClick={() => updateOffer(idx, { isActive: !offer.isActive })}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                        offer.isActive ? 'bg-green-600' : 'bg-gray-300'
-                      }`}
+            return (
+              <Card key={idx} className="rounded-2xl" padding="lg">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 space-y-4">
+                    <FormField
+                      label={t('fees.discounts.modal.nameArLabel')}
+                      required
+                      error={offerErrors.nameAr}
                     >
-                      <span
-                        className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-                          offer.isActive ? 'translate-x-5' : 'translate-x-1'
-                        }`}
+                      <Input
+                        value={offer.nameAr}
+                        onChange={(e) => updateOffer(idx, { nameAr: e.target.value })}
+                        placeholder={t('fees.discounts.modal.nameArPlaceholder')}
                       />
-                    </button>
+                    </FormField>
+
+                    <FormField
+                      label={t('fees.discounts.modal.nameEnLabel')}
+                      required
+                      error={offerErrors.nameEn}
+                    >
+                      <Input
+                        value={offer.nameEn}
+                        onChange={(e) => updateOffer(idx, { nameEn: e.target.value })}
+                        placeholder={t('fees.discounts.modal.nameEnPlaceholder')}
+                      />
+                    </FormField>
+
+                    <FormField label={t('fees.discounts.modal.discountTypeLabel')} required>
+                      <div className="flex items-center gap-6">
+                        <label className="flex cursor-pointer items-center gap-4">
+                          <input
+                            type="radio"
+                            checked={offer.discountType === 'value'}
+                            onChange={() => updateOffer(idx, { discountType: 'value' })}
+                          />
+                          <span className="text-base text-black-900">
+                            {t('fees.discounts.modal.typeValue')}
+                          </span>
+                        </label>
+
+                        <label className="flex cursor-pointer items-center gap-4">
+                          <input
+                            type="radio"
+                            checked={offer.discountType === 'percentage'}
+                            onChange={() => updateOffer(idx, { discountType: 'percentage' })}
+                          />
+                          <span className="text-base text-black-900">
+                            {t('fees.discounts.modal.typePercentage')}
+                          </span>
+                        </label>
+                      </div>
+                    </FormField>
+
+                    <FormField
+                      label={t('fees.discounts.modal.discountValueLabel')}
+                      required
+                      error={offerErrors.discountValue}
+                    >
+                      <Input
+                        type="number"
+                        min={0}
+                        max={offer.discountType === 'percentage' ? 100 : undefined}
+                        value={offer.discountValue}
+                        onChange={(e) => updateOffer(idx, { discountValue: e.target.value })}
+                        placeholder={t('fees.discounts.modal.discountValuePlaceholder')}
+                        icon={valueIcon}
+                        className={
+                          offer.discountType === 'percentage'
+                            ? isRTL
+                              ? 'pl-10 pr-4'
+                              : 'pl-4 pr-10'
+                            : 'pl-4 pr-4'
+                        }
+                      />
+                    </FormField>
+
+                    <FormField
+                      label={t('fees.discounts.modal.endDateLabel')}
+                      required
+                      error={offerErrors.endDate}
+                    >
+                      <Input
+                        type="date"
+                        value={offer.endDate}
+                        onChange={(e) => updateOffer(idx, { endDate: e.target.value })}
+                        placeholder={t('common.chooseDate')}
+                      />
+                    </FormField>
+
+                    <FormField
+                      label={t('fees.discounts.modal.startDateLabel')}
+                      required
+                      error={offerErrors.startDate}
+                    >
+                      <Input
+                        type="date"
+                        value={offer.startDate}
+                        onChange={(e) => updateOffer(idx, { startDate: e.target.value })}
+                        placeholder={t('common.chooseDate')}
+                      />
+                    </FormField>
+
+                    <div className="flex flex-col items-start gap-2">
+                      <div className="flex flex-col items-start gap-1">
+                        <div className="required text-base font-normal text-black-800">
+                          {t('fees.discounts.modal.statusLabel')}
+                        </div>
+                        <div className="text-base font-normal text-gray-500">
+                          {t('fees.discounts.modal.statusHint')}
+                        </div>
+                      </div>
+
+                      <ToggleSwitch
+                        checked={offer.isActive}
+                        onChange={(next) => updateOffer(idx, { isActive: next })}
+                      />
+                    </div>
                   </div>
+
+                  {canRemove ? (
+                    <div>
+                      <IconButton
+                        status="delete"
+                        variant="danger"
+                        ariaLabel={t('actions.delete')}
+                        onClick={() => removeOffer(idx)}
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-8 w-8"></div>
+                  )}
                 </div>
-
-                {canRemove ? (
-                  <div>
-                    <IconButton
-                      status="delete"
-                      variant="danger"
-                      ariaLabel={t('actions.delete')}
-                      onClick={() => removeOffer(idx)}
-                    />
-                  </div>
-                ) : (
-                  <div className="h-8 w-8"></div>
-                )}
-              </div>
-            </Card>
-          );
-        })}
-
+              </Card>
+            );
+          })}
+        </div>
         <div className="flex flex-row-reverse gap-3 pt-2">
           <Button onClick={handleSubmit} variant="primary">
             {mode === 'add' ? t('common.add') : t('common.save')}
