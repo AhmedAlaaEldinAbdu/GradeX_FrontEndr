@@ -28,7 +28,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
   disabled = false,
   className,
   inputClassName,
-  textClassName = 'text-sm text-gray-500',
+  textClassName = 'text-sm text-black-800',
   inputProps,
 }) => {
   return (
