@@ -27,6 +27,7 @@ import EditJobAnnouncementPage from '@/pages/school-dashboard/job-announcements/
 import JobAnnouncementDetailsPage from '@/pages/school-dashboard/job-announcements/job-announcement-details';
 import RegistrationAnnouncementPage from '@/pages/school-dashboard/registration-announcement/registration-announcement-page';
 import AddRegistrationAnnouncementPage from '@/pages/school-dashboard/registration-announcement/add-registration-announcement-page';
+import EditRegistrationAnnouncementPage from '@/pages/school-dashboard/registration-announcement/edit-registration-announcement-page';
 import WeeklyCalendarPage from '@/pages/school-dashboard/calendar-management/weekly-calendar-page';
 import AddLessonPage from '@/pages/school-dashboard/calendar-management/add-lesson-page';
 import EditLessonPage from '@/pages/school-dashboard/calendar-management/edit-lesson-page';
@@ -102,6 +103,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AddRegistrationAnnouncementPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/registration-announcement/edit-registration-announcement/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditRegistrationAnnouncementPage />
             </MainLayout>
           </ProtectedRoute>
         }
