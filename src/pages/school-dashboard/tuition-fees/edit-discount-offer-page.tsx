@@ -44,13 +44,13 @@ export default function EditDiscountOfferPage() {
 
   const breadcrumbItems = [
     { label: t('sidebar.fees'), path: '/fees?tab=discounts' },
-    { label: t('fees.discounts.modal.editTitle') },
+    { label: t('fees.discounts.form.editTitle') },
   ];
 
   return (
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title="fees.discounts.modal.editTitle" />
+      <PageHeader title="fees.discounts.form.editTitle" />
 
       <Card className="rounded-2xl" padding="lg">
         <AddEditDiscountOfferForm

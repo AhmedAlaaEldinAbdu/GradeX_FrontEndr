@@ -22,13 +22,13 @@ export default function AddDiscountOfferPage() {
 
   const breadcrumbItems = [
     { label: t('sidebar.fees'), path: '/fees?tab=discounts' },
-    { label: t('fees.discounts.modal.addTitle') },
+    { label: t('fees.discounts.form.addTitle') },
   ];
 
   return (
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title="fees.discounts.modal.addTitle" />
+      <PageHeader title="fees.discounts.form.addTitle" />
 
       <Card className="rounded-2xl" padding="lg">
         <AddEditDiscountOfferForm

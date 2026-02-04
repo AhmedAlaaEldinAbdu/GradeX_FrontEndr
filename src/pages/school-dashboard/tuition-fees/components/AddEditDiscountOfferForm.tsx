@@ -7,9 +7,11 @@ import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 import ToggleSwitch from '@/shared/components/ToggleSwitch';
+import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import PercentIcon from '@/assets/icons/Percent.svg';
 import GreenPlusIcon from '@/assets/icons/GreenPlus.svg';
 import { validateDiscountOffers } from '@/validations/discounts-offers-validations';
+import { OfferApplyOn } from '@/shared/enums/enums';
 
 export type DiscountType = 'value' | 'percentage';
 
@@ -22,6 +24,8 @@ export type DiscountOfferFormValues = {
   startDate: string;
   endDate: string;
   isActive: boolean;
+  matchAllConditions: boolean;
+  applyOn: OfferApplyOn;
 };
 
 type AddEditDiscountOfferFormMode = 'add' | 'edit';
@@ -42,6 +46,8 @@ const createEmptyOffer = (): DiscountOfferFormValues => ({
   startDate: '',
   endDate: '',
   isActive: true,
+  matchAllConditions: true,
+  applyOn: OfferApplyOn.TuitionFees,
 });
 
 export default function AddEditDiscountOfferForm({
@@ -55,6 +61,19 @@ export default function AddEditDiscountOfferForm({
   const isRTL = i18n.language === 'ar';
 
   const canAddMore = mode === 'add';
+
+  const applyOnToFlags = (applyOn: OfferApplyOn) => {
+    return {
+      applicationFees: applyOn === OfferApplyOn.ApplicationFees || applyOn === OfferApplyOn.Both,
+      tuitionFees: applyOn === OfferApplyOn.TuitionFees || applyOn === OfferApplyOn.Both,
+    };
+  };
+
+  const applyOnFromFlags = (applicationFees: boolean, tuitionFees: boolean): OfferApplyOn => {
+    if (applicationFees && tuitionFees) return OfferApplyOn.Both;
+    if (applicationFees) return OfferApplyOn.ApplicationFees;
+    return OfferApplyOn.TuitionFees;
+  };
 
   const initialSignature = useMemo(() => JSON.stringify(initialOffers ?? []), [initialOffers]);
 
@@ -136,7 +155,7 @@ export default function AddEditDiscountOfferForm({
       <div className="space-y-4 rounded-lg border p-3 md:p-5">
         <div className="flex items-center justify-between">
           <h3 className="text-2xl font-medium text-black-700">
-            {t('fees.discounts.modal.sectionTitle')}
+            {t('fees.discounts.form.sectionTitle')}
           </h3>
 
           {canAddMore && (
@@ -144,7 +163,7 @@ export default function AddEditDiscountOfferForm({
               type="button"
               onClick={addOffer}
               className="flex items-center gap-2"
-              aria-label={t('fees.discounts.modal.addAnother')}
+              aria-label={t('fees.discounts.form.addAnother')}
             >
               <CustomImage src={GreenPlusIcon} className="h-9 w-9" alt="Add" />
             </button>
@@ -168,118 +187,180 @@ export default function AddEditDiscountOfferForm({
             <Card key={idx} className="rounded-2xl" padding="lg">
               <div className="flex items-start gap-3">
                 <div className="flex-1 space-y-4">
-                  <FormField
-                    label={t('fees.discounts.modal.nameArLabel')}
-                    required
-                    error={offerErrors.nameAr}
-                  >
-                    <Input
-                      value={offer.nameAr}
-                      onChange={(e) => updateOffer(idx, { nameAr: e.target.value })}
-                      placeholder={t('fees.discounts.modal.nameArPlaceholder')}
-                    />
-                  </FormField>
-
-                  <FormField
-                    label={t('fees.discounts.modal.nameEnLabel')}
-                    required
-                    error={offerErrors.nameEn}
-                  >
-                    <Input
-                      value={offer.nameEn}
-                      onChange={(e) => updateOffer(idx, { nameEn: e.target.value })}
-                      placeholder={t('fees.discounts.modal.nameEnPlaceholder')}
-                    />
-                  </FormField>
-
-                  <FormField label={t('fees.discounts.modal.discountTypeLabel')} required>
-                    <div className="flex items-center gap-6">
-                      <label className="flex cursor-pointer items-center gap-4">
-                        <input
-                          type="radio"
-                          checked={offer.discountType === 'value'}
-                          onChange={() => updateOffer(idx, { discountType: 'value' })}
+                  <section>
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      <FormField
+                        label={t('fees.discounts.form.nameArLabel')}
+                        required
+                        error={offerErrors.nameAr}
+                      >
+                        <Input
+                          value={offer.nameAr}
+                          onChange={(e) => updateOffer(idx, { nameAr: e.target.value })}
+                          placeholder={t('fees.discounts.form.nameArPlaceholder')}
                         />
-                        <span className="text-base text-black-900">
-                          {t('fees.discounts.modal.typeValue')}
-                        </span>
-                      </label>
+                      </FormField>
 
-                      <label className="flex cursor-pointer items-center gap-4">
-                        <input
-                          type="radio"
-                          checked={offer.discountType === 'percentage'}
-                          onChange={() => updateOffer(idx, { discountType: 'percentage' })}
+                      <FormField
+                        label={t('fees.discounts.form.nameEnLabel')}
+                        required
+                        error={offerErrors.nameEn}
+                      >
+                        <Input
+                          value={offer.nameEn}
+                          onChange={(e) => updateOffer(idx, { nameEn: e.target.value })}
+                          placeholder={t('fees.discounts.form.nameEnPlaceholder')}
                         />
-                        <span className="text-base text-black-900">
-                          {t('fees.discounts.modal.typePercentage')}
-                        </span>
-                      </label>
+                      </FormField>
                     </div>
-                  </FormField>
+                  </section>
+                  <section>
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      <FormField label={t('fees.discounts.form.applyOnLabel')} required>
+                        <div className="flex flex-wrap gap-4">
+                          {(() => {
+                            const flags = applyOnToFlags(offer.applyOn);
 
-                  <FormField
-                    label={t('fees.discounts.modal.discountValueLabel')}
-                    required
-                    error={offerErrors.discountValue}
-                  >
-                    <Input
-                      type="number"
-                      min={0}
-                      max={offer.discountType === 'percentage' ? 100 : undefined}
-                      value={offer.discountValue}
-                      onChange={(e) => updateOffer(idx, { discountValue: e.target.value })}
-                      placeholder={t('fees.discounts.modal.discountValuePlaceholder')}
-                      icon={valueIcon}
-                      className={
-                        offer.discountType === 'percentage'
-                          ? isRTL
-                            ? 'pl-10 pr-4'
-                            : 'pl-4 pr-10'
-                          : 'pl-4 pr-4'
-                      }
-                    />
-                  </FormField>
+                            const setFlags = (
+                              nextApplicationFees: boolean,
+                              nextTuitionFees: boolean
+                            ) => {
+                              // Don’t allow unselecting both.
+                              if (!nextApplicationFees && !nextTuitionFees) return;
+                              updateOffer(idx, {
+                                applyOn: applyOnFromFlags(nextApplicationFees, nextTuitionFees),
+                              });
+                            };
 
-                  <FormField
-                    label={t('fees.discounts.modal.endDateLabel')}
-                    required
-                    error={offerErrors.endDate}
-                  >
-                    <Input
-                      type="date"
-                      value={offer.endDate}
-                      onChange={(e) => updateOffer(idx, { endDate: e.target.value })}
-                      placeholder={t('common.chooseDate')}
-                    />
-                  </FormField>
+                            return (
+                              <>
+                                <CustomCheckbox
+                                  label={t('fees.discounts.form.applyOn.applicationFees')}
+                                  checked={flags.applicationFees}
+                                  onChange={(checked) => setFlags(checked, flags.tuitionFees)}
+                                />
+                                <CustomCheckbox
+                                  label={t('fees.discounts.form.applyOn.tuitionFees')}
+                                  checked={flags.tuitionFees}
+                                  onChange={(checked) => setFlags(flags.applicationFees, checked)}
+                                />
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </FormField>
+                    </div>
+                  </section>
 
-                  <FormField
-                    label={t('fees.discounts.modal.startDateLabel')}
-                    required
-                    error={offerErrors.startDate}
-                  >
-                    <Input
-                      type="date"
-                      value={offer.startDate}
-                      onChange={(e) => updateOffer(idx, { startDate: e.target.value })}
-                      placeholder={t('common.chooseDate')}
-                    />
-                  </FormField>
+                  <section>
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      <FormField label={t('fees.discounts.form.discountTypeLabel')} required>
+                        <div className="flex items-center gap-6">
+                          <label className="flex cursor-pointer items-center gap-4">
+                            <input
+                              type="radio"
+                              checked={offer.discountType === 'value'}
+                              onChange={() => updateOffer(idx, { discountType: 'value' })}
+                            />
+                            <span className="text-base text-black-800">
+                              {t('fees.discounts.form.typeValue')}
+                            </span>
+                          </label>
+
+                          <label className="flex cursor-pointer items-center gap-4">
+                            <input
+                              type="radio"
+                              checked={offer.discountType === 'percentage'}
+                              onChange={() => updateOffer(idx, { discountType: 'percentage' })}
+                            />
+                            <span className="text-base text-black-800">
+                              {t('fees.discounts.form.typePercentage')}
+                            </span>
+                          </label>
+                        </div>
+                      </FormField>
+
+                      <FormField
+                        label={t('fees.discounts.form.discountValueLabel')}
+                        required
+                        error={offerErrors.discountValue}
+                      >
+                        <Input
+                          type="number"
+                          min={0}
+                          max={offer.discountType === 'percentage' ? 100 : undefined}
+                          value={offer.discountValue}
+                          onChange={(e) => updateOffer(idx, { discountValue: e.target.value })}
+                          placeholder={t('fees.discounts.form.discountValuePlaceholder')}
+                          icon={valueIcon}
+                          className={
+                            offer.discountType === 'percentage'
+                              ? isRTL
+                                ? 'pl-10 pr-4'
+                                : 'pl-4 pr-10'
+                              : 'pl-4 pr-4'
+                          }
+                        />
+                      </FormField>
+                    </div>
+                  </section>
+
+                  <section>
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      <FormField
+                        label={t('fees.discounts.form.startDateLabel')}
+                        required
+                        error={offerErrors.startDate}
+                      >
+                        <Input
+                          type="date"
+                          value={offer.startDate}
+                          onChange={(e) => updateOffer(idx, { startDate: e.target.value })}
+                          placeholder={t('common.chooseDate')}
+                        />
+                      </FormField>
+
+                      <FormField
+                        label={t('fees.discounts.form.endDateLabel')}
+                        required
+                        error={offerErrors.endDate}
+                      >
+                        <Input
+                          type="date"
+                          value={offer.endDate}
+                          onChange={(e) => updateOffer(idx, { endDate: e.target.value })}
+                          placeholder={t('common.chooseDate')}
+                        />
+                      </FormField>
+                    </div>
+                  </section>
 
                   <div className="flex flex-col items-start gap-2">
                     <div className="flex flex-col items-start gap-1">
                       <div className="required text-base font-normal text-black-800">
-                        {t('fees.discounts.modal.statusLabel')}
+                        {t('fees.discounts.form.statusLabel')}
                       </div>
                       <div className="text-base font-normal text-gray-500">
-                        {t('fees.discounts.modal.statusHint')}
+                        {t('fees.discounts.form.statusHint')}
                       </div>
                     </div>
 
                     <ToggleSwitch
                       checked={offer.isActive}
                       onChange={(next) => updateOffer(idx, { isActive: next })}
+                    />
+                  </div>
+
+                  <div className="flex flex-col items-start gap-2">
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="required text-base font-normal text-black-800">
+                        {t('fees.discounts.form.matchAllConditions')}
+                      </div>
+                    </div>
+
+                    <ToggleSwitch
+                      checked={offer.matchAllConditions}
+                      onChange={(next) => updateOffer(idx, { matchAllConditions: next })}
                     />
                   </div>
                 </div>
