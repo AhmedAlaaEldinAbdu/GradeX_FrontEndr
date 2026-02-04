@@ -40,6 +40,7 @@ import AddTuitionFeePage from '@/pages/school-dashboard/tuition-fees/add-tuition
 import EditTuitionFeePage from '@/pages/school-dashboard/tuition-fees/edit-tuition-fee-page';
 import AddDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/add-discount-offer-page';
 import EditDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/edit-discount-offer-page';
+import AttendanceRequestsPage from '@/pages/school-dashboard/attendance-requests/attendance-requests-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -429,10 +430,7 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">طلبات الحضور</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <AttendanceRequestsPage />
             </MainLayout>
           </ProtectedRoute>
         }
