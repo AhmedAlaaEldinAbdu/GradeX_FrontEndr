@@ -2,7 +2,7 @@ import React from 'react';
 import RegistrationRequestsTable from './components/RegistrationRequestsTable';
 import PersonalInterviewsTable from './components/PersonalInterviewsTable';
 
-const AttendanceRequestsPage: React.FC = () => {
+const StudentApplicationsPage: React.FC = () => {
   // TODO: Remove this temporary DEV check when the page is ready
   if (!import.meta.env.DEV) {
     return (
@@ -21,4 +21,4 @@ const AttendanceRequestsPage: React.FC = () => {
   );
 };
 
-export default AttendanceRequestsPage;
+export default StudentApplicationsPage;

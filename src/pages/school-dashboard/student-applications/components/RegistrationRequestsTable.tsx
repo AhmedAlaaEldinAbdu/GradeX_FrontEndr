@@ -1,79 +1,116 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
+import IconButton from '@/shared/components/IconButton';
 import Card from '@gradex/shared/components/Card';
+import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
-import IconButton from '@/shared/components/IconButton';
+import CheckIcon from '@gradex/assets/icons/Check.svg';
+import EditIcon from '@gradex/assets/icons/Edit.svg';
+import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
+import CloseIcon from '@gradex/assets/icons/BigTrash.svg'; // TOOD: Change Icon.
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
-interface Interview {
+interface RegistrationRequest {
   id: string;
   studentName: string;
   studentImage?: string;
   educationalStage: string;
-  grade: string;
-  interviewDate: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'interview_scheduled';
+  previousSchool: string;
 }
 
-const PersonalInterviewsTable: React.FC = () => {
+const RegistrationRequestsTable: React.FC = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
-  const data: Interview[] = [
+  // Mock data matching the style of other components (Arabic)
+  const data: RegistrationRequest[] = [
     {
       id: '1',
-      studentName: 'أحمد معتز حامد',
+      studentName: 'أحمد معتز حامد', // Arabic Name
       studentImage: 'https://i.pravatar.cc/150?u=1',
-      educationalStage: 'المرحلة الابتدائية',
-      grade: '1/1', // Class 1/1
-      interviewDate: '22/2/2025',
+      educationalStage: 'المرحلة الابتدائية', // Arabic Stage
+      status: 'pending',
+      previousSchool: 'مدرسة الرشيد', // Arabic School Name
     },
     {
       id: '2',
       studentName: 'سارة أحمد علي',
       studentImage: 'https://i.pravatar.cc/150?u=2',
       educationalStage: 'المرحلة الثانوية',
-      grade: '2/1',
-      interviewDate: '22/2/2025',
+      status: 'rejected',
+      previousSchool: 'مدرسة النور',
     },
     {
       id: '3',
       studentName: 'محمد خالد ابراهيم',
       studentImage: 'https://i.pravatar.cc/150?u=3',
       educationalStage: 'المرحلة الإعدادية',
-      grade: '1/1',
-      interviewDate: '22/2/2025',
+      status: 'rejected',
+      previousSchool: 'مدرسة المستقبل',
     },
     {
       id: '4',
       studentName: 'يوسف عمر حسن',
       studentImage: 'https://i.pravatar.cc/150?u=4',
       educationalStage: 'رياض الأطفال',
-      grade: '1/1',
-      interviewDate: '22/2/2025',
+      status: 'interview_scheduled',
+      previousSchool: '-- top --',
     },
     {
       id: '5',
       studentName: 'فاطمة الزهراء',
       studentImage: 'https://i.pravatar.cc/150?u=5',
       educationalStage: 'المرحلة الابتدائية',
-      grade: '1/3',
-      interviewDate: '22/2/2025',
+      status: 'accepted',
+      previousSchool: 'مدرسة التفوق',
     },
     {
       id: '6',
       studentName: 'محمود سامي',
       studentImage: 'https://i.pravatar.cc/150?u=6',
       educationalStage: 'المرحلة الابتدائية',
-      grade: '1/1',
-      interviewDate: '22/2/2025',
+      status: 'interview_scheduled',
+      previousSchool: 'مدرسة السلام',
     },
   ];
 
-  const columns: DataTableColumn<Interview>[] = [
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'accepted':
+        return (
+          <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+            {t('studentApplications.status.accepted')}
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+            {t('studentApplications.status.notPassed')}
+          </span>
+        );
+      case 'interview_scheduled':
+        return (
+          <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
+            {t('studentApplications.status.waitingInterview')}
+          </span>
+        );
+      case 'pending':
+        return (
+          <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
+            {t('studentApplications.status.editRequested')}
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const columns: DataTableColumn<RegistrationRequest>[] = [
     {
       header: '#',
       accessor: (_row, index) => (
@@ -105,45 +142,63 @@ const PersonalInterviewsTable: React.FC = () => {
       headerClassName: 'min-w-[200px]',
     },
     {
-      header: 'attendanceRequests.educationalStage',
+      header: 'studentApplications.educationalStage',
       accessor: (row) => <span>{row.educationalStage}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
-      header: 'attendanceRequests.grade',
-      accessor: (row) => <span>{row.grade}</span>,
+      header: 'common.status',
+      accessor: (row) => getStatusBadge(row.status),
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
-      header: 'attendanceRequests.interviewDate',
-      accessor: (row) => <span>{row.interviewDate}</span>,
+      header: 'studentApplications.previousSchool',
+      accessor: (row) => <span>{row.previousSchool}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
       header: 'common.actions',
-      accessor: (_row) => (
-        <div className="flex items-center justify-center gap-2">
-          <div className="relative">
-            <button className="rounded-full p-1 text-gray-500 hover:bg-gray-100">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 8C13.1 8 14 7.1 14 6C14 4.9 13.1 4 12 4C10.9 4 10 4.9 10 6C10 7.1 10.9 8 12 8ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10ZM12 16C10.9 16 10 16.9 10 18C10 19.1 10.9 20 12 20C13.1 20 14 19.1 14 18C14 16.9 13.1 16 12 16Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </button>
+      accessor: (row) => {
+        const actions: Action[] = [
+          {
+            id: 'accept',
+            label: t('studentApplications.actions.accept'),
+            icon: CheckIcon,
+            onClick: () => console.log('Accept', row.id),
+            color: 'text-green-600 hover:bg-green-50',
+          },
+          {
+            id: 'editRequest',
+            label: t('studentApplications.actions.sendEditRequest'),
+            icon: EditIcon,
+            onClick: () => console.log('Edit Request', row.id),
+            color: 'text-blue-600 hover:bg-blue-50',
+          },
+          {
+            id: 'schedule',
+            label: t('studentApplications.actions.scheduleAppointment'),
+            icon: CalendarIcon,
+            onClick: () => console.log('Schedule', row.id),
+            color: 'text-gray-700 hover:bg-gray-50',
+          },
+          {
+            id: 'notPassed',
+            label: t('studentApplications.actions.notPassed'),
+            icon: CloseIcon,
+            onClick: () => console.log('Not Passed', row.id),
+            color: 'text-red-600 hover:bg-red-50',
+          },
+        ];
+
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <ActionsDropdown actions={actions} />
           </div>
-        </div>
-      ),
+        );
+      },
       headerClassName: 'min-w-[100px] text-center',
       className: 'text-center',
     },
@@ -153,7 +208,7 @@ const PersonalInterviewsTable: React.FC = () => {
     {
       type: 'search',
       name: 'search',
-      placeholder: t('attendanceRequests.searchPlaceholder'),
+      placeholder: t('studentApplications.searchPlaceholder'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
       width: '25%',
@@ -173,7 +228,7 @@ const PersonalInterviewsTable: React.FC = () => {
             { value: 'middle', label: 'المرحلة الإعدادية' },
             { value: 'high', label: 'المرحلة الثانوية' },
           ]}
-          placeholder={t('attendanceRequests.educationalStage')}
+          placeholder={t('studentApplications.educationalStage')}
         />
       ),
     },
@@ -203,9 +258,9 @@ const PersonalInterviewsTable: React.FC = () => {
           value={selectedStatus}
           onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
           options={[
-            { value: 'pending', label: t('attendanceRequests.status.editRequested') },
-            { value: 'accepted', label: t('attendanceRequests.status.accepted') },
-            { value: 'rejected', label: t('attendanceRequests.status.notPassed') },
+            { value: 'pending', label: t('studentApplications.status.editRequested') },
+            { value: 'accepted', label: t('studentApplications.status.accepted') },
+            { value: 'rejected', label: t('studentApplications.status.notPassed') },
           ]}
           placeholder={t('common.status')}
         />
@@ -214,13 +269,10 @@ const PersonalInterviewsTable: React.FC = () => {
   ];
 
   return (
-    <Card className="mt-8">
+    <Card>
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-gray-800">
-          {t('attendanceRequests.interviewsTitle')}
-        </h3>
+        <h3 className="text-lg font-bold text-gray-800">{t('studentApplications.title')}</h3>
       </div>
-
       <DataTable
         data={data}
         columns={columns}
@@ -238,4 +290,4 @@ const PersonalInterviewsTable: React.FC = () => {
   );
 };
 
-export default PersonalInterviewsTable;
+export default RegistrationRequestsTable;

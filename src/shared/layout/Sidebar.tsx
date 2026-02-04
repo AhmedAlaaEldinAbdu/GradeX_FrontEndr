@@ -237,8 +237,8 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
         icon: <CustomImage src={PeopleSolidIcon} className="h-6 w-6" alt="Students List" />,
       },
       {
-        key: 'attendanceRequests',
-        path: '/attendance-requests',
+        key: 'studentApplications',
+        path: '/student-applications',
         icon: <CustomImage src={ReportIcon} className="h-6 w-6" alt="Requests" />,
       },
       {
