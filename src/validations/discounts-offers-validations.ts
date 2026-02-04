@@ -1,10 +1,21 @@
 import * as yup from 'yup';
-import { OfferApplyOn } from '@/shared/enums/enums';
+import { OfferApplyOn, OfferField, OfferOperator } from '@/shared/enums/enums';
 
 export const DiscountOfferSchema = yup.object().shape({
   id: yup.string().optional(),
   nameAr: yup.string().required('common.validation.required').trim(),
   nameEn: yup.string().required('common.validation.required').trim(),
+  field: yup
+    .number()
+    .oneOf(Object.values(OfferField) as number[], 'common.validation.required')
+    .typeError('common.validation.required')
+    .required('common.validation.required'),
+  operator: yup
+    .number()
+    .oneOf(Object.values(OfferOperator) as number[], 'common.validation.required')
+    .typeError('common.validation.required')
+    .required('common.validation.required'),
+  value: yup.mixed().required('common.validation.required'),
   applyOn: yup
     .number()
     .oneOf(Object.values(OfferApplyOn) as number[], 'common.validation.required')
