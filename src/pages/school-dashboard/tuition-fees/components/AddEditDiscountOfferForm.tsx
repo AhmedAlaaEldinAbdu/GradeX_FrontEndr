@@ -8,10 +8,17 @@ import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 import ToggleSwitch from '@/shared/components/ToggleSwitch';
 import CustomCheckbox from '@/shared/components/CustomCheckbox';
+import CustomSelect from '@/shared/components/CustomSelect';
 import PercentIcon from '@/assets/icons/Percent.svg';
 import GreenPlusIcon from '@/assets/icons/GreenPlus.svg';
 import { validateDiscountOffers } from '@/validations/discounts-offers-validations';
-import { OfferApplyOn } from '@/shared/enums/enums';
+import {
+  OfferApplyOn,
+  OfferField,
+  OfferOperator,
+  type OfferField as OfferFieldType,
+  type OfferOperator as OfferOperatorType,
+} from '@/shared/enums/enums';
 
 export type DiscountType = 'value' | 'percentage';
 
@@ -26,6 +33,9 @@ export type DiscountOfferFormValues = {
   isActive: boolean;
   matchAllConditions: boolean;
   applyOn: OfferApplyOn;
+  field: OfferFieldType;
+  operator: OfferOperatorType;
+  value: any;
 };
 
 type AddEditDiscountOfferFormMode = 'add' | 'edit';
@@ -48,6 +58,9 @@ const createEmptyOffer = (): DiscountOfferFormValues => ({
   isActive: true,
   matchAllConditions: true,
   applyOn: OfferApplyOn.TuitionFees,
+  field: OfferField.AlwaysTrue,
+  operator: OfferOperator.Equals,
+  value: 'true',
 });
 
 export default function AddEditDiscountOfferForm({
@@ -59,6 +72,81 @@ export default function AddEditDiscountOfferForm({
 }: AddEditDiscountOfferFormProps) {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
+
+  const offerFieldKeyMap = useMemo(
+    () =>
+      ({
+        StudentId: 'student',
+        GradeId: 'grade',
+        StageId: 'stage',
+        ClassroomId: 'classroom',
+        IsNewStudent: 'isNewStudent',
+        HasSibling: 'hasSibling',
+        SiblingsCount: 'siblingsCount',
+        Gender: 'gender',
+        NationalityId: 'nationality',
+        BirthYear: 'birthYear',
+        TuitionAmount: 'tuitionAmount',
+        ApplicationFeesAmount: 'applicationFeesAmount',
+        RemainingAmount: 'remainingAmount',
+        InstallmentsCount: 'installmentsCount',
+        IsInstallment: 'isInstallment',
+        PaidAmount: 'paidAmount',
+        PaidServiceId: 'paidService',
+        PaymentMethodId: 'paymentMethod',
+        PaymentMethodType: 'paymentMethodType',
+        PaymentDate: 'paymentDate',
+        DueDate: 'dueDate',
+        IsFullPayment: 'isFullPayment',
+        IsEarlyPayment: 'isEarlyPayment',
+        AlwaysTrue: 'alwaysTrue',
+      }) as const,
+    []
+  );
+
+  const offerFieldOptions = useMemo(() => {
+    return (Object.entries(OfferField) as Array<[keyof typeof OfferField, number]>)
+      .slice()
+      .sort((a, b) => a[1] - b[1])
+      .map(([enumKey, value]) => {
+        const mappedKey = offerFieldKeyMap[enumKey];
+        const label = mappedKey
+          ? t(`fees.discounts.form.offerField.${mappedKey}`)
+          : String(enumKey);
+
+        return { label, value: String(value) };
+      });
+  }, [offerFieldKeyMap, t, i18n.language]);
+
+  const offerOperatorKeyMap = useMemo(
+    () =>
+      ({
+        Equals: 'equals',
+        NotEquals: 'notEquals',
+        GreaterThan: 'greaterThan',
+        GreaterThanOrEqual: 'greaterThanOrEqual',
+        LessThan: 'lessThan',
+        LessThanOrEqual: 'lessThanOrEqual',
+        In: 'in',
+        NotIn: 'notIn',
+        Between: 'between',
+      }) as const,
+    []
+  );
+
+  const offerOperatorOptions = useMemo(() => {
+    return (Object.entries(OfferOperator) as Array<[keyof typeof OfferOperator, number]>)
+      .slice()
+      .sort((a, b) => a[1] - b[1])
+      .map(([enumKey, value]) => {
+        const mappedKey = offerOperatorKeyMap[enumKey];
+        const label = mappedKey
+          ? t(`fees.discounts.form.offerOperator.${mappedKey}`)
+          : String(enumKey);
+
+        return { label, value: String(value) };
+      });
+  }, [offerOperatorKeyMap, t, i18n.language]);
 
   const canAddMore = mode === 'add';
 
@@ -363,6 +451,70 @@ export default function AddEditDiscountOfferForm({
                       onChange={(next) => updateOffer(idx, { matchAllConditions: next })}
                     />
                   </div>
+
+                  <section>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="grid flex-1 grid-cols-1 gap-5 md:grid-cols-2">
+                        <FormField
+                          label={t('fees.discounts.form.conditionOperatorLabel')}
+                          required
+                          error={offerErrors.operator}
+                        >
+                          <CustomSelect
+                            value={String(offer.operator)}
+                            onChange={(value) =>
+                              updateOffer(idx, {
+                                operator: Number(value) as OfferOperatorType,
+                              })
+                            }
+                            options={offerOperatorOptions}
+                            placeholder={t('common.choose')}
+                            error={!!offerErrors.operator}
+                          />
+                        </FormField>
+
+                        <FormField
+                          label={t('fees.discounts.form.conditionFieldLabel')}
+                          required
+                          error={offerErrors.field}
+                        >
+                          <CustomSelect
+                            value={String(offer.field)}
+                            onChange={(value) =>
+                              updateOffer(idx, {
+                                field: Number(value) as OfferFieldType,
+                              })
+                            }
+                            options={offerFieldOptions}
+                            placeholder={t('common.choose')}
+                            error={!!offerErrors.field}
+                          />
+                        </FormField>
+
+                        <FormField
+                          label={t('fees.discounts.form.valueLabel')}
+                          required
+                          error={offerErrors.value}
+                        >
+                          <Input
+                            value={offer.value === null || offer.value === undefined ? '' : String(offer.value)}
+                            onChange={(e) => updateOffer(idx, { value: e.target.value })}
+                            placeholder={t('common.enterValue')}
+                          />
+                        </FormField>
+                      </div>
+                      {canAddMore && (
+                        <button
+                          type="button"
+                          onClick={addOffer}
+                          className="flex items-center gap-2"
+                          aria-label={t('fees.discounts.form.addAnother')}
+                        >
+                          <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Add" />
+                        </button>
+                      )}
+                    </div>
+                  </section>
                 </div>
 
                 {canRemove ? (
