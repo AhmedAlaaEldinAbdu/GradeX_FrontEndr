@@ -579,6 +579,30 @@
     "chooseStartDate": "Select start date",
     "chooseEndDate": "Select end date"
   },
+  "attendanceRequests": {
+    "title": "Registration Requests",
+    "interviewsTitle": "Personal Interviews",
+    "educationalStage": "Educational Stage",
+    "previousSchool": "Previous School Name",
+    "grade": "Class/Grade",
+    "interviewDate": "Interview Date",
+    "searchPlaceholder": "Search by student name",
+    "educationalStagesLabel": "Educational Stages",
+    "status": {
+      "accepted": "Accepted",
+      "notPassed": "Not Passed",
+      "waitingInterview": "Waiting for Interview",
+      "editRequested": "Edit Requested",
+      "modified": "Modified",
+      "completed": "Completed"
+    },
+    "actions": {
+      "accept": "Accept",
+      "sendEditRequest": "Send Edit Request",
+      "scheduleAppointment": "Schedule Appointment",
+      "notPassed": "Not Passed"
+    }
+  },
   "students": {
     "title": "Students",
     "details": {

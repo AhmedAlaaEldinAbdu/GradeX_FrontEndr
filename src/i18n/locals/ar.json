@@ -578,6 +578,30 @@
     "chooseStartDate": "اختر تاريخ بداية التسجيل",
     "chooseEndDate": "اختر تاريخ نهاية التسجيل"
   },
+  "attendanceRequests": {
+    "title": "طلبات التقديم",
+    "interviewsTitle": "المقابلات الشخصية",
+    "educationalStage": "المرحلة التعليمية",
+    "previousSchool": "اسم المدرسة السابق",
+    "grade": "الصف الدراسية",
+    "interviewDate": "تاريخ المقابلة",
+    "searchPlaceholder": "ابحث عن اسم الطالب",
+    "educationalStagesLabel": "المراحل الدراسية",
+    "status": {
+      "accepted": "تم قبول",
+      "notPassed": "لم يجتاز",
+      "waitingInterview": "في إنتظار التوقيع",
+      "editRequested": "طلب تعديل",
+      "modified": "تم التعديل",
+      "completed": "إكتمل"
+    },
+    "actions": {
+      "accept": "قبول",
+      "sendEditRequest": "إرسال طلب تعديل",
+      "scheduleAppointment": "تحديد موعد",
+      "notPassed": "لم يجتاز"
+    }
+  },
   "students": {
     "title": "الطلاب",
     "details": {
