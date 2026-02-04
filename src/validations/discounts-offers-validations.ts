@@ -1,9 +1,14 @@
 import * as yup from 'yup';
+import { OfferApplyOn } from '@/shared/enums/enums';
 
 export const DiscountOfferSchema = yup.object().shape({
   id: yup.string().optional(),
   nameAr: yup.string().required('common.validation.required').trim(),
   nameEn: yup.string().required('common.validation.required').trim(),
+  applyOn: yup
+    .number()
+    .oneOf(Object.values(OfferApplyOn) as number[], 'common.validation.required')
+    .required('common.validation.required'),
   discountType: yup.mixed<'value' | 'percentage'>().oneOf(['value', 'percentage']).required(),
   discountValue: yup
     .number()
@@ -26,6 +31,7 @@ export const DiscountOfferSchema = yup.object().shape({
       }
     ),
   isActive: yup.boolean().required(),
+  matchAllConditions: yup.boolean().required('common.validation.required'),
 });
 
 export type DiscountOfferValidation = yup.InferType<typeof DiscountOfferSchema>;

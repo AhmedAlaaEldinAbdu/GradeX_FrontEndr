@@ -26,6 +26,8 @@ export const offerDtoToFormValues = (o: OfferDto): DiscountOfferFormValues => {
         startDate: toInputDate(o.startDate),
         endDate: toInputDate(o.endDate),
         isActive: !!o.isActive,
+        matchAllConditions: o.matchAllConditions ?? true,
+        applyOn: (o.applyOn ?? OfferApplyOn.TuitionFees) as OfferApplyOn,
     };
 };
 
@@ -58,11 +60,15 @@ export const formValuesToOfferPayload = (
         offerType: base?.offerType ?? 1,
         amount: form.discountType === 'value' ? numericValue : 0,
         percentage: form.discountType === 'percentage' ? numericValue : 0,
-        applyOn: base?.applyOn ?? OfferApplyOn.TuitionFees,
+        applyOn:
+            (form.applyOn ?? (base?.applyOn ?? OfferApplyOn.TuitionFees)) as unknown as number,
         startDate: form.startDate ? toIsoDateTime(form.startDate) : base?.startDate ?? '',
         endDate: form.endDate ? toIsoDateTime(form.endDate) : base?.endDate ?? '',
         isActive: !!form.isActive,
-        matchAllConditions: base?.matchAllConditions ?? true,
+        matchAllConditions:
+            typeof form.matchAllConditions === 'boolean'
+                ? form.matchAllConditions
+                : (base?.matchAllConditions ?? true),
         conditions,
     };
 };
