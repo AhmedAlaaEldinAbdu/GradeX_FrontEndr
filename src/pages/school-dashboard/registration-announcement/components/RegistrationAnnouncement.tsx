@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Card from '@gradex/shared/components/Card';
 import EmptyState from '@gradex/shared/components/EmptyState';
 import Table from '@gradex/shared/components/Table';
@@ -20,6 +21,7 @@ interface Announcement {
 
 export default function RegistrationAnnouncement() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [hasAnnouncements] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
@@ -120,9 +122,16 @@ export default function RegistrationAnnouncement() {
     },
     {
       header: 'common.actions',
-      accessor: () => (
+      accessor: (row: Announcement) => (
         <div className="flex items-center gap-2">
-          <IconButton status="edit" variant="success" ariaLabel="Edit" />
+          <IconButton
+            status="edit"
+            variant="success"
+            ariaLabel="Edit"
+            onClick={() =>
+              navigate(`/registration-announcement/edit-registration-announcement/${row.id}`)
+            }
+          />
           <IconButton status="delete" variant="danger" ariaLabel="Delete" />
         </div>
       ),
