@@ -24,7 +24,7 @@
     "users": "Users",
     "studentManagement": "Student Management",
     "students": "Students",
-    "attendanceRequests": "Attendance Requests",
+    "studentApplications": "Student Applications",
     "registrationAnnouncement": "Registration Announcement",
     "examResults": "Exam Results",
     "attendance": "Attendance",
@@ -104,6 +104,7 @@
     "processing": "Processing...",
     "showAll": "Show All",
     "notAvailable": "Not Available",
+    "status": "Status",
     "all": "All",
     "validation": {
       "required": "this field is required",
@@ -151,7 +152,9 @@
     "searching": "Searching...",
     "loadingData": "Loading data...",
     "saving": "Saving...",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "status": "Status",
+    "actions": "Actions"
   },
   "login": {
     "title": "Sign In",
@@ -579,8 +582,8 @@
     "chooseStartDate": "Select start date",
     "chooseEndDate": "Select end date"
   },
-  "attendanceRequests": {
-    "title": "Registration Requests",
+  "studentApplications": {
+    "title": "Student Applications",
     "interviewsTitle": "Personal Interviews",
     "educationalStage": "Educational Stage",
     "previousSchool": "Previous School Name",
@@ -598,7 +601,7 @@
     },
     "actions": {
       "accept": "Accept",
-      "sendEditRequest": "Send Edit Request",
+      "sendEditRequest": "Edit Request",
       "scheduleAppointment": "Schedule Appointment",
       "notPassed": "Not Passed"
     }

@@ -24,7 +24,7 @@
     "users": "المستخدمين",
     "studentManagement": "إدارة الطلاب",
     "students": "الطلاب",
-    "attendanceRequests": "طلبات التقديم",
+    "studentApplications": "طلبات التقديم",
     "registrationAnnouncement": "إعلان التسجيل",
     "examResults": "نتائج الاختبارات",
     "attendance": "الحضور والإنصراف",
@@ -105,6 +105,7 @@
     "showAll": "عرض الكل",
     "notAvailable": "غير متاح",
     "all": "الكل",
+    "status": "الحالة",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
@@ -151,7 +152,9 @@
     "searching": "جاري البحث...",
     "loadingData": "جاري تحميل البيانات...",
     "saving": "جاري الحفظ...",
-    "loading": "جاري التحميل..."
+    "loading": "جاري التحميل...",
+    "status": "الحالة",
+    "actions": "الإجراءات"
   },
   "login": {
     "title": "تسجيل الدخول",
@@ -578,7 +581,7 @@
     "chooseStartDate": "اختر تاريخ بداية التسجيل",
     "chooseEndDate": "اختر تاريخ نهاية التسجيل"
   },
-  "attendanceRequests": {
+  "studentApplications": {
     "title": "طلبات التقديم",
     "interviewsTitle": "المقابلات الشخصية",
     "educationalStage": "المرحلة التعليمية",
