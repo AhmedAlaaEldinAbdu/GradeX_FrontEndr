@@ -1315,7 +1315,7 @@
     "discounts": {
       "tabTitle": "Discounts & Offers",
       "addAction": "Add Offer",
-      "modal": {
+      "form": {
         "addTitle": "Add Offer",
         "editTitle": "Edit Offer",
         "sectionTitle": "Offers",
@@ -1333,7 +1333,13 @@
         "endDateLabel": "Offer end date",
         "statusLabel": "Offer status",
         "statusHint": "When activated, the offer will be visible to all users.",
-        "invalidEndDate": "End date must be after start date"
+        "invalidEndDate": "End date must be after start date",
+        "matchAllConditions": "Match all conditions to apply the offer",
+        "applyOnLabel": "Apply offer on",
+        "applyOn": {
+          "applicationFees": "Application fees",
+          "tuitionFees": "Tuition fees"
+        }
       },
       "filters": {
         "searchPlaceholder": "Search by offer name",
@@ -1352,12 +1358,6 @@
           "status": "Offer status",
           "actions": "Actions"
         }
-      },
-      "mock": {
-        "siblingsOffer": "Siblings offer",
-        "siblingsOfferDiscount": "SAR 1000",
-        "earlyPaymentOffer": "Early payment offer",
-        "earlyPaymentOfferDiscount": "8%"
       }
     }
   },

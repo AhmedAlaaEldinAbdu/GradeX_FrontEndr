@@ -1248,8 +1248,8 @@
   "fees": {
     "title": "الرسوم",
     "totalExpenses": "الإجمالي المصروفات",
-        "tuitionAmountLabel": "الرسوم الدراسية",
-        "tuitionAmountPlaceholder": "اكتب الرسوم الدراسية للمرحلة",
+    "tuitionAmountLabel": "الرسوم الدراسية",
+    "tuitionAmountPlaceholder": "اكتب الرسوم الدراسية للمرحلة",
     "installmentPlan": "خطة تقسيط",
     "months": "شهور",
     "discount": "الخصم",
@@ -1313,7 +1313,7 @@
     "discounts": {
       "tabTitle": "الخصومات والعروض",
       "addAction": "إضافة عرض",
-      "modal": {
+      "form": {
         "addTitle": "إضافة عرض",
         "editTitle": "تعديل عرض",
         "sectionTitle": "العروض",
@@ -1331,7 +1331,13 @@
         "endDateLabel": "تاريخ نهاية العرض",
         "statusLabel": "حالة العرض",
         "statusHint": "في حالة تنشيط العرض سيظهر لجميع المستخدمين",
-        "invalidEndDate": "تاريخ نهاية العرض يجب أن يكون بعد تاريخ البداية"
+        "invalidEndDate": "تاريخ نهاية العرض يجب أن يكون بعد تاريخ البداية",
+        "matchAllConditions": "يجب استيفاء جميع الشروط لتطبيق العرض",
+        "applyOnLabel": "تطبيق العرض على",
+        "applyOn": {
+          "applicationFees": "رسوم التقديم",
+          "tuitionFees": "الرسوم الدراسية"
+        }
       },
       "filters": {
         "searchPlaceholder": "ابحث عن اسم العرض",
