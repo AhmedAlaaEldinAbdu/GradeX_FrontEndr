@@ -1,0 +1,293 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
+import IconButton from '@/shared/components/IconButton';
+import Card from '@gradex/shared/components/Card';
+import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
+import CustomImage from '@/shared/components/CustomImage';
+import CustomSelect from '@/shared/components/CustomSelect';
+import CheckIcon from '@gradex/assets/icons/Check.svg';
+import EditIcon from '@gradex/assets/icons/Edit.svg';
+import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
+import CloseIcon from '@gradex/assets/icons/BigTrash.svg'; // TOOD: Change Icon.
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+
+interface RegistrationRequest {
+  id: string;
+  studentName: string;
+  studentImage?: string;
+  educationalStage: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'interview_scheduled';
+  previousSchool: string;
+}
+
+const RegistrationRequestsTable: React.FC = () => {
+  const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStage, setSelectedStage] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+
+  // Mock data matching the style of other components (Arabic)
+  const data: RegistrationRequest[] = [
+    {
+      id: '1',
+      studentName: 'أحمد معتز حامد', // Arabic Name
+      studentImage: 'https://i.pravatar.cc/150?u=1',
+      educationalStage: 'المرحلة الابتدائية', // Arabic Stage
+      status: 'pending',
+      previousSchool: 'مدرسة الرشيد', // Arabic School Name
+    },
+    {
+      id: '2',
+      studentName: 'سارة أحمد علي',
+      studentImage: 'https://i.pravatar.cc/150?u=2',
+      educationalStage: 'المرحلة الثانوية',
+      status: 'rejected',
+      previousSchool: 'مدرسة النور',
+    },
+    {
+      id: '3',
+      studentName: 'محمد خالد ابراهيم',
+      studentImage: 'https://i.pravatar.cc/150?u=3',
+      educationalStage: 'المرحلة الإعدادية',
+      status: 'rejected',
+      previousSchool: 'مدرسة المستقبل',
+    },
+    {
+      id: '4',
+      studentName: 'يوسف عمر حسن',
+      studentImage: 'https://i.pravatar.cc/150?u=4',
+      educationalStage: 'رياض الأطفال',
+      status: 'interview_scheduled',
+      previousSchool: '-- top --',
+    },
+    {
+      id: '5',
+      studentName: 'فاطمة الزهراء',
+      studentImage: 'https://i.pravatar.cc/150?u=5',
+      educationalStage: 'المرحلة الابتدائية',
+      status: 'accepted',
+      previousSchool: 'مدرسة التفوق',
+    },
+    {
+      id: '6',
+      studentName: 'محمود سامي',
+      studentImage: 'https://i.pravatar.cc/150?u=6',
+      educationalStage: 'المرحلة الابتدائية',
+      status: 'interview_scheduled',
+      previousSchool: 'مدرسة السلام',
+    },
+  ];
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'accepted':
+        return (
+          <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+            {t('attendanceRequests.status.accepted')}
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+            {t('attendanceRequests.status.notPassed')}
+          </span>
+        );
+      case 'interview_scheduled':
+        return (
+          <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
+            {t('attendanceRequests.status.waitingInterview')}
+          </span>
+        );
+      case 'pending':
+        return (
+          <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
+            {t('attendanceRequests.status.editRequested')}
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const columns: DataTableColumn<RegistrationRequest>[] = [
+    {
+      header: '#',
+      accessor: (_row, index) => (
+        <span className="font-medium text-gray-500">{(index || 0) + 1}</span>
+      ),
+      headerClassName: 'w-[50px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'studentManagement.studentName',
+      accessor: (row) => (
+        <div className="flex items-center gap-3">
+          <CustomImage
+            src={row.studentImage || ''}
+            alt={row.studentName}
+            className="h-10 w-10 rounded-full border border-gray-100 object-cover"
+          />
+          <span className="font-medium text-gray-900">{row.studentName}</span>
+          <IconButton
+            variant="blue"
+            ariaLabel="View"
+            onClick={() => console.log('View', row.id)}
+            className="h-8 w-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
+          >
+            <CustomImage src={EyeStyledIcon} className="h-4 w-4" alt="View" />
+          </IconButton>
+        </div>
+      ),
+      headerClassName: 'min-w-[200px]',
+    },
+    {
+      header: 'attendanceRequests.educationalStage',
+      accessor: (row) => <span>{row.educationalStage}</span>,
+      headerClassName: 'min-w-[150px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'common.status',
+      accessor: (row) => getStatusBadge(row.status),
+      headerClassName: 'min-w-[150px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'attendanceRequests.previousSchool',
+      accessor: (row) => <span>{row.previousSchool}</span>,
+      headerClassName: 'min-w-[150px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'common.actions',
+      accessor: (row) => {
+        const actions: Action[] = [
+          {
+            id: 'accept',
+            label: t('attendanceRequests.actions.accept'),
+            icon: CheckIcon,
+            onClick: () => console.log('Accept', row.id),
+            color: 'text-green-600 hover:bg-green-50',
+          },
+          {
+            id: 'editRequest',
+            label: t('attendanceRequests.actions.sendEditRequest'),
+            icon: EditIcon,
+            onClick: () => console.log('Edit Request', row.id),
+            color: 'text-blue-600 hover:bg-blue-50',
+          },
+          {
+            id: 'schedule',
+            label: t('attendanceRequests.actions.scheduleAppointment'),
+            icon: CalendarIcon,
+            onClick: () => console.log('Schedule', row.id),
+            color: 'text-gray-700 hover:bg-gray-50',
+          },
+          {
+            id: 'notPassed',
+            label: t('attendanceRequests.actions.notPassed'),
+            icon: CloseIcon,
+            onClick: () => console.log('Not Passed', row.id),
+            color: 'text-red-600 hover:bg-red-50',
+          },
+        ];
+
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <ActionsDropdown actions={actions} />
+          </div>
+        );
+      },
+      headerClassName: 'min-w-[100px] text-center',
+      className: 'text-center',
+    },
+  ];
+
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'search',
+      name: 'search',
+      placeholder: t('attendanceRequests.searchPlaceholder'),
+      value: searchTerm,
+      onChange: (value) => setSearchTerm(value as string),
+      width: '25%',
+    },
+    {
+      type: 'custom',
+      name: 'stage-filter',
+      value: selectedStage,
+      onChange: () => {},
+      width: '25%',
+      customComponent: (
+        <CustomSelect
+          value={selectedStage}
+          onChange={(value) => setSelectedStage(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={[
+            { value: 'primary', label: 'المرحلة الابتدائية' },
+            { value: 'middle', label: 'المرحلة الإعدادية' },
+            { value: 'high', label: 'المرحلة الثانوية' },
+          ]}
+          placeholder={t('attendanceRequests.educationalStage')}
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'class-filter',
+      value: '',
+      onChange: () => {},
+      width: '25%',
+      customComponent: (
+        <CustomSelect
+          value=""
+          onChange={() => {}}
+          options={[]}
+          placeholder={t('sidebar.classes')}
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'status-filter',
+      value: selectedStatus,
+      onChange: () => {},
+      width: '25%',
+      customComponent: (
+        <CustomSelect
+          value={selectedStatus}
+          onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={[
+            { value: 'pending', label: t('attendanceRequests.status.editRequested') },
+            { value: 'accepted', label: t('attendanceRequests.status.accepted') },
+            { value: 'rejected', label: t('attendanceRequests.status.notPassed') },
+          ]}
+          placeholder={t('common.status')}
+        />
+      ),
+    },
+  ];
+
+  return (
+    <Card>
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-bold text-gray-800">{t('attendanceRequests.title')}</h3>
+      </div>
+      <DataTable
+        data={data}
+        columns={columns}
+        keyExtractor={(row) => row.id}
+        filters={filterConfigs}
+        showFilters={true}
+        onResetFilters={() => {
+          setSearchTerm('');
+          setSelectedStage('');
+          setSelectedStatus('');
+        }}
+        t={t}
+      />
+    </Card>
+  );
+};
+
+export default RegistrationRequestsTable;
