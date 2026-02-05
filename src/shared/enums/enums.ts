@@ -34,13 +34,13 @@ export type State = typeof State[keyof typeof State];
 
 
 export const Days = {
-    Sunday: 1,
-    Monday: 2,
-    Tuesday: 3,
-    Wednesday: 4,
-    Thursday: 5,
-    Friday: 6,
-    Saturday: 7
+  Sunday: 1,
+  Monday: 2,
+  Tuesday: 3,
+  Wednesday: 4,
+  Thursday: 5,
+  Friday: 6,
+  Saturday: 7
 } as const;
 export type Days = typeof Days[keyof typeof Days];
 
@@ -105,7 +105,7 @@ export const OfferField = {
   IsFullPayment: 94,
   IsEarlyPayment: 95,
 
-  AlwaysTrue: 200,
+  AlwaysTrue: 200, // عرض عام بدون شروط
 } as const;
 export type OfferField = typeof OfferField[keyof typeof OfferField];
 
