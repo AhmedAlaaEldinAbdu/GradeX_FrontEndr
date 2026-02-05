@@ -10,6 +10,8 @@ import DataTable, {
 import IconButton from '@/shared/components/IconButton';
 import SearchInput from '@/shared/components/SearchInput';
 import ToggleSwitch from '@/shared/components/ToggleSwitch';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import BigTrashIcon from '@/assets/icons/BigTrash.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import { useToast } from '@/shared/context/ToastContext';
@@ -50,6 +52,9 @@ export default function DiscountsAndOffersTab() {
   const [status, setStatus] = useState<OfferStatusFilter>('all');
   const [page, setPage] = useState(1);
   const limit = 10;
+
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const statusOptions = useMemo<CustomSelectOption[]>(
     () => [
@@ -113,13 +118,13 @@ export default function DiscountsAndOffersTab() {
   const getRowName = (row: DiscountOfferRow) =>
     (currentLang === 'ar' ? row.nameAr : row.nameEn) || row.nameAr || row.nameEn;
 
-  const buildPayload = (form: DiscountOfferFormValues, base?: OfferDto) =>
-    formValuesToOfferPayload(schoolBranchId, form, base);
-
   const findOfferById = (id: string | null | undefined) => {
     if (!id) return undefined;
     return (offers ?? []).find((o) => o.id === id);
   };
+
+  const buildPayload = (form: DiscountOfferFormValues, base?: OfferDto) =>
+    formValuesToOfferPayload(schoolBranchId, form, base);
 
   const total = pagination?.totalItems ?? rows.length;
   const totalPages = Math.max(1, pagination?.totalPages ?? Math.ceil(total / limit));
@@ -195,22 +200,9 @@ export default function DiscountsAndOffersTab() {
             <IconButton
               status="delete"
               ariaLabel={t('actions.delete')}
-              onClick={async () => {
-                try {
-                  await dispatch(deleteOffer(row.id)).unwrap();
-                  showToast({ message: t('common.success'), type: 'success' });
-                  dispatch(
-                    fetchOffers({
-                      SchoolBranchId: schoolBranchId,
-                      Search: search || undefined,
-                      IsActive: status === 'all' ? undefined : status === 'active',
-                      PageIndex: page,
-                      PageSize: limit,
-                    })
-                  );
-                } catch (e) {
-                  showToast({ message: t('common.error'), type: 'error' });
-                }
+              onClick={() => {
+                setPendingDeleteId(row.id);
+                setIsDeletePopupOpen(true);
               }}
             />
             <IconButton
@@ -286,6 +278,28 @@ export default function DiscountsAndOffersTab() {
     setPage(1);
   };
 
+  const handleDeleteConfirm = async () => {
+    if (!pendingDeleteId) return;
+    try {
+      await dispatch(deleteOffer(pendingDeleteId)).unwrap();
+      setIsDeletePopupOpen(false);
+      setPendingDeleteId(null);
+      showToast({ message: t('fees.discounts.messages.deleteSuccess'), type: 'success' });
+      dispatch(
+        fetchOffers({
+          SchoolBranchId: schoolBranchId,
+          Search: search || undefined,
+          IsActive: status === 'all' ? undefined : status === 'active',
+          PageIndex: page,
+          PageSize: limit,
+        })
+      );
+    } catch {
+      showToast({ message: t('common.error'), type: 'error' });
+      setIsDeletePopupOpen(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <Card className="rounded-2xl" padding="lg">
@@ -318,6 +332,22 @@ export default function DiscountsAndOffersTab() {
           t={t}
         />
       </Card>
+
+      <DeletePopup
+        open={isDeletePopupOpen}
+        message="fees.discounts.messages.deleteConfirm"
+        itemName={(() => {
+          const base = findOfferById(pendingDeleteId);
+          if (!base) return '';
+          return (currentLang === 'ar' ? base.nameAr : base.nameEn) || base.nameAr || base.nameEn;
+        })()}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => {
+          setIsDeletePopupOpen(false);
+          setPendingDeleteId(null);
+        }}
+        iconSrc={BigTrashIcon}
+      />
     </div>
   );
 }

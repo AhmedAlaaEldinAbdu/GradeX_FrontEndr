@@ -1,9 +1,10 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import {
@@ -17,6 +18,8 @@ import AddEditDiscountOfferForm, {
   type DiscountOfferFormValues,
 } from './components/AddEditDiscountOfferForm';
 import { offerDtoToFormValues, formValuesToOfferPayload } from './utils/discount-offer-mappers';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 export default function EditDiscountOfferPage() {
   const { t } = useTranslation();
@@ -24,6 +27,13 @@ export default function EditDiscountOfferPage() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+    isRaw: boolean;
+  }>({ show: false, type: 'success', message: '', isRaw: false });
 
   const { offerDetails, isLoadingDetails } = useAppSelector((state) => state.offers);
 
@@ -72,19 +82,47 @@ export default function EditDiscountOfferPage() {
             }
 
             const o = offers[0];
-            await dispatch(
-              updateOffer({
-                id,
-                ...formValuesToOfferPayload(schoolBranchId, o, base),
-              })
-            ).unwrap();
+            try {
+              await dispatch(
+                updateOffer({
+                  id,
+                  ...formValuesToOfferPayload(schoolBranchId, o, base),
+                })
+              ).unwrap();
 
-            showToast({ message: t('common.success'), type: 'success' });
-            dispatch(fetchOffers({ SchoolBranchId: schoolBranchId, PageIndex: 1, PageSize: 10 }));
-            navigate('/fees?tab=discounts');
+              dispatch(
+                fetchOffers({ SchoolBranchId: schoolBranchId, PageIndex: 1, PageSize: 10 })
+              );
+              setShowPopupMessage({
+                show: true,
+                type: 'success',
+                message: 'fees.discounts.messages.editSuccess',
+                isRaw: false,
+              });
+            } catch {
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: 'common.errorOccurred',
+                isRaw: false,
+              });
+            }
           }}
         />
       </Card>
+
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isRaw}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        autoClose={showPopupMessage.type === 'success'}
+        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+        navigateAfterClose={
+          showPopupMessage.type === 'success' ? '/fees?tab=discounts' : undefined
+        }
+      />
     </div>
   );
 }
