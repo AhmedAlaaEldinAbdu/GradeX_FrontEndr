@@ -1302,6 +1302,12 @@
       "addAction": "Add Tuition Fees",
       "emptyTitle": "No tuition fees yet.",
       "emptyDescription": "Start by adding tuition fees to organize fee management better.",
+      "messages": {
+        "addSuccess": "Tuition fees added successfully",
+        "editSuccess": "Tuition fees updated successfully",
+        "deleteConfirm": "Are you sure you want to delete the tuition fees?",
+        "deleteSuccess": "Tuition fees deleted successfully"
+      },
       "form": {
         "stageLabel": "Educational Stage",
         "stagePlaceholder": "Choose educational stage",
@@ -1342,6 +1348,12 @@
     "discounts": {
       "tabTitle": "Discounts & Offers",
       "addAction": "Add Offer",
+      "messages": {
+        "addSuccess": "Offer added successfully",
+        "editSuccess": "Offer updated successfully",
+        "deleteConfirm": "Are you sure you want to delete the offer?",
+        "deleteSuccess": "Offer deleted successfully"
+      },
       "form": {
         "addTitle": "Add Offer",
         "editTitle": "Edit Offer",
