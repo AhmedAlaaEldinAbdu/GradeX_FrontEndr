@@ -215,12 +215,6 @@ const PersonalInterviewsTable: React.FC = () => {
 
   return (
     <Card className="mt-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-gray-800">
-          {t('studentApplications.interviewsTitle')}
-        </h3>
-      </div>
-
       <DataTable
         data={data}
         columns={columns}
