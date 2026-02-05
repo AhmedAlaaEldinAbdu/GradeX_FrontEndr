@@ -2,7 +2,7 @@ import React from 'react';
 import CustomImage from '@/shared/components/CustomImage';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'info' | 'success';
   size?: 'sm' | 'md' | 'lg';
   icon?: React.ReactNode;
   imgSrc?: string;
@@ -32,6 +32,9 @@ const Button: React.FC<ButtonProps> = ({
     outline:
       'bg-white text-green-500 border-2 border-green-500 hover:bg-green-100 active:bg-green-800',
     danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm hover:shadow-md',
+    info: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm hover:shadow-md',
+    success:
+      'bg-green-800 text-white hover:bg-green-900 active:bg-green-950 shadow-sm hover:shadow-md',
   };
 
   const sizes = {
