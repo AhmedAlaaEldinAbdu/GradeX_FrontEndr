@@ -1432,7 +1432,7 @@
           "dueDate": "تاريخ الاستحقاق",
           "isFullPayment": "دفع كامل",
           "isEarlyPayment": "دفع مبكر",
-          "alwaysTrue": "دائمًا صحيح"
+          "alwaysTrue": "عرض عام"
         },
         "offerOperator": {
           "equals": "يساوي",

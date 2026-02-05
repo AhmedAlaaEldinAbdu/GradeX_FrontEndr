@@ -1434,7 +1434,7 @@
           "dueDate": "Due date",
           "isFullPayment": "Full payment",
           "isEarlyPayment": "Early payment",
-          "alwaysTrue": "Always true"
+          "alwaysTrue": "General offer"
         },
         "offerOperator": {
           "equals": "Equals",

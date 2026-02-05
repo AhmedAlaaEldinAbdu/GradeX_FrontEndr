@@ -1,10 +1,7 @@
 import * as yup from 'yup';
 import { OfferApplyOn, OfferField, OfferOperator } from '@/shared/enums/enums';
 
-export const DiscountOfferSchema = yup.object().shape({
-  id: yup.string().optional(),
-  nameAr: yup.string().required('common.validation.required').trim(),
-  nameEn: yup.string().required('common.validation.required').trim(),
+const DiscountOfferConditionSchema = yup.object({
   field: yup
     .number()
     .oneOf(Object.values(OfferField) as number[], 'common.validation.required')
@@ -15,7 +12,18 @@ export const DiscountOfferSchema = yup.object().shape({
     .oneOf(Object.values(OfferOperator) as number[], 'common.validation.required')
     .typeError('common.validation.required')
     .required('common.validation.required'),
-  value: yup.mixed().required('common.validation.required'),
+  value: yup.string().trim().required('common.validation.required'),
+});
+
+export const DiscountOfferSchema = yup.object().shape({
+  id: yup.string().optional(),
+  nameAr: yup.string().required('common.validation.required').trim(),
+  nameEn: yup.string().required('common.validation.required').trim(),
+  conditions: yup
+    .array()
+    .of(DiscountOfferConditionSchema)
+    .min(1, 'common.validation.required')
+    .required('common.validation.required'),
   applyOn: yup
     .number()
     .oneOf(Object.values(OfferApplyOn) as number[], 'common.validation.required')
@@ -69,7 +77,7 @@ export const validateDiscountOffers = async (
       const match = err.path.match(/^\[(\d+)\]\.(.+)$/);
       if (!match) continue;
       const index = Number(match[1]);
-      const field = match[2];
+      const field = match[2].replace(/\[(\d+)\]/g, '.$1');
       if (!errorsByIndex[index]) errorsByIndex[index] = {};
       // keep the first error per field
       if (!errorsByIndex[index][field]) errorsByIndex[index][field] = err.message;

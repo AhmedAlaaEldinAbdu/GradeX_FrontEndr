@@ -17,6 +17,21 @@ export const offerDtoToFormValues = (o: OfferDto): DiscountOfferFormValues => {
     const discountType: DiscountOfferFormValues['discountType'] =
         o.percentage !== null && o.percentage !== undefined ? 'percentage' : 'value';
 
+    const conditions = (o.conditions ?? []).length
+        ? (o.conditions ?? []).map((c) => ({
+            field: c.field as unknown as DiscountOfferFormValues['conditions'][number]['field'],
+            operator:
+                c.operator as unknown as DiscountOfferFormValues['conditions'][number]['operator'],
+            value: c.value === null || c.value === undefined ? '' : String(c.value),
+        }))
+        : [
+            {
+                field: OfferField.AlwaysTrue,
+                operator: OfferOperator.Equals,
+                value: 'true',
+            },
+        ];
+
     return {
         id: o.id,
         nameAr: o.nameAr,
@@ -28,6 +43,7 @@ export const offerDtoToFormValues = (o: OfferDto): DiscountOfferFormValues => {
         isActive: !!o.isActive,
         matchAllConditions: o.matchAllConditions ?? true,
         applyOn: (o.applyOn ?? OfferApplyOn.TuitionFees) as OfferApplyOn,
+        conditions,
     };
 };
 
@@ -38,20 +54,19 @@ export const formValuesToOfferPayload = (
 ) => {
     const numericValue = form.discountValue === '' ? 0 : Number(form.discountValue);
 
-    const conditions =
-        base?.conditions && base.conditions.length > 0
-            ? base.conditions.map((c) => ({
-                field: c.field,
-                operator: c.operator,
-                value: c.value,
-            }))
-            : [
-                {
-                    field: OfferField.AlwaysTrue,
-                    operator: OfferOperator.Equals,
-                    value: 'true',
-                },
-            ];
+    const conditions = (form.conditions ?? []).length
+        ? (form.conditions ?? []).map((c) => ({
+            field: c.field,
+            operator: c.operator,
+            value: c.value,
+        }))
+        : [
+            {
+                field: OfferField.AlwaysTrue,
+                operator: OfferOperator.Equals,
+                value: 'true',
+            },
+        ];
 
     return {
         schoolBranchId: base?.schoolBranchId ?? schoolBranchId,
