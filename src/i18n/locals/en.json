@@ -612,6 +612,30 @@
       "changeAppointment": "Change Appointment",
       "scheduleAppointment": "Schedule Appointment",
       "notPassed": "Not Passed"
+    },
+    "details": {
+      "parentInfo": "Parent Information",
+      "phone": "Phone Number",
+      "email": "Email",
+      "country": "Country",
+      "nationality": "Nationality",
+      "address": "Address",
+      "childInfo": "Child Information",
+      "birthDate": "Birth Date",
+      "previousSchoolName": "Previous School Name",
+      "gradeLevel": "Grade Level",
+      "educationalStage": "Educational Stage",
+      "tuitionFees": "Tuition Fees",
+      "paymentMethod": "Payment Method",
+      "discount": "Discount",
+      "addedFees": "Added Fees",
+      "totalExpenses": "Total Expenses",
+      "attachments": "Attachments",
+      "parentIdDoc": "Parent ID",
+      "vaccinationCert": "Vaccination Certificate",
+      "lastEducationCert": "Last Educational Certificate",
+      "cash": "Cash",
+      "siblings": "Siblings"
     }
   },
   "students": {

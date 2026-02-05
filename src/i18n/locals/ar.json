@@ -611,6 +611,30 @@
       "changeAppointment": "تغيير الموعد",
       "scheduleAppointment": "تحديد موعد",
       "notPassed": "لم يجتاز"
+    },
+    "details": {
+      "parentInfo": "بيانات ولي الأمر",
+      "phone": "رقم الهاتف",
+      "email": "البريد الإلكتروني",
+      "country": "دولة",
+      "nationality": "الجنسية",
+      "address": "العنوان",
+      "childInfo": "بيانات الطفل",
+      "birthDate": "تاريخ الميلاد",
+      "previousSchoolName": "اسم المدرسة السابقة",
+      "gradeLevel": "الصف الدراسي",
+      "educationalStage": "المرحلة التعليمية",
+      "tuitionFees": "المصروفات الدراسية",
+      "paymentMethod": "طريقة الدفع",
+      "discount": "الخصم",
+      "addedFees": "المصروفات المضافة",
+      "totalExpenses": "الإجمالي المصروفات",
+      "attachments": "المرفقات",
+      "parentIdDoc": "هوية ولي الامر",
+      "vaccinationCert": "شهادة التطعيم",
+      "lastEducationCert": "شهادة التعليمية الاخير",
+      "cash": "نقدي",
+      "siblings": "الأخوة"
     }
   },
   "students": {
