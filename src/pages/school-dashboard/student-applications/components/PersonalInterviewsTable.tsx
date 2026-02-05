@@ -225,18 +225,33 @@ const PersonalInterviewsTable: React.FC = () => {
     },
   ];
 
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  const total = data.length;
+  const totalPages = Math.ceil(total / limit);
+
+  const paginatedData = data.slice((page - 1) * limit, page * limit);
+
   return (
     <Card className="mt-8">
       <DataTable
-        data={data}
+        data={paginatedData}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
+        pagination={{
+          page: page,
+          limit: limit,
+          total: total,
+          totalPages: totalPages,
+        }}
+        onPageChange={(newPage) => setPage(newPage)}
         onResetFilters={() => {
           setSearchTerm('');
           setSelectedStage('');
           setSelectedStatus('');
+          setPage(1);
         }}
         t={t}
       />
