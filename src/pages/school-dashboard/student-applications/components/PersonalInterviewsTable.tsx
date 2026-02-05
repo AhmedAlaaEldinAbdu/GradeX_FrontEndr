@@ -18,6 +18,7 @@ interface Interview {
   educationalStage: string;
   grade: string;
   interviewDate: string;
+  interviewTime: string;
 }
 
 const PersonalInterviewsTable: React.FC = () => {
@@ -34,6 +35,7 @@ const PersonalInterviewsTable: React.FC = () => {
       educationalStage: 'المرحلة الابتدائية',
       grade: '1/1', // Class 1/1
       interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '2',
@@ -42,6 +44,7 @@ const PersonalInterviewsTable: React.FC = () => {
       educationalStage: 'المرحلة الثانوية',
       grade: '2/1',
       interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '3',
@@ -50,6 +53,7 @@ const PersonalInterviewsTable: React.FC = () => {
       educationalStage: 'المرحلة الإعدادية',
       grade: '1/1',
       interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '4',
@@ -58,6 +62,7 @@ const PersonalInterviewsTable: React.FC = () => {
       educationalStage: 'رياض الأطفال',
       grade: '1/1',
       interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '5',
@@ -66,6 +71,7 @@ const PersonalInterviewsTable: React.FC = () => {
       educationalStage: 'المرحلة الابتدائية',
       grade: '1/3',
       interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '6',
@@ -74,6 +80,7 @@ const PersonalInterviewsTable: React.FC = () => {
       educationalStage: 'المرحلة الابتدائية',
       grade: '1/1',
       interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
   ];
 
@@ -123,6 +130,12 @@ const PersonalInterviewsTable: React.FC = () => {
     {
       header: 'studentApplications.interviewDate',
       accessor: (row) => <span>{row.interviewDate}</span>,
+      headerClassName: 'min-w-[150px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'studentApplications.interviewTime',
+      accessor: (row) => <span>{row.interviewTime}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
