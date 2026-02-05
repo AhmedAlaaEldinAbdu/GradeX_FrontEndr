@@ -12,6 +12,8 @@ import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
+import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+
 interface RegistrationRequest {
   id: string;
   studentName: string;
@@ -19,6 +21,10 @@ interface RegistrationRequest {
   educationalStage: string;
   status: 'pending' | 'accepted' | 'rejected' | 'interview_scheduled';
   previousSchool: string;
+  applicationDate: string;
+  parentId?: string; // URL or boolean to show icon
+  vaccinationCertificate?: string; // URL or boolean
+  lastEducationCertificate?: string; // URL or boolean
 }
 
 const RegistrationRequestsTable: React.FC = () => {
@@ -36,6 +42,10 @@ const RegistrationRequestsTable: React.FC = () => {
       educationalStage: 'المرحلة الابتدائية', // Arabic Stage
       status: 'pending',
       previousSchool: 'مدرسة الرشيد', // Arabic School Name
+      applicationDate: '22/2/2025',
+      parentId: 'pdf',
+      vaccinationCertificate: 'pdf',
+      lastEducationCertificate: 'pdf',
     },
     {
       id: '2',
@@ -44,6 +54,10 @@ const RegistrationRequestsTable: React.FC = () => {
       educationalStage: 'المرحلة الثانوية',
       status: 'rejected',
       previousSchool: 'مدرسة النور',
+      applicationDate: '22/2/2025',
+      parentId: 'pdf',
+      vaccinationCertificate: 'pdf',
+      lastEducationCertificate: 'pdf',
     },
     {
       id: '3',
@@ -52,6 +66,10 @@ const RegistrationRequestsTable: React.FC = () => {
       educationalStage: 'المرحلة الإعدادية',
       status: 'rejected',
       previousSchool: 'مدرسة المستقبل',
+      applicationDate: '22/2/2025',
+      parentId: 'pdf',
+      vaccinationCertificate: 'pdf',
+      lastEducationCertificate: 'pdf',
     },
     {
       id: '4',
@@ -60,6 +78,10 @@ const RegistrationRequestsTable: React.FC = () => {
       educationalStage: 'رياض الأطفال',
       status: 'interview_scheduled',
       previousSchool: '-- top --',
+      applicationDate: '22/2/2025',
+      parentId: 'pdf',
+      vaccinationCertificate: 'pdf',
+      lastEducationCertificate: 'pdf',
     },
     {
       id: '5',
@@ -68,6 +90,10 @@ const RegistrationRequestsTable: React.FC = () => {
       educationalStage: 'المرحلة الابتدائية',
       status: 'accepted',
       previousSchool: 'مدرسة التفوق',
+      applicationDate: '22/2/2025',
+      parentId: 'pdf',
+      vaccinationCertificate: 'pdf',
+      lastEducationCertificate: 'pdf',
     },
     {
       id: '6',
@@ -76,6 +102,10 @@ const RegistrationRequestsTable: React.FC = () => {
       educationalStage: 'المرحلة الابتدائية',
       status: 'interview_scheduled',
       previousSchool: 'مدرسة السلام',
+      applicationDate: '22/2/2025',
+      parentId: 'pdf',
+      vaccinationCertificate: 'pdf',
+      lastEducationCertificate: 'pdf',
     },
   ];
 
@@ -102,7 +132,7 @@ const RegistrationRequestsTable: React.FC = () => {
       case 'pending':
         return (
           <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
-            {t('studentApplications.status.editRequested')}
+            {t('studentApplications.status.modified')}
           </span>
         );
       default:
@@ -150,7 +180,7 @@ const RegistrationRequestsTable: React.FC = () => {
     {
       header: 'common.status',
       accessor: (row) => getStatusBadge(row.status),
-      headerClassName: 'min-w-[150px] text-center',
+      headerClassName: 'min-w-[120px] text-center',
       className: 'text-center',
     },
     {
@@ -159,6 +189,43 @@ const RegistrationRequestsTable: React.FC = () => {
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
+    {
+      header: 'studentApplications.applicationDate',
+      accessor: (row) => <span>{row.applicationDate}</span>,
+      headerClassName: 'min-w-[120px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'studentApplications.parentId',
+      accessor: (row) => (
+        <div className="flex justify-center">
+          <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+        </div>
+      ),
+      headerClassName: 'min-w-[120px] text-center',
+      className: 'text-center w-[120px]',
+    },
+    {
+      header: 'studentApplications.vaccinationCertificate',
+      accessor: (row) => (
+        <div className="flex justify-center">
+          <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+        </div>
+      ),
+      headerClassName: 'min-w-[120px] text-center',
+      className: 'text-center w-[120px]',
+    },
+    {
+      header: 'studentApplications.lastEducationalCertificate',
+      accessor: (row) => (
+        <div className="flex justify-center">
+          <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+        </div>
+      ),
+      headerClassName: 'min-w-[150px] text-center',
+      className: 'text-center w-[150px]',
+    },
+
     {
       header: 'common.actions',
       accessor: (row) => {
