@@ -603,6 +603,7 @@
     "actions": {
       "accept": "قبول",
       "sendEditRequest": "إرسال طلب تعديل",
+      "changeAppointment": "تغيير الموعد",
       "scheduleAppointment": "تحديد موعد",
       "notPassed": "لم يجتاز"
     }

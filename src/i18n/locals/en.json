@@ -604,6 +604,7 @@
     "actions": {
       "accept": "Accept",
       "sendEditRequest": "Edit Request",
+      "changeAppointment": "Change Appointment",
       "scheduleAppointment": "Schedule Appointment",
       "notPassed": "Not Passed"
     }
