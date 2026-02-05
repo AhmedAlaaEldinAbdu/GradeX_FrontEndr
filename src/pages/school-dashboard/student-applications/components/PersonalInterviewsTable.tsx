@@ -1,116 +1,92 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
-import IconButton from '@/shared/components/IconButton';
 import Card from '@gradex/shared/components/Card';
-import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
-import CheckIcon from '@gradex/assets/icons/Check.svg';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
-import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
-import CloseIcon from '@gradex/assets/icons/BigTrash.svg'; // TOOD: Change Icon.
+import IconButton from '@/shared/components/IconButton';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
+import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
+import EventCalendarIcon from '@gradex/assets/icons/EventCalendar.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
-interface RegistrationRequest {
+interface Interview {
   id: string;
   studentName: string;
   studentImage?: string;
   educationalStage: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'interview_scheduled';
-  previousSchool: string;
+  grade: string;
+  interviewDate: string;
+  interviewTime: string;
 }
 
-const RegistrationRequestsTable: React.FC = () => {
+const PersonalInterviewsTable: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
-  // Mock data matching the style of other components (Arabic)
-  const data: RegistrationRequest[] = [
+  const data: Interview[] = [
     {
       id: '1',
-      studentName: 'أحمد معتز حامد', // Arabic Name
+      studentName: 'أحمد معتز حامد',
       studentImage: 'https://i.pravatar.cc/150?u=1',
-      educationalStage: 'المرحلة الابتدائية', // Arabic Stage
-      status: 'pending',
-      previousSchool: 'مدرسة الرشيد', // Arabic School Name
+      educationalStage: 'المرحلة الابتدائية',
+      grade: '1/1', // Class 1/1
+      interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '2',
       studentName: 'سارة أحمد علي',
       studentImage: 'https://i.pravatar.cc/150?u=2',
       educationalStage: 'المرحلة الثانوية',
-      status: 'rejected',
-      previousSchool: 'مدرسة النور',
+      grade: '2/1',
+      interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '3',
       studentName: 'محمد خالد ابراهيم',
       studentImage: 'https://i.pravatar.cc/150?u=3',
       educationalStage: 'المرحلة الإعدادية',
-      status: 'rejected',
-      previousSchool: 'مدرسة المستقبل',
+      grade: '1/1',
+      interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '4',
       studentName: 'يوسف عمر حسن',
       studentImage: 'https://i.pravatar.cc/150?u=4',
       educationalStage: 'رياض الأطفال',
-      status: 'interview_scheduled',
-      previousSchool: '-- top --',
+      grade: '1/1',
+      interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '5',
       studentName: 'فاطمة الزهراء',
       studentImage: 'https://i.pravatar.cc/150?u=5',
       educationalStage: 'المرحلة الابتدائية',
-      status: 'accepted',
-      previousSchool: 'مدرسة التفوق',
+      grade: '1/3',
+      interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
     {
       id: '6',
       studentName: 'محمود سامي',
       studentImage: 'https://i.pravatar.cc/150?u=6',
       educationalStage: 'المرحلة الابتدائية',
-      status: 'interview_scheduled',
-      previousSchool: 'مدرسة السلام',
+      grade: '1/1',
+      interviewDate: '22/2/2025',
+      interviewTime: '3:00 مساءا',
     },
   ];
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return (
-          <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-            {t('attendanceRequests.status.accepted')}
-          </span>
-        );
-      case 'rejected':
-        return (
-          <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
-            {t('attendanceRequests.status.notPassed')}
-          </span>
-        );
-      case 'interview_scheduled':
-        return (
-          <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
-            {t('attendanceRequests.status.waitingInterview')}
-          </span>
-        );
-      case 'pending':
-        return (
-          <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
-            {t('attendanceRequests.status.editRequested')}
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const columns: DataTableColumn<RegistrationRequest>[] = [
+  const columns: DataTableColumn<Interview>[] = [
     {
       header: '#',
       accessor: (_row, index) => (
@@ -132,7 +108,7 @@ const RegistrationRequestsTable: React.FC = () => {
           <IconButton
             variant="blue"
             ariaLabel="View"
-            onClick={() => console.log('View', row.id)}
+            onClick={() => navigate(`/student-applications/${row.id}`)}
             className="h-8 w-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
           >
             <CustomImage src={EyeStyledIcon} className="h-4 w-4" alt="View" />
@@ -142,20 +118,26 @@ const RegistrationRequestsTable: React.FC = () => {
       headerClassName: 'min-w-[200px]',
     },
     {
-      header: 'attendanceRequests.educationalStage',
+      header: 'studentApplications.educationalStage',
       accessor: (row) => <span>{row.educationalStage}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
-      header: 'common.status',
-      accessor: (row) => getStatusBadge(row.status),
+      header: 'studentApplications.grade',
+      accessor: (row) => <span>{row.grade}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
-      header: 'attendanceRequests.previousSchool',
-      accessor: (row) => <span>{row.previousSchool}</span>,
+      header: 'studentApplications.interviewDate',
+      accessor: (row) => <span>{row.interviewDate}</span>,
+      headerClassName: 'min-w-[150px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'studentApplications.interviewTime',
+      accessor: (row) => <span>{row.interviewTime}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
@@ -165,31 +147,21 @@ const RegistrationRequestsTable: React.FC = () => {
         const actions: Action[] = [
           {
             id: 'accept',
-            label: t('attendanceRequests.actions.accept'),
-            icon: CheckIcon,
+            label: t('studentApplications.actions.accept'),
+            icon: CheckmarkCircleIcon,
             onClick: () => console.log('Accept', row.id),
-            color: 'text-green-600 hover:bg-green-50',
           },
           {
-            id: 'editRequest',
-            label: t('attendanceRequests.actions.sendEditRequest'),
-            icon: EditIcon,
-            onClick: () => console.log('Edit Request', row.id),
-            color: 'text-blue-600 hover:bg-blue-50',
-          },
-          {
-            id: 'schedule',
-            label: t('attendanceRequests.actions.scheduleAppointment'),
-            icon: CalendarIcon,
-            onClick: () => console.log('Schedule', row.id),
-            color: 'text-gray-700 hover:bg-gray-50',
+            id: 'changeDate',
+            label: t('studentApplications.actions.changeAppointment'),
+            icon: EventCalendarIcon,
+            onClick: () => console.log('Change Date', row.id),
           },
           {
             id: 'notPassed',
-            label: t('attendanceRequests.actions.notPassed'),
-            icon: CloseIcon,
+            label: t('studentApplications.actions.notPassed'),
+            icon: XMarkDangerIcon,
             onClick: () => console.log('Not Passed', row.id),
-            color: 'text-red-600 hover:bg-red-50',
           },
         ];
 
@@ -208,7 +180,7 @@ const RegistrationRequestsTable: React.FC = () => {
     {
       type: 'search',
       name: 'search',
-      placeholder: t('attendanceRequests.searchPlaceholder'),
+      placeholder: t('studentApplications.searchPlaceholder'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
       width: '25%',
@@ -228,7 +200,7 @@ const RegistrationRequestsTable: React.FC = () => {
             { value: 'middle', label: 'المرحلة الإعدادية' },
             { value: 'high', label: 'المرحلة الثانوية' },
           ]}
-          placeholder={t('attendanceRequests.educationalStage')}
+          placeholder={t('studentApplications.educationalStage')}
         />
       ),
     },
@@ -258,9 +230,9 @@ const RegistrationRequestsTable: React.FC = () => {
           value={selectedStatus}
           onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
           options={[
-            { value: 'pending', label: t('attendanceRequests.status.editRequested') },
-            { value: 'accepted', label: t('attendanceRequests.status.accepted') },
-            { value: 'rejected', label: t('attendanceRequests.status.notPassed') },
+            { value: 'pending', label: t('studentApplications.status.editRequested') },
+            { value: 'accepted', label: t('studentApplications.status.accepted') },
+            { value: 'rejected', label: t('studentApplications.status.notPassed') },
           ]}
           placeholder={t('common.status')}
         />
@@ -268,21 +240,33 @@ const RegistrationRequestsTable: React.FC = () => {
     },
   ];
 
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  const total = data.length;
+  const totalPages = Math.ceil(total / limit);
+
+  const paginatedData = data.slice((page - 1) * limit, page * limit);
+
   return (
-    <Card>
-      <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-gray-800">{t('attendanceRequests.title')}</h3>
-      </div>
+    <Card className="mt-8">
       <DataTable
-        data={data}
+        data={paginatedData}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
+        pagination={{
+          page: page,
+          limit: limit,
+          total: total,
+          totalPages: totalPages,
+        }}
+        onPageChange={(newPage) => setPage(newPage)}
         onResetFilters={() => {
           setSearchTerm('');
           setSelectedStage('');
           setSelectedStatus('');
+          setPage(1);
         }}
         t={t}
       />
@@ -290,4 +274,4 @@ const RegistrationRequestsTable: React.FC = () => {
   );
 };
 
-export default RegistrationRequestsTable;
+export default PersonalInterviewsTable;
