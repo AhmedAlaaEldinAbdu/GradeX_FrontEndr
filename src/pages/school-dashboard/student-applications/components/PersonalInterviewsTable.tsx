@@ -6,6 +6,10 @@ import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import IconButton from '@/shared/components/IconButton';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
+import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
+import EventCalendarIcon from '@gradex/assets/icons/EventCalendar.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 interface Interview {
   id: string;
@@ -124,26 +128,34 @@ const PersonalInterviewsTable: React.FC = () => {
     },
     {
       header: 'common.actions',
-      accessor: (_row) => (
-        <div className="flex items-center justify-center gap-2">
-          <div className="relative">
-            <button className="rounded-full p-1 text-gray-500 hover:bg-gray-100">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 8C13.1 8 14 7.1 14 6C14 4.9 13.1 4 12 4C10.9 4 10 4.9 10 6C10 7.1 10.9 8 12 8ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10ZM12 16C10.9 16 10 16.9 10 18C10 19.1 10.9 20 12 20C13.1 20 14 19.1 14 18C14 16.9 13.1 16 12 16Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </button>
+      accessor: (row) => {
+        const actions: Action[] = [
+          {
+            id: 'accept',
+            label: t('studentApplications.actions.accept'),
+            icon: CheckmarkCircleIcon,
+            onClick: () => console.log('Accept', row.id),
+          },
+          {
+            id: 'changeDate',
+            label: t('studentApplications.actions.changeAppointment'),
+            icon: EventCalendarIcon,
+            onClick: () => console.log('Change Date', row.id),
+          },
+          {
+            id: 'notPassed',
+            label: t('studentApplications.actions.notPassed'),
+            icon: XMarkDangerIcon,
+            onClick: () => console.log('Not Passed', row.id),
+          },
+        ];
+
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <ActionsDropdown actions={actions} />
           </div>
-        </div>
-      ),
+        );
+      },
       headerClassName: 'min-w-[100px] text-center',
       className: 'text-center',
     },
