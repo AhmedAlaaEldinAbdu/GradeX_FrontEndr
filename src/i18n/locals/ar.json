@@ -590,6 +590,11 @@
     "previousSchool": "اسم المدرسة السابق",
     "grade": "الصف الدراسية",
     "interviewDate": "تاريخ المقابلة",
+    "interviewTime": "معاد المقابلة",
+    "applicationDate": "تاريخ التقديم",
+    "parentId": "هوية ولي الامر",
+    "vaccinationCertificate": "شهادة التطعيم",
+    "lastEducationalCertificate": "شهادة التعليمية الاخيرة",
     "searchPlaceholder": "ابحث عن اسم الطالب",
     "educationalStagesLabel": "المراحل الدراسية",
     "status": {

@@ -591,6 +591,11 @@
     "previousSchool": "Previous School Name",
     "grade": "Class/Grade",
     "interviewDate": "Interview Date",
+    "interviewTime": "Interview Time",
+    "applicationDate": "Application Date",
+    "parentId": "Parent ID",
+    "vaccinationCertificate": "Vaccination Certificate",
+    "lastEducationalCertificate": "Last Educational Certificate",
     "searchPlaceholder": "Search by student name",
     "educationalStagesLabel": "Educational Stages",
     "status": {
