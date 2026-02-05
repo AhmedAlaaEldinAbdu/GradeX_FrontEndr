@@ -41,6 +41,7 @@ import EditTuitionFeePage from '@/pages/school-dashboard/tuition-fees/edit-tuiti
 import AddDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/add-discount-offer-page';
 import EditDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/edit-discount-offer-page';
 import StudentApplicationsPage from '@/pages/school-dashboard/student-applications/student-applications-page';
+import StudentApplicationDetailsPage from '@/pages/school-dashboard/student-applications/student-application-details-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -431,6 +432,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <StudentApplicationsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/student-applications/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <StudentApplicationDetailsPage />
             </MainLayout>
           </ProtectedRoute>
         }
