@@ -6,10 +6,10 @@ import Card from '@gradex/shared/components/Card';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
-import CheckIcon from '@gradex/assets/icons/Check.svg';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
+import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
+import FilesIcon from '@gradex/assets/icons/Files.svg';
 import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
-import CloseIcon from '@gradex/assets/icons/BigTrash.svg'; // TOOD: Change Icon.
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
 interface RegistrationRequest {
@@ -166,30 +166,26 @@ const RegistrationRequestsTable: React.FC = () => {
           {
             id: 'accept',
             label: t('studentApplications.actions.accept'),
-            icon: CheckIcon,
+            icon: CheckmarkCircleIcon,
             onClick: () => console.log('Accept', row.id),
-            color: 'text-green-600 hover:bg-green-50',
           },
           {
             id: 'editRequest',
             label: t('studentApplications.actions.sendEditRequest'),
-            icon: EditIcon,
+            icon: FilesIcon,
             onClick: () => console.log('Edit Request', row.id),
-            color: 'text-blue-600 hover:bg-blue-50',
           },
           {
             id: 'schedule',
             label: t('studentApplications.actions.scheduleAppointment'),
             icon: CalendarIcon,
             onClick: () => console.log('Schedule', row.id),
-            color: 'text-gray-700 hover:bg-gray-50',
           },
           {
             id: 'notPassed',
             label: t('studentApplications.actions.notPassed'),
-            icon: CloseIcon,
+            icon: XMarkDangerIcon,
             onClick: () => console.log('Not Passed', row.id),
-            color: 'text-red-600 hover:bg-red-50',
           },
         ];
 
@@ -270,9 +266,6 @@ const RegistrationRequestsTable: React.FC = () => {
 
   return (
     <Card>
-      <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-gray-800">{t('studentApplications.title')}</h3>
-      </div>
       <DataTable
         data={data}
         columns={columns}
