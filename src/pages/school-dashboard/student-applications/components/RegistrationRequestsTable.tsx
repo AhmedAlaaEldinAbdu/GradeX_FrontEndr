@@ -9,7 +9,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
 import FilesIcon from '@gradex/assets/icons/Files.svg';
-import CalendarIcon from '@gradex/assets/icons/Calendar.svg';
+import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
