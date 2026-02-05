@@ -5,6 +5,7 @@ import CustomImage from '../components/CustomImage';
 interface DeletePopupProps {
   open: boolean;
   message: string;
+  isMessageRaw?: boolean;
   itemName: string;
   onConfirm: () => void;
   onCancel: () => void;
@@ -15,6 +16,7 @@ interface DeletePopupProps {
 export default function DeletePopup({
   open,
   message,
+  isMessageRaw = false,
   itemName,
   onConfirm,
   onCancel,
@@ -54,6 +56,8 @@ export default function DeletePopup({
 
   if (!open) return null;
 
+  const resolvedMessage = isMessageRaw ? message : t(`${message}`);
+
   return (
     <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
       <div
@@ -79,7 +83,7 @@ export default function DeletePopup({
           </div>
 
           <p className="w-[100%] font-medium text-black-900 md:text-xl lg:w-[75%] lg:text-2xl">
-            {t(`${message}`)} "{resolvedItemName}"
+            {resolvedMessage} "{resolvedItemName}"
           </p>
         </div>
 

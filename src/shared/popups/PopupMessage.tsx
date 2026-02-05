@@ -7,6 +7,7 @@ interface PopupMessageProps {
   open: boolean;
   type?: 'success' | 'error' | 'warning' | 'info';
   message: string;
+  isMessageRaw?: boolean;
   iconSrc?: string;
   autoClose?: boolean;
   duration?: number;
@@ -18,6 +19,7 @@ export default function PopupMessage({
   open,
   type = 'info',
   message,
+  isMessageRaw = false,
   iconSrc,
   autoClose = false,
   duration = 1500,
@@ -81,6 +83,8 @@ export default function PopupMessage({
 
   if (!open) return null;
 
+  const resolvedMessage = isMessageRaw ? message : t(message);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
       <div
@@ -105,7 +109,7 @@ export default function PopupMessage({
             />
           )}
           <p className="w-[100%] font-medium text-gray-800 md:text-lg lg:w-[75%] lg:text-xl">
-            {t(message)}
+            {resolvedMessage}
           </p>
         </div>
 
