@@ -56,7 +56,7 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
   const [search, setSearch] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodFilter>('all');
   const [page, setPage] = useState(1);
-  const limit = 7;
+  const limit = 10;
 
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -87,10 +87,17 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
   const rows = useMemo<TuitionFeeRow[]>(() => {
     return (tuitionFees ?? []).map((fee) => {
       const paymentMethods: Array<'cash' | 'online' | 'installment'> = (fee.paymentMethodIds ?? [])
-        .map((m) => m.englishName?.toLowerCase() || m.arabicName?.toLowerCase() || '')
+        .map((m) => `${m.englishName ?? ''} ${m.arabicName ?? ''}`.toLowerCase())
         .map((name) => {
           if (name.includes('installment') || name.includes('تقسيط')) return 'installment';
-          if (name.includes('online') || name.includes('اونلاين') || name.includes('إلكتروني'))
+          if (
+            name.includes('online') ||
+            name.includes('electronic') ||
+            name.includes('e-payment') ||
+            name.includes('اونلاين') ||
+            name.includes('إلكتروني') ||
+            name.includes('الكتروني')
+          )
             return 'online';
           if (name.includes('cash') || name.includes('نقد')) return 'cash';
           return null;
@@ -293,7 +300,7 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
             setIsDeletePopupOpen(false);
             setPendingDeleteId(null);
             showToast({
-              message: 'academicSystem.systemDeletedSuccessfully',
+              message: t('fees.tuition.messages.deleteSuccess'),
               type: 'success',
             });
             dispatch(
@@ -354,7 +361,7 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
 
       <DeletePopup
         open={isDeletePopupOpen}
-        message="actions.confirmDelete"
+        message="fees.tuition.messages.deleteConfirm"
         itemName={(() => {
           if (!pendingDeleteId) return '';
           const row = rows.find((r) => r.id === pendingDeleteId);

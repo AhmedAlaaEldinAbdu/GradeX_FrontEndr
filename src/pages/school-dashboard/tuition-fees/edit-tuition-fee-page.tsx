@@ -1,9 +1,10 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import AddEditTuitionFeeForm, {
   type TuitionFeeFormValues,
 } from './components/AddEditTuitionFeeForm';
@@ -14,12 +15,21 @@ import {
   updateTuitionFees,
   clearTuitionFeesDetails,
 } from '@/redux/features/tuition-fees/tuitionFeesSlice';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 export default function EditTuitionFeePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
+
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+    isRaw: boolean;
+  }>({ show: false, type: 'success', message: '', isRaw: false });
 
   const { tuitionFeesDetails } = useAppSelector((state) => state.tuitionFees);
 
@@ -114,11 +124,45 @@ export default function EditTuitionFeePage() {
               paymentMethodIds: values.paymentMethodIds,
             };
 
-            await dispatch(updateTuitionFees(payload)).unwrap();
-            navigate('/fees');
+            try {
+              const res = await dispatch(updateTuitionFees(payload)).unwrap();
+              if (res?.isSuccess === true) {
+                setShowPopupMessage({
+                  show: true,
+                  type: 'success',
+                  message: 'fees.tuition.messages.editSuccess',
+                  isRaw: false,
+                });
+              } else {
+                setShowPopupMessage({
+                  show: true,
+                  type: 'error',
+                  message: 'common.errorOccurred',
+                  isRaw: false,
+                });
+              }
+            } catch {
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: 'common.errorOccurred',
+                isRaw: false,
+              });
+            }
           }}
         />
       </Card>
+
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isRaw}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        autoClose={showPopupMessage.type === 'success'}
+        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+        navigateAfterClose={showPopupMessage.type === 'success' ? '/fees' : undefined}
+      />
     </div>
   );
 }
