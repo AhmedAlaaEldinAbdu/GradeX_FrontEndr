@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
@@ -29,6 +30,7 @@ interface RegistrationRequest {
 
 const RegistrationRequestsTable: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -162,7 +164,7 @@ const RegistrationRequestsTable: React.FC = () => {
           <IconButton
             variant="blue"
             ariaLabel="View"
-            onClick={() => console.log('View', row.id)}
+            onClick={() => navigate(`/student-applications/${row.id}`)}
             className="h-8 w-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
           >
             <CustomImage src={EyeStyledIcon} className="h-4 w-4" alt="View" />
@@ -197,7 +199,7 @@ const RegistrationRequestsTable: React.FC = () => {
     },
     {
       header: 'studentApplications.parentId',
-      accessor: (row) => (
+      accessor: (_row) => (
         <div className="flex justify-center">
           <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
         </div>
@@ -207,7 +209,7 @@ const RegistrationRequestsTable: React.FC = () => {
     },
     {
       header: 'studentApplications.vaccinationCertificate',
-      accessor: (row) => (
+      accessor: (_row) => (
         <div className="flex justify-center">
           <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
         </div>
@@ -217,7 +219,7 @@ const RegistrationRequestsTable: React.FC = () => {
     },
     {
       header: 'studentApplications.lastEducationalCertificate',
-      accessor: (row) => (
+      accessor: (_row) => (
         <div className="flex justify-center">
           <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
         </div>

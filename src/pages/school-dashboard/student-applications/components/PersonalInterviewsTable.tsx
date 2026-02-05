@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@gradex/shared/components/Card';
@@ -23,6 +24,7 @@ interface Interview {
 
 const PersonalInterviewsTable: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -106,7 +108,7 @@ const PersonalInterviewsTable: React.FC = () => {
           <IconButton
             variant="blue"
             ariaLabel="View"
-            onClick={() => console.log('View', row.id)}
+            onClick={() => navigate(`/student-applications/${row.id}`)}
             className="h-8 w-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
           >
             <CustomImage src={EyeStyledIcon} className="h-4 w-4" alt="View" />
