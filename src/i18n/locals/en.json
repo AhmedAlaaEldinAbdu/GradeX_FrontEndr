@@ -562,7 +562,9 @@
     "reload": "Reload",
     "exportPdf": "Export PDF",
     "exportExcel": "Export Excel",
-    "print": "Print"
+    "print": "Print",
+    "confirmDeleteStudent": "Are you sure you want to delete this student?",
+    "studentDeletedSuccessfully": "Student deleted successfully"
   },
   "registrationAnnouncement": {
     "title": "Registration Announcement",

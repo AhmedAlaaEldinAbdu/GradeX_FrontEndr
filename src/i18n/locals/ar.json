@@ -561,7 +561,9 @@
     "reload": "إعادة تحميل",
     "exportPdf": "تصدير PDF",
     "exportExcel": "تصدير Excel",
-    "print": "طباعة"
+    "print": "طباعة",
+    "confirmDeleteStudent": "هل أنت متأكد من حذف الطالب؟",
+    "studentDeletedSuccessfully": "تم حذف الطالب بنجاح"
   },
   "registrationAnnouncement": {
     "title": "إعلان التسجيل",
