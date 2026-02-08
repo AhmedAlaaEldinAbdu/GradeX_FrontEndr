@@ -1408,6 +1408,7 @@
         "statusHint": "When activated, the offer will be visible to all users.",
         "invalidEndDate": "End date must be after start date",
         "matchAllConditions": "Match all conditions to apply the offer",
+        "offerCondition": "Offer Condition",
         "conditionFieldLabel": "Condition field",
         "conditionOperatorLabel": "Condition operator",
         "offerField": {

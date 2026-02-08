@@ -197,9 +197,7 @@ export default function AddEditDiscountOfferForm({
 
     if (mode === 'edit') {
       const first = initialOffers?.[0];
-      setOffers([
-        normalizeOffer(first ? { ...createEmptyOffer(), ...first } : createEmptyOffer()),
-      ]);
+      setOffers([normalizeOffer(first ? { ...createEmptyOffer(), ...first } : createEmptyOffer())]);
     } else {
       setOffers(
         initialOffers.length > 0
@@ -515,104 +513,110 @@ export default function AddEditDiscountOfferForm({
                   </div>
 
                   <section>
-                    <div className="space-y-3">
-                      {(offer.conditions ?? []).map((condition, conditionIndex) => {
-                        const canRemoveCondition =
-                          canManageConditions && (offer.conditions?.length ?? 0) > 1;
-                        const fieldErr =
-                          offerErrors[`conditions.${conditionIndex}.field`] ?? '';
-                        const operatorErr =
-                          offerErrors[`conditions.${conditionIndex}.operator`] ?? '';
-                        const valueErr =
-                          offerErrors[`conditions.${conditionIndex}.value`] ?? '';
-
-                        return (
-                          <div
-                            key={`${idx}-${conditionIndex}`}
-                            className="flex items-start justify-between gap-2"
-                          >
-                            <div className="grid flex-1 grid-cols-1 gap-5 md:grid-cols-2">
-                              <FormField
-                                label={t('fees.discounts.form.conditionFieldLabel')}
-                                required
-                                error={fieldErr}
+                    <div className="space-y-3 rounded-lg border border-gray-300 p-4">
+                      <div className="mb-4 flex items-center justify-between gap-3">
+                        <h3 className="text-xl font-medium text-black-700">
+                          {t('fees.discounts.form.offerCondition')}
+                        </h3>
+                        <div>
+                          {canManageConditions && (
+                            <div className="flex">
+                              <button
+                                type="button"
+                                onClick={() => addCondition(idx)}
+                                className="flex items-center gap-2"
+                                aria-label={t('common.add')}
                               >
-                                <CustomSelect
-                                  value={String(condition.field)}
-                                  onChange={(value) =>
-                                    updateCondition(idx, conditionIndex, {
-                                      field: Number(value) as OfferFieldType,
-                                    })
-                                  }
-                                  options={offerFieldOptions}
-                                  placeholder={t('common.choose')}
-                                  error={!!fieldErr}
-                                />
-                              </FormField>
-
-                              <FormField
-                                label={t('fees.discounts.form.conditionOperatorLabel')}
-                                required
-                                error={operatorErr}
-                              >
-                                <CustomSelect
-                                  value={String(condition.operator)}
-                                  onChange={(value) =>
-                                    updateCondition(idx, conditionIndex, {
-                                      operator: Number(value) as OfferOperatorType,
-                                    })
-                                  }
-                                  options={offerOperatorOptions}
-                                  placeholder={t('common.choose')}
-                                  error={!!operatorErr}
-                                />
-                              </FormField>
-
-                              <FormField
-                                label={t('fees.discounts.form.valueLabel')}
-                                required
-                                error={valueErr}
-                              >
-                                <Input
-                                  value={condition.value ?? ''}
-                                  onChange={(e) =>
-                                    updateCondition(idx, conditionIndex, {
-                                      value: e.target.value,
-                                    })
-                                  }
-                                  placeholder={t('common.enterValue')}
-                                />
-                              </FormField>
+                                <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Add" />
+                              </button>
                             </div>
-
-                            {canRemoveCondition ? (
-                              <div>
-                                <IconButton
-                                  status="delete"
-                                  variant="danger"
-                                  ariaLabel={t('actions.delete')}
-                                  onClick={() => removeCondition(idx, conditionIndex)}
-                                />
-                              </div>
-                            ) : (
-                              <div className="h-8 w-8"></div>
-                            )}
-                          </div>
-                        );
-                      })}
-
-                      {canManageConditions && (
-                        <div className="flex">
-                          <button
-                            type="button"
-                            onClick={() => addCondition(idx)}
-                            className="flex items-center gap-2"
-                            aria-label={t('common.add')}
-                          >
-                            <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Add" />
-                          </button>
+                          )}
                         </div>
-                      )}
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        {(offer.conditions ?? []).map((condition, conditionIndex) => {
+                          const canRemoveCondition =
+                            canManageConditions && (offer.conditions?.length ?? 0) > 1;
+                          const fieldErr = offerErrors[`conditions.${conditionIndex}.field`] ?? '';
+                          const operatorErr =
+                            offerErrors[`conditions.${conditionIndex}.operator`] ?? '';
+                          const valueErr = offerErrors[`conditions.${conditionIndex}.value`] ?? '';
+
+                          return (
+                            <div
+                              key={`${idx}-${conditionIndex}`}
+                              className="flex items-start justify-between gap-2 rounded-lg border border-gray-300 p-4"
+                            >
+                              <div className="grid flex-1 grid-cols-1 gap-5 md:grid-cols-2">
+                                <FormField
+                                  label={t('fees.discounts.form.conditionFieldLabel')}
+                                  required
+                                  error={fieldErr}
+                                >
+                                  <CustomSelect
+                                    value={String(condition.field)}
+                                    onChange={(value) =>
+                                      updateCondition(idx, conditionIndex, {
+                                        field: Number(value) as OfferFieldType,
+                                      })
+                                    }
+                                    options={offerFieldOptions}
+                                    placeholder={t('common.choose')}
+                                    error={!!fieldErr}
+                                  />
+                                </FormField>
+
+                                <FormField
+                                  label={t('fees.discounts.form.conditionOperatorLabel')}
+                                  required
+                                  error={operatorErr}
+                                >
+                                  <CustomSelect
+                                    value={String(condition.operator)}
+                                    onChange={(value) =>
+                                      updateCondition(idx, conditionIndex, {
+                                        operator: Number(value) as OfferOperatorType,
+                                      })
+                                    }
+                                    options={offerOperatorOptions}
+                                    placeholder={t('common.choose')}
+                                    error={!!operatorErr}
+                                  />
+                                </FormField>
+
+                                <FormField
+                                  label={t('fees.discounts.form.valueLabel')}
+                                  required
+                                  error={valueErr}
+                                >
+                                  <Input
+                                    value={condition.value ?? ''}
+                                    onChange={(e) =>
+                                      updateCondition(idx, conditionIndex, {
+                                        value: e.target.value,
+                                      })
+                                    }
+                                    placeholder={t('common.enterValue')}
+                                  />
+                                </FormField>
+                              </div>
+
+                              {canRemoveCondition ? (
+                                <div>
+                                  <IconButton
+                                    status="delete"
+                                    variant="danger"
+                                    ariaLabel={t('actions.delete')}
+                                    onClick={() => removeCondition(idx, conditionIndex)}
+                                  />
+                                </div>
+                              ) : (
+                                <div className="h-8 w-8"></div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </section>
                 </div>
