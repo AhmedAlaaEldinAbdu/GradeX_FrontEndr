@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
@@ -12,126 +12,83 @@ import FilesIcon from '@gradex/assets/icons/Files.svg';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+import StudentIcon from '@gradex/assets/icons/Student.svg';
 
-interface RegistrationRequest {
-  id: string;
-  studentName: string;
-  studentImage?: string;
-  educationalStage: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'interview_scheduled';
-  previousSchool: string;
-  applicationDate: string;
-  parentId?: string; // URL or boolean to show icon
-  vaccinationCertificate?: string; // URL or boolean
-  lastEducationCertificate?: string; // URL or boolean
-}
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchStudentApplications } from '@/redux/features/student-applications/studentApplicationsSlice';
+import type { StudentApplicationDto } from '@/services/api/student-applications/student-applications.types';
+import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import useLanguage from '@/hooks/useLanguage';
 
 const RegistrationRequestsTable: React.FC = () => {
   const { t } = useTranslation();
+  const { isArabic } = useLanguage();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStage, setSelectedStage] = useState('');
+  const [selectedStageId, setSelectedStageId] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
-  // Mock data matching the style of other components (Arabic)
-  const data: RegistrationRequest[] = [
-    {
-      id: '1',
-      studentName: 'أحمد معتز حامد', // Arabic Name
-      studentImage: 'https://i.pravatar.cc/150?u=1',
-      educationalStage: 'المرحلة الابتدائية', // Arabic Stage
-      status: 'pending',
-      previousSchool: 'مدرسة الرشيد', // Arabic School Name
-      applicationDate: '22/2/2025',
-      parentId: 'pdf',
-      vaccinationCertificate: 'pdf',
-      lastEducationCertificate: 'pdf',
-    },
-    {
-      id: '2',
-      studentName: 'سارة أحمد علي',
-      studentImage: 'https://i.pravatar.cc/150?u=2',
-      educationalStage: 'المرحلة الثانوية',
-      status: 'rejected',
-      previousSchool: 'مدرسة النور',
-      applicationDate: '22/2/2025',
-      parentId: 'pdf',
-      vaccinationCertificate: 'pdf',
-      lastEducationCertificate: 'pdf',
-    },
-    {
-      id: '3',
-      studentName: 'محمد خالد ابراهيم',
-      studentImage: 'https://i.pravatar.cc/150?u=3',
-      educationalStage: 'المرحلة الإعدادية',
-      status: 'rejected',
-      previousSchool: 'مدرسة المستقبل',
-      applicationDate: '22/2/2025',
-      parentId: 'pdf',
-      vaccinationCertificate: 'pdf',
-      lastEducationCertificate: 'pdf',
-    },
-    {
-      id: '4',
-      studentName: 'يوسف عمر حسن',
-      studentImage: 'https://i.pravatar.cc/150?u=4',
-      educationalStage: 'رياض الأطفال',
-      status: 'interview_scheduled',
-      previousSchool: '-- top --',
-      applicationDate: '22/2/2025',
-      parentId: 'pdf',
-      vaccinationCertificate: 'pdf',
-      lastEducationCertificate: 'pdf',
-    },
-    {
-      id: '5',
-      studentName: 'فاطمة الزهراء',
-      studentImage: 'https://i.pravatar.cc/150?u=5',
-      educationalStage: 'المرحلة الابتدائية',
-      status: 'accepted',
-      previousSchool: 'مدرسة التفوق',
-      applicationDate: '22/2/2025',
-      parentId: 'pdf',
-      vaccinationCertificate: 'pdf',
-      lastEducationCertificate: 'pdf',
-    },
-    {
-      id: '6',
-      studentName: 'محمود سامي',
-      studentImage: 'https://i.pravatar.cc/150?u=6',
-      educationalStage: 'المرحلة الابتدائية',
-      status: 'interview_scheduled',
-      previousSchool: 'مدرسة السلام',
-      applicationDate: '22/2/2025',
-      parentId: 'pdf',
-      vaccinationCertificate: 'pdf',
-      lastEducationCertificate: 'pdf',
-    },
-  ];
+  // Redux State
+  const { applications, pagination, isLoading } = useAppSelector(
+    (state) => state.studentApplications
+  );
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
 
-  const getStatusBadge = (status: string) => {
+  useEffect(() => {
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(
+      fetchStudentApplications({
+        page: pagination.pageIndex,
+        limit: pagination.pageSize,
+        searchTerm: searchTerm || undefined,
+        status: selectedStatus ? Number(selectedStatus) : undefined,
+        educationalStageId: selectedStageId || undefined,
+      })
+    );
+  }, [
+    dispatch,
+    pagination.pageIndex,
+    pagination.pageSize,
+    searchTerm,
+    selectedStageId,
+    selectedStatus,
+  ]);
+
+  const getStatusBadge = (status: StudentApplicationStatus) => {
     switch (status) {
-      case 'accepted':
+      case StudentApplicationStatus.Completed:
         return (
           <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-            {t('studentApplications.status.accepted')}
+            {t('studentApplications.status.completed')}
           </span>
         );
-      case 'rejected':
+      case StudentApplicationStatus.NotPassed:
         return (
           <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
             {t('studentApplications.status.notPassed')}
           </span>
         );
-      case 'interview_scheduled':
+      case StudentApplicationStatus.WaitingForSignature:
         return (
           <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
             {t('studentApplications.status.waitingInterview')}
           </span>
         );
-      case 'pending':
+      case StudentApplicationStatus.EditRequested:
+        return (
+          <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700">
+            {t('studentApplications.status.editRequested')}
+          </span>
+        );
+      case StudentApplicationStatus.Modified:
         return (
           <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
             {t('studentApplications.status.modified')}
@@ -142,7 +99,7 @@ const RegistrationRequestsTable: React.FC = () => {
     }
   };
 
-  const columns: DataTableColumn<RegistrationRequest>[] = [
+  const columns: DataTableColumn<StudentApplicationDto>[] = [
     {
       header: '#',
       accessor: (_row, index) => (
@@ -153,29 +110,35 @@ const RegistrationRequestsTable: React.FC = () => {
     },
     {
       header: 'studentManagement.studentName',
-      accessor: (row) => (
-        <div className="flex items-center gap-3">
-          <CustomImage
-            src={row.studentImage || ''}
-            alt={row.studentName}
-            className="h-10 w-10 rounded-full border border-gray-100 object-cover"
-          />
-          <span className="font-medium text-gray-900">{row.studentName}</span>
-          <IconButton
-            variant="blue"
-            ariaLabel="View"
-            onClick={() => navigate(`/student-applications/${row.id}`)}
-            className="h-8 w-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
-          >
-            <CustomImage src={EyeStyledIcon} className="h-4 w-4" alt="View" />
-          </IconButton>
-        </div>
-      ),
+      accessor: (row) => {
+        const fullName = `${row.firstName} ${row.secondName} ${row.thirdName} ${row.fourthName}`;
+        return (
+          <div className="flex items-center gap-3">
+            <CustomImage
+              src={row.studentPhotoPath ? `${baseUrl}/${row.studentPhotoPath}` : ''}
+              fallbackSrc={StudentIcon}
+              alt={fullName}
+              className="h-10 w-10 rounded-full border border-gray-100 object-cover"
+            />
+            <span className="max-w-[200px] truncate font-medium text-gray-900" title={fullName}>
+              {fullName}
+            </span>
+            <IconButton
+              variant="blue"
+              ariaLabel="View"
+              onClick={() => navigate(`/student-applications/${row.id}`)}
+              className="h-8 w-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
+            >
+              <CustomImage src={EyeStyledIcon} alt="View" className="h-5 w-5" />
+            </IconButton>
+          </div>
+        );
+      },
       headerClassName: 'min-w-[200px]',
     },
     {
       header: 'studentApplications.educationalStage',
-      accessor: (row) => <span>{row.educationalStage}</span>,
+      accessor: (row) => <span>{row.lkSchoolStageNameAr || row.lkSchoolStageNameEn || '-'}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
@@ -187,21 +150,25 @@ const RegistrationRequestsTable: React.FC = () => {
     },
     {
       header: 'studentApplications.previousSchool',
-      accessor: (row) => <span>{row.previousSchool}</span>,
+      accessor: (row) => <span>{row.previousSchoolName || '-'}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
       header: 'studentApplications.applicationDate',
-      accessor: (row) => <span>{row.applicationDate}</span>,
+      accessor: (row) => <span>{new Date(row.created).toLocaleDateString()}</span>,
       headerClassName: 'min-w-[120px] text-center',
       className: 'text-center',
     },
     {
       header: 'studentApplications.parentId',
-      accessor: (_row) => (
+      accessor: (row) => (
         <div className="flex justify-center">
-          <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+          {row.guardianIdentityPath ? (
+            <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+          ) : (
+            '-'
+          )}
         </div>
       ),
       headerClassName: 'min-w-[120px] text-center',
@@ -209,9 +176,13 @@ const RegistrationRequestsTable: React.FC = () => {
     },
     {
       header: 'studentApplications.vaccinationCertificate',
-      accessor: (_row) => (
+      accessor: (row) => (
         <div className="flex justify-center">
-          <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+          {row.vaccinationCertificatePath ? (
+            <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+          ) : (
+            '-'
+          )}
         </div>
       ),
       headerClassName: 'min-w-[120px] text-center',
@@ -219,15 +190,18 @@ const RegistrationRequestsTable: React.FC = () => {
     },
     {
       header: 'studentApplications.lastEducationalCertificate',
-      accessor: (_row) => (
+      accessor: (row) => (
         <div className="flex justify-center">
-          <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+          {row.lastEducationCertificatePath ? (
+            <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+          ) : (
+            '-'
+          )}
         </div>
       ),
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center w-[150px]',
     },
-
     {
       header: 'common.actions',
       accessor: (row) => {
@@ -281,34 +255,20 @@ const RegistrationRequestsTable: React.FC = () => {
     {
       type: 'custom',
       name: 'stage-filter',
-      value: selectedStage,
+      value: selectedStageId,
       onChange: () => {},
       width: '25%',
       customComponent: (
         <CustomSelect
-          value={selectedStage}
-          onChange={(value) => setSelectedStage(Array.isArray(value) ? (value[0] ?? '') : value)}
-          options={[
-            { value: 'primary', label: 'المرحلة الابتدائية' },
-            { value: 'middle', label: 'المرحلة الإعدادية' },
-            { value: 'high', label: 'المرحلة الثانوية' },
-          ]}
+          value={selectedStageId}
+          onChange={(value) =>
+            setSelectedStageId(Array.isArray(value) ? (value[0] ?? '') : (value as string))
+          }
+          options={educationalStages.map((stage) => ({
+            value: stage.id,
+            label: (isArabic && stage.nameAr) || stage.nameEn || '',
+          }))}
           placeholder={t('studentApplications.educationalStage')}
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'class-filter',
-      value: '',
-      onChange: () => {},
-      width: '25%',
-      customComponent: (
-        <CustomSelect
-          value=""
-          onChange={() => {}}
-          options={[]}
-          placeholder={t('sidebar.classes')}
         />
       ),
     },
@@ -321,11 +281,30 @@ const RegistrationRequestsTable: React.FC = () => {
       customComponent: (
         <CustomSelect
           value={selectedStatus}
-          onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
+          onChange={(value) =>
+            setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : (value as string))
+          }
           options={[
-            { value: 'pending', label: t('studentApplications.status.editRequested') },
-            { value: 'accepted', label: t('studentApplications.status.accepted') },
-            { value: 'rejected', label: t('studentApplications.status.notPassed') },
+            {
+              value: StudentApplicationStatus.EditRequested.toString(),
+              label: t('studentApplications.status.editRequested'),
+            },
+            {
+              value: StudentApplicationStatus.Completed.toString(),
+              label: t('studentApplications.status.completed'),
+            },
+            {
+              value: StudentApplicationStatus.NotPassed.toString(),
+              label: t('studentApplications.status.notPassed'),
+            },
+            {
+              value: StudentApplicationStatus.WaitingForSignature.toString(),
+              label: t('studentApplications.status.waitingInterview'),
+            },
+            {
+              value: StudentApplicationStatus.Modified.toString(),
+              label: t('studentApplications.status.modified'),
+            },
           ]}
           placeholder={t('common.status')}
         />
@@ -333,35 +312,32 @@ const RegistrationRequestsTable: React.FC = () => {
     },
   ];
 
-  const [page, setPage] = useState(1);
-  const limit = 10;
-  const total = data.length;
-  const totalPages = Math.ceil(total / limit);
-
-  const paginatedData = data.slice((page - 1) * limit, page * limit);
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedStageId('');
+    setSelectedStatus('');
+  };
 
   return (
     <Card>
       <DataTable
-        data={paginatedData}
+        data={applications}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
         pagination={{
-          page: page,
-          limit: limit,
-          total: total,
-          totalPages: totalPages,
+          page: pagination.pageIndex,
+          limit: pagination.pageSize,
+          total: pagination.totalItems,
+          totalPages: pagination.totalPages,
         }}
-        onPageChange={(newPage) => setPage(newPage)}
-        onResetFilters={() => {
-          setSearchTerm('');
-          setSelectedStage('');
-          setSelectedStatus('');
-          setPage(1);
-        }}
+        onPageChange={(newPage) =>
+          dispatch(fetchStudentApplications({ page: newPage, limit: pagination.pageSize }))
+        }
+        onResetFilters={handleResetFilters}
         t={t}
+        isLoading={isLoading}
       />
     </Card>
   );
