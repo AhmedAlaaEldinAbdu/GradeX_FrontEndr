@@ -21,6 +21,8 @@ import type { StudentApplicationDto } from '@/services/api/student-applications/
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import useLanguage from '@/hooks/useLanguage';
+import ScheduleStudentAppointmentPopup from '../popups/ScheduleStudentAppointmentPopup';
+import type { ScheduleAppointmentFormProps } from '@/validations/student-applications-validations';
 
 const RegistrationRequestsTable: React.FC = () => {
   const { t } = useTranslation();
@@ -32,6 +34,10 @@ const RegistrationRequestsTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [showSchedulePopup, setShowSchedulePopup] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<StudentApplicationDto | null>(
+    null
+  );
 
   // Redux State
   const { applications, pagination, isLoading } = useAppSelector(
@@ -222,7 +228,7 @@ const RegistrationRequestsTable: React.FC = () => {
             id: 'schedule',
             label: t('studentApplications.actions.scheduleAppointment'),
             icon: CalendarIcon,
-            onClick: () => console.log('Schedule', row.id),
+            onClick: () => handleScheduleAppointment(row),
           },
           {
             id: 'notPassed',
@@ -318,6 +324,28 @@ const RegistrationRequestsTable: React.FC = () => {
     setSelectedStatus('');
   };
 
+  const handleScheduleAppointment = (application: StudentApplicationDto) => {
+    setSelectedApplication(application);
+    setShowSchedulePopup(true);
+  };
+
+  const handleScheduleSubmit = async (values: ScheduleAppointmentFormProps) => {
+    try {
+      // TODO: Implement API call when endpoint is available
+      console.log('Schedule appointment:', {
+        applicationId: selectedApplication?.id,
+        ...values,
+      });
+      // Show success message
+      alert(t('studentApplications.appointmentScheduled'));
+      setShowSchedulePopup(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      console.error('Failed to schedule appointment:', error);
+      alert('Failed to schedule appointment');
+    }
+  };
+
   return (
     <Card>
       <DataTable
@@ -338,6 +366,19 @@ const RegistrationRequestsTable: React.FC = () => {
         onResetFilters={handleResetFilters}
         t={t}
         isLoading={isLoading}
+      />
+      <ScheduleStudentAppointmentPopup
+        isOpen={showSchedulePopup}
+        onClose={() => {
+          setShowSchedulePopup(false);
+          setSelectedApplication(null);
+        }}
+        onSubmit={handleScheduleSubmit}
+        studentName={
+          selectedApplication
+            ? `${selectedApplication.firstName} ${selectedApplication.secondName} ${selectedApplication.thirdName} ${selectedApplication.fourthName}`
+            : undefined
+        }
       />
     </Card>
   );
