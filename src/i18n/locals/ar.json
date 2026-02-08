@@ -1406,6 +1406,7 @@
         "statusHint": "في حالة تنشيط العرض سيظهر لجميع المستخدمين",
         "invalidEndDate": "تاريخ نهاية العرض يجب أن يكون بعد تاريخ البداية",
         "matchAllConditions": "يجب استيفاء جميع الشروط لتطبيق العرض",
+        "offerCondition": "شرط العرض",
         "conditionFieldLabel": "حقل الشرط",
         "conditionOperatorLabel": "معامل الشرط",
         "offerField": {

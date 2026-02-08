@@ -71,7 +71,10 @@ export default function EditTuitionFeePage() {
         .filter((x): x is string => !!x),
       installmentPlans: (tuitionFeesDetails.installmentPlansDto ?? []).map((p, planIdx) => ({
         id: p.id ?? `plan-${planIdx}`,
-        paymentsCount: p.installmentsCount,
+        paymentsCount:
+          p.distributionType === 1 && (p.installmentsCount ?? 0) === 0
+            ? Math.max(1, p.installmentDto?.length ?? 0)
+            : p.installmentsCount,
         dueMode: p.distributionType === 1 ? 'equal' : 'ratio',
         rows: (p.installmentDto ?? []).map((r, idx) => ({
           id: `${p.id ?? `plan-${planIdx}`}-${idx}`,
@@ -104,12 +107,15 @@ export default function EditTuitionFeePage() {
               gradeId: values.educationalStageId,
               installmentPlansDto: values.installmentPlans.map((p) => ({
                 id: p.id,
-                installmentsCount: p.paymentsCount,
+                installmentsCount: p.rows.length,
                 distributionType: p.dueMode === 'equal' ? 1 : 2,
-                installmentDto: p.rows.map((r) => ({
-                  dueDate: r.dueDate.includes('T') ? r.dueDate : `${r.dueDate}T00:00:00.000Z`,
-                  percentage: Number(r.percentage || 0),
-                })),
+                installmentDto: p.rows.map((r) => {
+                  const dueDate = r.dueDate.includes('T')
+                    ? r.dueDate
+                    : `${r.dueDate}T00:00:00.000Z`;
+                  if (p.dueMode === 'equal') return { dueDate };
+                  return { dueDate, percentage: Number(r.percentage || 0) };
+                }),
               })),
               tuitionFeesServicesDto: values.includedServices.map((s) => ({
                 nameAr: s.nameAr,

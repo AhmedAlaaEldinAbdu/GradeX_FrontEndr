@@ -5,7 +5,7 @@
 
 export interface TuitionFeesInstallmentDto {
   dueDate: string; // ISO date string
-  percentage: number;
+  percentage?: number;
 }
 
 export interface TuitionFeesInstallmentPlanDto {
@@ -78,7 +78,7 @@ export interface CreateTuitionFeesRequest {
     distributionType: number;
     installmentDto: Array<{
       dueDate: string;
-      percentage: number;
+      percentage?: number;
     }>;
   }>;
   gradeId: string;

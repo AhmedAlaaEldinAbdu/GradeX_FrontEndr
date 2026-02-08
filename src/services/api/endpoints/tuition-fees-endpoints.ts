@@ -3,7 +3,7 @@ const TuitionFees = '/TuitionFees';
 export const TuitionFeesEndpoints = {
   base: TuitionFees,
   create: TuitionFees,
-  update: TuitionFees,
+  update: (id: string) => `${TuitionFees}?Id=${encodeURIComponent(id)}`,
   calculationTuitionFees: `${TuitionFees}/CalculationTuitionFees`,
   getById: (id: string) => `${TuitionFees}/${id}`,
   delete: (id: string) => `${TuitionFees}/${id}`,
