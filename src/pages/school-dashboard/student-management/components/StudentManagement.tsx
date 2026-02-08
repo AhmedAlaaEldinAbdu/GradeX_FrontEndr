@@ -5,10 +5,13 @@ import { useTranslation } from 'react-i18next';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
 import IconButton from '@/shared/components/IconButton';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import { useToast } from '@/shared/context/ToastContext';
 import { getStudentFullName } from '@/services/api/types/students.types';
 import type { StudentDto } from '@/services/api/types/students.types';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchStudents } from '@/redux/features/students/studentsSlice';
+import { fetchStudents, deleteStudent } from '@/redux/features/students/studentsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
@@ -17,6 +20,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 export default function StudentManagement() {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const currentLang = i18n.language as 'ar' | 'en';
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,9 +28,13 @@ export default function StudentManagement() {
   const [selectedClassroomId, setSelectedClassroomId] = useState('');
   const [selectedSchoolBranchId, setSelectedSchoolBranchId] = useState('');
 
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string>('');
+
   const students = useAppSelector((state) => state.students.students);
   const pagination = useAppSelector((state) => state.students.pagination);
   const isLoading = useAppSelector((state) => state.students.isLoading);
+  const isDeleting = useAppSelector((state) => state.students.isDeleting);
 
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
   const isLoadingEducationalStages = useAppSelector((state) => state.educationalStages.isLoading);
@@ -93,6 +101,29 @@ export default function StudentManagement() {
     setSelectedSchoolBranchId('');
   };
 
+  const handleDeleteClick = (id: string) => {
+    setSelectedStudentId(id);
+    setShowDeletePopup(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedStudentId) return;
+
+    try {
+      await dispatch(deleteStudent(selectedStudentId)).unwrap();
+      setShowDeletePopup(false);
+      showToast({
+        message: 'studentManagement.studentDeletedSuccessfully',
+        type: 'success',
+      });
+    } catch (error) {
+      showToast({
+        message: 'common.errorOccurred',
+        type: 'error',
+      });
+    }
+  };
+
   const hasActiveFilters =
     searchTerm || selectedGradeId || selectedClassroomId || selectedSchoolBranchId;
   const shouldShowEmptyState = !isLoading && students.length === 0 && !hasActiveFilters;
@@ -142,10 +173,16 @@ export default function StudentManagement() {
     },
     {
       header: 'common.actions',
-      accessor: () => (
+      accessor: (row) => (
         <div className="flex items-center gap-2">
           <IconButton status="edit" variant="success" ariaLabel="Edit" />
-          <IconButton status="delete" variant="danger" ariaLabel="Delete" />
+          <IconButton
+            status="delete"
+            variant="danger"
+            ariaLabel="Delete"
+            onClick={() => handleDeleteClick(row.id)}
+            disabled={isDeleting}
+          />
         </div>
       ),
       headerClassName: 'min-w-[150px]',
@@ -247,6 +284,19 @@ export default function StudentManagement() {
             isLoading={isLoading}
             emptyMessage={t('studentManagement.noStudentsMessage')}
             t={t}
+          />
+
+          <DeletePopup
+            open={showDeletePopup}
+            message="studentManagement.confirmDeleteStudent"
+            itemName={(() => {
+              const selected = students.find((s) => s.id === selectedStudentId);
+              return selected ? getStudentFullName(selected) : '';
+            })()}
+            onConfirm={handleDeleteConfirm}
+            onCancel={() => setShowDeletePopup(false)}
+            iconSrc={BigTrashIcon}
+            isProcessing={isDeleting}
           />
         </div>
       ) : null}
