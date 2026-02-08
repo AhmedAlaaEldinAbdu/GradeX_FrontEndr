@@ -108,6 +108,7 @@
     "notAvailable": "Not Available",
     "status": "Status",
     "all": "All",
+    "noDataFound": "No data found",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
