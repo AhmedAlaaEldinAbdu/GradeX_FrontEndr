@@ -41,7 +41,7 @@ export interface StudentApplicationListResponse {
 export interface StudentApplicationQueryParams {
   PageIndex?: number;
   PageSize?: number;
-  SearchTerm?: string;
+  Search?: string;
   Status?: number;
   LKSchoolStageId?: string;
 }

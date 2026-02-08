@@ -54,7 +54,7 @@ export const fetchStudentApplications = createAsyncThunk<
     const response = await studentApplicationsApiService.getStudentApplications({
       PageIndex: payload.page || 1,
       PageSize: payload.limit || 10,
-      SearchTerm: payload.searchTerm,
+      Search: payload.searchTerm,
       Status: payload.status,
       LKSchoolStageId: payload.educationalStageId,
     });
