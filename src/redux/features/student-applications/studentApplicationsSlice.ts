@@ -1,0 +1,118 @@
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { studentApplicationsApiService } from '@/services/api/student-applications/student-applications.service';
+import type { StudentApplicationDto } from '@/services/api/student-applications/student-applications.types';
+import { getErrorMessage } from '@/lib/http';
+
+interface StudentApplicationsState {
+  applications: StudentApplicationDto[];
+  pagination: {
+    pageIndex: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  isLoading: boolean;
+  error: string | null;
+}
+
+const initialState: StudentApplicationsState = {
+  applications: [],
+  pagination: {
+    pageIndex: 1,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+  },
+  isLoading: false,
+  error: null,
+};
+
+export interface FetchStudentApplicationsPayload {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+  status?: number;
+  educationalStageId?: string;
+}
+
+export interface FetchStudentApplicationsResponse {
+  data: StudentApplicationDto[];
+  meta: {
+    totalItems: number;
+    pageIndex: number;
+    pageSize: number;
+    totalPages: number;
+  };
+}
+
+export const fetchStudentApplications = createAsyncThunk<
+  FetchStudentApplicationsResponse,
+  FetchStudentApplicationsPayload,
+  { rejectValue: string }
+>('studentApplications/fetchStudentApplications', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await studentApplicationsApiService.getStudentApplications({
+      PageIndex: payload.page || 1,
+      PageSize: payload.limit || 10,
+      SearchTerm: payload.searchTerm,
+      Status: payload.status,
+      LKSchoolStageId: payload.educationalStageId,
+    });
+
+    if (!response?.isSuccess || !response.data) {
+      return {
+        data: [],
+        meta: {
+          totalItems: 0,
+          pageIndex: 1,
+          pageSize: 10,
+          totalPages: 0,
+        },
+      };
+    }
+
+    return {
+      data: response.data.applicationDtos || [],
+      meta: {
+        totalItems: response.data.totalItems || 0,
+        pageIndex: response.data.pageIndex || 1,
+        pageSize: response.data.pageSize || 10,
+        totalPages: response.data.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+const studentApplicationsSlice = createSlice({
+  name: 'studentApplications',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchStudentApplications.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchStudentApplications.fulfilled,
+        (state, action: PayloadAction<FetchStudentApplicationsResponse>) => {
+          state.isLoading = false;
+          state.applications = action.payload.data;
+          state.pagination = {
+            pageIndex: action.payload.meta.pageIndex,
+            pageSize: action.payload.meta.pageSize,
+            totalItems: action.payload.meta.totalItems,
+            totalPages: action.payload.meta.totalPages,
+          };
+        }
+      )
+      .addCase(fetchStudentApplications.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+  },
+});
+
+export default studentApplicationsSlice.reducer;
