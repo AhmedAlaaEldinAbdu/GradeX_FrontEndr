@@ -145,6 +145,18 @@ export const fetchStudents = createAsyncThunk<FetchStudentsResponse, FetchStuden
   }
 );
 
+export const deleteStudent = createAsyncThunk<string, string>(
+  'students/deleteStudent',
+  async (id, { rejectWithValue }) => {
+    try {
+      await studentsApiService.deleteStudent(id);
+      return id;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const studentsSlice = createSlice({
   name: 'students',
   initialState,
@@ -197,6 +209,23 @@ const studentsSlice = createSlice({
       })
       .addCase(fetchStudents.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      // Delete Student
+      .addCase(deleteStudent.pending, (state) => {
+        state.isDeleting = true;
+        state.error = null;
+      })
+      .addCase(deleteStudent.fulfilled, (state, action: PayloadAction<string>) => {
+        state.isDeleting = false;
+        state.students = state.students.filter((student) => student.id !== action.payload);
+        if (state.pagination.totalItems > 0) {
+          state.pagination.totalItems -= 1;
+        }
+      })
+      .addCase(deleteStudent.rejected, (state, action) => {
+        state.isDeleting = false;
         state.error = action.payload as string;
       });
   },

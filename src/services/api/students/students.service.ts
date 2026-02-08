@@ -70,9 +70,17 @@ export async function getStudentById(id: string): Promise<StudentDto> {
   return response.data.value as StudentDto;
 }
 
+export async function deleteStudent(id: string): Promise<ApiResponseModel<string>> {
+  const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.delete(
+    StudentEndpoints.deleteStudent(id)
+  );
+  return response.data;
+}
+
 export const studentsApiService = {
   getStudents,
   getStudentById,
+  deleteStudent,
 };
 
 export default studentsApiService;
