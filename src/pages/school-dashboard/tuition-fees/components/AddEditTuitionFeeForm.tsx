@@ -79,13 +79,6 @@ const createInstallmentPlan = (): InstallmentPlan => ({
 });
 
 const normalizeInstallmentRows = (plan: InstallmentPlan): InstallmentPlan => {
-  if (plan.dueMode === 'equal') {
-    return {
-      ...plan,
-      rows: [plan.rows?.[0] ?? createInstallmentRow()],
-    };
-  }
-
   const safe =
     Number.isFinite(plan.paymentsCount) && plan.paymentsCount > 0 ? plan.paymentsCount : 1;
   const nextRows = Array.from(
@@ -326,15 +319,6 @@ export default function AddEditTuitionFeeForm({
 
   const handleChangePaymentsCount = (plan: InstallmentPlan, count: number) => {
     const safe = Number.isFinite(count) && count > 0 ? Math.floor(count) : 1;
-
-    // In equal mode, the due date + percentage UI should be a single row.
-    if (plan.dueMode === 'equal') {
-      updatePlan(plan.id, {
-        paymentsCount: safe,
-        rows: [plan.rows?.[0] ?? createInstallmentRow()],
-      });
-      return;
-    }
 
     const nextRows = Array.from(
       { length: safe },
@@ -579,7 +563,12 @@ export default function AddEditTuitionFeeForm({
 
               <div className="space-y-4">
                 {plan.rows.map((row) => (
-                  <div key={row.id} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div
+                    key={row.id}
+                    className={`grid grid-cols-1 gap-4 ${
+                      plan.dueMode === 'equal' ? 'md:grid-cols-1' : 'md:grid-cols-2'
+                    }`}
+                  >
                     <FormField label={t('fees.dueDate')} required>
                       <Input
                         type="date"
@@ -590,18 +579,21 @@ export default function AddEditTuitionFeeForm({
                         placeholder={t('common.chooseDate')}
                       />
                     </FormField>
-                    <FormField label={t('fees.percentage')} required>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={row.percentage}
-                        onChange={(e) =>
-                          updatePlanRow(plan.id, row.id, { percentage: e.target.value })
-                        }
-                        placeholder={t('fees.tuition.percentagePlaceholder')}
-                      />
-                    </FormField>
+
+                    {plan.dueMode !== 'equal' && (
+                      <FormField label={t('fees.percentage')} required>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={row.percentage}
+                          onChange={(e) =>
+                            updatePlanRow(plan.id, row.id, { percentage: e.target.value })
+                          }
+                          placeholder={t('fees.tuition.percentagePlaceholder')}
+                        />
+                      </FormField>
+                    )}
                   </div>
                 ))}
               </div>

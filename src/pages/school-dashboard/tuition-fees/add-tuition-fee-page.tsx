@@ -50,12 +50,13 @@ export default function AddTuitionFeePage() {
               gradeId: values.educationalStageId,
               installmentPlansDto: values.installmentPlans.map((p) => ({
                 id: undefined,
-                installmentsCount: p.paymentsCount,
+                installmentsCount: p.rows.length,
                 distributionType: p.dueMode === 'equal' ? 1 : 2,
-                installmentDto: p.rows.map((r) => ({
-                  dueDate: r.dueDate.includes('T') ? r.dueDate : `${r.dueDate}T00:00:00.000Z`,
-                  percentage: Number(r.percentage || 0),
-                })),
+                installmentDto: p.rows.map((r) => {
+                  const dueDate = r.dueDate.includes('T') ? r.dueDate : `${r.dueDate}T00:00:00.000Z`;
+                  if (p.dueMode === 'equal') return { dueDate };
+                  return { dueDate, percentage: Number(r.percentage || 0) };
+                }),
               })),
               tuitionFeesServicesDto: values.includedServices.map((s) => ({
                 nameAr: s.nameAr,

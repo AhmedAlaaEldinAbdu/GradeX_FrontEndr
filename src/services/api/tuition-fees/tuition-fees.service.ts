@@ -66,7 +66,7 @@ export async function updateTuitionFees(
   data: UpdateTuitionFeesRequest
 ): Promise<ApiResponseModel<null>> {
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
-    TuitionFeesEndpoints.update,
+    TuitionFeesEndpoints.update(data.id),
     data
   );
 
