@@ -601,6 +601,12 @@
     "lastEducationalCertificate": "Last Educational Certificate",
     "searchPlaceholder": "Search by student name",
     "educationalStagesLabel": "Educational Stages",
+    "scheduleAppointment": "Schedule Appointment",
+    "appointmentDate": "Appointment Date",
+    "appointmentTime": "Time",
+    "selectDate": "Select today's date",
+    "selectTime": "Select time for interview",
+    "appointmentScheduled": "Appointment scheduled successfully",
     "status": {
       "accepted": "Accepted",
       "notPassed": "Not Passed",

@@ -600,6 +600,12 @@
     "lastEducationalCertificate": "شهادة التعليمية الاخيرة",
     "searchPlaceholder": "ابحث عن اسم الطالب",
     "educationalStagesLabel": "المراحل الدراسية",
+    "scheduleAppointment": "تحديد موعد",
+    "appointmentDate": "تاريخ موعد",
+    "appointmentTime": "الوقت",
+    "selectDate": "اختر التاريخ اليوم",
+    "selectTime": "اختر وقت للمقابلة",
+    "appointmentScheduled": "تم تحديد الموعد بنجاح",
     "status": {
       "accepted": "تم قبول",
       "notPassed": "لم يجتاز",
