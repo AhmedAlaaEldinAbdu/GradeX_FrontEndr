@@ -22,6 +22,7 @@ import lessonsReducer from '../features/lessons/lessonsSlice';
 import academicCalendarReducer from '../features/academic-calendar/academicCalendarSlice';
 import tuitionFeesReducer from '../features/tuition-fees/tuitionFeesSlice';
 import offersReducer from '../features/offers/offersSlice';
+import studentsReducer from '../features/students/studentsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -48,6 +49,7 @@ export const store = configureStore({
     academicCalendar: academicCalendarReducer,
     tuitionFees: tuitionFeesReducer,
     offers: offersReducer,
+    students: studentsReducer,
   },
 });
 
