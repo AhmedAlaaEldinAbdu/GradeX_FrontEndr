@@ -24,6 +24,7 @@ import tuitionFeesReducer from '../features/tuition-fees/tuitionFeesSlice';
 import offersReducer from '../features/offers/offersSlice';
 import studentsReducer from '../features/students/studentsSlice';
 import studentApplicationsReducer from '../features/student-applications/studentApplicationsSlice';
+import studentInterviewsReducer from '../features/student-interviews/studentInterviewsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -52,6 +53,7 @@ export const store = configureStore({
     offers: offersReducer,
     students: studentsReducer,
     studentApplications: studentApplicationsReducer,
+    studentInterviews: studentInterviewsReducer,
   },
 });
 
