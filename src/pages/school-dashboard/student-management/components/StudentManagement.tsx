@@ -155,10 +155,7 @@ export default function StudentManagement() {
     },
     {
       header: 'studentManagement.date',
-      accessor: (row) =>
-        row.dateOfBirth
-          ? new Date(row.dateOfBirth).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-GB')
-          : '-',
+      accessor: (row) => (row.dateOfBirth ? new Date(row.dateOfBirth).toLocaleDateString() : '-'),
       headerClassName: 'min-w-[150px]',
     },
     {
