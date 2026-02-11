@@ -296,12 +296,35 @@ export default function AddEditStudentInterviewPopup({
                 render={({ field }) => (
                   <Input
                     {...field}
+                    value={field.value ?? ''}
                     id="startTime"
                     type="time"
                     icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
                     placeholder={t('interviews.selectStartTime')}
                     className="flex justify-end"
                     error={errors.startTime ? ' ' : undefined}
+                  />
+                )}
+              />
+            </FormField>
+            <FormField
+              label={t('interviews.endTime')}
+              error={errors.endTime?.message && t(errors.endTime.message)}
+              htmlFor="endTime"
+            >
+              <Controller
+                name="endTime"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    value={field.value ?? ''}
+                    id="endTime"
+                    type="time"
+                    icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
+                    placeholder={t('interviews.selectEndTime')}
+                    className="flex justify-end"
+                    error={errors.endTime ? ' ' : undefined}
                   />
                 )}
               />
