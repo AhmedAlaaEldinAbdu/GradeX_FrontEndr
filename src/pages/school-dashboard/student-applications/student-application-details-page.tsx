@@ -8,7 +8,7 @@ import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import DownloadIcon from '@gradex/assets/icons/Download.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudentApplicationById } from '@/redux/features/student-applications/studentApplicationsSlice';
-
+import Loading from '@/shared/components/Loading';
 export default function StudentApplicationDetailsPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -28,7 +28,7 @@ export default function StudentApplicationDetailsPage() {
   if (currentApplicationLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="text-lg text-gray-600">{t('common.loading')}</div>
+        <Loading />
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function StudentApplicationDetailsPage() {
 
       {/* Header with Student Name and Actions */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">{data.studentName}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{studentFullName}</h1>
         <div className="flex flex-wrap gap-2">
           <Button variant="primary" onClick={handleAccept}>
             {t('studentApplications.actions.accept')}
