@@ -73,9 +73,9 @@ const createInstallmentRow = (): InstallmentRow => ({
 
 const createInstallmentPlan = (): InstallmentPlan => ({
   id: createId(),
-  paymentsCount: 3,
-  dueMode: 'ratio',
-  rows: [createInstallmentRow(), createInstallmentRow(), createInstallmentRow()],
+  paymentsCount: 1,
+  dueMode: 'equal',
+  rows: [createInstallmentRow()],
 });
 
 const normalizeInstallmentRows = (plan: InstallmentPlan): InstallmentPlan => {
