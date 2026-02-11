@@ -5,19 +5,24 @@ import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import Modal from '@/shared/popups/Modal';
 import FormField from '@/shared/components/FormField';
+import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
 import CustomImage from '@/shared/components/CustomImage';
-import type { StudentInterviewFormProps } from '@/validations/student-interviews-validations';
-import { StudentInterviewFormSchema } from '@/validations/student-interviews-validations';
+import type { StudentInterviewApiProps } from '@/validations/student-interviews-validations';
+import { StudentInterviewApiSchema } from '@/validations/student-interviews-validations';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchStudents } from '@/redux/features/students/studentsSlice';
+import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
+import { getStudentFullName } from '@/services/api/types/students.types';
 
 interface AddEditStudentInterviewPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: StudentInterviewFormProps) => Promise<void>;
-  initialValues?: StudentInterviewFormProps;
+  onSubmit?: (values: StudentInterviewApiProps) => Promise<void>;
+  initialValues?: StudentInterviewApiProps;
   selectedDate?: Date;
   mode?: 'add' | 'edit';
 }
@@ -31,34 +36,97 @@ export default function AddEditStudentInterviewPopup({
   mode = 'add',
 }: AddEditStudentInterviewPopupProps) {
   const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const {
+    students,
+    isInitialized: areStudentsInitialized,
+    isLoading: areStudentsLoading,
+  } = useAppSelector((state) => state.students);
+
+  const {
+    teachers,
+    isInitialized: areTeachersInitialized,
+    isLoading: areTeachersLoading,
+  } = useAppSelector((state) => state.teachers);
 
   const {
     handleSubmit,
     reset,
     control,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
-  } = useForm<StudentInterviewFormProps>({
-    resolver: yupResolver(StudentInterviewFormSchema),
+  } = useForm<StudentInterviewApiProps>({
+    resolver: yupResolver(StudentInterviewApiSchema),
     defaultValues: {
-      studentName: '',
-      educationalStage: '',
-      supervisorName: '',
+      nameAr: '',
+      nameEn: '',
+      schoolBranchesId: '',
+      studentId: '',
+      supervisorId: '',
       interviewDate: '',
       startTime: '',
       endTime: '',
-      notes: '',
     },
   });
 
-  const createInterviewFormDefaults = (): StudentInterviewFormProps => ({
-    studentName: '',
-    educationalStage: '',
-    supervisorName: '',
+  const selectedStudentId = watch('studentId');
+
+  const studentOptions: CustomSelectOption[] = students.length
+    ? students.map((student) => ({
+        value: student.id,
+        label: getStudentFullName(student),
+      }))
+    : [];
+
+  const supervisorOptions: CustomSelectOption[] = teachers.length
+    ? teachers.map((teacher) => ({
+        value: teacher.id,
+        label: teacher.fullName,
+      }))
+    : [];
+
+  const createInterviewFormDefaults = (): StudentInterviewApiProps => ({
+    nameAr: '',
+    nameEn: '',
+    schoolBranchesId: '',
+    studentId: '',
+    supervisorId: '',
     interviewDate: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
     startTime: '',
     endTime: '',
-    notes: '',
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    if (!areStudentsInitialized && !areStudentsLoading) {
+      dispatch(fetchStudents({ limit: 10000 }));
+    }
+
+    if (!areTeachersInitialized && !areTeachersLoading) {
+      dispatch(fetchTeachers({ limit: 10000 }));
+    }
+  }, [
+    areStudentsInitialized,
+    areStudentsLoading,
+    areTeachersInitialized,
+    areTeachersLoading,
+    dispatch,
+    isOpen,
+  ]);
+
+  useEffect(() => {
+    if (!selectedStudentId) {
+      return;
+    }
+
+    const student = students.find((s) => s.id === selectedStudentId);
+    setValue('schoolBranchesId', student?.schoolBrancheId ?? '');
+  }, [selectedStudentId, setValue, students]);
 
   useEffect(() => {
     if (isOpen) {
@@ -75,8 +143,10 @@ export default function AddEditStudentInterviewPopup({
     onClose();
   };
 
-  const handleFormSubmit = async (values: StudentInterviewFormProps) => {
-    await onSubmit(values);
+  const handleFormSubmit = async (values: StudentInterviewApiProps) => {
+    if (onSubmit) {
+      await onSubmit(values);
+    }
     closeAndReset();
   };
 
@@ -95,71 +165,97 @@ export default function AddEditStudentInterviewPopup({
         )}
 
         <div className="space-y-5">
-          {/* Student Name */}
-          <FormField
-            label={t('studentManagement.studentName')}
-            required
-            error={errors.studentName?.message && t(errors.studentName.message)}
-            htmlFor="studentName"
-          >
-            <Controller
-              name="studentName"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="studentName"
-                  placeholder={t('studentManagement.searchByStudentName')}
-                  error={errors.studentName ? ' ' : undefined}
-                  className={errors.studentName ? 'border-red-500' : ''}
-                />
-              )}
-            />
-          </FormField>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField
+              label={t('interviews.interviewNameAr')}
+              required
+              error={errors.nameAr?.message && t(errors.nameAr.message)}
+              htmlFor="nameAr"
+            >
+              <Controller
+                name="nameAr"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="nameAr"
+                    placeholder={t('interviews.enterInterviewNameAr')}
+                    error={errors.nameAr ? ' ' : undefined}
+                    className={errors.nameAr ? 'border-red-500' : ''}
+                  />
+                )}
+              />
+            </FormField>
 
-          {/* Educational Stage */}
-          <FormField
-            label={t('registrationAnnouncement.educationalStage')}
-            required
-            error={errors.educationalStage?.message && t(errors.educationalStage.message)}
-            htmlFor="educationalStage"
-          >
-            <Controller
-              name="educationalStage"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="educationalStage"
-                  placeholder={t('registrationAnnouncement.educationalStage')}
-                  error={errors.educationalStage ? ' ' : undefined}
-                  className={errors.educationalStage ? 'border-red-500' : ''}
-                />
-              )}
-            />
-          </FormField>
+            <FormField
+              label={t('interviews.interviewNameEn')}
+              required
+              error={errors.nameEn?.message && t(errors.nameEn.message)}
+              htmlFor="nameEn"
+            >
+              <Controller
+                name="nameEn"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="nameEn"
+                    placeholder={t('interviews.enterInterviewNameEn')}
+                    error={errors.nameEn ? ' ' : undefined}
+                    className={errors.nameEn ? 'border-red-500' : ''}
+                  />
+                )}
+              />
+            </FormField>
+          </div>
 
-          {/* Supervisor Name */}
-          <FormField
-            label={t('interviews.supervisorName')}
-            required
-            error={errors.supervisorName?.message && t(errors.supervisorName.message)}
-            htmlFor="supervisorName"
-          >
-            <Controller
-              name="supervisorName"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="supervisorName"
-                  placeholder={t('interviews.supervisorName')}
-                  error={errors.supervisorName ? ' ' : undefined}
-                  className={errors.supervisorName ? 'border-red-500' : ''}
-                />
-              )}
-            />
-          </FormField>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField
+              label={t('studentManagement.studentName')}
+              required
+              error={errors.studentId?.message && t(errors.studentId.message)}
+              htmlFor="studentId"
+            >
+              <Controller
+                name="studentId"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    id="studentId"
+                    value={field.value ?? ''}
+                    onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                    options={studentOptions}
+                    placeholder={t('studentManagement.searchByStudentName')}
+                    error={!!errors.studentId}
+                    disabled={studentOptions.length === 0}
+                  />
+                )}
+              />
+            </FormField>
+
+            <FormField
+              label={t('interviews.supervisorName')}
+              required
+              error={errors.supervisorId?.message && t(errors.supervisorId.message)}
+              htmlFor="supervisorId"
+            >
+              <Controller
+                name="supervisorId"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    id="supervisorId"
+                    value={field.value ?? ''}
+                    onChange={(value) => field.onChange(Array.isArray(value) ? value[0] : value)}
+                    options={supervisorOptions}
+                    placeholder={t('interviews.selectSupervisor')}
+                    error={!!errors.supervisorId}
+                    disabled={supervisorOptions.length === 0}
+                  />
+                )}
+              />
+            </FormField>
+          </div>
 
           {/* Time */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
