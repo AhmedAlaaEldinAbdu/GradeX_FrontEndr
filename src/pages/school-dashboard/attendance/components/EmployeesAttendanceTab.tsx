@@ -409,7 +409,7 @@ export default function EmployeesAttendanceTab({
           </IconButton>
         </div>
       ),
-      headerClassName: 'min-w-[230px]',
+      headerClassName: 'min-w-[260px]',
     },
     {
       header: 'attendance.educationalStage',
@@ -420,13 +420,13 @@ export default function EmployeesAttendanceTab({
             : row.lkSchoolStageNameEn || t('attendance.notAvailable')}
         </span>
       ),
-      headerClassName: 'min-w-[170px]',
+      headerClassName: 'min-w-[210px]',
       className: 'text-center',
     },
     {
       header: 'attendance.classroom',
       accessor: (row) => <span>{getClassroomsDisplay(row.classRooms, currentLang)}</span>,
-      headerClassName: 'min-w-[170px]',
+      headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
     {

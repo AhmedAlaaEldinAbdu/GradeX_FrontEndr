@@ -1434,7 +1434,7 @@
           "nationality": "الجنسية",
           "birthYear": "سنة الميلاد",
           "tuitionAmount": "قيمة المصروفات الدراسية",
-          "applicationFeesAmount": "قيمة رسوم التقديم",
+          "applicationFeesAmount": "قيمة رسوم التطبيق",
           "remainingAmount": "المبلغ المتبقي",
           "installmentsCount": "عدد الأقساط",
           "isInstallment": "نظام التقسيط",
@@ -1461,7 +1461,7 @@
         },
         "applyOnLabel": "تطبيق العرض على",
         "applyOn": {
-          "applicationFees": "رسوم التقديم",
+          "applicationFees": "رسوم التطبيق",
           "tuitionFees": "الرسوم الدراسية"
         }
       },

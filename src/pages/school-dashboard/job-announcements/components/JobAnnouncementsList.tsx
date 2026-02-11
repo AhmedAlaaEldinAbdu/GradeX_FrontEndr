@@ -321,7 +321,7 @@ export default function JobAnnouncementsList() {
             : (normalizeText(row.nameEn) ?? normalizeText(row.name) ?? '--')}
         </span>
       ),
-      headerClassName: 'min-w-[220px]',
+      headerClassName: 'min-w-[250px]',
     },
     {
       header: 'jobAnnouncement.jobGrade',
@@ -541,7 +541,7 @@ export default function JobAnnouncementsList() {
           })()}
         </span>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[220px]',
     },
     {
       header: 'jobAnnouncement.yearsOfExperience',
@@ -552,7 +552,7 @@ export default function JobAnnouncementsList() {
             : '--'}
         </span>
       ),
-      headerClassName: 'min-w-[180px]',
+      headerClassName: 'min-w-[200px]',
     },
     {
       header: 'jobAnnouncement.salary',

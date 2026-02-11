@@ -148,7 +148,7 @@ export default function PendingSchoolsTab({
           </Link>
         );
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.educationSystem',
@@ -158,7 +158,7 @@ export default function PendingSchoolsTab({
         }
         return '-';
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[200px]',
     },
     {
       header: 'schools.status',
@@ -167,7 +167,7 @@ export default function PendingSchoolsTab({
           {t('common.pending')}
         </Badge>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
     {
@@ -181,7 +181,7 @@ export default function PendingSchoolsTab({
             : null;
         return countryId ? getCountryName(countryId) : '-';
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.region',
@@ -193,7 +193,7 @@ export default function PendingSchoolsTab({
             : '-';
         return region;
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.district',
@@ -205,7 +205,7 @@ export default function PendingSchoolsTab({
             : '-';
         return neighborhood;
       },
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
     },
     {
       header: 'schools.addedDate',
@@ -245,7 +245,7 @@ export default function PendingSchoolsTab({
           </div>
         );
       },
-      headerClassName: 'min-w-[140px]',
+      headerClassName: 'min-w-[180px]',
     },
     {
       header: 'common.actions',

@@ -146,7 +146,7 @@ export default function DeletedSchoolsTab({
           currentLang === 'ar' ? row?.nameAr || row?.name || '-' : row?.nameEn || row?.name || '-';
         return <Link to={`/schools/view-school/${row?.id}`}>{schoolName}</Link>;
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.educationSystem',
@@ -156,7 +156,7 @@ export default function DeletedSchoolsTab({
         }
         return '-';
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[200px]',
     },
     {
       header: 'schools.status',
@@ -165,7 +165,7 @@ export default function DeletedSchoolsTab({
           {t('common.rejected')}
         </Badge>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
     {
@@ -179,7 +179,7 @@ export default function DeletedSchoolsTab({
             : null;
         return countryId ? getCountryName(countryId) : '-';
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.region',
@@ -191,7 +191,7 @@ export default function DeletedSchoolsTab({
             : '-';
         return region;
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.district',
@@ -203,7 +203,7 @@ export default function DeletedSchoolsTab({
             : '-';
         return neighborhood;
       },
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
     },
     {
       header: 'schools.addedDate',
@@ -243,7 +243,7 @@ export default function DeletedSchoolsTab({
           </div>
         );
       },
-      headerClassName: 'min-w-[140px]',
+      headerClassName: 'min-w-[180px]',
     },
     {
       header: 'common.actions',

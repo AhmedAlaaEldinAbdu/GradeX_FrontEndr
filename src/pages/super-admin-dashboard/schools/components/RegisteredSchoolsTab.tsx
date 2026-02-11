@@ -176,7 +176,7 @@ export default function RegisteredSchoolsTab({
           </Link>
         );
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.educationSystem',
@@ -187,7 +187,7 @@ export default function RegisteredSchoolsTab({
         }
         return '-';
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[200px]',
     },
     {
       header: 'schools.status',
@@ -195,7 +195,7 @@ export default function RegisteredSchoolsTab({
         if (!row || row.schoolStatus === undefined) return '-';
         return getStatusBadge(row.schoolStatus);
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
     {
@@ -209,7 +209,7 @@ export default function RegisteredSchoolsTab({
             : null;
         return countryId ? getCountryName(countryId) : '-';
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.region',
@@ -221,7 +221,7 @@ export default function RegisteredSchoolsTab({
             : '-';
         return region;
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[160px]',
     },
     {
       header: 'schools.district',
@@ -233,7 +233,7 @@ export default function RegisteredSchoolsTab({
             : '-';
         return neighborhood;
       },
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
     },
     {
       header: 'schools.addedDate',
@@ -270,7 +270,7 @@ export default function RegisteredSchoolsTab({
           )}
         </div>
       ),
-      headerClassName: 'min-w-[140px]',
+      headerClassName: 'min-w-[180px]',
     },
     {
       header: 'common.actions',
