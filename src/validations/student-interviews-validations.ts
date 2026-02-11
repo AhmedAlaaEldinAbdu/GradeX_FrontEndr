@@ -7,18 +7,14 @@ export const StudentInterviewFormSchema = object({
   educationalStage: string()
     .required('interviews.validation.educationalStageRequired')
     .typeError('interviews.validation.educationalStageRequired'),
-  supervisorName: string()
-    .required('interviews.validation.supervisorNameRequired')
-    .typeError('interviews.validation.supervisorNameRequired'),
+  supervisorName: string().notRequired().default(''),
   interviewDate: string()
     .required('interviews.validation.interviewDateRequired')
     .typeError('interviews.validation.interviewDateRequired'),
   startTime: string()
     .required('interviews.validation.startTimeRequired')
     .typeError('interviews.validation.startTimeRequired'),
-  endTime: string()
-    .required('interviews.validation.endTimeRequired')
-    .typeError('interviews.validation.endTimeRequired'),
+  endTime: string().notRequired().default(''),
   notes: string().notRequired().default(''),
 });
 
@@ -27,29 +23,25 @@ export type StudentInterviewFormProps = InferType<typeof StudentInterviewFormSch
 // Matches Swagger payload for /api/StudentInterview
 export const StudentInterviewApiSchema = object({
   nameAr: string()
-    .required('interviews.validation.nameArRequired')
-    .typeError('interviews.validation.nameArRequired'),
+    .required('common.validation.nameArRequired')
+    .typeError('common.validation.nameArRequired'),
   nameEn: string()
-    .required('interviews.validation.nameEnRequired')
-    .typeError('interviews.validation.nameEnRequired'),
+    .required('common.validation.nameEnRequired')
+    .typeError('common.validation.nameEnRequired'),
   schoolBranchesId: string()
     .required('interviews.validation.schoolBranchesIdRequired')
     .typeError('interviews.validation.schoolBranchesIdRequired'),
   studentId: string()
-    .required('interviews.validation.studentIdRequired')
-    .typeError('interviews.validation.studentIdRequired'),
-  supervisorId: string()
-    .required('interviews.validation.supervisorIdRequired')
-    .typeError('interviews.validation.supervisorIdRequired'),
+    .required('common.validation.required')
+    .typeError('common.validation.required'),
+  supervisorId: string().notRequired().default(''),
   interviewDate: string()
     .required('interviews.validation.interviewDateRequired')
     .typeError('interviews.validation.interviewDateRequired'),
   startTime: string()
     .required('interviews.validation.startTimeRequired')
     .typeError('interviews.validation.startTimeRequired'),
-  endTime: string()
-    .required('interviews.validation.endTimeRequired')
-    .typeError('interviews.validation.endTimeRequired'),
+  endTime: string().notRequired().default(''),
 });
 
 export type StudentInterviewApiProps = InferType<typeof StudentInterviewApiSchema>;

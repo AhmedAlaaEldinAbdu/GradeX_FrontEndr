@@ -97,7 +97,7 @@ export default function AcademicSystemTab() {
           {currentLang === 'ar' ? row.nameAr : row.nameEn}
         </div>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[180px]',
     },
     {
       header: 'academicSystem.systemType',
@@ -112,7 +112,7 @@ export default function AcademicSystemTab() {
           </div>
         );
       },
-      headerClassName: 'w-[250px]',
+      headerClassName: 'min-w-[200px]',
     },
     {
       header: 'academicSystem.countryName',
@@ -127,18 +127,18 @@ export default function AcademicSystemTab() {
           </div>
         );
       },
-      headerClassName: 'w-[250px]',
+      headerClassName: 'min-w-[200px]',
     },
     {
       header: 'academicSystem.educationalStagesCount',
       accessor: (row) => row.gradeCount,
-      headerClassName: 'min-w-[180px]',
+      headerClassName: 'min-w-[280px]',
       className: 'text-center',
     },
     {
       header: 'academicSystem.addedDate',
       accessor: (row) => <div>{new Date(row.created).toLocaleDateString()}</div>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {

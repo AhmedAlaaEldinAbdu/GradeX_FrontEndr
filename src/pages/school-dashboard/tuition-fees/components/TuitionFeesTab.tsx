@@ -157,10 +157,12 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
       {
         header: 'fees.tuition.list.table.columns.stageName',
         accessor: (row: TuitionFeeRow) => getStageName(row.educationalStageId),
+        headerClassName: 'min-w-[150px]',
       },
       {
         header: 'fees.tuition.list.table.columns.tuitionAmount',
         accessor: (row: TuitionFeeRow) => row.tuitionAmount,
+        headerClassName: 'min-w-[150px]',
       },
       {
         header: 'fees.tuition.list.table.columns.includes',
@@ -171,6 +173,7 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
             ))}
           </div>
         ),
+        headerClassName: 'min-w-[130px]',
       },
       {
         header: 'fees.tuition.list.table.columns.excludes',
@@ -181,6 +184,7 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
             ))}
           </div>
         ),
+        headerClassName: 'min-w-[130px]',
       },
       {
         header: 'fees.tuition.list.table.columns.paymentMethods',
@@ -197,11 +201,19 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
               .join(' - ')}
           </span>
         ),
+        headerClassName: 'min-w-[200px]',
       },
       {
         header: 'fees.tuition.list.table.columns.actions',
         accessor: (row: TuitionFeeRow) => (
           <div className="flex items-center justify-center gap-2">
+            <IconButton
+              status="edit"
+              ariaLabel={t('actions.edit')}
+              onClick={() => {
+                navigate(`/fees/edit-tuition-fee/${row.id}`);
+              }}
+            />
             <IconButton
               status="delete"
               ariaLabel={t('actions.delete')}
@@ -210,15 +222,9 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
                 setIsDeletePopupOpen(true);
               }}
             />
-            <IconButton
-              status="edit"
-              ariaLabel={t('actions.edit')}
-              onClick={() => {
-                navigate(`/fees/edit-tuition-fee/${row.id}`);
-              }}
-            />
           </div>
         ),
+        headerClassName: 'min-w-[120px]',
       },
     ],
     [dispatch, educationalStages, limit, navigate, safePage, t]

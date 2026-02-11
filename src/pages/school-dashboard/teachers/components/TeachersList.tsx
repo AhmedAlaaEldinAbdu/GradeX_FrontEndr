@@ -162,7 +162,7 @@ export default function TeachersList() {
           </IconButton>
         </div>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[250px]',
     },
     {
       header: 'teachers.mobile',
@@ -176,7 +176,7 @@ export default function TeachersList() {
 
         return <span dir="ltr">{`${countryCode} ${phone}`}</span>;
       },
-      headerClassName: 'min-w-[170px]',
+      headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
     {
@@ -209,7 +209,7 @@ export default function TeachersList() {
           </div>
         );
       },
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
     {
@@ -329,7 +329,7 @@ export default function TeachersList() {
       placeholder: '',
       value: selectedEducationalStage,
       onChange: () => {},
-      width: '20%',
+      width: '25%',
       customComponent: (
         <CustomSelect
           value={selectedEducationalStage}

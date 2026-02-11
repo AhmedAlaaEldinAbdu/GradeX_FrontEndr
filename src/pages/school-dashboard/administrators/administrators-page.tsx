@@ -104,7 +104,7 @@ export default function AdministratorsPage() {
           {row.phone}
         </span>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
     {
@@ -125,7 +125,7 @@ export default function AdministratorsPage() {
           </a>
         </div>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
     {
@@ -176,7 +176,7 @@ export default function AdministratorsPage() {
       placeholder: '',
       value: selectedSubject,
       onChange: () => {},
-      width: '20%',
+      width: '25%',
       customComponent: (
         <CustomSelect
           value={selectedSubject}
@@ -214,7 +214,7 @@ export default function AdministratorsPage() {
       placeholder: '',
       value: selectedEducationalStage,
       onChange: () => {},
-      width: '20%',
+      width: '30%',
       customComponent: (
         <CustomSelect
           value={selectedEducationalStage}

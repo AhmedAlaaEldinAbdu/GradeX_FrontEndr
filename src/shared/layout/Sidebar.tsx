@@ -136,30 +136,25 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'home',
     icon: <CustomImage src={HomeIcon} className="h-6 w-6" alt="Home" />,
-
     path: '/dashboard',
   },
   {
     key: 'educationalStages',
     icon: <CustomImage src={EducationIcon} className="h-6 w-6" alt="Education" />,
-
     subItems: [
       {
         icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teachers" />,
-
         key: 'classrooms',
         path: '/classrooms',
       },
       {
         icon: <CustomImage src={OrdersGreenIcon} className="h-6 w-6" alt="Orders" />,
-
         key: 'subjects',
         path: '/subjects',
       },
       {
         key: 'books',
         icon: <CustomImage src={BookGreenIcon} className="h-6 w-6" alt="Books" />,
-
         path: '/books',
       },
     ],
@@ -167,23 +162,19 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'teachingStaff',
     icon: <CustomImage src={PeopleRegularIcon} className="h-6 w-6" alt="Teaching Staff" />,
-
     subItems: [
       {
         icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teaching Staff" />,
-
         key: 'staff',
         path: '/teaching-staff',
       },
       {
         icon: <CustomImage src={WorkGreenIcon} className="h-6 w-6" alt="Work" />,
-
         key: 'jobAnnouncements',
         path: '/job-announcements',
       },
       {
         icon: <CustomImage src={DateGreenIcon} className="h-6 w-6" alt="Date" />,
-
         key: 'interviews',
         path: '/interviews',
       },
@@ -192,35 +183,29 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'calendarManagement',
     icon: <CustomImage src={CalendarIcon} className="h-6 w-6" alt="Calendar" />,
-
     subItems: [
       {
         icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teachers" />,
-
         key: 'tasks',
         path: '/calendar/tasks',
       },
       {
         icon: <CustomImage src={FilesGreenIcon} className="h-6 w-6" alt="Files" />,
-
         key: 'preparations',
         path: '/calendar/preparations',
       },
       {
         icon: <CustomImage src={DateGreenIcon} className="h-6 w-6" alt="Date" />,
-
         key: 'weeklyCalendar',
         path: '/calendar/weekly',
       },
       {
         icon: <CustomImage src={NoteEditGreenIcon} className="h-6 w-6" alt="Note" />,
-
         key: 'monthlyCalendar',
         path: '/calendar/monthly',
       },
       {
         icon: <CustomImage src={TaskDailyGreenIcon} className="h-6 w-6" alt="Task" />,
-
         key: 'academicCalendar',
         path: '/calendar/academic',
       },
@@ -229,7 +214,6 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
   {
     key: 'studentManagement',
     icon: <CustomImage src={StudentsIcon} className="h-6 w-6" alt="Students" />,
-
     subItems: [
       {
         key: 'students',
@@ -244,19 +228,23 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
       {
         key: 'interviews',
         path: '/student-interviews',
-        icon: <CustomImage src={CalendarIcon} className="h-6 w-6" alt="Interviews" />,
+        icon: <CustomImage src={DateGreenIcon} className="h-6 w-6" alt="Interviews" />,
       },
       {
         key: 'registrationAnnouncement',
         path: '/registration-announcement',
         icon: (
-          <CustomImage src={NotificationIcon} className="h-6 w-6" alt="Registration Announcement" />
+          <CustomImage
+            src={NoteEditGreenIcon}
+            className="h-6 w-6"
+            alt="Registration Announcement"
+          />
         ),
       },
       {
         key: 'examResults',
         path: '/exam-results',
-        icon: <CustomImage src={ReportsIcon} className="h-6 w-6" alt="Exam Results" />,
+        icon: <CustomImage src={TaskDailyGreenIcon} className="h-6 w-6" alt="Exam Results" />,
       },
     ],
   },

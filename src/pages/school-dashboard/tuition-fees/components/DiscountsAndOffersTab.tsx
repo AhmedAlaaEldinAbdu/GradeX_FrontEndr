@@ -141,18 +141,22 @@ export default function DiscountsAndOffersTab() {
       {
         header: 'fees.discounts.table.columns.name',
         accessor: (row: DiscountOfferRow) => getRowName(row),
+        headerClassName: 'min-w-[180px]',
       },
       {
         header: 'fees.discounts.table.columns.discount',
         accessor: (row: DiscountOfferRow) => formatDiscount(row),
+        headerClassName: 'min-w-[140px]',
       },
       {
         header: 'fees.discounts.table.columns.startDate',
         accessor: (row: DiscountOfferRow) => formatDisplayDate(row.startDate),
+        headerClassName: 'min-w-[140px]',
       },
       {
         header: 'fees.discounts.table.columns.endDate',
         accessor: (row: DiscountOfferRow) => formatDisplayDate(row.endDate),
+        headerClassName: 'min-w-[140px]',
       },
       {
         header: 'fees.discounts.table.columns.status',
@@ -192,11 +196,19 @@ export default function DiscountsAndOffersTab() {
             }}
           />
         ),
+        headerClassName: 'min-w-[100px]',
       },
       {
         header: 'fees.discounts.table.columns.actions',
         accessor: (row: DiscountOfferRow) => (
           <div className="flex items-center justify-center gap-2">
+            <IconButton
+              status="edit"
+              ariaLabel={t('actions.edit')}
+              onClick={() => {
+                navigate(`/fees/edit-discount-offer/${row.id}`);
+              }}
+            />
             <IconButton
               status="delete"
               ariaLabel={t('actions.delete')}
@@ -205,15 +217,9 @@ export default function DiscountsAndOffersTab() {
                 setIsDeletePopupOpen(true);
               }}
             />
-            <IconButton
-              status="edit"
-              ariaLabel={t('actions.edit')}
-              onClick={() => {
-                navigate(`/fees/edit-discount-offer/${row.id}`);
-              }}
-            />
           </div>
         ),
+        headerClassName: 'min-w-[120px]',
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
