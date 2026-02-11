@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
@@ -5,58 +6,47 @@ import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import DownloadIcon from '@gradex/assets/icons/Download.svg';
-
-// Mock data for the student application details
-const mockApplicationData = {
-  id: '1',
-  studentName: 'اسم الطالب',
-  studentImage: 'https://i.pravatar.cc/150?u=1',
-  parentInfo: {
-    phone: '+20 10 1234 5678',
-    email: 'Ahmed@gmail.com',
-    country: 'مصر',
-    nationality: 'مصري',
-    address: 'القاهرة – مدينة نصر – شارع مصطفى النحاس – عمارة 12',
-  },
-  childInfo: {
-    birthDate: '11/4/2022',
-    previousSchool: 'مدرسة الرشيد الخاصة',
-    gradeLevel: 'Kg 2',
-    educationalStage: 'رياض أطفال',
-  },
-  tuitionFees: {
-    paymentMethod: 'نقدي',
-    discount: 'الأخوة 15%',
-    addedFees: [
-      { name: 'الباص المدرسي', price: '33 ريال' },
-      { name: 'الباص المدرسي', price: '33 ريال' },
-      { name: 'مسبح', price: '33 ريال' },
-      { name: 'الباص المدرسي', price: '33 ريال' },
-      { name: 'الباص المدرسي', price: '33 ريال' },
-      { name: 'مسبح', price: '33 ريال' },
-      { name: 'الباص المدرسي', price: '33 ريال' },
-      { name: 'الباص المدرسي', price: '33 ريال' },
-    ],
-    totalOriginal: '5,900',
-    totalDiscounted: '5,500',
-  },
-  attachments: [
-    { name: 'هوية ولي الامر', size: '520 KB', type: 'pdf' },
-    { name: 'شهادة التطعيم', size: '520 KB', type: 'pdf' },
-    { name: 'شهادة التعليمية الاخيرة', size: '520 KB', type: 'pdf' },
-  ],
-};
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchStudentApplicationById } from '@/redux/features/student-applications/studentApplicationsSlice';
 
 export default function StudentApplicationDetailsPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
-  // In a real app, you would fetch data based on ID
-  const data = mockApplicationData;
+  const { currentApplication, currentApplicationLoading, error } = useAppSelector(
+    (state) => state.studentApplications
+  );
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchStudentApplicationById(id));
+    }
+  }, [dispatch, id]);
+
+  if (currentApplicationLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="text-lg text-gray-600">{t('common.loading')}</div>
+      </div>
+    );
+  }
+
+  if (error || !currentApplication) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="text-lg text-red-600">{error || t('common.error')}</div>
+      </div>
+    );
+  }
+
+  const data = currentApplication;
+  const studentFullName = `${data.firstName} ${data.secondName} ${data.thirdName} ${data.fourthName}`;
 
   const breadcrumbItems = [
     { label: t('studentApplications.title'), path: '/student-applications' },
-    { label: data.studentName },
+    { label: studentFullName },
   ];
 
   const handleAccept = () => {
@@ -104,8 +94,8 @@ export default function StudentApplicationDetailsPage() {
         {/* Profile Image - centered at top */}
         <div className="mb-6 flex justify-center">
           <CustomImage
-            src={data.studentImage}
-            alt={data.studentName}
+            src={data.studentPhotoPath ? `${baseUrl}/${data.studentPhotoPath}` : ''}
+            alt={studentFullName}
             className="h-28 w-28 rounded-full border-4 border-gray-100 object-cover"
           />
         </div>
@@ -125,7 +115,7 @@ export default function StudentApplicationDetailsPage() {
                   {t('studentApplications.details.phone')}:
                 </span>
                 <span className="text-gray-600" dir="ltr">
-                  {data.parentInfo.phone}
+                  {/* TODO: Add phone number field from API */}-
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -141,13 +131,13 @@ export default function StudentApplicationDetailsPage() {
                 <span className="font-bold text-gray-800">
                   {t('studentApplications.details.country')}:
                 </span>
-                <span className="text-gray-600">{data.parentInfo.country}</span>
+                <span className="text-gray-600">{data.parentInfo.lkCountryName || '-'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-gray-800">
                   {t('studentApplications.details.nationality')}:
                 </span>
-                <span className="text-gray-600">{data.parentInfo.nationality}</span>
+                <span className="text-gray-600">{/* TODO: Add nationality field from API */}-</span>
               </div>
             </div>
             {/* Row 3: Address (full width) */}
@@ -155,7 +145,16 @@ export default function StudentApplicationDetailsPage() {
               <span className="font-bold text-gray-800">
                 {t('studentApplications.details.address')}:
               </span>
-              <span className="text-gray-600">{data.parentInfo.address}</span>
+              <span className="text-gray-600">
+                {[
+                  data.parentInfo.cityName,
+                  data.parentInfo.districtName,
+                  data.parentInfo.streetName,
+                  data.parentInfo.buildingNumber,
+                ]
+                  .filter(Boolean)
+                  .join(' – ') || '-'}
+              </span>
             </div>
           </div>
         </div>
@@ -172,13 +171,17 @@ export default function StudentApplicationDetailsPage() {
                 <span className="font-bold text-gray-800">
                   {t('studentApplications.details.birthDate')}:
                 </span>
-                <span className="text-gray-600">{data.childInfo.birthDate}</span>
+                <span className="text-gray-600">
+                  {new Date(data.dateOfBirth).toLocaleDateString()}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-gray-800">
                   {t('studentApplications.details.previousSchoolName')}:
                 </span>
-                <span className="text-gray-600">{data.childInfo.previousSchool}</span>
+                <span className="text-gray-600">
+                  {data.hasPreviousSchool ? data.previousSchoolName || '-' : t('common.no')}
+                </span>
               </div>
             </div>
             {/* Row 2: Educational Stage and Grade */}
@@ -187,13 +190,13 @@ export default function StudentApplicationDetailsPage() {
                 <span className="font-bold text-gray-800">
                   {t('studentApplications.details.educationalStage')}:
                 </span>
-                <span className="text-gray-600">{data.childInfo.educationalStage}</span>
+                <span className="text-gray-600">{data.lkSchoolStageName || '-'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-gray-800">
                   {t('studentApplications.details.gradeLevel')}:
                 </span>
-                <span className="text-gray-600">{data.childInfo.gradeLevel}</span>
+                <span className="text-gray-600">{data.gradeName}</span>
               </div>
             </div>
           </div>
@@ -205,38 +208,52 @@ export default function StudentApplicationDetailsPage() {
             {t('studentApplications.details.tuitionFees')}
           </h2>
 
-          {/* Payment Method and Discount */}
+          {/* Payment Method and Services */}
           <div className="mb-6 space-y-3 text-sm">
             <div className="flex items-center gap-2">
               <span className="font-bold text-gray-800">
                 {t('studentApplications.details.paymentMethod')}:
               </span>
-              <span className="text-gray-600">{data.tuitionFees.paymentMethod}</span>
-              <span className="text-sm text-gray-600"> Pay</span>
-              <span className="text-sm text-gray-600">Apple Pay</span>
+              <span className="text-gray-600">{data.paymentMethod}</span>
             </div>
+            {data.services.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.services')}:
+                </span>
+                <span className="text-gray-600">{data.services.join(', ')}</span>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <span className="font-bold text-gray-800">
                 {t('studentApplications.details.discount')}:
               </span>
-              <span className="text-gray-600">{data.tuitionFees.discount}</span>
+              <span className="text-gray-600">
+                {data.offers.length > 0 ? data.offers.join(', ') : '-'}
+              </span>
             </div>
           </div>
 
-          {/* Added Fees Label */}
-          <div className="mb-4 text-right text-sm font-bold text-gray-800">
-            {t('studentApplications.details.addedFees')}:
-          </div>
-
-          {/* Added Fees Grid - 4 columns */}
-          <div className="mb-6 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-4">
-            {data.tuitionFees.addedFees.map((fee, index) => (
-              <div key={index} className="text-center">
-                <p className="text-sm font-bold text-gray-800">{fee.name}</p>
-                <p className="text-sm text-gray-500">{fee.price}</p>
+          {/* Paid Services Label */}
+          {data.paidServices.length > 0 && (
+            <>
+              <div className="mb-4 text-right text-sm font-bold text-gray-800">
+                {t('studentApplications.details.addedFees')}:
               </div>
-            ))}
-          </div>
+
+              {/* Paid Services Grid - 4 columns */}
+              <div className="mb-6 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-4">
+                {data.paidServices.map((service) => (
+                  <div key={service.id} className="text-center">
+                    <p className="text-sm font-bold text-gray-800">{service.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {service.amount} {t('common.currencyRiyal')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Total - label on right (RTL), prices on left */}
           <div className="flex items-center justify-between rounded-xl border border-gray-100 p-3">
@@ -245,11 +262,13 @@ export default function StudentApplicationDetailsPage() {
             </span>
             <div className="flex items-center gap-3" dir="ltr">
               <span className="text-xl font-bold text-green-600">
-                {data.tuitionFees.totalDiscounted}
+                {data.total.toLocaleString()} {t('common.currencyRiyal')}
               </span>
-              <span className="text-base text-gray-400 line-through">
-                {data.tuitionFees.totalOriginal}
-              </span>
+              {data.tuitionAmount !== data.total && (
+                <span className="text-base text-gray-400 line-through">
+                  {data.tuitionAmount.toLocaleString()} {t('common.currencyRiyal')}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -260,31 +279,51 @@ export default function StudentApplicationDetailsPage() {
             {t('studentApplications.details.attachments')}
           </h2>
           <div className="space-y-3">
-            {data.attachments.map((attachment, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between rounded-2xl border border-gray-100 p-4"
-              >
-                {/* File info on the right (RTL start) */}
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-10 items-center justify-center">
-                    <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-8" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">{attachment.name}</p>
-                    <p className="text-xs text-gray-400">{attachment.size}</p>
-                  </div>
-                </div>
-
-                {/* Download button on the left (RTL end) */}
-                <button
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-100 text-blue-500 transition-colors hover:bg-gray-50"
-                  onClick={() => console.log('Download', attachment.name)}
+            {[
+              {
+                name: t('studentApplications.details.guardianIdentity'),
+                path: data.guardianIdentityPath,
+              },
+              {
+                name: t('studentApplications.details.vaccinationCertificate'),
+                path: data.vaccinationCertificatePath,
+              },
+              {
+                name: t('studentApplications.details.lastEducationCertificate'),
+                path: data.lastEducationCertificatePath,
+              },
+              {
+                name: t('studentApplications.details.educationalCustody'),
+                path: data.educationalCustodyPath,
+              },
+            ]
+              .filter((attachment) => attachment.path)
+              .map((attachment, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between rounded-2xl border border-gray-100 p-4"
                 >
-                  <CustomImage src={DownloadIcon} alt="Download" className="h-5 w-5" />
-                </button>
-              </div>
-            ))}
+                  {/* File info on the right (RTL start) */}
+                  <div className="flex items-center gap-3">
+                    <CustomImage src={PdfIcon} alt="PDF" className="h-8 w-8" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{attachment.name}</p>
+                    </div>
+                  </div>
+
+                  {/* Download button on the left (RTL end) */}
+                  <a
+                    href={`${baseUrl}/${attachment.path}`}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="ghost" size="sm">
+                      <CustomImage src={DownloadIcon} alt="Download" className="h-5 w-5" />
+                    </Button>
+                  </a>
+                </div>
+              ))}
           </div>
         </div>
       </div>
