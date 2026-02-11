@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudents } from '@/redux/features/students/studentsSlice';
 import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 import { getStudentFullName } from '@/services/api/types/students.types';
+import { tokenManager } from '@gradex/lib/auth/token-manager';
 
 interface AddEditStudentInterviewPopupProps {
   isOpen: boolean;
@@ -55,7 +56,6 @@ export default function AddEditStudentInterviewPopup({
     reset,
     control,
     setValue,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<StudentInterviewApiProps>({
     resolver: yupResolver(StudentInterviewApiSchema),
@@ -71,7 +71,24 @@ export default function AddEditStudentInterviewPopup({
     },
   });
 
-  const selectedStudentId = watch('studentId');
+  const getStoredSchoolBranchId = (): string => {
+    try {
+      const userData = tokenManager.getUserData();
+      if (userData?.schoolBranchId && typeof userData.schoolBranchId === 'string') {
+        return userData.schoolBranchId;
+      }
+    } catch {
+      // ignore
+    }
+
+    try {
+      const rawUserData = localStorage.getItem('userData') ?? sessionStorage.getItem('userData');
+      const parsed = rawUserData ? (JSON.parse(rawUserData) as { schoolBranchId?: unknown }) : null;
+      return typeof parsed?.schoolBranchId === 'string' ? parsed.schoolBranchId : '';
+    } catch {
+      return '';
+    }
+  };
 
   const studentOptions: CustomSelectOption[] = students.length
     ? students.map((student) => ({
@@ -90,7 +107,7 @@ export default function AddEditStudentInterviewPopup({
   const createInterviewFormDefaults = (): StudentInterviewApiProps => ({
     nameAr: '',
     nameEn: '',
-    schoolBranchesId: '',
+    schoolBranchesId: getStoredSchoolBranchId(),
     studentId: '',
     supervisorId: '',
     interviewDate: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
@@ -103,12 +120,27 @@ export default function AddEditStudentInterviewPopup({
       return;
     }
 
+    const storedSchoolBranchId = getStoredSchoolBranchId();
+    if (storedSchoolBranchId) {
+      setValue('schoolBranchesId', storedSchoolBranchId);
+    }
+
     if (!areStudentsInitialized && !areStudentsLoading) {
-      dispatch(fetchStudents({ limit: 10000 }));
+      dispatch(
+        fetchStudents({
+          limit: 10000,
+          filters: storedSchoolBranchId ? { schoolBranchId: storedSchoolBranchId } : undefined,
+        })
+      );
     }
 
     if (!areTeachersInitialized && !areTeachersLoading) {
-      dispatch(fetchTeachers({ limit: 10000 }));
+      dispatch(
+        fetchTeachers({
+          limit: 10000,
+          filters: storedSchoolBranchId ? { schoolBranchId: storedSchoolBranchId } : undefined,
+        })
+      );
     }
   }, [
     areStudentsInitialized,
@@ -117,20 +149,12 @@ export default function AddEditStudentInterviewPopup({
     areTeachersLoading,
     dispatch,
     isOpen,
+    setValue,
   ]);
 
   useEffect(() => {
-    if (!selectedStudentId) {
-      return;
-    }
-
-    const student = students.find((s) => s.id === selectedStudentId);
-    setValue('schoolBranchesId', student?.schoolBrancheId ?? '');
-  }, [selectedStudentId, setValue, students]);
-
-  useEffect(() => {
     if (isOpen) {
-      reset(initialValues ?? createInterviewFormDefaults());
+      reset({ ...createInterviewFormDefaults(), ...(initialValues ?? {}) });
     }
   }, [isOpen, initialValues, reset, selectedDate]);
 
@@ -158,8 +182,10 @@ export default function AddEditStudentInterviewPopup({
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         {formattedSelectedDate && (
-          <div className="rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-600">
-            <span className="font-medium text-gray-900">{t('interviews.interviewDate')}:</span>{' '}
+          <div className="rounded-lg bg-gray-50 p-4 text-center text-base text-gray-500">
+            <span className="text-base font-medium text-black-800">
+              {t('interviews.interviewDate')}:
+            </span>{' '}
             {formattedSelectedDate}
           </div>
         )}
@@ -235,7 +261,6 @@ export default function AddEditStudentInterviewPopup({
 
             <FormField
               label={t('interviews.supervisorName')}
-              required
               error={errors.supervisorId?.message && t(errors.supervisorId.message)}
               htmlFor="supervisorId"
             >
@@ -277,29 +302,6 @@ export default function AddEditStudentInterviewPopup({
                     placeholder={t('interviews.selectStartTime')}
                     className="flex justify-end"
                     error={errors.startTime ? ' ' : undefined}
-                  />
-                )}
-              />
-            </FormField>
-
-            <FormField
-              label={t('interviews.endTime')}
-              required
-              error={errors.endTime?.message && t(errors.endTime.message)}
-              htmlFor="endTime"
-            >
-              <Controller
-                name="endTime"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="endTime"
-                    type="time"
-                    icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
-                    placeholder={t('interviews.selectEndTime')}
-                    className="flex justify-end"
-                    error={errors.endTime ? ' ' : undefined}
                   />
                 )}
               />

@@ -220,11 +220,16 @@ export default function StudentInterviewsCalendar() {
 
   const handleEditorSubmit = async (values: StudentInterviewApiProps) => {
     try {
-      const startIso = buildIsoDateTime(values.interviewDate, values.startTime);
-      const endIso = buildIsoDateTime(values.interviewDate, values.endTime);
+      const supervisorId = values.supervisorId ?? '';
+      const interviewDate = values.interviewDate ?? '';
+      const startTime = values.startTime ?? '';
+      const endTime = values.endTime ?? '';
+
+      const startIso = buildIsoDateTime(interviewDate || undefined, startTime || undefined);
+      const endIso = buildIsoDateTime(interviewDate || undefined, endTime || undefined);
       const interviewDateIso = startIso;
 
-      if (!startIso || !endIso || !interviewDateIso) {
+      if (!startIso || !interviewDateIso) {
         showToast({
           message: t('common.error'),
           type: 'error',
@@ -234,9 +239,10 @@ export default function StudentInterviewsCalendar() {
 
       const payload = {
         ...values,
+        supervisorId,
         interviewDate: interviewDateIso,
         startTime: startIso,
-        endTime: endIso,
+        endTime: endIso ?? startIso,
       };
 
       if (editorMode === 'add') {
