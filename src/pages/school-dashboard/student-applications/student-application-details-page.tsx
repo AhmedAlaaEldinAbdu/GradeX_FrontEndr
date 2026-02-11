@@ -22,7 +22,7 @@ export default function StudentApplicationDetailsPage() {
   if (!id) return null;
 
   return (
-    <div dir="rtl" className="pb-6">
+    <div className="pb-6">
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 

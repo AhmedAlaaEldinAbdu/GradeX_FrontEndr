@@ -41,7 +41,7 @@ const ApplicationAttachments: React.FC<ApplicationAttachmentsProps> = ({ data, b
 
   return (
     <div className="rounded-2xl border border-gray-200 p-6">
-      <h2 className="mb-4 text-right text-lg font-bold text-gray-900">
+      <h2 className="mb-4 text-start text-lg font-bold text-gray-900">
         {t('studentApplications.details.attachments')}
       </h2>
       <div className="space-y-3">

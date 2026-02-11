@@ -11,7 +11,7 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
 
   return (
     <div className="mb-8 rounded-2xl border border-gray-200 p-6">
-      <h2 className="mb-4 text-right text-lg font-bold text-gray-900">
+      <h2 className="mb-4 text-start text-lg font-bold text-gray-900">
         {t('studentApplications.details.tuitionFees')}
       </h2>
 
@@ -44,7 +44,7 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
       {/* Paid Services Label */}
       {data.paidServices.length > 0 && (
         <>
-          <div className="mb-4 text-right text-sm font-bold text-gray-800">
+          <div className="mb-4 text-start text-sm font-bold text-gray-800">
             {t('studentApplications.details.addedFees')}:
           </div>
 
