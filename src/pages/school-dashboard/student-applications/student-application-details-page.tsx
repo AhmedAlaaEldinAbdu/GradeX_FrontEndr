@@ -99,9 +99,9 @@ export default function StudentApplicationDetailsPage() {
         </div>
       </div>
 
-      {/* Parent Information Section - with Profile Image inside */}
-      <div className="mb-6 rounded-2xl bg-white p-6 shadow-sm">
-        {/* Profile Image - centered at top of card */}
+      {/* Single white card container for all sections */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        {/* Profile Image - centered at top */}
         <div className="mb-6 flex justify-center">
           <CustomImage
             src={data.studentImage}
@@ -110,183 +110,182 @@ export default function StudentApplicationDetailsPage() {
           />
         </div>
 
-        {/* Section Title - right aligned */}
-        <h2 className="mb-4 border-b border-gray-200 pb-3 text-right text-lg font-bold text-gray-900">
-          {t('studentApplications.details.parentInfo')}
-        </h2>
+        {/* Parent Information Section */}
+        <div className="mb-8 rounded-2xl border border-gray-200 p-6">
+          <h2 className="mb-4 text-right text-lg font-bold text-gray-900">
+            {t('studentApplications.details.parentInfo')}
+          </h2>
 
-        {/* Parent Info rows - two-column grid */}
-        <div className="space-y-4 text-sm">
-          {/* Row 1: Phone and Email */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-800">
-                {t('studentApplications.details.phone')}:
-              </span>
-              <span className="text-gray-600" dir="ltr">
-                {data.parentInfo.phone}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-800">
-                {t('studentApplications.details.email')}:
-              </span>
-              <span className="text-gray-600">{data.parentInfo.email}</span>
-            </div>
-          </div>
-          {/* Row 2: Country and Nationality */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-800">
-                {t('studentApplications.details.country')}:
-              </span>
-              <span className="text-gray-600">{data.parentInfo.country}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-800">
-                {t('studentApplications.details.nationality')}:
-              </span>
-              <span className="text-gray-600">{data.parentInfo.nationality}</span>
-            </div>
-          </div>
-          {/* Row 3: Address (full width) */}
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-800">
-              {t('studentApplications.details.address')}:
-            </span>
-            <span className="text-gray-600">{data.parentInfo.address}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Child Information Section */}
-      <div className="mb-6 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="mb-4 border-b border-gray-200 pb-3 text-right text-lg font-bold text-gray-900">
-          {t('studentApplications.details.childInfo')}
-        </h2>
-        <div className="space-y-4 text-sm">
-          {/* Row 1: Birth Date and Previous School */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-800">
-                {t('studentApplications.details.birthDate')}:
-              </span>
-              <span className="text-gray-600">{data.childInfo.birthDate}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-800">
-                {t('studentApplications.details.previousSchoolName')}:
-              </span>
-              <span className="text-gray-600">{data.childInfo.previousSchool}</span>
-            </div>
-          </div>
-          {/* Row 2: Educational Stage and Grade */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-800">
-                {t('studentApplications.details.educationalStage')}:
-              </span>
-              <span className="text-gray-600">{data.childInfo.educationalStage}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-800">
-                {t('studentApplications.details.gradeLevel')}:
-              </span>
-              <span className="text-gray-600">{data.childInfo.gradeLevel}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tuition Fees Section */}
-      <div className="mb-6 rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-right text-lg font-bold text-gray-900">
-          {t('studentApplications.details.tuitionFees')}
-        </h2>
-
-        {/* Payment Method and Discount */}
-        <div className="mb-6 space-y-3 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-800">
-              {t('studentApplications.details.paymentMethod')}:
-            </span>
-            <span className="text-gray-600">{data.tuitionFees.paymentMethod}</span>
-            <span className="text-sm text-gray-600"> Pay</span>
-            <span className="text-sm text-gray-600">Apple Pay</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-800">
-              {t('studentApplications.details.discount')}:
-            </span>
-            <span className="text-gray-600">{data.tuitionFees.discount}</span>
-          </div>
-        </div>
-
-        {/* Added Fees Label */}
-        <div className="mb-4 text-right text-sm font-bold text-gray-800">
-          {t('studentApplications.details.addedFees')}:
-        </div>
-
-        {/* Added Fees Grid - 4 columns, no border/background */}
-        <div className="mb-6 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-4">
-          {data.tuitionFees.addedFees.map((fee, index) => (
-            <div key={index} className="text-center">
-              <p className="text-sm font-bold text-gray-800">{fee.name}</p>
-              <p className="text-sm text-gray-500">{fee.price}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Total - label on right (RTL), prices on left */}
-        <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-          <span
-            className="text-sm font-bold text-green-700"
-            style={{ borderRight: '3px solid #16a34a', paddingRight: '8px' }}
-          >
-            {t('studentApplications.details.totalExpenses')}
-          </span>
-          <div className="flex items-center gap-3" dir="ltr">
-            <span className="text-xl font-bold text-green-600">
-              {data.tuitionFees.totalDiscounted}
-            </span>
-            <span className="text-base text-gray-400 line-through">
-              {data.tuitionFees.totalOriginal}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Attachments Section */}
-      <div className="rounded-2xl bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-right text-lg font-bold text-gray-900">
-          {t('studentApplications.details.attachments')}
-        </h2>
-        <div className="space-y-3">
-          {data.attachments.map((attachment, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between rounded-2xl border border-gray-100 p-4"
-            >
-              {/* File info on the right (RTL start) */}
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-10 items-center justify-center">
-                  <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-8" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">{attachment.name}</p>
-                  <p className="text-xs text-gray-400">{attachment.size}</p>
-                </div>
+          {/* Parent Info rows - two-column grid */}
+          <div className="space-y-4 text-sm">
+            {/* Row 1: Phone and Email */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.phone')}:
+                </span>
+                <span className="text-gray-600" dir="ltr">
+                  {data.parentInfo.phone}
+                </span>
               </div>
-
-              {/* Download button on the left (RTL end) */}
-              <button
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-100 text-blue-500 transition-colors hover:bg-gray-50"
-                onClick={() => console.log('Download', attachment.name)}
-              >
-                <CustomImage src={DownloadIcon} alt="Download" className="h-5 w-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.email')}:
+                </span>
+                <span className="text-gray-600">{data.parentInfo.email}</span>
+              </div>
             </div>
-          ))}
+            {/* Row 2: Country and Nationality */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.country')}:
+                </span>
+                <span className="text-gray-600">{data.parentInfo.country}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.nationality')}:
+                </span>
+                <span className="text-gray-600">{data.parentInfo.nationality}</span>
+              </div>
+            </div>
+            {/* Row 3: Address (full width) */}
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-gray-800">
+                {t('studentApplications.details.address')}:
+              </span>
+              <span className="text-gray-600">{data.parentInfo.address}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Child Information Section */}
+        <div className="mb-8 rounded-2xl border border-gray-200 p-6">
+          <h2 className="mb-4 text-right text-lg font-bold text-gray-900">
+            {t('studentApplications.details.childInfo')}
+          </h2>
+          <div className="space-y-4 text-sm">
+            {/* Row 1: Birth Date and Previous School */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.birthDate')}:
+                </span>
+                <span className="text-gray-600">{data.childInfo.birthDate}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.previousSchoolName')}:
+                </span>
+                <span className="text-gray-600">{data.childInfo.previousSchool}</span>
+              </div>
+            </div>
+            {/* Row 2: Educational Stage and Grade */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.educationalStage')}:
+                </span>
+                <span className="text-gray-600">{data.childInfo.educationalStage}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-800">
+                  {t('studentApplications.details.gradeLevel')}:
+                </span>
+                <span className="text-gray-600">{data.childInfo.gradeLevel}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tuition Fees Section */}
+        <div className="mb-8 rounded-2xl border border-gray-200 p-6">
+          <h2 className="mb-4 text-right text-lg font-bold text-gray-900">
+            {t('studentApplications.details.tuitionFees')}
+          </h2>
+
+          {/* Payment Method and Discount */}
+          <div className="mb-6 space-y-3 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-gray-800">
+                {t('studentApplications.details.paymentMethod')}:
+              </span>
+              <span className="text-gray-600">{data.tuitionFees.paymentMethod}</span>
+              <span className="text-sm text-gray-600"> Pay</span>
+              <span className="text-sm text-gray-600">Apple Pay</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-gray-800">
+                {t('studentApplications.details.discount')}:
+              </span>
+              <span className="text-gray-600">{data.tuitionFees.discount}</span>
+            </div>
+          </div>
+
+          {/* Added Fees Label */}
+          <div className="mb-4 text-right text-sm font-bold text-gray-800">
+            {t('studentApplications.details.addedFees')}:
+          </div>
+
+          {/* Added Fees Grid - 4 columns */}
+          <div className="mb-6 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-4">
+            {data.tuitionFees.addedFees.map((fee, index) => (
+              <div key={index} className="text-center">
+                <p className="text-sm font-bold text-gray-800">{fee.name}</p>
+                <p className="text-sm text-gray-500">{fee.price}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Total - label on right (RTL), prices on left */}
+          <div className="flex items-center justify-between rounded-xl border border-gray-100 p-3">
+            <span className="text-sm font-bold text-green-700">
+              {t('studentApplications.details.totalExpenses')}
+            </span>
+            <div className="flex items-center gap-3" dir="ltr">
+              <span className="text-xl font-bold text-green-600">
+                {data.tuitionFees.totalDiscounted}
+              </span>
+              <span className="text-base text-gray-400 line-through">
+                {data.tuitionFees.totalOriginal}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Attachments Section */}
+        <div className="rounded-2xl border border-gray-200 p-6">
+          <h2 className="mb-4 text-right text-lg font-bold text-gray-900">
+            {t('studentApplications.details.attachments')}
+          </h2>
+          <div className="space-y-3">
+            {data.attachments.map((attachment, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between rounded-2xl border border-gray-100 p-4"
+              >
+                {/* File info on the right (RTL start) */}
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-10 items-center justify-center">
+                    <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-8" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">{attachment.name}</p>
+                    <p className="text-xs text-gray-400">{attachment.size}</p>
+                  </div>
+                </div>
+
+                {/* Download button on the left (RTL end) */}
+                <button
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-100 text-blue-500 transition-colors hover:bg-gray-50"
+                  onClick={() => console.log('Download', attachment.name)}
+                >
+                  <CustomImage src={DownloadIcon} alt="Download" className="h-5 w-5" />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
