@@ -111,6 +111,7 @@
     "all": "الكل",
     "status": "الحالة",
     "noDataFound": "لم يتم العثور على بيانات",
+    "details": "التفاصيل",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",

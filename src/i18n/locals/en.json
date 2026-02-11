@@ -111,6 +111,7 @@
     "status": "Status",
     "all": "All",
     "noDataFound": "No data found",
+    "details": "Details",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
