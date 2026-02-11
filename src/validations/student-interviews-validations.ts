@@ -7,18 +7,14 @@ export const StudentInterviewFormSchema = object({
   educationalStage: string()
     .required('interviews.validation.educationalStageRequired')
     .typeError('interviews.validation.educationalStageRequired'),
-  supervisorName: string()
-    .required('interviews.validation.supervisorNameRequired')
-    .typeError('interviews.validation.supervisorNameRequired'),
+  supervisorName: string().notRequired().default(''),
   interviewDate: string()
     .required('interviews.validation.interviewDateRequired')
     .typeError('interviews.validation.interviewDateRequired'),
   startTime: string()
     .required('interviews.validation.startTimeRequired')
     .typeError('interviews.validation.startTimeRequired'),
-  endTime: string()
-    .required('interviews.validation.endTimeRequired')
-    .typeError('interviews.validation.endTimeRequired'),
+  endTime: string().notRequired().default(''),
   notes: string().notRequired().default(''),
 });
 
@@ -38,18 +34,14 @@ export const StudentInterviewApiSchema = object({
   studentId: string()
     .required('common.validation.required')
     .typeError('common.validation.required'),
-  supervisorId: string()
-    .required('interviews.validation.supervisorIdRequired')
-    .typeError('interviews.validation.supervisorIdRequired'),
+  supervisorId: string().notRequired().default(''),
   interviewDate: string()
     .required('interviews.validation.interviewDateRequired')
     .typeError('interviews.validation.interviewDateRequired'),
   startTime: string()
     .required('interviews.validation.startTimeRequired')
     .typeError('interviews.validation.startTimeRequired'),
-  endTime: string()
-    .required('interviews.validation.endTimeRequired')
-    .typeError('interviews.validation.endTimeRequired'),
+  endTime: string().notRequired().default(''),
 });
 
 export type StudentInterviewApiProps = InferType<typeof StudentInterviewApiSchema>;
