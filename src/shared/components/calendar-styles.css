@@ -30,7 +30,7 @@
   height: 2.5rem;
   border-radius: 100%;
   border: none;
-  background-color: #F2F2F2;
+  background-color: #f2f2f2;
   color: #6b7280;
   cursor: pointer;
   transition: all 0.2s;
@@ -44,7 +44,7 @@
 .toolbar-label {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #0E1F1F;
+  color: #0e1f1f;
   min-width: 150px;
   text-align: center;
 }
@@ -79,12 +79,12 @@
   padding: 0rem 1.75rem;
   border-radius: 0.5rem;
   font-weight: 400;
-  color: #00512E;
+  color: #00512e;
   font-size: 1.125rem;
 }
 
 .weekday-label--today {
-  border: 1px solid #00512E;
+  border: 1px solid #00512e;
   border-radius: 0.75rem;
 }
 
@@ -103,7 +103,7 @@
   position: relative;
   border: 0 !important;
   border-radius: 6px;
-  background-color: #F6F6F6;
+  background-color: #f6f6f6;
 }
 
 .rtl .rbc-day-bg {
@@ -116,14 +116,14 @@
 }
 
 .rbc-off-range-bg {
-  background-color: #F6F6F6;
+  background-color: #f6f6f6;
 }
 
 .rbc-today {
-  background-color: #5FA8960D;
+  background-color: #5fa8960d;
 }
 .rbc-day-bg:hover {
-  background-color: rgba(95, 168, 150, 0.10);
+  background-color: rgba(95, 168, 150, 0.1);
 }
 .rbc-date-cell {
   padding: 0.5rem;
@@ -206,11 +206,11 @@
 }
 
 .shared-calendar-event {
-  background-color: #5FA8960D;
-  border: 1px solid #00512E;
+  background-color: #5fa8960d;
+  border: 1px solid #00512e;
   border-radius: 0.5rem;
   padding: 0.35rem 0.5rem;
-  color: #00512E;
+  color: #00512e;
   font-size: 0.75rem;
   font-weight: 600;
   display: flex;
@@ -218,11 +218,11 @@
   justify-content: center;
   min-height: 2rem;
   text-align: center;
-  min-width: 30%;
+  width: 38%;
 }
 
 .shared-calendar-event:hover {
-  background-color: rgba(95, 168, 150, 0.10);
+  background-color: rgba(95, 168, 150, 0.1);
   box-shadow: 0 2px 6px rgba(15, 118, 110, 0.15);
 }
 
@@ -233,11 +233,11 @@
 
 /* Selected Event */
 .rbc-selected {
-  background-color: rgba(95, 168, 150, 0.10);
+  background-color: rgba(95, 168, 150, 0.1);
 }
 .rbc-event.rbc-selected,
 .rbc-day-slot .rbc-selected.rbc-background-event {
-  background-color: rgba(95, 168, 150, 0.10);
+  background-color: rgba(95, 168, 150, 0.1);
 }
 
 /* Time Views */
