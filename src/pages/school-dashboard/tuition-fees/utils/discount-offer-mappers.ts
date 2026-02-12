@@ -72,7 +72,8 @@ export const formValuesToOfferPayload = (
         schoolBranchId: base?.schoolBranchId ?? schoolBranchId,
         nameAr: form.nameAr,
         nameEn: form.nameEn,
-        offerType: base?.offerType ?? 1,
+        offerType: 2,
+        //  base?.offerType ?? 1,
         amount: form.discountType === 'value' ? numericValue : 0,
         percentage: form.discountType === 'percentage' ? numericValue : 0,
         applyOn:
@@ -80,10 +81,10 @@ export const formValuesToOfferPayload = (
         startDate: form.startDate ? toIsoDateTime(form.startDate) : base?.startDate ?? '',
         endDate: form.endDate ? toIsoDateTime(form.endDate) : base?.endDate ?? '',
         isActive: !!form.isActive,
-        matchAllConditions:
-            typeof form.matchAllConditions === 'boolean'
-                ? form.matchAllConditions
-                : (base?.matchAllConditions ?? true),
+        matchAllConditions: true,
+            // typeof form.matchAllConditions === 'boolean'
+            //     ? form.matchAllConditions
+            //     : (base?.matchAllConditions ?? true),
         conditions,
     };
 };

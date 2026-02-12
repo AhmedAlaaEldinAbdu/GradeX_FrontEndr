@@ -70,7 +70,7 @@ export const OfferField = {
   ClassroomId: 4,
 
   IsNewStudent: 10,
-  HasSibling: 11,
+  HasSibling: 11, // true
   SiblingsCount: 12,
 
   Gender: 13,
@@ -102,10 +102,10 @@ export const OfferField = {
   PaymentDate: 92,
   DueDate: 93,
 
-  IsFullPayment: 94,
-  IsEarlyPayment: 95,
+  IsFullPayment: 94, // true
+  IsEarlyPayment: 95, // true
 
-  AlwaysTrue: 200, // عرض عام بدون شروط
+  AlwaysTrue: 200, // true // عرض عام بدون شروط
 } as const;
 export type OfferField = typeof OfferField[keyof typeof OfferField];
 
