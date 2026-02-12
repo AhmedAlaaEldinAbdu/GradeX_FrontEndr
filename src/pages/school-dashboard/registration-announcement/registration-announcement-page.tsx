@@ -1,14 +1,19 @@
 import React from 'react';
 import { Breadcrumb } from '@gradex/shared/layout/layout';
-import { Button } from '@gradex/shared/components/components';
 import RegistrationAnnouncement from './components/RegistrationAnnouncement';
 import { useTranslation } from 'react-i18next';
-
+import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import { useNavigate } from 'react-router-dom';
+import PageHeader from '@/shared/components/PageHeader';
 
 const RegistrationAnnouncementPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const breadcrumbItems = [
+    { label: t('sidebar.studentManagement') },
+    { label: t('registrationAnnouncement.title') },
+  ];
 
   // TODO: Remove this temporary DEV check when the page is ready
   if (!import.meta.env.DEV) {
@@ -23,18 +28,20 @@ const RegistrationAnnouncementPage: React.FC = () => {
   return (
     <div>
       {/* Breadcrumb */}
-      <Breadcrumb items={[{ label: t('registrationAnnouncement.title') }]} />
+      <Breadcrumb items={breadcrumbItems} />
 
       {/* Page Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">{t('registrationAnnouncement.title')}</h1>
-        <Button
-          icon={<span className="text-lg">+</span>}
-          onClick={() => navigate('/registration-announcement/add-registration-announcement')}
-        >
-          {t('registrationAnnouncement.addAnnouncement')}
-        </Button>
-      </div>
+      <PageHeader
+        title={'registrationAnnouncement.title'}
+        actions={[
+          {
+            label: t('registrationAnnouncement.addAnnouncement'),
+            imgSrc: PlusIcon,
+            imgClassName: 'w-[24px] h-[24px]',
+            onClick: () => navigate('/registration-announcement/add-registration-announcement'),
+          },
+        ]}
+      />
 
       {/* Main Content */}
       <RegistrationAnnouncement />
