@@ -45,3 +45,67 @@ export interface StudentApplicationQueryParams {
   Status?: number;
   LKSchoolStageId?: string;
 }
+
+export const RelationshipType = {
+  Father: 1,
+  Mother: 2,
+  Uncle: 3,
+  Aunt: 4,
+  Other: 5,
+} as const;
+
+export type RelationshipType = (typeof RelationshipType)[keyof typeof RelationshipType];
+
+export interface ParentInfo {
+  parentId: string;
+  email: string;
+  lkCountryId: string;
+  lkCountryName: string | null;
+  cityId: string | null;
+  cityName: string | null;
+  districtName: string | null;
+  streetName: string | null;
+  buildingNumber: string | null;
+}
+
+export interface PaidService {
+  id: string;
+  name: string;
+  amount: number;
+}
+
+export interface StudentApplicationDetailDto {
+  id: string;
+  studentId: string;
+  firstName: string;
+  secondName: string;
+  thirdName: string;
+  fourthName: string;
+  dateOfBirth: string;
+  lkSchoolStageId: string;
+  lkSchoolStageName: string | null;
+  gradeId: string;
+  gradeName: string;
+  tuitionFeesId: string;
+  tuitionAmount: number;
+  services: string[];
+  schoolBrancheId: string;
+  schoolName: string;
+  lKPaymentMethodId: string;
+  paymentMethod: string;
+  installmentPlanId: string | null;
+  offers: string[];
+  paidServices: PaidService[];
+  total: number;
+  status: StudentApplicationStatus;
+  guardianName: string;
+  relationshipType: RelationshipType;
+  educationalCustodyPath: string | null;
+  hasPreviousSchool: boolean;
+  previousSchoolName: string | null;
+  studentPhotoPath: string | null;
+  guardianIdentityPath: string | null;
+  vaccinationCertificatePath: string | null;
+  lastEducationCertificatePath: string | null;
+  parentInfo: ParentInfo;
+}

@@ -1,10 +1,15 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { studentApplicationsApiService } from '@/services/api/student-applications/student-applications.service';
-import type { StudentApplicationDto } from '@/services/api/student-applications/student-applications.types';
+import type {
+  StudentApplicationDto,
+  StudentApplicationDetailDto,
+} from '@/services/api/student-applications/student-applications.types';
 import { getErrorMessage } from '@/lib/http';
 
 interface StudentApplicationsState {
   applications: StudentApplicationDto[];
+  currentApplication: StudentApplicationDetailDto | null;
+  currentApplicationLoading: boolean;
   pagination: {
     pageIndex: number;
     pageSize: number;
@@ -17,6 +22,8 @@ interface StudentApplicationsState {
 
 const initialState: StudentApplicationsState = {
   applications: [],
+  currentApplication: null,
+  currentApplicationLoading: false,
   pagination: {
     pageIndex: 1,
     pageSize: 10,
@@ -85,6 +92,24 @@ export const fetchStudentApplications = createAsyncThunk<
   }
 });
 
+export const fetchStudentApplicationById = createAsyncThunk<
+  StudentApplicationDetailDto,
+  string,
+  { rejectValue: string }
+>('studentApplications/fetchStudentApplicationById', async (id, { rejectWithValue }) => {
+  try {
+    const response = await studentApplicationsApiService.getStudentApplicationById(id);
+
+    if (!response?.isSuccess || !response.data) {
+      return rejectWithValue('Failed to fetch student application details');
+    }
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const studentApplicationsSlice = createSlice({
   name: 'studentApplications',
   initialState,
@@ -110,6 +135,21 @@ const studentApplicationsSlice = createSlice({
       )
       .addCase(fetchStudentApplications.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchStudentApplicationById.pending, (state) => {
+        state.currentApplicationLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchStudentApplicationById.fulfilled,
+        (state, action: PayloadAction<StudentApplicationDetailDto>) => {
+          state.currentApplicationLoading = false;
+          state.currentApplication = action.payload;
+        }
+      )
+      .addCase(fetchStudentApplicationById.rejected, (state, action) => {
+        state.currentApplicationLoading = false;
         state.error = action.payload as string;
       });
   },

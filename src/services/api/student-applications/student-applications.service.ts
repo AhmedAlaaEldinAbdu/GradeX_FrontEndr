@@ -4,6 +4,7 @@ import type { ApiResponseModel } from '../config';
 import type {
   StudentApplicationListResponse,
   StudentApplicationQueryParams,
+  StudentApplicationDetailDto,
 } from './student-applications.types';
 
 export async function getStudentApplications(
@@ -60,8 +61,18 @@ export async function getStudentApplications(
   return response.data;
 }
 
+export async function getStudentApplicationById(
+  id: string
+): Promise<ApiResponseModel<StudentApplicationDetailDto>> {
+  const response: AxiosResponse<ApiResponseModel<StudentApplicationDetailDto>> =
+    await axiosClient.get(`/StudentApplication/${id}`);
+
+  return response.data;
+}
+
 export const studentApplicationsApiService = {
   getStudentApplications,
+  getStudentApplicationById,
 };
 
 export default studentApplicationsApiService;
