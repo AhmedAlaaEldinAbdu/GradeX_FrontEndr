@@ -1,9 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { Breadcrumb } from '@gradex/shared/layout/layout';
 import StudentInterviewsCalendar from './components/StudentInterviewsCalendar';
+import PageHeader from '@/shared/components/PageHeader';
 
 export default function StudentInterviewsPage() {
   const { t } = useTranslation();
+
+  const breadcrumbItems = [
+    { label: t('sidebar.studentManagement') },
+    { label: t('interviews.title') },
+  ];
 
   // TODO: Remove this temporary DEV check when the page is ready
   if (!import.meta.env.DEV) {
@@ -17,10 +23,12 @@ export default function StudentInterviewsPage() {
 
   return (
     <div>
-      <Breadcrumb items={[{ label: t('interviews.title') }]} />
-      <div className="mb-6">
-        <h1 className="text-start text-2xl font-bold text-gray-800">{t('interviews.title')}</h1>
-      </div>
+      {/* Breadcrumb */}
+      <Breadcrumb items={breadcrumbItems} />
+
+      {/* Page Header */}
+      <PageHeader title={'interviews.title'} />
+
       <StudentInterviewsCalendar />
     </div>
   );

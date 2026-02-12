@@ -33,6 +33,7 @@ interface CalendarStudentInterview extends CalendarEvent {
   studentId?: string;
   studentName?: string;
   supervisorId?: string;
+  supervisor?: string;
   supervisorName?: string;
   interviewDate?: string;
   startTime?: string;
@@ -77,13 +78,12 @@ export default function StudentInterviewsCalendar() {
       const result = await dispatch(
         fetchStudentInterviews({
           filters,
-          limit: 10000,
         })
       ).unwrap();
 
       if (!trimmedSearch && result?.data) {
         const names = result.data
-          .map((item: StudentInterviewEntity) => item.supervisorName)
+          .map((item: StudentInterviewEntity) => item.supervisor || item.supervisorName)
           .filter((name): name is string => Boolean(name));
 
         const uniqueSupervisors = Array.from<string>(new Set(names)).map((name) => ({
@@ -115,7 +115,9 @@ export default function StudentInterviewsCalendar() {
     if (!selectedSupervisorName) {
       return studentInterviewsData;
     }
-    return studentInterviewsData.filter((x) => x.supervisorName === selectedSupervisorName);
+    return studentInterviewsData.filter(
+      (x) => (x.supervisor || x.supervisorName) === selectedSupervisorName
+    );
   }, [selectedSupervisorName, studentInterviewsData]);
 
   const calendarStudentInterviews = useMemo<CalendarStudentInterview[]>(() => {
@@ -148,6 +150,7 @@ export default function StudentInterviewsCalendar() {
         studentId: interview.studentId,
         studentName: interview.studentName,
         supervisorId: interview.supervisorId,
+        supervisor: interview.supervisor,
         supervisorName: interview.supervisorName,
         interviewDate: interview.interviewDate,
         startTime: interview.startTime,
@@ -252,6 +255,7 @@ export default function StudentInterviewsCalendar() {
             message: t('interviews.interviewAddedSuccessfully'),
             type: 'success',
           });
+          fetchStudentInterviewsData();
         } else {
           showToast({
             message: t('common.error'),
@@ -271,16 +275,14 @@ export default function StudentInterviewsCalendar() {
             message: t('interviews.interviewUpdatedSuccessfully'),
             type: 'success',
           });
+          fetchStudentInterviewsData();
         } else {
           showToast({
             message: t('common.error'),
             type: 'error',
           });
-          return;
         }
       }
-
-      await fetchStudentInterviewsData();
       handleCloseEditorPopup();
     } catch (error) {
       const message =
@@ -311,14 +313,24 @@ export default function StudentInterviewsCalendar() {
 
     try {
       setIsDeleting(true);
-      await dispatch(deleteStudentInterview(interviewIdPendingDelete)).unwrap();
-      showToast({
-        message: t('interviews.interviewDeletedSuccessfully'),
-        type: 'success',
-      });
-      setShowDeletePopup(false);
-      setInterviewIdPendingDelete(null);
-      await fetchStudentInterviewsData();
+      await dispatch(deleteStudentInterview(interviewIdPendingDelete))
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess || res === interviewIdPendingDelete) {
+            showToast({
+              message: t('interviews.interviewDeletedSuccessfully'),
+              type: 'success',
+            });
+            setShowDeletePopup(false);
+            setInterviewIdPendingDelete(null);
+            fetchStudentInterviewsData();
+          } else {
+            showToast({
+              message: t('common.error'),
+              type: 'error',
+            });
+          }
+        });
     } catch (error) {
       const message =
         typeof error === 'string'
@@ -329,6 +341,22 @@ export default function StudentInterviewsCalendar() {
       setIsDeleting(false);
     }
   };
+
+  const hasMultipleInterviewsOnDay = useCallback(
+    (day: Date) => {
+      const targetDate = new Date(day);
+      targetDate.setHours(0, 0, 0, 0);
+
+      const interviewsOnDay = calendarStudentInterviews.filter((interview) => {
+        const interviewDate = new Date(interview.start);
+        interviewDate.setHours(0, 0, 0, 0);
+        return interviewDate.getTime() === targetDate.getTime();
+      });
+
+      return interviewsOnDay.length > 1;
+    },
+    [calendarStudentInterviews]
+  );
 
   const contextMenuActions: ContextMenuAction[] = [
     {
@@ -359,22 +387,43 @@ export default function StudentInterviewsCalendar() {
       onClick: (_date, event) => {
         if (event) {
           const fullEvent = calendarStudentInterviews.find((e) => e.id === event.id);
-          if (fullEvent) handleOpenEditPopup(fullEvent);
+          if (fullEvent && !hasMultipleInterviewsOnDay(fullEvent.start)) {
+            handleOpenEditPopup(fullEvent);
+          }
         }
       },
       color: 'success',
       showOnEvent: true,
       showOnDate: false,
+      hidden: (_date, event) => {
+        if (event) {
+          const fullEvent = calendarStudentInterviews.find((e) => e.id === event.id);
+          return fullEvent ? hasMultipleInterviewsOnDay(fullEvent.start) : false;
+        }
+        return false;
+      },
     },
     {
       label: t('interviews.deleteInterview'),
       icon: TrashFillIcon,
       onClick: (_date, event) => {
-        if (event) handleRequestDelete(event.id);
+        if (event) {
+          const fullEvent = calendarStudentInterviews.find((e) => e.id === event.id);
+          if (fullEvent && !hasMultipleInterviewsOnDay(fullEvent.start)) {
+            handleRequestDelete(fullEvent.id);
+          }
+        }
       },
       color: 'danger',
       showOnEvent: true,
       showOnDate: false,
+      hidden: (_date, event) => {
+        if (event) {
+          const fullEvent = calendarStudentInterviews.find((e) => e.id === event.id);
+          return fullEvent ? hasMultipleInterviewsOnDay(fullEvent.start) : false;
+        }
+        return false;
+      },
     },
   ];
 
@@ -402,7 +451,7 @@ export default function StudentInterviewsCalendar() {
               options={allSupervisors}
               maxHeight="200px"
               className="w-[250px]"
-              placeholder={isLoading ? t('common.loading') : t('interviews.supervisorName')}
+              placeholder={isLoading ? t('common.loading') : t('interviews.supervisor')}
               disabled={isLoading}
             />
           </div>
@@ -488,6 +537,7 @@ export default function StudentInterviewsCalendar() {
                 studentId: entity.studentId,
                 studentName: entity.studentName,
                 supervisorId: entity.supervisorId,
+                supervisor: entity.supervisor,
                 supervisorName: entity.supervisorName,
                 interviewDate: entity.interviewDate,
                 startTime: entity.startTime,
