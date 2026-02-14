@@ -24,6 +24,10 @@ import useLanguage from '@/hooks/useLanguage';
 import ScheduleStudentAppointmentPopup from '../popups/ScheduleStudentAppointmentPopup';
 import type { ScheduleAppointmentFormProps } from '@/validations/student-applications-validations';
 
+import AcceptModal from './AcceptModal';
+import EditRequestModal from './EditRequestModal';
+import NotPassedModal from './NotPassedModal';
+
 const RegistrationRequestsTable: React.FC = () => {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
@@ -38,6 +42,11 @@ const RegistrationRequestsTable: React.FC = () => {
   const [selectedApplication, setSelectedApplication] = useState<StudentApplicationDto | null>(
     null
   );
+
+  // Modal state
+  const [isAcceptModalOpen, setAcceptModalOpen] = useState(false);
+  const [isEditRequestModalOpen, setEditRequestModalOpen] = useState(false);
+  const [isNotPassedModalOpen, setNotPassedModalOpen] = useState(false);
 
   // Redux State
   const { applications, pagination, isLoading } = useAppSelector(
@@ -67,6 +76,66 @@ const RegistrationRequestsTable: React.FC = () => {
     selectedStageId,
     selectedStatus,
   ]);
+
+  // Action handlers
+  const handleAccept = (row: StudentApplicationDto) => {
+    setSelectedApplication(row);
+    setAcceptModalOpen(true);
+  };
+
+  const handleEditRequest = (row: StudentApplicationDto) => {
+    setSelectedApplication(row);
+    setEditRequestModalOpen(true);
+  };
+
+  const handleScheduleAppointment = (application: StudentApplicationDto) => {
+    setSelectedApplication(application);
+    setShowSchedulePopup(true);
+  };
+
+  const handleNotPassed = (row: StudentApplicationDto) => {
+    setSelectedApplication(row);
+    setNotPassedModalOpen(true);
+  };
+
+  // Modal confirm handlers
+  const handleAcceptConfirm = (contractFile?: File) => {
+    console.log('Accept confirmed', selectedApplication?.id, contractFile);
+    setAcceptModalOpen(false);
+    setSelectedApplication(null);
+    // TODO: Call API
+  };
+
+  const handleEditRequestConfirm = (message: string) => {
+    console.log('Edit request sent', selectedApplication?.id, message);
+    setEditRequestModalOpen(false);
+    setSelectedApplication(null);
+    // TODO: Call API
+  };
+
+  const handleNotPassedConfirm = (reason: string) => {
+    console.log('Not passed confirmed', selectedApplication?.id, reason);
+    setNotPassedModalOpen(false);
+    setSelectedApplication(null);
+    // TODO: Call API
+  };
+
+  const handleScheduleSubmit = async (values: ScheduleAppointmentFormProps) => {
+    try {
+      // TODO: Implement API call when endpoint is available
+      console.log('Schedule appointment:', {
+        applicationId: selectedApplication?.id,
+        ...values,
+      });
+      // Show success message
+      alert(t('studentApplications.appointmentScheduled'));
+      setShowSchedulePopup(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      console.error('Failed to schedule appointment:', error);
+      alert('Failed to schedule appointment');
+    }
+  };
 
   const getStatusBadge = (status: StudentApplicationStatus) => {
     switch (status) {
@@ -216,13 +285,13 @@ const RegistrationRequestsTable: React.FC = () => {
             id: 'accept',
             label: t('studentApplications.actions.accept'),
             icon: CheckmarkCircleIcon,
-            onClick: () => console.log('Accept', row.id),
+            onClick: () => handleAccept(row),
           },
           {
             id: 'editRequest',
             label: t('studentApplications.actions.sendEditRequest'),
             icon: FilesIcon,
-            onClick: () => console.log('Edit Request', row.id),
+            onClick: () => handleEditRequest(row),
           },
           {
             id: 'schedule',
@@ -234,7 +303,7 @@ const RegistrationRequestsTable: React.FC = () => {
             id: 'notPassed',
             label: t('studentApplications.actions.notPassed'),
             icon: XMarkDangerIcon,
-            onClick: () => console.log('Not Passed', row.id),
+            onClick: () => handleNotPassed(row),
           },
         ];
 
@@ -324,28 +393,6 @@ const RegistrationRequestsTable: React.FC = () => {
     setSelectedStatus('');
   };
 
-  const handleScheduleAppointment = (application: StudentApplicationDto) => {
-    setSelectedApplication(application);
-    setShowSchedulePopup(true);
-  };
-
-  const handleScheduleSubmit = async (values: ScheduleAppointmentFormProps) => {
-    try {
-      // TODO: Implement API call when endpoint is available
-      console.log('Schedule appointment:', {
-        applicationId: selectedApplication?.id,
-        ...values,
-      });
-      // Show success message
-      alert(t('studentApplications.appointmentScheduled'));
-      setShowSchedulePopup(false);
-      setSelectedApplication(null);
-    } catch (error) {
-      console.error('Failed to schedule appointment:', error);
-      alert('Failed to schedule appointment');
-    }
-  };
-
   return (
     <Card>
       <DataTable
@@ -367,6 +414,8 @@ const RegistrationRequestsTable: React.FC = () => {
         t={t}
         isLoading={isLoading}
       />
+
+      {/* Schedule Appointment Popup */}
       <ScheduleStudentAppointmentPopup
         isOpen={showSchedulePopup}
         onClose={() => {
@@ -379,6 +428,32 @@ const RegistrationRequestsTable: React.FC = () => {
             ? `${selectedApplication.firstName} ${selectedApplication.secondName} ${selectedApplication.thirdName} ${selectedApplication.fourthName}`
             : undefined
         }
+      />
+
+      {/* Action Modals */}
+      <AcceptModal
+        isOpen={isAcceptModalOpen}
+        onClose={() => {
+          setAcceptModalOpen(false);
+          setSelectedApplication(null);
+        }}
+        onConfirm={handleAcceptConfirm}
+      />
+      <EditRequestModal
+        isOpen={isEditRequestModalOpen}
+        onClose={() => {
+          setEditRequestModalOpen(false);
+          setSelectedApplication(null);
+        }}
+        onConfirm={handleEditRequestConfirm}
+      />
+      <NotPassedModal
+        isOpen={isNotPassedModalOpen}
+        onClose={() => {
+          setNotPassedModalOpen(false);
+          setSelectedApplication(null);
+        }}
+        onConfirm={handleNotPassedConfirm}
       />
     </Card>
   );

@@ -20,6 +20,10 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 import type { StudentInterview } from '@/services/api/types/student-interviews.types';
 import useLanguage from '@/hooks/useLanguage';
 
+import AcceptModal from './AcceptModal';
+import NotPassedModal from './NotPassedModal';
+import ChangeAppointmentModal from './ChangeAppointmentModal';
+
 const PersonalInterviewsTable: React.FC = () => {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
@@ -28,6 +32,12 @@ const PersonalInterviewsTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGradeId, setSelectedGradeId] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+
+  // Modal state
+  const [isAcceptModalOpen, setAcceptModalOpen] = useState(false);
+  const [isNotPassedModalOpen, setNotPassedModalOpen] = useState(false);
+  const [isChangeAppointmentModalOpen, setChangeAppointmentModalOpen] = useState(false);
+  const [selectedInterview, setSelectedInterview] = useState<StudentInterview | null>(null);
 
   // Redux State
   const { studentInterviews, pagination, isLoading } = useAppSelector(
@@ -80,6 +90,44 @@ const PersonalInterviewsTable: React.FC = () => {
       minute: '2-digit',
       hour12: true,
     });
+  };
+
+  // Action handlers
+  const handleAccept = (row: StudentInterview) => {
+    setSelectedInterview(row);
+    setAcceptModalOpen(true);
+  };
+
+  const handleNotPassed = (row: StudentInterview) => {
+    setSelectedInterview(row);
+    setNotPassedModalOpen(true);
+  };
+
+  const handleChangeAppointment = (row: StudentInterview) => {
+    setSelectedInterview(row);
+    setChangeAppointmentModalOpen(true);
+  };
+
+  // Modal confirm handlers
+  const handleAcceptConfirm = (contractFile?: File) => {
+    console.log('Accept confirmed', selectedInterview?.id, contractFile);
+    setAcceptModalOpen(false);
+    setSelectedInterview(null);
+    // TODO: Call API
+  };
+
+  const handleNotPassedConfirm = (reason: string) => {
+    console.log('Not passed confirmed', selectedInterview?.id, reason);
+    setNotPassedModalOpen(false);
+    setSelectedInterview(null);
+    // TODO: Call API
+  };
+
+  const handleChangeAppointmentConfirm = (newDate: string, newTime: string) => {
+    console.log('Change appointment confirmed', selectedInterview?.id, newDate, newTime);
+    setChangeAppointmentModalOpen(false);
+    setSelectedInterview(null);
+    // TODO: Call API
   };
 
   const gradeOptions = educationalStages.map((stage) => ({
@@ -159,19 +207,19 @@ const PersonalInterviewsTable: React.FC = () => {
             id: 'accept',
             label: t('studentApplications.actions.accept'),
             icon: CheckmarkCircleIcon,
-            onClick: () => console.log('Accept', row.id),
+            onClick: () => handleAccept(row),
           },
           {
             id: 'changeDate',
             label: t('studentApplications.actions.changeAppointment'),
             icon: EventCalendarIcon,
-            onClick: () => console.log('Change Date', row.id),
+            onClick: () => handleChangeAppointment(row),
           },
           {
             id: 'notPassed',
             label: t('studentApplications.actions.notPassed'),
             icon: XMarkDangerIcon,
-            onClick: () => console.log('Not Passed', row.id),
+            onClick: () => handleNotPassed(row),
           },
         ];
 
@@ -268,6 +316,33 @@ const PersonalInterviewsTable: React.FC = () => {
           );
         }}
         t={t}
+      />
+
+      {/* Action Modals */}
+      <AcceptModal
+        isOpen={isAcceptModalOpen}
+        onClose={() => {
+          setAcceptModalOpen(false);
+          setSelectedInterview(null);
+        }}
+        onConfirm={handleAcceptConfirm}
+      />
+      <NotPassedModal
+        isOpen={isNotPassedModalOpen}
+        onClose={() => {
+          setNotPassedModalOpen(false);
+          setSelectedInterview(null);
+        }}
+        onConfirm={handleNotPassedConfirm}
+      />
+      <ChangeAppointmentModal
+        isOpen={isChangeAppointmentModalOpen}
+        onClose={() => {
+          setChangeAppointmentModalOpen(false);
+          setSelectedInterview(null);
+        }}
+        onConfirm={handleChangeAppointmentConfirm}
+        originalDate={selectedInterview?.interviewDate}
       />
     </Card>
   );
