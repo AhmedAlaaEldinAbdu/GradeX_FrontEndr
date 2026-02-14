@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
@@ -6,35 +6,45 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Card from '@gradex/shared/components/Card';
 import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
-import MultiSelectTagInput from '@/shared/components/MultiSelectTagInput';
+import CustomSelect from '@/shared/components/CustomSelect';
 import FormField from '@/shared/components/FormField';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getLKSchoolStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import {
   RegistrationAnnouncementSchema,
   type RegistrationAnnouncementProps,
 } from '@/validations/registration-announcement-validations';
+import { registrationAnnouncementApi } from '@/services/api/registration-announcement/registration-announcement.service';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 interface RegistrationAnnouncementFormProps {
   initialValues?: Partial<RegistrationAnnouncementProps>;
-  onSubmit: (data: RegistrationAnnouncementProps) => Promise<void>;
   isEditMode?: boolean;
 }
 
 const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> = ({
   initialValues,
-  onSubmit,
   isEditMode = false,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const currentLang = i18n.language as 'ar' | 'en';
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
-  // Mock options for educational stages
-  const stageOptions = [
-    { value: 'primary', label: 'المرحلة الابتدائية' },
-    { value: 'middle', label: 'المرحلة الإعدادية' },
-    { value: 'high', label: 'المرحلة الثانوية' },
-    { value: 'kg', label: 'رياض الأطفال' },
-  ];
+  const educationalStages = useAppSelector((state) => state.educationalStages.lkEducationalStages);
+  const isLoadingEducationalStages = useAppSelector((state) => state.educationalStages.isLoading);
+
+  useEffect(() => {
+    dispatch(getLKSchoolStages());
+  }, [dispatch]);
 
   const {
     control,
@@ -43,7 +53,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   } = useForm<RegistrationAnnouncementProps>({
     resolver: yupResolver(RegistrationAnnouncementSchema),
     defaultValues: {
-      educationalStages: initialValues?.educationalStages || '',
+      lkSchoolStageId: initialValues?.lkSchoolStageId || '',
       startDate: initialValues?.startDate || '',
       endDate: initialValues?.endDate || '',
     },
@@ -52,7 +62,24 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   const handleFormSubmit = async (data: RegistrationAnnouncementProps) => {
     setIsSubmitting(true);
     try {
-      await onSubmit(data);
+      await registrationAnnouncementApi.create({
+        lkSchoolStageId: data.lkSchoolStageId,
+        startDate: new Date(data.startDate).toISOString(),
+        endDate: new Date(data.endDate).toISOString(),
+      });
+
+      setShowPopupMessage({
+        show: true,
+        type: 'success',
+        message: t('registrationAnnouncement.addedSuccessfully'),
+      });
+    } catch (error: unknown) {
+      const errorMessage = (error as any)?.response?.data?.message || t('common.errorOccurred');
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: errorMessage,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -65,23 +92,38 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-        {/* Educational Stages (Multi-Select) */}
+        {/* Educational Stage (Single Select) */}
         <FormField
-          label={t('registrationAnnouncement.educationalStagesLabel')}
+          label={t('registrationAnnouncement.educationalStage')}
           required
-          error={errors.educationalStages?.message && t(errors.educationalStages.message)}
-          htmlFor="educationalStages"
+          error={errors.lkSchoolStageId?.message && t(errors.lkSchoolStageId.message)}
+          htmlFor="lkSchoolStageId"
         >
           <Controller
-            name="educationalStages"
+            name="lkSchoolStageId"
             control={control}
             render={({ field }) => (
-              <MultiSelectTagInput
+              <CustomSelect
                 value={field.value}
-                onChange={field.onChange}
-                options={stageOptions}
-                placeholder={t('registrationAnnouncement.selectEducationalStages')}
-                error={!!errors.educationalStages}
+                onChange={(value) => {
+                  const val = Array.isArray(value) ? value[0] : value;
+                  field.onChange(val);
+                }}
+                options={
+                  Array.isArray(educationalStages)
+                    ? educationalStages.map((stage) => ({
+                        value: stage?.id || '',
+                        label: currentLang === 'ar' ? stage?.nameAR || '' : stage?.nameEN || '',
+                      }))
+                    : []
+                }
+                placeholder={
+                  isLoadingEducationalStages
+                    ? t('common.loading')
+                    : t('registrationAnnouncement.selectEducationalStage')
+                }
+                disabled={isLoadingEducationalStages}
+                error={!!errors.lkSchoolStageId}
               />
             )}
           />
@@ -101,9 +143,9 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
               render={({ field }) => (
                 <Input
                   {...field}
-                  type="date"
+                  type="datetime-local"
                   placeholder={t('registrationAnnouncement.chooseStartDate')}
-                  error={errors.startDate?.message ? ' ' : undefined} // Pass non-empty string or boolean true to trigger red border only
+                  error={errors.startDate?.message ? ' ' : undefined}
                   className={errors.startDate?.message ? 'border-red-500' : ''}
                 />
               )}
@@ -122,7 +164,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
               render={({ field }) => (
                 <Input
                   {...field}
-                  type="date"
+                  type="datetime-local"
                   placeholder={t('registrationAnnouncement.chooseEndDate')}
                   error={errors.endDate?.message ? ' ' : undefined}
                   className={errors.endDate?.message ? 'border-red-500' : ''}
@@ -153,6 +195,17 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
           </Button>
         </div>
       </form>
+
+      {/* Popup Message */}
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        autoClose={true}
+        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
+        navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
+      />
     </Card>
   );
 };
