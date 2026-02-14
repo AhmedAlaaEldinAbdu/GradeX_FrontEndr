@@ -1,4 +1,9 @@
-import { createSlice, createAsyncThunk, type PayloadAction, type ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+  type ActionReducerMapBuilder,
+} from '@reduxjs/toolkit';
 import { getErrorMessage } from '@/lib/http';
 import type { ApiResponseModel, ValidationErrorResponse } from '@/services/api/config';
 import type { Pagination } from '@/types/Pagination';
@@ -13,6 +18,7 @@ import type {
 
 interface EducationalStagesState {
   educationalStages: EducationalStageResponse[];
+  lkEducationalStages: EducationalStageResponse[];
   educationalStageDetails: EducationalStageResponse | null;
   pagination: Pagination;
   isLoading: boolean;
@@ -25,6 +31,7 @@ interface EducationalStagesState {
 
 const initialState: EducationalStagesState = {
   educationalStages: [],
+  lkEducationalStages: [],
   educationalStageDetails: null,
   pagination: {
     pageIndex: 1,
@@ -52,17 +59,29 @@ export const getEducationalStages = createAsyncThunk<
   }
 });
 
-export const getEducationalStageBySubsystemId = createAsyncThunk<
-  EducationalStageResponse,
-  string
->('educationalStages/fetchById', async (id, { rejectWithValue }) => {
-  try {
-    const response = await EducationalStagesApiService.fetchEducationalStageById(id);
-    return response;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+export const getEducationalStageBySubsystemId = createAsyncThunk<EducationalStageResponse, string>(
+  'educationalStages/fetchById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await EducationalStagesApiService.fetchEducationalStageById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
+
+export const getLKSchoolStages = createAsyncThunk<EducationalStageResponse[]>(
+  'educationalStages/fetchLK',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await EducationalStagesApiService.fetchLKSchoolStages();
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
 
 export const addEducationalStage = createAsyncThunk<
   ApiResponseModel<null>,
@@ -88,17 +107,17 @@ export const editEducationalStage = createAsyncThunk<
   }
 });
 
-export const deleteEducationalStage = createAsyncThunk<
-  ApiResponseModel<string>,
-  string
->('educationalStages/delete', async (id, { rejectWithValue }) => {
-  try {
-    const response = await EducationalStagesApiService.deleteEducationalStage(id);
-    return response;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+export const deleteEducationalStage = createAsyncThunk<ApiResponseModel<string>, string>(
+  'educationalStages/delete',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await EducationalStagesApiService.deleteEducationalStage(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 const educationalStagesSlice = createSlice({
   name: 'educationalStages',
@@ -110,28 +129,31 @@ const educationalStagesSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getEducationalStages.fulfilled, (state, action: PayloadAction<EducationalStagesListValue>) => {
-        state.isLoading = false;
-        if (action.payload && action.payload.gradeDtos) {
-          state.educationalStages = Array.isArray(action.payload.gradeDtos) 
-            ? action.payload.gradeDtos 
-            : [];
-          state.pagination = {
-            pageIndex: action.payload.pageIndex || 1,
-            pageSize: action.payload.pageSize || 10,
-            totalItems: action.payload.totalItems || 0,
-            totalPages: action.payload.totalPages || 0,
-          };
-        } else {
-          state.educationalStages = [];
-          state.pagination = {
-            pageIndex: 1,
-            pageSize: 10,
-            totalItems: 0,
-            totalPages: 0,
-          };
+      .addCase(
+        getEducationalStages.fulfilled,
+        (state, action: PayloadAction<EducationalStagesListValue>) => {
+          state.isLoading = false;
+          if (action.payload && action.payload.gradeDtos) {
+            state.educationalStages = Array.isArray(action.payload.gradeDtos)
+              ? action.payload.gradeDtos
+              : [];
+            state.pagination = {
+              pageIndex: action.payload.pageIndex || 1,
+              pageSize: action.payload.pageSize || 10,
+              totalItems: action.payload.totalItems || 0,
+              totalPages: action.payload.totalPages || 0,
+            };
+          } else {
+            state.educationalStages = [];
+            state.pagination = {
+              pageIndex: 1,
+              pageSize: 10,
+              totalItems: 0,
+              totalPages: 0,
+            };
+          }
         }
-      })
+      )
       .addCase(getEducationalStages.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
@@ -141,10 +163,13 @@ const educationalStagesSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getEducationalStageBySubsystemId.fulfilled, (state, action: PayloadAction<EducationalStageResponse>) => {
-        state.isLoading = false;
-        state.educationalStageDetails = action.payload as EducationalStageResponse;
-      })
+      .addCase(
+        getEducationalStageBySubsystemId.fulfilled,
+        (state, action: PayloadAction<EducationalStageResponse>) => {
+          state.isLoading = false;
+          state.educationalStageDetails = action.payload as EducationalStageResponse;
+        }
+      )
       .addCase(getEducationalStageBySubsystemId.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
@@ -180,20 +205,42 @@ const educationalStagesSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      .addCase(getLKSchoolStages.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        getLKSchoolStages.fulfilled,
+        (state, action: PayloadAction<EducationalStageResponse[]>) => {
+          state.isLoading = false;
+          state.lkEducationalStages = action.payload;
+        }
+      )
+      .addCase(getLKSchoolStages.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
       .addCase(deleteEducationalStage.pending, (state) => {
         state.isDeleting = true;
         state.error = null;
       })
-      .addCase(deleteEducationalStage.fulfilled, (state, action: PayloadAction<ApiResponseModel>) => {
-        state.isDeleting = false;
-        const { isSuccess, value } = action.payload;
-        if (isSuccess) {
-          state.educationalStages = state.educationalStages?.filter((s) => s?.id !== value);
-          if (typeof state.pagination.totalItems === 'number' && state.pagination.totalItems > 0) {
-            state.pagination.totalItems -= 1 as number;
+      .addCase(
+        deleteEducationalStage.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel>) => {
+          state.isDeleting = false;
+          const { isSuccess, value } = action.payload;
+          if (isSuccess) {
+            state.educationalStages = state.educationalStages?.filter((s) => s?.id !== value);
+            if (
+              typeof state.pagination.totalItems === 'number' &&
+              state.pagination.totalItems > 0
+            ) {
+              state.pagination.totalItems -= 1 as number;
+            }
           }
         }
-      })
+      )
       .addCase(deleteEducationalStage.rejected, (state, action) => {
         state.isDeleting = false;
         state.error = action.payload as string;
