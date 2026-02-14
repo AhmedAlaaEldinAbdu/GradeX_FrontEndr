@@ -139,8 +139,8 @@ export default function ScheduleStudentAppointmentPopup({
           >
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={isLoading || isSubmitting}>
-            {isLoading || isSubmitting ? t('common.processing') : t('common.confirm')}
+          <Button type="submit" loading={isLoading || isSubmitting}>
+            {t('common.confirm')}
           </Button>
         </div>
       </form>
