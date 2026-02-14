@@ -9,6 +9,8 @@ interface ApplicationChildInfoProps {
 const ApplicationChildInfo: React.FC<ApplicationChildInfoProps> = ({ data }) => {
   const { t } = useTranslation();
 
+  if (!data) return null;
+
   return (
     <div className="mb-8 rounded-2xl border border-gray-200 p-6">
       <h2 className="mb-4 text-start text-lg font-bold text-gray-900">
@@ -21,7 +23,9 @@ const ApplicationChildInfo: React.FC<ApplicationChildInfoProps> = ({ data }) => 
             <span className="font-bold text-gray-800">
               {t('studentApplications.details.birthDate')}:
             </span>
-            <span className="text-gray-600">{new Date(data.dateOfBirth).toLocaleDateString()}</span>
+            <span className="text-gray-600">
+              {data.dateOfBirth ? new Date(data.dateOfBirth).toLocaleDateString() : '-'}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-gray-800">
@@ -44,7 +48,7 @@ const ApplicationChildInfo: React.FC<ApplicationChildInfoProps> = ({ data }) => 
             <span className="font-bold text-gray-800">
               {t('studentApplications.details.gradeLevel')}:
             </span>
-            <span className="text-gray-600">{data.gradeName}</span>
+            <span className="text-gray-600">{data.gradeName || '-'}</span>
           </div>
         </div>
       </div>
