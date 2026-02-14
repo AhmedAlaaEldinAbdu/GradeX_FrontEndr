@@ -19,7 +19,7 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
     if (id) {
       // Mock data depending on ID if needed, or just static for now
       setInitialValues({
-        educationalStages: 'primary', // This needs to match how the multiselect expects values (likely comma separated or array depending on implementation)
+        // educationalStages: 'primary', // This needs to match how the multiselect expects values (likely comma separated or array depending on implementation)
         startDate: '2025-02-22',
         endDate: '2025-02-22',
       });
@@ -37,6 +37,7 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
   if (!initialValues) {
     return <div>{t('common.loading')}...</div>;
   }
+  console.log(handleEditSubmit);
 
   return (
     <div>
@@ -57,7 +58,7 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
 
       {/* Main Content */}
       <RegistrationAnnouncementForm
-        onSubmit={handleEditSubmit}
+        // onSubmit={handleEditSubmit}
         initialValues={initialValues}
         isEditMode
       />
