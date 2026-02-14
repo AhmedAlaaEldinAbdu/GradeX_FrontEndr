@@ -9,6 +9,8 @@ interface ApplicationParentInfoProps {
 const ApplicationParentInfo: React.FC<ApplicationParentInfoProps> = ({ parentInfo }) => {
   const { t } = useTranslation();
 
+  if (!parentInfo) return null;
+
   return (
     <div className="mb-8 rounded-2xl border border-gray-200 p-6">
       <h2 className="mb-4 text-start text-lg font-bold text-gray-900">
@@ -31,7 +33,7 @@ const ApplicationParentInfo: React.FC<ApplicationParentInfoProps> = ({ parentInf
             <span className="font-bold text-gray-800">
               {t('studentApplications.details.email')}:
             </span>
-            <span className="text-gray-600">{parentInfo.email}</span>
+            <span className="text-gray-600">{parentInfo.email || '-'}</span>
           </div>
         </div>
         {/* Row 2: Country and Nationality */}
