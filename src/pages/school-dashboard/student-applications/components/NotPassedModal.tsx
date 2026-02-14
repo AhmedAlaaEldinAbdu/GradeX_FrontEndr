@@ -8,9 +8,15 @@ interface NotPassedModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (reason: string) => void;
+  isProcessing?: boolean;
 }
 
-const NotPassedModal: React.FC<NotPassedModalProps> = ({ isOpen, onClose, onConfirm }) => {
+const NotPassedModal: React.FC<NotPassedModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  isProcessing = false,
+}) => {
   const { t } = useTranslation();
   const [reason, setReason] = useState('');
   const [error, setError] = useState(false);
@@ -95,10 +101,10 @@ const NotPassedModal: React.FC<NotPassedModalProps> = ({ isOpen, onClose, onConf
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="danger" fullWidth onClick={handleConfirm}>
+          <Button variant="danger" fullWidth onClick={handleConfirm} loading={isProcessing}>
             {t('studentApplications.actions.notPassed')}
           </Button>
-          <Button variant="outline" fullWidth onClick={handleClose}>
+          <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
             {t('common.cancel')}
           </Button>
         </div>

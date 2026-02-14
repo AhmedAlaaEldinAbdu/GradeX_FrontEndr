@@ -7,9 +7,15 @@ interface EditRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (message: string) => void;
+  isProcessing?: boolean;
 }
 
-const EditRequestModal: React.FC<EditRequestModalProps> = ({ isOpen, onClose, onConfirm }) => {
+const EditRequestModal: React.FC<EditRequestModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  isProcessing = false,
+}) => {
   const { t } = useTranslation();
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
@@ -67,10 +73,10 @@ const EditRequestModal: React.FC<EditRequestModalProps> = ({ isOpen, onClose, on
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="success" fullWidth onClick={handleConfirm}>
+          <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
             {t('common.send')}
           </Button>
-          <Button variant="outline" fullWidth onClick={handleClose}>
+          <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
             {t('common.cancel')}
           </Button>
         </div>

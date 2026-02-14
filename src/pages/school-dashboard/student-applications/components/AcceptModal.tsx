@@ -9,9 +9,15 @@ interface AcceptModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (contractFile?: File) => void;
+  isProcessing?: boolean;
 }
 
-const AcceptModal: React.FC<AcceptModalProps> = ({ isOpen, onClose, onConfirm }) => {
+const AcceptModal: React.FC<AcceptModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  isProcessing = false,
+}) => {
   const { t } = useTranslation();
   const [contractFile, setContractFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
@@ -72,10 +78,10 @@ const AcceptModal: React.FC<AcceptModalProps> = ({ isOpen, onClose, onConfirm })
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="success" fullWidth onClick={handleConfirm}>
+          <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
             {t('common.confirm')}
           </Button>
-          <Button variant="outline" fullWidth onClick={handleClose}>
+          <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
             {t('common.cancel')}
           </Button>
         </div>

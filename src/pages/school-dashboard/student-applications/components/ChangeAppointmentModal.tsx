@@ -13,6 +13,7 @@ interface ChangeAppointmentModalProps {
   onClose: () => void;
   onConfirm: (newDate: string, newTime: string) => void;
   originalDate?: string;
+  isProcessing?: boolean;
 }
 
 const ChangeAppointmentModal: React.FC<ChangeAppointmentModalProps> = ({
@@ -20,6 +21,7 @@ const ChangeAppointmentModal: React.FC<ChangeAppointmentModalProps> = ({
   onClose,
   onConfirm,
   originalDate,
+  isProcessing = false,
 }) => {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
@@ -119,10 +121,10 @@ const ChangeAppointmentModal: React.FC<ChangeAppointmentModalProps> = ({
 
       {/* Action buttons */}
       <div className="mt-4 flex w-full gap-3">
-        <Button variant="success" fullWidth onClick={handleConfirm}>
+        <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
           {t('studentApplications.modals.change')}
         </Button>
-        <Button variant="outline" fullWidth onClick={handleClose}>
+        <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
           {t('common.cancel')}
         </Button>
       </div>
