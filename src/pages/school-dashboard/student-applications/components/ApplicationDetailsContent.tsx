@@ -13,6 +13,11 @@ import ApplicationChildInfo from './ApplicationChildInfo';
 import ApplicationTuitionFees from './ApplicationTuitionFees';
 import ApplicationAttachments from './ApplicationAttachments';
 import ApplicationStatusBanner from './ApplicationStatusBanner';
+import NotPassedModal from './NotPassedModal';
+import AcceptModal from './AcceptModal';
+import EditRequestModal from './EditRequestModal';
+import ScheduleAppointmentModal from './ScheduleAppointmentModal';
+import HousingModal from './HousingModal';
 import { useEffect } from 'react';
 
 interface ApplicationDetailsContentProps {
@@ -40,6 +45,13 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   // Mock status override for testing (set to '' to use real data)
   const [mockStatus, setMockStatus] = useState<string>('');
   const [mockInterviewDate, setMockInterviewDate] = useState<boolean>(false);
+
+  // Modal states
+  const [isNotPassedModalOpen, setNotPassedModalOpen] = useState(false);
+  const [isAcceptModalOpen, setAcceptModalOpen] = useState(false);
+  const [isEditRequestModalOpen, setEditRequestModalOpen] = useState(false);
+  const [isScheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [isHousingModalOpen, setHousingModalOpen] = useState(false);
 
   const { currentApplication, currentApplicationLoading, error } = useAppSelector(
     (state) => state.studentApplications
@@ -76,24 +88,50 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
     : data.status;
   const effectiveInterviewDate = mockInterviewDate ? '2025-02-11T10:00:00' : data.interviewDate;
 
+  // Action handlers — open modals
   const handleAccept = () => {
-    console.log('Accept application', applicationId);
+    setAcceptModalOpen(true);
   };
 
   const handleNotPassed = () => {
-    console.log('Not passed', applicationId);
+    setNotPassedModalOpen(true);
   };
 
   const handleEditRequest = () => {
-    console.log('Send edit request', applicationId);
+    setEditRequestModalOpen(true);
   };
 
   const handleScheduleAppointment = () => {
-    console.log('Schedule appointment', applicationId);
+    setScheduleModalOpen(true);
   };
 
   const handleHousing = () => {
-    console.log('Housing', applicationId);
+    setHousingModalOpen(true);
+  };
+
+  // Modal confirm handlers
+  const handleNotPassedConfirm = (reason: string) => {
+    console.log('Not passed confirmed with reason:', reason, applicationId);
+    setNotPassedModalOpen(false);
+    // TODO: Call API to mark as not passed
+  };
+
+  const handleAcceptConfirm = (contractFile?: File) => {
+    console.log('Accept confirmed with contract:', contractFile, applicationId);
+    setAcceptModalOpen(false);
+    // TODO: Call API to accept application
+  };
+
+  const handleEditRequestConfirm = (message: string) => {
+    console.log('Edit request sent:', message, applicationId);
+    setEditRequestModalOpen(false);
+    // TODO: Call API to send edit request
+  };
+
+  const handleScheduleConfirm = (date: string, time: string) => {
+    console.log('Appointment scheduled:', date, time, applicationId);
+    setScheduleModalOpen(false);
+    // TODO: Call API to schedule appointment
   };
 
   return (
@@ -169,6 +207,37 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         {/* Attachments Section */}
         <ApplicationAttachments data={data} baseUrl={baseUrl} />
       </div>
+
+      {/* Action Modals */}
+      <NotPassedModal
+        isOpen={isNotPassedModalOpen}
+        onClose={() => setNotPassedModalOpen(false)}
+        onConfirm={handleNotPassedConfirm}
+      />
+      <AcceptModal
+        isOpen={isAcceptModalOpen}
+        onClose={() => setAcceptModalOpen(false)}
+        onConfirm={handleAcceptConfirm}
+      />
+      <EditRequestModal
+        isOpen={isEditRequestModalOpen}
+        onClose={() => setEditRequestModalOpen(false)}
+        onConfirm={handleEditRequestConfirm}
+      />
+      <ScheduleAppointmentModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setScheduleModalOpen(false)}
+        onConfirm={handleScheduleConfirm}
+      />
+      <HousingModal
+        isOpen={isHousingModalOpen}
+        onClose={() => setHousingModalOpen(false)}
+        onConfirm={(classroomId) => {
+          console.log('Housing confirmed, classroom:', classroomId, applicationId);
+          setHousingModalOpen(false);
+          // TODO: Call API to assign student to classroom
+        }}
+      />
     </>
   );
 };
