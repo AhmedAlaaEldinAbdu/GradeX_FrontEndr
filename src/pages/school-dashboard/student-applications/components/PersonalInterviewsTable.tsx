@@ -16,9 +16,12 @@ import { FaRegCalendarAlt } from 'react-icons/fa';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudentInterviews } from '@/redux/features/student-interviews/studentInterviewsSlice';
+import { updateStudentApplicationStatus } from '@/redux/features/student-applications/studentApplicationsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import type { StudentInterview } from '@/services/api/types/student-interviews.types';
+import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
 import useLanguage from '@/hooks/useLanguage';
+import { useToast } from '@/shared/context/ToastContext';
 
 import AcceptModal from './AcceptModal';
 import NotPassedModal from './NotPassedModal';
@@ -28,6 +31,7 @@ const PersonalInterviewsTable: React.FC = () => {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGradeId, setSelectedGradeId] = useState('');
@@ -37,6 +41,7 @@ const PersonalInterviewsTable: React.FC = () => {
   const [isAcceptModalOpen, setAcceptModalOpen] = useState(false);
   const [isNotPassedModalOpen, setNotPassedModalOpen] = useState(false);
   const [isChangeAppointmentModalOpen, setChangeAppointmentModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [selectedInterview, setSelectedInterview] = useState<StudentInterview | null>(null);
 
   // Redux State
@@ -109,18 +114,66 @@ const PersonalInterviewsTable: React.FC = () => {
   };
 
   // Modal confirm handlers
-  const handleAcceptConfirm = (contractFile?: File) => {
-    console.log('Accept confirmed', selectedInterview?.id, contractFile);
-    setAcceptModalOpen(false);
-    setSelectedInterview(null);
-    // TODO: Call API
+  const handleAcceptConfirm = async () => {
+    if (!selectedInterview) return;
+    const targetId = selectedInterview.applicationId || selectedInterview.studentId;
+    if (!targetId) return;
+
+    try {
+      setIsProcessing(true);
+      await dispatch(
+        updateStudentApplicationStatus({
+          id: targetId,
+          status: StudentApplicationStatus.Completed,
+        })
+      ).unwrap();
+
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setAcceptModalOpen(false);
+      setSelectedInterview(null);
+    } catch (error) {
+      console.error(error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const handleNotPassedConfirm = (reason: string) => {
-    console.log('Not passed confirmed', selectedInterview?.id, reason);
-    setNotPassedModalOpen(false);
-    setSelectedInterview(null);
-    // TODO: Call API
+  const handleNotPassedConfirm = async () => {
+    if (!selectedInterview) return;
+    const targetId = selectedInterview.applicationId || selectedInterview.studentId;
+    if (!targetId) return;
+
+    try {
+      setIsProcessing(true);
+      await dispatch(
+        updateStudentApplicationStatus({
+          id: targetId,
+          status: StudentApplicationStatus.NotPassed,
+        })
+      ).unwrap();
+
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setNotPassedModalOpen(false);
+      setSelectedInterview(null);
+    } catch (error) {
+      console.error(error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleChangeAppointmentConfirm = (newDate: string, newTime: string) => {
@@ -322,27 +375,36 @@ const PersonalInterviewsTable: React.FC = () => {
       <AcceptModal
         isOpen={isAcceptModalOpen}
         onClose={() => {
-          setAcceptModalOpen(false);
-          setSelectedInterview(null);
+          if (!isProcessing) {
+            setAcceptModalOpen(false);
+            setSelectedInterview(null);
+          }
         }}
         onConfirm={handleAcceptConfirm}
+        isProcessing={isProcessing}
       />
       <NotPassedModal
         isOpen={isNotPassedModalOpen}
         onClose={() => {
-          setNotPassedModalOpen(false);
-          setSelectedInterview(null);
+          if (!isProcessing) {
+            setNotPassedModalOpen(false);
+            setSelectedInterview(null);
+          }
         }}
         onConfirm={handleNotPassedConfirm}
+        isProcessing={isProcessing}
       />
       <ChangeAppointmentModal
         isOpen={isChangeAppointmentModalOpen}
         onClose={() => {
-          setChangeAppointmentModalOpen(false);
-          setSelectedInterview(null);
+          if (!isProcessing) {
+            setChangeAppointmentModalOpen(false);
+            setSelectedInterview(null);
+          }
         }}
         onConfirm={handleChangeAppointmentConfirm}
         originalDate={selectedInterview?.interviewDate}
+        isProcessing={isProcessing}
       />
     </Card>
   );

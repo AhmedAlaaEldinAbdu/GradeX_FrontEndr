@@ -16,13 +16,17 @@ import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchStudentApplications } from '@/redux/features/student-applications/studentApplicationsSlice';
+import {
+  fetchStudentApplications,
+  updateStudentApplicationStatus,
+} from '@/redux/features/student-applications/studentApplicationsSlice';
 import type { StudentApplicationDto } from '@/services/api/student-applications/student-applications.types';
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import useLanguage from '@/hooks/useLanguage';
 import ScheduleStudentAppointmentPopup from '../popups/ScheduleStudentAppointmentPopup';
 import type { ScheduleAppointmentFormProps } from '@/validations/student-applications-validations';
+import { useToast } from '@/shared/context/ToastContext';
 
 import AcceptModal from './AcceptModal';
 import EditRequestModal from './EditRequestModal';
@@ -33,12 +37,14 @@ const RegistrationRequestsTable: React.FC = () => {
   const { isArabic } = useLanguage();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [showSchedulePopup, setShowSchedulePopup] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<StudentApplicationDto | null>(
     null
   );
@@ -99,41 +105,116 @@ const RegistrationRequestsTable: React.FC = () => {
   };
 
   // Modal confirm handlers
-  const handleAcceptConfirm = (contractFile?: File) => {
-    console.log('Accept confirmed', selectedApplication?.id, contractFile);
-    setAcceptModalOpen(false);
-    setSelectedApplication(null);
-    // TODO: Call API
+  const handleAcceptConfirm = async () => {
+    if (!selectedApplication) return;
+
+    try {
+      setIsProcessing(true);
+      await dispatch(
+        updateStudentApplicationStatus({
+          id: selectedApplication.id,
+          status: StudentApplicationStatus.Completed,
+        })
+      ).unwrap();
+
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setAcceptModalOpen(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      console.error(error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const handleEditRequestConfirm = (message: string) => {
-    console.log('Edit request sent', selectedApplication?.id, message);
-    setEditRequestModalOpen(false);
-    setSelectedApplication(null);
-    // TODO: Call API
+  const handleEditRequestConfirm = async () => {
+    if (!selectedApplication) return;
+
+    try {
+      setIsProcessing(true);
+      await dispatch(
+        updateStudentApplicationStatus({
+          id: selectedApplication.id,
+          status: StudentApplicationStatus.EditRequested,
+        })
+      ).unwrap();
+
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setEditRequestModalOpen(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      console.error(error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const handleNotPassedConfirm = (reason: string) => {
-    console.log('Not passed confirmed', selectedApplication?.id, reason);
-    setNotPassedModalOpen(false);
-    setSelectedApplication(null);
-    // TODO: Call API
+  const handleNotPassedConfirm = async () => {
+    if (!selectedApplication) return;
+
+    try {
+      setIsProcessing(true);
+      await dispatch(
+        updateStudentApplicationStatus({
+          id: selectedApplication.id,
+          status: StudentApplicationStatus.NotPassed,
+        })
+      ).unwrap();
+
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setNotPassedModalOpen(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      console.error(error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleScheduleSubmit = async (values: ScheduleAppointmentFormProps) => {
     try {
+      setIsProcessing(true);
       // TODO: Implement API call when endpoint is available
       console.log('Schedule appointment:', {
         applicationId: selectedApplication?.id,
         ...values,
       });
       // Show success message
-      alert(t('studentApplications.appointmentScheduled'));
+      showToast({
+        message: t('studentApplications.appointmentScheduled'),
+        type: 'success',
+      });
       setShowSchedulePopup(false);
       setSelectedApplication(null);
     } catch (error) {
       console.error('Failed to schedule appointment:', error);
-      alert('Failed to schedule appointment');
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -419,8 +500,10 @@ const RegistrationRequestsTable: React.FC = () => {
       <ScheduleStudentAppointmentPopup
         isOpen={showSchedulePopup}
         onClose={() => {
-          setShowSchedulePopup(false);
-          setSelectedApplication(null);
+          if (!isProcessing) {
+            setShowSchedulePopup(false);
+            setSelectedApplication(null);
+          }
         }}
         onSubmit={handleScheduleSubmit}
         studentName={
@@ -428,32 +511,42 @@ const RegistrationRequestsTable: React.FC = () => {
             ? `${selectedApplication.firstName} ${selectedApplication.secondName} ${selectedApplication.thirdName} ${selectedApplication.fourthName}`
             : undefined
         }
+        isLoading={isProcessing}
       />
 
       {/* Action Modals */}
       <AcceptModal
         isOpen={isAcceptModalOpen}
         onClose={() => {
-          setAcceptModalOpen(false);
-          setSelectedApplication(null);
+          if (!isProcessing) {
+            setAcceptModalOpen(false);
+            setSelectedApplication(null);
+          }
         }}
         onConfirm={handleAcceptConfirm}
+        isProcessing={isProcessing}
       />
       <EditRequestModal
         isOpen={isEditRequestModalOpen}
         onClose={() => {
-          setEditRequestModalOpen(false);
-          setSelectedApplication(null);
+          if (!isProcessing) {
+            setEditRequestModalOpen(false);
+            setSelectedApplication(null);
+          }
         }}
         onConfirm={handleEditRequestConfirm}
+        isProcessing={isProcessing}
       />
       <NotPassedModal
         isOpen={isNotPassedModalOpen}
         onClose={() => {
-          setNotPassedModalOpen(false);
-          setSelectedApplication(null);
+          if (!isProcessing) {
+            setNotPassedModalOpen(false);
+            setSelectedApplication(null);
+          }
         }}
         onConfirm={handleNotPassedConfirm}
+        isProcessing={isProcessing}
       />
     </Card>
   );
