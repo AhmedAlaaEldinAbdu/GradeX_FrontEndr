@@ -648,7 +648,13 @@
       "housingTitle": "تسكين الطالب",
       "classroomLabel": "الصف الدراسي",
       "studentsInClass": "عدد الطلاب في الفصل",
-      "housing": "تسكين"
+      "housing": "تسكين",
+      "changeAppointmentTitle": "تغيير الموعد",
+      "originalAppointment": "الموعد الاساسي",
+      "newAppointmentDate": "تاريخ الموعد الجديد",
+      "selectNewDate": "اختر تاريخ جديد",
+      "selectNewTime": "اختر وقت جديد",
+      "change": "تغيير"
     },
     "details": {
       "parentInfo": "بيانات ولي الأمر",

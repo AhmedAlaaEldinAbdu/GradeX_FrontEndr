@@ -649,7 +649,13 @@
       "housingTitle": "Student Housing",
       "classroomLabel": "Classroom",
       "studentsInClass": "Number of students in class",
-      "housing": "Housing"
+      "housing": "Housing",
+      "changeAppointmentTitle": "Change Appointment",
+      "originalAppointment": "Original Appointment",
+      "newAppointmentDate": "New Appointment Date",
+      "selectNewDate": "Select new date",
+      "selectNewTime": "Select new time",
+      "change": "Change"
     },
     "details": {
       "parentInfo": "Parent Information",
