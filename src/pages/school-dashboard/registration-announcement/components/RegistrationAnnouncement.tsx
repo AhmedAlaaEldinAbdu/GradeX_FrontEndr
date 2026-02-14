@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@gradex/shared/components/Card';
 import { useTranslation } from 'react-i18next';
@@ -31,29 +31,33 @@ export default function RegistrationAnnouncement() {
     totalPages: 0,
   });
 
-  const fetchAnnouncements = async (page: number = 1) => {
-    try {
-      setIsLoading(true);
-      const response = await registrationAnnouncementApi.getAll(page, pagination.limit);
-      if (response && response.data) {
-        setAnnouncements(response.data.registrationAdvertisementDto);
-        setPagination({
-          page: response.data.pageIndex,
-          limit: response.data.pageSize,
-          total: response.data.totalItems,
-          totalPages: response.data.totalPages,
-        });
+  const fetchAnnouncements = useCallback(
+    async (page: number = 1) => {
+      try {
+        setIsLoading(true);
+        const response = await registrationAnnouncementApi.getAll(page, pagination.limit);
+        if (response && response.data) {
+          setAnnouncements(response.data.registrationAdvertisementDto);
+          setPagination((prev) => ({
+            ...prev,
+            page: response.data.pageIndex,
+            limit: response.data.pageSize,
+            total: response.data.totalItems,
+            totalPages: response.data.totalPages,
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch announcements:', error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to fetch announcements:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [pagination.limit]
+  );
 
   useEffect(() => {
     fetchAnnouncements(pagination.page);
-  }, [pagination.page]); // Depend on pagination.page to refetch when page changes
+  }, [fetchAnnouncements, pagination.page]);
 
   const handlePageChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
