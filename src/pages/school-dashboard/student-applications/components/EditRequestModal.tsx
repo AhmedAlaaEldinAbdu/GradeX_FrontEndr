@@ -1,0 +1,82 @@
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import Modal from '@/shared/popups/Modal';
+import Button from '@/shared/components/Button';
+
+interface EditRequestModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (message: string) => void;
+}
+
+const EditRequestModal: React.FC<EditRequestModalProps> = ({ isOpen, onClose, onConfirm }) => {
+  const { t } = useTranslation();
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleConfirm = () => {
+    if (!message.trim()) {
+      setError(true);
+      return;
+    }
+    onConfirm(message);
+    setMessage('');
+    setError(false);
+  };
+
+  const handleClose = () => {
+    setMessage('');
+    setError(false);
+    onClose();
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={t('studentApplications.modals.editRequestTitle')}
+      size="sm"
+    >
+      <div className="flex flex-col">
+        {/* Edit request field */}
+        <div className="mb-6">
+          <label className="mb-2 block text-start text-sm font-medium text-gray-700">
+            {t('studentApplications.modals.editRequestLabel')}{' '}
+            <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            value={message}
+            onChange={(e) => {
+              setMessage(e.target.value);
+              if (error) setError(false);
+            }}
+            placeholder={t('studentApplications.modals.editRequestPlaceholder')}
+            rows={4}
+            className={`w-full resize-y rounded-xl border px-4 py-3 text-start text-sm outline-none transition-colors ${
+              error
+                ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-200'
+                : 'border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-200'
+            }`}
+          />
+          {error && (
+            <p className="mt-1 text-start text-xs text-red-500">
+              {t('studentApplications.modals.editRequestRequired')}
+            </p>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex w-full gap-3">
+          <Button variant="success" fullWidth onClick={handleConfirm}>
+            {t('common.send')}
+          </Button>
+          <Button variant="outline" fullWidth onClick={handleClose}>
+            {t('common.cancel')}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+export default EditRequestModal;
