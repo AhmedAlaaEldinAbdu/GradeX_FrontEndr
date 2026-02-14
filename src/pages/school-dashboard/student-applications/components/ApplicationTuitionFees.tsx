@@ -9,6 +9,8 @@ interface ApplicationTuitionFeesProps {
 const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data }) => {
   const { t } = useTranslation();
 
+  if (!data) return null;
+
   return (
     <div className="mb-8 rounded-2xl border border-gray-200 p-6">
       <h2 className="mb-4 text-start text-lg font-bold text-gray-900">
@@ -21,9 +23,9 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
           <span className="font-bold text-gray-800">
             {t('studentApplications.details.paymentMethod')}:
           </span>
-          <span className="text-gray-600">{data.paymentMethod}</span>
+          <span className="text-gray-600">{data.paymentMethod || '-'}</span>
         </div>
-        {data.services.length > 0 && (
+        {data.services?.length > 0 && (
           <div className="flex items-center gap-2">
             <span className="font-bold text-gray-800">
               {t('studentApplications.details.services')}:
@@ -36,13 +38,13 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
             {t('studentApplications.details.discount')}:
           </span>
           <span className="text-gray-600">
-            {data.offers.length > 0 ? data.offers.join(', ') : '-'}
+            {data.offers?.length > 0 ? data.offers.join(', ') : '-'}
           </span>
         </div>
       </div>
 
       {/* Paid Services Label */}
-      {data.paidServices.length > 0 && (
+      {data.paidServices?.length > 0 && (
         <>
           <div className="mb-4 text-start text-sm font-bold text-gray-800">
             {t('studentApplications.details.addedFees')}:
@@ -51,10 +53,10 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
           {/* Paid Services Grid - 4 columns */}
           <div className="mb-6 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-4">
             {data.paidServices.map((service) => (
-              <div key={service.id} className="text-center">
-                <p className="text-sm font-bold text-gray-800">{service.name}</p>
+              <div key={service?.id || Math.random()} className="text-center">
+                <p className="text-sm font-bold text-gray-800">{service?.name || '-'}</p>
                 <p className="text-sm text-gray-500">
-                  {service.amount} {t('common.currencyRiyal')}
+                  {service?.amount?.toLocaleString() || '0'} {t('common.currencyRiyal')}
                 </p>
               </div>
             ))}
@@ -69,13 +71,15 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
         </span>
         <div className="flex items-center gap-3" dir="ltr">
           <span className="text-xl font-bold text-green-600">
-            {data.total.toLocaleString()} {t('common.currencyRiyal')}
+            {(data.total || 0).toLocaleString()} {t('common.currencyRiyal')}
           </span>
-          {data.tuitionAmount !== data.total && (
-            <span className="text-base text-gray-400 line-through">
-              {data.tuitionAmount.toLocaleString()} {t('common.currencyRiyal')}
-            </span>
-          )}
+          {data.tuitionAmount !== undefined &&
+            data.tuitionAmount !== null &&
+            data.tuitionAmount !== data.total && (
+              <span className="text-base text-gray-400 line-through">
+                {(data.tuitionAmount || 0).toLocaleString()} {t('common.currencyRiyal')}
+              </span>
+            )}
         </div>
       </div>
     </div>
