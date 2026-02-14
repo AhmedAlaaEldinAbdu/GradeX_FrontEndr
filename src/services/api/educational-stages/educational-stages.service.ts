@@ -5,6 +5,7 @@ import type {
   EducationalStagesListValue,
   EducationalStageParams,
   EducationalStageResponse,
+  LKSchoolStageResponse,
   CreateEducationalStageRequest,
   UpdateEducationalStageRequest,
 } from '../types/educational-stages.types';
@@ -63,9 +64,10 @@ export async function deleteEducationalStage(id: string): Promise<ApiResponseMod
   return response.data;
 }
 
-export async function fetchLKSchoolStages(): Promise<EducationalStageResponse[]> {
-  const response: AxiosResponse<ApiResponseModel<EducationalStageResponse[]>> =
-    await axiosClient.get(EducationalStagesEndpoints.lkSchoolStage);
+export async function fetchLKSchoolStages(): Promise<LKSchoolStageResponse[]> {
+  const response: AxiosResponse<ApiResponseModel<LKSchoolStageResponse[]>> = await axiosClient.get(
+    EducationalStagesEndpoints.lkSchoolStage
+  );
   return response.data.value;
 }
 
