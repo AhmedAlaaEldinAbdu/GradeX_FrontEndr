@@ -13,10 +13,8 @@ import type { ApiResponseModel } from '../config';
 export async function fetchEducationalStages(
   params?: Partial<EducationalStageParams>
 ): Promise<EducationalStagesListValue> {
-  const response: AxiosResponse<ApiResponseModel<EducationalStagesListValue>> = await axiosClient.get(
-    EducationalStagesEndpoints.base,
-    { params }
-  );
+  const response: AxiosResponse<ApiResponseModel<EducationalStagesListValue>> =
+    await axiosClient.get(EducationalStagesEndpoints.base, { params });
   return response.data.value;
 }
 
@@ -24,10 +22,10 @@ export async function fetchEducationalStagesBySubSystemId(
   academicSubSystemId: string,
   params?: Partial<Omit<EducationalStageParams, 'academicSubSystemId'>>
 ): Promise<EducationalStagesListValue> {
-  const response: AxiosResponse<ApiResponseModel<EducationalStagesListValue>> = await axiosClient.get(
-    EducationalStagesEndpoints.getGradeBySubSystemId,
-    { params: { academicSubSystemId: academicSubSystemId, ...params } }
-  );
+  const response: AxiosResponse<ApiResponseModel<EducationalStagesListValue>> =
+    await axiosClient.get(EducationalStagesEndpoints.getGradeBySubSystemId, {
+      params: { academicSubSystemId: academicSubSystemId, ...params },
+    });
   return response.data.value;
 }
 
@@ -65,6 +63,12 @@ export async function deleteEducationalStage(id: string): Promise<ApiResponseMod
   return response.data;
 }
 
+export async function fetchLKSchoolStages(): Promise<EducationalStageResponse[]> {
+  const response: AxiosResponse<ApiResponseModel<EducationalStageResponse[]>> =
+    await axiosClient.get(EducationalStagesEndpoints.lkSchoolStage);
+  return response.data.value;
+}
+
 export const EducationalStagesApiService = {
   fetchEducationalStages,
   fetchEducationalStagesBySubSystemId,
@@ -72,6 +76,7 @@ export const EducationalStagesApiService = {
   createEducationalStage,
   updateEducationalStage,
   deleteEducationalStage,
+  fetchLKSchoolStages,
 };
 
 export default EducationalStagesApiService;
