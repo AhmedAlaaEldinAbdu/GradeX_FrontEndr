@@ -107,5 +107,6 @@ export interface StudentApplicationDetailDto {
   guardianIdentityPath: string | null;
   vaccinationCertificatePath: string | null;
   lastEducationCertificatePath: string | null;
+  interviewDate?: string | null;
   parentInfo: ParentInfo;
 }
