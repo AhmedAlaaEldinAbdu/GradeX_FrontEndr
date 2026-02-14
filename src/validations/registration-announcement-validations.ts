@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 export const RegistrationAnnouncementSchema = yup.object().shape({
-  educationalStages: yup.string().required('common.validation.required'),
+  lkSchoolStageId: yup.string().required('common.validation.required'),
   startDate: yup.string().required('common.validation.required'),
   endDate: yup
     .string()
