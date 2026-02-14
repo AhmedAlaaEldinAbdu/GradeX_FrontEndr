@@ -113,6 +113,8 @@
     "status": "الحالة",
     "noDataFound": "لم يتم العثور على بيانات",
     "details": "التفاصيل",
+    "rejectionReason": "سبب الرفض",
+    "enterRejectionReason": "أدخل سبب الرفض",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
@@ -627,6 +629,24 @@
       "scheduleAppointment": "تحديد موعد",
       "housing": "تسكين",
       "notPassed": "لم يجتاز"
+    },
+    "modals": {
+      "notPassedConfirm": "هل أنت متأكد من عدم اجتياز الطالب ؟",
+      "acceptConfirm": "هل ترغب في قبول الطالب في المدرسة وإرسال العقد ؟",
+      "editRequestTitle": "طلب التعديل",
+      "editRequestLabel": "طلب التعديل",
+      "editRequestPlaceholder": "أدخل طلب التعديل",
+      "editRequestRequired": "طلب التعديل مطلوب",
+      "scheduleTitle": "تحديد موعد",
+      "appointmentDate": "تاريخ موعد",
+      "selectDate": "اختر التاريخ اليوم",
+      "appointmentTime": "الوقت",
+      "selectTime": "اختر وقت للمقابلة",
+      "schedule": "تحديد",
+      "housingTitle": "تسكين الطالب",
+      "classroomLabel": "الصف الدراسي",
+      "studentsInClass": "عدد الطلاب في الفصل",
+      "housing": "تسكين"
     },
     "details": {
       "parentInfo": "بيانات ولي الأمر",

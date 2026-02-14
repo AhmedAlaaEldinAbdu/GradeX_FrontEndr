@@ -113,6 +113,8 @@
     "all": "All",
     "noDataFound": "No data found",
     "details": "Details",
+    "rejectionReason": "Rejection Reason",
+    "enterRejectionReason": "Enter the reason for rejection",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
@@ -628,6 +630,24 @@
       "scheduleAppointment": "Schedule Appointment",
       "housing": "Housing",
       "notPassed": "Not Passed"
+    },
+    "modals": {
+      "notPassedConfirm": "Are you sure the student did not pass?",
+      "acceptConfirm": "Do you want to accept the student in the school and send the contract?",
+      "editRequestTitle": "Edit Request",
+      "editRequestLabel": "Edit Request",
+      "editRequestPlaceholder": "Enter edit request",
+      "editRequestRequired": "Edit request is required",
+      "scheduleTitle": "Schedule Appointment",
+      "appointmentDate": "Appointment Date",
+      "selectDate": "Choose today's date",
+      "appointmentTime": "Time",
+      "selectTime": "Choose appointment time",
+      "schedule": "Schedule",
+      "housingTitle": "Student Housing",
+      "classroomLabel": "Classroom",
+      "studentsInClass": "Number of students in class",
+      "housing": "Housing"
     },
     "details": {
       "parentInfo": "Parent Information",
