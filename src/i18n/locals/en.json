@@ -614,6 +614,8 @@
     "selectDate": "Select today's date",
     "selectTime": "Select time for interview",
     "appointmentScheduled": "Appointment scheduled successfully",
+    "interviewName": "Interview Name",
+    "supervisor": "Supervisor",
     "status": {
       "accepted": "Accepted",
       "notPassed": "Not Passed",

@@ -613,6 +613,8 @@
     "selectDate": "اختر التاريخ اليوم",
     "selectTime": "اختر وقت للمقابلة",
     "appointmentScheduled": "تم تحديد الموعد بنجاح",
+    "interviewName": "اسم المقابلة",
+    "supervisor": "المشرف",
     "status": {
       "accepted": "تم قبول",
       "notPassed": "لم يجتاز",
