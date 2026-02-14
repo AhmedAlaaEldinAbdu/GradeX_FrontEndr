@@ -3,12 +3,10 @@ import { Breadcrumb } from '@gradex/shared/layout/layout';
 import RegistrationAnnouncement from './components/RegistrationAnnouncement';
 import { useTranslation } from 'react-i18next';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
-import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/shared/components/PageHeader';
 
 const RegistrationAnnouncementPage: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const breadcrumbItems = [
     { label: t('sidebar.studentManagement') },
@@ -38,7 +36,7 @@ const RegistrationAnnouncementPage: React.FC = () => {
             label: t('registrationAnnouncement.addAnnouncement'),
             imgSrc: PlusIcon,
             imgClassName: 'w-[24px] h-[24px]',
-            onClick: () => navigate('/registration-announcement/add-registration-announcement'),
+            to: '/registration-announcement/add-registration-announcement',
           },
         ]}
       />
