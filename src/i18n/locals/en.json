@@ -617,13 +617,15 @@
       "waitingInterview": "Waiting for Interview",
       "editRequested": "Edit Requested",
       "modified": "Modified",
-      "completed": "Completed"
+      "completed": "Completed",
+      "appointmentScheduled": "Appointment Scheduled"
     },
     "actions": {
       "accept": "Accept",
       "sendEditRequest": "Edit Request",
       "changeAppointment": "Change Appointment",
       "scheduleAppointment": "Schedule Appointment",
+      "housing": "Housing",
       "notPassed": "Not Passed"
     },
     "details": {
@@ -659,7 +661,10 @@
       "lastEducationCertificate": "Last Educational Certificate",
       "educationalCustody": "Educational Custody",
       "cash": "Cash",
-      "siblings": "Siblings"
+      "siblings": "Siblings",
+      "applicationStatus": "Application Status",
+      "appointmentDateLabel": "Appointment",
+      "studentEvaluation": "Student Evaluation"
     }
   },
   "students": {

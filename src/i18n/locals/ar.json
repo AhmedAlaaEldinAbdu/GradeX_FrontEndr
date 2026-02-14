@@ -616,13 +616,15 @@
       "waitingInterview": "في إنتظار التوقيع",
       "editRequested": "طلب تعديل",
       "modified": "تم التعديل",
-      "completed": "إكتمل"
+      "completed": "إكتمل",
+      "appointmentScheduled": "تم تحديد موعد المقابلة"
     },
     "actions": {
       "accept": "قبول",
       "sendEditRequest": "إرسال طلب تعديل",
       "changeAppointment": "تغيير الموعد",
       "scheduleAppointment": "تحديد موعد",
+      "housing": "تسكين",
       "notPassed": "لم يجتاز"
     },
     "details": {
@@ -658,7 +660,10 @@
       "lastEducationCertificate": "الشهادة التعليمية الأخيرة",
       "educationalCustody": "الولاية التعليمية",
       "cash": "نقدي",
-      "siblings": "الأخوة"
+      "siblings": "الأخوة",
+      "applicationStatus": "حالة الطلب",
+      "appointmentDateLabel": "الموعد",
+      "studentEvaluation": "تقيم الطالب"
     }
   },
   "students": {
