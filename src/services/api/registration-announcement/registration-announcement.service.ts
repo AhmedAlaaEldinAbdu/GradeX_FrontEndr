@@ -1,5 +1,8 @@
 import { axiosClient } from '@/lib/http';
-import type { GetRegistrationAdvertisementsResponse } from './registration-announcement.types';
+import type {
+  GetRegistrationAdvertisementsResponse,
+  CreateRegistrationAdvertisementRequest,
+} from './registration-announcement.types';
 
 export const registrationAnnouncementApi = {
   getAll: async (pageIndex: number = 1, pageSize: number = 10) => {
@@ -12,6 +15,11 @@ export const registrationAnnouncementApi = {
         },
       }
     );
+    return response.data;
+  },
+
+  create: async (data: CreateRegistrationAdvertisementRequest) => {
+    const response = await axiosClient.post('/RegistrationAdvertisement', data);
     return response.data;
   },
 };
