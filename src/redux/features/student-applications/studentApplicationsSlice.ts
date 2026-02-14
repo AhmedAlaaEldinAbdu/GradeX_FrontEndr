@@ -110,6 +110,26 @@ export const fetchStudentApplicationById = createAsyncThunk<
   }
 });
 
+export const updateStudentApplicationStatus = createAsyncThunk<
+  void,
+  { id: string; status: number },
+  { rejectValue: string }
+>('studentApplications/updateStatus', async ({ id, status }, { rejectWithValue, dispatch }) => {
+  try {
+    const response = await studentApplicationsApiService.updateStudentApplicationStatus(id, status);
+
+    if (!response?.isSuccess) {
+      return rejectWithValue(response?.errors?.[0] || 'Failed to update status');
+    }
+
+    // Refresh the list after update
+    dispatch(fetchStudentApplications({}));
+    return;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const studentApplicationsSlice = createSlice({
   name: 'studentApplications',
   initialState,

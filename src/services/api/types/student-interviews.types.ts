@@ -9,6 +9,7 @@ export interface StudentInterview {
   nameEn: string;
   schoolBranchesId: string;
   studentId: string;
+  applicationId?: string;
   supervisorId: string;
   interviewDate: string;
   startTime: string;
