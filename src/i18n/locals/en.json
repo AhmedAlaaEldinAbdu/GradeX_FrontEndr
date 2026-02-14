@@ -120,7 +120,8 @@
       "nameRequired": "name is required",
       "nameArRequired": "name in Arabic is required",
       "nameEnRequired": "name in English is required",
-      "pleaseFillRequiredFields": "Please fill all required fields"
+      "pleaseFillRequiredFields": "Please fill all required fields",
+      "endDateAfterStart": "End date must be after start date"
     }
   },
   "actions": {
@@ -591,7 +592,13 @@
     "startDateLabel": "Registration Start Date",
     "endDateLabel": "Registration End Date",
     "chooseStartDate": "Select start date",
-    "chooseEndDate": "Select end date"
+    "chooseEndDate": "Select end date",
+    "selectEducationalStage": "Select Educational Stage",
+    "addedSuccessfully": "Announcement added successfully",
+    "primary": "Primary Stage",
+    "middle": "Middle Stage",
+    "high": "High Stage",
+    "kindergarten": "Kindergarten"
   },
   "studentApplications": {
     "title": "Student Applications",

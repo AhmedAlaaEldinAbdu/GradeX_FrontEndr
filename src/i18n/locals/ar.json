@@ -120,7 +120,8 @@
       "nameRequired": "الاسم مطلوب",
       "nameArRequired": "الاسم بالعربية مطلوب",
       "nameEnRequired": "الاسم بالإنجليزية مطلوب",
-      "pleaseFillRequiredFields": "يرجى ملء جميع الحقول المطلوبة"
+      "pleaseFillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
+      "endDateAfterStart": "تاريخ النهاية يجب أن يكون بعد تاريخ البداية"
     }
   },
   "actions": {
@@ -590,7 +591,13 @@
     "startDateLabel": "تاريخ بداية التسجيل",
     "endDateLabel": "تاريخ نهاية التسجيل",
     "chooseStartDate": "اختر تاريخ بداية التسجيل",
-    "chooseEndDate": "اختر تاريخ نهاية التسجيل"
+    "chooseEndDate": "اختر تاريخ نهاية التسجيل",
+    "selectEducationalStage": "اختر المرحلة التعليمية",
+    "addedSuccessfully": "تم إضافة الإعلان بنجاح",
+    "primary": "المرحلة الابتدائية",
+    "middle": "المرحلة الإعدادية",
+    "high": "المرحلة الثانوية",
+    "kindergarten": "رياض الأطفال"
   },
   "studentApplications": {
     "title": "طلبات التقديم",
