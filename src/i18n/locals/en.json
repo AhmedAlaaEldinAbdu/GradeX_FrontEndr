@@ -613,6 +613,7 @@
     "appointmentTime": "Time",
     "selectDate": "Select today's date",
     "selectTime": "Select time for interview",
+    "statusUpdated": "Status updated successfully",
     "appointmentScheduled": "Appointment scheduled successfully",
     "interviewName": "Interview Name",
     "supervisor": "Supervisor",
