@@ -12,13 +12,14 @@ import type {
   EducationalStagesListValue,
   EducationalStageParams,
   EducationalStageResponse,
+  LKSchoolStageResponse,
   CreateEducationalStageRequest,
   UpdateEducationalStageRequest,
 } from '@/services/api/types/educational-stages.types';
 
 interface EducationalStagesState {
   educationalStages: EducationalStageResponse[];
-  lkEducationalStages: EducationalStageResponse[];
+  lkEducationalStages: LKSchoolStageResponse[];
   educationalStageDetails: EducationalStageResponse | null;
   pagination: Pagination;
   isLoading: boolean;
@@ -71,7 +72,7 @@ export const getEducationalStageBySubsystemId = createAsyncThunk<EducationalStag
   }
 );
 
-export const getLKSchoolStages = createAsyncThunk<EducationalStageResponse[]>(
+export const getLKSchoolStages = createAsyncThunk<LKSchoolStageResponse[]>(
   'educationalStages/fetchLK',
   async (_, { rejectWithValue }) => {
     try {
@@ -211,7 +212,7 @@ const educationalStagesSlice = createSlice({
       })
       .addCase(
         getLKSchoolStages.fulfilled,
-        (state, action: PayloadAction<EducationalStageResponse[]>) => {
+        (state, action: PayloadAction<LKSchoolStageResponse[]>) => {
           state.isLoading = false;
           state.lkEducationalStages = action.payload;
         }
