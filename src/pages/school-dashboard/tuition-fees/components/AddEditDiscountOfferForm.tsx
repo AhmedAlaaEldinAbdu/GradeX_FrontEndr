@@ -7,7 +7,6 @@ import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 import ToggleSwitch from '@/shared/components/ToggleSwitch';
-import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import CustomSelect from '@/shared/components/CustomSelect';
 import PercentIcon from '@/assets/icons/Percent.svg';
 import GreenPlusIcon from '@/assets/icons/GreenPlus.svg';
@@ -113,8 +112,16 @@ export default function AddEditDiscountOfferForm({
   );
 
   const offerFieldOptions = useMemo(() => {
+    const allowedFields: Array<keyof typeof OfferField> = [
+      'HasSibling',
+      'IsFullPayment',
+      'IsEarlyPayment',
+      'AlwaysTrue',
+    ];
+
     return (Object.entries(OfferField) as Array<[keyof typeof OfferField, number]>)
       .slice()
+      .filter(([enumKey]) => allowedFields.includes(enumKey))
       .sort((a, b) => a[1] - b[1])
       .map(([enumKey, value]) => {
         const mappedKey = offerFieldKeyMap[enumKey];
@@ -126,55 +133,11 @@ export default function AddEditDiscountOfferForm({
       });
   }, [offerFieldKeyMap, t, i18n.language]);
 
-  const offerOperatorKeyMap = useMemo(
-    () =>
-      ({
-        Equals: 'equals',
-        NotEquals: 'notEquals',
-        GreaterThan: 'greaterThan',
-        GreaterThanOrEqual: 'greaterThanOrEqual',
-        LessThan: 'lessThan',
-        LessThanOrEqual: 'lessThanOrEqual',
-        In: 'in',
-        NotIn: 'notIn',
-        Between: 'between',
-      }) as const,
-    []
-  );
-
-  const offerOperatorOptions = useMemo(() => {
-    return (Object.entries(OfferOperator) as Array<[keyof typeof OfferOperator, number]>)
-      .slice()
-      .sort((a, b) => a[1] - b[1])
-      .map(([enumKey, value]) => {
-        const mappedKey = offerOperatorKeyMap[enumKey];
-        const label = mappedKey
-          ? t(`fees.discounts.form.offerOperator.${mappedKey}`)
-          : String(enumKey);
-
-        return { label, value: String(value) };
-      });
-  }, [offerOperatorKeyMap, t, i18n.language]);
-
   const canAddMoreOffers = mode === 'add';
-  const canManageConditions = true;
 
   const normalizeOffer = (o: DiscountOfferFormValues): DiscountOfferFormValues => {
     if (Array.isArray(o.conditions) && o.conditions.length > 0) return o;
     return { ...o, conditions: createEmptyOffer().conditions };
-  };
-
-  const applyOnToFlags = (applyOn: OfferApplyOn) => {
-    return {
-      applicationFees: applyOn === OfferApplyOn.ApplicationFees || applyOn === OfferApplyOn.Both,
-      tuitionFees: applyOn === OfferApplyOn.TuitionFees || applyOn === OfferApplyOn.Both,
-    };
-  };
-
-  const applyOnFromFlags = (applicationFees: boolean, tuitionFees: boolean): OfferApplyOn => {
-    if (applicationFees && tuitionFees) return OfferApplyOn.Both;
-    if (applicationFees) return OfferApplyOn.ApplicationFees;
-    return OfferApplyOn.TuitionFees;
   };
 
   const initialSignature = useMemo(() => JSON.stringify(initialOffers ?? []), [initialOffers]);
@@ -241,48 +204,15 @@ export default function AddEditDiscountOfferForm({
     );
   };
 
-  const addCondition = (offerIndex: number) => {
-    setOffers((prev) =>
-      prev.map((o, i) => {
-        if (i !== offerIndex) return o;
-        const nextConditions = [
-          ...(o.conditions ?? []),
-          {
-            field: OfferField.AlwaysTrue,
-            operator: OfferOperator.Equals,
-            value: 'true',
-          },
-        ];
-        return normalizeOffer({ ...o, conditions: nextConditions });
-      })
-    );
-  };
-
-  const removeCondition = (offerIndex: number, conditionIndex: number) => {
-    setOffers((prev) =>
-      prev.map((o, i) => {
-        if (i !== offerIndex) return o;
-        const current = o.conditions ?? [];
-        if (current.length <= 1) return normalizeOffer(o);
-        const nextConditions = current.filter((_, ci) => ci !== conditionIndex);
-        return normalizeOffer({ ...o, conditions: nextConditions });
-      })
-    );
-
-    setErrors((prev) => {
-      const current = prev[offerIndex];
-      if (!current) return prev;
-      const next = { ...prev };
-      next[offerIndex] = Object.fromEntries(
-        Object.entries(current).filter(([key]) => !key.startsWith('conditions.'))
-      );
-      return next;
-    });
-  };
-
   const handleSubmit = async () => {
     const allowMultiple = mode === 'add';
-    const normalizedForValidation = offers.map((o) => ({
+    const offersToSubmit = offers.map((o) => ({
+      ...o,
+      applyOn: OfferApplyOn.TuitionFees,
+      matchAllConditions: true,
+    }));
+
+    const normalizedForValidation = offersToSubmit.map((o) => ({
       ...o,
       discountValue: Number(o.discountValue),
     }));
@@ -295,7 +225,7 @@ export default function AddEditDiscountOfferForm({
     }
 
     setErrors({});
-    await onSubmit(mode === 'add' ? offers : offers.slice(0, 1));
+    await onSubmit(mode === 'add' ? offersToSubmit : offersToSubmit.slice(0, 1));
   };
 
   return (
@@ -322,6 +252,10 @@ export default function AddEditDiscountOfferForm({
           const offerErrors = errors[idx] ?? {};
           const canRemove = canAddMoreOffers && offers.length > 1;
 
+          const conditionIndex = 0;
+          const condition = offer.conditions?.[conditionIndex] ?? createEmptyOffer().conditions[0];
+          const fieldErr = offerErrors[`conditions.${conditionIndex}.field`];
+
           const valueIcon =
             offer.discountType === 'percentage' ? (
               <span>
@@ -335,6 +269,27 @@ export default function AddEditDiscountOfferForm({
             <Card key={idx} className="rounded-2xl" padding="lg">
               <div className="flex items-start gap-3">
                 <div className="flex-1 space-y-4">
+                  <section>
+                    <div className="grid grid-cols-1 gap-5">
+                      <FormField
+                        label={t('fees.discounts.form.conditionFieldLabel')}
+                        required
+                        error={fieldErr}
+                      >
+                        <CustomSelect
+                          value={String(condition.field)}
+                          onChange={(value) =>
+                            updateCondition(idx, conditionIndex, {
+                              field: Number(value) as OfferFieldType,
+                            })
+                          }
+                          options={offerFieldOptions}
+                          placeholder={t('common.choose')}
+                          error={!!fieldErr}
+                        />
+                      </FormField>
+                    </div>
+                  </section>
                   <section>
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                       <FormField
@@ -362,44 +317,6 @@ export default function AddEditDiscountOfferForm({
                       </FormField>
                     </div>
                   </section>
-                  <section>
-                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                      <FormField label={t('fees.discounts.form.applyOnLabel')} required>
-                        <div className="flex flex-wrap gap-4">
-                          {(() => {
-                            const flags = applyOnToFlags(offer.applyOn);
-
-                            const setFlags = (
-                              nextApplicationFees: boolean,
-                              nextTuitionFees: boolean
-                            ) => {
-                              // Don’t allow unselecting both.
-                              if (!nextApplicationFees && !nextTuitionFees) return;
-                              updateOffer(idx, {
-                                applyOn: applyOnFromFlags(nextApplicationFees, nextTuitionFees),
-                              });
-                            };
-
-                            return (
-                              <>
-                                <CustomCheckbox
-                                  label={t('fees.discounts.form.applyOn.applicationFees')}
-                                  checked={flags.applicationFees}
-                                  onChange={(checked) => setFlags(checked, flags.tuitionFees)}
-                                />
-                                <CustomCheckbox
-                                  label={t('fees.discounts.form.applyOn.tuitionFees')}
-                                  checked={flags.tuitionFees}
-                                  onChange={(checked) => setFlags(flags.applicationFees, checked)}
-                                />
-                              </>
-                            );
-                          })()}
-                        </div>
-                      </FormField>
-                    </div>
-                  </section>
-
                   <section>
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                       <FormField label={t('fees.discounts.form.discountTypeLabel')} required>
@@ -498,127 +415,6 @@ export default function AddEditDiscountOfferForm({
                       onChange={(next) => updateOffer(idx, { isActive: next })}
                     />
                   </div>
-
-                  <div className="flex flex-col items-start gap-2">
-                    <div className="flex flex-col items-start gap-1">
-                      <div className="required text-base font-normal text-black-800">
-                        {t('fees.discounts.form.matchAllConditions')}
-                      </div>
-                    </div>
-
-                    <ToggleSwitch
-                      checked={offer.matchAllConditions}
-                      onChange={(next) => updateOffer(idx, { matchAllConditions: next })}
-                    />
-                  </div>
-
-                  <section>
-                    <div className="space-y-3 rounded-lg border border-gray-300 p-4">
-                      <div className="mb-4 flex items-center justify-between gap-3">
-                        <h3 className="text-xl font-medium text-black-700">
-                          {t('fees.discounts.form.offerCondition')}
-                        </h3>
-                        <div>
-                          {canManageConditions && (
-                            <div className="flex">
-                              <button
-                                type="button"
-                                onClick={() => addCondition(idx)}
-                                className="flex items-center gap-2"
-                                aria-label={t('common.add')}
-                              >
-                                <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Add" />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-4">
-                        {(offer.conditions ?? []).map((condition, conditionIndex) => {
-                          const canRemoveCondition =
-                            canManageConditions && (offer.conditions?.length ?? 0) > 1;
-                          const fieldErr = offerErrors[`conditions.${conditionIndex}.field`] ?? '';
-                          const operatorErr =
-                            offerErrors[`conditions.${conditionIndex}.operator`] ?? '';
-                          const valueErr = offerErrors[`conditions.${conditionIndex}.value`] ?? '';
-
-                          return (
-                            <div
-                              key={`${idx}-${conditionIndex}`}
-                              className="flex items-start justify-between gap-2 rounded-lg border border-gray-300 p-4"
-                            >
-                              <div className="grid flex-1 grid-cols-1 gap-5 md:grid-cols-2">
-                                <FormField
-                                  label={t('fees.discounts.form.conditionFieldLabel')}
-                                  required
-                                  error={fieldErr}
-                                >
-                                  <CustomSelect
-                                    value={String(condition.field)}
-                                    onChange={(value) =>
-                                      updateCondition(idx, conditionIndex, {
-                                        field: Number(value) as OfferFieldType,
-                                      })
-                                    }
-                                    options={offerFieldOptions}
-                                    placeholder={t('common.choose')}
-                                    error={!!fieldErr}
-                                  />
-                                </FormField>
-
-                                <FormField
-                                  label={t('fees.discounts.form.conditionOperatorLabel')}
-                                  required
-                                  error={operatorErr}
-                                >
-                                  <CustomSelect
-                                    value={String(condition.operator)}
-                                    onChange={(value) =>
-                                      updateCondition(idx, conditionIndex, {
-                                        operator: Number(value) as OfferOperatorType,
-                                      })
-                                    }
-                                    options={offerOperatorOptions}
-                                    placeholder={t('common.choose')}
-                                    error={!!operatorErr}
-                                  />
-                                </FormField>
-
-                                <FormField
-                                  label={t('fees.discounts.form.valueLabel')}
-                                  required
-                                  error={valueErr}
-                                >
-                                  <Input
-                                    value={condition.value ?? ''}
-                                    onChange={(e) =>
-                                      updateCondition(idx, conditionIndex, {
-                                        value: e.target.value,
-                                      })
-                                    }
-                                    placeholder={t('common.enterValue')}
-                                  />
-                                </FormField>
-                              </div>
-
-                              {canRemoveCondition ? (
-                                <div>
-                                  <IconButton
-                                    status="delete"
-                                    variant="danger"
-                                    ariaLabel={t('actions.delete')}
-                                    onClick={() => removeCondition(idx, conditionIndex)}
-                                  />
-                                </div>
-                              ) : (
-                                <div className="h-8 w-8"></div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </section>
                 </div>
 
                 {canRemove ? (

@@ -4,7 +4,7 @@ import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-cale
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import CustomImage from '@/shared/components/CustomImage';
-import DotsIcon from '@gradex/assets/icons/Dots.svg';
+import DotsBlackIcon from '@gradex/assets/icons/DotsBlack.svg';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar-styles.css';
 
@@ -81,6 +81,12 @@ export default function SharedCalendar({
   const currentLang = i18n.language as 'ar' | 'en';
   const isRTL = currentLang === 'ar';
 
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
   const getDayKey = useCallback((date: Date) => {
     const normalized = new Date(date);
     normalized.setHours(0, 0, 0, 0);
@@ -148,9 +154,10 @@ export default function SharedCalendar({
     title?: string;
   }) => (
     <div className="flex items-center justify-center gap-2">
-      {typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0 ? (
+      {typeof event.extraEventsCount === 'number' ? (
+        // && event.extraEventsCount > 0
         <span className="line-clamp-2 text-center text-sm font-bold text-green-500">
-          +{event.extraEventsCount}
+          +{event.extraEventsCount + 1}
         </span>
       ) : (
         <span className="line-clamp-2 text-center text-xs font-bold text-green-500">{title}</span>
@@ -212,7 +219,7 @@ export default function SharedCalendar({
           aria-label="Options"
         >
           <CustomImage
-            src={DotsIcon}
+            src={DotsBlackIcon}
             alt="options"
             className="h-4 w-4 opacity-60 hover:opacity-100"
           />
@@ -276,6 +283,22 @@ export default function SharedCalendar({
     </div>
   );
 
+  const CustomWeekdayHeader = (props: { date: Date; label: string }) => {
+    const headerDate = new Date(props.date);
+    headerDate.setHours(0, 0, 0, 0);
+
+    const isViewingCurrentMonth =
+      date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth();
+
+    const isTodayWeekdayHeader = isViewingCurrentMonth && getDay(headerDate) === getDay(today);
+
+    return (
+      <span className={`weekday-label ${isTodayWeekdayHeader ? 'weekday-label--today' : ''}`}>
+        {props.label}
+      </span>
+    );
+  };
+
   return (
     <div ref={containerRef} className="relative">
       <div className={`relative ${className}`}>
@@ -305,30 +328,35 @@ export default function SharedCalendar({
             components={{
               toolbar: CustomToolbar,
               event: CustomCalendarEvent,
-              ...(enableDateCellMenu
-                ? {
-                    dateHeader: (props: any) => {
-                      const dateEvents = condensedEvents.filter((event) => {
-                        const eventDate = new Date(event.start);
-                        const cellDate = new Date(props.date);
-                        return (
-                          eventDate.getDate() === cellDate.getDate() &&
-                          eventDate.getMonth() === cellDate.getMonth() &&
-                          eventDate.getFullYear() === cellDate.getFullYear()
-                        );
-                      });
+              month: {
+                header: CustomWeekdayHeader as any,
+                ...(enableDateCellMenu
+                  ? {
+                      dateHeader: (props: any) => {
+                        const dateEvents = condensedEvents.filter((event) => {
+                          const eventDate = new Date(event.start);
+                          const cellDate = new Date(props.date);
+                          return (
+                            eventDate.getDate() === cellDate.getDate() &&
+                            eventDate.getMonth() === cellDate.getMonth() &&
+                            eventDate.getFullYear() === cellDate.getFullYear()
+                          );
+                        });
 
-                      return (
-                        <div className="relative flex-col">
-                          <div className="relative flex items-center justify-between p-1">
-                            <span className="px-1 text-sm text-black-700 font-normal">{props.label}</span>
-                            <CustomDateCell date={props.date} event={dateEvents[0]} />
+                        return (
+                          <div className="relative flex-col">
+                            <div className="relative flex items-center justify-between p-1">
+                              <span className="px-1 text-sm font-normal text-black-700">
+                                {props.label}
+                              </span>
+                              <CustomDateCell date={props.date} event={dateEvents[0]} />
+                            </div>
                           </div>
-                        </div>
-                      );
-                    },
-                  }
-                : {}),
+                        );
+                      },
+                    }
+                  : {}),
+              },
             }}
             messages={{
               next: t('common.next'),

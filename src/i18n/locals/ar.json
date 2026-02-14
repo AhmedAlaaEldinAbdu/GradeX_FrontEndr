@@ -85,6 +85,7 @@
     "image": "صورة",
     "close": "إغلاق",
     "saving": "جاري الحفظ...",
+    "type": "النوع",
     "chooseDate": "اختر التاريخ",
     "choose": "اختر",
     "enterValue": "أدخل القيمة",
@@ -1233,6 +1234,7 @@
     "noInterviewsYet": "لم يتم إضافة أي مقابلات حتى الآن.",
     "searchTeacherName": "ابحث عن اسم المعلم",
     "supervisorName": "اسم المشرف",
+    "interviewName": "اسم المقابلة",
     "interviewNameAr": "اسم المقابلة (باللغة العربية)",
     "enterInterviewNameAr": "أدخل اسم المقابلة (باللغة العربية)",
     "interviewNameEn": "اسم المقابلة (باللغة الإنجليزية)",
@@ -1440,7 +1442,7 @@
         "invalidEndDate": "تاريخ نهاية العرض يجب أن يكون بعد تاريخ البداية",
         "matchAllConditions": "يجب استيفاء جميع الشروط لتطبيق العرض",
         "offerCondition": "شرط العرض",
-        "conditionFieldLabel": "حقل الشرط",
+        "conditionFieldLabel": "شرط تطبيق العرض",
         "conditionOperatorLabel": "معامل الشرط",
         "offerField": {
           "student": "طالب",
@@ -1448,13 +1450,13 @@
           "stage": "مرحلة دراسية",
           "classroom": "فصل",
           "isNewStudent": "طالب جديد",
-          "hasSibling": "لديه أشقاء",
+          "hasSibling": "خصم الاخوة",
           "siblingsCount": "عدد الأشقاء",
           "gender": "النوع",
           "nationality": "الجنسية",
           "birthYear": "سنة الميلاد",
           "tuitionAmount": "قيمة المصروفات الدراسية",
-          "applicationFeesAmount": "قيمة رسوم التطبيق",
+          "applicationFeesAmount": "قيمة رسوم التقديم",
           "remainingAmount": "المبلغ المتبقي",
           "installmentsCount": "عدد الأقساط",
           "isInstallment": "نظام التقسيط",
@@ -1464,8 +1466,8 @@
           "paymentMethodType": "نوع طريقة الدفع",
           "paymentDate": "تاريخ الدفع",
           "dueDate": "تاريخ الاستحقاق",
-          "isFullPayment": "دفع كامل",
-          "isEarlyPayment": "دفع مبكر",
+          "isFullPayment": "الدفع الكامل",
+          "isEarlyPayment": "السداد المبكر",
           "alwaysTrue": "عرض عام"
         },
         "offerOperator": {
@@ -1481,7 +1483,7 @@
         },
         "applyOnLabel": "تطبيق العرض على",
         "applyOn": {
-          "applicationFees": "رسوم التطبيق",
+          "applicationFees": "رسوم التقديم",
           "tuitionFees": "الرسوم الدراسية"
         }
       },

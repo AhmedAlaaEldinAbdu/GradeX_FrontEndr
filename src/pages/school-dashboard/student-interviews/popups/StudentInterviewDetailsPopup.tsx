@@ -39,12 +39,23 @@ export default function StudentInterviewDetailsPopup({
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  if (!interview) return null;
+  const safeParseDate = (value?: string | Date | null) => {
+    if (!value) return null;
+    if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const interviewStartDate = useMemo(
+    () => safeParseDate(interview?.start ?? null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [interview?.start]
+  );
 
   const dateFilter = useMemo(() => {
-    if (!interview.start) return undefined;
-    return format(new Date(interview.start), 'yyyy-MM-dd');
-  }, [interview.start]);
+    if (!interviewStartDate) return undefined;
+    return format(interviewStartDate, 'yyyy-MM-dd');
+  }, [interviewStartDate]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -59,23 +70,15 @@ export default function StudentInterviewDetailsPopup({
       fetchStudentInterviews({
         filters: { date: dateFilter },
         target: 'popup',
-        limit: 10000,
       })
     ).catch(() => {
       // errors handled by global error state/toast in caller
     });
   }, [dateFilter, dispatch, isOpen]);
 
-  const formattedDate = interview.start
-    ? format(new Date(interview.start), 'PPP', { locale: isRTL ? ar : undefined })
+  const formattedDate = interviewStartDate
+    ? format(interviewStartDate, 'PPP', { locale: isRTL ? ar : undefined })
     : t('common.notAvailable');
-
-  const safeParseDate = (value?: string | Date | null) => {
-    if (!value) return null;
-    if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
-    const parsed = new Date(value);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
-  };
 
   const normalizeTimePortion = (value: string) => (value.length === 5 ? `${value}:00` : value);
 
@@ -88,7 +91,7 @@ export default function StudentInterviewDetailsPopup({
   };
 
   const getLocalizedName = (item: StudentInterview) =>
-    (isRTL ? item.nameAr : item.nameEn) || item.nameAr || item.nameEn || t('interviews.interview');
+    (isRTL ? item.nameAr : item.nameEn) || item.nameAr || item.nameEn || '';
 
   const handleRequestDelete = (id: string) => {
     setPendingDeleteId(id);
@@ -118,7 +121,6 @@ export default function StudentInterviewDetailsPopup({
           fetchStudentInterviews({
             filters: { date: dateFilter },
             target: 'popup',
-            limit: 10000,
           })
         );
       }
@@ -135,6 +137,8 @@ export default function StudentInterviewDetailsPopup({
     }
   };
 
+  if (!interview) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={formattedDate}>
       <div className="space-y-4 py-4">
@@ -145,7 +149,11 @@ export default function StudentInterviewDetailsPopup({
             {popupStudentInterviews.map((item) => (
               <div key={item.id} className="flex flex-col gap-3 rounded-lg border p-3">
                 <div className="flex justify-between gap-3">
-                  <p className="font-semibold text-gray-900">{getLocalizedName(item)}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-gray-900">{t('interviews.interviewName')}:</p>
+                    <p className="text-gray-700">{getLocalizedName(item)}</p>
+                  </div>
+
                   <div className="flex items-center gap-2">
                     <IconButton
                       status="edit"
@@ -172,23 +180,24 @@ export default function StudentInterviewDetailsPopup({
                     {item.studentName || item.studentId || t('common.notAvailable')}
                   </p>
                 </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-semibold text-gray-900">{t('interviews.supervisorName')}:</p>
-                  <p className="text-gray-700">
-                    {item.supervisorName || item.supervisorId || t('common.notAvailable')}
-                  </p>
-                </div>
+                {item.supervisor && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold text-gray-900">{t('interviews.supervisor')}:</p>
+                    <p className="text-gray-700">{item.supervisor}</p>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-gray-900">{t('interviews.startTime')}:</p>
                     <p>{formatTimeFromString(item.startTime)}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-900">{t('interviews.endTime')}:</p>
-                    <p>{formatTimeFromString(item.endTime)}</p>
-                  </div>
+                  {item.endTime === item.startTime ? null : (
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">{t('interviews.endTime')}:</p>
+                      <p>{formatTimeFromString(item.endTime)}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

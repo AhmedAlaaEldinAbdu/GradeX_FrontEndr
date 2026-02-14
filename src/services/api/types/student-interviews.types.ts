@@ -16,6 +16,8 @@ export interface StudentInterview {
 
   // Optional fields that may be returned by list/detail endpoints
   studentName?: string;
+  /** Some endpoints return `supervisor` instead of `supervisorName`. */
+  supervisor?: string;
   supervisorName?: string;
   schoolBranchName?: string;
   createdAt?: string;
