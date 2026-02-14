@@ -20,3 +20,9 @@ export interface GetRegistrationAdvertisementsResponse {
   message: string;
   validationErrors: null;
 }
+
+export interface CreateRegistrationAdvertisementRequest {
+  lkSchoolStageId: string;
+  startDate: string;
+  endDate: string;
+}
