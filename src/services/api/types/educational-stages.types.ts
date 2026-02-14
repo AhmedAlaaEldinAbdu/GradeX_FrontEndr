@@ -26,6 +26,12 @@ export interface EducationalStageResponse {
   createdDate?: string;
 }
 
+export interface LKSchoolStageResponse {
+  id: string;
+  nameAR: string;
+  nameEN: string;
+}
+
 export interface EducationalStagesListValue extends Pagination {
   gradeDtos: EducationalStageResponse[];
 }
