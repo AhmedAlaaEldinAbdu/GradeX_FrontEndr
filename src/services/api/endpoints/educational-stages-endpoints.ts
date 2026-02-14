@@ -7,4 +7,5 @@ export const EducationalStagesEndpoints = {
   getById: (id: string) => `${Grade}/${id}`,
   delete: (id: string) => `${Grade}/${id}`,
   getGradeBySubSystemId: `${Grade}/GetGradeBySubSystemId`,
+  lkSchoolStage: '/LKSchoolStage',
 };
