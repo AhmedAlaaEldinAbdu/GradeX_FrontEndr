@@ -3,7 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
   userValidationSchema,
   userEditValidationSchema,
-} from '../../../../validations/system-user-validations';
+} from '@/validations/system-user-validations';
 
 export interface UserFormData {
   fullName: string;
@@ -11,6 +11,7 @@ export interface UserFormData {
   phoneNumber: string;
   roleId: string;
   lkCountryId: string;
+  schoolBranchId: string;
 }
 
 export const initialUserFormData: UserFormData = {
@@ -19,6 +20,7 @@ export const initialUserFormData: UserFormData = {
   phoneNumber: '',
   roleId: '',
   lkCountryId: '',
+  schoolBranchId: '',
 };
 
 interface UseUserFormReturn {

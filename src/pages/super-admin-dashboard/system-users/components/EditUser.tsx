@@ -28,6 +28,11 @@ import {
   selectCountries,
   selectIsLoadingCountries,
 } from '@gradex/redux/features/lookups';
+import {
+  fetchSchools,
+  selectSchools,
+  selectIsLoading as selectIsLoadingSchools,
+} from '@gradex/redux/features/schools';
 import type { ValidationErrorResponse } from '@/services/api/config';
 import { useUserForm } from '../hooks/useUserForm';
 import i18n from '@/i18n';
@@ -47,6 +52,8 @@ export default function EditUser() {
   const isLoadingRoles = useSelector(selectIsLoadingRoles);
   const countries = useSelector(selectCountries) || [];
   const isLoadingCountries = useSelector(selectIsLoadingCountries);
+  const schools = useSelector(selectSchools) || [];
+  const isLoadingSchools = useSelector(selectIsLoadingSchools);
 
   const currentLang = i18n.language as 'ar' | 'en';
 
@@ -104,6 +111,7 @@ export default function EditUser() {
   useEffect(() => {
     dispatch(fetchRoles({ page: 1, limit: 1000 }));
     dispatch(fetchCountries());
+    dispatch(fetchSchools({ page: 1, limit: 1000 }));
   }, [dispatch]);
 
   // Debug: Log roles when they change
@@ -126,6 +134,10 @@ export default function EditUser() {
 
       // Ensure roleId matches an existing role
       const roleId = currentUser.roleId || (currentUser.roles && currentUser.roles[0]) || '';
+      const schoolBranchId =
+        ((currentUser as any)?.schoolBranchId as string | undefined) ||
+        ((currentUser as any)?.schoolId as string | undefined) ||
+        '';
 
       reset({
         fullName: currentUser.fullName || '',
@@ -133,6 +145,7 @@ export default function EditUser() {
         phoneNumber: currentUser.phoneNumber || '',
         roleId: roleId,
         lkCountryId: currentUser.lkCountryId || '',
+        schoolBranchId,
       });
     }
   }, [currentUser, roles, reset]);
@@ -168,6 +181,7 @@ export default function EditUser() {
           roleId: formData.roleId,
           phoneNumber: formData.phoneNumber.trim(),
           lkCountryId: formData.lkCountryId || '',
+          ...(formData.schoolBranchId ? { schoolBranchId: formData.schoolBranchId } : {}),
         })
       );
 
@@ -179,7 +193,6 @@ export default function EditUser() {
           message: t('rolesManagement.userUpdatedSuccessfully'),
         });
       } else if (updateUser.rejected.match(resultAction)) {
-        console.error('Update rejected:', resultAction.payload);
         const errorPayload = resultAction.payload as { message?: string } | undefined;
         setShowPopupMessage({
           show: true,
@@ -188,7 +201,6 @@ export default function EditUser() {
         });
       }
     } catch (error) {
-      console.error('Failed to update user:', error);
       setShowPopupMessage({
         show: true,
         type: 'error',
@@ -199,7 +211,7 @@ export default function EditUser() {
     }
   };
 
-  if (isLoading || isLoadingRoles || isLoadingCountries) {
+  if (isLoading || isLoadingRoles || isLoadingCountries || isLoadingSchools) {
     return (
       <div className="flex justify-center py-10">
         <Loading />
@@ -211,6 +223,7 @@ export default function EditUser() {
     <FormProvider {...form}>
       <form
         onSubmit={handleSubmit}
+        noValidate
         className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
       >
         <div className="mb-6 grid gap-3 lg:grid-cols-2">
@@ -344,6 +357,40 @@ export default function EditUser() {
                     />
                   );
                 }}
+              />
+            </FormField>
+          </div>
+
+          {/* School Branch Field (Optional) */}
+          <div className="col-span-1">
+            <FormField label={t('rolesManagement.school')} htmlFor="schoolBranchId">
+              <Controller
+                name="schoolBranchId"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value || ''}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (errors.schoolBranchId) {
+                        trigger('schoolBranchId');
+                      }
+                    }}
+                    options={schools.map((school) => ({
+                      value: school.id,
+                      label:
+                        currentLang === 'ar'
+                          ? school.nameAr || school.name || ''
+                          : school.nameEn || school.name || '',
+                    }))}
+                    placeholder={
+                      isLoadingSchools ? t('common.loading') : t('rolesManagement.selectSchool')
+                    }
+                    disabled={isLoadingSchools}
+                    maxHeight="200px"
+                    isMulti={false}
+                  />
+                )}
               />
             </FormField>
           </div>

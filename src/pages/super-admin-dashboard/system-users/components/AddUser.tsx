@@ -26,6 +26,11 @@ import {
   selectCountries,
   selectIsLoadingCountries,
 } from '@gradex/redux/features/lookups';
+import {
+  fetchSchools,
+  selectSchools,
+  selectIsLoading as selectIsLoadingSchools,
+} from '@gradex/redux/features/schools';
 import { useUserForm, type UserFormData } from '../hooks/useUserForm';
 import i18n from '@/i18n';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
@@ -40,6 +45,8 @@ export default function AddUser() {
   const isLoadingRoles = useSelector(selectIsLoadingRoles);
   const countries = useSelector(selectCountries) || [];
   const isLoadingCountries = useSelector(selectIsLoadingCountries);
+  const schools = useSelector(selectSchools) || [];
+  const isLoadingSchools = useSelector(selectIsLoadingSchools);
   const validationErrorsFromRedux = useSelector(selectValidationErrors);
   const errorFromRedux = useSelector(selectError);
 
@@ -77,6 +84,7 @@ export default function AddUser() {
   useEffect(() => {
     dispatch(fetchRoles({ page: 1, limit: 1000 }));
     dispatch(fetchCountries());
+    dispatch(fetchSchools({ page: 1, limit: 1000 }));
   }, [dispatch]);
 
   /**
@@ -92,6 +100,7 @@ export default function AddUser() {
           roleId: data.roleId,
           phoneNumber: data.phoneNumber.trim(),
           lkCountryId: data.lkCountryId,
+          ...(data.schoolBranchId ? { schoolBranchId: data.schoolBranchId } : {}),
         })
       );
 
@@ -101,10 +110,21 @@ export default function AddUser() {
           type: 'success',
           message: t('rolesManagement.userCreatedSuccessfully'),
         });
+      } else if (createUser.rejected.match(resultAction)) {
+        const errorPayload = resultAction.payload as { message?: string } | undefined;
+        setShowPopupMessage({
+          show: true,
+          type: 'error',
+          message: errorPayload?.message || t('common.error'),
+        });
       }
     } catch (error) {
-      console.error('Failed to create user:', error);
-      // Error will be handled by useEffect via errorFromRedux
+      const errorPayload = (error as any)?.payload as { message?: string } | undefined;
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: errorPayload?.message || t('common.error'),
+      });
     } finally {
       setIsCreating(false);
     }
@@ -133,6 +153,7 @@ export default function AddUser() {
     <FormProvider {...form}>
       <form
         onSubmit={handleSubmit}
+        noValidate
         className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
       >
         <div className="mb-6 grid gap-3 lg:grid-cols-2">
@@ -294,6 +315,40 @@ export default function AddUser() {
                     }
                     disabled={isLoadingCountries}
                     maxHeight="200px"
+                  />
+                )}
+              />
+            </FormField>
+          </div>
+
+          {/* School Branch Field (Optional) */}
+          <div className="col-span-1">
+            <FormField label={t('rolesManagement.school')} htmlFor="schoolBranchId">
+              <Controller
+                name="schoolBranchId"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value || ''}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (errors.schoolBranchId) {
+                        trigger('schoolBranchId');
+                      }
+                    }}
+                    options={schools.map((school) => ({
+                      value: school.id,
+                      label:
+                        currentLang === 'ar'
+                          ? school.nameAr || school.name || ''
+                          : school.nameEn || school.name || '',
+                    }))}
+                    placeholder={
+                      isLoadingSchools ? t('common.loading') : t('rolesManagement.selectSchool')
+                    }
+                    disabled={isLoadingSchools}
+                    maxHeight="200px"
+                    isMulti={false}
                   />
                 )}
               />
