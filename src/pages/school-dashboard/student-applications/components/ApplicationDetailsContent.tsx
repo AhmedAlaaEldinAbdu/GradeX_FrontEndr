@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudentApplicationById } from '@/redux/features/student-applications/studentApplicationsSlice';
 import Loading from '@/shared/components/Loading';
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
+import { sendEditRequest } from '@/services/api/student-applications/student-applications.service';
+import { useToast } from '@/shared/context/ToastContext';
 
 // Import extracted components
 import ApplicationHeaderActions from './ApplicationHeaderActions';
@@ -42,6 +44,7 @@ const SHOW_MOCK_STATUS_SELECTOR = import.meta.env.DEV && false;
 const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ applicationId }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
   // Mock status override for testing (set to '' to use real data)
@@ -124,10 +127,23 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
     // TODO: Call API to accept application
   };
 
-  const handleEditRequestConfirm = (message: string) => {
-    console.log('Edit request sent:', message, applicationId);
-    setEditRequestModalOpen(false);
-    // TODO: Call API to send edit request
+  const handleEditRequestConfirm = async (message: string) => {
+    try {
+      await sendEditRequest(applicationId, message);
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setEditRequestModalOpen(false);
+      // Refresh the application details
+      dispatch(fetchStudentApplicationById(applicationId));
+    } catch (error) {
+      console.error('Failed to send edit request:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    }
   };
 
   const handleScheduleConfirm = (date: string, time: string) => {
