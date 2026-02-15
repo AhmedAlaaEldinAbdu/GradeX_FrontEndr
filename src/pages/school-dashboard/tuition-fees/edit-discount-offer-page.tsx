@@ -14,6 +14,7 @@ import {
   fetchOffers,
 } from '@/redux/features/offers/offersSlice';
 import { useToast } from '@/shared/context/ToastContext';
+import { formatValidationErrors } from '@/lib/utils/error-utils';
 import AddEditDiscountOfferForm, {
   type DiscountOfferFormValues,
 } from './components/AddEditDiscountOfferForm';
@@ -88,23 +89,39 @@ export default function EditDiscountOfferPage() {
                   id,
                   ...formValuesToOfferPayload(schoolBranchId, o, base),
                 })
-              ).unwrap();
-
-              dispatch(
-                fetchOffers({ SchoolBranchId: schoolBranchId, PageIndex: 1, PageSize: 10 })
+              )
+                .unwrap()
+                .then((res) => {
+                  if (res.isSuccess) {
+                    dispatch(
+                      fetchOffers({ SchoolBranchId: schoolBranchId, PageIndex: 1, PageSize: 10 })
+                    );
+                    setShowPopupMessage({
+                      show: true,
+                      type: 'success',
+                      message: 'fees.discounts.messages.editSuccess',
+                      isRaw: false,
+                    });
+                  } else {
+                    setShowPopupMessage({
+                      show: true,
+                      type: 'error',
+                      message: 'common.error',
+                      isRaw: false,
+                    });
+                  }
+                });
+            } catch (err) {
+              const formatted = formatValidationErrors(
+                (err as any)?.validationErrors,
+                t('common.errorOccurred')
               );
-              setShowPopupMessage({
-                show: true,
-                type: 'success',
-                message: 'fees.discounts.messages.editSuccess',
-                isRaw: false,
-              });
-            } catch {
+              showToast({ message: formatted.split('\n')[0] ?? t('common.error'), type: 'error' });
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: 'common.errorOccurred',
-                isRaw: false,
+                message: formatted,
+                isRaw: true,
               });
             }
           }}
@@ -119,9 +136,7 @@ export default function EditDiscountOfferPage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={
-          showPopupMessage.type === 'success' ? '/fees?tab=discounts' : undefined
-        }
+        navigateAfterClose={showPopupMessage.type === 'success' ? '/fees?tab=discounts' : undefined}
       />
     </div>
   );

@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import { createOffer, fetchOffers } from '@/redux/features/offers/offersSlice';
 import { useToast } from '@/shared/context/ToastContext';
+import { formatValidationErrors } from '@/lib/utils/error-utils';
 import AddEditDiscountOfferForm, {
   type DiscountOfferFormValues,
 } from './components/AddEditDiscountOfferForm';
@@ -54,23 +55,48 @@ export default function AddDiscountOfferPage() {
             try {
               await Promise.all(
                 offers.map((o) =>
-                  dispatch(createOffer(formValuesToOfferPayload(schoolBranchId, o))).unwrap()
+                  dispatch(createOffer(formValuesToOfferPayload(schoolBranchId, o)))
+                    .unwrap()
+                    .then((res) => {
+                      if (res.isSuccess) {
+                        dispatch(
+                          fetchOffers({
+                            SchoolBranchId: schoolBranchId,
+                            PageIndex: 1,
+                            PageSize: 10,
+                          })
+                        );
+                        setShowPopupMessage({
+                          show: true,
+                          type: 'success',
+                          message: 'fees.discounts.messages.addSuccess',
+                          isRaw: false,
+                        });
+                      } else {
+                        setShowPopupMessage({
+                          show: true,
+                          type: 'error',
+                          message: 'common.error',
+                          isRaw: false,
+                        });
+                      }
+                    })
                 )
               );
+            } catch (err) {
+              // unwrap() rejects with the payload passed to rejectWithValue.
+              // Our offers thunks pass { validationErrors } for 400 validation failures.
+              const formatted = formatValidationErrors(
+                (err as any)?.validationErrors,
+                t('common.errorOccurred')
+              );
 
-              dispatch(fetchOffers({ SchoolBranchId: schoolBranchId, PageIndex: 1, PageSize: 10 }));
-              setShowPopupMessage({
-                show: true,
-                type: 'success',
-                message: 'fees.discounts.messages.addSuccess',
-                isRaw: false,
-              });
-            } catch {
+              showToast({ message: formatted.split('\n')[0] ?? t('common.error'), type: 'error' });
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: 'common.errorOccurred',
-                isRaw: false,
+                message: formatted,
+                isRaw: true,
               });
             }
           }}

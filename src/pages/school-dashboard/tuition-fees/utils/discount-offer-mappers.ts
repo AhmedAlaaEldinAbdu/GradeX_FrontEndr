@@ -10,7 +10,23 @@ export const toInputDate = (value: string) => {
 
 export const toIsoDateTime = (value: string) => {
     if (!value) return '';
-    return value.includes('T') ? value : `${value}T00:00:00.000Z`;
+
+    // Already has a timezone (Z or +/-HH:MM) -> keep as is.
+    if (/[zZ]$/.test(value) || /[+-]\d{2}:\d{2}$/.test(value)) return value;
+
+    // Date-only input: YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00:00.000Z`;
+
+    // Datetime without timezone.
+    // - YYYY-MM-DDTHH:mm:ss      -> add .000Z
+    // - YYYY-MM-DDTHH:mm:ss.SSS  -> add Z
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(value)) return `${value}.000Z`;
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}$/.test(value)) return `${value}Z`;
+
+    // Fallback: if it contains T but no TZ, append Z.
+    if (value.includes('T')) return `${value}Z`;
+
+    return `${value}T00:00:00.000Z`;
 };
 
 export const offerDtoToFormValues = (o: OfferDto): DiscountOfferFormValues => {
@@ -52,7 +68,13 @@ export const formValuesToOfferPayload = (
     form: DiscountOfferFormValues,
     base?: OfferDto
 ) => {
-    const numericValue = form.discountValue === '' ? 0 : Number(form.discountValue);
+    const parsedValue = Number(form.discountValue);
+    const numericValue = Number.isFinite(parsedValue) ? parsedValue : null;
+
+    // Backend validation ties amount/percentage rules to offerType.
+    // In this discounts UI, the user's choice is `discountType`.
+    // Assumption (based on backend validation): 1 = Amount, 2 = Percentage.
+    const offerType = form.discountType === 'percentage' ? 2 : 1;
 
     const conditions = (form.conditions ?? []).length
         ? (form.conditions ?? []).map((c) => ({
@@ -72,19 +94,18 @@ export const formValuesToOfferPayload = (
         schoolBranchId: base?.schoolBranchId ?? schoolBranchId,
         nameAr: form.nameAr,
         nameEn: form.nameEn,
-        offerType: 2,
-        //  base?.offerType ?? 1,
-        amount: form.discountType === 'value' ? numericValue : 0,
-        percentage: form.discountType === 'percentage' ? numericValue : 0,
-        applyOn:
-            (form.applyOn ?? (base?.applyOn ?? OfferApplyOn.TuitionFees)) as unknown as number,
+        offerType,
+        amount: offerType === 1 ? numericValue : null,
+        percentage: offerType === 2 ? numericValue : null,
+        applyOn: 2,
+        // (form.applyOn ?? (base?.applyOn ?? OfferApplyOn.TuitionFees)) as unknown as number,
         startDate: form.startDate ? toIsoDateTime(form.startDate) : base?.startDate ?? '',
         endDate: form.endDate ? toIsoDateTime(form.endDate) : base?.endDate ?? '',
         isActive: !!form.isActive,
         matchAllConditions: true,
-            // typeof form.matchAllConditions === 'boolean'
-            //     ? form.matchAllConditions
-            //     : (base?.matchAllConditions ?? true),
+        // typeof form.matchAllConditions === 'boolean'
+        //     ? form.matchAllConditions
+        //     : (base?.matchAllConditions ?? true),
         conditions,
     };
 };

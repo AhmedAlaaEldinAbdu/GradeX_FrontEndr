@@ -11,10 +11,14 @@ import IconButton from '@/shared/components/IconButton';
 import SearchInput from '@/shared/components/SearchInput';
 import ToggleSwitch from '@/shared/components/ToggleSwitch';
 import DeletePopup from '@/shared/popups/DeletePopup';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import BigTrashIcon from '@/assets/icons/BigTrash.svg';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import { useToast } from '@/shared/context/ToastContext';
+import { formatValidationErrors } from '@/lib/utils/error-utils';
 import { deleteOffer, fetchOffers, updateOffer } from '@/redux/features/offers/offersSlice';
 import type { OfferDto } from '@/services/api/types/offer.types';
 import type { DiscountOfferFormValues } from './AddEditDiscountOfferForm';
@@ -55,6 +59,13 @@ export default function DiscountsAndOffersTab() {
 
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+    isRaw: boolean;
+  }>({ show: false, type: 'success', message: '', isRaw: false });
 
   const statusOptions = useMemo<CustomSelectOption[]>(
     () => [
@@ -179,7 +190,34 @@ export default function DiscountsAndOffersTab() {
                       base
                     ),
                   })
-                ).unwrap();
+                )
+                  .unwrap()
+                  .then((res) => {
+                    if (res.isSuccess) {
+                      dispatch(
+                        fetchOffers({
+                          SchoolBranchId: schoolBranchId,
+                          Search: search || undefined,
+                          IsActive: status === 'all' ? undefined : status === 'active',
+                          PageIndex: page,
+                          PageSize: limit,
+                        })
+                      );
+                      setShowPopupMessage({
+                        show: true,
+                        type: 'success',
+                        message: 'fees.discounts.messages.editSuccess',
+                        isRaw: false,
+                      });
+                    } else {
+                      setShowPopupMessage({
+                        show: true,
+                        type: 'error',
+                        message: 'common.error',
+                        isRaw: false,
+                      });
+                    }
+                  });
 
                 dispatch(
                   fetchOffers({
@@ -191,7 +229,16 @@ export default function DiscountsAndOffersTab() {
                   })
                 );
               } catch (e) {
-                showToast({ message: t('common.error'), type: 'error' });
+                const formatted = formatValidationErrors(
+                  (e as any)?.validationErrors,
+                  t('common.errorOccurred')
+                );
+                setShowPopupMessage({
+                  show: true,
+                  type: 'error',
+                  message: formatted,
+                  isRaw: true,
+                });
               }
             }}
           />
@@ -287,19 +334,30 @@ export default function DiscountsAndOffersTab() {
   const handleDeleteConfirm = async () => {
     if (!pendingDeleteId) return;
     try {
-      await dispatch(deleteOffer(pendingDeleteId)).unwrap();
-      setIsDeletePopupOpen(false);
-      setPendingDeleteId(null);
-      showToast({ message: t('fees.discounts.messages.deleteSuccess'), type: 'success' });
-      dispatch(
-        fetchOffers({
-          SchoolBranchId: schoolBranchId,
-          Search: search || undefined,
-          IsActive: status === 'all' ? undefined : status === 'active',
-          PageIndex: page,
-          PageSize: limit,
-        })
-      );
+      await dispatch(deleteOffer(pendingDeleteId))
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess || res === pendingDeleteId) {
+            showToast({
+              message: t('fees.discounts.messages.deleteSuccess'),
+              type: 'success',
+            });
+            setIsDeletePopupOpen(false);
+            setPendingDeleteId(null);
+            showToast({ message: t('fees.discounts.messages.deleteSuccess'), type: 'success' });
+            dispatch(
+              fetchOffers({
+                SchoolBranchId: schoolBranchId,
+                Search: search || undefined,
+                IsActive: status === 'all' ? undefined : status === 'active',
+                PageIndex: page,
+                PageSize: limit,
+              })
+            );
+          } else {
+            showToast({ message: t('common.error'), type: 'error' });
+          }
+        });
     } catch {
       showToast({ message: t('common.error'), type: 'error' });
       setIsDeletePopupOpen(false);
@@ -353,6 +411,16 @@ export default function DiscountsAndOffersTab() {
           setPendingDeleteId(null);
         }}
         iconSrc={BigTrashIcon}
+      />
+
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isRaw}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        autoClose={true}
+        onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
       />
     </div>
   );

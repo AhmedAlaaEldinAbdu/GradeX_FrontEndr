@@ -56,7 +56,7 @@ export async function createOffer(data: CreateOfferRequest): Promise<ApiResponse
 
 export async function updateOffer(data: UpdateOfferRequest): Promise<ApiResponseModel<null>> {
     const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
-        OfferEndpoints.update,
+        OfferEndpoints.update(data.id),
         data
     );
 
