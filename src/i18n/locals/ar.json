@@ -602,7 +602,9 @@
     "high": "المرحلة الثانوية",
     "kindergarten": "رياض الأطفال",
     "updatedSuccessfully": "تم تحديث الإعلان بنجاح",
-    "noAnnouncementsMessage": "لا توجد إعلانات"
+    "noAnnouncementsMessage": "لا توجد إعلانات",
+    "confirmDelete": "هل أنت متأكد من حذف الإعلان؟",
+    "deletedSuccessfully": "تم حذف الإعلان بنجاح"
   },
   "studentApplications": {
     "title": "طلبات التقديم",
