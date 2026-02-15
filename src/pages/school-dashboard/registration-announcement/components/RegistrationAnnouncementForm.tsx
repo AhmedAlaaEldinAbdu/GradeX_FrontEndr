@@ -22,11 +22,13 @@ import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 interface RegistrationAnnouncementFormProps {
   initialValues?: Partial<RegistrationAnnouncementProps>;
   isEditMode?: boolean;
+  registrationId?: string;
 }
 
 const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> = ({
   initialValues,
   isEditMode = false,
+  registrationId,
 }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -49,6 +51,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegistrationAnnouncementProps>({
     resolver: yupResolver(RegistrationAnnouncementSchema),
@@ -59,20 +62,38 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
     },
   });
 
+  const startDate = watch('startDate');
+  const endDate = watch('endDate');
+
   const handleFormSubmit = async (data: RegistrationAnnouncementProps) => {
     setIsSubmitting(true);
     try {
-      await registrationAnnouncementApi.create({
-        lkSchoolStageId: data.lkSchoolStageId,
-        startDate: new Date(data.startDate).toISOString(),
-        endDate: new Date(data.endDate).toISOString(),
-      });
+      if (isEditMode && registrationId) {
+        await registrationAnnouncementApi.update({
+          id: registrationId,
+          lkSchoolStageId: data.lkSchoolStageId,
+          startDate: new Date(data.startDate).toISOString(),
+          endDate: new Date(data.endDate).toISOString(),
+        });
 
-      setShowPopupMessage({
-        show: true,
-        type: 'success',
-        message: t('registrationAnnouncement.addedSuccessfully'),
-      });
+        setShowPopupMessage({
+          show: true,
+          type: 'success',
+          message: t('registrationAnnouncement.updatedSuccessfully'),
+        });
+      } else {
+        await registrationAnnouncementApi.create({
+          lkSchoolStageId: data.lkSchoolStageId,
+          startDate: new Date(data.startDate).toISOString(),
+          endDate: new Date(data.endDate).toISOString(),
+        });
+
+        setShowPopupMessage({
+          show: true,
+          type: 'success',
+          message: t('registrationAnnouncement.addedSuccessfully'),
+        });
+      }
     } catch (error: unknown) {
       const errorMessage = (error as any)?.response?.data?.message || t('common.errorOccurred');
       setShowPopupMessage({
@@ -88,6 +109,8 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   const handleCancel = () => {
     navigate('/registration-announcement');
   };
+
+  const currentDateTime = new Date().toISOString().slice(0, 16);
 
   return (
     <Card className="p-6">
@@ -145,6 +168,8 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
                   {...field}
                   type="datetime-local"
                   placeholder={t('registrationAnnouncement.chooseStartDate')}
+                  min={currentDateTime}
+                  max={endDate || undefined}
                   error={errors.startDate?.message ? ' ' : undefined}
                   className={errors.startDate?.message ? 'border-red-500' : ''}
                 />
@@ -166,6 +191,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
                   {...field}
                   type="datetime-local"
                   placeholder={t('registrationAnnouncement.chooseEndDate')}
+                  min={startDate || currentDateTime}
                   error={errors.endDate?.message ? ' ' : undefined}
                   className={errors.endDate?.message ? 'border-red-500' : ''}
                 />
