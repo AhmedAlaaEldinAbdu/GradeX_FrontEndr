@@ -130,6 +130,32 @@ export const updateStudentApplicationStatus = createAsyncThunk<
   }
 });
 
+export const sendEditRequest = createAsyncThunk<
+  void,
+  { studentApplicationId: string; editRequest: string },
+  { rejectValue: string }
+>(
+  'studentApplications/sendEditRequest',
+  async ({ studentApplicationId, editRequest }, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await studentApplicationsApiService.sendEditRequest(
+        studentApplicationId,
+        editRequest
+      );
+
+      if (!response?.isSuccess) {
+        return rejectWithValue(response?.errors?.[0] || 'Failed to send edit request');
+      }
+
+      // Refresh the list after update
+      dispatch(fetchStudentApplications({}));
+      return;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const studentApplicationsSlice = createSlice({
   name: 'studentApplications',
   initialState,

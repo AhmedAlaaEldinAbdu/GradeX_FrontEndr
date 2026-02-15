@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudentApplicationById } from '@/redux/features/student-applications/studentApplicationsSlice';
 import Loading from '@/shared/components/Loading';
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
+import { sendEditRequest } from '@/services/api/student-applications/student-applications.service';
+import { useToast } from '@/shared/context/ToastContext';
 
 // Import extracted components
 import ApplicationHeaderActions from './ApplicationHeaderActions';
@@ -37,9 +39,12 @@ const MOCK_STATUS_OPTIONS = [
   { value: String(StudentApplicationStatus.Completed), label: 'Completed (إكتمل)' },
 ];
 
+const SHOW_MOCK_STATUS_SELECTOR = import.meta.env.DEV && false;
+
 const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ applicationId }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
   // Mock status override for testing (set to '' to use real data)
@@ -122,10 +127,23 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
     // TODO: Call API to accept application
   };
 
-  const handleEditRequestConfirm = (message: string) => {
-    console.log('Edit request sent:', message, applicationId);
-    setEditRequestModalOpen(false);
-    // TODO: Call API to send edit request
+  const handleEditRequestConfirm = async (message: string) => {
+    try {
+      await sendEditRequest(applicationId, message);
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setEditRequestModalOpen(false);
+      // Refresh the application details
+      dispatch(fetchStudentApplicationById(applicationId));
+    } catch (error) {
+      console.error('Failed to send edit request:', error);
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+    }
   };
 
   const handleScheduleConfirm = (date: string, time: string) => {
@@ -137,7 +155,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   return (
     <>
       {/* DEBUG: Mock Status Selector — only visible in dev */}
-      {import.meta.env.DEV && (
+      {SHOW_MOCK_STATUS_SELECTOR && (
         <div className="mb-4 rounded-lg border-2 border-dashed border-amber-400 bg-amber-50 p-3">
           <div className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">
             🛠 Debug: Mock Status Override
