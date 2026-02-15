@@ -74,6 +74,46 @@ export function extractErrorMessage(
   return fallbackMessage;
 }
 
+export function formatValidationErrors(
+  errors: unknown,
+  fallbackMessage: string = 'An error occurred'
+): string {
+  if (!errors) return fallbackMessage;
+
+  if (typeof errors === 'string') return errors;
+
+  if (Array.isArray(errors)) {
+    const messages = errors
+      .map((e) => {
+        if (typeof e === 'string') return e;
+        if (typeof e === 'object' && e !== null) {
+          if ('errorMessage' in e && typeof (e as any).errorMessage === 'string') {
+            return (e as any).errorMessage as string;
+          }
+          if ('propertyName' in e && 'errorMessage' in e) {
+            const propertyName = (e as any).propertyName;
+            const errorMessage = (e as any).errorMessage;
+            if (typeof errorMessage === 'string') {
+              return typeof propertyName === 'string' && propertyName
+                ? `${propertyName}: ${errorMessage}`
+                : errorMessage;
+            }
+          }
+        }
+        return null;
+      })
+      .filter((m): m is string => !!m && m.trim().length > 0);
+
+    return messages.length ? messages.join('\n') : fallbackMessage;
+  }
+
+  if (typeof errors === 'object') {
+    return extractErrorMessage(errors, fallbackMessage) || fallbackMessage;
+  }
+
+  return fallbackMessage;
+}
+
 export function hasErrors(validationErrors: unknown, error: unknown): boolean {
   return !!(validationErrors || error);
 }
