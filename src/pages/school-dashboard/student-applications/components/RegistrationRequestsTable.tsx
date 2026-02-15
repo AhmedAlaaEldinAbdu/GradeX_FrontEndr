@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchStudentApplications,
   updateStudentApplicationStatus,
+  sendEditRequest,
 } from '@/redux/features/student-applications/studentApplicationsSlice';
 import type { StudentApplicationDto } from '@/services/api/student-applications/student-applications.types';
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
@@ -134,15 +135,15 @@ const RegistrationRequestsTable: React.FC = () => {
     }
   };
 
-  const handleEditRequestConfirm = async () => {
+  const handleEditRequestConfirm = async (message: string) => {
     if (!selectedApplication) return;
 
     try {
       setIsProcessing(true);
       await dispatch(
-        updateStudentApplicationStatus({
-          id: selectedApplication.id,
-          status: StudentApplicationStatus.EditRequested,
+        sendEditRequest({
+          studentApplicationId: selectedApplication.id,
+          editRequest: message,
         })
       ).unwrap();
 
