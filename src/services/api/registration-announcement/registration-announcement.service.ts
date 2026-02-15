@@ -48,4 +48,9 @@ export const registrationAnnouncementApi = {
     );
     return response.data;
   },
+
+  delete: async (id: string) => {
+    const response = await axiosClient.delete(`/RegistrationAdvertisement/${id}`);
+    return response.data;
+  },
 };

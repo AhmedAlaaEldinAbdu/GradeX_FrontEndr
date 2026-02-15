@@ -8,14 +8,23 @@ import type { RegistrationAdvertisementDto } from '@/services/api/registration-a
 import useLanguage from '@/hooks/useLanguage';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import { useToast } from '@/shared/context/ToastContext';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 
 export default function RegistrationAnnouncement() {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [announcements, setAnnouncements] = useState<RegistrationAdvertisementDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Delete state
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [selectedAnnouncementId, setSelectedAnnouncementId] = useState<string>('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,6 +70,34 @@ export default function RegistrationAnnouncement() {
 
   const handlePageChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedAnnouncementId(id);
+    setShowDeletePopup(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedAnnouncementId) return;
+
+    try {
+      setIsDeleting(true);
+      await registrationAnnouncementApi.delete(selectedAnnouncementId);
+      showToast({
+        message: t('registrationAnnouncement.deletedSuccessfully'),
+        type: 'success',
+      });
+      setShowDeletePopup(false);
+      fetchAnnouncements(pagination.page);
+    } catch (error) {
+      console.error('Failed to delete announcement:', error);
+      showToast({
+        message: t('common.errorOccurred'),
+        type: 'error',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const getStatus = (start: string, end: string) => {
@@ -162,7 +199,12 @@ export default function RegistrationAnnouncement() {
               navigate(`/registration-announcement/edit-registration-announcement/${row.id}`)
             }
           />
-          <IconButton status="delete" variant="danger" ariaLabel="Delete" />
+          <IconButton
+            status="delete"
+            variant="danger"
+            ariaLabel="Delete"
+            onClick={() => handleDeleteClick(row.id)}
+          />
         </div>
       ),
       headerClassName: 'min-w-[150px]',
@@ -264,6 +306,21 @@ export default function RegistrationAnnouncement() {
         isLoading={isLoading}
         emptyMessage={t('registrationAnnouncement.noAnnouncementsMessage')}
         t={t}
+      />
+      <DeletePopup
+        open={showDeletePopup}
+        message="registrationAnnouncement.confirmDelete"
+        itemName={
+          announcements.find((a) => a.id === selectedAnnouncementId)
+            ? isArabic
+              ? announcements.find((a) => a.id === selectedAnnouncementId)?.stageNameAr || ''
+              : announcements.find((a) => a.id === selectedAnnouncementId)?.stageNameEn || ''
+            : ''
+        }
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setShowDeletePopup(false)}
+        iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
       />
     </Card>
   );
