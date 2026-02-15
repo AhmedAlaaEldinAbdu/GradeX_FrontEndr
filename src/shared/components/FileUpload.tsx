@@ -222,9 +222,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   return (
     <div className="space-y-3">
-      <label className="mb-2 block text-start text-sm font-medium text-gray-700">
+      <label className={`mb-2 block text-start text-sm font-medium text-gray-700 ${required && 'required'}`}>
         {label}
-        {required && <span className="me-1 text-red-500">*</span>}
+        {/* {required && <span className="me-1 text-red-500">*</span>} */}
         {optional && <span className="text-xs text-gray-400"> ({t('schools.optional')}) </span>}
       </label>
 

@@ -21,9 +21,9 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
             <div
               className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full transition-all ${
                 currentStep > step.id
-                  ? 'bg-green-600 shadow-md'
+                  ? 'bg-green-500 shadow-md'
                   : currentStep === step.id
-                    ? 'border-2 border-green-600 bg-transparent'
+                    ? 'border-2 border-green-500 bg-transparent'
                     : 'border-2 border-gray-300 bg-gray-100'
               }`}
             >

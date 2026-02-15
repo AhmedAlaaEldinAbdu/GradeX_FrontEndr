@@ -480,7 +480,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               }
               files={certificateFiles}
               uploadText={t('schools.uploadMedia')}
-              required={true}
+              // required={true}
               multiple={true}
               error={!!certificateError && certificateTouched}
             />
