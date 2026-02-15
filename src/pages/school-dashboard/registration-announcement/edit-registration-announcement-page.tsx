@@ -2,42 +2,96 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumb } from '@gradex/shared/layout/layout';
 import RegistrationAnnouncementForm from './components/RegistrationAnnouncementForm';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { type RegistrationAnnouncementProps } from '@/validations/registration-announcement-validations';
+import { registrationAnnouncementApi } from '@/services/api/registration-announcement/registration-announcement.service';
+import Loading from '@/shared/components/Loading';
 
 const EditRegistrationAnnouncementPage: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [initialValues, setInitialValues] = useState<Partial<RegistrationAnnouncementProps> | null>(
     null
   );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // TODO: Fetch data by ID
-    // Simulating fetch
-    if (id) {
-      // Mock data depending on ID if needed, or just static for now
-      setInitialValues({
-        // educationalStages: 'primary', // This needs to match how the multiselect expects values (likely comma separated or array depending on implementation)
-        startDate: '2025-02-22',
-        endDate: '2025-02-22',
-      });
-    }
-  }, [id]);
+    const fetchAnnouncement = async () => {
+      if (!id) return;
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await registrationAnnouncementApi.getById(id);
+        if (response.isSuccess && response.data && response.data.registrationAdvertisementDto) {
+          // Find the announcement with the matching ID, or take the first one if exact match is expected
+          const announcement =
+            response.data.registrationAdvertisementDto.find((item: any) => item.id === id) ||
+            response.data.registrationAdvertisementDto[0];
 
-  const handleEditSubmit = async (data: RegistrationAnnouncementProps) => {
-    // TODO: Implement submission logic (API call)
-    console.log('Updated Form Data:', data);
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    navigate('/registration-announcement');
-  };
+          if (!announcement) {
+            setError(t('common.noDataFound'));
+            setIsLoading(false);
+            return;
+          }
+
+          const formatDateTime = (dateString: string) => {
+            if (!dateString) return '';
+            try {
+              // Extract "YYYY-MM-DDThh:mm" safely
+              const formatted = new Date(dateString).toISOString().slice(0, 16);
+              return formatted;
+            } catch {
+              return '';
+            }
+          };
+
+          const values = {
+            lkSchoolStageId: announcement.lkSchoolStageId,
+            startDate: formatDateTime(announcement.startDate),
+            endDate: formatDateTime(announcement.endDate),
+          };
+
+          setInitialValues(values);
+        } else {
+          setError(response.message || t('common.errorOccurred'));
+        }
+      } catch (error) {
+        console.error('Failed to fetch announcement:', error);
+        setError(t('common.errorOccurred'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAnnouncement();
+  }, [id, t]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 w-full items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-64 w-full flex-col items-center justify-center gap-4">
+        <div className="text-red-500">{error}</div>
+        <button
+          onClick={() => window.location.reload()}
+          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+        >
+          {t('common.retry')}
+        </button>
+      </div>
+    );
+  }
 
   if (!initialValues) {
-    return <div>{t('common.loading')}...</div>;
+    return <div className="p-8 text-center text-gray-500">{t('common.noDataFound')}</div>;
   }
-  console.log(handleEditSubmit);
 
   return (
     <div>
@@ -45,7 +99,7 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
       <Breadcrumb
         items={[
           { label: t('registrationAnnouncement.title'), path: '/registration-announcement' },
-          { label: t('registrationAnnouncement.editPageTitle') }, // Make sure to add this key to translations or use a temporary string
+          { label: t('registrationAnnouncement.editPageTitle') },
         ]}
       />
 
@@ -57,11 +111,7 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <RegistrationAnnouncementForm
-        // onSubmit={handleEditSubmit}
-        initialValues={initialValues}
-        isEditMode
-      />
+      <RegistrationAnnouncementForm initialValues={initialValues} isEditMode registrationId={id} />
     </div>
   );
 };

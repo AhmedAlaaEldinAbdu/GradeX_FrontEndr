@@ -26,3 +26,8 @@ export interface CreateRegistrationAdvertisementRequest {
   startDate: string;
   endDate: string;
 }
+
+export interface UpdateRegistrationAdvertisementRequest
+  extends CreateRegistrationAdvertisementRequest {
+  id: string;
+}
