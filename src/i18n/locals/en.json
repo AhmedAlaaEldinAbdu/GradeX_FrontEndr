@@ -319,6 +319,8 @@
     "enterFullUserName": "Enter the full name of the employee",
     "enterEmail": "Enter the email address",
     "selectRole": "Select Role",
+    "school": "School",
+    "selectSchool": "Select School",
     "userAdded": "System user added successfully",
     "editUser": "Edit User",
     "userUpdated": "System user updated successfully",

@@ -18,6 +18,7 @@ export interface User {
   roleName?: string; // Role name for display
   lkCountryId?: string; // Country ID for forms
   countryName?: string; // Country name for display
+  schoolBranchId?: string; // School branch ID (optional)
 }
 
 // ============================================================================
@@ -30,6 +31,7 @@ export interface CreateUserRequest {
   roleId: string;
   phoneNumber: string;
   lkCountryId: string;
+  schoolBranchId?: string;
 }
 
 export interface UpdateUserRequest {
@@ -39,6 +41,7 @@ export interface UpdateUserRequest {
   roleId: string;
   phoneNumber: string;
   lkCountryId: string;
+  schoolBranchId?: string;
 }
 
 export interface DeleteUserRequest {
