@@ -112,6 +112,7 @@
     "status": "Status",
     "all": "All",
     "noDataFound": "No data found",
+    "retry": "Retry",
     "details": "Details",
     "rejectionReason": "Rejection Reason",
     "enterRejectionReason": "Enter the reason for rejection",
@@ -121,7 +122,9 @@
       "nameArRequired": "name in Arabic is required",
       "nameEnRequired": "name in English is required",
       "pleaseFillRequiredFields": "Please fill all required fields",
-      "endDateAfterStart": "End date must be after start date"
+      "endDateAfterStart": "End date must be after start date",
+      "startDateInPast": "Start date cannot be in the past",
+      "endDateInPast": "End date cannot be in the past"
     }
   },
   "actions": {
@@ -598,7 +601,9 @@
     "primary": "Primary Stage",
     "middle": "Middle Stage",
     "high": "High Stage",
-    "kindergarten": "Kindergarten"
+    "kindergarten": "Kindergarten",
+    "updatedSuccessfully": "Announcement updated successfully",
+    "noAnnouncementsMessage": "No announcements found"
   },
   "studentApplications": {
     "title": "Student Applications",

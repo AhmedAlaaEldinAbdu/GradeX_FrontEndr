@@ -112,6 +112,7 @@
     "all": "الكل",
     "status": "الحالة",
     "noDataFound": "لم يتم العثور على بيانات",
+    "retry": "إعادة المحاولة",
     "details": "التفاصيل",
     "rejectionReason": "سبب الرفض",
     "enterRejectionReason": "أدخل سبب الرفض",
@@ -121,7 +122,9 @@
       "nameArRequired": "الاسم بالعربية مطلوب",
       "nameEnRequired": "الاسم بالإنجليزية مطلوب",
       "pleaseFillRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
-      "endDateAfterStart": "تاريخ النهاية يجب أن يكون بعد تاريخ البداية"
+      "endDateAfterStart": "تاريخ النهاية يجب أن يكون بعد تاريخ البداية",
+      "startDateInPast": "تاريخ البداية لا يمكن أن يكون في الماضي",
+      "endDateInPast": "تاريخ النهاية لا يمكن أن يكون في الماضي"
     }
   },
   "actions": {
@@ -597,7 +600,9 @@
     "primary": "المرحلة الابتدائية",
     "middle": "المرحلة الإعدادية",
     "high": "المرحلة الثانوية",
-    "kindergarten": "رياض الأطفال"
+    "kindergarten": "رياض الأطفال",
+    "updatedSuccessfully": "تم تحديث الإعلان بنجاح",
+    "noAnnouncementsMessage": "لا توجد إعلانات"
   },
   "studentApplications": {
     "title": "طلبات التقديم",
