@@ -37,6 +37,8 @@ const MOCK_STATUS_OPTIONS = [
   { value: String(StudentApplicationStatus.Completed), label: 'Completed (إكتمل)' },
 ];
 
+const SHOW_MOCK_STATUS_SELECTOR = import.meta.env.DEV && false;
+
 const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ applicationId }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -137,7 +139,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   return (
     <>
       {/* DEBUG: Mock Status Selector — only visible in dev */}
-      {import.meta.env.DEV && (
+      {SHOW_MOCK_STATUS_SELECTOR && (
         <div className="mb-4 rounded-lg border-2 border-dashed border-amber-400 bg-amber-50 p-3">
           <div className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">
             🛠 Debug: Mock Status Override
