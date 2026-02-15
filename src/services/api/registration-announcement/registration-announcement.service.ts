@@ -3,7 +3,6 @@ import type {
   GetRegistrationAdvertisementsResponse,
   CreateRegistrationAdvertisementRequest,
   UpdateRegistrationAdvertisementRequest,
-  RegistrationAdvertisementDto,
 } from './registration-announcement.types';
 
 export const registrationAnnouncementApi = {
