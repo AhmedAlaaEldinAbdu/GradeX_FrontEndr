@@ -380,7 +380,7 @@ export default function JobAnnouncementsList() {
         <div className="flex justify-center">
           {row.workShedule !== undefined && row.workShedule !== null ? (
             <span
-              className={`rounded-full px-3 py-1 text-sm font-medium ${
+              className={`rounded-full px-3 py-1 text-base font-medium ${
                 WORK_TYPE_BADGES[row.workShedule]?.bg || 'text-gray-500'
               }`}
             >
@@ -399,7 +399,7 @@ export default function JobAnnouncementsList() {
     {
       header: 'jobAnnouncement.applicantsCount',
       accessor: (row) => (
-        <div className="flex items-center justify-center gap-2 text-sm">
+        <div className="flex items-center justify-center gap-2 text-base">
           <IconButton
             variant="blue"
             ariaLabel={t('jobAnnouncement.viewApplicants')}
