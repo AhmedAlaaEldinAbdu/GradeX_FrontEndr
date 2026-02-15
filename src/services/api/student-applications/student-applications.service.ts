@@ -85,10 +85,26 @@ export async function updateStudentApplicationStatus(
   return response.data;
 }
 
+export async function sendEditRequest(
+  studentApplicationId: string,
+  editRequest: string
+): Promise<ApiResponseModel<boolean>> {
+  const response: AxiosResponse<ApiResponseModel<boolean>> = await axiosClient.put(
+    '/StudentApplication/EditRequest',
+    {
+      studentApplication: studentApplicationId,
+      editRequest,
+    }
+  );
+
+  return response.data;
+}
+
 export const studentApplicationsApiService = {
   getStudentApplications,
   getStudentApplicationById,
   updateStudentApplicationStatus,
+  sendEditRequest,
 };
 
 export default studentApplicationsApiService;
