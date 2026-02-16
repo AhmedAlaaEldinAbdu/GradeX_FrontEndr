@@ -38,6 +38,7 @@ export interface FetchStudentAttendancePayload {
   lkSchoolStageId?: string;
   classroomId?: string;
   status?: number;
+  date?: string;
 }
 
 export interface FetchStudentAttendanceResponse {
@@ -64,6 +65,7 @@ export const fetchStudentAttendance = createAsyncThunk<
       LKSchoolStageId: payload?.lkSchoolStageId,
       ClassroomId: payload?.classroomId,
       Status: payload?.status,
+      Date: payload?.date,
     });
 
     if (!response?.isSuccess || !response.data) {
