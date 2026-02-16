@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
@@ -12,154 +12,31 @@ import HistoryIcon from '@gradex/assets/icons/History.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
 import IconButton from '@/shared/components/IconButton';
-
-interface StudentAttendance {
-  id: string;
-  studentName: string;
-  studentNameEn: string;
-  educationalStage: string;
-  educationalStageEn: string;
-  classroom: string;
-  classroomEn: string;
-  date: string;
-  attendanceTime: string;
-  createdBy: string;
-  createdByEn: string;
-  createdByRole: string;
-  createdByRoleEn: string;
-  status: 'present' | 'absent' | 'late' | null;
-}
-
-// Mock data
-const mockStudents: StudentAttendance[] = [
-  {
-    id: '1',
-    studentName: 'أحمد مختار حسن',
-    studentNameEn: 'Ahmed Mokhtar Hassan',
-    educationalStage: 'المرحلة الابتدائية',
-    educationalStageEn: 'Primary School',
-    classroom: '1/أ',
-    classroomEn: '1/A',
-    date: '22/2/2025',
-    attendanceTime: '',
-    createdBy: 'أحمد حسن',
-    createdByEn: 'Ahmed Hassan',
-    createdByRole: 'مدرس الرياضيات',
-    createdByRoleEn: 'Math Teacher',
-    status: null,
-  },
-  {
-    id: '2',
-    studentName: 'أحمد مختار حسن',
-    studentNameEn: 'Ahmed Mokhtar Hassan',
-    educationalStage: 'المرحلة الثانوية',
-    educationalStageEn: 'Secondary School',
-    classroom: '2/ج',
-    classroomEn: '2/C',
-    date: '22/2/2025',
-    attendanceTime: '7:34 ص',
-    createdBy: 'أحمد حسن',
-    createdByEn: 'Ahmed Hassan',
-    createdByRole: 'مدرس الرياضيات',
-    createdByRoleEn: 'Math Teacher',
-    status: null,
-  },
-  {
-    id: '3',
-    studentName: 'أحمد مختار حسن',
-    studentNameEn: 'Ahmed Mokhtar Hassan',
-    educationalStage: 'المرحلة الإعدادية',
-    educationalStageEn: 'Middle School',
-    classroom: '1/أ',
-    classroomEn: '1/A',
-    date: '22/2/2025',
-    attendanceTime: '8:30 ص (متأخر)',
-    createdBy: 'أحمد حسن',
-    createdByEn: 'Ahmed Hassan',
-    createdByRole: 'مدرس الرياضيات',
-    createdByRoleEn: 'Math Teacher',
-    status: null,
-  },
-  {
-    id: '4',
-    studentName: 'أحمد مختار حسن',
-    studentNameEn: 'Ahmed Mokhtar Hassan',
-    educationalStage: 'رياض الأطفال',
-    educationalStageEn: 'Kindergarten',
-    classroom: '1/أ',
-    classroomEn: '1/A',
-    date: '22/2/2025',
-    attendanceTime: '7:34 ص',
-    createdBy: 'أحمد حسن',
-    createdByEn: 'Ahmed Hassan',
-    createdByRole: 'مدرس الرياضيات',
-    createdByRoleEn: 'Math Teacher',
-    status: null,
-  },
-  {
-    id: '5',
-    studentName: 'أحمد مختار حسن',
-    studentNameEn: 'Ahmed Mokhtar Hassan',
-    educationalStage: 'المرحلة الابتدائية',
-    educationalStageEn: 'Primary School',
-    classroom: '3/ج',
-    classroomEn: '3/C',
-    date: '22/2/2025',
-    attendanceTime: '7:34 ص',
-    createdBy: 'أحمد حسن',
-    createdByEn: 'Ahmed Hassan',
-    createdByRole: 'مدرس الرياضيات',
-    createdByRoleEn: 'Math Teacher',
-    status: null,
-  },
-  {
-    id: '6',
-    studentName: 'أحمد مختار حسن',
-    studentNameEn: 'Ahmed Mokhtar Hassan',
-    educationalStage: 'المرحلة الابتدائية',
-    educationalStageEn: 'Primary School',
-    classroom: '1/أ',
-    classroomEn: '1/A',
-    date: '22/2/2025',
-    attendanceTime: '7:34 ص',
-    createdBy: 'أحمد حسن',
-    createdByEn: 'Ahmed Hassan',
-    createdByRole: 'مدرس الرياضيات',
-    createdByRoleEn: 'Math Teacher',
-    status: null,
-  },
-];
-
-const EDUCATIONAL_STAGES = [
-  { value: 'primary', labelAr: 'المرحلة الابتدائية', labelEn: 'Primary School' },
-  { value: 'middle', labelAr: 'المرحلة الإعدادية', labelEn: 'Middle School' },
-  { value: 'secondary', labelAr: 'المرحلة الثانوية', labelEn: 'Secondary School' },
-  { value: 'kindergarten', labelAr: 'رياض الأطفال', labelEn: 'Kindergarten' },
-];
-
-const CLASSROOMS = [
-  { value: '1a', labelAr: '1/أ', labelEn: '1/A' },
-  { value: '1b', labelAr: '1/ب', labelEn: '1/B' },
-  { value: '1c', labelAr: '1/ج', labelEn: '1/C' },
-  { value: '2a', labelAr: '2/أ', labelEn: '2/A' },
-  { value: '2b', labelAr: '2/ب', labelEn: '2/B' },
-  { value: '2c', labelAr: '2/ج', labelEn: '2/C' },
-  { value: '3a', labelAr: '3/أ', labelEn: '3/A' },
-  { value: '3c', labelAr: '3/ج', labelEn: '3/C' },
-];
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchStudentAttendance } from '@/redux/features/student-attendance/studentAttendanceSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import type { StudentAttendanceDto } from '@/types/studentAttendance';
+import useLanguage from '@/hooks/useLanguage';
 
 export default function AttendanceManagement() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { isArabic } = useLanguage();
   const navigate = useNavigate();
-  const currentLang = i18n.language as 'ar' | 'en';
+  const dispatch = useAppDispatch();
 
-  const [students] = useState<StudentAttendance[]>(mockStudents);
+  // Redux state
+  const { attendances, pagination, isLoading } = useAppSelector((state) => state.studentAttendance);
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
+
+  // Filter state
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStage, setSelectedStage] = useState('');
-  const [selectedClassroom, setSelectedClassroom] = useState('');
+  const [selectedStageId, setSelectedStageId] = useState('');
+  const [selectedClassroomId, setSelectedClassroomId] = useState('');
+
+  // Selection state
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
 
   // Popup state
   const [popupOpen, setPopupOpen] = useState(false);
@@ -168,34 +45,46 @@ export default function AttendanceManagement() {
   const [popupStudentName, setPopupStudentName] = useState('');
   const [popupStudentId, setPopupStudentId] = useState<string | null>(null);
 
-  // Filter students
-  const filteredStudents = students.filter((student) => {
-    const matchesSearch =
-      searchTerm === '' ||
-      student.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.studentNameEn.toLowerCase().includes(searchTerm.toLowerCase());
+  // Load educational stages and classrooms for filters
+  useEffect(() => {
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 1000 }));
+    dispatch(fetchClassrooms({ page: 1, limit: 1000 }));
+  }, [dispatch]);
 
-    const matchesStage =
-      selectedStage === '' ||
-      student.educationalStage.includes(
-        EDUCATIONAL_STAGES.find((s) => s.value === selectedStage)?.labelAr || ''
-      );
+  // Fetch student attendance
+  useEffect(() => {
+    dispatch(
+      fetchStudentAttendance({
+        page: pagination.pageIndex,
+        limit: pagination.pageSize,
+        search: searchTerm || undefined,
+        lkSchoolStageId: selectedStageId || undefined,
+        classroomId: selectedClassroomId || undefined,
+      })
+    );
+  }, [
+    dispatch,
+    pagination.pageIndex,
+    pagination.pageSize,
+    searchTerm,
+    selectedStageId,
+    selectedClassroomId,
+  ]);
 
-    const matchesClassroom =
-      selectedClassroom === '' ||
-      student.classroom ===
-        CLASSROOMS.find((c) => c.value === selectedClassroom)?.[
-          currentLang === 'ar' ? 'labelAr' : 'labelEn'
-        ];
+  const handlePageChange = (page: number) => {
+    dispatch(
+      fetchStudentAttendance({
+        page,
+        limit: pagination.pageSize,
+        search: searchTerm || undefined,
+        lkSchoolStageId: selectedStageId || undefined,
+        classroomId: selectedClassroomId || undefined,
+      })
+    );
+  };
 
-    return matchesSearch && matchesStage && matchesClassroom;
-  });
-
-  const totalPages = Math.ceil(filteredStudents.length / pageSize);
-  const paginatedStudents = filteredStudents.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  // Selection handlers
+  const getStudentKey = (row: StudentAttendanceDto) => row.studentId || row.id || '';
 
   const handleSelectStudent = (id: string, checked: boolean) => {
     if (checked) {
@@ -207,27 +96,27 @@ export default function AttendanceManagement() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      const currentPageIds = paginatedStudents.map((s) => s.id);
+      const currentPageIds = attendances.map((s) => getStudentKey(s));
       setSelectedStudents((prev) => {
         const newSelected = [...prev];
         currentPageIds.forEach((id) => {
-          if (!newSelected.includes(id)) {
+          if (id && !newSelected.includes(id)) {
             newSelected.push(id);
           }
         });
         return newSelected;
       });
     } else {
-      const currentPageIds = paginatedStudents.map((s) => s.id);
+      const currentPageIds = attendances.map((s) => getStudentKey(s));
       setSelectedStudents((prev) => prev.filter((id) => !currentPageIds.includes(id)));
     }
   };
 
   const allCurrentPageSelected =
-    paginatedStudents.length > 0 && paginatedStudents.every((s) => selectedStudents.includes(s.id));
+    attendances.length > 0 && attendances.every((s) => selectedStudents.includes(getStudentKey(s)));
 
   const someCurrentPageSelected =
-    paginatedStudents.some((s) => selectedStudents.includes(s.id)) && !allCurrentPageSelected;
+    attendances.some((s) => selectedStudents.includes(getStudentKey(s))) && !allCurrentPageSelected;
 
   // Individual action handlers
   const handleIndividualAction = (
@@ -273,10 +162,11 @@ export default function AttendanceManagement() {
     setPopupOpen(false);
   };
 
-  const columns: DataTableColumn<StudentAttendance>[] = [
+  const columns: DataTableColumn<StudentAttendanceDto>[] = [
     {
       header: '#',
-      accessor: (_row, index) => (currentPage - 1) * pageSize + (index || 0) + 1,
+      accessor: (_row, index) =>
+        (pagination.pageIndex - 1) * pagination.pageSize + (index || 0) + 1,
       headerClassName: 'w-16',
       className: 'text-center',
     },
@@ -298,8 +188,8 @@ export default function AttendanceManagement() {
       accessor: (row) => (
         <input
           type="checkbox"
-          checked={selectedStudents.includes(row.id)}
-          onChange={(e) => handleSelectStudent(row.id, e.target.checked)}
+          checked={selectedStudents.includes(getStudentKey(row))}
+          onChange={(e) => handleSelectStudent(getStudentKey(row), e.target.checked)}
           className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1"
         />
       ),
@@ -313,23 +203,19 @@ export default function AttendanceManagement() {
           <div className="h-10 w-10 overflow-hidden rounded-full">
             <CustomImage src={ProfileImage} alt="profile" className="h-full w-full object-cover" />
           </div>
-          {currentLang === 'ar' ? row.studentName : row.studentNameEn}
+          {row.teacherFullName || '-'}
           <IconButton
             variant="blue"
-            ariaLabel={t('jobAnnouncement.viewApplicants')}
+            ariaLabel={t('common.view')}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/students/${row.id}?tab=attendance`, {
+              navigate(`/students/${row.studentId}?tab=attendance`, {
                 state: { from: 'attendance' },
               });
             }}
             className="h-8 w-8"
           >
-            <CustomImage
-              src={EyeStyledIcon}
-              alt={t('jobAnnouncement.viewApplicants')}
-              className="h-4 w-4"
-            />
+            <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-4 w-4" />
           </IconButton>
         </div>
       ),
@@ -337,28 +223,33 @@ export default function AttendanceManagement() {
     },
     {
       header: 'attendance.educationalStage',
-      accessor: (row) => (
-        <span>{currentLang === 'ar' ? row.educationalStage : row.educationalStageEn}</span>
-      ),
+      accessor: (row) => {
+        const classroom = classrooms.find((c) => c.id === row.classroomId);
+        return <span>{classroom?.gradeName || '-'}</span>;
+      },
       headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
       header: 'attendance.classroom',
-      accessor: (row) => <span>{currentLang === 'ar' ? row.classroom : row.classroomEn}</span>,
+      accessor: (row) => <span>{isArabic ? row.classroomNameAr : row.classroomNameEn || '-'}</span>,
       headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
       header: 'attendance.date',
-      accessor: (row) => <span>{row.date}</span>,
+      accessor: (row) => (
+        <span>
+          {row.date ? new Date(row.date).toLocaleDateString(isArabic ? 'ar' : 'en') : '-'}
+        </span>
+      ),
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
       header: 'attendance.attendanceTime',
       accessor: (row) => (
-        <span className="text-sm">{row.attendanceTime || t('attendance.notAvailable')}</span>
+        <span className="text-sm">{row.checkInTime || t('attendance.notAvailable')}</span>
       ),
       headerClassName: 'min-w-[170px]',
       className: 'text-center',
@@ -367,8 +258,11 @@ export default function AttendanceManagement() {
       header: 'attendance.createdBy',
       accessor: (row) => (
         <span className="text-sm">
-          {currentLang === 'ar' ? row.createdBy : row.createdByEn} (
-          {currentLang === 'ar' ? row.createdByRole : row.createdByRoleEn})
+          {row.createdBy?.createdByFullNane || '-'}
+          {row.createdBy?.administrativePositionNameAr ||
+          row.createdBy?.administrativePositionNameEn
+            ? ` (${isArabic ? row.createdBy.administrativePositionNameAr : row.createdBy.administrativePositionNameEn})`
+            : ''}
         </span>
       ),
       headerClassName: 'min-w-[220px]',
@@ -376,49 +270,35 @@ export default function AttendanceManagement() {
     },
     {
       header: 'attendance.actions',
-      accessor: (row) => (
-        <div className="flex items-center justify-center gap-2">
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-300"
-            onClick={() =>
-              handleIndividualAction(
-                row.id,
-                currentLang === 'ar' ? row.studentName : row.studentNameEn,
-                'present'
-              )
-            }
-            title={t('attendance.present')}
-          >
-            <CustomImage src={CheckIcon} alt="check" className="h-4 w-4" />
-          </button>
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 transition-colors hover:bg-yellow-200"
-            onClick={() =>
-              handleIndividualAction(
-                row.id,
-                currentLang === 'ar' ? row.studentName : row.studentNameEn,
-                'late'
-              )
-            }
-            title={t('attendance.late')}
-          >
-            <CustomImage src={HistoryIcon} alt="history" className="h-4 w-4" />
-          </button>
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 transition-colors hover:bg-red-200"
-            onClick={() =>
-              handleIndividualAction(
-                row.id,
-                currentLang === 'ar' ? row.studentName : row.studentNameEn,
-                'absent'
-              )
-            }
-            title={t('attendance.absent')}
-          >
-            <CustomImage src={XMarkDangerIcon} alt="delete" className="h-4 w-4" />
-          </button>
-        </div>
-      ),
+      accessor: (row) => {
+        const studentName = row.teacherFullName || '-';
+        const studentKey = getStudentKey(row);
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-300"
+              onClick={() => handleIndividualAction(studentKey, studentName, 'present')}
+              title={t('attendance.present')}
+            >
+              <CustomImage src={CheckIcon} alt="check" className="h-4 w-4" />
+            </button>
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 transition-colors hover:bg-yellow-200"
+              onClick={() => handleIndividualAction(studentKey, studentName, 'late')}
+              title={t('attendance.late')}
+            >
+              <CustomImage src={HistoryIcon} alt="history" className="h-4 w-4" />
+            </button>
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 transition-colors hover:bg-red-200"
+              onClick={() => handleIndividualAction(studentKey, studentName, 'absent')}
+              title={t('attendance.absent')}
+            >
+              <CustomImage src={XMarkDangerIcon} alt="delete" className="h-4 w-4" />
+            </button>
+          </div>
+        );
+      },
       headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
@@ -437,17 +317,21 @@ export default function AttendanceManagement() {
       type: 'custom',
       name: 'stage-filter',
       placeholder: '',
-      value: selectedStage,
+      value: selectedStageId,
       onChange: () => {},
       width: '30%',
       customComponent: (
         <CustomSelect
-          value={selectedStage}
-          onChange={(value) => setSelectedStage(Array.isArray(value) ? (value[0] ?? '') : value)}
-          options={EDUCATIONAL_STAGES.map((stage) => ({
-            value: stage.value,
-            label: currentLang === 'ar' ? stage.labelAr : stage.labelEn,
-          }))}
+          value={selectedStageId}
+          onChange={(value) => setSelectedStageId(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={
+            Array.isArray(educationalStages)
+              ? educationalStages.map((stage) => ({
+                  value: stage?.id || '',
+                  label: isArabic ? stage?.nameAr || '' : stage?.nameEn || '',
+                }))
+              : []
+          }
           placeholder={t('attendance.educationalStage')}
           maxHeight="200px"
         />
@@ -457,19 +341,23 @@ export default function AttendanceManagement() {
       type: 'custom',
       name: 'classroom-filter',
       placeholder: '',
-      value: selectedClassroom,
+      value: selectedClassroomId,
       onChange: () => {},
       width: '30%',
       customComponent: (
         <CustomSelect
-          value={selectedClassroom}
+          value={selectedClassroomId}
           onChange={(value) =>
-            setSelectedClassroom(Array.isArray(value) ? (value[0] ?? '') : value)
+            setSelectedClassroomId(Array.isArray(value) ? (value[0] ?? '') : value)
           }
-          options={CLASSROOMS.map((classroom) => ({
-            value: classroom.value,
-            label: currentLang === 'ar' ? classroom.labelAr : classroom.labelEn,
-          }))}
+          options={
+            Array.isArray(classrooms)
+              ? classrooms.map((c) => ({
+                  value: c?.id || '',
+                  label: isArabic ? c?.name || '' : c?.nameEn || '',
+                }))
+              : []
+          }
           placeholder={t('attendance.classroom')}
           maxHeight="200px"
         />
@@ -479,8 +367,8 @@ export default function AttendanceManagement() {
 
   const handleResetFilters = () => {
     setSearchTerm('');
-    setSelectedStage('');
-    setSelectedClassroom('');
+    setSelectedStageId('');
+    setSelectedClassroomId('');
     setSelectedStudents([]);
   };
 
@@ -515,21 +403,21 @@ export default function AttendanceManagement() {
     <div>
       <Card>
         <DataTable
-          data={paginatedStudents}
+          data={attendances}
           columns={columns}
-          keyExtractor={(row) => row.id}
+          keyExtractor={(row) => getStudentKey(row)}
           pagination={{
-            page: currentPage,
-            limit: pageSize,
-            total: filteredStudents.length,
-            totalPages: totalPages,
+            page: pagination.pageIndex,
+            limit: pagination.pageSize,
+            total: pagination.totalItems,
+            totalPages: pagination.totalPages,
           }}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
           filters={filterConfigs}
           showFilters={true}
           onResetFilters={handleResetFilters}
           bulkActions={bulkActionsBar}
-          isLoading={false}
+          isLoading={isLoading}
           emptyMessage={t('attendance.noStudents')}
           t={t}
         />
