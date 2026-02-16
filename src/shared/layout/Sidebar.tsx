@@ -23,6 +23,7 @@ import WalletIcon from '@gradex/assets/icons/Wallet.svg';
 import ChevronDown from '@gradex/assets/icons/ChevronDown.svg';
 import ChevronUp from '@gradex/assets/icons/ChevronUp.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
+import ContactFillGreenIcon from '@gradex/assets/icons/ContactFillGreen.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
 import MainLogo from '@gradex/assets/identity/MainLogo.png';
 import TeachersIcon from '@gradex/assets/icons/Teachers.svg';
@@ -88,12 +89,12 @@ const getSuperAdminMenuItems = (): MenuItem[] => [
       {
         key: 'rolesPermissions',
         path: '/employees-administration/roles-permissions',
-        icon: <CustomImage src={ContactIcon} className="h-6 w-6" alt="Roles & Permissions" />,
+        icon: <CustomImage src={ContactFillGreenIcon} className="h-6 w-6" alt="Roles & Permissions" />,
       },
       {
         key: 'systemUsers',
         path: '/employees-administration/system-users',
-        icon: <CustomImage src={ContactIcon} className="h-6 w-6" alt="System Users" />,
+        icon: <CustomImage src={ContactFillGreenIcon} className="h-6 w-6" alt="System Users" />,
       },
     ],
   },
