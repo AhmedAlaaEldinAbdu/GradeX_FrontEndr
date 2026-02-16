@@ -13,11 +13,20 @@ import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
 import IconButton from '@/shared/components/IconButton';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchStudentAttendance } from '@/redux/features/student-attendance/studentAttendanceSlice';
+import {
+  fetchStudentAttendance,
+  bulkCreateStudentAttendance,
+  selectAttendance,
+  deselectAttendance,
+  selectAllAttendances,
+  clearSelection,
+} from '@/redux/features/student-attendance/studentAttendanceSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import type { StudentAttendanceDto } from '@/types/studentAttendance';
+import { StudentAttendanceStatus } from '@/types/studentAttendance';
 import { formatTime } from '@/shared/common/common';
+import { useToast } from '@/shared/context/ToastContext';
 import useLanguage from '@/hooks/useLanguage';
 
 export default function AttendanceManagement() {
@@ -25,9 +34,13 @@ export default function AttendanceManagement() {
   const { isArabic } = useLanguage();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   // Redux state
-  const { attendances, pagination, isLoading } = useAppSelector((state) => state.studentAttendance);
+  const { attendances, pagination, isLoading, selectedAttendanceIds } = useAppSelector(
+    (state) => state.studentAttendance
+  );
+  const isProcessing = isLoading;
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
 
@@ -39,8 +52,7 @@ export default function AttendanceManagement() {
 
   const currentLang = useMemo(() => (isArabic ? 'ar' : 'en') as 'ar' | 'en', [isArabic]);
 
-  // Selection state
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  // Note: Selection is managed via Redux (selectedAttendanceIds)
 
   // Popup state
   const [popupOpen, setPopupOpen] = useState(false);
@@ -95,35 +107,43 @@ export default function AttendanceManagement() {
 
   const handleSelectStudent = (id: string, checked: boolean) => {
     if (checked) {
-      setSelectedStudents((prev) => [...prev, id]);
+      dispatch(selectAttendance(id));
     } else {
-      setSelectedStudents((prev) => prev.filter((sid) => sid !== id));
+      dispatch(deselectAttendance(id));
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      const currentPageIds = attendances.map((s) => getStudentKey(s));
-      setSelectedStudents((prev) => {
-        const newSelected = [...prev];
-        currentPageIds.forEach((id) => {
-          if (id && !newSelected.includes(id)) {
-            newSelected.push(id);
-          }
-        });
-        return newSelected;
-      });
+      dispatch(selectAllAttendances());
     } else {
-      const currentPageIds = attendances.map((s) => getStudentKey(s));
-      setSelectedStudents((prev) => prev.filter((id) => !currentPageIds.includes(id)));
+      dispatch(clearSelection());
     }
   };
 
   const allCurrentPageSelected =
-    attendances.length > 0 && attendances.every((s) => selectedStudents.includes(getStudentKey(s)));
+    attendances.length > 0 && attendances.every((s) => selectedAttendanceIds.includes(s.studentId));
 
   const someCurrentPageSelected =
-    attendances.some((s) => selectedStudents.includes(getStudentKey(s))) && !allCurrentPageSelected;
+    attendances.some((s) => selectedAttendanceIds.includes(s.studentId)) && !allCurrentPageSelected;
+
+  const allStudentsDisabled =
+    attendances.length === 0 ||
+    attendances.every((s) => s.status !== null && s.status !== -1 && s.status !== 0);
+
+  // Helper to refresh attendance list
+  const refreshAttendanceList = () => {
+    dispatch(
+      fetchStudentAttendance({
+        page: pagination.pageIndex,
+        limit: pagination.pageSize,
+        search: searchTerm || undefined,
+        lkSchoolStageId: selectedStageId || undefined,
+        classroomId: selectedClassroomId || undefined,
+        date: selectedDate || undefined,
+      })
+    );
+  };
 
   // Individual action handlers
   const handleIndividualAction = (
@@ -147,22 +167,79 @@ export default function AttendanceManagement() {
     setPopupOpen(true);
   };
 
-  const handleConfirmAction = (time?: string) => {
-    if (popupIsBulk) {
-      console.log(
-        `Bulk action: ${popupType} for students:`,
-        selectedStudents,
-        time ? `at ${time}` : ''
-      );
-      setSelectedStudents([]);
-    } else if (popupStudentId) {
-      console.log(
-        `Individual action: ${popupType} for student:`,
-        popupStudentId,
-        time ? `at ${time}` : ''
-      );
+  const handleConfirmAction = async (time?: string) => {
+    try {
+      const statusMap = {
+        present: StudentAttendanceStatus.Present,
+        late: StudentAttendanceStatus.Late,
+        absent: StudentAttendanceStatus.Absent,
+      };
+
+      const currentDate = new Date().toISOString();
+
+      if (popupIsBulk) {
+        // Prepare bulk request data
+        const bulkData = selectedAttendanceIds.map((studentId) => ({
+          studentId,
+          date: currentDate,
+          status: statusMap[popupType],
+          delayTime: time || undefined,
+        }));
+
+        await dispatch(bulkCreateStudentAttendance(bulkData)).unwrap();
+
+        const successMessageMap = {
+          present: 'attendance.bulkAttendanceSuccess',
+          late: 'attendance.bulkLateSuccess',
+          absent: 'attendance.bulkAbsentSuccess',
+        };
+
+        showToast({
+          message: successMessageMap[popupType],
+          type: 'success',
+        });
+
+        dispatch(clearSelection());
+        refreshAttendanceList();
+      } else if (popupStudentId) {
+        // Individual action — use bulk-create with a single item
+        await dispatch(
+          bulkCreateStudentAttendance([
+            {
+              studentId: popupStudentId,
+              date: currentDate,
+              status: statusMap[popupType],
+              delayTime: time || undefined,
+            },
+          ])
+        ).unwrap();
+
+        const successMessageMap = {
+          present: 'attendance.individualAttendanceSuccess',
+          late: 'attendance.individualLateSuccess',
+          absent: 'attendance.individualAbsentSuccess',
+        };
+
+        showToast({
+          message: successMessageMap[popupType],
+          type: 'success',
+        });
+
+        dispatch(deselectAttendance(popupStudentId));
+        refreshAttendanceList();
+      }
+
+      setPopupOpen(false);
+    } catch (error) {
+      setPopupOpen(false);
+      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
+      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: isApiError,
+      });
     }
-    setPopupOpen(false);
   };
 
   const handleCancelPopup = () => {
@@ -189,17 +266,29 @@ export default function AttendanceManagement() {
             }
           }}
           onChange={(e) => handleSelectAll(e.target.checked)}
-          className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1"
+          disabled={allStudentsDisabled}
+          className={`h-4 w-4 appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1 ${
+            allStudentsDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+          }`}
         />
       ),
-      accessor: (row) => (
-        <input
-          type="checkbox"
-          checked={selectedStudents.includes(getStudentKey(row))}
-          onChange={(e) => handleSelectStudent(getStudentKey(row), e.target.checked)}
-          className="h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1"
-        />
-      ),
+      accessor: (row) => {
+        const hasStatus = row.status !== null && row.status !== -1 && row.status !== 0;
+        const studentKey = getStudentKey(row);
+        return (
+          <input
+            type="checkbox"
+            id={`checkbox-${studentKey}`}
+            name={`checkbox-${studentKey}`}
+            checked={selectedAttendanceIds.includes(studentKey)}
+            onChange={(e) => handleSelectStudent(studentKey, e.target.checked)}
+            disabled={hasStatus}
+            className={`h-4 w-4 appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1 ${
+              hasStatus ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+            }`}
+          />
+        );
+      },
       headerClassName: 'w-12',
       className: 'text-center',
     },
@@ -316,6 +405,40 @@ export default function AttendanceManagement() {
     {
       header: 'attendance.actions',
       accessor: (row) => {
+        const hasStatus = row.status !== null && row.status !== -1 && row.status !== 0;
+
+        if (hasStatus) {
+          const statusConfig: Record<number, { text: string; className: string }> = {
+            [StudentAttendanceStatus.Present]: {
+              text: t('attendance.present'),
+              className: 'bg-green-100 text-green-800',
+            },
+            [StudentAttendanceStatus.Absent]: {
+              text: t('attendance.absent'),
+              className: 'bg-red-100 text-red-800',
+            },
+            [StudentAttendanceStatus.Late]: {
+              text: t('attendance.late'),
+              className: 'bg-yellow-100 text-yellow-800',
+            },
+            [StudentAttendanceStatus.EarlyLeave]: {
+              text: t('attendance.earlyLeave'),
+              className: 'bg-orange-100 text-orange-800',
+            },
+          };
+          const config = statusConfig[row.status] || {
+            text: t('attendance.notAvailable'),
+            className: 'bg-gray-100 text-gray-800',
+          };
+          return (
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${config.className}`}
+            >
+              {config.text}
+            </span>
+          );
+        }
+
         const studentName = row.teacherFullName || '-';
         const studentKey = getStudentKey(row);
         return (
@@ -434,11 +557,11 @@ export default function AttendanceManagement() {
     setSelectedStageId('');
     setSelectedClassroomId('');
     setSelectedDate('');
-    setSelectedStudents([]);
+    dispatch(clearSelection());
   };
 
   const bulkActionsBar =
-    selectedStudents.length > 0 ? (
+    selectedAttendanceIds.length > 0 ? (
       <div className="flex items-center justify-end gap-2">
         <button
           onClick={() => handleBulkActionClick('present')}
@@ -497,6 +620,7 @@ export default function AttendanceManagement() {
         personType="student"
         onConfirm={handleConfirmAction}
         onCancel={handleCancelPopup}
+        isProcessing={isProcessing}
       />
     </div>
   );
