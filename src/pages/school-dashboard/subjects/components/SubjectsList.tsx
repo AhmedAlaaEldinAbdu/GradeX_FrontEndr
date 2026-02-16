@@ -29,7 +29,7 @@ export default function SubjectsList() {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [selectedLevel, setSelectedLevel] = useState('');
-
+  const limit = 10;
   const { showToast } = useToast();
 
   const subjects = useAppSelector((state) => state.subjects.subjects);
@@ -41,14 +41,14 @@ export default function SubjectsList() {
     dispatch(
       fetchSubjects({
         page: pagination.page,
-        limit: pagination.limit,
+        limit: limit,
         filters: {
           searchName: searchTerm || undefined,
           level: selectedLevel ? Number(selectedLevel) : undefined,
         },
       })
     );
-  }, [dispatch, pagination.page, pagination.limit, searchTerm, selectedLevel]);
+  }, [dispatch, pagination.page, limit, searchTerm, selectedLevel]);
 
   const handlePageChange = (page: number) => {
     dispatch(
@@ -233,7 +233,7 @@ export default function SubjectsList() {
             keyExtractor={(row) => row.id}
             pagination={{
               page: pagination.page,
-              limit: pagination.limit,
+              limit: limit,
               total: pagination.total,
               totalPages: pagination.totalPages,
             }}
