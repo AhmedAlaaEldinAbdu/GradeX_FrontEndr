@@ -1,10 +1,19 @@
-import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  type PayloadAction,
+  type ActionReducerMapBuilder,
+  createAsyncThunk,
+} from '@reduxjs/toolkit';
 import { studentAttendanceApiService } from '@/services/api/student-attendance/student-attendance.service';
-import type { StudentAttendanceDto } from '@/types/studentAttendance';
+import type { StudentAttendanceDto, StudentBulkAttendanceRequest } from '@/types/studentAttendance';
 import { getErrorMessage } from '@/lib/http';
 
 // Use the same static branch ID as teacher attendance
 export const STATIC_SCHOOL_BRANCH_ID = '471d89c1-61a8-4b13-d682-08de1657abad';
+
+// ============================================================================
+// Types
+// ============================================================================
 
 interface StudentAttendanceState {
   attendances: StudentAttendanceDto[];
@@ -16,6 +25,7 @@ interface StudentAttendanceState {
   };
   isLoading: boolean;
   error: string | null;
+  selectedAttendanceIds: string[];
 }
 
 const initialState: StudentAttendanceState = {
@@ -28,6 +38,7 @@ const initialState: StudentAttendanceState = {
   },
   isLoading: false,
   error: null,
+  selectedAttendanceIds: [],
 };
 
 export interface FetchStudentAttendancePayload {
@@ -50,6 +61,10 @@ export interface FetchStudentAttendanceResponse {
     totalPages: number;
   };
 }
+
+// ============================================================================
+// Async Thunks
+// ============================================================================
 
 export const fetchStudentAttendance = createAsyncThunk<
   FetchStudentAttendanceResponse,
@@ -94,11 +109,47 @@ export const fetchStudentAttendance = createAsyncThunk<
   }
 });
 
+export const bulkCreateStudentAttendance = createAsyncThunk<void, StudentBulkAttendanceRequest>(
+  'studentAttendance/bulkCreateStudentAttendance',
+  async (payload, { rejectWithValue }) => {
+    try {
+      await studentAttendanceApiService.bulkCreateStudentAttendance(payload);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+// ============================================================================
+// Slice
+// ============================================================================
+
 const studentAttendanceSlice = createSlice({
   name: 'studentAttendance',
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
+  reducers: {
+    selectAttendance: (state, action: PayloadAction<string>) => {
+      if (!state.selectedAttendanceIds.includes(action.payload)) {
+        state.selectedAttendanceIds.push(action.payload);
+      }
+    },
+    deselectAttendance: (state, action: PayloadAction<string>) => {
+      state.selectedAttendanceIds = state.selectedAttendanceIds.filter(
+        (id) => id !== action.payload
+      );
+    },
+    selectAllAttendances: (state) => {
+      state.selectedAttendanceIds = state.attendances.map((attendance) => attendance.studentId);
+    },
+    clearSelection: (state) => {
+      state.selectedAttendanceIds = [];
+    },
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder: ActionReducerMapBuilder<StudentAttendanceState>) => {
+    // Fetch Student Attendance
     builder
       .addCase(fetchStudentAttendance.pending, (state) => {
         state.isLoading = true;
@@ -121,7 +172,33 @@ const studentAttendanceSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       });
+
+    // Bulk Create Student Attendance
+    builder
+      .addCase(bulkCreateStudentAttendance.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(bulkCreateStudentAttendance.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(bulkCreateStudentAttendance.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
   },
 });
+
+// ============================================================================
+// Exports
+// ============================================================================
+
+export const {
+  selectAttendance,
+  deselectAttendance,
+  selectAllAttendances,
+  clearSelection,
+  clearError,
+} = studentAttendanceSlice.actions;
 
 export default studentAttendanceSlice.reducer;
