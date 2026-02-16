@@ -756,6 +756,8 @@
     "classroom": "الصفوف الدراسية",
     "date": "التاريخ",
     "attendanceTime": "وقت الحضور",
+    "departureTime": "وقت الإنصراف",
+    "noEarlyLeave": "لا يوجد",
     "createdBy": "تم بواسطة",
     "type": "النوع",
     "jobTitle": "الوظيفة",

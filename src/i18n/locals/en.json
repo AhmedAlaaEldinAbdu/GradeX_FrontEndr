@@ -757,6 +757,8 @@
     "classroom": "Classroom",
     "date": "Date",
     "attendanceTime": "Attendance Time",
+    "departureTime": "Departure Time",
+    "noEarlyLeave": "None",
     "createdBy": "Created By",
     "type": "Type",
     "jobTitle": "Job Title",
