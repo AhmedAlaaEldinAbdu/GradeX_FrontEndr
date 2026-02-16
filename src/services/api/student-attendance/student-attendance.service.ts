@@ -5,6 +5,7 @@ import type {
   StudentAttendanceListResponse,
   StudentAttendanceQueryParams,
   StudentAttendanceListData,
+  StudentBulkAttendanceRequest,
 } from '@/types/studentAttendance';
 
 /**
@@ -60,6 +61,25 @@ export async function getStudentAttendanceByBranch(
   };
 }
 
+/**
+ * Bulk create student attendance records
+ */
+export async function bulkCreateStudentAttendance(
+  data: StudentBulkAttendanceRequest
+): Promise<void> {
+  const response: AxiosResponse<{
+    data: null;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.post(StudentAttendanceEndpoints.bulkCreate, data);
+
+  if (!response?.data?.isSuccess) {
+    throw new Error(response?.data?.message || 'Failed to bulk create student attendance');
+  }
+}
+
 export const studentAttendanceApiService = {
   getStudentAttendanceByBranch,
+  bulkCreateStudentAttendance,
 };
