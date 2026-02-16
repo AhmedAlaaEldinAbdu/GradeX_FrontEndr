@@ -44,7 +44,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
                 </svg>
               ) : (
                 <div
-                  className="text-green-600"
+                  className="text-green-500"
                   style={
                     currentStep === step.id
                       ? {
@@ -63,7 +63,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
 
             {/* Step Label */}
             <span
-              className={`whitespace-nowrap text-sm ${currentStep === step.id ? 'font-semibold text-green-600' : 'text-gray-500'}`}
+              className={`whitespace-nowrap text-base font-normal ${currentStep === step.id ? 'font-semibold text-green-500' : 'text-gray-500'}`}
             >
               {step.label}
             </span>
@@ -73,7 +73,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
           {index < steps.length - 1 && (
             <div
               className={`mx-6 mb-8 h-[2px] flex-1 transition-all ${
-                currentStep > step.id ? 'bg-green-600' : 'bg-gray-200'
+                currentStep > step.id ? 'bg-green-500' : 'bg-gray-200'
               }`}
             ></div>
           )}
