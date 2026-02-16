@@ -6,8 +6,10 @@ import { Controller, useFormContext } from 'react-hook-form';
 import Input from '@gradex/shared/components/Input';
 import FormField from '@gradex/shared/components/FormField';
 import Button from '@gradex/shared/components/Button';
+import FileUpload from '@gradex/shared/components/FileUpload';
 import MapLocationModal from '@gradex/shared/components/MapLocationModal';
 import AddressBranch from './AddressBranch';
+import ViewModeFileDisplay from './ViewModeFileDisplay';
 import type { SchoolFormData } from '../types/school.types';
 import {
   fetchCountries,
@@ -29,6 +31,10 @@ interface BranchData {
 
 interface AddressStepProps {
   readOnly?: boolean;
+  onSchoolImageUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSchoolImageDelete?: (index?: number) => void;
+  schoolImageFileNames?: string[];
+  schoolImageFiles?: File[];
   initialBranches?: Array<{
     country: string;
     region: string;
@@ -61,6 +67,10 @@ interface AddressStepProps {
  */
 const AddressStep: React.FC<AddressStepProps> = ({
   readOnly = false,
+  onSchoolImageUpload,
+  onSchoolImageDelete,
+  schoolImageFileNames,
+  schoolImageFiles,
   initialBranches,
   onBranchesChange,
 }) => {
@@ -164,7 +174,7 @@ const AddressStep: React.FC<AddressStepProps> = ({
             type="button"
             variant="outline"
             onClick={() => handleOpenMapModal(null)}
-            className="border-none bg-transparent text-left text-lg font-semibold text-green-600 hover:bg-transparent"
+            className="border-none bg-transparent text-left text-lg font-semibold text-green-500 hover:bg-transparent"
           >
             {t('schools.mapLocation')}
           </Button>
@@ -332,6 +342,31 @@ const AddressStep: React.FC<AddressStepProps> = ({
 
         <div className="md:col-span-1"></div>
       </div>
+      {/* School Images Upload (Optional) */}
+      {!readOnly ? (
+        <div className="space-y-4 rounded-lg border border-gray-200 p-4">
+          <FormField label={t('schools.schoolImages')} optional>
+            <FileUpload
+              label=""
+              accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
+              onChange={onSchoolImageUpload || (() => {})}
+              onDelete={onSchoolImageDelete}
+              fileNames={schoolImageFileNames || []}
+              files={schoolImageFiles || []}
+              uploadText={t('schools.uploadMedia')}
+              multiple={true}
+            />
+          </FormField>
+        </div>
+      ) : (
+        <>
+          {schoolImageFileNames && schoolImageFileNames.length > 0 && (
+            <div className="space-y-4 rounded-lg border border-gray-200 p-4">
+              <ViewModeFileDisplay files={schoolImageFileNames} label={t('schools.images')} />
+            </div>
+          )}
+        </>
+      )}
 
       {/* Has Branches Toggle */}
       {/* <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

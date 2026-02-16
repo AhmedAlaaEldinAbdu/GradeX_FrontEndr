@@ -64,7 +64,8 @@ interface BackendSchoolData {
 export function transformSchoolFormBackend(
   formData: SchoolFormData,
   files: FileAttachments,
-  branches?: BranchData[]
+  branches?: BranchData[],
+  existingSchoolImageFiles?: string[]
 ): FormData {
   const backendFormData = new FormData();
 
@@ -73,6 +74,7 @@ export function transformSchoolFormBackend(
   appendFinancialData(backendFormData, formData);
   appendContactInformation(backendFormData, formData);
   appendAddressAndBranches(backendFormData, formData, branches);
+  appendSchoolImageAttachments(backendFormData, files, existingSchoolImageFiles);
   appendApplicationFeatures(backendFormData, formData);
   appendFacilities(backendFormData, formData, files);
 
@@ -110,11 +112,42 @@ function appendBasicInformation(formData: FormData, schoolData: SchoolFormData):
 }
 
 function appendLicenseAttachments(formData: FormData, files: FileAttachments): void {
-  const attachments = collectLicenseAttachments(files);
+  if (!files.license || files.license.length === 0) return;
 
-  attachments.forEach((attachment, index) => {
-    formData.append(`LicensesAttachments[${index}].attachmentFile`, attachment.file);
-    formData.append(`LicensesAttachments[${index}].attachmentName`, attachment.name);
+  files.license.forEach((file, index) => {
+    formData.append(`LicensesAttachments[${index}].attachmentFile`, file);
+    formData.append(`LicensesAttachments[${index}].attachmentName`, file.name || 'School Logo');
+  });
+}
+
+function appendSchoolImageAttachments(
+  formData: FormData,
+  files: FileAttachments,
+  existingSchoolImageFiles?: string[]
+): void {
+  const existing = (existingSchoolImageFiles || []).filter(
+    (value) => typeof value === 'string' && value.trim().length > 0
+  );
+  const newFiles = files.image || [];
+
+  if (existing.length === 0 && newFiles.length === 0) return;
+
+  let index = 0;
+
+  // Keep existing attachments by sending their paths/values back
+  existing.forEach((filePath) => {
+    const prefix = `schoolImageAttachmentsDto[${index}]`;
+    formData.append(`${prefix}.attachmentFile`, filePath);
+    formData.append(`${prefix}.name`, 'schoolImage');
+    index++;
+  });
+
+  // Add newly uploaded files
+  newFiles.forEach((file) => {
+    const prefix = `schoolImageAttachmentsDto[${index}]`;
+    formData.append(`${prefix}.attachmentFile`, file);
+    formData.append(`${prefix}.name`, 'schoolImage');
+    index++;
   });
 }
 
@@ -311,32 +344,6 @@ function formatFoundingDate(date?: string): string {
   return date ? new Date(date).toISOString() : new Date().toISOString();
 }
 
-function collectLicenseAttachments(files: FileAttachments): Array<{ file: File; name: string }> {
-  const attachments: Array<{ file: File; name: string }> = [];
-
-  // Add all logo files
-  if (files.license && files.license.length > 0) {
-    files.license.forEach((file) => {
-      attachments.push({
-        file: file,
-        name: file.name || 'School Logo',
-      });
-    });
-  }
-
-  // Add all image files
-  if (files.image && files.image.length > 0) {
-    files.image.forEach((file) => {
-      attachments.push({
-        file: file,
-        name: file.name || 'School Image',
-      });
-    });
-  }
-
-  return attachments;
-}
-
 function appendFacilityCertificates(formData: FormData, certificates: File[]): void {
   if (!certificates || certificates.length === 0) return;
 
@@ -400,6 +407,11 @@ interface BackendSchoolResponse {
     fileName: string;
     filePath: string;
     schoolId: string;
+  }>;
+  schoolImageAttachmentsDto?: Array<{
+    id: string;
+    attachmentFile: string;
+    name: string;
   }>;
   schoolBranches?: Array<{
     id: string;
@@ -537,6 +549,12 @@ export function transformBackendSchoolToForm(
 
   // Extract license file paths from attachments (use filePath for full URL access)
   const licenseFiles = data.licensesAttachments?.map((attachment) => attachment.filePath) || [];
+
+  // Extract school images (Step 3 attachments)
+  const imageFiles =
+    data.schoolImageAttachmentsDto
+      ?.map((attachment) => attachment.attachmentFile)
+      .filter((value) => typeof value === 'string' && value.trim().length > 0) || [];
 
   // Extract certificate files from all facilities
   const certificateFiles: string[] = [];
@@ -692,6 +710,7 @@ export function transformBackendSchoolToForm(
 
     // Files from backend (for view mode)
     licenseFiles,
+    imageFiles,
     certificateFiles,
 
     // Additional branches (for view/edit mode) - skip the first branch as it's the main address

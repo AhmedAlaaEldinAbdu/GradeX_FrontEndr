@@ -74,7 +74,7 @@ const AddressBranch: React.FC<AddressBranchProps> = ({
                 type="button"
                 variant="outline"
                 onClick={() => onOpenMapModal(index)}
-                className="border-none bg-transparent text-left text-sm font-semibold text-green-600 hover:bg-transparent"
+                className="border-none bg-transparent text-left text-sm font-semibold text-green-500 hover:bg-transparent"
                 style={{ backgroundColor: 'transparent', boxShadow: 'none' }}
               >
                 {t('schools.mapLocation')}
