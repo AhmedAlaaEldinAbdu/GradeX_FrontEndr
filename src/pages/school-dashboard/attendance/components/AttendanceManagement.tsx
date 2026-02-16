@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
@@ -17,6 +17,7 @@ import { fetchStudentAttendance } from '@/redux/features/student-attendance/stud
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import type { StudentAttendanceDto } from '@/types/studentAttendance';
+import { formatTime } from '@/shared/common/common';
 import useLanguage from '@/hooks/useLanguage';
 
 export default function AttendanceManagement() {
@@ -34,6 +35,9 @@ export default function AttendanceManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
   const [selectedClassroomId, setSelectedClassroomId] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+
+  const currentLang = useMemo(() => (isArabic ? 'ar' : 'en') as 'ar' | 'en', [isArabic]);
 
   // Selection state
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
@@ -60,6 +64,7 @@ export default function AttendanceManagement() {
         search: searchTerm || undefined,
         lkSchoolStageId: selectedStageId || undefined,
         classroomId: selectedClassroomId || undefined,
+        date: selectedDate || undefined,
       })
     );
   }, [
@@ -69,6 +74,7 @@ export default function AttendanceManagement() {
     searchTerm,
     selectedStageId,
     selectedClassroomId,
+    selectedDate,
   ]);
 
   const handlePageChange = (page: number) => {
@@ -79,6 +85,7 @@ export default function AttendanceManagement() {
         search: searchTerm || undefined,
         lkSchoolStageId: selectedStageId || undefined,
         classroomId: selectedClassroomId || undefined,
+        date: selectedDate || undefined,
       })
     );
   };
@@ -248,10 +255,48 @@ export default function AttendanceManagement() {
     },
     {
       header: 'attendance.attendanceTime',
+      accessor: (row) => {
+        if (row.status === 2) {
+          return (
+            <span className="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+              {t('attendance.absent')}
+            </span>
+          );
+        }
+        if (row.status === 3) {
+          return (
+            <span className="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
+              {t('attendance.late')}
+            </span>
+          );
+        }
+        return (
+          <span className="text-sm">
+            {row.checkInTime ? formatTime(row.checkInTime, currentLang) : '-'}
+          </span>
+        );
+      },
+      headerClassName: 'min-w-[170px]',
+      className: 'text-center',
+    },
+    {
+      header: 'attendance.departureTime',
       accessor: (row) => (
-        <span className="text-sm">{row.checkInTime || t('attendance.notAvailable')}</span>
+        <span className="text-sm">
+          {row.checkOutTime ? formatTime(row.checkOutTime, currentLang) : '-'}
+        </span>
       ),
       headerClassName: 'min-w-[170px]',
+      className: 'text-center',
+    },
+    {
+      header: 'attendance.earlyLeave',
+      accessor: (row) => (
+        <span className="text-sm text-gray-500">
+          {row.status === 4 ? t('attendance.earlyLeave') : t('attendance.noEarlyLeave')}
+        </span>
+      ),
+      headerClassName: 'min-w-[130px]',
       className: 'text-center',
     },
     {
@@ -363,12 +408,32 @@ export default function AttendanceManagement() {
         />
       ),
     },
+    {
+      type: 'custom',
+      name: 'date-filter',
+      placeholder: '',
+      value: selectedDate,
+      onChange: () => {},
+      width: '25%',
+      customComponent: (
+        <div className="relative w-full">
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-[#1FAD6C] focus:ring-1 focus:ring-[#1FAD6C]"
+            placeholder={t('attendance.date')}
+          />
+        </div>
+      ),
+    },
   ];
 
   const handleResetFilters = () => {
     setSearchTerm('');
     setSelectedStageId('');
     setSelectedClassroomId('');
+    setSelectedDate('');
     setSelectedStudents([]);
   };
 
