@@ -89,7 +89,9 @@ const getSuperAdminMenuItems = (): MenuItem[] => [
       {
         key: 'rolesPermissions',
         path: '/employees-administration/roles-permissions',
-        icon: <CustomImage src={ContactFillGreenIcon} className="h-6 w-6" alt="Roles & Permissions" />,
+        icon: (
+          <CustomImage src={ContactFillGreenIcon} className="h-6 w-6" alt="Roles & Permissions" />
+        ),
       },
       {
         key: 'systemUsers',
