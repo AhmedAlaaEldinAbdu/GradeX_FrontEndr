@@ -49,3 +49,21 @@ export interface StudentAttendanceQueryParams {
   Status?: number;
   Date?: string;
 }
+
+// Bulk attendance request
+export interface StudentBulkAttendanceItem {
+  studentId: string;
+  date: string;
+  status: number;
+  delayTime?: string;
+}
+
+export type StudentBulkAttendanceRequest = StudentBulkAttendanceItem[];
+
+// Attendance status constants
+export const StudentAttendanceStatus = {
+  Present: 1,
+  Absent: 2,
+  Late: 3,
+  EarlyLeave: 4,
+} as const;
