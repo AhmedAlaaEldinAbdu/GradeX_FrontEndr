@@ -233,7 +233,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         className={`relative rounded-xl border-2 border-dashed p-8 text-center transition-all ${
           error
             ? 'border-red-500 bg-red-50 hover:border-red-600'
-            : 'border-[#1E8A73] bg-[#F2F2F2] hover:border-[#166b5a]'
+            : 'border-green-500 bg-green-100 hover:border-green-600'
         }`}
         style={{ borderStyle: 'dashed', borderSpacing: '8px' }}
       >
@@ -246,14 +246,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
           multiple={multiple}
           className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
         />
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-2">
           {/* Icon Container */}
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-sm">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-sm mb-1">
             <img src={MultiFiles} alt="Upload Icon" className="h-6 w-6 object-contain" />
           </div>
-          <p className="text-sm font-medium text-[#1E8A73]">{displayUploadText}</p>
+          <p className="text-base font-normal text-green-500">{displayUploadText}</p>
           {formatHints.length > 0 && (
-            <p className="text-sm text-gray-500" dir={isArabic ? 'ltr' : 'rtl'}>
+            <p className="text-base font-normal text-black-600" dir={isArabic ? 'ltr' : 'rtl'}>
               {formatHintsText()}
             </p>
           )}
