@@ -17,13 +17,8 @@ import AddFacilityDetailsPopup from '../popups/AddFacilityDetailsPopup';
 import ViewModeFileDisplay from './ViewModeFileDisplay';
 
 interface FacilitiesStepProps {
-  onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCertificateUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onImageDelete?: (index?: number) => void;
   onCertificateDelete?: (index?: number) => void;
-  imageFileName?: string;
-  imageFileNames?: string[];
-  imageFiles?: File[];
   certificateFileName?: string;
   certificateFileNames?: string[];
   certificateFiles?: File[];
@@ -37,13 +32,8 @@ interface FacilitiesStepProps {
  * Includes facility checkboxes and file uploads for images and certificates
  */
 const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
-  onImageUpload,
   onCertificateUpload,
-  onImageDelete,
   onCertificateDelete,
-  imageFileName,
-  imageFileNames,
-  imageFiles = [],
   certificateFileName,
   certificateFileNames,
   certificateFiles = [],
@@ -426,33 +416,6 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
           </div>
         </FormField>
       </div>
-
-      {/* Images Upload Section - Multiple Files */}
-      {!readOnly ? (
-        <div className="space-y-4 rounded-lg border border-gray-200 p-4">
-          <FormField label={t('schools.images')} optional>
-            <FileUpload
-              label=""
-              accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
-              onChange={onImageUpload}
-              onDelete={onImageDelete}
-              fileNames={imageFileNames || (imageFileName ? imageFileName.split(', ') : [])}
-              files={imageFiles}
-              uploadText={t('schools.uploadMedia')}
-              multiple={true}
-            />
-          </FormField>
-        </div>
-      ) : (
-        // View mode - show uploaded images
-        <>
-          {imageFileNames && imageFileNames.length > 0 && (
-            <div className="space-y-4 rounded-lg border border-gray-200 p-4">
-              <ViewModeFileDisplay files={imageFileNames} label={t('schools.images')} />
-            </div>
-          )}
-        </>
-      )}
 
       {/* Certificates Upload Section - Multiple Files */}
       {!readOnly ? (
