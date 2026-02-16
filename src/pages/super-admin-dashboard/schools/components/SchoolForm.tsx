@@ -22,10 +22,10 @@ import {
 } from '@gradex/redux/features/schools';
 import { useToast } from '@/shared/context/ToastContext';
 import type { ValidationErrorResponse } from '@/services/api/config';
-import LocationIcon from '@gradex/assets/icons/location-fill.svg';
-import PhoneIcon from '@gradex/assets/icons/phone-fill.svg';
-import DiamondIcon from '@gradex/assets/icons/Diamond.svg';
-import FileIcon from '@gradex/assets/icons/File.svg';
+import LocationFillGreenIcon from '@gradex/assets/icons/LocationFillGreen.svg';
+import PhoneFillGreenIcon from '@gradex/assets/icons/PhoneFillGreen.svg';
+import DiamondFillGreenIcon from '@gradex/assets/icons/DiamondFillGreen.svg';
+import FilesFillGreenIcon from '@gradex/assets/icons/FilesFillGreen.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import CustomImage from '@/shared/components/CustomImage';
@@ -86,6 +86,8 @@ const SchoolForm = ({
     }>
   >([]);
 
+  const [schoolImageFiles, setSchoolImageFiles] = useState<string[]>([]);
+
   // Ref to prevent accidental submission immediately after navigation
   const justNavigatedToStep4Ref = useRef(false);
 
@@ -97,6 +99,15 @@ const SchoolForm = ({
     if (initialData?.branches && initialData.branches.length > 0) {
       console.log('📋 SchoolForm: Initializing branches from initialData:', initialData.branches);
       setBranches(initialData.branches);
+    }
+  }, [initialData]);
+
+  // Initialize school image attachments from initialData (for edit/view mode)
+  useEffect(() => {
+    if (initialData?.imageFiles && initialData.imageFiles.length > 0) {
+      setSchoolImageFiles(initialData.imageFiles);
+    } else {
+      setSchoolImageFiles([]);
     }
   }, [initialData]);
 
@@ -146,28 +157,28 @@ const SchoolForm = ({
     {
       id: 1,
       step: 1,
-      icon: <CustomImage src={FileIcon} className="h-5 w-5" alt="Basic Info" />,
+      icon: <CustomImage src={FilesFillGreenIcon} className="h-5 w-5" alt="Basic Info" />,
       label: t('schools.basicInfo'),
       completed: currentStep > 1,
     },
     {
       id: 2,
       step: 2,
-      icon: <CustomImage src={PhoneIcon} className="h-5 w-5" alt="Contact" />,
+      icon: <CustomImage src={PhoneFillGreenIcon} className="h-5 w-5" alt="Contact" />,
       label: t('schools.contactInfo'),
       completed: currentStep > 2,
     },
     {
       id: 3,
       step: 3,
-      icon: <CustomImage src={LocationIcon} className="h-5 w-5" alt="Address" />,
+      icon: <CustomImage src={LocationFillGreenIcon} className="h-5 w-5" alt="Address" />,
       label: t('schools.address'),
       completed: currentStep > 3,
     },
     {
       id: 4,
       step: 4,
-      icon: <CustomImage src={DiamondIcon} className="h-5 w-5" alt="Facilities" />,
+      icon: <CustomImage src={DiamondFillGreenIcon} className="h-5 w-5" alt="Facilities" />,
       label: t('schools.facilities'),
       completed: currentStep > 4,
     },
@@ -228,7 +239,7 @@ const SchoolForm = ({
    */
   const onFormSubmit = async (data: SchoolFormData) => {
     try {
-      const backendFormData = transformSchoolFormBackend(data, files, branches);
+      const backendFormData = transformSchoolFormBackend(data, files, branches, schoolImageFiles);
 
       if (import.meta.env.DEV) {
         logFormData(backendFormData);
@@ -255,6 +266,34 @@ const SchoolForm = ({
       }
     } catch (error) {
       console.error('Error submitting form:', error);
+    }
+  };
+
+  const handleSchoolImageDelete = (index?: number) => {
+    const existingCount = schoolImageFiles.length;
+    const newCount = files.image?.length || 0;
+
+    if (index === undefined) {
+      setSchoolImageFiles([]);
+      // clear newly added images
+      if (newCount > 0) {
+        // delete all new files
+        // handleFileDelete without index clears all
+        handleFileDelete('image')();
+      }
+      return;
+    }
+
+    // Delete from existing (backend) list
+    if (index < existingCount) {
+      setSchoolImageFiles((prev) => prev.filter((_, i) => i !== index));
+      return;
+    }
+
+    // Delete from newly uploaded files
+    const newIndex = index - existingCount;
+    if (newIndex >= 0 && newIndex < newCount) {
+      handleFileDelete('image', newIndex)();
     }
   };
 
@@ -340,21 +379,17 @@ const SchoolForm = ({
               readOnly={mode === 'view'}
               initialBranches={branches}
               onBranchesChange={setBranches}
+              onSchoolImageUpload={handleFileUpload('image')}
+              onSchoolImageDelete={handleSchoolImageDelete}
+              schoolImageFileNames={[...schoolImageFiles, ...getFileNames('image')]}
+              schoolImageFiles={files.image}
             />
           )}
 
           {currentStep === 4 && (
             <FacilitiesStep
-              onImageUpload={handleFileUpload('image')}
               onCertificateUpload={handleFileUpload('certificate')}
-              onImageDelete={(index?: number) => handleFileDelete('image', index)()}
               onCertificateDelete={(index?: number) => handleFileDelete('certificate', index)()}
-              imageFileNames={
-                mode === 'view'
-                  ? initialData?.imageFiles || []
-                  : [...(initialData?.imageFiles || []), ...getFileNames('image')]
-              }
-              imageFiles={files.image}
               certificateFileNames={
                 mode === 'view'
                   ? initialData?.certificateFiles || []
