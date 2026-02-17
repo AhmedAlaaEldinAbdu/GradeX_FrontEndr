@@ -11,7 +11,7 @@ import useLanguage from '@/hooks/useLanguage';
 interface ChangeAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (newDate: string, newTime: string) => void;
+  onConfirm: (newDate: string, newTime: string) => void | Promise<void>;
   originalDate?: string;
   isProcessing?: boolean;
 }
@@ -43,7 +43,7 @@ const ChangeAppointmentModal: React.FC<ChangeAppointmentModalProps> = ({
     return `${dayName} ${dateStr}`;
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     let hasError = false;
     if (!newDate.trim()) {
       setDateError(t('common.validation.required'));
@@ -55,8 +55,7 @@ const ChangeAppointmentModal: React.FC<ChangeAppointmentModalProps> = ({
     }
     if (hasError) return;
 
-    onConfirm(newDate, newTime);
-    handleClose();
+    await onConfirm(newDate, newTime);
   };
 
   const handleClose = () => {
@@ -121,11 +120,11 @@ const ChangeAppointmentModal: React.FC<ChangeAppointmentModalProps> = ({
 
       {/* Action buttons */}
       <div className="mt-4 flex w-full gap-3">
-        <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
-          {t('studentApplications.modals.change')}
-        </Button>
         <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
           {t('common.cancel')}
+        </Button>
+        <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
+          {t('studentApplications.modals.change')}
         </Button>
       </div>
     </Modal>
