@@ -77,10 +77,31 @@ export async function deleteStudent(id: string): Promise<ApiResponseModel<string
   return response.data;
 }
 
+/**
+ * Assign a student to a classroom
+ */
+export async function assignStudentToClassroom(
+  studentId: string,
+  classroomId: string
+): Promise<void> {
+  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
+    StudentEndpoints.assignToClassroom,
+    {
+      studentId,
+      classrommid: classroomId,
+    }
+  );
+
+  if (!response?.data?.isSuccess) {
+    throw new Error(response?.data?.message || 'Failed to assign student to classroom');
+  }
+}
+
 export const studentsApiService = {
   getStudents,
   getStudentById,
   deleteStudent,
+  assignStudentToClassroom,
 };
 
 export default studentsApiService;
