@@ -6,6 +6,7 @@ import { fetchStudentApplicationById } from '@/redux/features/student-applicatio
 import Loading from '@/shared/components/Loading';
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
 import { sendEditRequest } from '@/services/api/student-applications/student-applications.service';
+import { assignStudentToClassroom } from '@/services/api/students/students.service';
 import { useToast } from '@/shared/context/ToastContext';
 
 // Import extracted components
@@ -57,6 +58,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   const [isEditRequestModalOpen, setEditRequestModalOpen] = useState(false);
   const [isScheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [isHousingModalOpen, setHousingModalOpen] = useState(false);
+  const [isHousingLoading, setHousingLoading] = useState(false);
 
   const { currentApplication, currentApplicationLoading, error } = useAppSelector(
     (state) => state.studentApplications
@@ -250,10 +252,29 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
       <HousingModal
         isOpen={isHousingModalOpen}
         onClose={() => setHousingModalOpen(false)}
-        onConfirm={(classroomId) => {
-          console.log('Housing confirmed, classroom:', classroomId, applicationId);
-          setHousingModalOpen(false);
-          // TODO: Call API to assign student to classroom
+        isLoading={isHousingLoading}
+        onConfirm={async (classroomId) => {
+          try {
+            setHousingLoading(true);
+            await assignStudentToClassroom(data.studentId, classroomId);
+            showToast({
+              message: t('studentApplications.modals.housingSuccess'),
+              type: 'success',
+            });
+            setHousingModalOpen(false);
+            // Refresh application details to reflect the change
+            dispatch(fetchStudentApplicationById(applicationId));
+          } catch (error) {
+            console.error('Failed to assign student to classroom:', error);
+            const errorMessage = error instanceof Error ? error.message : t('common.error');
+            showToast({
+              message: errorMessage,
+              type: 'error',
+              isRaw: error instanceof Error && errorMessage !== t('common.error'),
+            });
+          } finally {
+            setHousingLoading(false);
+          }
         }}
       />
     </>
