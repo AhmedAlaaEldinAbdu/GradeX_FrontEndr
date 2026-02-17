@@ -28,9 +28,48 @@ jobs:
     - name: Build React app
       run: npm run build
 
+    # 4.5️⃣ Check FTP configuration (skip deploy if missing)
+    - name: Check FTP configuration
+      id: ftp_check
+      shell: bash
+      env:
+        FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        FTP_PATH: ${{ secrets.FTP_PATH }}
+      run: |
+        missing=false
+
+        if [ -z "$FTP_SERVER" ]; then
+          echo "::warning::Missing FTP server. Set secret FTP_SERVER (or repo variable FTP_SERVER). Deploy step will be skipped."
+          missing=true
+        fi
+
+        if [ -z "$FTP_USERNAME" ]; then
+          echo "::warning::Missing FTP username. Set secret FTP_USERNAME (or repo variable FTP_USERNAME). Deploy step will be skipped."
+          missing=true
+        fi
+
+        if [ -z "$FTP_PASSWORD" ]; then
+          echo "::warning::Missing FTP password. Set secret FTP_PASSWORD (or repo variable FTP_PASSWORD). Deploy step will be skipped."
+          missing=true
+        fi
+
+        if [ -z "$FTP_PATH" ]; then
+          echo "::warning::Missing FTP path. Set secret FTP_PATH (or repo variable FTP_PATH). Deploy step will be skipped."
+          missing=true
+        fi
+
+        if [ "$missing" = true ]; then
+          echo "can_deploy=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "can_deploy=true" >> "$GITHUB_OUTPUT"
+        fi
+
     # 5️⃣ Deploy build folder to SmarterASP via FTP
     - name: Deploy to SmarterASP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      if: ${{ steps.ftp_check.outputs.can_deploy == 'true' }}
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
