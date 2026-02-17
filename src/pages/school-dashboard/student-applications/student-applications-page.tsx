@@ -49,18 +49,16 @@ const StudentApplicationsPage: React.FC = () => {
         }
       />
 
-      <div className="p-6 pt-0">
-        <div className="mb-5 w-full px-1">
-          <Tabs
-            items={tabs}
-            value={activeTab}
-            onChange={handleTabChange}
-            variant="underline"
-            listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
-            lazy={true}
-            searchParamKey="tab"
-          />
-        </div>
+      <div className="mb-5 w-full px-1">
+        <Tabs
+          items={tabs}
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="underline"
+          listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+          lazy={true}
+          searchParamKey="tab"
+        />
       </div>
     </div>
   );
