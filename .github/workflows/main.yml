@@ -28,56 +28,13 @@ jobs:
     - name: Build React app
       run: npm run build
 
-    # 4.5️⃣ Check FTP configuration (fail if missing)
-    - name: Check FTP configuration
-      id: ftp_check
-      shell: bash
-      env:
-        # Prefer the documented FTP_* secrets, but allow common alternate names.
-        # Note: `secrets['NAME']` is valid even if the secret is not defined.
-        FTP_SERVER: ${{ secrets.FTP_SERVER || secrets['SERVER'] || vars.FTP_SERVER }}
-        FTP_USERNAME: ${{ secrets.FTP_USERNAME || secrets['USERNAME'] || vars.FTP_USERNAME }}
-        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD || secrets['PASSWORD'] }}
-        FTP_PATH: ${{ secrets.FTP_PATH || vars.FTP_PATH }}
-      run: |
-        missing=false
-
-        if [ -z "$FTP_SERVER" ]; then
-          echo "::error::Missing FTP server. Set Actions secret FTP_SERVER (or Actions variable FTP_SERVER)."
-          missing=true
-        fi
-
-        if [ -z "$FTP_USERNAME" ]; then
-          echo "::error::Missing FTP username. Set Actions secret FTP_USERNAME (or Actions variable FTP_USERNAME)."
-          missing=true
-        fi
-
-        if [ -z "$FTP_PASSWORD" ]; then
-          echo "::error::Missing FTP password. Set Actions secret FTP_PASSWORD."
-          missing=true
-        fi
-
-        if [ -z "$FTP_PATH" ]; then
-          echo "::error::Missing FTP path. Set Actions secret FTP_PATH (or Actions variable FTP_PATH)."
-          missing=true
-        fi
-
-        if [ "$missing" = true ]; then
-          exit 1
-        fi
-
-        echo "server=$FTP_SERVER" >> "$GITHUB_OUTPUT"
-        echo "username=$FTP_USERNAME" >> "$GITHUB_OUTPUT"
-        echo "password=$FTP_PASSWORD" >> "$GITHUB_OUTPUT"
-        echo "path=$FTP_PATH" >> "$GITHUB_OUTPUT"
-
     # 5️⃣ Deploy build folder to SmarterASP via FTP
     - name: Deploy to SmarterASP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ${{ steps.ftp_check.outputs.server }}
-        username: ${{ steps.ftp_check.outputs.username }}
-        password: ${{ steps.ftp_check.outputs.password }}
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
         local-dir: dist/
-        server-dir: ${{ steps.ftp_check.outputs.path }}/
+        server-dir: ${{ secrets.FTP_PATH }}/
         dangerous-clean-slate: true
