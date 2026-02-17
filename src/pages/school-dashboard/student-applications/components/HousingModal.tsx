@@ -10,9 +10,15 @@ interface HousingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (classroomId: string) => void;
+  isLoading?: boolean;
 }
 
-const HousingModal: React.FC<HousingModalProps> = ({ isOpen, onClose, onConfirm }) => {
+const HousingModal: React.FC<HousingModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  isLoading: externalLoading,
+}) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
 
@@ -100,11 +106,16 @@ const HousingModal: React.FC<HousingModalProps> = ({ isOpen, onClose, onConfirm 
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="success" fullWidth onClick={handleConfirm}>
-            {t('studentApplications.modals.housing')}
-          </Button>
           <Button variant="outline" fullWidth onClick={handleClose}>
             {t('common.cancel')}
+          </Button>
+          <Button
+            variant="success"
+            fullWidth
+            onClick={handleConfirm}
+            disabled={externalLoading || loading}
+          >
+            {externalLoading ? t('common.processing') : t('studentApplications.modals.housing')}
           </Button>
         </div>
       </div>
