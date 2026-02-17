@@ -28,6 +28,8 @@ import useLanguage from '@/hooks/useLanguage';
 import ScheduleStudentAppointmentPopup from '../popups/ScheduleStudentAppointmentPopup';
 import type { ScheduleAppointmentFormProps } from '@/validations/student-applications-validations';
 import { useToast } from '@/shared/context/ToastContext';
+import { createStudentInterview } from '@/services/api/student-interviews/student-interviews.service';
+import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
 
 import AcceptModal from './AcceptModal';
 import EditRequestModal from './EditRequestModal';
@@ -194,25 +196,52 @@ const RegistrationRequestsTable: React.FC = () => {
   };
 
   const handleScheduleSubmit = async (values: ScheduleAppointmentFormProps) => {
+    if (!selectedApplication) return;
+
     try {
       setIsProcessing(true);
-      // TODO: Implement API call when endpoint is available
-      console.log('Schedule appointment:', {
-        applicationId: selectedApplication?.id,
-        ...values,
+
+      const interviewDate = new Date(
+        `${values.appointmentDate}T${values.appointmentTime}:00`
+      ).toISOString();
+
+      const startDate = new Date(`${values.appointmentDate}T${values.appointmentTime}:00`);
+      const startTime = startDate.toISOString();
+
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+      const endTime = endDate.toISOString();
+
+      await createStudentInterview({
+        schoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+        studentId: selectedApplication.studentId,
+        interviewDate,
+        startTime,
+        endTime,
       });
-      // Show success message
+
       showToast({
         message: t('studentApplications.appointmentScheduled'),
         type: 'success',
       });
       setShowSchedulePopup(false);
       setSelectedApplication(null);
+
+      dispatch(
+        fetchStudentApplications({
+          page: pagination.pageIndex,
+          limit: pagination.pageSize,
+          searchTerm: searchTerm || undefined,
+          status: selectedStatus ? Number(selectedStatus) : undefined,
+          educationalStageId: selectedStageId || undefined,
+        })
+      );
     } catch (error) {
       console.error('Failed to schedule appointment:', error);
+      const errorMessage = error instanceof Error ? error.message : t('common.error');
       showToast({
-        message: t('common.error'),
+        message: errorMessage,
         type: 'error',
+        isRaw: error instanceof Error && errorMessage !== t('common.error'),
       });
     } finally {
       setIsProcessing(false);
