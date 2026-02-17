@@ -37,6 +37,7 @@ import type { ValidationErrorResponse } from '@/services/api/config';
 import { useUserForm } from '../hooks/useUserForm';
 import i18n from '@/i18n';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import { formatPhoneForInput, normalizePhoneForApi } from '@/lib/utils/phone-utils';
 
 export default function EditUser() {
   const { t } = useTranslation();
@@ -142,7 +143,7 @@ export default function EditUser() {
       reset({
         fullName: currentUser.fullName || '',
         email: currentUser.email || '',
-        phoneNumber: currentUser.phoneNumber || '',
+        phoneNumber: formatPhoneForInput(currentUser.countryCode, currentUser.phoneNumber),
         roleId: roleId,
         lkCountryId: currentUser.lkCountryId || '',
         schoolBranchId,
@@ -171,6 +172,8 @@ export default function EditUser() {
 
     const formData = form.getValues();
 
+    const normalizedPhone = normalizePhoneForApi(formData.phoneNumber);
+
     try {
       setIsUpdating(true);
       const resultAction = await dispatch(
@@ -179,7 +182,8 @@ export default function EditUser() {
           fullName: formData.fullName.trim(),
           email: formData.email.trim(),
           roleId: formData.roleId,
-          phoneNumber: formData.phoneNumber.trim(),
+          phoneNumber: normalizedPhone.phoneNumber,
+          countryCode: normalizedPhone.countryCode,
           lkCountryId: formData.lkCountryId || '',
           ...(formData.schoolBranchId ? { schoolBranchId: formData.schoolBranchId } : {}),
         })

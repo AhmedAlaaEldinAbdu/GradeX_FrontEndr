@@ -155,7 +155,16 @@ export default function SystemUsers() {
     },
     {
       header: 'rolesManagement.phoneNumber',
-      accessor: (row) => <bdi>{row.phoneNumber || '-'}</bdi>,
+      accessor: (row) => {
+        const phone = row.phoneNumber?.trim();
+        const countryCode = row.countryCode?.trim();
+
+        if (!phone && !countryCode) return <bdi>-</bdi>;
+        if (!countryCode) return <bdi>{phone}</bdi>;
+        if (!phone) return <bdi>{countryCode}</bdi>;
+
+        return <bdi dir="ltr">{`${countryCode} ${phone}`}</bdi>;
+      },
       headerClassName: 'min-w-[150px]',
     },
     {

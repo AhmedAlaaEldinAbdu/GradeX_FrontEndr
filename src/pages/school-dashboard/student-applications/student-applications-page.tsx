@@ -12,16 +12,6 @@ const StudentApplicationsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'applications');
 
-  // TODO: Remove this temporary DEV check when the page is ready
-  if (!import.meta.env.DEV) {
-    return (
-      <div className="py-16 text-center">
-        <h2 className="text-2xl font-bold text-gray-800">طلبات التقديم</h2>
-        <p className="mt-4 text-gray-600">قريباً... ...</p>
-      </div>
-    );
-  }
-
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setSearchParams({ tab });
@@ -59,18 +49,16 @@ const StudentApplicationsPage: React.FC = () => {
         }
       />
 
-      <div className="p-6 pt-0">
-        <div className="mb-5 w-full px-1">
-          <Tabs
-            items={tabs}
-            value={activeTab}
-            onChange={handleTabChange}
-            variant="underline"
-            listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
-            lazy={true}
-            searchParamKey="tab"
-          />
-        </div>
+      <div className="mb-5 w-full px-1">
+        <Tabs
+          items={tabs}
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="underline"
+          listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+          lazy={true}
+          searchParamKey="tab"
+        />
       </div>
     </div>
   );

@@ -93,7 +93,9 @@ export async function assignStudentToClassroom(
   );
 
   if (!response?.data?.isSuccess) {
-    throw new Error(response?.data?.message || 'Failed to assign student to classroom');
+    const firstError = response?.data?.validationErrors?.[0];
+    const errorMessage = typeof firstError === 'string' ? firstError : firstError?.errorMessage || 'Failed to assign student to classroom';
+    throw new Error(errorMessage);
   }
 }
 

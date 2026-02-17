@@ -35,6 +35,7 @@ import { useUserForm, type UserFormData } from '../hooks/useUserForm';
 import i18n from '@/i18n';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { extractErrorMessage } from '@/lib/utils';
+import { normalizePhoneForApi } from '@/lib/utils/phone-utils';
 
 export default function AddUser() {
   const { t } = useTranslation();
@@ -93,12 +94,16 @@ export default function AddUser() {
   const onFormSubmit = async (data: UserFormData) => {
     try {
       setIsCreating(true);
+
+      const normalizedPhone = normalizePhoneForApi(data.phoneNumber);
+
       const resultAction = await dispatch(
         createUser({
           fullName: data.fullName.trim(),
           email: data.email.trim(),
           roleId: data.roleId,
-          phoneNumber: data.phoneNumber.trim(),
+          phoneNumber: normalizedPhone.phoneNumber,
+          countryCode: normalizedPhone.countryCode,
           lkCountryId: data.lkCountryId,
           ...(data.schoolBranchId ? { schoolBranchId: data.schoolBranchId } : {}),
         })
