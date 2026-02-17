@@ -55,11 +55,11 @@ export interface StudentInterviewQueryParams {
 }
 
 export interface CreateStudentInterviewRequest {
-  nameAr: string;
-  nameEn: string;
+  nameAr?: string;
+  nameEn?: string;
   schoolBranchesId: string;
   studentId: string;
-  supervisorId: string;
+  supervisorId?: string;
   interviewDate: string;
   startTime: string;
   endTime: string;
