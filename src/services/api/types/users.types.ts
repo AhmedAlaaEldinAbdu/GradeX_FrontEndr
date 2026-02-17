@@ -13,6 +13,7 @@ export interface User {
   email: string;
   auth0Id: string | null;
   phoneNumber: string;
+  countryCode?: string | null;
   roles: string[];
   roleId?: string; // Role ID for forms
   roleName?: string; // Role name for display
@@ -30,6 +31,7 @@ export interface CreateUserRequest {
   email: string;
   roleId: string;
   phoneNumber: string;
+  countryCode: string;
   lkCountryId: string;
   schoolBranchId?: string;
 }
@@ -40,6 +42,7 @@ export interface UpdateUserRequest {
   email: string;
   roleId: string;
   phoneNumber: string;
+  countryCode: string;
   lkCountryId: string;
   schoolBranchId?: string;
 }
