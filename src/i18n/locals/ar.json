@@ -667,6 +667,7 @@
       "classroomLabel": "الصف الدراسي",
       "studentsInClass": "عدد الطلاب في الفصل",
       "housing": "تسكين",
+      "housingSuccess": "تم تسكين الطالب في الفصل بنجاح",
       "changeAppointmentTitle": "تغيير الموعد",
       "originalAppointment": "الموعد الاساسي",
       "newAppointmentDate": "تاريخ الموعد الجديد",

@@ -668,6 +668,7 @@
       "classroomLabel": "Classroom",
       "studentsInClass": "Number of students in class",
       "housing": "Housing",
+      "housingSuccess": "Student assigned to classroom successfully",
       "changeAppointmentTitle": "Change Appointment",
       "originalAppointment": "Original Appointment",
       "newAppointmentDate": "New Appointment Date",
