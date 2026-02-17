@@ -632,6 +632,7 @@
     "selectTime": "Select time for interview",
     "statusUpdated": "Status updated successfully",
     "appointmentScheduled": "Appointment scheduled successfully",
+    "appointmentChanged": "Appointment changed successfully",
     "interviewName": "Interview Name",
     "supervisor": "Supervisor",
     "status": {
