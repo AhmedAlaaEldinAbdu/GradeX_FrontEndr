@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
@@ -61,6 +61,26 @@ export default function AddUser() {
 
   const currentLang = i18n.language as 'ar' | 'en';
 
+  const schoolBranchOptions = useMemo(() => {
+    return (schools || []).flatMap((school) => {
+      const schoolLabel =
+        currentLang === 'ar'
+          ? school.nameAr || school.name || ''
+          : school.nameEn || school.name || '';
+
+      const branches = Array.isArray((school as any).schoolBranches)
+        ? ((school as any).schoolBranches as Array<{ id: string; city?: string }>)
+        : [];
+
+      return branches
+        .filter((branch) => Boolean(branch?.id))
+        .map((branch) => ({
+          value: branch.id,
+          label: branch.city ? `${schoolLabel} - ${branch.city}` : schoolLabel,
+        }));
+    });
+  }, [schools, currentLang]);
+
   // Initialize form with custom hook
   const { form, validateForm } = useUserForm();
   const {
@@ -105,7 +125,7 @@ export default function AddUser() {
           phoneNumber: normalizedPhone.phoneNumber,
           countryCode: normalizedPhone.countryCode,
           lkCountryId: data.lkCountryId,
-          ...(data.schoolBranchId ? { schoolBranchId: data.schoolBranchId } : {}),
+          ...(data.schoolBrancheId ? { schoolBrancheId: data.schoolBrancheId } : {}),
         })
       );
 
@@ -328,26 +348,20 @@ export default function AddUser() {
 
           {/* School Branch Field (Optional) */}
           <div className="col-span-1">
-            <FormField label={t('rolesManagement.school')} htmlFor="schoolBranchId">
+            <FormField label={t('rolesManagement.school')} htmlFor="schoolBrancheId">
               <Controller
-                name="schoolBranchId"
+                name="schoolBrancheId"
                 control={control}
                 render={({ field }) => (
                   <CustomSelect
                     value={field.value || ''}
                     onChange={(value) => {
                       field.onChange(value);
-                      if (errors.schoolBranchId) {
-                        trigger('schoolBranchId');
+                      if (errors.schoolBrancheId) {
+                        trigger('schoolBrancheId');
                       }
                     }}
-                    options={schools.map((school) => ({
-                      value: school.id,
-                      label:
-                        currentLang === 'ar'
-                          ? school.nameAr || school.name || ''
-                          : school.nameEn || school.name || '',
-                    }))}
+                    options={schoolBranchOptions}
                     placeholder={
                       isLoadingSchools ? t('common.loading') : t('rolesManagement.selectSchool')
                     }
