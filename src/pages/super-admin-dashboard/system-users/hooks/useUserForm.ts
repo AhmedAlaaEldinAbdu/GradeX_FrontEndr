@@ -11,7 +11,7 @@ export interface UserFormData {
   phoneNumber: string;
   roleId: string;
   lkCountryId: string;
-  schoolBranchId: string;
+  schoolBrancheId: string;
 }
 
 export const initialUserFormData: UserFormData = {
@@ -20,7 +20,7 @@ export const initialUserFormData: UserFormData = {
   phoneNumber: '',
   roleId: '',
   lkCountryId: '',
-  schoolBranchId: '',
+  schoolBrancheId: '',
 };
 
 interface UseUserFormReturn {

@@ -386,7 +386,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             className={`flex w-full items-center justify-between rounded-lg px-4 py-3 transition-colors duration-200 ${
               isAnySubItemActive
                 ? 'linear-green font-medium text-white'
-                : 'text-black-700 hover:bg-gray-100'
+                : 'text-black-700 hover:bg-green-100'
             }`}
             style={{ borderRadius: isRTL ? '32px 0 0 32px' : '0 32px 32px 0' }}
           >
@@ -450,7 +450,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                       `flex items-center gap-3 px-4 py-3 ${menuTextSizeClass} transition-colors duration-200 ${
                         isActive || isSubItemActive
                           ? `bg-green-100 font-medium text-green-800 ${isLastSubItem ? 'rounded-b-[32px]' : ''}`
-                          : 'hover:bg-green-75 text-green-700'
+                          : 'hover:bg-green-100 text-green-500'
                       }`
                     }
                   >
@@ -512,7 +512,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       </div>
 
       {/* Navigation Menu */}
-      <nav className={`scrollbar-thin flex-1 overflow-y-auto ${isRTL ? 'pl-4' : 'pr-4'}`}>
+      <nav className={`scrollbar-thin flex-1 overflow-y-auto pt-1 ${isRTL ? 'pl-4' : 'pr-4'}`}>
         {menuItems.map(renderMenuItem)}
       </nav>
     </aside>

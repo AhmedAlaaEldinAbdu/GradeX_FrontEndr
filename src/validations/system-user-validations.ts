@@ -24,7 +24,7 @@ export const userValidationSchema = yup.object({
 
   lkCountryId: yup.string().required('rolesManagement.validation.countryRequired'),
 
-  schoolBranchId: yup.string().optional(),
+  schoolBrancheId: yup.string().optional(),
 });
 
 /**
@@ -49,7 +49,7 @@ export const userEditValidationSchema = yup.object({
 
   roleId: yup.string().required('rolesManagement.validation.roleRequired'),
 
-  schoolBranchId: yup.string().optional(),
+  schoolBrancheId: yup.string().optional(),
 });
 
 /**

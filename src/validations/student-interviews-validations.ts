@@ -34,7 +34,9 @@ export const StudentInterviewApiSchema = object({
   studentId: string()
     .required('common.validation.required')
     .typeError('common.validation.required'),
-  supervisorId: string().notRequired().default(''),
+  supervisorId: string()
+    .transform((value) => (typeof value === 'string' && value.trim() === '' ? undefined : value))
+    .notRequired(),
   interviewDate: string()
     .required('interviews.validation.interviewDateRequired')
     .typeError('interviews.validation.interviewDateRequired'),

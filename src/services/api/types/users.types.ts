@@ -20,6 +20,7 @@ export interface User {
   lkCountryId?: string; // Country ID for forms
   countryName?: string; // Country name for display
   schoolBranchId?: string; // School branch ID (optional)
+  schoolBrancheId?: string; // School branch ID (optional) - backend spelling
 }
 
 // ============================================================================
@@ -34,6 +35,7 @@ export interface CreateUserRequest {
   countryCode: string;
   lkCountryId: string;
   schoolBranchId?: string;
+  schoolBrancheId?: string;
 }
 
 export interface UpdateUserRequest {
@@ -45,6 +47,7 @@ export interface UpdateUserRequest {
   countryCode: string;
   lkCountryId: string;
   schoolBranchId?: string;
+  schoolBrancheId?: string;
 }
 
 export interface DeleteUserRequest {
