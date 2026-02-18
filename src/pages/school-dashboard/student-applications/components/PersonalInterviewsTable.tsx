@@ -22,6 +22,8 @@ import type { StudentInterview } from '@/services/api/types/student-interviews.t
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
 import useLanguage from '@/hooks/useLanguage';
 import { useToast } from '@/shared/context/ToastContext';
+import { updateStudentInterview } from '@/services/api/student-interviews/student-interviews.service';
+import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
 
 import AcceptModal from './AcceptModal';
 import NotPassedModal from './NotPassedModal';
@@ -176,11 +178,55 @@ const PersonalInterviewsTable: React.FC = () => {
     }
   };
 
-  const handleChangeAppointmentConfirm = (newDate: string, newTime: string) => {
-    console.log('Change appointment confirmed', selectedInterview?.id, newDate, newTime);
-    setChangeAppointmentModalOpen(false);
-    setSelectedInterview(null);
-    // TODO: Call API
+  const handleChangeAppointmentConfirm = async (newDate: string, newTime: string) => {
+    if (!selectedInterview) return;
+
+    try {
+      setIsProcessing(true);
+
+      const interviewDate = new Date(`${newDate}T${newTime}:00`).toISOString();
+      const startDate = new Date(`${newDate}T${newTime}:00`);
+      const startTime = startDate.toISOString();
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+      const endTime = endDate.toISOString();
+
+      await updateStudentInterview(selectedInterview.id, {
+        schoolBranchesId: selectedInterview.schoolBranchesId || STATIC_SCHOOL_BRANCH_ID,
+        studentId: selectedInterview.studentId,
+        interviewDate,
+        startTime,
+        endTime,
+      });
+
+      showToast({
+        message: t('studentApplications.appointmentChanged'),
+        type: 'success',
+      });
+      setChangeAppointmentModalOpen(false);
+      setSelectedInterview(null);
+
+      dispatch(
+        fetchStudentInterviews({
+          page: pagination.pageIndex,
+          limit: pagination.pageSize,
+          filters: {
+            studentName: searchTerm || undefined,
+            gradeId: selectedGradeId || undefined,
+            date: selectedDate || undefined,
+          },
+        })
+      );
+    } catch (error) {
+      console.error('Failed to change appointment:', error);
+      const errorMessage = error instanceof Error ? error.message : t('common.error');
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: error instanceof Error && errorMessage !== t('common.error'),
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const gradeOptions = educationalStages.map((stage) => ({

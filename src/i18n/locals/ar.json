@@ -631,6 +631,7 @@
     "selectTime": "اختر وقت للمقابلة",
     "statusUpdated": "تم تحديث الحالة بنجاح",
     "appointmentScheduled": "تم تحديد الموعد بنجاح",
+    "appointmentChanged": "تم تغيير الموعد بنجاح",
     "interviewName": "اسم المقابلة",
     "supervisor": "المشرف",
     "status": {
