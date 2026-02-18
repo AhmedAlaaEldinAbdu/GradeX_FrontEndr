@@ -392,34 +392,6 @@ export default function EditUser() {
             </FormField>
           </div>
 
-          {/* School Branch Field (Optional) */}
-          <div className="col-span-1">
-            <FormField label={t('rolesManagement.school')} htmlFor="schoolBrancheId">
-              <Controller
-                name="schoolBrancheId"
-                control={control}
-                render={({ field }) => (
-                  <CustomSelect
-                    value={field.value || ''}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      if (errors.schoolBrancheId) {
-                        trigger('schoolBrancheId');
-                      }
-                    }}
-                    options={schoolBranchOptions}
-                    placeholder={
-                      isLoadingSchools ? t('common.loading') : t('rolesManagement.selectSchool')
-                    }
-                    disabled={isLoadingSchools}
-                    maxHeight="200px"
-                    isMulti={false}
-                  />
-                )}
-              />
-            </FormField>
-          </div>
-
           {/* Country Field */}
           <div className="col-span-1">
             <FormField
@@ -453,6 +425,34 @@ export default function EditUser() {
                     }
                     disabled={isLoadingCountries}
                     maxHeight="200px"
+                  />
+                )}
+              />
+            </FormField>
+          </div>
+
+          {/* School Branch Field (Optional) */}
+          <div className="col-span-1">
+            <FormField label={t('rolesManagement.school')} htmlFor="schoolBrancheId">
+              <Controller
+                name="schoolBrancheId"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value || ''}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      if (errors.schoolBrancheId) {
+                        trigger('schoolBrancheId');
+                      }
+                    }}
+                    options={schoolBranchOptions}
+                    placeholder={
+                      isLoadingSchools ? t('common.loading') : t('rolesManagement.selectSchool')
+                    }
+                    disabled={isLoadingSchools}
+                    maxHeight="200px"
+                    isMulti={false}
                   />
                 )}
               />
