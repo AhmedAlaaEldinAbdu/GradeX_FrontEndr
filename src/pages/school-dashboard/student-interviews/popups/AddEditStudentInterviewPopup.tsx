@@ -58,7 +58,7 @@ export default function AddEditStudentInterviewPopup({
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<StudentInterviewApiProps>({
-    resolver: yupResolver(StudentInterviewApiSchema),
+    resolver: yupResolver(StudentInterviewApiSchema) as any,
     defaultValues: {
       nameAr: '',
       nameEn: '',

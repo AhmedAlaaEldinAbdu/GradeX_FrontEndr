@@ -245,7 +245,8 @@ export default function StudentInterviewsCalendar() {
 
   const handleEditorSubmit = async (values: StudentInterviewApiProps) => {
     try {
-      const supervisorId = values.supervisorId ?? '';
+      const { supervisorId: _ignoredSupervisorId, ...restValues } = values;
+      const supervisorId = _ignoredSupervisorId?.trim() || undefined;
       const interviewDate = values.interviewDate ?? '';
       const startTime = values.startTime ?? '';
       const endTime = values.endTime ?? '';
@@ -263,8 +264,8 @@ export default function StudentInterviewsCalendar() {
       }
 
       const payload = {
-        ...values,
-        supervisorId,
+        ...restValues,
+        ...(supervisorId ? { supervisorId } : {}),
         interviewDate: interviewDateIso,
         startTime: startIso,
         endTime: endIso ?? startIso,
