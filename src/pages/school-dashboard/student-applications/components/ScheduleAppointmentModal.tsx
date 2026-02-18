@@ -97,11 +97,11 @@ const ScheduleAppointmentModal: React.FC<ScheduleAppointmentModalProps> = ({
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="success" fullWidth onClick={handleConfirm}>
-            {t('studentApplications.modals.schedule')}
-          </Button>
           <Button variant="outline" fullWidth onClick={handleClose}>
             {t('common.cancel')}
+          </Button>
+          <Button variant="success" fullWidth onClick={handleConfirm}>
+            {t('studentApplications.modals.schedule')}
           </Button>
         </div>
       </div>

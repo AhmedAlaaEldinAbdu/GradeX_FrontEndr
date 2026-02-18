@@ -118,7 +118,7 @@ const PersonalInterviewsTable: React.FC = () => {
   // Modal confirm handlers
   const handleAcceptConfirm = async () => {
     if (!selectedInterview) return;
-    const targetId = selectedInterview.applicationId || selectedInterview.studentId;
+    const targetId = selectedInterview.studentId;
     if (!targetId) return;
 
     try {
@@ -149,7 +149,7 @@ const PersonalInterviewsTable: React.FC = () => {
 
   const handleNotPassedConfirm = async () => {
     if (!selectedInterview) return;
-    const targetId = selectedInterview.applicationId || selectedInterview.studentId;
+    const targetId = selectedInterview.studentId;
     if (!targetId) return;
 
     try {
