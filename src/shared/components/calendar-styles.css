@@ -220,6 +220,9 @@
   text-align: center;
   width: 38%;
 }
+.shared-calendar-event.rbc-event-allday {
+  width: 18%;
+}
 
 .shared-calendar-event:hover {
   background-color: rgba(95, 168, 150, 0.1);
