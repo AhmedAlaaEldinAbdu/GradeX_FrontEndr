@@ -190,10 +190,32 @@ export default function StudentInterviewsCalendar() {
       return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
     }
 
-    const normalizedTime = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
-    const combined = `${dateStr}T${normalizedTime}`;
-    const parsed = new Date(combined);
-    return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+    const [yearStr, monthStr, dayStr] = dateStr.split('-');
+    const [hourStr, minuteStr, secondStr = '00'] = (timeStr.length === 5
+      ? `${timeStr}:00`
+      : timeStr
+    ).split(':');
+
+    const year = Number(yearStr);
+    const monthIndex = Number(monthStr) - 1;
+    const day = Number(dayStr);
+    const hour = Number(hourStr);
+    const minute = Number(minuteStr);
+    const second = Number(secondStr);
+
+    if (
+      Number.isNaN(year) ||
+      Number.isNaN(monthIndex) ||
+      Number.isNaN(day) ||
+      Number.isNaN(hour) ||
+      Number.isNaN(minute) ||
+      Number.isNaN(second)
+    ) {
+      return undefined;
+    }
+
+    const utcDate = new Date(Date.UTC(year, monthIndex, day, hour, minute, second));
+    return utcDate.toISOString();
   };
 
   const handleOpenEditPopup = (event: CalendarStudentInterview) => {
