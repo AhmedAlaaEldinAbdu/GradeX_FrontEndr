@@ -116,6 +116,7 @@
     "details": "Details",
     "rejectionReason": "Rejection Reason",
     "enterRejectionReason": "Enter the reason for rejection",
+    "rejectionReasonRequired": "Rejection reason is required",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
