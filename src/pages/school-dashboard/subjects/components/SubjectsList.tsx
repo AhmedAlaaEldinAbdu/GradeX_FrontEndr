@@ -203,12 +203,22 @@ export default function SubjectsList() {
     if (!selectedSubjectId) return;
 
     try {
-      await dispatch(deleteSubjectAction(selectedSubjectId)).unwrap();
+      await dispatch(deleteSubjectAction(selectedSubjectId))
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess === true || res === selectedSubjectId) {
+            showToast({
+              message: 'subjects.subjectDeletedSuccessfully',
+              type: 'success',
+            });
+          } else {
+            showToast({
+              message: 'common.errorOccurred',
+              type: 'error',
+            });
+          }
+        });
       setShowDeletePopup(false);
-      showToast({
-        message: 'subjects.subjectDeletedSuccessfully',
-        type: 'success',
-      });
     } catch (error) {
       setShowDeletePopup(false);
       const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
