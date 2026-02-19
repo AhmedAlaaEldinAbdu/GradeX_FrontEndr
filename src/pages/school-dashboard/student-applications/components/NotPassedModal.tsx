@@ -101,11 +101,11 @@ const NotPassedModal: React.FC<NotPassedModalProps> = ({
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="danger" fullWidth onClick={handleConfirm} loading={isProcessing}>
-            {t('studentApplications.actions.notPassed')}
-          </Button>
           <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
             {t('common.cancel')}
+          </Button>
+          <Button variant="danger" fullWidth onClick={handleConfirm} loading={isProcessing}>
+            {t('studentApplications.actions.notPassed')}
           </Button>
         </div>
       </div>

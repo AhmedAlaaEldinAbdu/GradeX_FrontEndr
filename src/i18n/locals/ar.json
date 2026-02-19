@@ -116,6 +116,7 @@
     "details": "التفاصيل",
     "rejectionReason": "سبب الرفض",
     "enterRejectionReason": "أدخل سبب الرفض",
+    "rejectionReasonRequired": "سبب الرفض مطلوب",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",

@@ -78,11 +78,11 @@ const AcceptModal: React.FC<AcceptModalProps> = ({
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
-            {t('common.confirm')}
-          </Button>
           <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
             {t('common.cancel')}
+          </Button>
+          <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
+            {t('common.confirm')}
           </Button>
         </div>
       </div>

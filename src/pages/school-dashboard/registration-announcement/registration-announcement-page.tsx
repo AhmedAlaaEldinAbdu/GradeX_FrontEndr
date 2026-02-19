@@ -13,16 +13,6 @@ const RegistrationAnnouncementPage: React.FC = () => {
     { label: t('registrationAnnouncement.title') },
   ];
 
-  // TODO: Remove this temporary DEV check when the page is ready
-  if (!import.meta.env.DEV) {
-    return (
-      <div className="py-16 text-center">
-        <h2 className="text-2xl font-bold text-gray-800">إعلان التسجيل</h2>
-        <p className="mt-4 text-gray-600">قريباً...</p>
-      </div>
-    );
-  }
-
   return (
     <div>
       {/* Breadcrumb */}

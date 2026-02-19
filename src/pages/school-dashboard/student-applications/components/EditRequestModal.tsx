@@ -73,11 +73,11 @@ const EditRequestModal: React.FC<EditRequestModalProps> = ({
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
-            {t('common.send')}
-          </Button>
           <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
             {t('common.cancel')}
+          </Button>
+          <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
+            {t('common.send')}
           </Button>
         </div>
       </div>
