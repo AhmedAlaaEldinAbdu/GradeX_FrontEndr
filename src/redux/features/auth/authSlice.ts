@@ -78,6 +78,14 @@ export const login = createAsyncThunk(
         throw new Error('Failed to decode user data from token');
       }
 
+      // Persist school branch id coming from login response (not always present in JWT)
+      const branchIdFromResponse = response.schoolBrancheId ?? null;
+      if (branchIdFromResponse) {
+        (userData as any).schoolBrancheId = branchIdFromResponse;
+        // Backward compatibility: lots of screens still read `schoolBranchId`
+        (userData as any).schoolBranchId = branchIdFromResponse;
+      }
+
       // Store token and user data
       const rememberMe = credentials.rememberMe ?? false;
       tokenManager.setToken(response.token, rememberMe);
