@@ -34,7 +34,7 @@ export default function EditTuitionFeePage() {
   const { tuitionFeesDetails } = useAppSelector((state) => state.tuitionFees);
 
   const schoolBranchId =
-    tokenManager.getUserData()?.schoolBranchId ?? '41b6a93d-947c-4d58-959a-08de1c988710';
+    tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
     { label: t('sidebar.fees'), path: '/fees' },
