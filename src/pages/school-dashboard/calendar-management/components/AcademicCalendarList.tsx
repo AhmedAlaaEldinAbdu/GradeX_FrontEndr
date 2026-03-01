@@ -45,8 +45,8 @@ export default function AcademicCalendarList() {
     (state) => state.academicCalendar
   );
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
-
-  const DummySchoolBranchId = '41b6a93d-947c-4d58-959a-08de1c988710';
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -62,8 +62,10 @@ export default function AcademicCalendarList() {
 
   useEffect(() => {
     if (educationalStages.length > 0) return;
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId: DummySchoolBranchId }));
-  }, [dispatch, educationalStages.length, DummySchoolBranchId]);
+    dispatch(
+      getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId: schoolBranchId })
+    );
+  }, [dispatch, educationalStages.length, schoolBranchId]);
 
   useEffect(() => {
     dispatch(
@@ -71,7 +73,7 @@ export default function AcademicCalendarList() {
         page,
         limit,
         filters: {
-          schoolBranchId: DummySchoolBranchId,
+          schoolBranchId: schoolBranchId,
           searchTerm: searchTerm.trim() || undefined,
           startDate: startDate || undefined,
           endDate: endDate || undefined,
@@ -277,11 +279,11 @@ export default function AcademicCalendarList() {
             open={showDeletePopup}
             message="academicCalendar.confirmDelete"
             itemName={
-              (tableRows.find((row) => row.id === selectedId)
+              tableRows.find((row) => row.id === selectedId)
                 ? currentLang === 'ar'
                   ? tableRows.find((row) => row.id === selectedId)!.stageNameAr
                   : tableRows.find((row) => row.id === selectedId)!.stageNameEn
-                : '')
+                : ''
             }
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
