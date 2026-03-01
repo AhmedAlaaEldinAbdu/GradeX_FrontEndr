@@ -27,6 +27,16 @@ const RoleBasedRouter: React.FC = () => {
   const dashboardType = useSelector(selectDashboardType);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
+  const isSuperAdminRole = (role: unknown): boolean => {
+    const normalized = String(role ?? '')
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_-]+/g, '');
+
+    // Handles: Super-Admin, SuperAdmin, super-admin, superAdmin, Super Admin
+    return normalized === 'superadmin';
+  };
+
   logger.debug('RoleBasedRouter render', {
     isAuthenticated,
     dashboardType,
@@ -54,21 +64,12 @@ const RoleBasedRouter: React.FC = () => {
   }
 
   // Super Admin Routes
-  if (dashboardType === UserRole.SUPER_ADMIN) {
+  if (dashboardType === UserRole.SUPER_ADMIN || isSuperAdminRole(dashboardType)) {
     return <SuperAdminRouter />;
   }
 
-  // School Admin Routes
-  if (dashboardType === UserRole.SCHOOL_ADMIN) {
-    return <SchoolRouter />;
-  }
-
-  // Default fallback
-  return (
-    <Routes>
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
-  );
+  // Any non–Super Admin role should land on School routes
+  return <SchoolRouter />;
 };
 
 export default RoleBasedRouter;
