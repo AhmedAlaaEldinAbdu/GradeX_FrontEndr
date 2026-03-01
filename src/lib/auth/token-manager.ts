@@ -17,7 +17,9 @@ export interface StoredUserData {
   role: string;
   avatar?: string;
   isAuthenticated: boolean;
-  schoolBranchId: string | null;
+  // Backend uses `schoolBrancheId` (typo). Keep both for compatibility.
+  schoolBrancheId?: string | null;
+  schoolBranchId?: string | null;
 }
 
 /**
@@ -67,15 +69,19 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
     // Normalize role to match our constants
     // Backend sends: "SuperAdmin" -> we need: "super-admin"
     const normalizeRole = (role: string): string => {
-      const roleMap: Record<string, string> = {
-        SuperAdmin: 'super-admin',
-        SchoolAdmin: 'school-admin',
-        superadmin: 'super-admin',
-        schooladmin: 'school-admin',
-        'super-admin': 'super-admin',
-        'school-admin': 'school-admin',
-      };
-      return roleMap[role] || 'super-admin'; // Default to super-admin if unknown
+      const normalized = String(role ?? '')
+        .trim()
+        .toLowerCase()
+        .replace(/[\s_-]+/g, '');
+
+      // Handles: Super-Admin, SuperAdmin, super-admin, superAdmin, Super Admin
+      if (normalized === 'superadmin') return 'super-admin';
+
+      // Handles: School-Admin, SchoolAdmin, school-admin, schoolAdmin, School Admin
+      if (normalized === 'schooladmin') return 'school-admin';
+
+      // Safer default: if it's not explicitly Super Admin, treat as School Admin.
+      return 'school-admin';
     };
 
     // Extract user data from JWT claims with mock fallbacks
@@ -92,18 +98,25 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
     const userRole = normalizeRole(rawRole);
 
     const DummySchoolBranchId = '471D89C1-61A8-4B13-D682-08DE1657ABAD'; // remove later
-    
+
+    const branchId =
+      payload.schoolBrancheId ||
+      payload.SchoolBrancheId ||
+      payload.schoolBranchId ||
+      payload.SchoolBranchId ||
+      DummySchoolBranchId;
+
     const userData: StoredUserData = {
       id: userId,
       name: userName,
       email: userEmail,
       role: userRole,
       isAuthenticated: true,
-      schoolBranchId: payload.SchoolBranchId || DummySchoolBranchId,
+      schoolBrancheId: branchId,
+      schoolBranchId: branchId,
     };
 
     logger.success('Decoded user data from JWT', userData);
-
     return userData;
   } catch (error) {
     logger.error('Error decoding JWT token', error);
