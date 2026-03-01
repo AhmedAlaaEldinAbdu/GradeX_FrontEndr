@@ -152,7 +152,8 @@ export default function JobAnnouncementsList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
-  const DummySchoolBranchId = '471D89C1-61A8-4B13-D682-08DE1657ABAD';
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
@@ -180,7 +181,7 @@ export default function JobAnnouncementsList() {
 
   useEffect(() => {
     const filtersPayload = buildFiltersPayload({
-      schoolBranchId: DummySchoolBranchId,
+      schoolBranchId: schoolBranchId || '',
       searchTerm,
       selectedCountryId,
       selectedStageId,
@@ -706,12 +707,22 @@ export default function JobAnnouncementsList() {
     if (!selectedJobId) return;
 
     try {
-      await dispatch(deleteJobAdvertisment(selectedJobId)).unwrap();
+      await dispatch(deleteJobAdvertisment(selectedJobId))
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess === true || res === selectedJobId) {
+            showToast({
+              message: 'jobAnnouncement.announcementDeletedSuccessfully',
+              type: 'success',
+            });
+          } else {
+            showToast({
+              message: 'common.errorOccurred',
+              type: 'error',
+            });
+          }
+        });
       setShowDeletePopup(false);
-      showToast({
-        type: 'success',
-        message: 'jobAnnouncement.announcementDeletedSuccessfully',
-      });
     } catch (error) {
       showToast({
         type: 'error',
@@ -721,7 +732,7 @@ export default function JobAnnouncementsList() {
     }
 
     const filtersPayload = buildFiltersPayload({
-      schoolBranchId: DummySchoolBranchId,
+      schoolBranchId: schoolBranchId,
       searchTerm,
       selectedCountryId,
       selectedStageId,

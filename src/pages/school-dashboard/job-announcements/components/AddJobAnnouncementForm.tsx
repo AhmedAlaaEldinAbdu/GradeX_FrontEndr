@@ -206,7 +206,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const DummySchoolBranchId = '471D89C1-61A8-4B13-D682-08DE1657ABAD';
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
     type: 'success' | 'error';
@@ -294,7 +295,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     dispatch(fetchLanguageLevels());
     dispatch(fetchJobBenefits());
     dispatch(fetchSubjects({ page: 1, limit: 10000 }));
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
+    dispatch(
+      getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId: schoolBranchId })
+    );
   }, [dispatch]);
 
   // Helper function to populate form with job data
@@ -659,7 +662,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const rawPayload: CreateJobAdvertismentRequest = {
       name: values.name,
       nameEn: values.nameEn,
-      schoolBranchId: DummySchoolBranchId, // Temporary static value for school branch ID
+      schoolBranchId: schoolBranchId,
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,
       jobDescription: values.jobDescriptionAr ?? '',
