@@ -43,7 +43,6 @@ import type { Classroom } from '@/services/api/types/classrooms.types';
 import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { addMinutesToTime } from '@/lib/utils/date-utils';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance';
 
 // Period time slots for mapping API times to periodIndex
 // Each slot has start and end times in 24h format (HH:mm)
@@ -630,8 +629,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     Map<string, { endTime: string; duration: number }>
   >(new Map());
 
-  // TODO: Replace with actual school branch ID from user context/auth state
-  const schoolBranchId = STATIC_SCHOOL_BRANCH_ID;
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   // Fetch Academic Systems (النظام التعليمي)
   const fetchAcademicSystemsData = useCallback(async () => {

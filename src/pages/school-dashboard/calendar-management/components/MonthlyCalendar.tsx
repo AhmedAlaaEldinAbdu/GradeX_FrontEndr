@@ -97,7 +97,8 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
-  const DummySchoolBranchId = '41b6a93d-947c-4d58-959a-08de1c988710';
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   const {
     events: apiEvents,
@@ -134,7 +135,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       getEducationalStages({
         pageIndex: 1,
         pageSize: EDUCATIONAL_STAGE_LOOKUP_LIMIT,
-        schoolBranchId: DummySchoolBranchId,
+        schoolBranchId: schoolBranchId,
       })
     )
       .unwrap()
@@ -160,7 +161,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
           fetchClassrooms({
             page: 1,
             limit: CLASSROOM_LOOKUP_LIMIT,
-            filters: { schoolBranchId: DummySchoolBranchId },
+            filters: { schoolBranchId: schoolBranchId },
           })
         ).unwrap();
       } catch (error) {
@@ -178,7 +179,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     return () => {
       isMounted = false;
     };
-  }, [dispatch, showToast, DummySchoolBranchId]);
+  }, [dispatch, showToast, schoolBranchId]);
 
   const buildFilters = useCallback((): MonthlyCalendarFilters => {
     const filters: MonthlyCalendarFilters = {};
@@ -294,7 +295,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         : MonthlyCalendarDuration.SpecificTime,
       startTime: event.startTime ?? '',
       endTime: event.endTime ?? '',
-      schoolBranchesId: event.schoolBranchesId || DummySchoolBranchId,
+      schoolBranchesId: event.schoolBranchesId || schoolBranchId,
     }),
     []
   );
@@ -340,7 +341,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         : MonthlyCalendarDuration.SpecificTime,
       startTime: startDateTime,
       endTime: endDateTime,
-      schoolBranchesId: values.schoolBranchesId || DummySchoolBranchId,
+      schoolBranchesId: values.schoolBranchesId || schoolBranchId,
       grades: values.grades || [],
       classRomms: values.classRomms || [],
     };
@@ -583,7 +584,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         mode={editorMode}
         gradeOptions={stageOptions}
         classroomOptions={classroomOptions}
-        schoolBranchId={DummySchoolBranchId}
+        schoolBranchId={schoolBranchId}
         gradeOptionsLoading={isEducationalStagesLoading}
         classroomOptionsLoading={isClassroomsLoading}
       />
