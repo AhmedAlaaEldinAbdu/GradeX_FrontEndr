@@ -34,6 +34,8 @@ export default function EditClassroom() {
     type: 'success' | 'error';
     message: string;
   }>({ show: false, type: 'success', message: '' });
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   // Redux state
   const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
@@ -67,7 +69,7 @@ export default function EditClassroom() {
 
   useEffect(() => {
     dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000 }));
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
     if (id) {
       dispatch(fetchClassroomById(id));
     }

@@ -22,7 +22,6 @@ import { fetchEducationalStages } from '@/services/api/educational-stages/educat
 import { getBooks } from '@/services/api/books/books.service';
 import { getClassrooms } from '@/services/api/classrooms/classrooms.service';
 import { lessonsApiService } from '@/services/api/lessons/lessons.service';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance';
 import { useLanguage } from '@/hooks/useLanguage';
 
 // Types
@@ -109,6 +108,8 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { validateStartTime, validateEndTime } = useLessonValidations();
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   // Get date and time from URL params if available (for add mode)
   const dateParam = searchParams.get('date');
@@ -208,7 +209,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
       const response = await getTeachers({
         PageIndex: 1,
         PageSize: 100,
-        SchoolBranchId: STATIC_SCHOOL_BRANCH_ID,
+        SchoolBranchId: schoolBranchId,
       });
       setTeachers(response.data?.teachers || []);
     } catch (error) {
@@ -378,7 +379,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         startTime: data.startTime || '08:00',
         endTime: data.endTime || '09:00',
         isHomeworkForAllStudents: sendTo === 'all',
-        schoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+        schoolBranchesId: schoolBranchId,
       };
 
       // If sending to specific students, add lessonsStudent array

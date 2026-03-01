@@ -33,6 +33,8 @@ export default function AddClassroom() {
     type: 'success' | 'error';
     message: string;
   }>({ show: false, type: 'success', message: '' });
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   // Redux state
   const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
@@ -43,7 +45,7 @@ export default function AddClassroom() {
 
   useEffect(() => {
     dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000 }));
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
   }, [dispatch]);
 
   const {

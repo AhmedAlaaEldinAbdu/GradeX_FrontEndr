@@ -26,6 +26,8 @@ export default function ClassroomsList() {
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   const formatDate = (value?: string | null) => {
     if (!value) return '-';
@@ -70,6 +72,7 @@ export default function ClassroomsList() {
       getEducationalStages({
         pageIndex: 1,
         pageSize: 10000,
+        schoolBranchId: schoolBranchId,
       })
     );
   }, [dispatch]);
@@ -83,6 +86,7 @@ export default function ClassroomsList() {
           name: searchTerm || undefined,
           academicSystemId: selectedAcademicSystemId || undefined,
           gradeId: selectedGradeId || undefined,
+          schoolBranchId: schoolBranchId || undefined,
         },
       })
     );
@@ -104,6 +108,7 @@ export default function ClassroomsList() {
           name: searchTerm || undefined,
           academicSystemId: selectedAcademicSystemId || undefined,
           gradeId: selectedGradeId || undefined,
+          schoolBranchId: schoolBranchId || undefined,
         },
       })
     );
@@ -175,7 +180,9 @@ export default function ClassroomsList() {
     },
     {
       header: 'grades.studentCount',
-      accessor: (row) => <span>{typeof row.studentNumber === 'number' ? row.studentNumber : '-'}</span>,
+      accessor: (row) => (
+        <span>{typeof row.studentNumber === 'number' ? row.studentNumber : '-'}</span>
+      ),
       headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
@@ -183,7 +190,11 @@ export default function ClassroomsList() {
       header: 'grades.note',
       accessor: (row) => {
         const noteValue = currentLang === 'ar' ? row.note : row.noteEn;
-        return <span>{noteValue?.trim() ? noteValue : currentLang === 'ar' ? 'لا يوجد' : 'No note'}</span>;
+        return (
+          <span>
+            {noteValue?.trim() ? noteValue : currentLang === 'ar' ? 'لا يوجد' : 'No note'}
+          </span>
+        );
       },
       headerClassName: 'min-w-[220px]',
     },
@@ -295,12 +306,22 @@ export default function ClassroomsList() {
     if (!selectedClassroomId) return;
 
     try {
-      await dispatch(deleteClassroomAction(selectedClassroomId)).unwrap();
+      await dispatch(deleteClassroomAction(selectedClassroomId))
+        .unwrap()
+        .then((res: any) => {
+          if (res === selectedClassroomId || res.isSuccess === true) {
+            showToast({
+              message: 'grades.gradeDeletedSuccessfully',
+              type: 'success',
+            });
+          } else {
+            showToast({
+              message: 'common.errorOccurred',
+              type: 'error',
+            });
+          }
+        });
       setShowDeletePopup(false);
-      showToast({
-        message: 'grades.gradeDeletedSuccessfully',
-        type: 'success',
-      });
     } catch (error) {
       showToast({
         message: 'common.errorOccurred',
@@ -338,12 +359,12 @@ export default function ClassroomsList() {
           <DeletePopup
             open={showDeletePopup}
             message="grades.confirmDeleteGrade"
-            itemName={
-              (() => {
-                const selected = classrooms.find((c) => c.id === selectedClassroomId);
-                return currentLang === 'ar' ? selected?.name ?? '' : selected?.nameEn ?? selected?.name ?? '';
-              })()
-            }
+            itemName={(() => {
+              const selected = classrooms.find((c) => c.id === selectedClassroomId);
+              return currentLang === 'ar'
+                ? (selected?.name ?? '')
+                : (selected?.nameEn ?? selected?.name ?? '');
+            })()}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
