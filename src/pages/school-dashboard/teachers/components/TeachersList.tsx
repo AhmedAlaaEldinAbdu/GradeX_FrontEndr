@@ -25,14 +25,13 @@ import ProfileImage from '@gradex/assets/images/profile.png';
 import WhatsAppIcon from '@gradex/assets/icons/WhatsApp.svg';
 import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
 
-// Static school branch ID
-const SCHOOL_BRANCH_ID = 'D18C45EA-EEEE-4A41-D35E-08DE1D686083';
-
 export default function TeachersList() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -58,15 +57,17 @@ export default function TeachersList() {
 
   // Fetch filter data on mount
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 100 }));
-    dispatch(fetchClassrooms({ page: 1, limit: 100 }));
+    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(
+      fetchClassrooms({ page: 1, limit: 100, filters: { schoolBranchId: schoolBranchId } })
+    );
     dispatch(fetchSchoolStages());
   }, [dispatch]);
 
   useEffect(() => {
     dispatch(
       fetchTeacherAssignmentList({
-        schoolBranchesId: SCHOOL_BRANCH_ID,
+        schoolBranchesId: schoolBranchId,
         page: pagination.page,
         limit: pagination.limit,
       })
@@ -76,7 +77,7 @@ export default function TeachersList() {
   const handlePageChange = (page: number) => {
     dispatch(
       fetchTeacherAssignmentList({
-        schoolBranchesId: SCHOOL_BRANCH_ID,
+        schoolBranchesId: schoolBranchId,
         page,
         limit: pagination.limit,
       })
@@ -389,7 +390,7 @@ export default function TeachersList() {
             });
             dispatch(
               fetchTeacherAssignmentList({
-                schoolBranchesId: SCHOOL_BRANCH_ID,
+                schoolBranchesId: schoolBranchId,
                 page: pagination.page,
                 limit: pagination.limit,
               })

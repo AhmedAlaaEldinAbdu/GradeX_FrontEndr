@@ -30,6 +30,8 @@ export default function StudentManagement() {
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   const students = useAppSelector((state) => state.students.students);
   const pagination = useAppSelector((state) => state.students.pagination);
@@ -52,6 +54,9 @@ export default function StudentManagement() {
       fetchClassrooms({
         page: 1,
         limit: 1000,
+        filters: {
+          schoolBranchId: schoolBranchId || undefined,
+        },
       })
     );
   }, [dispatch]);
