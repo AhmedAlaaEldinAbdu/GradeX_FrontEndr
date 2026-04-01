@@ -87,6 +87,7 @@ export default function AddClassroom() {
         studentNumber: classroom.maxStudents,
         note: classroom.note || '',
         noteEn: classroom.noteEn || '',
+        ...(schoolBranchId && { schoolBranchId }),
       }));
 
       // Append DtosJson FIRST as a single JSON array string

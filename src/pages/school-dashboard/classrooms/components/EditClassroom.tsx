@@ -115,6 +115,7 @@ export default function EditClassroom() {
       formData.append('note', data.note || '');
       formData.append('noteEn', data.noteEn || '');
       formData.append('studentNumber', data.maxStudents.toString());
+      schoolBranchId && formData.append('schoolBranchId', schoolBranchId || '');
 
       if (uploadedFile) {
         formData.append('image', uploadedFile);
