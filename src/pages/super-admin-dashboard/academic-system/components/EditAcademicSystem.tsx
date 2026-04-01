@@ -26,6 +26,7 @@ import AddSystemTypePopup from '../popups/AddSystemTypePopup';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { Button, Loading } from '@/shared/components/components';
 import CustomImage from '@/shared/components/CustomImage';
+import { selectIsUpdatingAcademicSystem } from '@/redux/features/academic-system';
 
 export default function EditAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -59,6 +60,8 @@ export default function EditAcademicSystem() {
   const isLoadingSubSystems = useAppSelector((state) => {
     return state.academicSubSystems.isLoading;
   });
+
+  const isUpdating = useAppSelector(selectIsUpdatingAcademicSystem);
 
   const {
     control,
@@ -296,12 +299,12 @@ export default function EditAcademicSystem() {
                 type="button"
                 variant="outline"
                 onClick={() => navigate(-1)}
-                disabled={isSubmitting}
+                disabled={isUpdating}
               >
                 {t('common.cancel')}
               </Button>
-              <Button type="submit" variant="primary" disabled={isSubmitting}>
-                {isSubmitting ? t('common.saving') : t('common.edit')}
+              <Button type="submit" variant="primary" disabled={isUpdating}>
+                {isUpdating ? t('common.saving') : t('common.edit')}
               </Button>
             </div>
           </form>
