@@ -282,6 +282,8 @@
       "academicSystemNameRequired": "Academic system name is required",
       "academicSystemNameArInvalid": "Academic system name must contain only Arabic letters",
       "academicSystemNameEnInvalid": "Academic system name must contain only English letters",
+      "educationalStageNameArInvalid": "Educational stage name must contain only Arabic letters",
+      "educationalStageNameEnInvalid": "Educational stage name must contain only English letters",
       "countryRequired": "Country is required",
       "educationalStagesNameRequired": "Educational stage name is required",
       "academicSystemRequired": "Educational system is required",
