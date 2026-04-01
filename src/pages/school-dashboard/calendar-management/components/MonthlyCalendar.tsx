@@ -189,6 +189,10 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     if (stageFilter) {
       filters.grade = stageFilter;
     }
+    if (schoolBranchId) {
+      filters.schoolBranchId = schoolBranchId;
+    }
+
     return filters;
   }, [searchTerm, stageFilter]);
 

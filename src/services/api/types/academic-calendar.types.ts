@@ -40,6 +40,12 @@ export interface AcademicCalendarEntity {
   id: string;
   schoolBrancheId?: string;
   schoolBranchId?: string;
+
+  // Newer backend fields
+  gradeId?: string;
+  gradeNameAr?: string | null;
+  gradeNameEn?: string | null;
+
   lkSchoolStageId: string;
   lkSchoolStageNameAr?: string | null;
   lkSchoolStageNameEn?: string | null;

@@ -11,6 +11,7 @@ import CalendarEmptyIcon from '@/assets/icons/calendar.svg';
 import Input from '@/shared/components/Input';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { tokenManager } from '@/lib/auth/token-manager';
 import {
   deleteAcademicCalendar,
   fetchAcademicCalendars,
@@ -19,8 +20,8 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 
 type AcademicCalendarRow = {
   id: string;
-  stageNameAr: string;
-  stageNameEn: string;
+  gradeNameAr: string;
+  gradeNameEn: string;
   startDate: string; // yyyy-mm-dd
   endDate: string; // yyyy-mm-dd
   weeksCount: number;
@@ -45,8 +46,8 @@ export default function AcademicCalendarList() {
     (state) => state.academicCalendar
   );
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const userData = tokenManager.getUserData();
+  const schoolBranchId = userData?.schoolBrancheId ?? userData?.schoolBranchId ?? undefined;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -62,9 +63,7 @@ export default function AcademicCalendarList() {
 
   useEffect(() => {
     if (educationalStages.length > 0) return;
-    dispatch(
-      getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId: schoolBranchId })
-    );
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
   }, [dispatch, educationalStages.length, schoolBranchId]);
 
   useEffect(() => {
@@ -82,7 +81,7 @@ export default function AcademicCalendarList() {
     );
   }, [dispatch, page, limit, searchTerm, startDate, endDate]);
 
-  const stageNameById = useMemo(() => {
+  const gradeNameById = useMemo(() => {
     const map = new Map<string, { ar: string; en: string }>();
     educationalStages.forEach((stage) => {
       map.set(stage.id, { ar: stage.nameAr, en: stage.nameEn || stage.nameAr });
@@ -92,20 +91,21 @@ export default function AcademicCalendarList() {
 
   const tableRows = useMemo<AcademicCalendarRow[]>(() => {
     return (calendars || []).map((calendar) => {
-      const stage = stageNameById.get(calendar.lkSchoolStageId);
-      const apiStageNameAr = calendar.lkSchoolStageNameAr || undefined;
-      const apiStageNameEn = calendar.lkSchoolStageNameEn || undefined;
+      const gradeId = calendar.gradeId ?? calendar.lkSchoolStageId;
+      const grade = gradeNameById.get(gradeId);
+      const apiGradeNameAr = (calendar.gradeNameAr ?? calendar.lkSchoolStageNameAr) || undefined;
+      const apiGradeNameEn = (calendar.gradeNameEn ?? calendar.lkSchoolStageNameEn) || undefined;
 
       return {
         id: calendar.id,
-        stageNameAr: apiStageNameAr || stage?.ar || '-',
-        stageNameEn: apiStageNameEn || stage?.en || '-',
+        gradeNameAr: apiGradeNameAr || grade?.ar || '-',
+        gradeNameEn: apiGradeNameEn || grade?.en || '-',
         startDate: calendar.studyStartDate?.slice(0, 10) || '',
         endDate: calendar.studyEndDate?.slice(0, 10) || '',
         weeksCount: calendar.weeksCount || 0,
       };
     });
-  }, [calendars, stageNameById]);
+  }, [calendars, gradeNameById]);
 
   const shouldShowEmptyState = tableRows.length === 0 && !hasActiveFilters && !isLoading;
 
@@ -120,7 +120,7 @@ export default function AcademicCalendarList() {
       header: 'academicCalendar.table.educationalStages',
       accessor: (row) => (
         <span className="text-gray-700">
-          {currentLang === 'ar' ? row.stageNameAr : row.stageNameEn}
+          {currentLang === 'ar' ? row.gradeNameAr : row.gradeNameEn}
         </span>
       ),
       headerClassName: 'min-w-[220px]',
@@ -281,8 +281,8 @@ export default function AcademicCalendarList() {
             itemName={
               tableRows.find((row) => row.id === selectedId)
                 ? currentLang === 'ar'
-                  ? tableRows.find((row) => row.id === selectedId)!.stageNameAr
-                  : tableRows.find((row) => row.id === selectedId)!.stageNameEn
+                  ? tableRows.find((row) => row.id === selectedId)!.gradeNameAr
+                  : tableRows.find((row) => row.id === selectedId)!.gradeNameEn
                 : ''
             }
             onConfirm={handleDeleteConfirm}
