@@ -5,8 +5,9 @@ import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import CustomImage from '@/shared/components/CustomImage';
-import { studentsApiService } from '@/services/api/students/students.service';
 import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { fetchStudents } from '@/redux/features/students/studentsSlice';
 
 export interface Student {
   id: string;
@@ -30,6 +31,7 @@ export default function SelectStudentsPopup({
   classroomId,
 }: SelectStudentsPopupProps) {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState('');
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,12 +43,16 @@ export default function SelectStudentsPopup({
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await studentsApiService.getStudents({
-        PageIndex: 1,
-        PageSize: 100,
-        ClassroomId: classroomId,
-      });
-      const studentDtos = response.data?.studentDto || [];
+      const response = await dispatch(
+        fetchStudents({
+          page: 1,
+          limit: 100,
+          filters: {
+            classroomId,
+          },
+        })
+      ).unwrap();
+      const studentDtos = response.data || [];
       const mappedStudents: Student[] = studentDtos.map((s: StudentDto) => ({
         id: s.id,
         name: getStudentFullName(s),
@@ -58,14 +64,14 @@ export default function SelectStudentsPopup({
     } finally {
       setIsLoading(false);
     }
-  }, [classroomId]);
+  }, [classroomId, dispatch]);
 
   // Fetch students when popup opens
   useEffect(() => {
     if (isOpen) {
-      fetchStudents();
+      fetchStudentsData();
     }
-  }, [isOpen, fetchStudents]);
+  }, [isOpen, fetchStudentsData]);
 
   // Reset selected students when initialSelectedStudents changes
   useEffect(() => {

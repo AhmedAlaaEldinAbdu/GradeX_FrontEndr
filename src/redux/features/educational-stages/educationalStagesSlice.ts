@@ -60,6 +60,21 @@ export const getEducationalStages = createAsyncThunk<
   }
 });
 
+export const getEducationalStagesBySubSystemId = createAsyncThunk<
+  EducationalStagesListValue,
+  { academicSubSystemId: string; params?: Partial<EducationalStageParams> }
+>('educationalStages/fetchBySubSystemId', async ({ academicSubSystemId, params }, { rejectWithValue }) => {
+  try {
+    const response = await EducationalStagesApiService.fetchEducationalStagesBySubSystemId(
+      academicSubSystemId,
+      params
+    );
+    return response;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 export const getEducationalStageBySubsystemId = createAsyncThunk<EducationalStageResponse, string>(
   'educationalStages/fetchById',
   async (id, { rejectWithValue }) => {
@@ -156,6 +171,40 @@ const educationalStagesSlice = createSlice({
         }
       )
       .addCase(getEducationalStages.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(getEducationalStagesBySubSystemId.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        getEducationalStagesBySubSystemId.fulfilled,
+        (state, action: PayloadAction<EducationalStagesListValue>) => {
+          state.isLoading = false;
+          if (action.payload && action.payload.gradeDtos) {
+            state.educationalStages = Array.isArray(action.payload.gradeDtos)
+              ? action.payload.gradeDtos
+              : [];
+            state.pagination = {
+              pageIndex: action.payload.pageIndex || 1,
+              pageSize: action.payload.pageSize || 10,
+              totalItems: action.payload.totalItems || 0,
+              totalPages: action.payload.totalPages || 0,
+            };
+          } else {
+            state.educationalStages = [];
+            state.pagination = {
+              pageIndex: 1,
+              pageSize: 10,
+              totalItems: 0,
+              totalPages: 0,
+            };
+          }
+        }
+      )
+      .addCase(getEducationalStagesBySubSystemId.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

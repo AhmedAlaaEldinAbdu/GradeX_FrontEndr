@@ -145,6 +145,19 @@ export const fetchStudents = createAsyncThunk<FetchStudentsResponse, FetchStuden
   }
 );
 
+// Fetch student by id without mutating slice state/loading flags (useful for background operations)
+export const fetchStudentByIdSilent = createAsyncThunk<StudentDto, string>(
+  'students/fetchStudentByIdSilent',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await studentsApiService.getStudentById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 export const deleteStudent = createAsyncThunk<string, string>(
   'students/deleteStudent',
   async (id, { rejectWithValue }) => {
