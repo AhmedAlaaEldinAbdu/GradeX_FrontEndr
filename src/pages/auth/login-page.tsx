@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
         rememberMe: rememberMe,
       });
 
-      await dispatch(
+      const result = await dispatch(
         login({
           email: data.email,
           password: data.password,
@@ -56,7 +56,11 @@ const LoginPage: React.FC = () => {
 
       logger.success('Login successful, navigating to dashboard...');
 
-      navigate('/dashboard');
+      if (result.user.schoolBrancheId == null) {
+        navigate('/super-admin/dashboard');
+      } else {
+        navigate('/school/dashboard');
+      }
     } catch (error) {
       setLoginError(
         typeof error === 'string'

@@ -86,6 +86,13 @@ export const login = createAsyncThunk(
         (userData as any).schoolBranchId = branchIdFromResponse;
       }
 
+      // Derive role from schoolBrancheId: null = SuperAdmin, non-null = SchoolAdmin
+      const derivedRole: UserRoleType = branchIdFromResponse
+        ? UserRole.SCHOOL_ADMIN
+        : UserRole.SUPER_ADMIN;
+
+      userData.role = derivedRole;
+
       // Store token and user data
       const rememberMe = credentials.rememberMe ?? false;
       tokenManager.setToken(response.token, rememberMe);
@@ -106,9 +113,9 @@ export const login = createAsyncThunk(
           id: Number(userData.id) || 0,
           name: userData.name,
           email: userData.email,
-          // role: userData.role as UserRoleType,
-          role: UserRole.SCHOOL_ADMIN as UserRoleType, // TODO: Remove this line after backend integration
+          role: derivedRole,
           isAuthenticated: true,
+          schoolBrancheId: branchIdFromResponse,
         },
         token: response.token,
       };
