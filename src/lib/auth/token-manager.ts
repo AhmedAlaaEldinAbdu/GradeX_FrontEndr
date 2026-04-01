@@ -97,14 +97,12 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       'user@gradex.com';
     const userRole = normalizeRole(rawRole);
 
-    const DummySchoolBranchId = '471D89C1-61A8-4B13-D682-08DE1657ABAD'; // remove later
-
     const branchId =
       payload.schoolBrancheId ||
       payload.SchoolBrancheId ||
       payload.schoolBranchId ||
       payload.SchoolBranchId ||
-      DummySchoolBranchId;
+      null;
 
     const userData: StoredUserData = {
       id: userId,

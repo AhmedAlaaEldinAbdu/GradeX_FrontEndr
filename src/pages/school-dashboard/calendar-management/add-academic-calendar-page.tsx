@@ -17,6 +17,7 @@ import type {
   AcademicCalendarTimedSchedule,
   CreateAcademicCalendarRequest,
 } from '@/services/api/types/academic-calendar.types';
+import { tokenManager } from '@gradex/lib/auth/token-manager';
 
 const normalizeDateToApi = (value: string) => {
   if (!value) return value;
@@ -87,7 +88,8 @@ export default function AddAcademicCalendarPage() {
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
-  const DummySchoolBranchId = '41b6a93d-947c-4d58-959a-08de1c988710';
+  const schoolBranchId =
+    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
     { label: t('sidebar.calendarManagement') },
@@ -102,10 +104,18 @@ export default function AddAcademicCalendarPage() {
 
       <AcademicCalendarForm
         mode="add"
-        schoolBranchId={DummySchoolBranchId}
+        schoolBranchId={schoolBranchId}
         onCancel={() => navigate('/calendar/academic')}
         onSubmit={async (values: AcademicCalendarFormValues) => {
-          const requests = mapFormValuesToCreateRequests(values, DummySchoolBranchId);
+          if (!schoolBranchId) {
+            showToast({
+              message: 'common.errorOccurred',
+              type: 'error',
+            });
+            return;
+          }
+
+          const requests = mapFormValuesToCreateRequests(values, schoolBranchId);
 
           if (requests.length === 0) {
             showToast({

@@ -26,6 +26,7 @@ import type {
   CreateAcademicCalendarRequest,
   UpdateAcademicCalendarRequest,
 } from '@/services/api/types/academic-calendar.types';
+import { tokenManager } from '@gradex/lib/auth/token-manager';
 
 type DayKey = AcademicCalendarScheduleItem['days'][number];
 
@@ -199,7 +200,8 @@ export default function EditAcademicCalendarPage() {
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
-  const DummySchoolBranchId = '41b6a93d-947c-4d58-959a-08de1c988710';
+  const schoolBranchId =
+    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const { currentCalendar, isLoading } = useAppSelector((state) => state.academicCalendar);
 
@@ -236,15 +238,23 @@ export default function EditAcademicCalendarPage() {
         <AcademicCalendarForm
           key={currentCalendar.id}
           mode="edit"
-          schoolBranchId={DummySchoolBranchId}
+          schoolBranchId={schoolBranchId}
           onCancel={() => navigate('/calendar/academic')}
           initialValues={initialValues}
           onSubmit={async (values: AcademicCalendarFormValues) => {
             try {
+              if (!schoolBranchId) {
+                showToast({
+                  message: 'common.errorOccurred',
+                  type: 'error',
+                });
+                return;
+              }
+
               const stageId = values.educationalStageId || currentCalendar.lkSchoolStageId;
               const req = mapFormValuesToUpdateRequest(
                 values,
-                DummySchoolBranchId,
+                schoolBranchId,
                 stageId,
                 currentCalendar.id
               );
