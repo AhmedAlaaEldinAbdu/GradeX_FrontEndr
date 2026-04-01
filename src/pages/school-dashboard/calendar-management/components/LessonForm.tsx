@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import Card from '@/shared/components/Card';
@@ -15,21 +15,18 @@ import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import CustomImage from '@/shared/components/CustomImage';
 
-// API Services
-import { getSubjects } from '@/services/api/subjects/subjects.service';
-import { getTeachers } from '@/services/api/teachers/teachers.service';
-import { fetchEducationalStages } from '@/services/api/educational-stages/educational-stages.service';
-import { getBooks } from '@/services/api/books/books.service';
-import { getClassrooms } from '@/services/api/classrooms/classrooms.service';
-import { lessonsApiService } from '@/services/api/lessons/lessons.service';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
+import { fetchTeachers as fetchTeachersThunk } from '@/redux/features/teachers/teachersSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchBooks } from '@/redux/features/books/booksSlice';
+import { fetchClassrooms as fetchClassroomsThunk } from '@/redux/features/classrooms/classroomsSlice';
+import { createLesson, updateLessonWithAttachments } from '@/redux/features/lessons/lessonsSlice';
 import { useLanguage } from '@/hooks/useLanguage';
+import { tokenManager } from '@/lib/auth/token-manager';
 
 // Types
-import type { Subject } from '@/types/subjects';
-import type { Teacher } from '@/types/teachers';
-import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
-import type { Book, BookGrade } from '@/types/books';
-import type { Classroom } from '@/services/api/types/classrooms.types';
+import type { Book } from '@/types/books';
 import type { CreateLessonRequest, Lesson } from '@/services/api/types/lessons.types';
 import { useLessonValidations } from '@/validations/lessons-validations';
 
@@ -106,10 +103,11 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const { validateStartTime, validateEndTime } = useLessonValidations();
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const userData = tokenManager.getUserData();
+  const schoolBranchId = userData?.schoolBrancheId ?? userData?.schoolBranchId ?? undefined;
 
   // Get date and time from URL params if available (for add mode)
   const dateParam = searchParams.get('date');
@@ -146,19 +144,18 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   );
   const [isSelectStudentsPopupOpen, setIsSelectStudentsPopupOpen] = useState(false);
 
-  // API Data States
-  const [materials, setMaterials] = useState<Subject[]>([]);
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [grades, setGrades] = useState<EducationalStageResponse[]>([]);
-  const [bookGrades, setBookGrades] = useState<BookGrade[]>([]);
-  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-
-  // Loading States
-  const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
-  const [isLoadingTeachers, setIsLoadingTeachers] = useState(false);
-  const [isLoadingGrades, setIsLoadingGrades] = useState(false);
-  const [isLoadingBooks, setIsLoadingBooks] = useState(false);
-  const [isLoadingClassrooms, setIsLoadingClassrooms] = useState(false);
+  // Redux state (lookup lists + loading)
+  const { subjects: materials, isLoading: isLoadingMaterials } = useAppSelector(
+    (state) => state.subjects
+  );
+  const { teachers, isLoading: isLoadingTeachers } = useAppSelector((state) => state.teachers);
+  const { educationalStages: grades, isLoading: isLoadingGrades } = useAppSelector(
+    (state) => state.educationalStages
+  );
+  const { bookGrades, isLoading: isLoadingBooks } = useAppSelector((state) => state.books);
+  const { classrooms, isLoading: isLoadingClassrooms } = useAppSelector(
+    (state) => state.classrooms
+  );
 
   const {
     control,
@@ -189,109 +186,58 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const watchedGradeId = watch('gradeId');
   const watchedMaterialId = watch('materialId');
 
-  // Fetch Materials (Subjects)
-  const fetchMaterials = useCallback(async () => {
-    setIsLoadingMaterials(true);
-    try {
-      const response = await getSubjects({ PageIndex: 1, PageSize: 100 });
-      setMaterials(response.data?.materialDto || []);
-    } catch (error) {
-      console.error('Failed to fetch materials:', error);
-    } finally {
-      setIsLoadingMaterials(false);
-    }
-  }, []);
-
-  // Fetch Teachers
-  const fetchTeachers = useCallback(async () => {
-    setIsLoadingTeachers(true);
-    try {
-      const response = await getTeachers({
-        PageIndex: 1,
-        PageSize: 100,
-        SchoolBranchId: schoolBranchId,
-      });
-      setTeachers(response.data?.teachers || []);
-    } catch (error) {
-      console.error('Failed to fetch teachers:', error);
-    } finally {
-      setIsLoadingTeachers(false);
-    }
-  }, []);
-
-  // Fetch Grades
-  const fetchGrades = useCallback(async () => {
-    setIsLoadingGrades(true);
-    try {
-      const response = await fetchEducationalStages({ pageIndex: 1, pageSize: 100 });
-      setGrades(response?.gradeDtos || []);
-    } catch (error) {
-      console.error('Failed to fetch grades:', error);
-    } finally {
-      setIsLoadingGrades(false);
-    }
-  }, []);
-
-  // Fetch Books - depends on materialId and gradeId
-  const fetchBooksData = useCallback(async (materialId: string, gradeId: string) => {
-    if (!materialId || !gradeId) {
-      setBookGrades([]);
-      return;
-    }
-    setIsLoadingBooks(true);
-    try {
-      const response = await getBooks({ MaterialId: materialId, GradeId: gradeId });
-      setBookGrades(response.data?.bookGradeDto || []);
-    } catch (error) {
-      console.error('Failed to fetch books:', error);
-    } finally {
-      setIsLoadingBooks(false);
-    }
-  }, []);
-
-  // Fetch Classrooms - depends on gradeId
-  const fetchClassroomsData = useCallback(async (gradeId: string) => {
-    if (!gradeId) {
-      setClassrooms([]);
-      return;
-    }
-    setIsLoadingClassrooms(true);
-    try {
-      const response = await getClassrooms({ gradeId: gradeId });
-      setClassrooms(response.data?.classroomDto || []);
-    } catch (error) {
-      console.error('Failed to fetch classrooms:', error);
-    } finally {
-      setIsLoadingClassrooms(false);
-    }
-  }, []);
-
   // Initial data fetches
   useEffect(() => {
-    fetchMaterials();
-    fetchTeachers();
-    fetchGrades();
-  }, [fetchMaterials, fetchTeachers, fetchGrades]);
+    dispatch(fetchSubjects({ page: 1, limit: 100 }));
+    dispatch(
+      fetchTeachersThunk({
+        page: 1,
+        limit: 100,
+        filters: schoolBranchId ? { schoolBranchId } : {},
+      })
+    );
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 100,
+      })
+    );
+  }, [dispatch, schoolBranchId]);
 
   // Fetch books when material or grade changes
   useEffect(() => {
     if (watchedMaterialId && watchedGradeId) {
-      fetchBooksData(watchedMaterialId, watchedGradeId);
+      dispatch(
+        fetchBooks({
+          page: 1,
+          limit: 100,
+          filters: {
+            materialId: watchedMaterialId,
+            gradeId: watchedGradeId,
+          },
+        })
+      );
     } else {
-      setBookGrades([]);
       setValue('bookId', '');
     }
-  }, [watchedMaterialId, watchedGradeId, fetchBooksData, setValue]);
+  }, [dispatch, watchedMaterialId, watchedGradeId, setValue]);
 
   // Fetch classrooms when grade changes
   useEffect(() => {
     if (watchedGradeId) {
-      fetchClassroomsData(watchedGradeId);
+      dispatch(
+        fetchClassroomsThunk({
+          page: 1,
+          limit: 100,
+          filters: {
+            gradeId: watchedGradeId,
+          },
+        })
+      );
     } else {
-      setClassrooms([]);
       setValue('classroomId', '');
     }
-  }, [watchedGradeId, fetchClassroomsData, setValue]);
+  }, [dispatch, watchedGradeId, setValue]);
 
   // Build options for selects
   const materialOptions = useMemo(() => {
@@ -363,6 +309,15 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
 
   const onSubmit = async (data: LessonFormData) => {
     try {
+      if (!schoolBranchId) {
+        setShowPopupMessage({
+          show: true,
+          type: 'error',
+          message: t('common.errorOccurred'),
+        });
+        return;
+      }
+
       const request: CreateLessonRequest = {
         materialId: data.materialId,
         teacherId: data.teacherId,
@@ -395,12 +350,14 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
       }
 
       if (mode === 'add') {
-        await lessonsApiService.createLesson(request, attachmentFiles);
+        await dispatch(createLesson({ data: request, attachmentFiles })).unwrap();
       } else if (normalizedInitialData?.id) {
-        await lessonsApiService.updateLesson(
-          { ...request, id: normalizedInitialData.id },
-          attachmentFiles
-        );
+        await dispatch(
+          updateLessonWithAttachments({
+            data: { ...request, id: normalizedInitialData.id },
+            attachmentFiles,
+          })
+        ).unwrap();
       }
 
       setShowPopupMessage({

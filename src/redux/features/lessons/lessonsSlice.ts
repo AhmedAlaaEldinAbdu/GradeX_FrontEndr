@@ -4,9 +4,11 @@ import { lessonsApiService } from '@/services/api/lessons/lessons.service';
 import type {
   Lesson,
   LessonsQueryParams,
+  CreateLessonRequest,
   UpdateLessonRequest,
 } from '@/services/api/types/lessons.types';
 import { addMinutesToTime } from '@/lib/utils/date-utils';
+import type { ApiResponseModel } from '@/services/api';
 
 export interface LessonsFilters {
   searchTerm?: string;
@@ -102,6 +104,18 @@ export const fetchLessons = createAsyncThunk<FetchLessonsResponse, FetchLessonsP
   }
 );
 
+export const createLesson = createAsyncThunk<
+  ApiResponseModel<null>,
+  { data: CreateLessonRequest; attachmentFiles?: File[] }
+>('lessons/createLesson', async ({ data, attachmentFiles }, { rejectWithValue }) => {
+  try {
+    const response = await lessonsApiService.createLesson(data, attachmentFiles);
+    return response;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 export const fetchLessonById = createAsyncThunk<Lesson, string>(
   'lessons/fetchLessonById',
   async (id, { rejectWithValue }) => {
@@ -113,6 +127,43 @@ export const fetchLessonById = createAsyncThunk<Lesson, string>(
     }
   }
 );
+
+// Fetch a lesson without mutating slice state/loading flags (useful for background operations)
+export const fetchLessonByIdSilent = createAsyncThunk<Lesson, string>(
+  'lessons/fetchLessonByIdSilent',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await lessonsApiService.getLessonById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const updateLesson = createAsyncThunk<ApiResponseModel<null>, UpdateLessonRequest>(
+  'lessons/updateLesson',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await lessonsApiService.updateLesson(data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const updateLessonWithAttachments = createAsyncThunk<
+  ApiResponseModel<null>,
+  { data: UpdateLessonRequest; attachmentFiles?: File[] }
+>('lessons/updateLessonWithAttachments', async ({ data, attachmentFiles }, { rejectWithValue }) => {
+  try {
+    const response = await lessonsApiService.updateLesson(data, attachmentFiles);
+    return response;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const deleteLessonById = createAsyncThunk<string, string>(
   'lessons/deleteLesson',
@@ -233,6 +284,20 @@ const lessonsSlice = createSlice({
         state.error = action.payload as string;
       });
 
+    // Update lesson
+    builder
+      .addCase(updateLesson.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(updateLesson.fulfilled, (state) => {
+        state.isUpdating = false;
+      })
+      .addCase(updateLesson.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.error = action.payload as string;
+      });
+
     // Delete lesson
     builder
       .addCase(deleteLessonById.pending, (state) => {
@@ -245,6 +310,34 @@ const lessonsSlice = createSlice({
       })
       .addCase(deleteLessonById.rejected, (state, action) => {
         state.isDeleting = false;
+        state.error = action.payload as string;
+      });
+
+    // Create lesson
+    builder
+      .addCase(createLesson.pending, (state) => {
+        state.isCreating = true;
+        state.error = null;
+      })
+      .addCase(createLesson.fulfilled, (state) => {
+        state.isCreating = false;
+      })
+      .addCase(createLesson.rejected, (state, action) => {
+        state.isCreating = false;
+        state.error = action.payload as string;
+      });
+
+    // Update lesson (with attachments)
+    builder
+      .addCase(updateLessonWithAttachments.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(updateLessonWithAttachments.fulfilled, (state) => {
+        state.isUpdating = false;
+      })
+      .addCase(updateLessonWithAttachments.rejected, (state, action) => {
+        state.isUpdating = false;
         state.error = action.payload as string;
       });
 

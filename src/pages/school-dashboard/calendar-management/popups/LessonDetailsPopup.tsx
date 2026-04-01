@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
 import type { ScheduleLesson } from '@/shared/components/WeeklyScheduleCalendar';
 import type { Lesson } from '@/services/api/types/lessons.types';
-import { lessonsApiService } from '@/services/api/lessons/lessons.service';
-import { studentsApiService } from '@/services/api/students/students.service';
 import type { StudentDto } from '@/services/api/types/students.types';
 import { getStudentFullName } from '@/services/api/types/students.types';
 import { formatTimeDisplay, formatDateDisplay } from '@/lib/utils';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { fetchLessonByIdSilent } from '@/redux/features/lessons/lessonsSlice';
+import { fetchStudentByIdSilent } from '@/redux/features/students/studentsSlice';
 
 interface LessonDetailsPopupProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface LessonDetailsPopupProps {
 
 export default function LessonDetailsPopup({ isOpen, onClose, lesson }: LessonDetailsPopupProps) {
   const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
   const [lessonDetails, setLessonDetails] = useState<Lesson | null>(null);
   const [firstStudent, setFirstStudent] = useState<StudentDto | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,35 +34,36 @@ export default function LessonDetailsPopup({ isOpen, onClose, lesson }: LessonDe
       setError(null);
       setFirstStudent(null);
 
-      lessonsApiService
-        .getLessonById(lesson.id)
-        .then(async (details) => {
+      (async () => {
+        try {
+          const details = await dispatch(fetchLessonByIdSilent(lesson.id)).unwrap();
           setLessonDetails(details);
 
           // Fetch first student details if there are students assigned
           if (details.lessonsStudent && details.lessonsStudent.length > 0) {
             const firstStudentId = details.lessonsStudent[0].studentId;
             try {
-              const studentDetails = await studentsApiService.getStudentById(firstStudentId);
+              const studentDetails = await dispatch(
+                fetchStudentByIdSilent(firstStudentId)
+              ).unwrap();
               setFirstStudent(studentDetails);
             } catch {
               console.warn('Failed to fetch student details');
             }
           }
-        })
-        .catch((err) => {
-          setError(err?.message || t('common.error'));
-        })
-        .finally(() => {
+        } catch (err) {
+          setError((err as { message?: string })?.message || t('common.error'));
+        } finally {
           setIsLoading(false);
-        });
+        }
+      })();
     } else if (!isOpen) {
       // Reset when closed
       setLessonDetails(null);
       setFirstStudent(null);
       setError(null);
     }
-  }, [isOpen, lesson?.id, t]);
+  }, [dispatch, isOpen, lesson?.id, t]);
 
   if (!lesson) return null;
 

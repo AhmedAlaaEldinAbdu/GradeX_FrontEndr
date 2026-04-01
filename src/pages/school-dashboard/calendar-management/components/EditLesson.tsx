@@ -1,12 +1,14 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import LessonForm from './LessonForm';
-import { lessonsApiService } from '@/services/api/lessons/lessons.service';
 import type { Lesson } from '@/services/api/types/lessons.types';
 import Loading from '@/shared/components/Loading';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { fetchLessonByIdSilent } from '@/redux/features/lessons/lessonsSlice';
 
 export default function EditLesson() {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
   const [lessonData, setLessonData] = useState<Lesson | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export default function EditLesson() {
       try {
         setIsLoading(true);
         setError(null);
-        const lesson = await lessonsApiService.getLessonById(id);
+        const lesson = await dispatch(fetchLessonByIdSilent(id)).unwrap();
         setLessonData(lesson);
       } catch (err) {
         console.error('Failed to fetch lesson:', err);
@@ -32,7 +34,7 @@ export default function EditLesson() {
     };
 
     fetchLesson();
-  }, [id]);
+  }, [dispatch, id]);
 
   if (isLoading) {
     return (
