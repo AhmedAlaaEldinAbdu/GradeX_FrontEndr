@@ -16,11 +16,19 @@ import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchLessons,
+  fetchLessonByIdSilent,
+  updateLesson,
   deleteLessonById,
   recoverAllLessons,
 } from '@/redux/features/lessons/lessonsSlice';
 import { fetchMonthlyCalendarEvents } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import { fetchAcademicCalendarsForWeek } from '@/redux/features/academic-calendar/academicCalendarSlice';
+import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import {
+  getEducationalStages,
+  getEducationalStagesBySubSystemId,
+} from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import type { Lesson } from '@/services/api/types/lessons.types';
 import type { MonthlyCalendarEvent } from '@/services/api/types/monthly-calendar.types';
 import type {
@@ -31,18 +39,9 @@ import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import {
-  fetchEducationalStages,
-  fetchEducationalStagesBySubSystemId,
-} from '@/services/api/educational-stages/educational-stages.service';
-import { getClassrooms } from '@/services/api/classrooms/classrooms.service';
-import { getAcademicSystem } from '@/services/api/academic-system/academic-system.service';
-import { lessonsApiService } from '@/services/api/lessons/lessons.service';
-import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
-import type { Classroom } from '@/services/api/types/classrooms.types';
-import type { AcademicSubSystemResponse } from '@/services/api/types/academic-system.types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { addMinutesToTime } from '@/lib/utils/date-utils';
+import { tokenManager } from '@/lib/auth/token-manager';
 
 // Period time slots for mapping API times to periodIndex
 // Each slot has start and end times in 24h format (HH:mm)
@@ -601,15 +600,15 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const [stage, setStage] = useState('');
   const [grade, setGrade] = useState('');
 
-  // API Data States for filters
-  const [academicSystems, setAcademicSystems] = useState<AcademicSubSystemResponse[]>([]);
-  const [stages, setStages] = useState<EducationalStageResponse[]>([]);
-  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-
-  // Loading States for filters
-  const [isLoadingAcademicSystems, setIsLoadingAcademicSystems] = useState(false);
-  const [isLoadingStages, setIsLoadingStages] = useState(false);
-  const [isLoadingClassrooms, setIsLoadingClassrooms] = useState(false);
+  // Redux state for filter data
+  const { academicSystems: academicSystemsList, isLoading: isLoadingAcademicSystems } =
+    useAppSelector((state) => state.academicSystems);
+  const { educationalStages: stagesList, isLoading: isLoadingStages } = useAppSelector(
+    (state) => state.educationalStages
+  );
+  const { classrooms: classroomsList, isLoading: isLoadingClassrooms } = useAppSelector(
+    (state) => state.classrooms
+  );
 
   // Current week start date (Saturday)
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
@@ -629,80 +628,40 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     Map<string, { endTime: string; duration: number }>
   >(new Map());
 
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const userData = tokenManager.getUserData();
+  const schoolBranchId = userData?.schoolBrancheId ?? userData?.schoolBranchId ?? undefined;
 
-  // Fetch Academic Systems (النظام التعليمي)
-  const fetchAcademicSystemsData = useCallback(async () => {
-    setIsLoadingAcademicSystems(true);
-    try {
-      const response = await getAcademicSystem({ pageIndex: 1, pageSize: 100 });
-      const systems = response?.academicSubSystemResponse || [];
-      setAcademicSystems(systems);
-    } catch (error) {
-      console.error('Failed to fetch academic systems:', error);
-      setAcademicSystems([]);
-    } finally {
-      setIsLoadingAcademicSystems(false);
-    }
-  }, []);
-
-  // Fetch Stages (المرحلة) - depends on subSystemId
-  const fetchStagesData = useCallback(async (academicSubSystemId?: string) => {
-    setIsLoadingStages(true);
-    try {
-      let response;
-      if (academicSubSystemId) {
-        response = await fetchEducationalStagesBySubSystemId(academicSubSystemId, {
-          pageIndex: 1,
-          pageSize: 100,
-        });
-      } else {
-        response = await fetchEducationalStages({ pageIndex: 1, pageSize: 100 });
-      }
-      const stagesData = response?.gradeDtos || [];
-      setStages(stagesData);
-      // Reset stage selection when stages change
-      setStage('');
-      setGrade('');
-    } catch (error) {
-      console.error('Failed to fetch stages:', error);
-      setStages([]);
-    } finally {
-      setIsLoadingStages(false);
-    }
-  }, []);
-
-  // Fetch Classrooms (الصف) - can work independently or filtered by stage
-  const fetchClassroomsData = useCallback(async (gradeId?: string) => {
-    setIsLoadingClassrooms(true);
-    try {
-      // Fetch classrooms - if gradeId provided, filter by it; otherwise fetch all
-      const response = await getClassrooms(gradeId ? { gradeId } : {});
-      const classroomsData = response.data?.classroomDto || [];
-      setClassrooms(classroomsData);
-    } catch (error) {
-      console.error('Failed to fetch classrooms:', error);
-      setClassrooms([]);
-    } finally {
-      setIsLoadingClassrooms(false);
-    }
-  }, []);
-
-  // Initial data fetches
+  // Initial fetch: academic systems
   useEffect(() => {
-    fetchAcademicSystemsData();
-    fetchClassroomsData(); // Fetch all classrooms on initial load
-  }, [fetchAcademicSystemsData, fetchClassroomsData]);
+    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000 }));
+  }, [dispatch]);
 
   // Fetch stages when subSystemId changes
   useEffect(() => {
+    // Reset dependent filters
+    setStage('');
+    setGrade('');
+
     if (subSystemId) {
-      fetchStagesData(subSystemId);
+      dispatch(
+        getEducationalStagesBySubSystemId({
+          academicSubSystemId: subSystemId,
+          params: {
+            pageIndex: 1,
+            pageSize: 10000,
+          },
+        })
+      );
     } else {
-      fetchStagesData();
+      dispatch(
+        getEducationalStages({
+          pageIndex: 1,
+          pageSize: 10000,
+          ...(schoolBranchId && { schoolBranchId }),
+        })
+      );
     }
-  }, [subSystemId, fetchStagesData]);
+  }, [dispatch, subSystemId]);
 
   // Fetch lessons when classroom (grade) or stage changes
   useEffect(() => {
@@ -738,16 +697,24 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
   // Fetch classrooms when stage changes (filter by stage if selected, otherwise fetch all)
   useEffect(() => {
-    if (stage) {
-      fetchClassroomsData(stage);
-    } else {
-      // When stage is cleared, fetch all classrooms again
-      fetchClassroomsData();
+    if (!stage) {
       setGrade('');
     }
-  }, [stage, fetchClassroomsData]);
+
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: stage ? { gradeId: stage } : schoolBranchId ? { schoolBranchId } : {},
+      })
+    );
+  }, [dispatch, stage, schoolBranchId]);
 
   useEffect(() => {
+    if (!schoolBranchId) {
+      return;
+    }
+
     dispatch(
       fetchAcademicCalendarsForWeek({
         schoolBranchId,
@@ -757,26 +724,26 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
   // Computed options for filters
   const educationSystemOptions = useMemo(() => {
-    return academicSystems.map((sys) => ({
+    return academicSystemsList.map((sys) => ({
       value: sys.id,
       label: isArabic ? sys.nameAr : sys.nameEn,
       subSystems: sys.academicSubSystemDto || [],
     }));
-  }, [academicSystems, isArabic]);
+  }, [academicSystemsList, isArabic]);
 
   const stageOptions = useMemo(() => {
-    return stages.map((s) => ({
+    return stagesList.map((s) => ({
       value: s.id,
       label: isArabic ? s.nameAr : s.nameEn,
     }));
-  }, [stages, isArabic]);
+  }, [stagesList, isArabic]);
 
   const classroomOptions = useMemo(() => {
-    return classrooms.map((c) => ({
+    return classroomsList.map((c) => ({
       value: c.id,
       label: isArabic ? c.name : c.nameEn || c.name,
     }));
-  }, [classrooms, isArabic]);
+  }, [classroomsList, isArabic]);
 
   // Transform API lessons to ScheduleLesson format with weekly repetition
   const transformedLessons: ScheduleLesson[] = useMemo(() => {
@@ -961,14 +928,15 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     });
 
     try {
-      // Fetch the full lesson data from API
-      const fullLesson = await lessonsApiService.getLessonById(lesson.id);
+      // Fetch the full lesson data from API (via slice thunk)
+      const fullLesson = await dispatch(fetchLessonByIdSilent(lesson.id)).unwrap();
 
       // Calculcate new key for Backend (it expects end time string)
       const apiNewEndTime = addMinutesToTime(fullLesson.endTime, deltaMinutes);
 
-      // Update the lesson with new end time
-      await lessonsApiService.updateLesson({
+      // Update the lesson with new end time (via slice thunk)
+      await dispatch(
+        updateLesson({
         id: fullLesson.id,
         materialId: fullLesson.materialId,
         teacherId: fullLesson.teacherId,
@@ -991,7 +959,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           fileName: a.fileName,
           fileUrl: a.fileUrl,
         })),
-      });
+        })
+      ).unwrap();
 
       showToast({
         message: t('weeklyCalendar.lessonUpdatedSuccessfully'),
@@ -1072,12 +1041,11 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
             <CustomSelect
               value={educationSystem}
               onChange={(val) => {
-                const selectedSystem = academicSystems.find((s) => s.id === val);
+                const selectedSystem = academicSystemsList.find((s) => s.id === val);
                 setEducationSystem(val as string);
                 // Reset dependent filters
                 setStage('');
                 setGrade('');
-                setClassrooms([]);
                 // If the selected system has sub-systems, use the first one to filter stages
                 if (selectedSystem?.academicSubSystemDto?.length) {
                   setSubSystemId(selectedSystem.academicSubSystemDto[0].id);
@@ -1159,7 +1127,6 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
                 setSubSystemId('');
                 setStage('');
                 setGrade('');
-                fetchClassroomsData();
               }}
               className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
               title={t('actions.clearFilter')}
