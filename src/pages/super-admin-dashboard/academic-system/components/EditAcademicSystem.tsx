@@ -67,7 +67,7 @@ export default function EditAcademicSystem() {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<EditAcademicSystemProps>({
     resolver: yupResolver(EditAcademicSystemSchema) as Resolver<EditAcademicSystemProps>,
     defaultValues: {

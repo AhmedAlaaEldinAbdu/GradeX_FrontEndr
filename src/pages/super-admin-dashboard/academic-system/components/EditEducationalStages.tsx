@@ -45,7 +45,7 @@ export default function EditEducationalStages() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
   } = useForm<EditEducationalStagesProps>({
     resolver: yupResolver(EditEducationalStagesSchema),
@@ -55,6 +55,8 @@ export default function EditEducationalStages() {
       academicSystem: '',
     },
   });
+
+  const isEditing = useAppSelector((state) => state.educationalStages.isUpdating);
 
   useEffect(() => {
     dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
@@ -226,12 +228,12 @@ export default function EditEducationalStages() {
               type="button"
               variant="outline"
               onClick={() => navigate(-1)}
-              disabled={isSubmitting}
+              disabled={isEditing}
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting}>
-              {isSubmitting ? t('common.saving') : t('common.edit')}
+            <Button type="submit" variant="primary" disabled={isEditing}>
+              {isEditing ? t('common.saving') : t('common.edit')}
             </Button>
           </div>
         </form>
