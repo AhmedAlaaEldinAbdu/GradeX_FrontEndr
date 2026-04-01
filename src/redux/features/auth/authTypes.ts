@@ -8,6 +8,7 @@ export interface User {
   avatar?: string;
   permissions?: string[];
   isAuthenticated?: boolean;
+  schoolBrancheId?: string | null;
 }
 
 export interface AuthState {
