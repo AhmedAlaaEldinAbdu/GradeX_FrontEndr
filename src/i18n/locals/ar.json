@@ -280,6 +280,10 @@
     "educationalStageEditedSuccessfully": "تم تعديل المرحلة التعليمية بنجاح",
     "validation": {
       "academicSystemNameRequired": "يجب إدخال اسم النظام الأكاديمي",
+      "academicSystemNameArInvalid": "يجب أن يحتوي اسم النظام الأكاديمي على أحرف عربية فقط",
+      "academicSystemNameEnInvalid": "يجب أن يحتوي اسم النظام الأكاديمي على أحرف إنجليزية فقط",
+      "educationalStageNameArInvalid": "يجب أن يحتوي اسم المرحلة التعليمية على أحرف عربية فقط",
+      "educationalStageNameEnInvalid": "يجب أن يحتوي اسم المرحلة التعليمية على أحرف إنجليزية فقط",
       "countryRequired": "يجب اختيار الدولة",
       "educationalStagesNameRequired": "يجب إدخال اسم المرحلة التعليمية",
       "academicSystemRequired": "يجب اختيار نظام تعليمي",

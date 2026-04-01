@@ -38,6 +38,8 @@ export default function AddEducationalStages() {
   const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
   const stagesErrors = useAppSelector((state) => state.educationalStages.validationErrors);
 
+  const isCreating = useAppSelector((state) => state.educationalStages.isCreating);
+
   useEffect(() => {
     dispatch(getAcademicSubSystems({ pageIndex: 1, pageSize: 1000 }));
   }, [dispatch]);
@@ -45,7 +47,7 @@ export default function AddEducationalStages() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<EducationalStagesProps>({
     resolver: yupResolver(EducationalStagesSchema),
     defaultValues: {
@@ -236,12 +238,12 @@ export default function AddEducationalStages() {
               type="button"
               variant="outline"
               onClick={() => navigate(-1)}
-              disabled={isSubmitting}
+              disabled={isCreating}
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting}>
-              {isSubmitting ? t('common.saving') : t('common.add')}
+            <Button type="submit" variant="primary" disabled={isCreating}>
+              {isCreating ? t('common.saving') : t('common.add')}
             </Button>
           </div>
         </form>
