@@ -35,7 +35,12 @@ export default function SystemUsers() {
   const { showToast } = useToast();
 
   const users = useSelector(selectUsers) || [];
-  const isLoading = useSelector(selectIsLoading);
+
+  // Force loading overlay on the very first mount so old cached data doesn't flash
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const reduxIsLoading = useSelector(selectIsLoading);
+  const isLoading = isInitialLoad || reduxIsLoading;
+
   const pagination = useSelector(selectPagination);
   const roles = useSelector(selectRoles) || [];
   const isLoadingRoles = useSelector(selectIsLoadingRoles);
@@ -57,23 +62,24 @@ export default function SystemUsers() {
     dispatch(fetchCountries());
   }, [dispatch]);
 
-  // Fetch users with debounce when filters change
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const filtersObj: Record<string, string> = {};
-      if (searchTerm) filtersObj.searchTerm = searchTerm;
-      if (selectedRole) filtersObj.roleId = selectedRole;
+    setIsInitialLoad(false);
 
-      dispatch(
-        fetchUsers({
-          page: 1,
-          limit: 10,
-          filters: Object.keys(filtersObj).length > 0 ? filtersObj : undefined,
-        })
-      );
-    }, 500);
+    const filtersObj: Record<string, string> = {};
+    if (searchTerm) filtersObj.searchTerm = searchTerm;
+    if (selectedRole) filtersObj.roleId = selectedRole;
 
-    return () => clearTimeout(timeoutId);
+    const promise = dispatch(
+      fetchUsers({
+        page: 1,
+        limit: 10,
+        filters: Object.keys(filtersObj).length > 0 ? filtersObj : undefined,
+      })
+    );
+
+    return () => {
+      promise.abort();
+    };
   }, [searchTerm, selectedRole, dispatch]);
 
   const handleDeleteConfirm = async () => {
@@ -177,11 +183,7 @@ export default function SystemUsers() {
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <Link to={`edit-user/${row.id}`}>
-            <IconButton
-              status="edit"
-              variant="success"
-              ariaLabel="Edit"
-            />
+            <IconButton status="edit" variant="success" ariaLabel="Edit" />
           </Link>
           <IconButton
             status="delete"
