@@ -450,7 +450,10 @@ export function transformBackendToSchoolForm(backendData: unknown): SchoolFormDa
   const data = backendData as BackendSchoolData;
 
   const academicSystemIdsRaw =
-    (data as any).AcademicSystemIds ?? (data as any).academicSystemIds;
+    (data as any).AcademicSystemIds ??
+    (data as any).academicSystemIds ??
+    (data as any).AcademicSystemId ??
+    (data as any).academicSystemId;
   const academicSystemIds = extractAcademicSystemIds(academicSystemIdsRaw);
 
   const subSystemIdsRaw = (data as any).SubSystemIds ?? (data as any).subSystemIds;
@@ -538,13 +541,18 @@ export function transformBackendSchoolToForm(
   const applicationFeatures =
     data.applicationFeaturesDto?.map((feature) => feature.lkApplicationFeatureId) || [];
 
-  const subSystemIdsRaw = (data as any).subSystemIds ?? (data as any).SubSystemIds;
+  const subSystemIdsRaw = (data as any).subSystemIds ?? (data as any).SubSystemIds ?? (data as any).subSystemId ?? (data as any).SubSystemId;
   const subSystemIds = Array.isArray(subSystemIdsRaw)
     ? subSystemIdsRaw.filter((value) => typeof value === 'string' && value.trim().length > 0)
+    : typeof subSystemIdsRaw === 'string' && subSystemIdsRaw.trim().length > 0
+    ? [subSystemIdsRaw]
     : [];
 
   const academicSystemIdsRaw =
-    (data as any).academicSystemIds ?? (data as any).AcademicSystemIds;
+    (data as any).academicSystemIds ??
+    (data as any).AcademicSystemIds ??
+    (data as any).academicSystemId ??
+    (data as any).AcademicSystemId;
   const academicSystemIds = extractAcademicSystemIds(academicSystemIdsRaw);
 
   // Extract license file paths from attachments (use filePath for full URL access)
