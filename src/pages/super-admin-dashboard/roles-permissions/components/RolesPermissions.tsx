@@ -28,7 +28,6 @@ export default function RolesPermissions() {
   const { showToast } = useToast();
 
   const roles = useSelector(selectRoles) || [];
-  const isLoading = useSelector(selectIsLoading);
   const pagination = useSelector(selectPagination);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,19 +35,25 @@ export default function RolesPermissions() {
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const isDeleting = useSelector(selectIsDeleting);
 
-  // Fetch roles with debounce when search changes
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      dispatch(
-        fetchRoles({
-          page: 1,
-          limit: 10,
-          filters: searchTerm ? { searchTerm } : undefined,
-        })
-      );
-    }, 500);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const reduxIsLoading = useSelector(selectIsLoading);
+  const isLoading = isInitialLoad || reduxIsLoading;
 
-    return () => clearTimeout(timeoutId);
+  // Fetch roles when search changes
+  useEffect(() => {
+    setIsInitialLoad(false);
+
+    const promise = dispatch(
+      fetchRoles({
+        page: 1,
+        limit: 10,
+        filters: searchTerm ? { searchTerm } : undefined,
+      })
+    );
+
+    return () => {
+      promise.abort();
+    };
   }, [searchTerm, dispatch]);
 
   const handleDeleteConfirm = async () => {
@@ -124,11 +129,7 @@ export default function RolesPermissions() {
       accessor: (row) => (
         <div className="flex items-center gap-2">
           <Link to={`edit-role/${row.id}`}>
-            <IconButton
-              status="edit"
-              variant="success"
-              ariaLabel="Edit"
-            />
+            <IconButton status="edit" variant="success" ariaLabel="Edit" />
           </Link>
           <IconButton
             status="delete"
