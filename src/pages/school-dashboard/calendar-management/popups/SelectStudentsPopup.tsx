@@ -40,7 +40,7 @@ export default function SelectStudentsPopup({
   );
 
   // Fetch students from API
-  const fetchStudents = useCallback(async () => {
+  const fetchStudentsData = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await dispatch(
