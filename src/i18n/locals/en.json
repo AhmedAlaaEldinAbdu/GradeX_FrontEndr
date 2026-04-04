@@ -1138,6 +1138,7 @@
       "totalPresent": "Total Present",
       "totalLate": "Total Late",
       "totalAbsent": "Total Absent",
+      "totalLeave": "Total Leaves",
       "date": "Date",
       "selectDate": "Select Latest Date",
       "status": "Status",
