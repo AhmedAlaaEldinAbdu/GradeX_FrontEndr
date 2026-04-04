@@ -1,7 +1,7 @@
 export const StudentApplicationStatus = {
-  Modified: 1, // تم التعديل
+  NotPassed: 1, // لم يجتاز
   EditRequested: 2, // طلب تعديل
-  NotPassed: 3, // لم يجتاز
+  Modified: 3, // تم التعديل
   WaitingForSignature: 4, // في إنتظار التوقيع
   Completed: 5, // إكتمل
 } as const;

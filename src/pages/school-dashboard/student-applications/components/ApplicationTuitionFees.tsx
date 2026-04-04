@@ -71,15 +71,13 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
         </span>
         <div className="flex items-center gap-3" dir="ltr">
           <span className="text-xl font-bold text-green-600">
-            {(data.total || 0).toLocaleString()} {t('common.currencyRiyal')}
+            {(data.tuitionAmount || 0).toLocaleString()} {t('common.currencyRiyal')}
           </span>
-          {data.tuitionAmount !== undefined &&
-            data.tuitionAmount !== null &&
-            data.tuitionAmount !== data.total && (
-              <span className="text-base text-gray-400 line-through">
-                {(data.tuitionAmount || 0).toLocaleString()} {t('common.currencyRiyal')}
-              </span>
-            )}
+          {data.total && data.tuitionAmount !== data.total ? (
+            <span className="text-base text-gray-400 line-through">
+              {(data.total || 0).toLocaleString()} {t('common.currencyRiyal')}
+            </span>
+          ) : null}
         </div>
       </div>
     </div>

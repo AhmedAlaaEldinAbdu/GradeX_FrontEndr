@@ -8,6 +8,7 @@ import { StudentApplicationStatus } from '@/services/api/student-applications/st
 import { sendEditRequest } from '@/services/api/student-applications/student-applications.service';
 import { assignStudentToClassroom } from '@/services/api/students/students.service';
 import { useToast } from '@/shared/context/ToastContext';
+import StudentIcon from '@gradex/assets/icons/Student.svg';
 
 // Import extracted components
 import ApplicationHeaderActions from './ApplicationHeaderActions';
@@ -207,7 +208,8 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         <div className="mb-6 flex flex-col items-center justify-center">
           <CustomImage
             src={data.studentPhotoPath ? `${baseUrl}/${data.studentPhotoPath}` : ''}
-            alt={studentFullName}
+            fallbackSrc={StudentIcon}
+            alt={t('studentApplications.details.studentPhoto')}
             className="h-28 w-28 rounded-full border-4 border-gray-100 object-cover"
           />
         </div>
