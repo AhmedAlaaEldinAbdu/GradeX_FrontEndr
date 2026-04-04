@@ -55,6 +55,7 @@ export default function AddClassroom() {
     setValue,
   } = useForm({
     resolver: yupResolver(ClassroomsSchema),
+    mode: 'onBlur',
     defaultValues: {
       academicSystem: '',
       educationalStage: '',
