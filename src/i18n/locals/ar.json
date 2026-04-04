@@ -1270,6 +1270,9 @@
     "code": "الكود",
     "validation": {
       "bookNameRequired": "اسم الكتاب مطلوب",
+      "bookNameArInvalid": "يجب أن يحتوي اسم الكتاب على أحرف عربية فقط",
+      "bookNameEnRequired": "اسم الكتاب بالإنجليزية مطلوب",
+      "bookNameEnInvalid": "يجب أن يحتوي اسم الكتاب بالإنجليزية على أحرف إنجليزية فقط",
       "bookCodeRequired": "رمز الكتاب مطلوب",
       "subjectRequired": "المادة مطلوبة",
       "gradeRequired": "الصف مطلوب",

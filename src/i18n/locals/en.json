@@ -1272,6 +1272,9 @@
     "code": "Code",
     "validation": {
       "bookNameRequired": "Book name is required",
+      "bookNameArInvalid": "Book name must contain Arabic letters only",
+      "bookNameEnRequired": "Book name in English is required",
+      "bookNameEnInvalid": "Book name in English must contain English letters only",
       "bookCodeRequired": "Book code is required",
       "subjectRequired": "Subject is required",
       "gradeRequired": "Grade is required",
