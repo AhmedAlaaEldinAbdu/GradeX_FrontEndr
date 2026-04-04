@@ -1,60 +1,64 @@
-import { array, mixed, number, object, string, type InferType } from "yup";
+import { array, mixed, number, object, string, type InferType } from 'yup';
 
 export const ClassroomsSchema = object({
   academicSystem: string()
-    .required("classrooms.validation.academicSystemRequired")
-    .typeError("classrooms.validation.academicSystemRequired"),
+    .required('classrooms.validation.academicSystemRequired')
+    .typeError('classrooms.validation.academicSystemRequired'),
   educationalStage: string()
-    .required("classrooms.validation.educationalStageRequired")
-    .typeError("classrooms.validation.educationalStageRequired"),
+    .required('classrooms.validation.educationalStageRequired')
+    .typeError('classrooms.validation.educationalStageRequired'),
   classrooms: array()
     .of(
       object({
         name: string()
-          .required("classrooms.validation.classroomNameRequired")
-          .typeError("classrooms.validation.classroomNameRequired"),
+          .required('classrooms.validation.classroomNameRequired')
+          .typeError('classrooms.validation.classroomNameRequired')
+          .matches(/^[\u0600-\u06FF\s\d\p{P}]+$/u, 'classrooms.validation.classroomNameArInvalid'),
         nameEn: string()
-          .required("classrooms.validation.classroomNameRequired")
-          .typeError("classrooms.validation.classroomNameRequired"),
-        alias: string().default(""),
-        aliasEn: string().default(""),
-        note: string().default(""),
-        noteEn: string().default(""),
+          .required('classrooms.validation.classroomNameEnRequired')
+          .typeError('classrooms.validation.classroomNameEnRequired')
+          .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'classrooms.validation.classroomNameEnInvalid'),
+        alias: string().default(''),
+        aliasEn: string().default(''),
+        note: string().default(''),
+        noteEn: string().default(''),
         maxStudents: number()
-          .required("classrooms.validation.maxStudentsRequired")
-          .positive("classrooms.validation.maxStudentsMustBePositive")
-          .integer("classrooms.validation.maxStudentsMustBeInteger")
-          .typeError("classrooms.validation.maxStudentsRequired"),
+          .required('classrooms.validation.maxStudentsRequired')
+          .positive('classrooms.validation.maxStudentsMustBePositive')
+          .integer('classrooms.validation.maxStudentsMustBeInteger')
+          .typeError('classrooms.validation.maxStudentsRequired'),
         classImage: mixed().optional(),
       })
     )
-    .required("classrooms.validation.requiredList")
-    .min(1, "classrooms.validation.atLeastOne")
-    .typeError("classrooms.validation.requiredList"),
+    .required('classrooms.validation.requiredList')
+    .min(1, 'classrooms.validation.atLeastOne')
+    .typeError('classrooms.validation.requiredList'),
 });
 
 export const EditClassroomSchema = object({
   academicSystem: string()
-    .required("classrooms.validation.academicSystemRequired")
-    .typeError("classrooms.validation.academicSystemRequired"),
+    .required('classrooms.validation.academicSystemRequired')
+    .typeError('classrooms.validation.academicSystemRequired'),
   educationalStage: string()
-    .required("classrooms.validation.educationalStageRequired")
-    .typeError("classrooms.validation.educationalStageRequired"),
+    .required('classrooms.validation.educationalStageRequired')
+    .typeError('classrooms.validation.educationalStageRequired'),
   name: string()
-    .required("classrooms.validation.classroomNameRequired")
-    .typeError("classrooms.validation.classroomNameRequired"),
+    .required('classrooms.validation.classroomNameRequired')
+    .typeError('classrooms.validation.classroomNameRequired')
+    .matches(/^[\u0600-\u06FF\s\d\p{P}]+$/u, 'classrooms.validation.classroomNameArInvalid'),
   nameEn: string()
-    .required("classrooms.validation.classroomNameRequired")
-    .typeError("classrooms.validation.classroomNameRequired"),
-  alias: string().default(""),
-  aliasEn: string().default(""),
-  note: string().default(""),
-  noteEn: string().default(""),
+    .required('classrooms.validation.classroomNameEnRequired')
+    .typeError('classrooms.validation.classroomNameEnRequired')
+    .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'classrooms.validation.classroomNameEnInvalid'),
+  alias: string().default(''),
+  aliasEn: string().default(''),
+  note: string().default(''),
+  noteEn: string().default(''),
   maxStudents: number()
-    .required("classrooms.validation.maxStudentsRequired")
-    .positive("classrooms.validation.maxStudentsMustBePositive")
-    .integer("classrooms.validation.maxStudentsMustBeInteger")
-    .typeError("classrooms.validation.maxStudentsRequired"),
+    .required('classrooms.validation.maxStudentsRequired')
+    .positive('classrooms.validation.maxStudentsMustBePositive')
+    .integer('classrooms.validation.maxStudentsMustBeInteger')
+    .typeError('classrooms.validation.maxStudentsRequired'),
   classImage: mixed().optional(),
 });
 
