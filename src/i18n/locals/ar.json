@@ -689,6 +689,8 @@
       "nationality": "الجنسية",
       "address": "العنوان",
       "childInfo": "بيانات الطفل",
+      "studentInfo": "بيانات الطالب",
+      "studentPhoto": "صورة الطالب",
       "birthDate": "تاريخ الميلاد",
       "previousSchoolName": "اسم المدرسة السابقة",
       "gradeLevel": "الصف الدراسي",

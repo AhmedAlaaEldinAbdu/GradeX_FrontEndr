@@ -14,7 +14,7 @@ const ApplicationChildInfo: React.FC<ApplicationChildInfoProps> = ({ data }) => 
   return (
     <div className="mb-8 rounded-2xl border border-gray-200 p-6">
       <h2 className="mb-4 text-start text-lg font-bold text-gray-900">
-        {t('studentApplications.details.studentInfo')}
+        {t('studentApplications.details.childData')}
       </h2>
       <div className="space-y-4 text-sm">
         {/* Row 1: Birth Date and Previous School */}

@@ -690,6 +690,8 @@
       "nationality": "Nationality",
       "address": "Address",
       "childInfo": "Child Information",
+      "studentInfo": "Student Information",
+      "studentPhoto": "Student Photo",
       "birthDate": "Birth Date",
       "previousSchoolName": "Previous School Name",
       "gradeLevel": "Grade Level",
