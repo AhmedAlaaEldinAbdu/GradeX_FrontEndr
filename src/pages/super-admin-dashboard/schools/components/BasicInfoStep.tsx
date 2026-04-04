@@ -309,6 +309,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   disabled={readOnly}
                   className={'text-end'}
                   id="foundationDate"
+                  hidePicker
                 />
               </div>
             )}

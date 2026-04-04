@@ -5,10 +5,11 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   icon?: React.ReactNode;
+  hidePicker?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, className = '', type, ...props }, ref) => {
+  ({ label, error, icon, hidePicker = false, className = '', type, ...props }, ref) => {
     const { i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
     const inputRef = useRef<HTMLInputElement>(null);
@@ -23,10 +24,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const showTimeIcon = isTimeInput && icon;
     const showIconAtEnd = icon && !isTimeInput && !isDateInput;
 
-    // Hide native time picker icon
-    const timeInputClasses = isTimeInput
-      ? '[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden'
-      : '';
+    // Hide native time/date picker icon
+    const timeInputClasses =
+      isTimeInput || (isDateInput && hidePicker)
+        ? '[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden'
+        : '';
 
     const timeIconPositionClass = isRTL ? 'left-3' : 'right-3';
 
@@ -64,7 +66,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={inputRef}
             type={type}
             onClick={() => {
-              if (isTimeInput || isDateInput) {
+              if ((isTimeInput || isDateInput) && !hidePicker) {
                 inputRef.current?.showPicker?.();
               }
             }}

@@ -93,7 +93,7 @@ export async function getTeacherAttendanceByTeacher(
     };
   }
 
-  return response.data;
+  return (response.data as any).data ?? response.data;
 }
 
 /**
