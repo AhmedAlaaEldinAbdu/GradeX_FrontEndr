@@ -80,6 +80,7 @@ export default function EditSubject() {
     watch,
   } = useForm<EditSubjectProps>({
     resolver: yupResolver(EditSubjectSchema),
+    mode: 'onBlur',
     defaultValues: {
       name: '',
       nameEn: '',

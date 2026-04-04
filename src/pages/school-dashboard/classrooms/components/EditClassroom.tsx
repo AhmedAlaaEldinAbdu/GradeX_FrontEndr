@@ -54,6 +54,7 @@ export default function EditClassroom() {
     reset,
   } = useForm({
     resolver: yupResolver(EditClassroomSchema),
+    mode: 'onBlur',
     defaultValues: {
       academicSystem: '',
       educationalStage: '',

@@ -65,6 +65,7 @@ export default function EditBook() {
     reset,
   } = useForm({
     resolver: yupResolver(EditBookSchema),
+    mode: 'onBlur',
     defaultValues: {
       lkSchoolStageId: '',
       materialId: '',
