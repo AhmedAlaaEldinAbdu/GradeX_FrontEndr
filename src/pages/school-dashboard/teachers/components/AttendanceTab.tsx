@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
@@ -48,6 +48,11 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
   const [showRecordAttendancePopup, setShowRecordAttendancePopup] = useState(false);
   const pageSize = 10;
 
+  // Refs for tracking initial load
+  const hasDoneInitialLoad = useRef(false);
+  const prevLoadingRef = useRef(false);
+  const isFirstFilterRun = useRef(true);
+
   // Redux state
   const {
     teacherAttendanceRecords,
@@ -57,7 +62,19 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
     attendanceError,
   } = useAppSelector((state) => state.teachers);
 
-  // Fetch data when tab becomes active
+  // Snapshot of summary — only updated on first successful load
+  const [localSummary, setLocalSummary] = useState(teacherAttendanceSummary);
+
+  // Detect first load completion and snapshot the summary
+  useEffect(() => {
+    if (prevLoadingRef.current && !isLoadingAttendance && !hasDoneInitialLoad.current) {
+      hasDoneInitialLoad.current = true;
+      setLocalSummary(teacherAttendanceSummary);
+    }
+    prevLoadingRef.current = isLoadingAttendance;
+  }, [isLoadingAttendance, teacherAttendanceSummary]);
+
+  // Initial fetch when tab becomes active — also handles cleanup on deactivation
   useEffect(() => {
     if (teacherId && isActive) {
       dispatch(
@@ -74,8 +91,33 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
 
     return () => {
       dispatch(clearTeacherAttendance());
+      hasDoneInitialLoad.current = false;
+      prevLoadingRef.current = false;
+      isFirstFilterRun.current = true;
     };
-  }, [dispatch, teacherId, currentPage, selectedStatus, isActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, teacherId, isActive]);
+
+  // Re-fetch when filter or page changes (skip the very first run — initial load handles it)
+  useEffect(() => {
+    if (isFirstFilterRun.current) {
+      isFirstFilterRun.current = false;
+      return;
+    }
+    if (teacherId && isActive) {
+      dispatch(
+        fetchTeacherAttendanceDetails({
+          teacherId,
+          page: currentPage,
+          limit: pageSize,
+          filters: {
+            status: selectedStatus ? Number(selectedStatus) : undefined,
+          },
+        })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, selectedStatus]);
 
   // Filter records by date locally (API doesn't support date filter)
   const filteredRecords = teacherAttendanceRecords.filter((record) => {
@@ -252,8 +294,8 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
     }
   };
 
-  // Show loader when tab is not active or loading
-  if (!isActive || (isLoadingAttendance && teacherAttendanceRecords.length === 0)) {
+  // Show full-page loader only on the very first load (before summary cards have data)
+  if (!isActive || (!hasDoneInitialLoad.current && isLoadingAttendance)) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Loading />
@@ -293,9 +335,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               </div>
               <p className="text-xl text-gray-600">{t('teachers.details.totalPresent')}</p>
             </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">
-              {teacherAttendanceSummary.totalPresent}
-            </p>
+            <p className="mt-1 text-3xl font-bold text-gray-900">{localSummary.totalPresent}</p>
           </div>
         </div>
 
@@ -308,9 +348,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               </div>
               <p className="text-xl text-gray-600">{t('teachers.details.totalLate')}</p>
             </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">
-              {teacherAttendanceSummary.totalLate}
-            </p>
+            <p className="mt-1 text-3xl font-bold text-gray-900">{localSummary.totalLate}</p>
           </div>
         </div>
 
@@ -331,9 +369,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               </div>
               <p className="text-xl text-gray-600">{t('teachers.details.totalAbsent')}</p>
             </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">
-              {teacherAttendanceSummary.totalAbsent}
-            </p>
+            <p className="mt-1 text-3xl font-bold text-gray-900">{localSummary.totalAbsent}</p>
           </div>
         </div>
 
@@ -346,9 +382,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               </div>
               <p className="text-xl text-gray-600">{t('teachers.details.totalLeave')}</p>
             </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">
-              {teacherAttendanceSummary.totalLeave}
-            </p>
+            <p className="mt-1 text-3xl font-bold text-gray-900">{localSummary.totalLeave}</p>
           </div>
         </div>
       </div>
