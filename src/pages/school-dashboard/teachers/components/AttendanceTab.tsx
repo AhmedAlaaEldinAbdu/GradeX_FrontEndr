@@ -291,7 +291,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100">
                 <img src={CheckCircleIcon} alt="present" className="h-6 w-6" />
               </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalPresent')}</p>
+              <p className="text-xl text-gray-600">{t('teachers.details.totalPresent')}</p>
             </div>
             <p className="mt-1 text-3xl font-bold text-gray-900">
               {teacherAttendanceSummary.totalPresent}
@@ -306,7 +306,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-yellow-100">
                 <img src={TimeSyncIcon} alt="late" className="h-6 w-6" />
               </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalLate')}</p>
+              <p className="text-xl text-gray-600">{t('teachers.details.totalLate')}</p>
             </div>
             <p className="mt-1 text-3xl font-bold text-gray-900">
               {teacherAttendanceSummary.totalLate}
@@ -329,7 +329,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
                   }}
                 />
               </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalAbsent')}</p>
+              <p className="text-xl text-gray-600">{t('teachers.details.totalAbsent')}</p>
             </div>
             <p className="mt-1 text-3xl font-bold text-gray-900">
               {teacherAttendanceSummary.totalAbsent}
@@ -344,7 +344,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100">
                 <img src={VacationIcon} alt="leave" className="h-6 w-6" />
               </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalLeave')}</p>
+              <p className="text-xl text-gray-600">{t('teachers.details.totalLeave')}</p>
             </div>
             <p className="mt-1 text-3xl font-bold text-gray-900">
               {teacherAttendanceSummary.totalLeave}
