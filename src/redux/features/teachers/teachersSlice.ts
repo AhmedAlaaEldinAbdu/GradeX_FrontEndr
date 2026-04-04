@@ -132,6 +132,7 @@ const initialState: TeachersState = {
     totalPresent: 0,
     totalAbsent: 0,
     totalLate: 0,
+    totalLeave: 0,
   },
 
   // Pagination
@@ -292,6 +293,7 @@ export const fetchTeacherAttendanceDetails = createAsyncThunk<
         totalPresent: response.totalAttendance || 0,
         totalAbsent: response.totalAbsence || 0,
         totalLate: response.totalLate || 0,
+        totalLeave: response.totalLeave || 0,
       },
       meta: {
         total: response.totalItems || 0,
@@ -392,6 +394,7 @@ const teachersSlice = createSlice({
         totalPresent: 0,
         totalAbsent: 0,
         totalLate: 0,
+        totalLeave: 0,
       };
       state.attendanceError = null;
       state.attendanceFilters = {};

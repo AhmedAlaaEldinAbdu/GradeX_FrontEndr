@@ -27,6 +27,7 @@ export interface TeacherAttendanceDetailData {
   totalAttendance: number;
   totalAbsence: number;
   totalLate: number;
+  totalLeave?: number;
   pageIndex: number;
   totalPages: number;
   totalItems: number;
@@ -38,6 +39,7 @@ export interface TeacherAttendanceDetailResponse {
   totalAttendance: number;
   totalAbsence: number;
   totalLate: number;
+  totalLeave?: number;
   pageIndex: number;
   totalPages: number;
   totalItems: number;
@@ -72,4 +74,5 @@ export interface TeacherAttendanceSummary {
   totalPresent: number;
   totalAbsent: number;
   totalLate: number;
+  totalLeave: number;
 }
