@@ -401,7 +401,7 @@ export default function AddClassroom() {
                                 const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                   const val = e.target.value;
 
-                                  if (/^[0-9]*$/.test(val)) {
+                                  if (/^[0-9]*$/.test(val) && Number(val) <= 100) {
                                     field.onChange(val);
                                   }
                                 };

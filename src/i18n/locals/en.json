@@ -1034,6 +1034,7 @@
       "maxStudentsRequired": "Maximum number of students is required",
       "maxStudentsMustBePositive": "Maximum students must be a positive number",
       "maxStudentsMustBeInteger": "Maximum students must be an integer",
+      "maxStudentsExceeded": "Maximum number of students cannot exceed 100",
       "requiredList": "Classrooms list is required",
       "atLeastOne": "At least one classroom must be added"
     }

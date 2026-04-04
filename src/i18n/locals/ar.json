@@ -1033,6 +1033,7 @@
       "maxStudentsRequired": "العدد الأقصى للطلاب مطلوب",
       "maxStudentsMustBePositive": "العدد الأقصى للطلاب يجب أن يكون رقم موجب",
       "maxStudentsMustBeInteger": "العدد الأقصى للطلاب يجب أن يكون رقم صحيح",
+      "maxStudentsExceeded": "العدد الأقصى للطلاب يجب ألا يتجاوز 100",
       "requiredList": "قائمة الصفوف مطلوبة",
       "atLeastOne": "يجب إضافة صف واحد على الأقل"
     }

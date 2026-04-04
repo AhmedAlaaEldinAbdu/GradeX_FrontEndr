@@ -26,6 +26,7 @@ export const ClassroomsSchema = object({
           .required('classrooms.validation.maxStudentsRequired')
           .positive('classrooms.validation.maxStudentsMustBePositive')
           .integer('classrooms.validation.maxStudentsMustBeInteger')
+          .max(100, 'classrooms.validation.maxStudentsExceeded')
           .typeError('classrooms.validation.maxStudentsRequired'),
         classImage: mixed().optional(),
       })
@@ -58,6 +59,7 @@ export const EditClassroomSchema = object({
     .required('classrooms.validation.maxStudentsRequired')
     .positive('classrooms.validation.maxStudentsMustBePositive')
     .integer('classrooms.validation.maxStudentsMustBeInteger')
+    .max(100, 'classrooms.validation.maxStudentsExceeded')
     .typeError('classrooms.validation.maxStudentsRequired'),
   classImage: mixed().optional(),
 });
