@@ -45,6 +45,7 @@ export default function AddSubject() {
     watch,
   } = useForm<AddSubjectProps>({
     resolver: yupResolver(AddSubjectSchema),
+    mode: 'onBlur',
     defaultValues: {
       materialLevel: '',
       lKSchoolStageIds: [],

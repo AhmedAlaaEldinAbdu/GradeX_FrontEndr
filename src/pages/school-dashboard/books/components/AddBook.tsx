@@ -80,6 +80,7 @@ export default function AddBook() {
     reset,
   } = useForm({
     resolver: yupResolver(AddBookSchema),
+    mode: 'onBlur',
     defaultValues: {
       restorePreviousCurriculum: 'no' as const,
       lkSchoolStageId: '',
