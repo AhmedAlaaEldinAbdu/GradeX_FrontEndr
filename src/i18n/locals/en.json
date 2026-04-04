@@ -1070,6 +1070,9 @@
     "confirmDeleteSubject": "Are you sure you want to delete this subject?",
     "validation": {
       "subjectNameRequired": "Subject name is required",
+      "subjectNameArInvalid": "Subject name must contain Arabic letters only",
+      "subjectNameEnRequired": "Subject name in English is required",
+      "subjectNameEnInvalid": "Subject name in English must contain English letters only",
       "levelRequired": "Level is required",
       "schoolStagesRequired": "School stages are required",
       "requiredList": "Subjects list is required",
