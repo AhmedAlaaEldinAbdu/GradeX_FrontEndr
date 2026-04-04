@@ -6,6 +6,10 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import Loading from '@/shared/components/Loading';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
+import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
+import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
+import TimeSyncIcon from '@gradex/assets/icons/TimeSync.svg';
+import VacationIcon from '@gradex/assets/icons/Vacation.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import RecordAttendancePopup, {
   type TeacherPreparationFormValues,
@@ -280,24 +284,12 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card className="flex items-center justify-between">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
           <div>
             <div className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100">
-                <svg
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+                <img src={CheckCircleIcon} alt="present" className="h-6 w-6" />
               </div>
               <p className="text-sm text-gray-600">{t('teachers.details.totalPresent')}</p>
             </div>
@@ -305,26 +297,14 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               {teacherAttendanceSummary.totalPresent}
             </p>
           </div>
-        </Card>
+        </div>
 
         {/* Total Late */}
-        <Card className="flex items-center justify-between">
+        <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
           <div>
             <div className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-yellow-100">
-                <svg
-                  className="h-6 w-6 text-yellow-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <img src={TimeSyncIcon} alt="late" className="h-6 w-6" />
               </div>
               <p className="text-sm text-gray-600">{t('teachers.details.totalLate')}</p>
             </div>
@@ -332,26 +312,22 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               {teacherAttendanceSummary.totalLate}
             </p>
           </div>
-        </Card>
+        </div>
 
         {/* Total Absent */}
-        <Card className="flex items-center justify-between">
+        <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
           <div>
             <div className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-100">
-                <svg
-                  className="h-6 w-6 text-red-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <img
+                  src={XmarkCircleIcon}
+                  alt="absent"
+                  className="h-6 w-6"
+                  style={{
+                    filter:
+                      'brightness(0) saturate(100%) invert(29%) sepia(69%) saturate(2278%) hue-rotate(336deg) brightness(104%) contrast(93%)',
+                  }}
+                />
               </div>
               <p className="text-sm text-gray-600">{t('teachers.details.totalAbsent')}</p>
             </div>
@@ -359,7 +335,22 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
               {teacherAttendanceSummary.totalAbsent}
             </p>
           </div>
-        </Card>
+        </div>
+
+        {/* Total Leave */}
+        <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100">
+                <img src={VacationIcon} alt="leave" className="h-6 w-6" />
+              </div>
+              <p className="text-sm text-gray-600">{t('teachers.details.totalLeave')}</p>
+            </div>
+            <p className="mt-1 text-3xl font-bold text-gray-900">
+              {teacherAttendanceSummary.totalLeave}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Attendance Table */}
