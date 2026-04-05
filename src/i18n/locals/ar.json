@@ -2185,6 +2185,7 @@
     "teacherName": "اسم المعلم",
     "educationalStage": "المرحلة التعليمية",
     "grade": "الصف الدراسي",
+    "date": "التاريخ",
     "actions": "الإجراءات",
     "noPreparations": "لا يوجد تحضيرات",
     "confirmDelete": "هل أنت متأكد من حذف هذا التحضير؟",

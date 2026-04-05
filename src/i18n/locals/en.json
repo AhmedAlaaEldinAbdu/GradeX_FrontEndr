@@ -2182,6 +2182,7 @@
     "teacherName": "Teacher Name",
     "educationalStage": "Educational Stage",
     "grade": "Grade",
+    "date": "Date",
     "actions": "Actions",
     "noPreparations": "No preparations",
     "confirmDelete": "Are you sure you want to delete this preparation?",
