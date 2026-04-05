@@ -47,6 +47,11 @@
   color: #dd0417;
 }
 
+/* Shared shadow token */
+.app-card-shadow {
+  box-shadow: 0px 1px 12px 1px rgba(0, 0, 0, 0.06);
+}
+
 /* react-international-phone custom css */
 .react-international-phone-country-selector-button {
   font-size: 16px !important;
