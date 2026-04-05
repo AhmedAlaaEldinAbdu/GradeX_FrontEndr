@@ -1033,6 +1033,8 @@
       "classroomNameEnInvalid": "Classroom name in English must contain English letters only",
       "classroomNicknameArInvalid": "Nickname must contain Arabic letters only",
       "classroomNicknameEnInvalid": "Nickname in English must contain English letters only",
+      "classroomDescriptionArInvalid": "Description must contain Arabic letters only",
+      "classroomDescriptionEnInvalid": "Description in English must contain English letters only",
       "maxStudentsRequired": "Maximum number of students is required",
       "maxStudentsMustBePositive": "Maximum students must be a positive number",
       "maxStudentsMustBeInteger": "Maximum students must be an integer",
