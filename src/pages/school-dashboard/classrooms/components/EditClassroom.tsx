@@ -183,7 +183,7 @@ export default function EditClassroom() {
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Academic System */}
             <FormField
-              label={t('grades.academicSystem')}
+              label={t('grades.academicSystemLabel')}
               required
               error={errors.academicSystem?.message}
               htmlFor="academicSystem"
@@ -218,7 +218,7 @@ export default function EditClassroom() {
 
             {/* Educational Stage */}
             <FormField
-              label={t('grades.educationalStage')}
+              label={t('grades.gradeLabel')}
               required
               error={errors.educationalStage?.message}
               htmlFor="educationalStage"
@@ -244,7 +244,7 @@ export default function EditClassroom() {
                     placeholder={
                       isLoadingEducationalStages
                         ? t('common.loading')
-                        : t('grades.selectEducationalStage')
+                        : t('common.selectAnOption')
                     }
                     disabled={isLoadingEducationalStages}
                     error={!!errors.educationalStage}

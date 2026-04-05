@@ -52,6 +52,11 @@
   box-shadow: 0px 1px 12px 1px rgba(0, 0, 0, 0.06);
 }
 
+/* Table card shadow */
+.table-card-shadow {
+  box-shadow: 0px 4px 24px 0px rgba(0, 0, 0, 0.1);
+}
+
 /* react-international-phone custom css */
 .react-international-phone-country-selector-button {
   font-size: 16px !important;
@@ -77,35 +82,29 @@
 .sticky-cell {
   position: sticky;
   z-index: 20;
-  background-color: white;
-  /* box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.15); */
-  outline: 1px solid rgba(229, 231, 235, 1);
+  background-color: inherit;
 }
 .sticky-header {
   position: sticky;
   z-index: 20;
-  background-color: rgb(243, 244, 246);
-  /* box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.15); */
+  background-color: rgb(249, 250, 251);
 }
 tr:hover .sticky-cell {
-  background-color: rgb(249, 250, 251);
+  background-color: inherit;
 }
 
 .sticky-cell-right {
   position: sticky;
   z-index: 20;
-  background-color: white;
-  /* box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.15);*/ /* Left-side shadow */
-  outline: 1px solid rgba(229, 231, 235, 1);
+  background-color: inherit;
 }
 .sticky-header-right {
   position: sticky;
   z-index: 20;
-  background-color: rgb(243, 244, 246);
-  /* box-shadow: -4px 0 8px -2px rgba(0, 0, 0, 0.15);*/ /* Left-side shadow */
+  background-color: rgb(249, 250, 251);
 }
 tr:hover .sticky-cell-right {
-  background-color: rgb(249, 250, 251);
+  background-color: inherit;
 }
 
 /* Floating Actions Overlay */
@@ -114,9 +113,7 @@ tr:hover .sticky-cell-right {
   top: 0;
   z-index: 30;
   background-color: white;
-  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
   display: flex;
   flex-direction: column;
 }
@@ -127,6 +124,9 @@ tr:hover .sticky-cell-right {
   border-bottom-left-radius: 16px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 4px 0 12px -2px rgba(0, 0, 0, 0.08);
+  min-width: 130px;
 }
 
 .floating-actions-right {
@@ -135,10 +135,13 @@ tr:hover .sticky-cell-right {
   border-bottom-right-radius: 16px;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: -4px 0 12px -2px rgba(0, 0, 0, 0.08);
+  min-width: 130px;
 }
 
 .floating-actions-header {
-  background-color: rgb(243, 244, 246);
+  background-color: rgb(249, 250, 251);
   padding: 16px;
   text-align: center;
   font-weight: 500;
@@ -146,7 +149,6 @@ tr:hover .sticky-cell-right {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .floating-actions-left .floating-actions-header {
@@ -158,12 +160,11 @@ tr:hover .sticky-cell-right {
 }
 
 .floating-actions-cell {
-  padding: 8px 16px;
+  padding: 8px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: white;
+  gap: 8px;
 }
 
 .floating-actions-cell:last-child {
@@ -180,40 +181,4 @@ tr:hover .sticky-cell-right {
 
 .floating-actions-cell:hover {
   background-color: rgb(249, 250, 251);
-}
-
-/* Shared Table: rounded corners (CSS-only, no markup changes) */
-.overflow-x-auto > table.border-collapse {
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-/* LTR corners */
-.overflow-x-auto > table[dir='ltr'] thead tr:first-child th:first-child {
-  border-top-left-radius: 16px;
-}
-.overflow-x-auto > table[dir='ltr'] thead tr:first-child th:last-child {
-  border-top-right-radius: 16px;
-}
-.overflow-x-auto > table[dir='ltr'] tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 16px;
-}
-.overflow-x-auto > table[dir='ltr'] tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 16px;
-}
-
-/* RTL corners */
-.overflow-x-auto > table[dir='rtl'] thead tr:first-child th:first-child {
-  border-top-right-radius: 16px;
-}
-.overflow-x-auto > table[dir='rtl'] thead tr:first-child th:last-child {
-  border-top-left-radius: 16px;
-}
-.overflow-x-auto > table[dir='rtl'] tbody tr:last-child td:first-child {
-  border-bottom-right-radius: 16px;
-}
-.overflow-x-auto > table[dir='rtl'] tbody tr:last-child td:last-child {
-  border-bottom-left-radius: 16px;
 }

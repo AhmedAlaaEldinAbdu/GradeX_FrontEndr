@@ -57,7 +57,7 @@ const IconButton: React.FC<IconButtonProps> = ({
     <button
       type={type}
       aria-label={ariaLabel}
-      className={`rounded-full p-2 transition-colors ${defaultVariant || variantClasses[variant]} ${disabledClasses} ${className}`}
+      className={`rounded-full p-2 shadow-md transition-colors ${defaultVariant || variantClasses[variant]} ${disabledClasses} ${className}`}
       disabled={disabled}
       {...rest}
     >

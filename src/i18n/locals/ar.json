@@ -117,6 +117,7 @@
     "rejectionReason": "سبب الرفض",
     "enterRejectionReason": "أدخل سبب الرفض",
     "rejectionReasonRequired": "سبب الرفض مطلوب",
+    "selectAnOption": "اختر خيارًا",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
@@ -979,11 +980,13 @@
     "gradesList": "قائمة الصفوف",
     "noGradesMessage": "لم يتم إضافة أي صف حتى الآن. يمكنك البدء بإضافة الصفوف الدراسية لتنظيم والإدارة بشكل أفضل.",
     "grade": "صف",
+    "gradeLabel": "الصف الدراسي",
     "gradeName": "اسم الصف",
     "gradeNameAr": "اسم الصف (باللغة العربية)",
     "gradeNameEn": "اسم الصف (باللغة الإنجليزية)",
     "enterGradeNameAr": "أدخل اسم الصف بالعربية",
     "enterGradeNameEn": "أدخل اسم الصف بالإنجليزية",
+    "academicSystemLabel": "نظام التعليم",
     "academicSystem": "النظام التعليمي",
     "selectAcademicSystem": "اختر النظام التعليمي",
     "classImage": "صورة الفصل",
@@ -1030,6 +1033,10 @@
       "classroomNameArInvalid": "يجب أن يحتوي اسم الصف على أحرف عربية فقط",
       "classroomNameEnRequired": "اسم الصف بالإنجليزية مطلوب",
       "classroomNameEnInvalid": "يجب أن يحتوي اسم الصف بالإنجليزية على أحرف إنجليزية فقط",
+      "classroomNicknameArInvalid": "يجب أن يحتوي الاسم المختصر على أحرف عربية فقط",
+      "classroomNicknameEnInvalid": "يجب أن يحتوي الاسم المختصر بالإنجليزية على أحرف إنجليزية فقط",
+      "classroomDescriptionArInvalid": "يجب أن يحتوي الوصف على أحرف عربية فقط",
+      "classroomDescriptionEnInvalid": "يجب أن يحتوي الوصف بالإنجليزية على أحرف إنجليزية فقط",
       "maxStudentsRequired": "العدد الأقصى للطلاب مطلوب",
       "maxStudentsMustBePositive": "العدد الأقصى للطلاب يجب أن يكون رقم موجب",
       "maxStudentsMustBeInteger": "العدد الأقصى للطلاب يجب أن يكون رقم صحيح",
@@ -2216,5 +2223,21 @@
   "fileUpload": {
     "uploadText": "اضغط هنا للإضافة صورة أو ملف",
     "formatSeparator": " أو "
+  },
+  "preparations": {
+    "title": "التحضيرات",
+    "addPreparation": "إضافة تحضير",
+    "searchTopicName": "ابحث عن اسم الموضوع",
+    "preparationNumber": "رقم التحضير",
+    "topicName": "اسم الموضوع",
+    "subjectName": "اسم المادة",
+    "teacherName": "اسم المعلم",
+    "educationalStage": "المرحلة التعليمية",
+    "grade": "الصف الدراسي",
+    "date": "التاريخ",
+    "actions": "الإجراءات",
+    "noPreparations": "لا يوجد تحضيرات",
+    "confirmDelete": "هل أنت متأكد من حذف هذا التحضير؟",
+    "deletedSuccessfully": "تم حذف التحضير بنجاح"
   }
 }

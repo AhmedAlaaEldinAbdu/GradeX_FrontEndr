@@ -83,7 +83,7 @@ export default function DataTable<T>({
   isLoading = false,
   emptyMessage,
   t,
-  showActionButtons = true,
+  showActionButtons = false,
   floatingActions = true,
 }: DataTableProps<T>) {
   const handleReload = () => {

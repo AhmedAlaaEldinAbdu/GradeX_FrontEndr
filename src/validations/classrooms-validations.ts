@@ -18,10 +18,34 @@ export const ClassroomsSchema = object({
           .required('classrooms.validation.classroomNameEnRequired')
           .typeError('classrooms.validation.classroomNameEnRequired')
           .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'classrooms.validation.classroomNameEnInvalid'),
-        alias: string().default(''),
-        aliasEn: string().default(''),
-        note: string().default(''),
-        noteEn: string().default(''),
+        alias: string()
+          .default('')
+          .test(
+            'arabic-or-empty',
+            'classrooms.validation.classroomNicknameArInvalid',
+            (value) => !value || /^[\u0600-\u06FF\s\d\p{P}]+$/u.test(value)
+          ),
+        aliasEn: string()
+          .default('')
+          .test(
+            'english-or-empty',
+            'classrooms.validation.classroomNicknameEnInvalid',
+            (value) => !value || /^[a-zA-Z\s\d\p{P}]+$/u.test(value)
+          ),
+        note: string()
+          .default('')
+          .test(
+            'arabic-or-empty',
+            'classrooms.validation.classroomDescriptionArInvalid',
+            (value) => !value || /^[\u0600-\u06FF\s\d\p{P}]+$/u.test(value)
+          ),
+        noteEn: string()
+          .default('')
+          .test(
+            'english-or-empty',
+            'classrooms.validation.classroomDescriptionEnInvalid',
+            (value) => !value || /^[a-zA-Z\s\d\p{P}]+$/u.test(value)
+          ),
         maxStudents: number()
           .required('classrooms.validation.maxStudentsRequired')
           .positive('classrooms.validation.maxStudentsMustBePositive')
@@ -51,10 +75,34 @@ export const EditClassroomSchema = object({
     .required('classrooms.validation.classroomNameEnRequired')
     .typeError('classrooms.validation.classroomNameEnRequired')
     .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'classrooms.validation.classroomNameEnInvalid'),
-  alias: string().default(''),
-  aliasEn: string().default(''),
-  note: string().default(''),
-  noteEn: string().default(''),
+  alias: string()
+    .default('')
+    .test(
+      'arabic-or-empty',
+      'classrooms.validation.classroomNicknameArInvalid',
+      (value) => !value || /^[\u0600-\u06FF\s\d\p{P}]+$/u.test(value)
+    ),
+  aliasEn: string()
+    .default('')
+    .test(
+      'english-or-empty',
+      'classrooms.validation.classroomNicknameEnInvalid',
+      (value) => !value || /^[a-zA-Z\s\d\p{P}]+$/u.test(value)
+    ),
+  note: string()
+    .default('')
+    .test(
+      'arabic-or-empty',
+      'classrooms.validation.classroomDescriptionArInvalid',
+      (value) => !value || /^[\u0600-\u06FF\s\d\p{P}]+$/u.test(value)
+    ),
+  noteEn: string()
+    .default('')
+    .test(
+      'english-or-empty',
+      'classrooms.validation.classroomDescriptionEnInvalid',
+      (value) => !value || /^[a-zA-Z\s\d\p{P}]+$/u.test(value)
+    ),
   maxStudents: number()
     .required('classrooms.validation.maxStudentsRequired')
     .positive('classrooms.validation.maxStudentsMustBePositive')
