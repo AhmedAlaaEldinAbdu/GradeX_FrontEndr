@@ -147,7 +147,7 @@ function Table<T>({ columns, data, keyExtractor, floatingActions = false }: Tabl
 
   return (
     <div className="relative w-full">
-      <div className="table-card-shadow overflow-hidden rounded-xl border border-gray-200">
+      <div className="overflow-hidden rounded-xl border border-gray-200">
         <div ref={scrollContainerRef} className="w-full overflow-x-auto">
           <table
             ref={tableRef}
