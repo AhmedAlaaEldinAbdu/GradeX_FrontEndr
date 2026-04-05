@@ -2171,5 +2171,20 @@
   "fileUpload": {
     "uploadText": "اضغط هنا للإضافة صورة أو ملف",
     "formatSeparator": " أو "
+  },
+  "preparations": {
+    "title": "التحضيرات",
+    "addPreparation": "إضافة تحضير",
+    "searchTopicName": "ابحث عن اسم الموضوع",
+    "preparationNumber": "رقم التحضير",
+    "topicName": "اسم الموضوع",
+    "subjectName": "اسم المادة",
+    "teacherName": "اسم المعلم",
+    "educationalStage": "المرحلة التعليمية",
+    "grade": "الصف الدراسي",
+    "actions": "الإجراءات",
+    "noPreparations": "لا يوجد تحضيرات",
+    "confirmDelete": "هل أنت متأكد من حذف هذا التحضير؟",
+    "deletedSuccessfully": "تم حذف التحضير بنجاح"
   }
 }

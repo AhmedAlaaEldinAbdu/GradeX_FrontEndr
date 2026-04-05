@@ -2168,5 +2168,20 @@
   "fileUpload": {
     "uploadText": "Click here to add image or file",
     "formatSeparator": " or "
+  },
+  "preparations": {
+    "title": "Preparations",
+    "addPreparation": "Add preparation",
+    "searchTopicName": "Search topic name",
+    "preparationNumber": "Preparation Number",
+    "topicName": "Topic Name",
+    "subjectName": "Subject Name",
+    "teacherName": "Teacher Name",
+    "educationalStage": "Educational Stage",
+    "grade": "Grade",
+    "actions": "Actions",
+    "noPreparations": "No preparations",
+    "confirmDelete": "Are you sure you want to delete this preparation?",
+    "deletedSuccessfully": "Preparation deleted successfully"
   }
 }
