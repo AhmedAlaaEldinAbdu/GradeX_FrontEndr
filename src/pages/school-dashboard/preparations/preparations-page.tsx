@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
-import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import PreparationsList from './components/PreparationsList';
 
 export default function PreparationsPage() {
@@ -20,19 +19,7 @@ export default function PreparationsPage() {
     <div>
       <Breadcrumb items={breadcrumbItems} />
 
-      <PageHeader
-        title="preparations.title"
-        actions={[
-          {
-            label: 'preparations.addPreparation',
-            onClick: () => {
-              // Coming soon
-            },
-            imgSrc: PlusIcon,
-            imgClassName: 'w-[24px] h-[24px]',
-          },
-        ]}
-      />
+      <PageHeader title="preparations.title" />
 
       <PreparationsList />
     </div>
