@@ -34,6 +34,8 @@ import EditLessonPage from '@/pages/school-dashboard/calendar-management/edit-le
 import MonthlyCalendarPage from '@/pages/school-dashboard/calendar-management/monthly-calendar-page';
 import AcademicCalendarPage from '@/pages/school-dashboard/calendar-management/academic-calendar-page';
 import TasksPage from '@/pages/school-dashboard/calendar-management/tasks-page';
+import AddTaskPage from '@/pages/school-dashboard/calendar-management/add-task-page';
+import EditTaskPage from '@/pages/school-dashboard/calendar-management/edit-task-page';
 import AddAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/add-academic-calendar-page';
 import EditAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/edit-academic-calendar-page';
 import TuitionFeesPage from '@/pages/school-dashboard/tuition-fees/tuition-fees-page';
@@ -338,6 +340,26 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <TasksPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/tasks/add-task"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddTaskPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/tasks/edit/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditTaskPage />
             </MainLayout>
           </ProtectedRoute>
         }
