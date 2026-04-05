@@ -1930,6 +1930,19 @@
   "tasksManagement": {
     "title": "Tasks",
     "addTaskButton": "Add Task",
+    "messages": {
+      "addSuccess": "Task added successfully",
+      "editSuccess": "Changes saved successfully",
+      "notFound": "Task not found"
+    },
+    "addPage": {
+      "title": "Add Task",
+      "submitButton": "Add"
+    },
+    "editPage": {
+      "title": "Edit Task",
+      "submitButton": "Save Changes"
+    },
     "metrics": {
       "total": "Total tasks",
       "completed": "Completed tasks",
@@ -1957,11 +1970,43 @@
     "taskTypes": {
       "quiz": "Quiz",
       "dictation": "Dictation",
-      "training": "Training"
+      "training": "Training",
+      "homework": "Homework"
     },
     "correctionStatuses": {
       "corrected": "Corrected",
       "notCorrected": "Not corrected"
+    },
+    "form": {
+      "educationalStage": "Educational stage",
+      "educationalStagePlaceholder": "Select option",
+      "classroom": "Classroom",
+      "classroomPlaceholder": "Select classroom",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select subject",
+      "taskNameAr": "Task name (Arabic)",
+      "taskNameArPlaceholder": "Enter task name",
+      "taskNameEn": "Task name (English)",
+      "taskNameEnPlaceholder": "Enter task name",
+      "taskType": "Task type",
+      "taskDate": "Task date",
+      "deliveryDate": "Delivery date",
+      "taskDatePlaceholder": "Select date",
+      "deliveryDatePlaceholder": "Select date",
+      "startPage": "Start page number (optional)",
+      "startPagePlaceholder": "Enter start page number",
+      "endPage": "End page number (optional)",
+      "endPagePlaceholder": "Enter end page number",
+      "descriptionAr": "Description (Arabic) (optional)",
+      "descriptionArPlaceholder": "Enter homework description in Arabic",
+      "descriptionEn": "Description (English) (optional)",
+      "descriptionEnPlaceholder": "Enter homework description in English",
+      "assignTo": "Assign quiz to",
+      "assignAll": "All",
+      "assignSpecific": "Select students",
+      "attachments": "Attachments",
+      "uploadAttachment": "Click here to add an image or file",
+      "attachmentFileName": "File name"
     },
     "emptyState": {
       "title": "No tasks yet",

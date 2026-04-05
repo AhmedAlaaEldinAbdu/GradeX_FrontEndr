@@ -1933,6 +1933,19 @@
   "tasksManagement": {
     "title": "المهام",
     "addTaskButton": "إضافة مهمة",
+    "messages": {
+      "addSuccess": "تمت إضافة المهمة بنجاح",
+      "editSuccess": "تم حفظ التغييرات بنجاح",
+      "notFound": "لم يتم العثور على المهمة"
+    },
+    "addPage": {
+      "title": "إضافة مهمة",
+      "submitButton": "إضافة"
+    },
+    "editPage": {
+      "title": "تعديل المهمة",
+      "submitButton": "حفظ التغييرات"
+    },
     "metrics": {
       "total": "إجمالي المهام",
       "completed": "المهام المكتملة",
@@ -1960,11 +1973,43 @@
     "taskTypes": {
       "quiz": "اختبار Quiz",
       "dictation": "إملاء",
-      "training": "تدريب"
+      "training": "تدريب",
+      "homework": "واجب"
     },
     "correctionStatuses": {
       "corrected": "تم التصحيح",
       "notCorrected": "لم يتم التصحيح"
+    },
+    "form": {
+      "educationalStage": "المرحلة الدراسية",
+      "educationalStagePlaceholder": "اختر خياراً",
+      "classroom": "الصف الدراسي",
+      "classroomPlaceholder": "اختر الصف الدراسي",
+      "subject": "المادة",
+      "subjectPlaceholder": "اختر المادة",
+      "taskNameAr": "اسم المهمة (باللغة العربية)",
+      "taskNameArPlaceholder": "أدخل اسم المهمة",
+      "taskNameEn": "اسم المهمة (باللغة الإنجليزية)",
+      "taskNameEnPlaceholder": "أدخل اسم المهمة",
+      "taskType": "نوع المهمة",
+      "taskDate": "تاريخ المهمة",
+      "deliveryDate": "تاريخ التسليم",
+      "taskDatePlaceholder": "اختر التاريخ",
+      "deliveryDatePlaceholder": "اختر التاريخ",
+      "startPage": "بداية رقم الصفحات",
+      "startPagePlaceholder": "أدخل بداية رقم الصفحات",
+      "endPage": "نهاية رقم الصفحات",
+      "endPagePlaceholder": "أدخل نهاية رقم الصفحات",
+      "descriptionAr": "الوصف (باللغة العربية)",
+      "descriptionArPlaceholder": "أدخل وصف الواجب (باللغة العربية)",
+      "descriptionEn": "الوصف (باللغة الإنجليزية)",
+      "descriptionEnPlaceholder": "أدخل وصف الواجب (باللغة الإنجليزية)",
+      "assignTo": "تخصيص الاختبار الى",
+      "assignAll": "الكل",
+      "assignSpecific": "تحديد الطلاب",
+      "attachments": "مرفقات",
+      "uploadAttachment": "اضغط هنا للإضافة صورة أو ملف",
+      "attachmentFileName": "اسم الملف"
     },
     "emptyState": {
       "title": "لم يتم إضافة أي مهمة حتى الآن",
