@@ -1920,6 +1920,55 @@
       "breakfastEndLabel": "Breakfast end"
     }
   },
+  "tasksManagement": {
+    "title": "Tasks",
+    "addTaskButton": "Add Task",
+    "metrics": {
+      "total": "Total tasks",
+      "completed": "Completed tasks",
+      "pending": "Pending tasks",
+      "late": "Late tasks"
+    },
+    "filters": {
+      "searchPlaceholder": "Search by task name",
+      "classroomPlaceholder": "Classroom",
+      "subjectPlaceholder": "Subject",
+      "taskTypePlaceholder": "Task type",
+      "correctionStatusPlaceholder": "Correction status"
+    },
+    "table": {
+      "taskName": "Task name",
+      "correctionStatus": "Correction status",
+      "submissionsCount": "Submissions",
+      "taskType": "Task type",
+      "educationalStage": "Educational stage",
+      "classroom": "Classroom",
+      "subjectName": "Subject name",
+      "teacherName": "Teacher name",
+      "date": "Date"
+    },
+    "taskTypes": {
+      "quiz": "Quiz",
+      "dictation": "Dictation",
+      "training": "Training"
+    },
+    "correctionStatuses": {
+      "corrected": "Corrected",
+      "notCorrected": "Not corrected"
+    },
+    "emptyState": {
+      "title": "No tasks yet",
+      "description": "You can start by adding tasks to manage follow-up and workflow better.",
+      "noMatchingResults": "No matching results"
+    },
+    "alt": {
+      "total": "Total tasks",
+      "completed": "Completed tasks",
+      "pending": "Pending tasks",
+      "late": "Late tasks",
+      "empty": "Tasks"
+    }
+  },
   "monthlyCalendar": {
     "title": "Monthly Calendar",
     "description": "Keep track of academic highlights for the month at a glance.",

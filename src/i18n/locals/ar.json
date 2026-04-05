@@ -1923,6 +1923,55 @@
       "breakfastEndLabel": "نهاية وقت الفطور"
     }
   },
+  "tasksManagement": {
+    "title": "المهام",
+    "addTaskButton": "إضافة مهمة",
+    "metrics": {
+      "total": "إجمالي المهام",
+      "completed": "المهام المكتملة",
+      "pending": "المهام قيد الانتظار",
+      "late": "المهام المتأخرة"
+    },
+    "filters": {
+      "searchPlaceholder": "ابحث عن اسم المهمة",
+      "classroomPlaceholder": "الصف الدراسي",
+      "subjectPlaceholder": "اسم المادة",
+      "taskTypePlaceholder": "نوع المهمة",
+      "correctionStatusPlaceholder": "حالة التصحيح"
+    },
+    "table": {
+      "taskName": "اسم المهمة",
+      "correctionStatus": "حالة التسليم",
+      "submissionsCount": "عدد التسليم",
+      "taskType": "نوع المهمة",
+      "educationalStage": "المرحلة التعليمية",
+      "classroom": "الصف الدراسي",
+      "subjectName": "اسم المادة",
+      "teacherName": "اسم المعلم",
+      "date": "التاريخ"
+    },
+    "taskTypes": {
+      "quiz": "اختبار Quiz",
+      "dictation": "إملاء",
+      "training": "تدريب"
+    },
+    "correctionStatuses": {
+      "corrected": "تم التصحيح",
+      "notCorrected": "لم يتم التصحيح"
+    },
+    "emptyState": {
+      "title": "لم يتم إضافة أي مهمة حتى الآن",
+      "description": "يمكنك البدء بإضافة المهام الدراسية لتنظيم المتابعة والإدارة بشكل أفضل.",
+      "noMatchingResults": "لا توجد نتائج مطابقة"
+    },
+    "alt": {
+      "total": "إجمالي المهام",
+      "completed": "المهام المكتملة",
+      "pending": "المهام قيد الانتظار",
+      "late": "المهام المتأخرة",
+      "empty": "المهام"
+    }
+  },
   "monthlyCalendar": {
     "title": "التقويم الشهري",
     "description": "تابع أبرز فعاليات الشهر في لمحة واحدة.",
