@@ -100,10 +100,9 @@ export default function PreparationsList() {
           </div>
           <span className="font-medium text-gray-500">{row.teacherName}</span>
           <IconButton
-            variant="blue"
             onClick={() => {}}
             ariaLabel="View"
-            className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-blue-50/50 hover:bg-blue-100"
+            className="flex h-[32px] w-[32px] items-center justify-center !rounded-full !bg-[#EAF4F4] !shadow-none hover:bg-[#D9EBEB]"
           >
             <CustomImage src={EyeStyledIcon} alt="View" className="h-[20px] w-[20px]" />
           </IconButton>
