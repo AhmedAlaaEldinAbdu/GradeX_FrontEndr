@@ -131,7 +131,10 @@ function Table<T>({ columns, data, keyExtractor, floatingActions = false }: Tabl
           <div
             key={keyExtractor(row, rowIndex)}
             className="floating-actions-cell"
-            style={{ height: rowHeights[rowIndex] || 'auto' }}
+            style={{
+              height: rowHeights[rowIndex] || 'auto',
+              backgroundColor: rowIndex % 2 === 0 ? '#ffffff' : 'rgba(209, 250, 229, 0.25)',
+            }}
           >
             {typeof lastColumn.accessor === 'function'
               ? lastColumn.accessor(row, rowIndex)
@@ -144,54 +147,16 @@ function Table<T>({ columns, data, keyExtractor, floatingActions = false }: Tabl
 
   return (
     <div className="relative w-full">
-      <div ref={scrollContainerRef} className="w-full overflow-x-auto">
-        <table
-          ref={tableRef}
-          className={`mb-1 min-w-full border-collapse border border-gray-300 text-sm ${isRTL ? 'text-right' : 'text-left'}`}
-          dir={direction}
-        >
-          <thead>
-            <tr className="border-b border-gray-200 bg-gray-100">
-              {columns.map((column, index) => {
-                const isStickyLeft = column.sticky === 'left' || column.sticky === true;
-                const isStickyRight = column.sticky === 'right';
-
-                let stickyClass = '';
-                let stickyStyle: React.CSSProperties = {};
-
-                if (isStickyLeft) {
-                  stickyClass = 'sticky-header';
-                  stickyStyle = { left: calculateStickyPosition(columns, index, 'left') };
-                } else if (isStickyRight && !floatingActions) {
-                  // Only apply sticky styles if floating actions is disabled
-                  if (isRTL) {
-                    stickyClass = 'sticky-header';
-                    stickyStyle = { left: calculateStickyPosition(columns, index, 'right') };
-                  } else {
-                    stickyClass = 'sticky-header-right';
-                    stickyStyle = { right: calculateStickyPosition(columns, index, 'right') };
-                  }
-                }
-
-                return (
-                  <th
-                    key={index}
-                    className={`border border-gray-300 bg-gray-100 px-4 py-4 text-center text-base font-normal ${column.headerClassName || ''} text-black-900 ${stickyClass}`}
-                    style={stickyStyle}
-                  >
-                    {column.headerComponent ? column.headerComponent : t(column.header)}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, rowIndex) => (
-              <tr
-                key={keyExtractor(row, rowIndex)}
-                className="border-b border-gray-200 transition-colors hover:bg-gray-50"
-              >
-                {columns.map((column, colIndex) => {
+      <div className="table-card-shadow overflow-hidden rounded-xl border border-gray-200">
+        <div ref={scrollContainerRef} className="w-full overflow-x-auto">
+          <table
+            ref={tableRef}
+            className={`min-w-full border-collapse text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+            dir={direction}
+          >
+            <thead>
+              <tr className="bg-gray-50">
+                {columns.map((column, index) => {
                   const isStickyLeft = column.sticky === 'left' || column.sticky === true;
                   const isStickyRight = column.sticky === 'right';
 
@@ -199,41 +164,83 @@ function Table<T>({ columns, data, keyExtractor, floatingActions = false }: Tabl
                   let stickyStyle: React.CSSProperties = {};
 
                   if (isStickyLeft) {
-                    stickyClass = 'sticky-cell';
-                    stickyStyle = { left: calculateStickyPosition(columns, colIndex, 'left') };
+                    stickyClass = 'sticky-header';
+                    stickyStyle = { left: calculateStickyPosition(columns, index, 'left') };
                   } else if (isStickyRight && !floatingActions) {
+                    // Only apply sticky styles if floating actions is disabled
                     if (isRTL) {
-                      stickyClass = 'sticky-cell';
-                      stickyStyle = { left: calculateStickyPosition(columns, colIndex, 'right') };
+                      stickyClass = 'sticky-header';
+                      stickyStyle = { left: calculateStickyPosition(columns, index, 'right') };
                     } else {
-                      stickyClass = 'sticky-cell-right';
-                      stickyStyle = { right: calculateStickyPosition(columns, colIndex, 'right') };
+                      stickyClass = 'sticky-header-right';
+                      stickyStyle = { right: calculateStickyPosition(columns, index, 'right') };
                     }
                   }
 
                   return (
-                    <td
-                      key={colIndex}
-                      className={`border border-gray-300 px-4 py-2 text-center text-base font-normal text-gray-500 ${
-                        column.className || ''
-                      } ${stickyClass}`}
+                    <th
+                      key={index}
+                      className={`bg-gray-50 px-4 py-4 text-center text-base font-normal ${column.headerClassName || ''} text-black-900 ${stickyClass}`}
                       style={stickyStyle}
                     >
-                      <div className="flex items-center justify-center text-base font-normal text-gray-500">
-                        {typeof column.accessor === 'function'
-                          ? column.accessor(row, rowIndex)
-                          : String(row[column.accessor])}
-                      </div>
-                    </td>
+                      {column.headerComponent ? column.headerComponent : t(column.header)}
+                    </th>
                   );
                 })}
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {data.length === 0 && (
-          <div className="py-8 text-center text-gray-500">{t('common.noData')}</div>
-        )}
+            </thead>
+            <tbody>
+              {data.map((row, rowIndex) => (
+                <tr
+                  key={keyExtractor(row, rowIndex)}
+                  className={`transition-colors ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-emerald-50/40'} hover:bg-emerald-50/60`}
+                >
+                  {columns.map((column, colIndex) => {
+                    const isStickyLeft = column.sticky === 'left' || column.sticky === true;
+                    const isStickyRight = column.sticky === 'right';
+
+                    let stickyClass = '';
+                    let stickyStyle: React.CSSProperties = {};
+
+                    if (isStickyLeft) {
+                      stickyClass = 'sticky-cell';
+                      stickyStyle = { left: calculateStickyPosition(columns, colIndex, 'left') };
+                    } else if (isStickyRight && !floatingActions) {
+                      if (isRTL) {
+                        stickyClass = 'sticky-cell';
+                        stickyStyle = { left: calculateStickyPosition(columns, colIndex, 'right') };
+                      } else {
+                        stickyClass = 'sticky-cell-right';
+                        stickyStyle = {
+                          right: calculateStickyPosition(columns, colIndex, 'right'),
+                        };
+                      }
+                    }
+
+                    return (
+                      <td
+                        key={colIndex}
+                        className={`px-4 py-4 text-center text-base font-normal text-gray-500 ${
+                          column.className || ''
+                        } ${stickyClass}`}
+                        style={stickyStyle}
+                      >
+                        <div className="flex items-center justify-center text-base font-normal text-gray-500">
+                          {typeof column.accessor === 'function'
+                            ? column.accessor(row, rowIndex)
+                            : String(row[column.accessor])}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {data.length === 0 && (
+            <div className="py-8 text-center text-gray-500">{t('common.noData')}</div>
+          )}
+        </div>
       </div>
 
       {/* Floating Actions Overlay */}
