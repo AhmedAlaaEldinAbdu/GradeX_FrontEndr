@@ -169,7 +169,7 @@ export default function PreparationsList() {
       placeholder: t('preparations.searchTopicName'),
       value: searchTerm,
       onChange: (value) => setSearchTerm((value as string) ?? ''),
-      width: '25%',
+      width: '40%',
     },
     {
       type: 'custom',
@@ -177,7 +177,7 @@ export default function PreparationsList() {
       placeholder: '',
       value: selectedStage,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedStage}
@@ -195,7 +195,7 @@ export default function PreparationsList() {
       placeholder: '',
       value: selectedGrade,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedGrade}
@@ -212,11 +212,16 @@ export default function PreparationsList() {
       name: 'prep-date',
       value: selectedDate,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <Input
-          type="date"
+          type="text"
+          placeholder={t('preparations.date')}
           value={selectedDate}
+          onFocus={(e) => (e.target.type = 'date')}
+          onBlur={(e) => {
+            if (!e.target.value) e.target.type = 'text';
+          }}
           onChange={(e) => setSelectedDate(e.target.value)}
           className="h-[40px] w-full"
         />
