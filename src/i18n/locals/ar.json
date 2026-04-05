@@ -1030,6 +1030,8 @@
       "classroomNameArInvalid": "يجب أن يحتوي اسم الصف على أحرف عربية فقط",
       "classroomNameEnRequired": "اسم الصف بالإنجليزية مطلوب",
       "classroomNameEnInvalid": "يجب أن يحتوي اسم الصف بالإنجليزية على أحرف إنجليزية فقط",
+      "classroomNicknameArInvalid": "يجب أن يحتوي الاسم المختصر على أحرف عربية فقط",
+      "classroomNicknameEnInvalid": "يجب أن يحتوي الاسم المختصر بالإنجليزية على أحرف إنجليزية فقط",
       "maxStudentsRequired": "العدد الأقصى للطلاب مطلوب",
       "maxStudentsMustBePositive": "العدد الأقصى للطلاب يجب أن يكون رقم موجب",
       "maxStudentsMustBeInteger": "العدد الأقصى للطلاب يجب أن يكون رقم صحيح",
