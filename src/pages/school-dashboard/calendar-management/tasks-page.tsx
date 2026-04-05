@@ -10,6 +10,7 @@ export default function TasksPage() {
         actions={[
           {
             label: 'tasksManagement.addTaskButton',
+            to: '/calendar/tasks/add-task',
             imgSrc: PlusIcon,
             imgClassName: 'w-[24px] h-[24px]',
           },
