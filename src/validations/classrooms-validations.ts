@@ -32,8 +32,20 @@ export const ClassroomsSchema = object({
             'classrooms.validation.classroomNicknameEnInvalid',
             (value) => !value || /^[a-zA-Z\s\d\p{P}]+$/u.test(value)
           ),
-        note: string().default(''),
-        noteEn: string().default(''),
+        note: string()
+          .default('')
+          .test(
+            'arabic-or-empty',
+            'classrooms.validation.classroomDescriptionArInvalid',
+            (value) => !value || /^[\u0600-\u06FF\s\d\p{P}]+$/u.test(value)
+          ),
+        noteEn: string()
+          .default('')
+          .test(
+            'english-or-empty',
+            'classrooms.validation.classroomDescriptionEnInvalid',
+            (value) => !value || /^[a-zA-Z\s\d\p{P}]+$/u.test(value)
+          ),
         maxStudents: number()
           .required('classrooms.validation.maxStudentsRequired')
           .positive('classrooms.validation.maxStudentsMustBePositive')
@@ -77,8 +89,20 @@ export const EditClassroomSchema = object({
       'classrooms.validation.classroomNicknameEnInvalid',
       (value) => !value || /^[a-zA-Z\s\d\p{P}]+$/u.test(value)
     ),
-  note: string().default(''),
-  noteEn: string().default(''),
+  note: string()
+    .default('')
+    .test(
+      'arabic-or-empty',
+      'classrooms.validation.classroomDescriptionArInvalid',
+      (value) => !value || /^[\u0600-\u06FF\s\d\p{P}]+$/u.test(value)
+    ),
+  noteEn: string()
+    .default('')
+    .test(
+      'english-or-empty',
+      'classrooms.validation.classroomDescriptionEnInvalid',
+      (value) => !value || /^[a-zA-Z\s\d\p{P}]+$/u.test(value)
+    ),
   maxStudents: number()
     .required('classrooms.validation.maxStudentsRequired')
     .positive('classrooms.validation.maxStudentsMustBePositive')
