@@ -33,6 +33,7 @@ import AddLessonPage from '@/pages/school-dashboard/calendar-management/add-less
 import EditLessonPage from '@/pages/school-dashboard/calendar-management/edit-lesson-page';
 import MonthlyCalendarPage from '@/pages/school-dashboard/calendar-management/monthly-calendar-page';
 import AcademicCalendarPage from '@/pages/school-dashboard/calendar-management/academic-calendar-page';
+import TasksPage from '@/pages/school-dashboard/calendar-management/tasks-page';
 import AddAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/add-academic-calendar-page';
 import EditAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/edit-academic-calendar-page';
 import TuitionFeesPage from '@/pages/school-dashboard/tuition-fees/tuition-fees-page';
@@ -335,10 +336,7 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">المهام</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <TasksPage />
             </MainLayout>
           </ProtectedRoute>
         }
