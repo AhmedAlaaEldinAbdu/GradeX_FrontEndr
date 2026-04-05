@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
+import Input from '@/shared/components/Input';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import EmptyState from '@/shared/components/EmptyState';
@@ -39,11 +40,11 @@ export default function PreparationsList() {
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
-  
+
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedPrepId, setSelectedPrepId] = useState('');
   const [data, setData] = useState<PreparationMock[]>(mockData);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
 
@@ -61,7 +62,7 @@ export default function PreparationsList() {
   const columns: DataTableColumn<PreparationMock>[] = [
     {
       header: '#',
-      accessor: (_, index) => ((currentPage - 1) * limit + (index + 1)).toString(),
+      accessor: (_, index) => ((currentPage - 1) * limit + ((index || 0) + 1)).toString(),
       headerClassName: 'w-16',
       className: 'text-center',
     },
@@ -89,7 +90,11 @@ export default function PreparationsList() {
         <div className="flex items-center justify-center gap-3">
           <span>{row.teacherName}</span>
           <div className="h-8 w-8 overflow-hidden rounded-full border border-gray-200">
-            <CustomImage src={row.teacherAvatar} alt={row.teacherName} className="h-full w-full object-cover" />
+            <CustomImage
+              src={row.teacherAvatar}
+              alt={row.teacherName}
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
       ),
@@ -100,12 +105,7 @@ export default function PreparationsList() {
       header: 'preparations.actions',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
-          <IconButton
-            variant="blue"
-            onClick={() => {}}
-            ariaLabel="View"
-            className="h-8 w-8"
-          >
+          <IconButton variant="blue" onClick={() => {}} ariaLabel="View" className="h-8 w-8">
             <CustomImage src={EyeStyledIcon} alt="View" className="h-4 w-4" />
           </IconButton>
           <IconButton
@@ -149,7 +149,9 @@ export default function PreparationsList() {
       customComponent: (
         <CustomSelect
           value={selectedStage}
-          onChange={(val) => setSelectedStage(Array.isArray(val) ? val[0] as string : val as string)}
+          onChange={(val) =>
+            setSelectedStage(Array.isArray(val) ? (val[0] as string) : (val as string))
+          }
           options={[]}
           placeholder={t('preparations.educationalStage')}
         />
@@ -165,19 +167,28 @@ export default function PreparationsList() {
       customComponent: (
         <CustomSelect
           value={selectedGrade}
-          onChange={(val) => setSelectedGrade(Array.isArray(val) ? val[0] as string : val as string)}
+          onChange={(val) =>
+            setSelectedGrade(Array.isArray(val) ? (val[0] as string) : (val as string))
+          }
           options={[]}
           placeholder={t('preparations.grade')}
         />
       ),
     },
     {
-      type: 'date',
+      type: 'custom',
       name: 'prep-date',
-      placeholder: t('common.chooseDate'),
       value: selectedDate,
-      onChange: (value) => setSelectedDate((value as string) ?? ''),
+      onChange: () => {},
       width: '25%',
+      customComponent: (
+        <Input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="h-[40px] w-full"
+        />
+      ),
     },
   ];
 
@@ -222,7 +233,7 @@ export default function PreparationsList() {
           <DeletePopup
             open={showDeletePopup}
             message="preparations.confirmDelete"
-            itemName={data.find(d => d.id === selectedPrepId)?.topicName || ''}
+            itemName={data.find((d) => d.id === selectedPrepId)?.topicName || ''}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
