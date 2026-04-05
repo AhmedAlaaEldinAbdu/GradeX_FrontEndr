@@ -20,19 +20,18 @@ export default function MetricCard({
   iconClassName = 'bg-gray-50 text-gray-600',
 }: MetricCardProps) {
   return (
-    <Card className={`flex items-center justify-between gap-4 ${className} app-card-shadow p-4`}>
-      <div className="flex flex-1 flex-col items-center justify-center text-center">
+    <Card className={`flex gap-4 ${className} app-card-shadow p-4`}>
+      <div
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconClassName}`}
+      >
+        {icon}
+      </div>
+      <div className="flex flex-1 flex-col items-start gap-2">
         <div className="text-lg font-medium text-gray-700">{title}</div>
-        <div className="text-2xl font-semibold text-gray-900">
+        <div className="text-xl font-medium text-gray-900">
           {value}
           {percentage ? '%' : ''}
         </div>
-      </div>
-
-      <div
-        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconClassName}`}
-      >
-        {icon}
       </div>
     </Card>
   );
