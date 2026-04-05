@@ -10,6 +10,7 @@ import Button from '@/shared/components/Button';
 import { useToast } from '@/shared/context/ToastContext';
 import type { TaskRecord, TaskType } from '../data/tasks.mock';
 import { TASKS_MOCK } from '../data/tasks.mock';
+import TaskStudentsPopup, { type TaskStudentOption } from '../popups/TaskStudentsPopup';
 
 export interface TaskFormValues {
   stage: string;
@@ -69,6 +70,8 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
 
   const [values, setValues] = useState<TaskFormValues>(createInitialValues(initialTask));
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+  const [isStudentsPopupOpen, setIsStudentsPopupOpen] = useState(false);
+  const [selectedStudents, setSelectedStudents] = useState<TaskStudentOption[]>([]);
   const [existingFileNames, setExistingFileNames] = useState<string[]>(
     mode === 'edit' ? [t('tasksManagement.form.attachmentFileName')] : []
   );
@@ -136,6 +139,21 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const handleFileDelete = () => {
     setAttachmentFiles([]);
     setExistingFileNames([]);
+  };
+
+  const handleAssignAll = () => {
+    patchValue('assignTo', 'all');
+    setSelectedStudents([]);
+    setIsStudentsPopupOpen(false);
+  };
+
+  const handleAssignSpecific = () => {
+    patchValue('assignTo', 'specific');
+    setIsStudentsPopupOpen(true);
+  };
+
+  const handleStudentsConfirm = (students: TaskStudentOption[]) => {
+    setSelectedStudents(students);
   };
 
   const handleSubmit = () => {
@@ -291,20 +309,38 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                 <input
                   type="radio"
                   checked={values.assignTo === 'all'}
-                  onChange={() => patchValue('assignTo', 'all')}
+                  onChange={handleAssignAll}
                   className="h-4 w-4"
                 />
                 {t('tasksManagement.form.assignAll')}
               </label>
-              <label className="flex items-center gap-2 text-base text-black-800">
+              <label
+                className="flex cursor-pointer items-center gap-2 text-base text-black-800"
+                onClick={() => {
+                  if (values.assignTo === 'specific') {
+                    setIsStudentsPopupOpen(true);
+                  }
+                }}
+              >
                 <input
                   type="radio"
                   checked={values.assignTo === 'specific'}
-                  onChange={() => patchValue('assignTo', 'specific')}
+                  onChange={handleAssignSpecific}
                   className="h-4 w-4"
                 />
                 {t('tasksManagement.form.assignSpecific')}
               </label>
+              {values.assignTo === 'specific' && selectedStudents.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setIsStudentsPopupOpen(true)}
+                  className="px-2 text-sm font-medium text-green-500 transition-colors hover:text-green-600"
+                >
+                  {t('tasksManagement.studentPopup.selectedCount', {
+                    count: selectedStudents.length,
+                  })}
+                </button>
+              ) : null}
             </div>
           </FormField>
 
@@ -347,6 +383,14 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
           </div>
         </div>
       </Card>
+
+      <TaskStudentsPopup
+        isOpen={isStudentsPopupOpen}
+        onClose={() => setIsStudentsPopupOpen(false)}
+        onConfirm={handleStudentsConfirm}
+        initialSelectedStudents={selectedStudents}
+        classroomName={values.classroom}
+      />
     </div>
   );
 }
