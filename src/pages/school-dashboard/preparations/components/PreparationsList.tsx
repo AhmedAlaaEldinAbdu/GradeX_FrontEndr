@@ -21,6 +21,7 @@ interface PreparationMock {
   subjectName: string;
   educationalStage: string;
   grade: string;
+  date: string;
 }
 
 const mockData: PreparationMock[] = Array.from({ length: 6 }).map((_, index) => ({
@@ -28,10 +29,18 @@ const mockData: PreparationMock[] = Array.from({ length: 6 }).map((_, index) => 
   preparationNumber: '121',
   topicName: 'موضوع 1',
   teacherName: 'أحمد معتز حسن',
-  teacherAvatar: 'https://i.pravatar.cc/150?u=' + index, // Mock avatar
+  teacherAvatar: 'https://i.pravatar.cc/150?u=' + (index + 20), // Mock avatar
   subjectName: 'لغة عربية',
-  educationalStage: 'المرحلة الابتدائية',
-  grade: 'الأول الابتدائي',
+  educationalStage:
+    index === 1
+      ? 'المرحلة الثانوية'
+      : index === 2
+        ? 'المرحلة الإعدادية'
+        : index === 3
+          ? 'رياض الأطفال'
+          : 'المرحلة الابتدائية',
+  grade: index === 1 ? '2/1 ع' : index === 4 ? '1/3 ع' : '1/1 ع',
+  date: '22/2/2025',
 }));
 
 export default function PreparationsList() {
@@ -64,23 +73,17 @@ export default function PreparationsList() {
       header: '#',
       accessor: (_, index) => ((currentPage - 1) * limit + ((index || 0) + 1)).toString(),
       headerClassName: 'w-16',
-      className: 'text-center',
+      className: 'text-center text-gray-500',
     },
     {
       header: 'preparations.preparationNumber',
-      accessor: (row) => row.preparationNumber,
+      accessor: (row) => <span className="text-gray-500">{row.preparationNumber}</span>,
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: 'preparations.topicName',
-      accessor: (row) => <span>{row.topicName}</span>,
-      headerClassName: 'min-w-[160px]',
-      className: 'text-center',
-    },
-    {
-      header: 'preparations.subjectName',
-      accessor: (row) => <span>{row.subjectName}</span>,
+      accessor: (row) => <span className="text-gray-500">{row.topicName}</span>,
       headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
@@ -88,7 +91,6 @@ export default function PreparationsList() {
       header: 'preparations.teacherName',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
-          <span>{row.teacherName}</span>
           <div className="h-8 w-8 overflow-hidden rounded-full border border-gray-200">
             <CustomImage
               src={row.teacherAvatar}
@@ -96,24 +98,48 @@ export default function PreparationsList() {
               className="h-full w-full object-cover"
             />
           </div>
+          <span className="font-medium text-gray-500">{row.teacherName}</span>
+          <IconButton
+            variant="blue"
+            onClick={() => {}}
+            ariaLabel="View"
+            className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-blue-50/50 hover:bg-blue-100"
+          >
+            <CustomImage src={EyeStyledIcon} alt="View" className="h-[20px] w-[20px]" />
+          </IconButton>
         </div>
       ),
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[280px]',
+      className: 'text-center',
+    },
+    {
+      header: 'preparations.subjectName',
+      accessor: (row) => <span className="text-gray-500">{row.subjectName}</span>,
+      headerClassName: 'min-w-[160px]',
+      className: 'text-center',
+    },
+    {
+      header: 'preparations.educationalStage',
+      accessor: (row) => <span className="text-gray-500">{row.educationalStage}</span>,
+      headerClassName: 'min-w-[170px]',
+      className: 'text-center',
+    },
+    {
+      header: 'preparations.grade',
+      accessor: (row) => <span className="text-gray-500">{row.grade}</span>,
+      headerClassName: 'min-w-[130px]',
+      className: 'text-center',
+    },
+    {
+      header: 'preparations.date',
+      accessor: (row) => <span className="text-gray-500">{row.date}</span>,
+      headerClassName: 'min-w-[130px]',
       className: 'text-center',
     },
     {
       header: 'preparations.actions',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
-          <IconButton variant="blue" onClick={() => {}} ariaLabel="View" className="h-8 w-8">
-            <CustomImage src={EyeStyledIcon} alt="View" className="h-4 w-4" />
-          </IconButton>
-          <IconButton
-            status="edit"
-            variant="success"
-            onClick={() => {}}
-            ariaLabel={t('common.edit')}
-          />
           <IconButton
             status="delete"
             variant="danger"
@@ -123,9 +149,15 @@ export default function PreparationsList() {
             }}
             ariaLabel={t('common.delete')}
           />
+          <IconButton
+            status="edit"
+            variant="success"
+            onClick={() => {}}
+            ariaLabel={t('common.edit')}
+          />
         </div>
       ),
-      headerClassName: 'min-w-[170px]',
+      headerClassName: 'min-w-[130px]',
       className: 'text-center',
     },
   ];
