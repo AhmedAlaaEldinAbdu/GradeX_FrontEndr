@@ -45,7 +45,7 @@ const getUniqueOptions = (
   });
 };
 
-export default function TaskForm({ mode, initialTask }: TaskFormProps) {
+export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();

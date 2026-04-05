@@ -1,6 +1,6 @@
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
-import TaskForm from './components/TaskForm';
+import AddEditTaskForm from './components/AddEditTaskForm';
 
 export default function AddTaskPage() {
   return (
@@ -12,7 +12,7 @@ export default function AddTaskPage() {
         ]}
       />
       <PageHeader title="tasksManagement.addPage.title" />
-      <TaskForm mode="add" />
+      <AddEditTaskForm mode="add" />
     </div>
   );
 }
