@@ -1,6 +1,6 @@
 export type TaskProgressStatus = 'completed' | 'pending' | 'late';
 export type TaskCorrectionStatus = 'corrected' | 'notCorrected';
-export type TaskType = 'quiz' | 'dictation' | 'training';
+export type TaskType = 'quiz' | 'dictation' | 'training' | 'homework';
 
 export interface TaskRecord {
     id: string;
@@ -29,6 +29,9 @@ export const TASK_TYPE_META: Record<TaskType, { className: string }> = {
     },
     training: {
         className: 'bg-amber-100 text-amber-700',
+    },
+    homework: {
+        className: 'bg-emerald-100 text-emerald-700',
     },
 };
 

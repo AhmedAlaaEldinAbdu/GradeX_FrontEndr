@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -35,6 +36,7 @@ const formatTaskDate = (value: string) => {
 
 export default function TasksManagement() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const isArabic = i18n.language === 'ar';
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -249,9 +251,14 @@ export default function TasksManagement() {
     },
     {
       header: 'common.actions',
-      accessor: () => (
+      accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
-          <IconButton status="edit" variant="success" ariaLabel={t('actions.edit')} />
+          <IconButton
+            status="edit"
+            variant="success"
+            ariaLabel={t('actions.edit')}
+            onClick={() => navigate(`/calendar/tasks/edit/${row.id}`)}
+          />
           <IconButton status="delete" variant="danger" ariaLabel={t('actions.delete')} />
         </div>
       ),
