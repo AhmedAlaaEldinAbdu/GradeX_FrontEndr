@@ -2008,6 +2008,14 @@
       "uploadAttachment": "Click here to add an image or file",
       "attachmentFileName": "File name"
     },
+    "studentPopup": {
+      "title": "Select Students",
+      "searchPlaceholder": "Search easily for what you want",
+      "loading": "Loading students...",
+      "empty": "No students found",
+      "confirmButton": "Select",
+      "selectedCount": "{{count}} students selected"
+    },
     "emptyState": {
       "title": "No tasks yet",
       "description": "You can start by adding tasks to manage follow-up and workflow better.",

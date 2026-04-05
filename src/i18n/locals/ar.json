@@ -2011,6 +2011,14 @@
       "uploadAttachment": "اضغط هنا للإضافة صورة أو ملف",
       "attachmentFileName": "اسم الملف"
     },
+    "studentPopup": {
+      "title": "تحديد الطلاب",
+      "searchPlaceholder": "ابحث بسهولة عما تريد",
+      "loading": "جار تحميل الطلاب...",
+      "empty": "لا يوجد طلاب",
+      "confirmButton": "تحديد",
+      "selectedCount": "تم تحديد {{count}} طالب"
+    },
     "emptyState": {
       "title": "لم يتم إضافة أي مهمة حتى الآن",
       "description": "يمكنك البدء بإضافة المهام الدراسية لتنظيم المتابعة والإدارة بشكل أفضل.",
