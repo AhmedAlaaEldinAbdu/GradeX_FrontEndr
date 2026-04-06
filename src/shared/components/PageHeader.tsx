@@ -7,12 +7,13 @@ type ActionType = {
   label: string;
   onClick?: () => void;
   to?: string;
-  variant?: 'primary' | 'outline' | 'danger' | 'secondary';
+  variant?: 'primary' | 'outline' | 'danger' | 'secondary' | 'info' | 'success' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   icon?: ReactNode;
   imgSrc?: string;
   imgClassName?: string;
   fullWidth?: boolean;
+  className?: string;
 };
 
 type PageHeaderProps = {
@@ -41,8 +42,9 @@ const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
                   imgSrc={action.imgSrc}
                   imgClassName={action.imgClassName}
                   fullWidth={action.fullWidth}
+                  className={action.className}
                 >
-                  {t(`${action.label}`)}
+                  {action.label ? t(`${action.label}`) : null}
                 </Button>
               </Link>
             ) : (
@@ -55,8 +57,9 @@ const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
                 imgSrc={action.imgSrc}
                 imgClassName={action.imgClassName}
                 fullWidth={action.fullWidth}
+                className={action.className}
               >
-                {t(`${action.label}`)}
+                {action.label ? t(`${action.label}`) : null}
               </Button>
             )
           )}

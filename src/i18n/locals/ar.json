@@ -2391,6 +2391,14 @@
       "content": "المحتوى",
       "contentPlaceholder": "ادخل المحتوى",
       "attachments": "مرفقات (اختياري)",
+      "validation": {
+        "dateRequired": "تاريخ التحضير مطلوب",
+        "educationalStageRequired": "برجاء اختيار المرحلة التعليمية",
+        "gradesRequired": "برجاء اختيار الصف الدراسي",
+        "subjectRequired": "برجاء اختيار المادة",
+        "topicRequired": "موضوع التحضير مطلوب",
+        "contentRequired": "محتوى التحضير مطلوب"
+      },
       "actions": {
         "cancel": "الغاء",
         "save": "حفظ",

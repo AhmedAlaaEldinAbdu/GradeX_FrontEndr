@@ -36,7 +36,8 @@ export default function PreparationsPage() {
             onClick: () => {
               // More options
             },
-            variant: 'secondary',
+            variant: 'ghost',
+            className: '!p-2.5 bg-gray-50 border border-gray-200 hover:bg-gray-100',
             imgSrc: DotsBlackIcon,
             imgClassName: 'w-[20px] h-[20px]',
           },
