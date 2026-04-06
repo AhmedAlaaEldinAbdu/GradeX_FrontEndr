@@ -30,12 +30,16 @@ import AddRegistrationAnnouncementPage from '@/pages/school-dashboard/registrati
 import EditRegistrationAnnouncementPage from '@/pages/school-dashboard/registration-announcement/edit-registration-announcement-page';
 import WeeklyCalendarPage from '@/pages/school-dashboard/calendar-management/weekly-calendar-page';
 import AddLessonPage from '@/pages/school-dashboard/calendar-management/add-lesson-page';
+import AddTaskCorrectionPage from '@/pages/school-dashboard/calendar-management/add-task-correction-page';
 import EditLessonPage from '@/pages/school-dashboard/calendar-management/edit-lesson-page';
 import MonthlyCalendarPage from '@/pages/school-dashboard/calendar-management/monthly-calendar-page';
 import AcademicCalendarPage from '@/pages/school-dashboard/calendar-management/academic-calendar-page';
 import TasksPage from '@/pages/school-dashboard/calendar-management/tasks-page';
 import AddTaskPage from '@/pages/school-dashboard/calendar-management/add-task-page';
 import EditTaskPage from '@/pages/school-dashboard/calendar-management/edit-task-page';
+import EditTaskCorrectionPage from '@/pages/school-dashboard/calendar-management/edit-task-correction-page';
+import TaskDetailsPage from '@/pages/school-dashboard/calendar-management/task-details-page';
+import TaskCorrectionPreviewPage from '@/pages/school-dashboard/calendar-management/task-correction-preview-page';
 import AddAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/add-academic-calendar-page';
 import EditAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/edit-academic-calendar-page';
 import TuitionFeesPage from '@/pages/school-dashboard/tuition-fees/tuition-fees-page';
@@ -362,6 +366,46 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <EditTaskPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/tasks/details/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <TaskDetailsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/tasks/details/:id/correction/:submissionId"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddTaskCorrectionPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/tasks/details/:id/edit-correction/:submissionId"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditTaskCorrectionPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/tasks/details/:id/correction-preview/:submissionId"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <TaskCorrectionPreviewPage />
             </MainLayout>
           </ProtectedRoute>
         }

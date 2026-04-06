@@ -2,12 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
+import CustomImage from '@/shared/components/CustomImage';
 import FormField from '@/shared/components/FormField';
 import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
 import FileUpload from '@/shared/components/FileUpload';
 import Button from '@/shared/components/Button';
-import { useToast } from '@/shared/context/ToastContext';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import DefaultAvatar from '@gradex/assets/images/profile.png';
 import type { TaskRecord, TaskType } from '../data/tasks.mock';
 import { TASKS_MOCK } from '../data/tasks.mock';
 import TaskStudentsPopup, { type TaskStudentOption } from '../popups/TaskStudentsPopup';
@@ -49,7 +52,6 @@ const getUniqueOptions = (
 export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { showToast } = useToast();
   const isArabic = i18n.language === 'ar';
 
   const createInitialValues = (task?: TaskRecord): TaskFormValues => ({
@@ -72,6 +74,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [isStudentsPopupOpen, setIsStudentsPopupOpen] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState<TaskStudentOption[]>([]);
+  const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [existingFileNames, setExistingFileNames] = useState<string[]>(
     mode === 'edit' ? [t('tasksManagement.form.attachmentFileName')] : []
   );
@@ -156,19 +159,14 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
     setSelectedStudents(students);
   };
 
+  const primarySelectedStudent = selectedStudents[0];
+
   const handleSubmit = () => {
-    showToast({
-      message:
-        mode === 'add'
-          ? 'tasksManagement.messages.addSuccess'
-          : 'tasksManagement.messages.editSuccess',
-      type: 'success',
-    });
-    navigate('/calendar/tasks');
+    setShowPopupMessage(true);
   };
 
   return (
-    <div dir={isArabic ? 'rtl' : 'ltr'}>
+    <div>
       <Card>
         <div className="space-y-8">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -290,7 +288,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                 value={values.descriptionAr}
                 onChange={(event) => patchValue('descriptionAr', event.target.value)}
                 placeholder={t('tasksManagement.form.descriptionArPlaceholder')}
-                className="min-h-[110px] w-full rounded-lg border border-gray-300 px-4 py-3 transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="min-h-[60px] w-full rounded-lg border border-gray-300 px-4 py-3 transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </FormField>
             <FormField label={t('tasksManagement.form.descriptionEn')} optional>
@@ -298,47 +296,68 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                 value={values.descriptionEn}
                 onChange={(event) => patchValue('descriptionEn', event.target.value)}
                 placeholder={t('tasksManagement.form.descriptionEnPlaceholder')}
-                className="min-h-[110px] w-full rounded-lg border border-gray-300 px-4 py-3 transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="min-h-[60px] w-full rounded-lg border border-gray-300 px-4 py-3 transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </FormField>
           </div>
 
           <FormField label={t('tasksManagement.form.assignTo')} required>
-            <div className="flex flex-wrap items-center gap-8 px-2 py-2">
-              <label className="flex items-center gap-2 text-base text-black-800">
-                <input
-                  type="radio"
-                  checked={values.assignTo === 'all'}
-                  onChange={handleAssignAll}
-                  className="h-4 w-4"
-                />
-                {t('tasksManagement.form.assignAll')}
-              </label>
-              <label
-                className="flex cursor-pointer items-center gap-2 text-base text-black-800"
-                onClick={() => {
-                  if (values.assignTo === 'specific') {
-                    setIsStudentsPopupOpen(true);
-                  }
-                }}
-              >
-                <input
-                  type="radio"
-                  checked={values.assignTo === 'specific'}
-                  onChange={handleAssignSpecific}
-                  className="h-4 w-4"
-                />
-                {t('tasksManagement.form.assignSpecific')}
-              </label>
+            <div className="space-y-4 px-2 py-2">
+              <div className="flex flex-wrap items-center gap-8">
+                <label className="flex items-center gap-2 text-base text-black-800">
+                  <input
+                    type="radio"
+                    checked={values.assignTo === 'all'}
+                    onChange={handleAssignAll}
+                    className="h-4 w-4"
+                  />
+                  {t('tasksManagement.form.assignAll')}
+                </label>
+                <label
+                  className="flex cursor-pointer items-center gap-2 text-base text-black-800"
+                  onClick={() => {
+                    if (values.assignTo === 'specific') {
+                      setIsStudentsPopupOpen(true);
+                    }
+                  }}
+                >
+                  <input
+                    type="radio"
+                    checked={values.assignTo === 'specific'}
+                    onChange={handleAssignSpecific}
+                    className="h-4 w-4"
+                  />
+                  {t('tasksManagement.form.assignSpecific')}
+                </label>
+              </div>
+
               {values.assignTo === 'specific' && selectedStudents.length > 0 ? (
                 <button
                   type="button"
                   onClick={() => setIsStudentsPopupOpen(true)}
-                  className="px-2 text-sm font-medium text-green-500 transition-colors hover:text-green-600"
+                  className="flex items-center gap-4"
                 >
-                  {t('tasksManagement.studentPopup.selectedCount', {
-                    count: selectedStudents.length,
-                  })}
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 overflow-hidden rounded-md border border-gray-200 bg-gray-100">
+                        <CustomImage
+                          src={primarySelectedStudent?.avatar}
+                          fallbackSrc={DefaultAvatar}
+                          alt={
+                            primarySelectedStudent?.name || t('tasksManagement.form.assignSpecific')
+                          }
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <span className="truncate text-[1.25rem] text-gray-800">
+                        {primarySelectedStudent?.name}
+                      </span>
+                    </div>
+                    <span className="text-[1.25rem] font-semibold leading-none text-green-500">
+                      +{selectedStudents.length}
+                      <span className="mx-1">{t('tasksManagement.form.student')}</span>
+                    </span>
+                  </div>
                 </button>
               ) : null}
             </div>
@@ -390,6 +409,20 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
         onConfirm={handleStudentsConfirm}
         initialSelectedStudents={selectedStudents}
         classroomName={values.classroom}
+      />
+
+      <PopupMessage
+        open={showPopupMessage}
+        type="success"
+        message={
+          mode === 'add'
+            ? 'tasksManagement.messages.addSuccess'
+            : 'tasksManagement.messages.editSuccess'
+        }
+        iconSrc={BigSuccessIcon}
+        autoClose={true}
+        onClose={() => setShowPopupMessage(false)}
+        navigateAfterClose="/calendar/tasks"
       />
     </div>
   );

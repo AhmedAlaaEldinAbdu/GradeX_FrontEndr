@@ -28,4 +28,5 @@ export type { CustomSelectOption } from './CustomSelect';
 export type { Action } from './ActionsDropdown';
 export type { FilterConfig, DataTableColumn, PaginationData, DataTableProps } from './DataTable';
 export { default as SharedCalendar } from './SharedCalendar';
+export { default as PersonSummaryCard } from './PersonSummaryCard';
 export type { CalendarEvent, ContextMenuAction } from './SharedCalendar';
