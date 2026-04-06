@@ -7,7 +7,9 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
 import MetricCard from '@/shared/components/MetricCard';
+import DeletePopup from '@/shared/popups/DeletePopup';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import ClockYellowBoldIcon from '@gradex/assets/icons/ClockYellowBold.svg';
@@ -45,9 +47,11 @@ export default function TasksManagement() {
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedTaskType, setSelectedTaskType] = useState('');
   const [selectedCorrectionStatus, setSelectedCorrectionStatus] = useState('');
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState('');
   const [page, setPage] = useState(1);
 
-  const tasks = TASKS_MOCK;
+  const [tasks, setTasks] = useState(TASKS_MOCK);
 
   const metrics = useMemo(() => {
     return {
@@ -148,6 +152,22 @@ export default function TasksManagement() {
   }, [filteredTasks, page]);
 
   const totalPages = Math.max(1, Math.ceil(filteredTasks.length / PAGE_SIZE));
+
+  const selectedTask = tasks.find((task) => task.id === selectedTaskId);
+
+  const handleDeleteConfirm = () => {
+    if (!selectedTaskId) {
+      return;
+    }
+
+    const remainingTasks = tasks.filter((task) => task.id !== selectedTaskId);
+    const nextTotalPages = Math.max(1, Math.ceil(remainingTasks.length / PAGE_SIZE));
+
+    setTasks(remainingTasks);
+    setShowDeletePopup(false);
+    setSelectedTaskId('');
+    setPage((currentPage) => Math.min(currentPage, nextTotalPages));
+  };
 
   const columns: DataTableColumn<TaskTableRow>[] = [
     {
@@ -270,7 +290,15 @@ export default function TasksManagement() {
             ariaLabel={t('actions.edit')}
             onClick={() => navigate(`/calendar/tasks/edit/${row.id}`)}
           />
-          <IconButton status="delete" variant="danger" ariaLabel={t('actions.delete')} />
+          <IconButton
+            status="delete"
+            variant="danger"
+            ariaLabel={t('actions.delete')}
+            onClick={() => {
+              setSelectedTaskId(row.id);
+              setShowDeletePopup(true);
+            }}
+          />
         </div>
       ),
       headerClassName: 'min-w-[130px]',
@@ -452,24 +480,38 @@ export default function TasksManagement() {
         </Card>
       ) : (
         <Card className="overflow-hidden">
-          <DataTable
-            data={paginatedTasks}
-            columns={columns}
-            keyExtractor={(row) => row.id}
-            pagination={{
-              page,
-              limit: PAGE_SIZE,
-              total: filteredTasks.length,
-              totalPages,
-            }}
-            onPageChange={setPage}
-            filters={filterConfigs}
-            showFilters={true}
-            onResetFilters={handleResetFilters}
-            isLoading={false}
-            emptyMessage={t('tasksManagement.emptyState.noMatchingResults')}
-            t={t}
-          />
+          <>
+            <DataTable
+              data={paginatedTasks}
+              columns={columns}
+              keyExtractor={(row) => row.id}
+              pagination={{
+                page,
+                limit: PAGE_SIZE,
+                total: filteredTasks.length,
+                totalPages,
+              }}
+              onPageChange={setPage}
+              filters={filterConfigs}
+              showFilters={true}
+              onResetFilters={handleResetFilters}
+              isLoading={false}
+              emptyMessage={t('tasksManagement.emptyState.noMatchingResults')}
+              t={t}
+            />
+
+            <DeletePopup
+              open={showDeletePopup}
+              message="tasksManagement.messages.deleteConfirm"
+              itemName={selectedTask ? (isArabic ? selectedTask.nameAr : selectedTask.nameEn) : ''}
+              onConfirm={handleDeleteConfirm}
+              onCancel={() => {
+                setShowDeletePopup(false);
+                setSelectedTaskId('');
+              }}
+              iconSrc={BigTrashIcon}
+            />
+          </>
         </Card>
       )}
     </div>
