@@ -25,19 +25,19 @@ export default function PreparationsPage() {
         title="preparations.title"
         actions={[
           {
+            label: 'preparations.addPreparation',
+            to: '/calendar/preparations/add-preparation',
+            variant: 'primary',
+            imgSrc: PlusIcon,
+            imgClassName: 'w-[20px] h-[20px]',
+          },
+          {
             label: '',
             onClick: () => {
               // More options
             },
             variant: 'secondary',
             imgSrc: DotsBlackIcon,
-            imgClassName: 'w-[20px] h-[20px]',
-          },
-          {
-            label: 'preparations.addPreparation',
-            to: '/calendar/preparations/add-preparation',
-            variant: 'primary',
-            imgSrc: PlusIcon,
             imgClassName: 'w-[20px] h-[20px]',
           },
         ]}
