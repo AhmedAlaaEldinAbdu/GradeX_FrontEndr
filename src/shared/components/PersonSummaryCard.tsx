@@ -22,7 +22,7 @@ export default function PersonSummaryCard({
             <CustomImage src={avatar} alt={name} className="h-full w-full object-cover" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-semibold text-gray-900">{name}</h2>
+            <h2 className="flex text-2xl font-semibold text-gray-900">{name}</h2>
             <p className="text-lg text-gray-600">{subtitle}</p>
           </div>
         </div>
