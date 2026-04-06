@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import Input from '@/shared/components/Input';
@@ -45,6 +46,8 @@ const mockData: PreparationMock[] = Array.from({ length: 6 }).map((_, index) => 
 
 export default function PreparationsList() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
@@ -151,7 +154,7 @@ export default function PreparationsList() {
           <IconButton
             status="edit"
             variant="success"
-            onClick={() => {}}
+            onClick={() => navigate(`/calendar/preparations/edit-preparation/${row.id}`)}
             ariaLabel={t('common.edit')}
           />
         </div>
