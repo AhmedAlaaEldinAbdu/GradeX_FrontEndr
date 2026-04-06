@@ -12,6 +12,13 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import type { CreatePreparationRequest, UpdatePreparationRequest } from '@/types/preparations';
 
+import * as yup from 'yup';
+import {
+  preparationValidationSchema,
+  validatePreparationForm,
+  type PreparationFormValidation,
+} from '@/validations/preparations-validations';
+
 import Card from '@/shared/components/Card';
 import Input from '@/shared/components/Input';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -58,6 +65,20 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [toPage, setToPage] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState<File[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleBlur = async (field: keyof PreparationFormValidation, value: any) => {
+    try {
+      await yup.reach(preparationValidationSchema, field).validate(value);
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    } catch (err: any) {
+      setErrors((prev) => ({ ...prev, [field]: t(err.message) }));
+    }
+  };
 
   useEffect(() => {
     if (isEditMode && currentPreparation) {
@@ -91,6 +112,24 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   const handleSave = async () => {
     try {
+      const validationResult = await validatePreparationForm({
+        date,
+        educationalStage,
+        grades,
+        subject,
+        topic,
+        content,
+      });
+
+      if (!validationResult.isValid) {
+        const translatedErrors: Record<string, string> = {};
+        for (const [key, msg] of Object.entries(validationResult.errors)) {
+          translatedErrors[key] = t(msg as string);
+        }
+        setErrors(translatedErrors);
+        return;
+      }
+
       const data: CreatePreparationRequest | UpdatePreparationRequest = {
         schoolBranchId,
         preparationDate: new Date(date).toISOString(),
@@ -198,7 +237,12 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               <Input
                 type="date"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => {
+                  setDate(e.target.value);
+                  if (errors.date) handleBlur('date', e.target.value);
+                }}
+                onBlur={() => handleBlur('date', date)}
+                error={errors.date}
                 placeholder={t('preparations.form.datePlaceholder')}
               />
             </div>
@@ -208,31 +252,63 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                 <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                   {t('preparations.form.educationalStage')} <span className="text-red-500">*</span>
                 </label>
-                <CustomSelect
-                  value={educationalStage}
-                  onChange={(val) => setEducationalStage(val as string)}
-                  options={educationalStages.map((stage) => ({
-                    value: stage.id,
-                    label: stage.nameAr || stage.nameEn || '',
-                  }))}
-                  placeholder={t('preparations.form.educationalStagePlaceholder')}
-                />
+                <div
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      handleBlur('educationalStage', educationalStage);
+                    }
+                  }}
+                >
+                  <CustomSelect
+                    value={educationalStage}
+                    onChange={(val) => {
+                      setEducationalStage(val as string);
+                      if (errors.educationalStage) handleBlur('educationalStage', val);
+                    }}
+                    options={educationalStages.map((stage) => ({
+                      value: stage.id,
+                      label: stage.nameAr || stage.nameEn || '',
+                    }))}
+                    error={!!errors.educationalStage}
+                    placeholder={t('preparations.form.educationalStagePlaceholder')}
+                  />
+                  {errors.educationalStage && (
+                    <p className="mt-1 text-start text-sm text-red-500">
+                      {errors.educationalStage}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div>
                 <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                   {t('preparations.form.grades')} <span className="text-red-500">*</span>
                 </label>
-                <CustomSelect
-                  isMulti
-                  value={grades}
-                  onChange={(val) => setGrades(val as string[])}
-                  options={classrooms.map((c) => ({
-                    value: c.id,
-                    label: `${c.name || ''} ${c.nameEn || ''}`.trim(),
-                  }))}
-                  placeholder={t('preparations.form.gradesPlaceholder')}
-                />
+                <div
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      handleBlur('grades', grades);
+                    }
+                  }}
+                >
+                  <CustomSelect
+                    isMulti
+                    value={grades}
+                    onChange={(val) => {
+                      setGrades(val as string[]);
+                      if (errors.grades) handleBlur('grades', val);
+                    }}
+                    options={classrooms.map((c) => ({
+                      value: c.id,
+                      label: `${c.name || ''} ${c.nameEn || ''}`.trim(),
+                    }))}
+                    error={!!errors.grades}
+                    placeholder={t('preparations.form.gradesPlaceholder')}
+                  />
+                  {errors.grades && (
+                    <p className="mt-1 text-start text-sm text-red-500">{errors.grades}</p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -240,12 +316,27 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.subject')} <span className="text-red-500">*</span>
               </label>
-              <CustomSelect
-                value={subject}
-                onChange={(val) => setSubject(val as string)}
-                options={subjectOptions}
-                placeholder={t('preparations.form.subjectPlaceholder')}
-              />
+              <div
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget)) {
+                    handleBlur('subject', subject);
+                  }
+                }}
+              >
+                <CustomSelect
+                  value={subject}
+                  onChange={(val) => {
+                    setSubject(val as string);
+                    if (errors.subject) handleBlur('subject', val);
+                  }}
+                  options={subjectOptions}
+                  error={!!errors.subject}
+                  placeholder={t('preparations.form.subjectPlaceholder')}
+                />
+                {errors.subject && (
+                  <p className="mt-1 text-start text-sm text-red-500">{errors.subject}</p>
+                )}
+              </div>
             </div>
 
             <div className="w-full">
@@ -254,7 +345,12 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               </label>
               <Input
                 value={topic}
-                onChange={(e) => setTopic(e.target.value)}
+                onChange={(e) => {
+                  setTopic(e.target.value);
+                  if (errors.topic) handleBlur('topic', e.target.value);
+                }}
+                onBlur={() => handleBlur('topic', topic)}
+                error={errors.topic}
                 placeholder={t('preparations.form.topicPlaceholder')}
               />
             </div>
@@ -308,15 +404,32 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.content')} <span className="text-red-500">*</span>
               </label>
-              <div className="flex flex-col overflow-hidden rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-green-500">
+              <div
+                className={`flex flex-col overflow-hidden rounded-lg border ${errors.content ? 'border-red-500' : 'border-gray-200'} focus-within:ring-2 focus-within:ring-green-500`}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget)) {
+                    handleBlur('content', content);
+                  }
+                }}
+              >
                 {renderEditorToolbar()}
                 <textarea
                   className="min-h-[120px] w-full resize-y p-4 outline-none"
                   placeholder={t('preparations.form.contentPlaceholder')}
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                    if (errors.content) handleBlur('content', e.target.value);
+                  }}
                 />
-                <div className="p-2 text-left text-xs text-gray-400">0/2000</div>
+                <div className="flex items-center justify-between p-2 text-xs">
+                  {errors.content ? (
+                    <span className="text-start text-red-500">{errors.content}</span>
+                  ) : (
+                    <span></span>
+                  )}
+                  <span className="text-gray-400">0/2000</span>
+                </div>
               </div>
             </div>
 
