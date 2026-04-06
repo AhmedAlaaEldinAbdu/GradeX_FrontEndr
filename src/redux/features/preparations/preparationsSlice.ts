@@ -5,7 +5,11 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 import { preparationApiService } from '@/services/api/preparations/preparations.service';
-import type { Preparation, PreparationQueryParams } from '@/types/preparations';
+import type {
+  Preparation,
+  PreparationQueryParams,
+  CreatePreparationRequest,
+} from '@/types/preparations';
 import { getErrorMessage } from '@/lib/http';
 
 export interface PreparationFilters {
@@ -25,7 +29,9 @@ export interface PreparationsState {
   };
   filters: PreparationFilters;
   isLoading: boolean;
+  isCreating: boolean;
   error: string | null;
+  validationErrors: Record<string, string> | null;
   isInitialized: boolean;
 }
 
@@ -56,7 +62,9 @@ const initialState: PreparationsState = {
   },
   filters: {},
   isLoading: false,
+  isCreating: false,
   error: null,
+  validationErrors: null,
   isInitialized: false,
 };
 
@@ -108,6 +116,21 @@ export const fetchPreparations = createAsyncThunk<
   }
 });
 
+export const addPreparation = createAsyncThunk<
+  { success: boolean; message: string; data?: any },
+  CreatePreparationRequest
+>('preparations/addPreparation', async (data, { rejectWithValue }) => {
+  try {
+    const response = await preparationApiService.createPreparation(data);
+    return response;
+  } catch (error: any) {
+    if (error.isValidationError && error.validationErrors) {
+      return rejectWithValue({ validationErrors: error.validationErrors });
+    }
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const preparationsSlice = createSlice({
   name: 'preparations',
   initialState,
@@ -145,6 +168,27 @@ const preparationsSlice = createSlice({
       .addCase(fetchPreparations.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      .addCase(addPreparation.pending, (state) => {
+        state.isCreating = true;
+        state.error = null;
+        state.validationErrors = null;
+      })
+      .addCase(addPreparation.fulfilled, (state, action) => {
+        state.isCreating = false;
+        const { success, message } = action.payload;
+        if (!success) {
+          state.error = message; // Or handle validationErrors if mapping
+        }
+      })
+      .addCase(addPreparation.rejected, (state, action) => {
+        state.isCreating = false;
+        const payload = action.payload as any;
+        if (payload?.validationErrors) {
+          state.validationErrors = payload.validationErrors;
+        } else {
+          state.error = payload as string;
+        }
       });
   },
 });
