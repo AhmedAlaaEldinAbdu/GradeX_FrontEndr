@@ -7,7 +7,11 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import FileUpload from '@/shared/components/FileUpload';
 
-export default function PreparationForm() {
+interface PreparationFormProps {
+  isEditMode?: boolean;
+}
+
+export default function PreparationForm({ isEditMode = false }: PreparationFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -243,11 +247,13 @@ export default function PreparationForm() {
           <Button
             variant="outline"
             onClick={() => {
-              // Reset logic
+              if (isEditMode) {
+                navigate('/calendar/preparations');
+              }
             }}
             className="px-8"
           >
-            {t('preparations.form.actions.reset')}
+            {isEditMode ? t('preparations.form.actions.cancel') : t('preparations.form.actions.reset')}
           </Button>
           <Button
             variant="outline"
@@ -266,7 +272,7 @@ export default function PreparationForm() {
             }}
             className="bg-[#005B48] px-8"
           >
-            {t('preparations.form.actions.save')}
+            {isEditMode ? t('preparations.form.actions.saveChanges') : t('preparations.form.actions.save')}
           </Button>
         </div>
       </Card>
