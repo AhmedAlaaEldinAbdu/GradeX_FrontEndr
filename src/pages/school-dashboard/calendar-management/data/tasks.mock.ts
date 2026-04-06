@@ -12,6 +12,7 @@ export interface TaskAttachment {
 
 export interface TaskRecord {
     id: string;
+    teacherId: string;
     nameAr: string;
     nameEn: string;
     stageAr: string;
@@ -61,6 +62,7 @@ export const TASK_CORRECTION_META: Record<TaskCorrectionStatus, { className: str
 export const TASKS_MOCK: TaskRecord[] = [
     {
         id: 'task-1',
+        teacherId: 'bc3080ff-fb8a-4c07-6d23-08de492eac99',
         nameAr: 'اسم المهمة مهمة 1',
         nameEn: 'Task name in English: Task 1',
         stageAr: 'مرحلة رياض أطفال',
@@ -91,6 +93,7 @@ export const TASKS_MOCK: TaskRecord[] = [
     },
     {
         id: 'task-2',
+        teacherId: 'bc3080ff-fb8a-4c07-6d23-08de492eac99',
         nameAr: 'اسم المهمة 2',
         nameEn: 'Task Name 2',
         stageAr: 'المرحلة الثانوية',
@@ -121,6 +124,7 @@ export const TASKS_MOCK: TaskRecord[] = [
     },
     {
         id: 'task-3',
+        teacherId: 'bc3080ff-fb8a-4c07-6d23-08de492eac99',
         nameAr: 'اسم المهمة 3',
         nameEn: 'Task Name 3',
         stageAr: 'المرحلة الإعدادية',
@@ -144,6 +148,7 @@ export const TASKS_MOCK: TaskRecord[] = [
     },
     {
         id: 'task-4',
+        teacherId: 'bc3080ff-fb8a-4c07-6d23-08de492eac99',
         nameAr: 'اسم المهمة 4',
         nameEn: 'Task Name 4',
         stageAr: 'رياض الأطفال',
@@ -174,6 +179,7 @@ export const TASKS_MOCK: TaskRecord[] = [
     },
     {
         id: 'task-5',
+        teacherId: 'bc3080ff-fb8a-4c07-6d23-08de492eac99',
         nameAr: 'اسم المهمة 5',
         nameEn: 'Task Name 5',
         stageAr: 'المرحلة الابتدائية',

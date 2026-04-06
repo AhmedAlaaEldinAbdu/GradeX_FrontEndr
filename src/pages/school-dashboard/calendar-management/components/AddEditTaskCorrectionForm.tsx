@@ -169,7 +169,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
             </FormField>
 
             {correctionBasis === 'grades' ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4">
                 <FormField
                   label={t('tasksManagement.correctionFormPage.fields.trainingGrade')}
                   required
@@ -226,9 +226,9 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
               </FormField>
             )}
 
-            <FormField label={t('tasksManagement.correctionFormPage.fields.attachmentsOptional')}>
+            <FormField>
               <FileUpload
-                label={t('tasksManagement.correctionFormPage.fields.attachmentsOptional')}
+                label={t('tasksManagement.correctionFormPage.fields.attachments')}
                 accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
                 onChange={handleAttachmentChange}
                 onDelete={handleAttachmentDelete}
@@ -236,6 +236,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                 uploadText={t('tasksManagement.form.uploadAttachment')}
                 formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
                 id={`correction-attachment-${mode}`}
+                optional={true}
               />
             </FormField>
 
