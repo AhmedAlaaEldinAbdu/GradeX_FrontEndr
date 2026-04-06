@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/redux/store/store';
-import { addPreparation } from '@/redux/features/preparations/preparationsSlice';
+import {
+  addPreparation,
+  editPreparation,
+  fetchPreparationById,
+} from '@/redux/features/preparations/preparationsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
-import type { CreatePreparationRequest } from '@/types/preparations';
+import type { CreatePreparationRequest, UpdatePreparationRequest } from '@/types/preparations';
 
 import Card from '@/shared/components/Card';
 import Input from '@/shared/components/Input';
@@ -21,12 +25,15 @@ interface PreparationFormProps {
 export default function PreparationForm({ isEditMode = false }: PreparationFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
 
   const dispatch = useDispatch<AppDispatch>();
 
   const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
   const { classrooms } = useSelector((state: RootState) => state.classrooms);
-  const { isCreating } = useSelector((state: RootState) => state.preparations);
+  const { isCreating, isUpdating, isLoading, currentPreparation } = useSelector(
+    (state: RootState) => state.preparations
+  );
 
   const schoolBranchId = '560581d1-5f5a-4ec7-5f29-08de6be7bc5a';
 
@@ -34,6 +41,12 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
     dispatch(fetchClassrooms({ filters: { schoolBranchId }, limit: 1000 }));
   }, [dispatch, schoolBranchId]);
+
+  useEffect(() => {
+    if (isEditMode && id) {
+      dispatch(fetchPreparationById(id));
+    }
+  }, [isEditMode, id, dispatch]);
 
   const [date, setDate] = useState('');
   const [educationalStage, setEducationalStage] = useState('');
@@ -45,6 +58,25 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [toPage, setToPage] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState<File[]>([]);
+
+  useEffect(() => {
+    if (isEditMode && currentPreparation) {
+      if (currentPreparation.preparationDate) {
+        setDate(currentPreparation.preparationDate.split('T')[0]);
+      }
+      setEducationalStage(currentPreparation.gradeId || '');
+      // Map the array of classrooms to an array of classRoomIds
+      if (currentPreparation.classRooms) {
+        setGrades(currentPreparation.classRooms.map((c) => c.classRoomId || c.id));
+      }
+      setSubject(currentPreparation.materialId || '');
+      setTopic(currentPreparation.topic || '');
+      setBookName(currentPreparation.bookId || '');
+      setFromPage(currentPreparation.fromPage?.toString() || '');
+      setToPage(currentPreparation.toPage?.toString() || '');
+      setContent(currentPreparation.content || '');
+    }
+  }, [isEditMode, currentPreparation]);
 
   // Mock Options mapped with default values or API matches from cURL
   const subjectOptions = [
@@ -59,7 +91,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   const handleSave = async () => {
     try {
-      const data: CreatePreparationRequest = {
+      const data: CreatePreparationRequest | UpdatePreparationRequest = {
         schoolBranchId,
         preparationDate: new Date(date).toISOString(),
         gradeId: educationalStage,
@@ -73,9 +105,21 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
         attachments: files,
       };
 
-      const resultAction = await dispatch(addPreparation(data)).unwrap();
-      if (resultAction.success) {
-        navigate('/calendar/preparations');
+      if (isEditMode && id) {
+        (data as UpdatePreparationRequest).id = id;
+        const resultAction = await dispatch(
+          editPreparation(data as UpdatePreparationRequest)
+        ).unwrap();
+        if (resultAction.success) {
+          navigate('/calendar/preparations');
+        }
+      } else {
+        const resultAction = await dispatch(
+          addPreparation(data as CreatePreparationRequest)
+        ).unwrap();
+        if (resultAction.success) {
+          navigate('/calendar/preparations');
+        }
       }
     } catch (err) {
       console.error(err);
@@ -131,6 +175,16 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       </div>
     </div>
   );
+
+  if (isEditMode && isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#005B48]"></div>
+      </div>
+    );
+  }
+
+  const isSubmitting = isCreating || isUpdating;
 
   return (
     <div className="space-y-6">
@@ -307,10 +361,10 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           <Button
             variant="primary"
             onClick={() => handleSave()}
-            disabled={isCreating}
-            className={`bg-[#005B48] px-8 ${isCreating ? 'opacity-50' : ''}`}
+            disabled={isSubmitting}
+            className={`bg-[#005B48] px-8 ${isSubmitting ? 'opacity-50' : ''}`}
           >
-            {isCreating
+            {isSubmitting
               ? t('common.saving')
               : isEditMode
                 ? t('common.saveChanges')
