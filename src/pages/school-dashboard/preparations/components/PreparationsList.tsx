@@ -1,5 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '@/redux/store/store';
+import { fetchPreparations } from '@/redux/features/preparations/preparationsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import type { Preparation } from '@/types/preparations';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
@@ -13,55 +19,58 @@ import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 
-interface PreparationMock {
-  id: string;
-  preparationNumber: string;
-  topicName: string;
-  teacherName: string;
-  teacherAvatar: string;
-  subjectName: string;
-  educationalStage: string;
-  grade: string;
-  date: string;
-}
 
-const mockData: PreparationMock[] = Array.from({ length: 6 }).map((_, index) => ({
-  id: `prep-${index + 1}`,
-  preparationNumber: '121',
-  topicName: 'موضوع 1',
-  teacherName: 'أحمد معتز حسن',
-  teacherAvatar: 'https://i.pravatar.cc/150?u=' + (index + 20), // Mock avatar
-  subjectName: 'لغة عربية',
-  educationalStage:
-    index === 1
-      ? 'المرحلة الثانوية'
-      : index === 2
-        ? 'المرحلة الإعدادية'
-        : index === 3
-          ? 'رياض الأطفال'
-          : 'المرحلة الابتدائية',
-  grade: index === 1 ? '2/1 ع' : index === 4 ? '1/3 ع' : '1/1 ع',
-  date: '22/2/2025',
-}));
 
 export default function PreparationsList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { preparations, pagination, isLoading } = useSelector((state: RootState) => state.preparations);
+  const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
+  const { classrooms } = useSelector((state: RootState) => state.classrooms);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStage, setSelectedStage] = useState('');
-  const [selectedGrade, setSelectedGrade] = useState('');
+  const [selectedStage, setSelectedStage] = useState('');     // Maps to GradeId
+  const [selectedGrade, setSelectedGrade] = useState('');     // Maps to ClassRoomId
   const [selectedDate, setSelectedDate] = useState('');
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedPrepId, setSelectedPrepId] = useState('');
-  const [data, setData] = useState<PreparationMock[]>(mockData);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const limit = 10;
+  // Use the exact schoolBranchId as requested, or dynamically bind in future.
+  const schoolBranchId = '560581d1-5f5a-4ec7-5f29-08de6be7bc5a';
+
+  useEffect(() => {
+    dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
+    dispatch(fetchClassrooms({ filters: { schoolBranchId }, limit: 1000 }));
+  }, [dispatch, schoolBranchId]);
+
+  useEffect(() => {
+    dispatch(fetchPreparations({ 
+      schoolBranchId, 
+      page: 1, 
+      limit: pagination.limit,
+      filters: {
+        searchTerm: searchTerm || undefined,
+        gradeId: selectedStage || undefined,
+        classRoomId: selectedGrade || undefined,
+        date: selectedDate || undefined,
+      }
+    }));
+  }, [dispatch, schoolBranchId, searchTerm, selectedStage, selectedGrade, selectedDate]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    dispatch(fetchPreparations({ 
+      schoolBranchId, 
+      page, 
+      limit: pagination.limit,
+      filters: {
+        searchTerm: searchTerm || undefined,
+        gradeId: selectedStage || undefined,
+        classRoomId: selectedGrade || undefined,
+        date: selectedDate || undefined,
+      }
+    }));
   };
 
   const handleResetFilters = () => {
@@ -71,10 +80,10 @@ export default function PreparationsList() {
     setSelectedDate('');
   };
 
-  const columns: DataTableColumn<PreparationMock>[] = [
+  const columns: DataTableColumn<Preparation>[] = [
     {
       header: '#',
-      accessor: (_, index) => ((currentPage - 1) * limit + ((index || 0) + 1)).toString(),
+      accessor: (_, index) => ((pagination.page - 1) * pagination.limit + ((index || 0) + 1)).toString(),
       headerClassName: 'w-16',
       className: 'text-center text-gray-500',
     },
@@ -86,7 +95,7 @@ export default function PreparationsList() {
     },
     {
       header: 'preparations.topicName',
-      accessor: (row) => <span className="text-gray-500">{row.topicName}</span>,
+      accessor: (row) => <span className="text-gray-500">{row.topic}</span>,
       headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
@@ -94,16 +103,10 @@ export default function PreparationsList() {
       header: 'preparations.teacherName',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
-          <div className="h-8 w-8 overflow-hidden rounded-full border border-gray-200">
-            <CustomImage
-              src={row.teacherAvatar}
-              alt={row.teacherName}
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <span className="font-medium text-gray-500">{row.teacherName}</span>
+          {/* Avatar omitted since it is not retrieved in the endpoint snippet currently */}
+          <span className="font-medium text-gray-500">{row.createdName || '-'}</span>
           <IconButton
-            onClick={() => {}}
+            onClick={() => navigate(`/calendar/preparations/details/${row.id}`)}
             ariaLabel="View"
             className="flex h-[32px] w-[32px] items-center justify-center !rounded-full !bg-[#EAF4F4] !shadow-none hover:bg-[#D9EBEB]"
           >
@@ -116,25 +119,35 @@ export default function PreparationsList() {
     },
     {
       header: 'preparations.subjectName',
-      accessor: (row) => <span className="text-gray-500">{row.subjectName}</span>,
+      accessor: (row) => (
+        <span className="text-gray-500">{row.materialNameAr || row.materialNameEn}</span>
+      ),
       headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
     {
       header: 'preparations.educationalStage',
-      accessor: (row) => <span className="text-gray-500">{row.educationalStage}</span>,
+      accessor: (row) => <span className="text-gray-500">{row.gradeNameAr}</span>,
       headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
       header: 'preparations.grade',
-      accessor: (row) => <span className="text-gray-500">{row.grade}</span>,
+      accessor: (row) => (
+        <span className="text-gray-500">
+          {row.classRooms && row.classRooms.length > 0 
+            ? row.classRooms.map(c => `${c.nameAr || ''} ${c.nameEn || ''}`.trim()).join(', ') 
+            : '-'}
+        </span>
+      ),
       headerClassName: 'min-w-[130px]',
       className: 'text-center',
     },
     {
       header: 'preparations.date',
-      accessor: (row) => <span className="text-gray-500">{row.date}</span>,
+      accessor: (row) => (
+        <span className="text-gray-500">{new Date(row.preparationDate).toLocaleDateString()}</span>
+      ),
       headerClassName: 'min-w-[130px]',
       className: 'text-center',
     },
@@ -186,7 +199,7 @@ export default function PreparationsList() {
           onChange={(val) =>
             setSelectedStage(Array.isArray(val) ? (val[0] as string) : (val as string))
           }
-          options={[]}
+          options={educationalStages.map(stage => ({ value: stage.id, label: stage.nameAr || stage.nameEn || '' }))}
           placeholder={t('preparations.educationalStage')}
         />
       ),
@@ -204,7 +217,7 @@ export default function PreparationsList() {
           onChange={(val) =>
             setSelectedGrade(Array.isArray(val) ? (val[0] as string) : (val as string))
           }
-          options={[]}
+          options={classrooms.map(c => ({ value: c.id, label: `${c.name || ''} ${c.nameEn || ''}`.trim() }))}
           placeholder={t('preparations.grade')}
         />
       ),
@@ -232,18 +245,18 @@ export default function PreparationsList() {
   ];
 
   const handleDeleteConfirm = () => {
-    setData((prev) => prev.filter((item) => item.id !== selectedPrepId));
+    // Delete action not yet hooked up to API
     setShowDeletePopup(false);
   };
 
   const hasActiveFilters = Boolean(searchTerm || selectedStage || selectedGrade || selectedDate);
-  const shouldShowEmptyState = data.length === 0 && !hasActiveFilters;
+  const shouldShowEmptyState = preparations.length === 0 && !hasActiveFilters && !isLoading;
 
   const tablePagination = {
-    page: currentPage,
-    limit: limit,
-    total: data.length,
-    totalPages: Math.ceil(data.length / limit),
+    page: pagination.page,
+    limit: pagination.limit,
+    total: pagination.total,
+    totalPages: pagination.totalPages,
   };
 
   return (
@@ -257,7 +270,7 @@ export default function PreparationsList() {
       ) : (
         <>
           <DataTable
-            data={data}
+            data={preparations}
             columns={columns}
             keyExtractor={(row) => row.id}
             pagination={tablePagination}
@@ -267,12 +280,13 @@ export default function PreparationsList() {
             onResetFilters={handleResetFilters}
             emptyMessage={t('common.noResults')}
             t={t}
+            isLoading={isLoading}
           />
 
           <DeletePopup
             open={showDeletePopup}
             message="preparations.confirmDelete"
-            itemName={data.find((d) => d.id === selectedPrepId)?.topicName || ''}
+            itemName={preparations.find((d) => d.id === selectedPrepId)?.topic || ''}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
