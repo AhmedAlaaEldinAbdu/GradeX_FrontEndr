@@ -1932,7 +1932,10 @@
     "addTaskButton": "Add Task",
     "messages": {
       "addSuccess": "Task added successfully",
-      "editSuccess": "Changes saved successfully",
+      "editSuccess": "Task updated successfully",
+      "addCorrectionSuccess": "Correction submitted successfully",
+      "editCorrectionSuccess": "Correction updated successfully",
+      "deleteConfirm": "Are you sure you want to delete the task?",
       "notFound": "Task not found"
     },
     "addPage": {

@@ -1934,8 +1934,11 @@
     "title": "المهام",
     "addTaskButton": "إضافة مهمة",
     "messages": {
-      "addSuccess": "تمت إضافة المهمة بنجاح",
-      "editSuccess": "تم حفظ التغييرات بنجاح",
+      "addSuccess": "تم إضافة المهمة بنجاح",
+      "editSuccess": "تم تعديل المهمة بنجاح",
+      "addCorrectionSuccess": "تم إرسال التصحيح بنجاح",
+      "editCorrectionSuccess": "تم تعديل التصحيح بنجاح",
+      "deleteConfirm": "هل متأكد من حذف المهمة؟",
       "notFound": "لم يتم العثور على المهمة"
     },
     "addPage": {
