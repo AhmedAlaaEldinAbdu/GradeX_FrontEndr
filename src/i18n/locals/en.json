@@ -2380,11 +2380,25 @@
         "toPagePlaceholder": "To page"
       },
       "content": "Content",
-      "contentPlaceholder": "Enter content",
-      "attachments": "Attachments (optional)",
+      "contentPlaceholder": "Enter Content",
+      "attachments": "Attachments (Optional)",
+      "validation": {
+        "dateRequired": "Preparation date is required",
+        "educationalStageRequired": "Please select the educational stage",
+        "gradesRequired": "Please select the grade",
+        "subjectRequired": "Please select the subject",
+        "topicRequired": "Preparation topic is required",
+        "topicMin": "Topic must be at least 3 characters",
+        "topicMax": "Topic must not exceed 100 characters",
+        "contentRequired": "Preparation content is required",
+        "contentMin": "Content must be at least 10 characters",
+        "pageMustBeNumber": "Page number must be numeric",
+        "toPageMustBeGreater": "Ending page must be greater than starting page"
+      },
       "actions": {
         "cancel": "Cancel",
         "save": "Save",
+        "saving": "Saving...",
         "saveChanges": "Save Changes",
         "draft": "Draft",
         "reset": "Reset"
