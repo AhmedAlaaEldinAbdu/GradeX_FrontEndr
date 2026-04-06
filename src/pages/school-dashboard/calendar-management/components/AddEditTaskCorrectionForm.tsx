@@ -6,6 +6,7 @@ import Card from '@/shared/components/Card';
 import CustomSelect from '@/shared/components/CustomSelect';
 import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import FileUpload from '@/shared/components/FileUpload';
+import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import PersonSummaryCard from '@/shared/components/PersonSummaryCard';
@@ -134,12 +135,10 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
           </h2>
 
           <div className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-1 text-base font-medium text-gray-900">
-                <span>{t('tasksManagement.correctionFormPage.fields.correctionBasedOn')}</span>
-                <span className="text-red-500">*</span>
-              </div>
-
+            <FormField
+              label={t('tasksManagement.correctionFormPage.fields.correctionBasedOn')}
+              required
+            >
               <div className="flex flex-wrap items-center gap-8">
                 <label className="flex cursor-pointer items-center gap-2">
                   <input
@@ -167,16 +166,17 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                   </span>
                 </label>
               </div>
-            </div>
+            </FormField>
 
             {correctionBasis === 'grades' ? (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1 text-base font-medium text-gray-900">
-                    <span>{t('tasksManagement.correctionFormPage.fields.trainingGrade')}</span>
-                    <span className="text-red-500">*</span>
-                  </div>
+                <FormField
+                  label={t('tasksManagement.correctionFormPage.fields.trainingGrade')}
+                  required
+                  htmlFor="trainingGrade"
+                >
                   <Input
+                    id="trainingGrade"
                     type="number"
                     min={0}
                     value={trainingGrade}
@@ -186,14 +186,15 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                     )}
                     className="w-full"
                   />
-                </div>
+                </FormField>
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1 text-base font-medium text-gray-900">
-                    <span>{t('tasksManagement.correctionFormPage.fields.studentGrade')}</span>
-                    <span className="text-red-500">*</span>
-                  </div>
+                <FormField
+                  label={t('tasksManagement.correctionFormPage.fields.studentGrade')}
+                  required
+                  htmlFor="studentGrade"
+                >
                   <Input
+                    id="studentGrade"
                     type="number"
                     min={0}
                     value={studentGrade}
@@ -203,14 +204,13 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                     )}
                     className="w-full"
                   />
-                </div>
+                </FormField>
               </div>
             ) : (
-              <div className="space-y-2">
-                <div className="flex items-center gap-1 text-base font-medium text-gray-900">
-                  <span>{t('tasksManagement.correctionFormPage.fields.studentPerformance')}</span>
-                  <span className="text-red-500">*</span>
-                </div>
+              <FormField
+                label={t('tasksManagement.correctionFormPage.fields.studentPerformance')}
+                required
+              >
                 <CustomSelect
                   value={studentPerformance}
                   onChange={(value) =>
@@ -223,13 +223,10 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                   maxHeight="200px"
                   showSearch={false}
                 />
-              </div>
+              </FormField>
             )}
 
-            <div className="space-y-2">
-              <div className="text-base font-medium text-gray-900">
-                {t('tasksManagement.correctionFormPage.fields.attachmentsOptional')}
-              </div>
+            <FormField label={t('tasksManagement.correctionFormPage.fields.attachmentsOptional')}>
               <FileUpload
                 label={t('tasksManagement.correctionFormPage.fields.attachmentsOptional')}
                 accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
@@ -240,7 +237,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                 formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
                 id={`correction-attachment-${mode}`}
               />
-            </div>
+            </FormField>
 
             <div className="mt-6 flex flex-wrap items-center justify-end gap-3 pt-2">
               <Button type="button" variant="outline" onClick={() => navigate(-1)}>
