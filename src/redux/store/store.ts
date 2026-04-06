@@ -26,6 +26,7 @@ import studentsReducer from '../features/students/studentsSlice';
 import studentApplicationsReducer from '../features/student-applications/studentApplicationsSlice';
 import studentInterviewsReducer from '../features/student-interviews/studentInterviewsSlice';
 import studentAttendanceReducer from '../features/student-attendance/studentAttendanceSlice';
+import preparationsReducer from '../features/preparations/preparationsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -56,6 +57,7 @@ export const store = configureStore({
     students: studentsReducer,
     studentApplications: studentApplicationsReducer,
     studentInterviews: studentInterviewsReducer,
+    preparations: preparationsReducer,
   },
 });
 
