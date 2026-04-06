@@ -9,6 +9,7 @@ import IconButton from '@/shared/components/IconButton';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 import { TASK_CORRECTION_META, TASKS_MOCK } from '../data/tasks.mock';
 import { TASK_SUBMISSIONS_MOCK, type TaskSubmissionRecord } from '../data/task-submissions.mock';
 
@@ -155,9 +156,9 @@ export default function TaskDetails() {
             type="button"
             onClick={() => handleOpenCorrection(row.id)}
             aria-label={t('actions.view')}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 shadow-md transition-colors hover:bg-indigo-200"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 shadow-md transition-colors hover:bg-blue-200"
           >
-            <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
+            <CustomImage src={EyeDarkBlueIcon} alt={t('actions.view')} className="h-5 w-5" />
           </button>
           <IconButton
             status="edit"

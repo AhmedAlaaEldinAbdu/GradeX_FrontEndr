@@ -41,6 +41,8 @@ export default function TasksManagement() {
   const navigate = useNavigate();
   const isArabic = i18n.language === 'ar';
   const handleViewTask = (taskId: string) => navigate(`/calendar/tasks/details/${taskId}`);
+  const handleViewTeacher = (teacherId: string) =>
+    navigate(`/teachers/${teacherId}`, { state: { comeFrom: 'calendar-tasks' } });
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClassroom, setSelectedClassroom] = useState('');
@@ -191,7 +193,7 @@ export default function TasksManagement() {
           </button>
         </div>
       ),
-      headerClassName: 'min-w-[220px]',
+      headerClassName: 'min-w-[250px]',
     },
     {
       header: 'tasksManagement.table.correctionStatus',
@@ -205,13 +207,13 @@ export default function TasksManagement() {
           </span>
         );
       },
-      headerClassName: 'min-w-[170px]',
+      headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
     {
       header: 'tasksManagement.table.submissionsCount',
       accessor: (row) => <span>{row.submissionsLabel}</span>,
-      headerClassName: 'min-w-[140px]',
+      headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
     {
@@ -226,25 +228,25 @@ export default function TasksManagement() {
           </span>
         );
       },
-      headerClassName: 'min-w-[160px]',
+      headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
     {
       header: 'tasksManagement.table.educationalStage',
       accessor: (row) => <span>{isArabic ? row.stageAr : row.stageEn}</span>,
-      headerClassName: 'min-w-[170px]',
+      headerClassName: 'min-w-[230px]',
       className: 'text-center',
     },
     {
       header: 'tasksManagement.table.classroom',
       accessor: (row) => <span>{isArabic ? row.classroomAr : row.classroomEn}</span>,
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
     {
       header: 'tasksManagement.table.subjectName',
       accessor: (row) => <span>{isArabic ? row.subjectAr : row.subjectEn}</span>,
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[250px]',
       className: 'text-center',
     },
     {
@@ -263,7 +265,7 @@ export default function TasksManagement() {
           </div>
           <button
             type="button"
-            onClick={() => handleViewTask(row.id)}
+            onClick={() => handleViewTeacher(row.teacherId)}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50"
             aria-label={t('actions.view')}
           >
@@ -277,7 +279,7 @@ export default function TasksManagement() {
     {
       header: 'tasksManagement.table.date',
       accessor: (row) => <span>{formatTaskDate(row.dueDate)}</span>,
-      headerClassName: 'min-w-[130px]',
+      headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
     {

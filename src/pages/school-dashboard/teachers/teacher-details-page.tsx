@@ -24,6 +24,7 @@ export default function TeacherDetailsPage() {
   // Check if coming from job-announcements
   const locationState = location.state as LocationState | null;
   const isFromJobAnnouncements = locationState?.comeFrom === 'job-announcements';
+  const isFromCalendarTasks = locationState?.comeFrom === 'calendar-tasks';
 
   const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
   const isLoadingPersonalData = useAppSelector((state) => state.teachers.isLoadingPersonalData);
@@ -40,11 +41,16 @@ export default function TeacherDetailsPage() {
         { label: t('teachers.jobAnnouncements'), path: '/job-announcements' },
         { label: teacherPersonalData?.fullName || t('common.loading') },
       ]
-    : [
-        { label: t('sidebar.teachingStaff') },
-        { label: t('teachers.title'), path: '/teachers' },
-        { label: teacherPersonalData?.fullName || t('common.loading') },
-      ];
+    : isFromCalendarTasks
+      ? [
+          { label: t('sidebar.tasks'), path: '/calendar/tasks' },
+          { label: teacherPersonalData?.fullName || t('common.loading') },
+        ]
+      : [
+          { label: t('sidebar.teachingStaff') },
+          { label: t('teachers.title'), path: '/teachers' },
+          { label: teacherPersonalData?.fullName || t('common.loading') },
+        ];
 
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'personal-data');
 
@@ -81,7 +87,7 @@ export default function TeacherDetailsPage() {
   }
 
   // If coming from job-announcements, show only PersonalDataTab without tabs
-  if (isFromJobAnnouncements) {
+  if (isFromJobAnnouncements || isFromCalendarTasks) {
     return (
       <div>
         {/* Breadcrumb */}
