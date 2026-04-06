@@ -38,6 +38,7 @@ export default function TasksManagement() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const isArabic = i18n.language === 'ar';
+  const handleViewTask = (taskId: string) => navigate(`/calendar/tasks/details/${taskId}`);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClassroom, setSelectedClassroom] = useState('');
@@ -160,9 +161,14 @@ export default function TasksManagement() {
       accessor: (row) => (
         <div className="flex w-full items-center justify-evenly gap-2">
           <div>{isArabic ? row.nameAr : row.nameEn}</div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50">
+          <button
+            type="button"
+            onClick={() => handleViewTask(row.id)}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50"
+            aria-label={t('actions.view')}
+          >
             <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
-          </div>
+          </button>
         </div>
       ),
       headerClassName: 'min-w-[220px]',
@@ -235,9 +241,14 @@ export default function TasksManagement() {
             </div>
             <span>{row.teacherName}</span>
           </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50">
+          <button
+            type="button"
+            onClick={() => handleViewTask(row.id)}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50"
+            aria-label={t('actions.view')}
+          >
             <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
-          </div>
+          </button>
         </div>
       ),
       headerClassName: 'min-w-[250px]',
@@ -367,7 +378,7 @@ export default function TasksManagement() {
   };
 
   return (
-    <div className="space-y-6" dir={isArabic ? 'rtl' : 'ltr'}>
+    <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           title={t('tasksManagement.metrics.total')}
