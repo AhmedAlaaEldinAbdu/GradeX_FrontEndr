@@ -9,6 +9,7 @@ import type {
   Preparation,
   PreparationQueryParams,
   CreatePreparationRequest,
+  UpdatePreparationRequest,
 } from '@/types/preparations';
 import { getErrorMessage } from '@/lib/http';
 
@@ -21,6 +22,7 @@ export interface PreparationFilters {
 
 export interface PreparationsState {
   preparations: Preparation[];
+  currentPreparation: Preparation | null;
   pagination: {
     page: number;
     limit: number;
@@ -30,6 +32,7 @@ export interface PreparationsState {
   filters: PreparationFilters;
   isLoading: boolean;
   isCreating: boolean;
+  isUpdating: boolean;
   error: string | null;
   validationErrors: Record<string, string> | null;
   isInitialized: boolean;
@@ -54,6 +57,7 @@ export interface FetchPreparationsResponse {
 
 const initialState: PreparationsState = {
   preparations: [],
+  currentPreparation: null,
   pagination: {
     page: 1,
     limit: 10,
@@ -63,6 +67,7 @@ const initialState: PreparationsState = {
   filters: {},
   isLoading: false,
   isCreating: false,
+  isUpdating: false,
   error: null,
   validationErrors: null,
   isInitialized: false,
@@ -131,6 +136,36 @@ export const addPreparation = createAsyncThunk<
   }
 });
 
+export const fetchPreparationById = createAsyncThunk<Preparation, string>(
+  'preparations/fetchPreparationById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await preparationApiService.getPreparationById(id);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      return rejectWithValue('Failed to fetch preparation');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const editPreparation = createAsyncThunk<
+  { success: boolean; message: string; data?: any },
+  UpdatePreparationRequest
+>('preparations/editPreparation', async (data, { rejectWithValue }) => {
+  try {
+    const response = await preparationApiService.updatePreparation(data);
+    return response;
+  } catch (error: any) {
+    if (error.isValidationError && error.validationErrors) {
+      return rejectWithValue({ validationErrors: error.validationErrors });
+    }
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const preparationsSlice = createSlice({
   name: 'preparations',
   initialState,
@@ -143,6 +178,10 @@ const preparationsSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+      state.validationErrors = null;
+    },
+    setCurrentPreparation: (state, action: PayloadAction<Preparation | null>) => {
+      state.currentPreparation = action.payload;
     },
   },
   extraReducers: (builder: ActionReducerMapBuilder<PreparationsState>) => {
@@ -189,10 +228,44 @@ const preparationsSlice = createSlice({
         } else {
           state.error = payload as string;
         }
+      })
+      .addCase(fetchPreparationById.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchPreparationById.fulfilled, (state, action: PayloadAction<Preparation>) => {
+        state.isLoading = false;
+        state.currentPreparation = action.payload;
+      })
+      .addCase(fetchPreparationById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(editPreparation.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+        state.validationErrors = null;
+      })
+      .addCase(editPreparation.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        const { success, message } = action.payload;
+        if (!success) {
+          state.error = message;
+        }
+      })
+      .addCase(editPreparation.rejected, (state, action) => {
+        state.isUpdating = false;
+        const payload = action.payload as any;
+        if (payload?.validationErrors) {
+          state.validationErrors = payload.validationErrors;
+        } else {
+          state.error = payload as string;
+        }
       });
   },
 });
 
-export const { setFilters, clearFilters, clearError } = preparationsSlice.actions;
+export const { setFilters, clearFilters, clearError, setCurrentPreparation } =
+  preparationsSlice.actions;
 
 export default preparationsSlice.reducer;
