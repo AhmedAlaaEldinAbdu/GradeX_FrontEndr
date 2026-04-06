@@ -85,7 +85,7 @@ const Button: React.FC<ButtonProps> = (props) => {
           {imgSrc && <CustomImage src={imgSrc} alt="Btn Icon" className={`${imgClassName}`} />}
         </>
       )}
-      <span>{children}</span>
+      {children && <span>{children}</span>}
     </button>
   );
 };
