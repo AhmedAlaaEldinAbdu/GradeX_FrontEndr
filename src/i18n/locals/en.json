@@ -1943,6 +1943,70 @@
       "title": "Edit Task",
       "submitButton": "Save Changes"
     },
+    "detailsPage": {
+      "title": "Task Details",
+      "detailsSectionTitle": "Task Details",
+      "attachmentsSectionTitle": "Attachments",
+      "submissionsSectionTitle": "Submission Status",
+      "assignmentSpecific": "Selected",
+      "assignmentAll": "All",
+      "noDescription": "No description available",
+      "noAttachments": "No attachments",
+      "noStudents": "No student data",
+      "searchStudentPlaceholder": "Search by student name",
+      "submissionsTable": {
+        "studentName": "Student Name"
+      },
+      "fields": {
+        "taskNameAr": "Task name in Arabic",
+        "taskNameEn": "Task name in English",
+        "educationalStage": "Educational stage",
+        "classroom": "Classroom",
+        "subject": "Subject name",
+        "date": "Date",
+        "taskType": "Task type",
+        "description": "Description",
+        "assignTo": "Assign quiz to"
+      }
+    },
+    "correctionPage": {
+      "title": "Correction Preview",
+      "studentAttachmentsTitle": "Student Attachments",
+      "correctionAttachmentsTitle": "Attachments",
+      "noAttachments": "No attachments",
+      "fields": {
+        "correctionBasedOn": "Correction based on",
+        "studentPerformance": "Student Performance"
+      }
+    },
+    "correctionFormPage": {
+      "title": "Correction",
+      "submitButton": "Send",
+      "basisOptions": {
+        "grades": "Grades",
+        "evaluation": "Evaluation"
+      },
+      "fields": {
+        "correctionBasedOn": "Correction based on",
+        "trainingGrade": "Training grade",
+        "trainingGradePlaceholder": "Enter training grade",
+        "studentGrade": "Student grade",
+        "studentGradePlaceholder": "Enter student grade",
+        "studentPerformance": "Student performance",
+        "studentPerformancePlaceholder": "Select performance",
+        "attachmentsOptional": "Attachments (optional)"
+      },
+      "performanceOptions": {
+        "excellent": "Excellent",
+        "veryGood": "Very Good",
+        "good": "Good",
+        "acceptable": "Acceptable"
+      }
+    },
+    "editCorrectionPage": {
+      "title": "Edit Correction",
+      "submitButton": "Save Changes"
+    },
     "metrics": {
       "total": "Total tasks",
       "completed": "Completed tasks",
@@ -2004,6 +2068,7 @@
       "assignTo": "Assign quiz to",
       "assignAll": "All",
       "assignSpecific": "Select students",
+      "student": "Student",
       "attachments": "Attachments",
       "uploadAttachment": "Click here to add an image or file",
       "attachmentFileName": "File name"

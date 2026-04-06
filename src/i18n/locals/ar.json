@@ -1946,6 +1946,70 @@
       "title": "تعديل المهمة",
       "submitButton": "حفظ التغييرات"
     },
+    "detailsPage": {
+      "title": "تفاصيل المهمة",
+      "detailsSectionTitle": "تفاصيل المهمة",
+      "attachmentsSectionTitle": "المرفقات",
+      "submissionsSectionTitle": "حالة التسليم",
+      "assignmentSpecific": "تم التحديد",
+      "assignmentAll": "الكل",
+      "noDescription": "لا يوجد وصف",
+      "noAttachments": "لا توجد مرفقات",
+      "noStudents": "لا توجد بيانات طلاب",
+      "searchStudentPlaceholder": "ابحث عن اسم الطالب",
+      "submissionsTable": {
+        "studentName": "اسم الطالب"
+      },
+      "fields": {
+        "taskNameAr": "اسم المهمة باللغة العربية",
+        "taskNameEn": "اسم المهمة باللغة الإنجليزية",
+        "educationalStage": "المرحلة الدراسية",
+        "classroom": "الصف الدراسي",
+        "subject": "اسم المادة",
+        "date": "التاريخ",
+        "taskType": "نوع المهمة",
+        "description": "الوصف",
+        "assignTo": "تخصيص الاختبار إلى"
+      }
+    },
+    "correctionPage": {
+      "title": "معاينة التصحيح",
+      "studentAttachmentsTitle": "مرفقات الطالب",
+      "correctionAttachmentsTitle": "المرفقات",
+      "noAttachments": "لا توجد مرفقات",
+      "fields": {
+        "correctionBasedOn": "التصحيح قائم على",
+        "studentPerformance": "أداء الطالب"
+      }
+    },
+    "correctionFormPage": {
+      "title": "تصحيح",
+      "submitButton": "إرسال",
+      "basisOptions": {
+        "grades": "درجات",
+        "evaluation": "تقييم"
+      },
+      "fields": {
+        "correctionBasedOn": "التصحيح قائم على",
+        "trainingGrade": "الدرجة التدريب",
+        "trainingGradePlaceholder": "ادخل الدرجة التدريب",
+        "studentGrade": "الدرجة الطالب",
+        "studentGradePlaceholder": "ادخل الدرجة الطالب",
+        "studentPerformance": "أداء الطالب",
+        "studentPerformancePlaceholder": "اختر الأداء",
+        "attachmentsOptional": "مرفقات (اختياري)"
+      },
+      "performanceOptions": {
+        "excellent": "ممتاز",
+        "veryGood": "جيد جدًا",
+        "good": "جيد",
+        "acceptable": "مقبول"
+      }
+    },
+    "editCorrectionPage": {
+      "title": "تعديل التصحيح",
+      "submitButton": "حفظ التغييرات"
+    },
     "metrics": {
       "total": "إجمالي المهام",
       "completed": "المهام المكتملة",
@@ -2007,6 +2071,7 @@
       "assignTo": "تخصيص الاختبار الى",
       "assignAll": "الكل",
       "assignSpecific": "تحديد الطلاب",
+      "student": "طالب",
       "attachments": "مرفقات",
       "uploadAttachment": "اضغط هنا للإضافة صورة أو ملف",
       "attachmentFileName": "اسم الملف"
@@ -2100,10 +2165,16 @@
       "title": "تفاصيل الحدث",
       "eventItemTitle": "الحدث {{number}}",
       "eventNameAr": "اسم الحدث (باللغة العربية)",
+      "submissionsSectionTitle": "Submission Status",
       "eventNameEn": "اسم الحدث (باللغة الإنجليزية)",
       "date": "التاريخ",
       "time": "الوقت",
       "startTime": "ساعة البدء",
+      "noStudents": "No student data",
+      "searchStudentPlaceholder": "Search by student name",
+      "submissionsTable": {
+        "studentName": "Student Name"
+      },
       "endTime": "ساعة الانتهاء",
       "stages": "المراحل الدراسية",
       "classrooms": "الصفوف الدراسية",
