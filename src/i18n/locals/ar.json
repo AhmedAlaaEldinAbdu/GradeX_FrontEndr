@@ -2294,6 +2294,7 @@
     "deletedSuccessfully": "تم حذف التحضير بنجاح",
     "form": {
       "addTitle": "إضافة تحضير",
+      "editTitle": "تعديل التحضير",
       "date": "التاريخ",
       "datePlaceholder": "اختر التاريخ",
       "educationalStage": "المرحلة التعليمية",
@@ -2317,7 +2318,9 @@
       "contentPlaceholder": "ادخل المحتوى",
       "attachments": "مرفقات (اختياري)",
       "actions": {
+        "cancel": "الغاء",
         "save": "حفظ",
+        "saveChanges": "حفظ التغيرات",
         "draft": "مسودة",
         "reset": "اعادة تعين"
       }

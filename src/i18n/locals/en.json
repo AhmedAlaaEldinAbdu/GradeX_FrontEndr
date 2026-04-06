@@ -2291,6 +2291,7 @@
     "deletedSuccessfully": "Preparation deleted successfully",
     "form": {
       "addTitle": "Add Preparation",
+      "editTitle": "Edit Preparation",
       "date": "Date",
       "datePlaceholder": "Select Date",
       "educationalStage": "Educational Stage",
@@ -2314,7 +2315,9 @@
       "contentPlaceholder": "Enter content",
       "attachments": "Attachments (optional)",
       "actions": {
+        "cancel": "Cancel",
         "save": "Save",
+        "saveChanges": "Save Changes",
         "draft": "Draft",
         "reset": "Reset"
       }
