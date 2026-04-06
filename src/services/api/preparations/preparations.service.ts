@@ -5,6 +5,8 @@ import type {
   PreparationListResponse,
   PreparationQueryParams,
   CreatePreparationRequest,
+  UpdatePreparationRequest,
+  Preparation,
 } from '@/types/preparations';
 
 /**
@@ -98,9 +100,71 @@ export async function createPreparation(
   };
 }
 
+export async function getPreparationById(
+  id: string
+): Promise<{ success: boolean; data?: Preparation; messageType?: string }> {
+  try {
+    const response: AxiosResponse<any> = await axiosClient.get(
+      PreparationEndpoints.getPreparationById(id)
+    );
+    return {
+      success: response.data?.isSuccess,
+      data: response.data?.data,
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function updatePreparation(
+  data: UpdatePreparationRequest
+): Promise<{ success: boolean; message: string; data?: any }> {
+  const formData = new FormData();
+
+  if (data.schoolBranchId) formData.append('SchoolBrancheId', data.schoolBranchId);
+  if (data.preparationDate) formData.append('PreparationDate', data.preparationDate);
+  if (data.gradeId) formData.append('GradeId', data.gradeId);
+
+  if (data.classRoomIds && data.classRoomIds.length > 0) {
+    data.classRoomIds.forEach((id) => formData.append('ClassRoomIds', id));
+  }
+
+  if (data.materialId) formData.append('MaterialId', data.materialId);
+  if (data.topic) formData.append('Topic', data.topic);
+  if (data.content) formData.append('Content', data.content);
+
+  if (data.bookId) formData.append('BookId', data.bookId);
+  if (data.bookName) formData.append('BookName', data.bookName);
+  if (data.fromPage !== undefined) formData.append('FromPage', String(data.fromPage));
+  if (data.toPage !== undefined) formData.append('ToPage', String(data.toPage));
+
+  if (data.attachments && data.attachments.length > 0) {
+    data.attachments.forEach((file) => formData.append('Attachments', file));
+  }
+
+  const response: AxiosResponse<any> = await axiosClient.put(
+    PreparationEndpoints.updatePreparation,
+    formData,
+    {
+      params: { Id: data.id },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+
+  return {
+    success: response.data?.isSuccess,
+    message: response.data?.message || 'Updated successfully',
+    data: response.data?.data,
+  };
+}
+
 export const preparationApiService = {
   getPreparations,
   createPreparation,
+  getPreparationById,
+  updatePreparation,
 };
 
 export default preparationApiService;
