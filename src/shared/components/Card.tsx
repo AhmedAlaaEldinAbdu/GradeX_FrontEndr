@@ -6,7 +6,7 @@ interface CardProps {
   padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
-const Card: React.FC<CardProps> = ({ children, className = '', padding = 'md' }) => {
+const Card: React.FC<CardProps> = ({ children, className = '', padding = 'sm' }) => {
   const paddingStyles = {
     none: '',
     sm: 'p-4',
@@ -16,7 +16,7 @@ const Card: React.FC<CardProps> = ({ children, className = '', padding = 'md' })
 
   return (
     <div
-      className={`rounded-lg border border-gray-200 bg-white shadow-sm ${paddingStyles[padding]} ${className}`}
+      className={`rounded-2xl bg-white app-card-shadow ${paddingStyles[padding]} ${className}`}
     >
       {children}
     </div>
