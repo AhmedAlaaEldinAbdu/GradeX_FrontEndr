@@ -9,6 +9,8 @@ import FileUpload from '@/shared/components/FileUpload';
 import Input from '@/shared/components/Input';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import PersonSummaryCard from '@/shared/components/PersonSummaryCard';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { TASKS_MOCK } from '../data/tasks.mock';
 import { TASK_SUBMISSIONS_MOCK } from '../data/task-submissions.mock';
 
@@ -36,6 +38,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
   const [studentGrade, setStudentGrade] = useState('');
   const [studentPerformance, setStudentPerformance] = useState('excellent');
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
+  const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [existingAttachmentName, setExistingAttachmentName] = useState(
     mode === 'edit' ? (submission?.correctionAttachments[0]?.name ?? '') : ''
   );
@@ -84,7 +87,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
   };
 
   const handleSubmit = () => {
-    navigate(`/calendar/tasks/details/${task.id}/correction-preview/${submission.id}`);
+    setShowPopupMessage(true);
   };
 
   return (
@@ -178,7 +181,9 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                     min={0}
                     value={trainingGrade}
                     onChange={(event) => setTrainingGrade(event.target.value)}
-                    placeholder={t('tasksManagement.correctionFormPage.fields.trainingGradePlaceholder')}
+                    placeholder={t(
+                      'tasksManagement.correctionFormPage.fields.trainingGradePlaceholder'
+                    )}
                     className="w-full"
                   />
                 </div>
@@ -193,7 +198,9 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                     min={0}
                     value={studentGrade}
                     onChange={(event) => setStudentGrade(event.target.value)}
-                    placeholder={t('tasksManagement.correctionFormPage.fields.studentGradePlaceholder')}
+                    placeholder={t(
+                      'tasksManagement.correctionFormPage.fields.studentGradePlaceholder'
+                    )}
                     className="w-full"
                   />
                 </div>
@@ -235,7 +242,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
               />
             </div>
 
-            <div className="flex items-center gap-3 pt-2">
+            <div className="mt-6 flex flex-wrap items-center justify-end gap-3 pt-2">
               <Button type="button" variant="outline" onClick={() => navigate(-1)}>
                 {t('common.cancel')}
               </Button>
@@ -250,6 +257,20 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
           </div>
         </section>
       </Card>
+
+      <PopupMessage
+        open={showPopupMessage}
+        type="success"
+        message={
+          mode === 'edit'
+            ? 'tasksManagement.messages.editCorrectionSuccess'
+            : 'tasksManagement.messages.addCorrectionSuccess'
+        }
+        iconSrc={BigSuccessIcon}
+        autoClose={true}
+        onClose={() => setShowPopupMessage(false)}
+        navigateAfterClose={`/calendar/tasks/details/${task.id}/correction-preview/${submission.id}`}
+      />
     </div>
   );
 }

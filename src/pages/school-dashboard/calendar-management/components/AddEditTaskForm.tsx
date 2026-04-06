@@ -8,7 +8,8 @@ import CustomSelect, { type CustomSelectOption } from '@/shared/components/Custo
 import Input from '@/shared/components/Input';
 import FileUpload from '@/shared/components/FileUpload';
 import Button from '@/shared/components/Button';
-import { useToast } from '@/shared/context/ToastContext';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import type { TaskRecord, TaskType } from '../data/tasks.mock';
 import { TASKS_MOCK } from '../data/tasks.mock';
@@ -51,7 +52,6 @@ const getUniqueOptions = (
 export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { showToast } = useToast();
   const isArabic = i18n.language === 'ar';
 
   const createInitialValues = (task?: TaskRecord): TaskFormValues => ({
@@ -74,6 +74,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [isStudentsPopupOpen, setIsStudentsPopupOpen] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState<TaskStudentOption[]>([]);
+  const [showPopupMessage, setShowPopupMessage] = useState(false);
   const [existingFileNames, setExistingFileNames] = useState<string[]>(
     mode === 'edit' ? [t('tasksManagement.form.attachmentFileName')] : []
   );
@@ -161,14 +162,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const primarySelectedStudent = selectedStudents[0];
 
   const handleSubmit = () => {
-    showToast({
-      message:
-        mode === 'add'
-          ? 'tasksManagement.messages.addSuccess'
-          : 'tasksManagement.messages.editSuccess',
-      type: 'success',
-    });
-    navigate('/calendar/tasks');
+    setShowPopupMessage(true);
   };
 
   return (
@@ -415,6 +409,20 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
         onConfirm={handleStudentsConfirm}
         initialSelectedStudents={selectedStudents}
         classroomName={values.classroom}
+      />
+
+      <PopupMessage
+        open={showPopupMessage}
+        type="success"
+        message={
+          mode === 'add'
+            ? 'tasksManagement.messages.addSuccess'
+            : 'tasksManagement.messages.editSuccess'
+        }
+        iconSrc={BigSuccessIcon}
+        autoClose={true}
+        onClose={() => setShowPopupMessage(false)}
+        navigateAfterClose="/calendar/tasks"
       />
     </div>
   );
