@@ -2353,6 +2353,39 @@
     "actions": "Actions",
     "noPreparations": "No preparations",
     "confirmDelete": "Are you sure you want to delete this preparation?",
-    "deletedSuccessfully": "Preparation deleted successfully"
+    "deletedSuccessfully": "Preparation deleted successfully",
+    "form": {
+      "addTitle": "Add Preparation",
+      "editTitle": "Edit Preparation",
+      "date": "Date",
+      "datePlaceholder": "Select Date",
+      "educationalStage": "Educational Stage",
+      "educationalStagePlaceholder": "Select Educational Stage",
+      "grades": "Grades",
+      "gradesPlaceholder": "Select Grades",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select Subject",
+      "topic": "Topic",
+      "topicPlaceholder": "Enter topic name",
+      "bookSection": {
+        "title": "Book",
+        "bookName": "Book Name (optional)",
+        "bookNamePlaceholder": "Select book name",
+        "fromPage": "From Page (optional)",
+        "fromPagePlaceholder": "From page",
+        "toPage": "To Page (optional)",
+        "toPagePlaceholder": "To page"
+      },
+      "content": "Content",
+      "contentPlaceholder": "Enter content",
+      "attachments": "Attachments (optional)",
+      "actions": {
+        "cancel": "Cancel",
+        "save": "Save",
+        "saveChanges": "Save Changes",
+        "draft": "Draft",
+        "reset": "Reset"
+      }
+    }
   }
 }

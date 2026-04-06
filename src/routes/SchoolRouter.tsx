@@ -50,6 +50,8 @@ import EditDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/edit-di
 import StudentApplicationsPage from '@/pages/school-dashboard/student-applications/student-applications-page';
 import StudentApplicationDetailsPage from '@/pages/school-dashboard/student-applications/student-application-details-page';
 import PreparationsPage from '@/pages/school-dashboard/preparations/preparations-page';
+import AddPreparationPage from '@/pages/school-dashboard/preparations/add-preparation-page';
+import EditPreparationPage from '@/pages/school-dashboard/preparations/edit-preparation-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -414,6 +416,26 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <PreparationsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/preparations/add-preparation"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddPreparationPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar/preparations/edit-preparation/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditPreparationPage />
             </MainLayout>
           </ProtectedRoute>
         }

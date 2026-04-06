@@ -2362,6 +2362,39 @@
     "actions": "الإجراءات",
     "noPreparations": "لا يوجد تحضيرات",
     "confirmDelete": "هل أنت متأكد من حذف هذا التحضير؟",
-    "deletedSuccessfully": "تم حذف التحضير بنجاح"
+    "deletedSuccessfully": "تم حذف التحضير بنجاح",
+    "form": {
+      "addTitle": "إضافة تحضير",
+      "editTitle": "تعديل التحضير",
+      "date": "التاريخ",
+      "datePlaceholder": "اختر التاريخ",
+      "educationalStage": "المرحلة التعليمية",
+      "educationalStagePlaceholder": "اختر المرحلة الدراسية",
+      "grades": "الصفوف الدراسي",
+      "gradesPlaceholder": "اختر الصفوف الدراسي",
+      "subject": "المادة",
+      "subjectPlaceholder": "اختر المادة",
+      "topic": "الموضوع",
+      "topicPlaceholder": "ادخل اسم الموضوع",
+      "bookSection": {
+        "title": "الكتاب",
+        "bookName": "اسم الكتاب (اختياري)",
+        "bookNamePlaceholder": "اختر اسم الكتاب",
+        "fromPage": "من صفحة (اختياري)",
+        "fromPagePlaceholder": "من صفحة",
+        "toPage": "الي صفحة (اختياري)",
+        "toPagePlaceholder": "الي صفحة"
+      },
+      "content": "المحتوى",
+      "contentPlaceholder": "ادخل المحتوى",
+      "attachments": "مرفقات (اختياري)",
+      "actions": {
+        "cancel": "الغاء",
+        "save": "حفظ",
+        "saveChanges": "حفظ التغيرات",
+        "draft": "مسودة",
+        "reset": "اعادة تعين"
+      }
+    }
   }
 }
