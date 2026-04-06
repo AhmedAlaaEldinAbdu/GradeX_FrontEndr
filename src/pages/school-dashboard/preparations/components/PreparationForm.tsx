@@ -1,6 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '@/redux/store/store';
+import { addPreparation } from '@/redux/features/preparations/preparationsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import type { CreatePreparationRequest } from '@/types/preparations';
+
 import Card from '@/shared/components/Card';
 import Input from '@/shared/components/Input';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -15,6 +22,19 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
+  const { classrooms } = useSelector((state: RootState) => state.classrooms);
+  const { isCreating } = useSelector((state: RootState) => state.preparations);
+
+  const schoolBranchId = '560581d1-5f5a-4ec7-5f29-08de6be7bc5a';
+
+  useEffect(() => {
+    dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
+    dispatch(fetchClassrooms({ filters: { schoolBranchId }, limit: 1000 }));
+  }, [dispatch, schoolBranchId]);
+
   const [date, setDate] = useState('');
   const [educationalStage, setEducationalStage] = useState('');
   const [grades, setGrades] = useState<string[]>([]);
@@ -24,31 +44,43 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [fromPage, setFromPage] = useState('');
   const [toPage, setToPage] = useState('');
   const [content, setContent] = useState('');
-  const [, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
-  // Mock Options
-  const educationalStageOptions = [
-    { value: 'primary', label: 'المرحلة الابتدائية' },
-    { value: 'middle', label: 'المرحلة الإعدادية' },
-    { value: 'high', label: 'المرحلة الثانوية' },
-  ];
-
-  const gradeOptions = [
-    { value: '1', label: '1/1 ع' },
-    { value: '2', label: '1/2 ع' },
-    { value: '3', label: '1/3 ع' },
-  ];
-
+  // Mock Options mapped with default values or API matches from cURL
   const subjectOptions = [
-    { value: 'arabic', label: 'اللغة العربية' },
+    { value: '45e85024-f17f-4c43-b6ab-08de2240f2fc', label: 'اللغة العربية' },
     { value: 'english', label: 'اللغة الإنجليزية' },
-    { value: 'math', label: 'الرياضيات' },
   ];
 
   const bookOptions = [
-    { value: 'book1', label: 'كتاب 1' },
+    { value: 'f095c5c9-68aa-4e65-8eea-08de22252ef9', label: 'كتاب 1' },
     { value: 'book2', label: 'كتاب 2' },
   ];
+
+  const handleSave = async () => {
+    try {
+      const data: CreatePreparationRequest = {
+        schoolBranchId,
+        preparationDate: new Date(date).toISOString(),
+        gradeId: educationalStage,
+        classRoomIds: grades,
+        materialId: subject,
+        topic,
+        content,
+        bookId: bookName,
+        fromPage: fromPage ? parseInt(fromPage) : undefined,
+        toPage: toPage ? parseInt(toPage) : undefined,
+        attachments: files,
+      };
+
+      const resultAction = await dispatch(addPreparation(data)).unwrap();
+      if (resultAction.success) {
+        navigate('/calendar/preparations');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Dummy toolbar for rich text area
   const renderEditorToolbar = () => (
@@ -125,7 +157,10 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                 <CustomSelect
                   value={educationalStage}
                   onChange={(val) => setEducationalStage(val as string)}
-                  options={educationalStageOptions}
+                  options={educationalStages.map((stage) => ({
+                    value: stage.id,
+                    label: stage.nameAr || stage.nameEn || '',
+                  }))}
                   placeholder={t('preparations.form.educationalStagePlaceholder')}
                 />
               </div>
@@ -138,7 +173,10 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                   isMulti
                   value={grades}
                   onChange={(val) => setGrades(val as string[])}
-                  options={gradeOptions}
+                  options={classrooms.map((c) => ({
+                    value: c.id,
+                    label: `${c.name || ''} ${c.nameEn || ''}`.trim(),
+                  }))}
                   placeholder={t('preparations.form.gradesPlaceholder')}
                 />
               </div>
@@ -253,7 +291,9 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
             }}
             className="px-8"
           >
-            {isEditMode ? t('preparations.form.actions.cancel') : t('preparations.form.actions.reset')}
+            {isEditMode
+              ? t('preparations.form.actions.cancel')
+              : t('preparations.form.actions.reset')}
           </Button>
           <Button
             variant="outline"
@@ -266,13 +306,15 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           </Button>
           <Button
             variant="primary"
-            onClick={() => {
-              // Save logic
-              navigate('/calendar/preparations');
-            }}
-            className="bg-[#005B48] px-8"
+            onClick={() => handleSave()}
+            disabled={isCreating}
+            className={`bg-[#005B48] px-8 ${isCreating ? 'opacity-50' : ''}`}
           >
-            {isEditMode ? t('preparations.form.actions.saveChanges') : t('preparations.form.actions.save')}
+            {isCreating
+              ? t('common.saving')
+              : isEditMode
+                ? t('common.saveChanges')
+                : t('common.save')}
           </Button>
         </div>
       </Card>
