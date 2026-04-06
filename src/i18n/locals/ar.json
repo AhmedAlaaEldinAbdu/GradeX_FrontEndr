@@ -1986,7 +1986,7 @@
       }
     },
     "correctionFormPage": {
-      "title": "تصحيح",
+      "title": "التصحيح",
       "submitButton": "إرسال",
       "basisOptions": {
         "grades": "درجات",
@@ -2000,7 +2000,7 @@
         "studentGradePlaceholder": "ادخل الدرجة الطالب",
         "studentPerformance": "أداء الطالب",
         "studentPerformancePlaceholder": "اختر الأداء",
-        "attachmentsOptional": "مرفقات (اختياري)"
+        "attachments": "مرفقات"
       },
       "performanceOptions": {
         "excellent": "ممتاز",
