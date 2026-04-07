@@ -130,7 +130,7 @@ export async function getStudentMaterialTasks(
     data: {
       taskStudents: items,
       pageIndex: Number(data.pageIndex ?? 1),
-      pageSize: Number(data.pageSize ?? items.length || 10),
+      pageSize: Number(data.pageSize ?? items.length ?? 10),
       totalItems: Number(data.totalItems ?? items.length),
       totalPages: Number(data.totalPages ?? 0),
     },
