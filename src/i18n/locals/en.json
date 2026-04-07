@@ -1306,6 +1306,32 @@
       "atLeastOne": "At least one book must be added"
     }
   },
+  "schoolTasks": {
+    "validation": {
+      "idRequired": "Task ID is required",
+      "branchRequired": "School branch is required",
+      "gradeRequired": "Grade is required",
+      "classroomRequired": "Classroom is required",
+      "materialRequired": "Material is required",
+      "nameArRequired": "Task name in Arabic is required",
+      "nameArInvalid": "Task name in Arabic must contain Arabic letters only",
+      "nameEnRequired": "Task name in English is required",
+      "nameEnInvalid": "Task name in English must contain English letters only",
+      "taskTypeRequired": "Task type is required",
+      "dateRequired": "Task date is required",
+      "deliveryDateRequired": "Delivery date is required",
+      "startPageRequired": "Start page number is required",
+      "startPageInteger": "Start page number must be an integer",
+      "startPageMin": "Start page number must be zero or greater",
+      "endPageRequired": "End page number is required",
+      "endPageInteger": "End page number must be an integer",
+      "endPageMin": "End page number must be zero or greater",
+      "endPageGreaterThanStartPage": "End page number must be greater than or equal to the start page number",
+      "descriptionArInvalid": "Arabic description must contain Arabic letters only",
+      "descriptionEnInvalid": "English description must contain English letters only",
+      "assignmentTypeRequired": "Assignment type is required"
+    }
+  },
   "interviews": {
     "title": "Interviews",
     "noInterviewsYet": "No interviews have been added yet.",

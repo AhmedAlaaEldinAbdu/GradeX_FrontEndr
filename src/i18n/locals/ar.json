@@ -1304,6 +1304,32 @@
       "atLeastOne": "يجب إضافة كتاب واحد على الأقل"
     }
   },
+  "schoolTasks": {
+    "validation": {
+      "idRequired": "معرف الواجب مطلوب",
+      "branchRequired": "الفرع الدراسي مطلوب",
+      "gradeRequired": "الصف مطلوب",
+      "classroomRequired": "الفصل مطلوب",
+      "materialRequired": "المادة مطلوبة",
+      "nameArRequired": "اسم الواجب بالعربية مطلوب",
+      "nameArInvalid": "يجب أن يحتوي اسم الواجب بالعربية على أحرف عربية فقط",
+      "nameEnRequired": "اسم الواجب بالإنجليزية مطلوب",
+      "nameEnInvalid": "يجب أن يحتوي اسم الواجب بالإنجليزية على أحرف إنجليزية فقط",
+      "taskTypeRequired": "نوع الواجب مطلوب",
+      "dateRequired": "تاريخ الواجب مطلوب",
+      "deliveryDateRequired": "تاريخ التسليم مطلوب",
+      "startPageRequired": "رقم صفحة البداية مطلوب",
+      "startPageInteger": "رقم صفحة البداية يجب أن يكون رقم صحيح",
+      "startPageMin": "رقم صفحة البداية يجب أن يكون صفر أو أكبر",
+      "endPageRequired": "رقم صفحة النهاية مطلوب",
+      "endPageInteger": "رقم صفحة النهاية يجب أن يكون رقم صحيح",
+      "endPageMin": "رقم صفحة النهاية يجب أن يكون صفر أو أكبر",
+      "endPageGreaterThanStartPage": "رقم صفحة النهاية يجب أن يكون أكبر من أو يساوي رقم صفحة البداية",
+      "descriptionArInvalid": "يجب أن يحتوي الوصف بالعربية على أحرف عربية فقط",
+      "descriptionEnInvalid": "يجب أن يحتوي الوصف بالإنجليزية على أحرف إنجليزية فقط",
+      "assignmentTypeRequired": "نوع الإسناد مطلوب"
+    }
+  },
   "interviews": {
     "title": "المقابلات",
     "noInterviewsYet": "لم يتم إضافة أي مقابلات حتى الآن.",
