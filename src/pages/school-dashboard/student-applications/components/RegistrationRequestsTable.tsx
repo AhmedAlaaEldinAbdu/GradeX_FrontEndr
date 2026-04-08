@@ -306,14 +306,17 @@ const RegistrationRequestsTable: React.FC = () => {
               alt={fullName}
               className="h-10 w-10 rounded-full border border-gray-100 object-cover"
             />
-            <span className="max-w-[200px] truncate font-medium text-gray-900" title={fullName}>
+            <span
+              className="w-[200px] truncate text-start font-medium text-gray-900"
+              title={fullName}
+            >
               {fullName}
             </span>
             <IconButton
               variant="blue"
               ariaLabel="View"
               onClick={() => navigate(`/student-applications/${row.id}`)}
-              className="h-8 w-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
             >
               <CustomImage src={EyeStyledIcon} alt="View" className="h-5 w-5" />
             </IconButton>
