@@ -59,7 +59,7 @@ export async function getPreparations(
 
 export async function createPreparation(
   data: CreatePreparationRequest
-): Promise<{ success: boolean; message: string; data?: any }> {
+): Promise<{ success: boolean; message: string; data?: unknown }> {
   const formData = new FormData();
 
   if (data.schoolBranchId) formData.append('SchoolBrancheId', data.schoolBranchId);
@@ -83,15 +83,12 @@ export async function createPreparation(
     data.attachments.forEach((file) => formData.append('Attachments', file));
   }
 
-  const response: AxiosResponse<any> = await axiosClient.post(
-    PreparationEndpoints.addPreparation,
-    formData,
-    {
+  const response: AxiosResponse<{ isSuccess: boolean; message: string; data?: unknown }> =
+    await axiosClient.post(PreparationEndpoints.addPreparation, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    }
-  );
+    });
 
   return {
     success: response.data?.isSuccess,
@@ -103,22 +100,28 @@ export async function createPreparation(
 export async function getPreparationById(
   id: string
 ): Promise<{ success: boolean; data?: Preparation; messageType?: string }> {
-  try {
-    const response: AxiosResponse<any> = await axiosClient.get(
-      PreparationEndpoints.getPreparationById(id)
-    );
-    return {
-      success: response.data?.isSuccess,
-      data: response.data?.data,
-    };
-  } catch (error) {
-    throw error;
-  }
+  const response: AxiosResponse<{ isSuccess: boolean; data?: Preparation }> =
+    await axiosClient.get(PreparationEndpoints.getPreparationById(id));
+  return {
+    success: response.data?.isSuccess,
+    data: response.data?.data,
+  };
+}
+
+export async function deletePreparation(
+  id: string
+): Promise<{ success: boolean; message?: string }> {
+  const response: AxiosResponse<{ isSuccess: boolean; message?: string }> =
+    await axiosClient.delete(PreparationEndpoints.deletePreparation(id));
+  return {
+    success: response.data?.isSuccess,
+    message: response.data?.message,
+  };
 }
 
 export async function updatePreparation(
   data: UpdatePreparationRequest
-): Promise<{ success: boolean; message: string; data?: any }> {
+): Promise<{ success: boolean; message: string; data?: unknown }> {
   const formData = new FormData();
 
   if (data.schoolBranchId) formData.append('SchoolBrancheId', data.schoolBranchId);
@@ -142,16 +145,13 @@ export async function updatePreparation(
     data.attachments.forEach((file) => formData.append('Attachments', file));
   }
 
-  const response: AxiosResponse<any> = await axiosClient.put(
-    PreparationEndpoints.updatePreparation,
-    formData,
-    {
+  const response: AxiosResponse<{ isSuccess: boolean; message: string; data?: unknown }> =
+    await axiosClient.put(PreparationEndpoints.updatePreparation, formData, {
       params: { Id: data.id },
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    }
-  );
+    });
 
   return {
     success: response.data?.isSuccess,
@@ -165,6 +165,7 @@ export const preparationApiService = {
   createPreparation,
   getPreparationById,
   updatePreparation,
+  deletePreparation,
 };
 
 export default preparationApiService;
