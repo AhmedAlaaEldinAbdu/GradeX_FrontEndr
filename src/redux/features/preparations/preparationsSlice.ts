@@ -166,6 +166,18 @@ export const editPreparation = createAsyncThunk<
   }
 });
 
+export const deletePreparation = createAsyncThunk<
+  { success: boolean; message?: string; id: string },
+  string
+>('preparations/deletePreparation', async (id, { rejectWithValue }) => {
+  try {
+    const response = await preparationApiService.deletePreparation(id);
+    return { ...response, id };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const preparationsSlice = createSlice({
   name: 'preparations',
   initialState,
@@ -261,6 +273,20 @@ const preparationsSlice = createSlice({
         } else {
           state.error = payload as string;
         }
+      })
+      .addCase(deletePreparation.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deletePreparation.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.preparations = state.preparations.filter(
+          (prep) => prep.id !== action.payload.id
+        );
+      })
+      .addCase(deletePreparation.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       });
   },
 });
