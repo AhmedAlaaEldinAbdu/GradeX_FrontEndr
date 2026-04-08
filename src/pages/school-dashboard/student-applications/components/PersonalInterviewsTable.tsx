@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@gradex/shared/components/Card';
@@ -33,6 +34,7 @@ const PersonalInterviewsTable: React.FC = () => {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { showToast } = useToast();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -302,7 +304,14 @@ const PersonalInterviewsTable: React.FC = () => {
           <IconButton
             variant="blue"
             ariaLabel="View"
-            onClick={() => {}}
+            onClick={() => {
+              const studentName = row.studentName || (isArabic ? row.nameAr : row.nameEn) || '';
+              if (studentName) {
+                navigate(`/student-interviews?StudentName=${encodeURIComponent(studentName)}`);
+              } else {
+                navigate('/student-interviews');
+              }
+            }}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
           >
             <CustomImage src={EyeStyledIcon} className="h-5 w-5" alt="View" />

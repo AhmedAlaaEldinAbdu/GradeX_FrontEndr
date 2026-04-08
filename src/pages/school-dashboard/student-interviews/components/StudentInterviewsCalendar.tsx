@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import SharedCalendar, {
   type CalendarEvent,
   type ContextMenuAction,
@@ -44,13 +45,14 @@ export default function StudentInterviewsCalendar() {
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
   const { studentInterviews: studentInterviewsData, isLoading } = useAppSelector(
     (state) => state.studentInterviews
   );
 
   const isRTL = i18n.language === 'ar';
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('StudentName') || '');
   const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
   const [allSupervisors, setAllSupervisors] = useState<Array<{ value: string; label: string }>>([]);
 
@@ -71,7 +73,7 @@ export default function StudentInterviewsCalendar() {
   const fetchStudentInterviewsData = useCallback(async () => {
     const trimmedSearch = searchTerm.trim();
     const filters = {
-      ...(trimmedSearch ? { search: trimmedSearch } : {}),
+      ...(trimmedSearch ? { studentName: trimmedSearch } : {}),
     };
 
     try {
