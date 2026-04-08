@@ -1,6 +1,15 @@
 import * as yup from 'yup';
 
 export const preparationValidationSchema = yup.object({
+  preparationNumber: yup
+    .string()
+    .required('preparations.form.validation.preparationNumberRequired')
+    .matches(/^\d+$/, 'preparations.form.validation.preparationNumberMustBeNumber')
+    .test(
+      'greater-than-zero',
+      'preparations.form.validation.preparationNumberMustBeGreaterThanZero',
+      (value) => !value || parseInt(value, 10) > 0
+    ),
   date: yup.string().required('preparations.form.validation.dateRequired'),
   educationalStage: yup.string().required('preparations.form.validation.educationalStageRequired'),
   grades: yup.array().of(yup.string()).min(1, 'preparations.form.validation.gradesRequired'),

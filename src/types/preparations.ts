@@ -61,6 +61,7 @@ export interface PreparationQueryParams {
 
 export interface CreatePreparationRequest {
   schoolBranchId: string;
+  preparationNumber: number;
   preparationDate: string;
   gradeId: string;
   classRoomIds: string[];
