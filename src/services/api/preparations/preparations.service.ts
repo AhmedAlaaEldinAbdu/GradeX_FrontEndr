@@ -63,6 +63,8 @@ export async function createPreparation(
   const formData = new FormData();
 
   if (data.schoolBranchId) formData.append('SchoolBrancheId', data.schoolBranchId);
+  if (data.preparationNumber !== undefined)
+    formData.append('PreparationNumber', String(data.preparationNumber));
   if (data.preparationDate) formData.append('PreparationDate', data.preparationDate);
   if (data.gradeId) formData.append('GradeId', data.gradeId);
 
@@ -100,8 +102,9 @@ export async function createPreparation(
 export async function getPreparationById(
   id: string
 ): Promise<{ success: boolean; data?: Preparation; messageType?: string }> {
-  const response: AxiosResponse<{ isSuccess: boolean; data?: Preparation }> =
-    await axiosClient.get(PreparationEndpoints.getPreparationById(id));
+  const response: AxiosResponse<{ isSuccess: boolean; data?: Preparation }> = await axiosClient.get(
+    PreparationEndpoints.getPreparationById(id)
+  );
   return {
     success: response.data?.isSuccess,
     data: response.data?.data,
@@ -125,6 +128,8 @@ export async function updatePreparation(
   const formData = new FormData();
 
   if (data.schoolBranchId) formData.append('SchoolBrancheId', data.schoolBranchId);
+  if (data.preparationNumber !== undefined)
+    formData.append('PreparationNumber', String(data.preparationNumber));
   if (data.preparationDate) formData.append('PreparationDate', data.preparationDate);
   if (data.gradeId) formData.append('GradeId', data.gradeId);
 
