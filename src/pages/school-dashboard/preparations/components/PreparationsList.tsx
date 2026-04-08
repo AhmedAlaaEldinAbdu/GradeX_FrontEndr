@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/redux/store/store';
-import { fetchPreparations } from '@/redux/features/preparations/preparationsSlice';
+import {
+  fetchPreparations,
+  deletePreparation,
+} from '@/redux/features/preparations/preparationsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import type { Preparation } from '@/types/preparations';
@@ -60,17 +63,19 @@ export default function PreparationsList() {
   }, [dispatch, schoolBranchId, searchTerm, selectedStage, selectedGrade, selectedDate]);
 
   const handlePageChange = (page: number) => {
-    dispatch(fetchPreparations({ 
-      schoolBranchId, 
-      page, 
-      limit: pagination.limit,
-      filters: {
-        searchTerm: searchTerm || undefined,
-        gradeId: selectedStage || undefined,
-        classRoomId: selectedGrade || undefined,
-        date: selectedDate || undefined,
-      }
-    }));
+    dispatch(
+      fetchPreparations({
+        schoolBranchId,
+        page,
+        limit: pagination.limit,
+        filters: {
+          searchTerm: searchTerm || undefined,
+          gradeId: selectedStage || undefined,
+          classRoomId: selectedGrade || undefined,
+          date: selectedDate || undefined,
+        },
+      })
+    );
   };
 
   const handleResetFilters = () => {
@@ -244,9 +249,13 @@ export default function PreparationsList() {
     },
   ];
 
-  const handleDeleteConfirm = () => {
-    // Delete action not yet hooked up to API
-    setShowDeletePopup(false);
+  const handleDeleteConfirm = async () => {
+    if (selectedPrepId) {
+      const resultAction = await dispatch(deletePreparation(selectedPrepId)).unwrap();
+      if (resultAction.success) {
+        setShowDeletePopup(false);
+      }
+    }
   };
 
   const hasActiveFilters = Boolean(searchTerm || selectedStage || selectedGrade || selectedDate);
