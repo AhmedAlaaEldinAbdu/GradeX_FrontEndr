@@ -1395,7 +1395,9 @@
       "startTimeRequired": "Start time is required",
       "endTimeRequired": "End time is required",
       "interViewTypeRequired": "Interview type is required",
-      "interViewTypeInvalid": "Interview type is invalid"
+      "interViewTypeInvalid": "Interview type is invalid",
+      "nameArInvalid": "Interview name in Arabic must contain Arabic characters only",
+      "nameEnInvalid": "Interview name in English must contain English characters only"
     }
   },
   "performance": {

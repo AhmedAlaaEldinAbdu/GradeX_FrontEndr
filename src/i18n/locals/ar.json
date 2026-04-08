@@ -1393,7 +1393,9 @@
       "startTimeRequired": "وقت البدء مطلوب",
       "endTimeRequired": "وقت الانتهاء مطلوب",
       "interViewTypeRequired": "نوع المقابلة مطلوب",
-      "interViewTypeInvalid": "نوع المقابلة غير صالح"
+      "interViewTypeInvalid": "نوع المقابلة غير صالح",
+      "nameArInvalid": "اسم المقابلة بالعربية يجب أن يحتوي على أحرف عربية فقط",
+      "nameEnInvalid": "اسم المقابلة بالإنجليزية يجب أن يحتوي على أحرف إنجليزية فقط"
     }
   },
   "performance": {
