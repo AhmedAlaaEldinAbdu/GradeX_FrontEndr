@@ -58,9 +58,7 @@ export default function TeachersList() {
   // Fetch filter data on mount
   useEffect(() => {
     dispatch(fetchSubjects({ page: 1, limit: 10000 }));
-    dispatch(
-      fetchClassrooms({ page: 1, limit: 100, filters: { schoolBranchId: schoolBranchId } })
-    );
+    dispatch(fetchClassrooms({ page: 1, limit: 100, filters: { schoolBranchId: schoolBranchId } }));
     dispatch(fetchSchoolStages());
   }, [dispatch]);
 
@@ -230,8 +228,11 @@ export default function TeachersList() {
       accessor: (row) => {
         const gradeName = currentLang === 'ar' ? row.gradeNameAR : row.gradeNameEN;
         return gradeName ? (
-          <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-base font-medium text-blue-800">
-            {gradeName}
+          <span className="text-base font-medium text-gray-800">
+            {gradeName
+              .split(',')
+              .map((s) => s.trim())
+              .join(' - ')}
           </span>
         ) : (
           <span className="text-gray-400">-</span>
