@@ -84,7 +84,10 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   const handleBlur = async (field: keyof PreparationFormValidation, value: any) => {
     try {
-      await yup.reach(preparationValidationSchema, field).validate(value);
+      const schema = yup.reach(preparationValidationSchema, field);
+      if (schema && 'validate' in schema) {
+        await (schema as yup.Schema).validate(value);
+      }
       setErrors((prev) => {
         const next = { ...prev };
         delete next[field];
