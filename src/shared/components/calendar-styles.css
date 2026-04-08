@@ -207,7 +207,7 @@
 .rbc-month-row .rbc-row-segment {
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   padding: 0.25rem 0.5rem;
 }
 
@@ -232,11 +232,12 @@
   font-weight: 500;
 }
 
+/* Single-event pill: wide, centered in the cell */
 .shared-calendar-event {
   background-color: #5fa8960d;
   border: 1px solid #00512e;
-  border-radius: 0.5rem;
-  padding: 0.35rem 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.35rem 0.75rem;
   color: #00512e;
   font-size: 0.75rem;
   font-weight: 600;
@@ -245,10 +246,16 @@
   justify-content: center;
   min-height: 2rem;
   text-align: center;
-  width: 38%;
+  width: calc(100% - 0.5rem);
+  margin: 0 auto;
 }
-.shared-calendar-event.rbc-event-allday {
-  width: 18%;
+
+/* Multi-event count pill: compact, pushed to inline-end */
+.shared-calendar-event--multi {
+  width: auto !important;
+  margin: 0 !important;
+  margin-inline-end: auto !important;
+  padding: 0.25rem 0.6rem !important;
 }
 
 .shared-calendar-event:hover {

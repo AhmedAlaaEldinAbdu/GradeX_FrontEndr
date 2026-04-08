@@ -193,21 +193,28 @@ export default function SharedCalendar({
     event: CalendarEventWithMeta;
     title?: string;
   }) => (
-    <div className="flex items-center justify-center gap-2">
-      {typeof event.extraEventsCount === 'number' ? (
-        // && event.extraEventsCount > 0
-        <span className="line-clamp-2 text-center text-sm font-bold text-green-500">
+    <div className="flex items-center justify-center overflow-hidden">
+      {typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0 ? (
+        <span className="text-center text-sm font-bold text-green-500">
           +{event.extraEventsCount + 1}
         </span>
       ) : (
-        <span className="line-clamp-2 text-center text-xs font-bold text-green-500">{title}</span>
+        <span
+          className="block w-full truncate text-center text-xs font-bold text-green-500"
+          title={title}
+        >
+          {title}
+        </span>
       )}
     </div>
   );
 
-  const eventPropGetter = useCallback(() => {
+  const eventPropGetter = useCallback((event: CalendarEventWithMeta) => {
+    const isMulti = typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0;
     return {
-      className: 'shared-calendar-event',
+      className: isMulti
+        ? 'shared-calendar-event shared-calendar-event--multi'
+        : 'shared-calendar-event',
     };
   }, []);
 
