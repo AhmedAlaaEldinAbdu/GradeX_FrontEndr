@@ -77,6 +77,7 @@ export default function StudentInterviewsCalendar() {
     try {
       const result = await dispatch(
         fetchStudentInterviews({
+          limit: 1000,
           filters,
         })
       ).unwrap();
@@ -191,9 +192,8 @@ export default function StudentInterviewsCalendar() {
     }
 
     const [yearStr, monthStr, dayStr] = dateStr.split('-');
-    const [hourStr, minuteStr, secondStr = '00'] = (timeStr.length === 5
-      ? `${timeStr}:00`
-      : timeStr
+    const [hourStr, minuteStr, secondStr = '00'] = (
+      timeStr.length === 5 ? `${timeStr}:00` : timeStr
     ).split(':');
 
     const year = Number(yearStr);
