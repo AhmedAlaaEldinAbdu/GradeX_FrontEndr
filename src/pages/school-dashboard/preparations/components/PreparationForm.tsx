@@ -10,6 +10,8 @@ import {
 } from '@/redux/features/preparations/preparationsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
+import { fetchBooks } from '@/redux/features/books/booksSlice';
 import type { CreatePreparationRequest, UpdatePreparationRequest } from '@/types/preparations';
 
 import * as yup from 'yup';
@@ -19,11 +21,15 @@ import {
   type PreparationFormValidation,
 } from '@/validations/preparations-validations';
 
+import { tokenManager } from '@/lib/auth/token-manager';
 import Card from '@/shared/components/Card';
 import Input from '@/shared/components/Input';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import FileUpload from '@/shared/components/FileUpload';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import { useToast } from '@/shared/context/ToastContext';
 
 interface PreparationFormProps {
   isEditMode?: boolean;
@@ -31,6 +37,7 @@ interface PreparationFormProps {
 
 export default function PreparationForm({ isEditMode = false }: PreparationFormProps) {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -38,15 +45,20 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
   const { classrooms } = useSelector((state: RootState) => state.classrooms);
+  const { subjects } = useSelector((state: RootState) => state.subjects);
+  const { flattenedBooks } = useSelector((state: RootState) => state.books);
   const { isCreating, isUpdating, isLoading, currentPreparation } = useSelector(
     (state: RootState) => state.preparations
   );
 
-  const schoolBranchId = '560581d1-5f5a-4ec7-5f29-08de6be7bc5a';
+  const schoolBranchId =
+    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
 
   useEffect(() => {
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
     dispatch(fetchClassrooms({ filters: { schoolBranchId }, limit: 1000 }));
+    dispatch(fetchSubjects({ limit: 1000 }));
+    dispatch(fetchBooks({ limit: 100 }));
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -56,6 +68,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   }, [isEditMode, id, dispatch]);
 
   const [date, setDate] = useState('');
+  const [preparationNumber, setPreparationNumber] = useState('');
   const [educationalStage, setEducationalStage] = useState('');
   const [grades, setGrades] = useState<string[]>([]);
   const [subject, setSubject] = useState('');
@@ -66,6 +79,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [content, setContent] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const handleBlur = async (field: keyof PreparationFormValidation, value: any) => {
     try {
@@ -85,6 +99,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       if (currentPreparation.preparationDate) {
         setDate(currentPreparation.preparationDate.split('T')[0]);
       }
+      setPreparationNumber(currentPreparation.preparationNumber?.toString() || '');
       setEducationalStage(currentPreparation.gradeId || '');
       // Map the array of classrooms to an array of classRoomIds
       if (currentPreparation.classRooms) {
@@ -99,21 +114,22 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
     }
   }, [isEditMode, currentPreparation]);
 
-  // Mock Options mapped with default values or API matches from cURL
-  const subjectOptions = [
-    { value: '45e85024-f17f-4c43-b6ab-08de2240f2fc', label: 'اللغة العربية' },
-    { value: 'english', label: 'اللغة الإنجليزية' },
-  ];
+  // Options from API data
+  const subjectOptions = subjects.map((s) => ({
+    value: s.id,
+    label: s.name || s.nameEn || '',
+  }));
 
-  const bookOptions = [
-    { value: 'f095c5c9-68aa-4e65-8eea-08de22252ef9', label: 'كتاب 1' },
-    { value: 'book2', label: 'كتاب 2' },
-  ];
+  // Get unique books from flattenedBooks
+  const bookOptions = Array.from(
+    new Map(flattenedBooks.map((b) => [b.id, { value: b.id, label: b.name }])).values()
+  );
 
   const handleSave = async () => {
     try {
       const validationResult = await validatePreparationForm({
         date,
+        preparationNumber,
         educationalStage,
         grades,
         subject,
@@ -132,6 +148,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
       const data: CreatePreparationRequest | UpdatePreparationRequest = {
         schoolBranchId,
+        preparationNumber: parseInt(preparationNumber),
         preparationDate: new Date(date).toISOString(),
         gradeId: educationalStage,
         classRoomIds: grades,
@@ -150,18 +167,24 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           editPreparation(data as UpdatePreparationRequest)
         ).unwrap();
         if (resultAction.success) {
-          navigate('/calendar/preparations');
+          setShowSuccessPopup(true);
         }
       } else {
         const resultAction = await dispatch(
           addPreparation(data as CreatePreparationRequest)
         ).unwrap();
         if (resultAction.success) {
-          navigate('/calendar/preparations');
+          setShowSuccessPopup(true);
         }
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
+      const message = typeof err === 'string' ? err : t('common.errorOccurred');
+      showToast({
+        message,
+        type: 'error',
+        isRaw: typeof err === 'string',
+      });
     }
   };
 
@@ -230,6 +253,24 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       <Card className="rounded-xl bg-white p-6 shadow-sm">
         <form className="space-y-8">
           <div className="space-y-6">
+            <div className="w-full">
+              <label className="mb-2 block text-start text-sm font-medium text-gray-700">
+                {t('preparations.form.preparationNumber')} <span className="text-red-500">*</span>
+              </label>
+              <Input
+                type="number"
+                value={preparationNumber}
+                min={1}
+                onChange={(e) => {
+                  setPreparationNumber(e.target.value);
+                  if (errors.preparationNumber) handleBlur('preparationNumber', e.target.value);
+                }}
+                onBlur={() => handleBlur('preparationNumber', preparationNumber)}
+                error={errors.preparationNumber}
+                placeholder={t('preparations.form.preparationNumberPlaceholder')}
+              />
+            </div>
+
             <div className="w-full">
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.date')} <span className="text-red-500">*</span>
@@ -380,6 +421,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                     <Input
                       type="number"
                       value={fromPage}
+                      min={1}
                       onChange={(e) => setFromPage(e.target.value)}
                       placeholder={t('preparations.form.bookSection.fromPagePlaceholder')}
                     />
@@ -390,6 +432,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                     </label>
                     <Input
                       type="number"
+                      min={1}
                       value={toPage}
                       onChange={(e) => setToPage(e.target.value)}
                       placeholder={t('preparations.form.bookSection.toPagePlaceholder')}
@@ -485,6 +528,20 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           </Button>
         </div>
       </Card>
+
+      {/* Success Popup */}
+      <PopupMessage
+        open={showSuccessPopup}
+        type="success"
+        message={isEditMode ? 'actions.successEdit' : 'actions.successAdd'}
+        iconSrc={BigSuccessIcon}
+        autoClose={true}
+        duration={1500}
+        onClose={() => {
+          setShowSuccessPopup(false);
+          navigate('/calendar/preparations');
+        }}
+      />
     </div>
   );
 }
