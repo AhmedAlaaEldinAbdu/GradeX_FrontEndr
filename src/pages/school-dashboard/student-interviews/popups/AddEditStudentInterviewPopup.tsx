@@ -59,6 +59,7 @@ export default function AddEditStudentInterviewPopup({
     formState: { errors, isSubmitting },
   } = useForm<StudentInterviewApiProps>({
     resolver: yupResolver(StudentInterviewApiSchema) as any,
+    mode: 'onBlur',
     defaultValues: {
       nameAr: '',
       nameEn: '',
