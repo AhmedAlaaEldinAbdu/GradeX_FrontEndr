@@ -33,6 +33,7 @@ export interface PreparationsState {
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
+  isDeleting: boolean;
   error: string | null;
   validationErrors: Record<string, string> | null;
   isInitialized: boolean;
@@ -68,6 +69,7 @@ const initialState: PreparationsState = {
   isLoading: false,
   isCreating: false,
   isUpdating: false,
+  isDeleting: false,
   error: null,
   validationErrors: null,
   isInitialized: false,
@@ -275,17 +277,15 @@ const preparationsSlice = createSlice({
         }
       })
       .addCase(deletePreparation.pending, (state) => {
-        state.isLoading = true;
+        state.isDeleting = true;
         state.error = null;
       })
       .addCase(deletePreparation.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.preparations = state.preparations.filter(
-          (prep) => prep.id !== action.payload.id
-        );
+        state.isDeleting = false;
+        state.preparations = state.preparations.filter((prep) => prep.id !== action.payload.id);
       })
       .addCase(deletePreparation.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isDeleting = false;
         state.error = action.payload as string;
       });
   },
