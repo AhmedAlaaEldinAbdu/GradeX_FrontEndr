@@ -98,6 +98,19 @@
 .rbc-row-bg {
   gap: 0.5rem;
 }
+
+/* Date Cell Wrapper — flex item for hover add effect */
+.custom-date-cell-wrapper {
+  position: relative;
+  flex: 1 0 0%;
+  align-self: stretch;
+  border-radius: 6px;
+}
+
+.custom-date-cell-wrapper > .rbc-day-bg {
+  height: 100%;
+  border-radius: 6px;
+}
 .rbc-day-bg {
   transition: background-color 0.2s;
   position: relative;
@@ -131,6 +144,7 @@
   color: #6b7280;
   position: relative;
   cursor: default;
+  pointer-events: none; /* let hover reach the bg wrapper below */
 }
 
 .rtl .rbc-date-cell {
@@ -150,6 +164,19 @@
 .rbc-row-content {
   position: relative;
   z-index: 0;
+  pointer-events: none; /* Let hover pass through to the bg layer */
+}
+
+.rbc-row-content * {
+  pointer-events: none; /* Default off for all children */
+}
+
+/* Restore only for actual interactive elements */
+.rbc-row-content .rbc-event,
+.rbc-row-content .rbc-show-more,
+.rbc-row-content button,
+.rbc-row-content [role='button'] {
+  pointer-events: auto;
 }
 
 .rbc-date-cell.rbc-now {
