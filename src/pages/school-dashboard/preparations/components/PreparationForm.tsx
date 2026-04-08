@@ -30,6 +30,7 @@ import FileUpload from '@/shared/components/FileUpload';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { useToast } from '@/shared/context/ToastContext';
+import Loading from '@/shared/components/Loading';
 
 interface PreparationFormProps {
   isEditMode?: boolean;
@@ -239,11 +240,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   );
 
   if (isEditMode && isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#005B48]"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   const isSubmitting = isCreating || isUpdating;
