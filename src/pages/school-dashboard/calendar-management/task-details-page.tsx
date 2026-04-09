@@ -3,7 +3,6 @@ import PageHeader from '@/shared/components/PageHeader';
 import TaskDetails from './components/TaskDetails';
 
 export default function TaskDetailsPage() {
-
   return (
     <div className="space-y-6">
       <Breadcrumb

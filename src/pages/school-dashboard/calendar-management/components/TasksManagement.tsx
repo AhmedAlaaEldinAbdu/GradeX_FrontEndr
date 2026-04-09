@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/shared/context/ToastContext';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
+import EmptyState from '@/shared/components/EmptyState';
 import IconButton from '@/shared/components/IconButton';
 import MetricCard from '@/shared/components/MetricCard';
 import DeletePopup from '@/shared/popups/DeletePopup';
@@ -15,19 +18,51 @@ import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import ClockYellowBoldIcon from '@gradex/assets/icons/ClockYellowBold.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import TaskIcon from '@gradex/assets/icons/Task.svg';
+import TasksBadgeIcon from '@gradex/assets/icons/TasksBadge.svg';
+import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import {
-  TASK_CORRECTION_META,
-  TASK_TYPE_META,
-  TASKS_MOCK,
-  type TaskRecord,
-} from '../data/tasks.mock';
+  deleteSchoolTask as deleteSchoolTaskAction,
+  fetchSchoolTasks,
+} from '@/redux/features/school-tasks/schoolTasksSlice';
+import type { SchoolTask, SchoolTaskType } from '@/types/schoolTasks';
 
-type TaskTableRow = TaskRecord & {
+type CorrectionStatusKey = 'corrected' | 'notCorrected';
+type ProgressStatusKey = 'completed' | 'pending' | 'late';
+
+type TaskTableRow = SchoolTask & {
   index: number;
+  correctionStatusKey: CorrectionStatusKey;
+  progressStatusKey: ProgressStatusKey;
+  submissionsLabel: string;
 };
 
 const PAGE_SIZE = 7;
+
+const TASK_TYPE_LABEL_KEYS: Partial<Record<SchoolTaskType, string>> = {
+  1: 'tasksManagement.taskTypes.homework',
+  2: 'tasksManagement.taskTypes.training',
+  3: 'tasksManagement.taskTypes.dictation',
+  4: 'tasksManagement.taskTypes.quiz',
+};
+
+const TASK_TYPE_META: Record<number, { className: string }> = {
+  1: { className: 'bg-emerald-100 text-emerald-700' },
+  2: { className: 'bg-amber-100 text-amber-700' },
+  3: { className: 'bg-cyan-100 text-cyan-700' },
+  4: { className: 'bg-violet-100 text-violet-700' },
+  5: { className: 'bg-blue-100 text-blue-700' },
+  6: { className: 'bg-rose-100 text-rose-700' },
+};
+
+const TASK_CORRECTION_META: Record<CorrectionStatusKey, { className: string }> = {
+  corrected: {
+    className: 'bg-emerald-100 text-emerald-700',
+  },
+  notCorrected: {
+    className: 'bg-rose-100 text-rose-700',
+  },
+};
 
 const formatTaskDate = (value: string) => {
   if (!value) return '-';
@@ -36,10 +71,38 @@ const formatTaskDate = (value: string) => {
   return date.toLocaleDateString('en-GB');
 };
 
+const getCorrectionStatusKey = (task: SchoolTask): CorrectionStatusKey =>
+  task.correctTaskNumber > 0 ? 'corrected' : 'notCorrected';
+
+const getProgressStatusKey = (task: SchoolTask): ProgressStatusKey => {
+  if (task.totalTaskNumber > 0 && task.correctTaskNumber >= task.totalTaskNumber) {
+    return 'completed';
+  }
+
+  const deliveryDate = new Date(task.deliveryDate || task.date);
+  if (!Number.isNaN(deliveryDate.getTime()) && deliveryDate.getTime() < Date.now()) {
+    return 'late';
+  }
+
+  return 'pending';
+};
+
+const getTeacherId = (task: SchoolTask) => {
+  const taskWithTeacherId = task as SchoolTask & {
+    teacherId?: string;
+    teatcherId?: string;
+  };
+
+  return taskWithTeacherId.teacherId || taskWithTeacherId.teatcherId || '';
+};
+
 export default function TasksManagement() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const isArabic = i18n.language === 'ar';
+  const currentLang = i18n.language as 'ar' | 'en';
   const handleViewTask = (taskId: string) => navigate(`/calendar/tasks/details/${taskId}`);
   const handleViewTeacher = (teacherId: string) =>
     navigate(`/teachers/${teacherId}`, { state: { comeFrom: 'calendar-tasks' } });
@@ -53,52 +116,64 @@ export default function TasksManagement() {
   const [selectedTaskId, setSelectedTaskId] = useState('');
   const [page, setPage] = useState(1);
 
-  const [tasks, setTasks] = useState(TASKS_MOCK);
+  const tasks = useAppSelector((state) => state.schoolTasks.schoolTasks);
+  const isLoading = useAppSelector((state) => state.schoolTasks.isLoading);
+  const isDeleting = useAppSelector((state) => state.schoolTasks.isDeleting);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
+  const subjects = useAppSelector((state) => state.subjects.subjects);
+  const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
+  const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
+
+  useEffect(() => {
+    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(fetchClassrooms({ page: 1, limit: 10000 }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(
+      fetchSchoolTasks({
+        page: 1,
+        limit: 1000,
+        filters: {
+          classroomId: selectedClassroom || undefined,
+          materialId: selectedSubject || undefined,
+          taskType: selectedTaskType ? (Number(selectedTaskType) as SchoolTaskType) : undefined,
+        },
+      })
+    );
+  }, [dispatch, selectedClassroom, selectedSubject, selectedTaskType]);
 
   const metrics = useMemo(() => {
     return {
       total: tasks.length,
-      completed: tasks.filter((task) => task.progressStatus === 'completed').length,
-      pending: tasks.filter((task) => task.progressStatus === 'pending').length,
-      late: tasks.filter((task) => task.progressStatus === 'late').length,
+      completed: tasks.filter((task) => getProgressStatusKey(task) === 'completed').length,
+      pending: tasks.filter((task) => getProgressStatusKey(task) === 'pending').length,
+      late: tasks.filter((task) => getProgressStatusKey(task) === 'late').length,
     };
   }, [tasks]);
 
   const classroomOptions = useMemo(() => {
-    const seen = new Set<string>();
-    return tasks
-      .map((task) => ({
-        value: task.classroomAr,
-        label: isArabic ? task.classroomAr : task.classroomEn,
-      }))
-      .filter((option) => {
-        if (seen.has(option.value)) {
-          return false;
-        }
-        seen.add(option.value);
-        return true;
-      });
-  }, [isArabic, tasks]);
+    return classrooms.map((classroom) => ({
+      value: classroom.id,
+      label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
+    }));
+  }, [classrooms, currentLang]);
 
   const subjectOptions = useMemo(() => {
-    const seen = new Set<string>();
-    return tasks
-      .map((task) => ({
-        value: task.subjectAr,
-        label: isArabic ? task.subjectAr : task.subjectEn,
-      }))
-      .filter((option) => {
-        if (seen.has(option.value)) {
-          return false;
-        }
-        seen.add(option.value);
-        return true;
-      });
-  }, [isArabic, tasks]);
+    return subjects.map((subject) => ({
+      value: subject.id,
+      label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
+    }));
+  }, [currentLang, subjects]);
 
-  const taskTypeOptions = Object.keys(TASK_TYPE_META).map((value) => ({
-    value,
-    label: t(`tasksManagement.taskTypes.${value}`),
+  const getTaskTypeLabel = (taskType: number) => {
+    const labelKey = TASK_TYPE_LABEL_KEYS[taskType as SchoolTaskType];
+    return labelKey ? t(labelKey) : `${t('tasksManagement.table.taskType')} ${taskType}`;
+  };
+
+  const taskTypeOptions = [1, 2, 3, 4, 5, 6].map((value) => ({
+    value: String(value),
+    label: getTaskTypeLabel(value),
   }));
 
   const correctionStatusOptions = Object.keys(TASK_CORRECTION_META).map((value) => ({
@@ -110,46 +185,43 @@ export default function TasksManagement() {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
     return tasks.filter((task) => {
-      const localizedName = isArabic ? task.nameAr : task.nameEn;
-      const localizedSubject = isArabic ? task.subjectAr : task.subjectEn;
-      const localizedClassroom = isArabic ? task.classroomAr : task.classroomEn;
+      const localizedName = isArabic ? task.nameAr || task.name : task.nameEn || task.name;
+      const localizedSubject = task.materialName || '';
+      const localizedClassroom = task.classroomName || '';
+      const correctionStatusKey = getCorrectionStatusKey(task);
 
       const matchesSearch =
         !normalizedSearch ||
         localizedName.toLowerCase().includes(normalizedSearch) ||
-        task.teacherName.toLowerCase().includes(normalizedSearch);
+        (task.teatcherName || '').toLowerCase().includes(normalizedSearch);
 
-      const matchesClassroom = !selectedClassroom || task.classroomAr === selectedClassroom;
-      const matchesSubject = !selectedSubject || task.subjectAr === selectedSubject;
-      const matchesTaskType = !selectedTaskType || task.taskType === selectedTaskType;
       const matchesCorrectionStatus =
-        !selectedCorrectionStatus || task.correctionStatus === selectedCorrectionStatus;
+        !selectedCorrectionStatus || correctionStatusKey === selectedCorrectionStatus;
 
       return (
         matchesSearch &&
-        matchesClassroom &&
-        matchesSubject &&
-        matchesTaskType &&
         matchesCorrectionStatus &&
         Boolean(localizedClassroom) &&
         Boolean(localizedSubject)
       );
     });
-  }, [
-    isArabic,
-    searchTerm,
-    selectedClassroom,
-    selectedCorrectionStatus,
-    selectedSubject,
-    selectedTaskType,
-    tasks,
-  ]);
+  }, [isArabic, searchTerm, selectedCorrectionStatus, tasks]);
+
+  useEffect(() => {
+    const nextTotalPages = Math.max(1, Math.ceil(filteredTasks.length / PAGE_SIZE));
+    if (page > nextTotalPages) {
+      setPage(nextTotalPages);
+    }
+  }, [filteredTasks.length, page]);
 
   const paginatedTasks = useMemo<TaskTableRow[]>(() => {
     const startIndex = (page - 1) * PAGE_SIZE;
     return filteredTasks.slice(startIndex, startIndex + PAGE_SIZE).map((task, index) => ({
       ...task,
       index: startIndex + index + 1,
+      correctionStatusKey: getCorrectionStatusKey(task),
+      progressStatusKey: getProgressStatusKey(task),
+      submissionsLabel: `${task.correctTaskNumber}/${task.totalTaskNumber}`,
     }));
   }, [filteredTasks, page]);
 
@@ -157,19 +229,36 @@ export default function TasksManagement() {
 
   const selectedTask = tasks.find((task) => task.id === selectedTaskId);
 
-  const handleDeleteConfirm = () => {
-    if (!selectedTaskId) {
-      return;
+  const handleDeleteConfirm = async () => {
+    if (!selectedTaskId) return;
+
+    try {
+      await dispatch(deleteSchoolTaskAction(selectedTaskId)).unwrap();
+      setShowDeletePopup(false);
+      setSelectedTaskId('');
+      showToast({
+        message: isArabic ? 'تم حذف المهمة بنجاح' : 'Task deleted successfully',
+        isRaw: true,
+        type: 'success',
+      });
+    } catch {
+      showToast({
+        message: 'common.errorOccurred',
+        type: 'error',
+      });
     }
-
-    const remainingTasks = tasks.filter((task) => task.id !== selectedTaskId);
-    const nextTotalPages = Math.max(1, Math.ceil(remainingTasks.length / PAGE_SIZE));
-
-    setTasks(remainingTasks);
-    setShowDeletePopup(false);
-    setSelectedTaskId('');
-    setPage((currentPage) => Math.min(currentPage, nextTotalPages));
   };
+
+  const hasActiveFilters = Boolean(
+    searchTerm ||
+      selectedClassroom ||
+      selectedSubject ||
+      selectedTaskType ||
+      selectedCorrectionStatus
+  );
+
+  const shouldShowEmptyState = !isLoading && tasks.length === 0 && !hasActiveFilters;
+  const shouldShowContent = isLoading || tasks.length > 0 || hasActiveFilters;
 
   const columns: DataTableColumn<TaskTableRow>[] = [
     {
@@ -182,7 +271,7 @@ export default function TasksManagement() {
       header: 'tasksManagement.table.taskName',
       accessor: (row) => (
         <div className="flex w-full items-center justify-evenly gap-2">
-          <div>{isArabic ? row.nameAr : row.nameEn}</div>
+          <div>{isArabic ? row.nameAr || row.name : row.nameEn || row.name}</div>
           <button
             type="button"
             onClick={() => handleViewTask(row.id)}
@@ -198,12 +287,12 @@ export default function TasksManagement() {
     {
       header: 'tasksManagement.table.correctionStatus',
       accessor: (row) => {
-        const meta = TASK_CORRECTION_META[row.correctionStatus];
+        const meta = TASK_CORRECTION_META[row.correctionStatusKey];
         return (
           <span
             className={`inline-flex min-w-[130px] justify-center rounded-full px-4 py-2 ${meta.className}`}
           >
-            {t(`tasksManagement.correctionStatuses.${row.correctionStatus}`)}
+            {t(`tasksManagement.correctionStatuses.${row.correctionStatusKey}`)}
           </span>
         );
       },
@@ -224,7 +313,7 @@ export default function TasksManagement() {
           <span
             className={`inline-flex min-w-[130px] justify-center rounded-full px-4 py-2 ${meta.className}`}
           >
-            {t(`tasksManagement.taskTypes.${row.taskType}`)}
+            {getTaskTypeLabel(row.taskType)}
           </span>
         );
       },
@@ -233,52 +322,61 @@ export default function TasksManagement() {
     },
     {
       header: 'tasksManagement.table.educationalStage',
-      accessor: (row) => <span>{isArabic ? row.stageAr : row.stageEn}</span>,
+      accessor: (row) => <span>{row.gradeName}</span>,
       headerClassName: 'min-w-[230px]',
       className: 'text-center',
     },
     {
       header: 'tasksManagement.table.classroom',
-      accessor: (row) => <span>{isArabic ? row.classroomAr : row.classroomEn}</span>,
+      accessor: (row) => <span>{row.classroomName}</span>,
       headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
     {
       header: 'tasksManagement.table.subjectName',
-      accessor: (row) => <span>{isArabic ? row.subjectAr : row.subjectEn}</span>,
+      accessor: (row) => <span>{row.materialName}</span>,
       headerClassName: 'min-w-[250px]',
       className: 'text-center',
     },
     {
       header: 'tasksManagement.table.teacherName',
-      accessor: (row) => (
-        <div className="flex w-full items-center justify-evenly gap-2">
-          <div className="flex items-center justify-center gap-2">
-            <div className="h-10 w-10 overflow-hidden rounded-md bg-gray-100">
-              <CustomImage
-                src={DefaultAvatar}
-                alt={row.teacherName}
-                className="h-full w-full object-cover"
-              />
+      accessor: (row) => {
+        const teacherId = getTeacherId(row);
+
+        return (
+          <div className="flex w-full items-center justify-evenly gap-2">
+            <div className="flex items-center justify-center gap-2">
+              <div className="h-10 w-10 overflow-hidden rounded-md bg-gray-100">
+                <CustomImage
+                  src={DefaultAvatar}
+                  alt={row.teatcherName}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <span>{row.teatcherName}</span>
             </div>
-            <span>{row.teacherName}</span>
+            <button
+              type="button"
+              onClick={() => {
+                if (teacherId) {
+                  handleViewTeacher(teacherId);
+                }
+              }}
+              disabled={!teacherId}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label={t('actions.view')}
+            >
+              <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => handleViewTeacher(row.teacherId)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50"
-            aria-label={t('actions.view')}
-          >
-            <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
-          </button>
-        </div>
-      ),
+        );
+      },
       headerClassName: 'min-w-[250px]',
       className: 'text-center',
     },
     {
       header: 'tasksManagement.table.date',
-      accessor: (row) => <span>{formatTaskDate(row.dueDate)}</span>,
+      accessor: (row) => <span>{formatTaskDate(row.deliveryDate || row.date)}</span>,
       headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
@@ -334,7 +432,12 @@ export default function TasksManagement() {
             setPage(1);
           }}
           options={classroomOptions}
-          placeholder={t('tasksManagement.filters.classroomPlaceholder')}
+          placeholder={
+            isLoadingClassrooms
+              ? t('common.loading')
+              : t('tasksManagement.filters.classroomPlaceholder')
+          }
+          disabled={isLoadingClassrooms}
           maxHeight="200px"
         />
       ),
@@ -344,7 +447,7 @@ export default function TasksManagement() {
       name: 'tasks-subject',
       value: selectedSubject,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedSubject}
@@ -353,7 +456,12 @@ export default function TasksManagement() {
             setPage(1);
           }}
           options={subjectOptions}
-          placeholder={t('tasksManagement.filters.subjectPlaceholder')}
+          placeholder={
+            isLoadingSubjects
+              ? t('common.loading')
+              : t('tasksManagement.filters.subjectPlaceholder')
+          }
+          disabled={isLoadingSubjects}
           maxHeight="200px"
         />
       ),
@@ -363,7 +471,7 @@ export default function TasksManagement() {
       name: 'tasks-type',
       value: selectedTaskType,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedTaskType}
@@ -460,27 +568,16 @@ export default function TasksManagement() {
         />
       </div>
 
-      {tasks.length === 0 ? (
+      {shouldShowEmptyState ? (
         <Card className="min-h-[280px]">
-          <div className="flex min-h-[248px] flex-col items-center justify-center gap-6 text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-50">
-              <CustomImage
-                src={TaskIcon}
-                alt={t('tasksManagement.alt.empty')}
-                className="h-14 w-14 opacity-80"
-              />
-            </div>
-            <div className="max-w-[540px] space-y-2">
-              <h2 className="text-xl font-semibold text-gray-800">
-                {t('tasksManagement.emptyState.title')}
-              </h2>
-              <p className="text-base text-gray-500">
-                {t('tasksManagement.emptyState.description')}
-              </p>
-            </div>
-          </div>
+          <EmptyState
+            imgSrc={TasksBadgeIcon}
+            title={t('tasksManagement.emptyState.title')}
+            description={t('tasksManagement.emptyState.description')}
+            blend={true}
+          />
         </Card>
-      ) : (
+      ) : shouldShowContent ? (
         <Card className="overflow-hidden">
           <>
             <DataTable
@@ -497,7 +594,7 @@ export default function TasksManagement() {
               filters={filterConfigs}
               showFilters={true}
               onResetFilters={handleResetFilters}
-              isLoading={false}
+              isLoading={isLoading}
               emptyMessage={t('tasksManagement.emptyState.noMatchingResults')}
               t={t}
             />
@@ -505,17 +602,24 @@ export default function TasksManagement() {
             <DeletePopup
               open={showDeletePopup}
               message="tasksManagement.messages.deleteConfirm"
-              itemName={selectedTask ? (isArabic ? selectedTask.nameAr : selectedTask.nameEn) : ''}
+              itemName={
+                selectedTask
+                  ? isArabic
+                    ? selectedTask.nameAr || selectedTask.name
+                    : selectedTask.nameEn || selectedTask.name
+                  : ''
+              }
               onConfirm={handleDeleteConfirm}
               onCancel={() => {
                 setShowDeletePopup(false);
                 setSelectedTaskId('');
               }}
               iconSrc={BigTrashIcon}
+              isProcessing={isDeleting}
             />
           </>
         </Card>
-      )}
+      ) : null}
     </div>
   );
 }

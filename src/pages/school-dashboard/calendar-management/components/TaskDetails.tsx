@@ -1,19 +1,50 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import IconButton from '@/shared/components/IconButton';
+import Loading from '@/shared/components/Loading';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
-import { TASK_CORRECTION_META, TASKS_MOCK } from '../data/tasks.mock';
-import { TASK_SUBMISSIONS_MOCK, type TaskSubmissionRecord } from '../data/task-submissions.mock';
+import {
+  fetchSchoolTaskById,
+  fetchSchoolTaskStatuses,
+} from '@/redux/features/school-tasks/schoolTasksSlice';
+import type { SchoolTask, SchoolTaskStatusItem, SchoolTaskType } from '@/types/schoolTasks';
 
 const PAGE_SIZE = 6;
+
+type CorrectionStatusKey = 'corrected' | 'notCorrected';
+
+type TaskSubmissionRow = SchoolTaskStatusItem & {
+  index: number;
+  id: string;
+  studentName: string;
+  avatar?: string;
+  correctionStatusKey: CorrectionStatusKey;
+};
+
+const TASK_CORRECTION_META: Record<CorrectionStatusKey, { className: string }> = {
+  corrected: {
+    className: 'bg-emerald-100 text-emerald-700',
+  },
+  notCorrected: {
+    className: 'bg-rose-100 text-rose-700',
+  },
+};
+
+const TASK_TYPE_LABEL_KEYS: Partial<Record<SchoolTaskType, string>> = {
+  1: 'tasksManagement.taskTypes.homework',
+  2: 'tasksManagement.taskTypes.training',
+  3: 'tasksManagement.taskTypes.dictation',
+  4: 'tasksManagement.taskTypes.quiz',
+};
 
 const formatTaskDate = (value: string) => {
   if (!value) return '-';
@@ -24,64 +55,172 @@ const formatTaskDate = (value: string) => {
   return date.toLocaleDateString('en-GB');
 };
 
+const getStringValue = (value: unknown) => (typeof value === 'string' ? value : '');
+
+const getSubmissionId = (submission: SchoolTaskStatusItem) => {
+  return getStringValue(
+    submission.id ||
+      submission.studentId ||
+      submission.taskStudentId ||
+      submission.taskStudentID ||
+      submission.submissionId
+  );
+};
+
+const getLocalizedStudentName = (submission: SchoolTaskStatusItem, isArabic: boolean) => {
+  const nameAr = getStringValue(submission.studentNameAr || submission.nameAr);
+  const nameEn = getStringValue(submission.studentNameEn || submission.nameEn);
+  const fallbackName = getStringValue(submission.studentName || submission.name);
+
+  if (isArabic) {
+    return nameAr || nameEn || fallbackName || '-';
+  }
+
+  return nameEn || nameAr || fallbackName || '-';
+};
+
+const getSubmissionAvatar = (submission: SchoolTaskStatusItem) => {
+  return getStringValue(
+    submission.avatar || submission.imageUrl || submission.profilePicture || submission.image
+  );
+};
+
+const getCorrectionStatusKey = (submission: SchoolTaskStatusItem): CorrectionStatusKey => {
+  const status = submission.correctionStatus;
+
+  if (status === 'corrected' || status === 'notCorrected') {
+    return status;
+  }
+
+  if (submission.isCorrected === true || submission.corrected === true) {
+    return 'corrected';
+  }
+
+  if (
+    submission.correctionId ||
+    submission.correctedAt ||
+    submission.studentScore ||
+    submission.evaluationGrade
+  ) {
+    return 'corrected';
+  }
+
+  return 'notCorrected';
+};
+
+const getTaskCorrectionStatusKey = (task: SchoolTask): CorrectionStatusKey =>
+  task.correctTaskNumber > 0 ? 'corrected' : 'notCorrected';
+
+const getTaskTypeLabel = (taskType: SchoolTaskType, t: (key: string) => string) => {
+  const labelKey = TASK_TYPE_LABEL_KEYS[taskType];
+  return labelKey ? t(labelKey) : `${t('tasksManagement.table.taskType')} ${taskType}`;
+};
+
+const getFileNameFromPath = (filePath: string) => {
+  const parts = filePath.split('/');
+  return parts[parts.length - 1] || filePath;
+};
+
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
   const isArabic = i18n.language === 'ar';
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
 
-  const task = useMemo(() => TASKS_MOCK.find((item) => item.id === id), [id]);
+  const currentSchoolTask = useAppSelector((state) => state.schoolTasks.currentSchoolTask);
+  const taskStatuses = useAppSelector((state) => state.schoolTasks.taskStatuses);
+  const isLoading = useAppSelector((state) => state.schoolTasks.isLoading);
 
-  if (!task) {
-    return (
-      <Card>
-        <NotFoundMessage message="tasksManagement.messages.notFound" className="py-16" />
-      </Card>
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    dispatch(fetchSchoolTaskById(id));
+    dispatch(
+      fetchSchoolTaskStatuses({
+        id,
+        page: 1,
+        limit: 1000,
+      })
     );
-  }
+  }, [dispatch, id]);
 
-  const localizedDescription = isArabic ? task.descriptionAr : task.descriptionEn;
-  const statusMeta = TASK_CORRECTION_META[task.correctionStatus];
+  const task = useMemo(() => {
+    if (!id || !currentSchoolTask || currentSchoolTask.id !== id) {
+      return null;
+    }
+
+    return currentSchoolTask;
+  }, [currentSchoolTask, id]);
+
+  const attachments = useMemo(
+    () =>
+      (task?.attachmentUrls || []).map((filePath, index) => ({
+        id: `${task?.id || 'task'}-attachment-${index}`,
+        filePath,
+        fileName: getFileNameFromPath(filePath),
+      })),
+    [task?.attachmentUrls, task?.id]
+  );
+
+  const submissions = useMemo(
+    () => taskStatuses.filter((submission) => getSubmissionId(submission)),
+    [taskStatuses]
+  );
+
+  const taskId = task?.id || id || '';
+  const localizedDescription = isArabic ? task?.descriptionAr : task?.descriptionEn;
+  const statusKey = task ? getTaskCorrectionStatusKey(task) : 'notCorrected';
+  const statusMeta = TASK_CORRECTION_META[statusKey];
   const assignmentValue =
-    task.assignedTo === 'specific'
+    task?.assignmentType === 2
       ? t('tasksManagement.detailsPage.assignmentSpecific')
       : t('tasksManagement.detailsPage.assignmentAll');
   const handleOpenCorrection = (submissionId: string) => {
-    navigate(`/calendar/tasks/details/${task.id}/correction/${submissionId}`);
+    navigate(`/calendar/tasks/details/${taskId}/correction/${submissionId}`);
   };
 
   const handleOpenCorrectionPreview = (submissionId: string) => {
-    navigate(`/calendar/tasks/details/${task.id}/correction-preview/${submissionId}`);
+    navigate(`/calendar/tasks/details/${taskId}/correction-preview/${submissionId}`);
   };
 
   const handleOpenEditCorrection = (submissionId: string) => {
-    navigate(`/calendar/tasks/details/${task.id}/edit-correction/${submissionId}`);
+    navigate(`/calendar/tasks/details/${taskId}/edit-correction/${submissionId}`);
   };
 
   const filteredSubmissions = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    return TASK_SUBMISSIONS_MOCK.filter((submission) => {
-      if (submission.taskId !== task.id) {
-        return false;
-      }
-
-      const localizedStudentName = isArabic ? submission.studentNameAr : submission.studentNameEn;
+    return submissions.filter((submission) => {
+      const localizedStudentName = getLocalizedStudentName(submission, isArabic);
       return !normalizedSearch || localizedStudentName.toLowerCase().includes(normalizedSearch);
     });
-  }, [isArabic, searchTerm, task.id]);
+  }, [isArabic, searchTerm, submissions]);
 
-  const paginatedSubmissions = useMemo(() => {
+  useEffect(() => {
+    const nextTotalPages = Math.max(1, Math.ceil(filteredSubmissions.length / PAGE_SIZE));
+    if (page > nextTotalPages) {
+      setPage(nextTotalPages);
+    }
+  }, [filteredSubmissions.length, page]);
+
+  const paginatedSubmissions = useMemo<TaskSubmissionRow[]>(() => {
     const startIndex = (page - 1) * PAGE_SIZE;
     return filteredSubmissions
       .slice(startIndex, startIndex + PAGE_SIZE)
       .map((submission, index) => ({
         ...submission,
+        id: getSubmissionId(submission),
+        studentName: getLocalizedStudentName(submission, isArabic),
+        avatar: getSubmissionAvatar(submission),
+        correctionStatusKey: getCorrectionStatusKey(submission),
         index: startIndex + index + 1,
       }));
-  }, [filteredSubmissions, page]);
+  }, [filteredSubmissions, isArabic, page]);
 
   const totalPages = Math.max(1, Math.ceil(filteredSubmissions.length / PAGE_SIZE));
 
@@ -99,7 +238,7 @@ export default function TaskDetails() {
     },
   ];
 
-  const submissionColumns: DataTableColumn<TaskSubmissionRecord & { index: number }>[] = [
+  const submissionColumns: DataTableColumn<TaskSubmissionRow>[] = [
     {
       header: '#',
       accessor: (row) => <span>{row.index}</span>,
@@ -115,11 +254,11 @@ export default function TaskDetails() {
               <CustomImage
                 src={row.avatar}
                 fallbackSrc={DefaultAvatar}
-                alt={isArabic ? row.studentNameAr : row.studentNameEn}
+                alt={row.studentName}
                 className="h-full w-full object-cover"
               />
             </div>
-            <span>{isArabic ? row.studentNameAr : row.studentNameEn}</span>
+            <span>{row.studentName}</span>
           </div>
           <button
             type="button"
@@ -136,12 +275,12 @@ export default function TaskDetails() {
     {
       header: 'tasksManagement.table.correctionStatus',
       accessor: (row) => {
-        const meta = TASK_CORRECTION_META[row.correctionStatus];
+        const meta = TASK_CORRECTION_META[row.correctionStatusKey];
         return (
           <span
             className={`flex w-full justify-center rounded-full px-4 py-2 text-sm font-medium ${meta.className}`}
           >
-            {t(`tasksManagement.correctionStatuses.${row.correctionStatus}`)}
+            {t(`tasksManagement.correctionStatuses.${row.correctionStatusKey}`)}
           </span>
         );
       },
@@ -174,13 +313,29 @@ export default function TaskDetails() {
     },
   ];
 
+  if (isLoading && !task) {
+    return (
+      <Card>
+        <Loading />
+      </Card>
+    );
+  }
+
+  if (!task) {
+    return (
+      <Card>
+        <NotFoundMessage message="tasksManagement.messages.notFound" className="py-16" />
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className={'flex items-center justify-end'}>
         <span
           className={`flex min-w-[120px] justify-center rounded-full px-4 py-2 text-sm font-medium ${statusMeta.className}`}
         >
-          {t(`tasksManagement.correctionStatuses.${task.correctionStatus}`)}
+          {t(`tasksManagement.correctionStatuses.${statusKey}`)}
         </span>
       </div>
 
@@ -206,21 +361,21 @@ export default function TaskDetails() {
                   <span className="font-medium text-gray-900">
                     {t('tasksManagement.detailsPage.fields.educationalStage')}:
                   </span>
-                  <span>{isArabic ? task.stageAr : task.stageEn}</span>
+                  <span>{task.gradeName || '-'}</span>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <span className="font-medium text-gray-900">
                     {t('tasksManagement.detailsPage.fields.subject')}:
                   </span>
-                  <span>{isArabic ? task.subjectAr : task.subjectEn}</span>
+                  <span>{task.materialName || '-'}</span>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <span className="font-medium text-gray-900">
                     {t('tasksManagement.detailsPage.fields.date')}:
                   </span>
-                  <span>{formatTaskDate(task.taskDate || task.dueDate)}</span>
+                  <span>{formatTaskDate(task.deliveryDate || task.date)}</span>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -252,35 +407,35 @@ export default function TaskDetails() {
                   <span className="font-medium text-gray-900">
                     {t('tasksManagement.detailsPage.fields.classroom')}:
                   </span>
-                  <span>{isArabic ? task.classroomAr : task.classroomEn}</span>
+                  <span>{task.classroomName || '-'}</span>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <span className="font-medium text-gray-900">
                     {t('tasksManagement.detailsPage.fields.taskType')}:
                   </span>
-                  <span>{t(`tasksManagement.taskTypes.${task.taskType}`)}</span>
+                  <span>{getTaskTypeLabel(task.taskType, t)}</span>
                 </div>
               </div>
             </div>
           </section>
 
           <section className="rounded-[22px] border border-gray-200 px-5 py-6 sm:px-8">
-            <h2 className="mb-6 text-xl font-medium text-gray-800">
+            <h2 className="mb-6 flex text-xl font-medium text-gray-800">
               {t('tasksManagement.detailsPage.attachmentsSectionTitle')}
             </h2>
 
-            {task.attachments.length === 0 ? (
+            {attachments.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
                 {t('tasksManagement.detailsPage.noAttachments')}
               </div>
             ) : (
               <div className="space-y-3">
-                {task.attachments.map((attachment) => (
+                {attachments.map((attachment) => (
                   <ExistingFileDisplay
                     key={attachment.id}
                     filePath={attachment.filePath}
-                    fileName={attachment.name}
+                    fileName={attachment.fileName}
                     className="mb-0"
                   />
                 ))}
@@ -296,7 +451,7 @@ export default function TaskDetails() {
               {t('tasksManagement.detailsPage.submissionsSectionTitle')}
             </div>
             <span className="flex min-w-[72px] justify-center rounded-full bg-emerald-100 px-4 py-2 text-sm font-medium text-emerald-700">
-              {task.submissionsLabel}
+              {`${task.correctTaskNumber}/${task.totalTaskNumber}`}
             </span>
           </div>
 
