@@ -6,48 +6,48 @@ const SCHOOL_TASK_TYPES = [1, 2, 3, 4, 5, 6] as const;
 
 const baseSchoolTaskSchema = {
   schoolBranchesId: string()
-    .required('schoolTasks.validation.branchRequired')
-    .typeError('schoolTasks.validation.branchRequired'),
+    .required('School branch is required')
+    .typeError('School branch is required'),
   gradeId: string()
-    .required('schoolTasks.validation.gradeRequired')
-    .typeError('schoolTasks.validation.gradeRequired'),
+    .required('Educational stage is required')
+    .typeError('Educational stage is required'),
   classroomId: string()
-    .required('schoolTasks.validation.classroomRequired')
-    .typeError('schoolTasks.validation.classroomRequired'),
+    .required('Classroom is required')
+    .typeError('Classroom is required'),
   materialId: string()
-    .required('schoolTasks.validation.materialRequired')
-    .typeError('schoolTasks.validation.materialRequired'),
+    .required('Subject is required')
+    .typeError('Subject is required'),
   nameAr: string()
-    .required('schoolTasks.validation.nameArRequired')
-    .typeError('schoolTasks.validation.nameArRequired')
-    .matches(ARABIC_TEXT_REGEX, 'schoolTasks.validation.nameArInvalid'),
+    .required('Arabic task name is required')
+    .typeError('Arabic task name is required')
+    .matches(ARABIC_TEXT_REGEX, 'Arabic task name is invalid'),
   nameEn: string()
-    .required('schoolTasks.validation.nameEnRequired')
-    .typeError('schoolTasks.validation.nameEnRequired')
-    .matches(ENGLISH_TEXT_REGEX, 'schoolTasks.validation.nameEnInvalid'),
+    .required('English task name is required')
+    .typeError('English task name is required')
+    .matches(ENGLISH_TEXT_REGEX, 'English task name is invalid'),
   taskType: number()
-    .required('schoolTasks.validation.taskTypeRequired')
-    .oneOf([...SCHOOL_TASK_TYPES], 'schoolTasks.validation.taskTypeRequired')
-    .typeError('schoolTasks.validation.taskTypeRequired'),
+    .required('Task type is required')
+    .oneOf([...SCHOOL_TASK_TYPES], 'Task type is required')
+    .typeError('Task type is required'),
   date: string()
-    .required('schoolTasks.validation.dateRequired')
-    .typeError('schoolTasks.validation.dateRequired'),
+    .required('Task date is required')
+    .typeError('Task date is required'),
   deliveryDate: string()
-    .required('schoolTasks.validation.deliveryDateRequired')
-    .typeError('schoolTasks.validation.deliveryDateRequired'),
+    .required('Delivery date is required')
+    .typeError('Delivery date is required'),
   startPageNumber: number()
-    .required('schoolTasks.validation.startPageRequired')
-    .integer('schoolTasks.validation.startPageInteger')
-    .min(0, 'schoolTasks.validation.startPageMin')
-    .typeError('schoolTasks.validation.startPageRequired'),
+    .required('Start page is required')
+    .integer('Start page must be a whole number')
+    .min(0, 'Start page must be at least 0')
+    .typeError('Start page is required'),
   endPageNumber: number()
-    .required('schoolTasks.validation.endPageRequired')
-    .integer('schoolTasks.validation.endPageInteger')
-    .min(0, 'schoolTasks.validation.endPageMin')
-    .typeError('schoolTasks.validation.endPageRequired')
+    .required('End page is required')
+    .integer('End page must be a whole number')
+    .min(0, 'End page must be at least 0')
+    .typeError('End page is required')
     .test(
       'end-page-greater-than-start-page',
-      'schoolTasks.validation.endPageGreaterThanStartPage',
+      'End page must be greater than or equal to start page',
       function validateEndPage(value) {
         const { startPageNumber } = this.parent;
         if (typeof value !== 'number' || typeof startPageNumber !== 'number') {
@@ -59,7 +59,7 @@ const baseSchoolTaskSchema = {
     ),
   descriptionAr: string()
     .optional()
-    .test('arabic-description', 'schoolTasks.validation.descriptionArInvalid', (value) => {
+    .test('arabic-description', 'Arabic description is invalid', (value) => {
       if (!value) {
         return true;
       }
@@ -68,7 +68,7 @@ const baseSchoolTaskSchema = {
     }),
   descriptionEn: string()
     .optional()
-    .test('english-description', 'schoolTasks.validation.descriptionEnInvalid', (value) => {
+    .test('english-description', 'English description is invalid', (value) => {
       if (!value) {
         return true;
       }
@@ -76,10 +76,10 @@ const baseSchoolTaskSchema = {
       return ENGLISH_TEXT_REGEX.test(value);
     }),
   assignmentType: number()
-    .required('schoolTasks.validation.assignmentTypeRequired')
-    .integer('schoolTasks.validation.assignmentTypeRequired')
-    .positive('schoolTasks.validation.assignmentTypeRequired')
-    .typeError('schoolTasks.validation.assignmentTypeRequired'),
+    .required('Assignment type is required')
+    .integer('Assignment type is required')
+    .positive('Assignment type is required')
+    .typeError('Assignment type is required'),
   attachment: mixed<File[]>().optional(),
   studentIds: array(string().required()).optional(),
 };
@@ -88,8 +88,8 @@ export const AddSchoolTaskSchema = object(baseSchoolTaskSchema);
 
 export const EditSchoolTaskSchema = object({
   id: string()
-    .required('schoolTasks.validation.idRequired')
-    .typeError('schoolTasks.validation.idRequired'),
+    .required('Task id is required')
+    .typeError('Task id is required'),
   ...baseSchoolTaskSchema,
 });
 

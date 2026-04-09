@@ -5,37 +5,37 @@ const EVALUATION_GRADES = [1, 2, 3, 4] as const;
 
 const baseTaskCorrectionSchema = {
   taskStudentId: string()
-    .required('taskCorrections.validation.taskStudentRequired')
-    .typeError('taskCorrections.validation.taskStudentRequired'),
+    .required('Task student is required')
+    .typeError('Task student is required'),
   correctionType: number()
-    .required('taskCorrections.validation.correctionTypeRequired')
-    .oneOf([...CORRECTION_TYPES], 'taskCorrections.validation.correctionTypeRequired')
-    .typeError('taskCorrections.validation.correctionTypeRequired'),
+    .required('Correction type is required')
+    .oneOf([...CORRECTION_TYPES], 'Correction type is required')
+    .typeError('Correction type is required'),
   studentScore: number().when('correctionType', {
     is: 1,
     then: (schema) =>
       schema
-        .required('taskCorrections.validation.studentScoreRequired')
-        .min(0, 'taskCorrections.validation.studentScoreMin')
-        .typeError('taskCorrections.validation.studentScoreRequired'),
+        .required('Student grade is required')
+        .min(0, 'Student grade must be zero or greater')
+        .typeError('Student grade is required'),
     otherwise: (schema) => schema.optional(),
   }),
   maxScore: number().when('correctionType', {
     is: 1,
     then: (schema) =>
       schema
-        .required('taskCorrections.validation.maxScoreRequired')
-        .moreThan(0, 'taskCorrections.validation.maxScorePositive')
-        .typeError('taskCorrections.validation.maxScoreRequired'),
+        .required('Training grade is required')
+        .moreThan(0, 'Training grade must be greater than zero')
+        .typeError('Training grade is required'),
     otherwise: (schema) => schema.optional(),
   }),
   evaluationGrade: number().when('correctionType', {
     is: 2,
     then: (schema) =>
       schema
-        .required('taskCorrections.validation.evaluationGradeRequired')
-        .oneOf([...EVALUATION_GRADES], 'taskCorrections.validation.evaluationGradeRequired')
-        .typeError('taskCorrections.validation.evaluationGradeRequired'),
+        .required('Student performance is required')
+        .oneOf([...EVALUATION_GRADES], 'Student performance is required')
+        .typeError('Student performance is required'),
     otherwise: (schema) => schema.optional(),
   }),
   feedback: string().optional(),
@@ -44,7 +44,7 @@ const baseTaskCorrectionSchema = {
 
 export const AddTaskCorrectionSchema = object(baseTaskCorrectionSchema).test(
   'student-score-not-greater-than-max-score',
-  'taskCorrections.validation.studentScoreNotGreaterThanMax',
+  'Student grade must be less than or equal to training grade',
   (value) => {
     if (!value || value.correctionType !== 1) {
       return true;
@@ -60,12 +60,12 @@ export const AddTaskCorrectionSchema = object(baseTaskCorrectionSchema).test(
 
 export const EditTaskCorrectionSchema = object({
   id: string()
-    .required('taskCorrections.validation.idRequired')
-    .typeError('taskCorrections.validation.idRequired'),
+    .required('Correction id is required')
+    .typeError('Correction id is required'),
   ...baseTaskCorrectionSchema,
 }).test(
   'student-score-not-greater-than-max-score',
-  'taskCorrections.validation.studentScoreNotGreaterThanMax',
+  'Student grade must be less than or equal to training grade',
   (value) => {
     if (!value || value.correctionType !== 1) {
       return true;
