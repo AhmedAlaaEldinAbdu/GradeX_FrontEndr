@@ -1102,7 +1102,7 @@
     "nationality": "الجنسية",
     "country": "الدولة",
     "subjectName": "اسم المادة",
-    "educationalStages": "المراحل التعليمية المسؤول عنها",
+    "educationalStages": "الصفوف الدراسية المسؤول عنها",
     "classrooms": "الصفوف الدراسية المسؤول عنها",
     "searchTeacher": "ابحث عن اسم المعلم",
     "selectSubject": "اسم المادة",
@@ -1393,7 +1393,9 @@
       "startTimeRequired": "وقت البدء مطلوب",
       "endTimeRequired": "وقت الانتهاء مطلوب",
       "interViewTypeRequired": "نوع المقابلة مطلوب",
-      "interViewTypeInvalid": "نوع المقابلة غير صالح"
+      "interViewTypeInvalid": "نوع المقابلة غير صالح",
+      "nameArInvalid": "اسم المقابلة بالعربية يجب أن يحتوي على أحرف عربية فقط",
+      "nameEnInvalid": "اسم المقابلة بالإنجليزية يجب أن يحتوي على أحرف إنجليزية فقط"
     }
   },
   "performance": {
@@ -2395,6 +2397,8 @@
     "form": {
       "addTitle": "إضافة تحضير",
       "editTitle": "تعديل التحضير",
+      "preparationNumber": "رقم التحضير",
+      "preparationNumberPlaceholder": "ادخل رقم التحضير",
       "date": "التاريخ",
       "datePlaceholder": "اختر التاريخ",
       "educationalStage": "المرحلة التعليمية",
@@ -2418,19 +2422,28 @@
       "contentPlaceholder": "ادخل المحتوى",
       "attachments": "مرفقات (اختياري)",
       "validation": {
+        "preparationNumberRequired": "رقم التحضير مطلوب",
+        "preparationNumberMustBeNumber": "رقم التحضير يجب أن يكون رقماً صحيحاً",
+        "preparationNumberMustBeGreaterThanZero": "رقم التحضير يجب أن يكون أكبر من 0",
         "dateRequired": "تاريخ التحضير مطلوب",
         "educationalStageRequired": "برجاء اختيار المرحلة التعليمية",
         "gradesRequired": "برجاء اختيار الصف الدراسي",
         "subjectRequired": "برجاء اختيار المادة",
         "topicRequired": "موضوع التحضير مطلوب",
-        "contentRequired": "محتوى التحضير مطلوب"
+        "topicMin": "يجب أن يكون الموضوع 3 أحرف على الأقل",
+        "topicMax": "يجب أن لا يتجاوز الموضوع 100 حرف",
+        "contentRequired": "محتوى التحضير مطلوب",
+        "contentMin": "يجب أن يكون المحتوى 10 أحرف على الأقل",
+        "pageMustBeNumber": "يجب أن يكون رقم الصفحة رقماً",
+        "toPageMustBeGreater": "يجب أن تكون الصفحة الأخيرة أكبر من الصفحة الأولى"
       },
       "actions": {
         "cancel": "الغاء",
         "save": "حفظ",
+        "saving": "جارٍ الحفظ...",
         "saveChanges": "حفظ التغيرات",
         "draft": "مسودة",
-        "reset": "اعادة تعين"
+        "reset": "اعادة تعيين"
       }
     }
   }

@@ -5,6 +5,7 @@ import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import CustomImage from '@/shared/components/CustomImage';
 import DotsBlackIcon from '@gradex/assets/icons/DotsBlack.svg';
+import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar-styles.css';
 
@@ -121,6 +122,45 @@ export default function SharedCalendar({
     return condensed;
   }, [events, getDayKey]);
 
+  const CustomDateCellWrapper = useMemo(() => {
+    const addAction = contextMenuActions.find(
+      (a) => a.showOnEvent !== true && a.showOnDate !== false
+    );
+
+    return function DateCellWrapperInner({
+      value,
+      children,
+    }: {
+      value: Date;
+      children?: React.ReactNode;
+    }) {
+      const hasEvents = condensedEvents.some((event) => {
+        const ed = new Date(event.start);
+        return (
+          ed.getDate() === value.getDate() &&
+          ed.getMonth() === value.getMonth() &&
+          ed.getFullYear() === value.getFullYear()
+        );
+      });
+
+      if (hasEvents || !addAction) {
+        return <div className="custom-date-cell-wrapper">{children}</div>;
+      }
+
+      return (
+        <div
+          className="custom-date-cell-wrapper group cursor-pointer rounded-[6px] transition-all duration-150 hover:shadow-[inset_0_0_0_1px_#00512E]"
+          onClick={() => addAction.onClick(value)}
+        >
+          {children}
+          <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+            <img src={GreenPlusCircleIcon} alt="Add" className="h-9 w-9" />
+          </div>
+        </div>
+      );
+    };
+  }, [condensedEvents, contextMenuActions]);
+
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -153,21 +193,28 @@ export default function SharedCalendar({
     event: CalendarEventWithMeta;
     title?: string;
   }) => (
-    <div className="flex items-center justify-center gap-2">
-      {typeof event.extraEventsCount === 'number' ? (
-        // && event.extraEventsCount > 0
-        <span className="line-clamp-2 text-center text-sm font-bold text-green-500">
+    <div className="flex items-center justify-center overflow-hidden">
+      {typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0 ? (
+        <span className="text-center text-sm font-bold text-green-500">
           +{event.extraEventsCount + 1}
         </span>
       ) : (
-        <span className="line-clamp-2 text-center text-xs font-bold text-green-500">{title}</span>
+        <span
+          className="block w-full truncate text-center text-xs font-bold text-green-500"
+          title={title}
+        >
+          {title}
+        </span>
       )}
     </div>
   );
 
-  const eventPropGetter = useCallback(() => {
+  const eventPropGetter = useCallback((event: CalendarEventWithMeta) => {
+    const isMulti = typeof event.extraEventsCount === 'number' && event.extraEventsCount > 0;
     return {
-      className: 'shared-calendar-event',
+      className: isMulti
+        ? 'shared-calendar-event shared-calendar-event--multi'
+        : 'shared-calendar-event',
     };
   }, []);
 
@@ -330,6 +377,7 @@ export default function SharedCalendar({
               event: CustomCalendarEvent,
               month: {
                 header: CustomWeekdayHeader as any,
+                dateCellWrapper: CustomDateCellWrapper as any,
                 ...(enableDateCellMenu
                   ? {
                       dateHeader: (props: any) => {
@@ -343,13 +391,19 @@ export default function SharedCalendar({
                           );
                         });
 
+                        const hasEvents = dateEvents.length > 0;
+
                         return (
                           <div className="relative flex-col">
-                            <div className="relative flex items-center justify-between p-1">
+                            <div
+                              className={`relative flex p-1 ${hasEvents ? 'items-center justify-between' : 'items-center justify-start'}`}
+                            >
                               <span className="px-1 text-sm font-normal text-black-700">
                                 {props.label}
                               </span>
-                              <CustomDateCell date={props.date} event={dateEvents[0]} />
+                              {hasEvents && (
+                                <CustomDateCell date={props.date} event={dateEvents[0]} />
+                              )}
                             </div>
                           </div>
                         );

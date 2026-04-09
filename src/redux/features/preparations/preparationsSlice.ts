@@ -33,6 +33,7 @@ export interface PreparationsState {
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
+  isDeleting: boolean;
   error: string | null;
   validationErrors: Record<string, string> | null;
   isInitialized: boolean;
@@ -68,6 +69,7 @@ const initialState: PreparationsState = {
   isLoading: false,
   isCreating: false,
   isUpdating: false,
+  isDeleting: false,
   error: null,
   validationErrors: null,
   isInitialized: false,
@@ -162,6 +164,18 @@ export const editPreparation = createAsyncThunk<
     if (error.isValidationError && error.validationErrors) {
       return rejectWithValue({ validationErrors: error.validationErrors });
     }
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const deletePreparation = createAsyncThunk<
+  { success: boolean; message?: string; id: string },
+  string
+>('preparations/deletePreparation', async (id, { rejectWithValue }) => {
+  try {
+    const response = await preparationApiService.deletePreparation(id);
+    return { ...response, id };
+  } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }
 });
@@ -261,6 +275,18 @@ const preparationsSlice = createSlice({
         } else {
           state.error = payload as string;
         }
+      })
+      .addCase(deletePreparation.pending, (state) => {
+        state.isDeleting = true;
+        state.error = null;
+      })
+      .addCase(deletePreparation.fulfilled, (state, action) => {
+        state.isDeleting = false;
+        state.preparations = state.preparations.filter((prep) => prep.id !== action.payload.id);
+      })
+      .addCase(deletePreparation.rejected, (state, action) => {
+        state.isDeleting = false;
+        state.error = action.payload as string;
       });
   },
 });

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import FormErrorMessage from './FormErrorMessage';
 
 interface FormFieldProps {
-  label: string;
+  label?: string;
   required?: boolean;
   optional?: boolean;
   error?: string;

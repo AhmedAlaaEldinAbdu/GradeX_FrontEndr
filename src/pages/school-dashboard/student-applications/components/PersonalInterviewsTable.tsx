@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@gradex/shared/components/Card';
@@ -33,6 +34,7 @@ const PersonalInterviewsTable: React.FC = () => {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { showToast } = useToast();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,7 +64,7 @@ const PersonalInterviewsTable: React.FC = () => {
     dispatch(
       fetchStudentInterviews({
         page: pagination.pageIndex,
-        limit: pagination.pageSize,
+        limit: 10,
         filters: {
           studentName: searchTerm || undefined,
           gradeId: selectedGradeId || undefined,
@@ -136,11 +138,30 @@ const PersonalInterviewsTable: React.FC = () => {
       });
       setAcceptModalOpen(false);
       setSelectedInterview(null);
+
+      dispatch(
+        fetchStudentInterviews({
+          page: pagination.pageIndex,
+          limit: pagination.pageSize,
+          filters: {
+            studentName: searchTerm || undefined,
+            gradeId: selectedGradeId || undefined,
+            date: selectedDate || undefined,
+          },
+        })
+      );
     } catch (error) {
       console.error(error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : typeof error === 'string'
+            ? error
+            : t('common.error');
       showToast({
-        message: t('common.error'),
+        message: errorMessage,
         type: 'error',
+        isRaw: errorMessage !== t('common.error'),
       });
     } finally {
       setIsProcessing(false);
@@ -167,11 +188,30 @@ const PersonalInterviewsTable: React.FC = () => {
       });
       setNotPassedModalOpen(false);
       setSelectedInterview(null);
+
+      dispatch(
+        fetchStudentInterviews({
+          page: pagination.pageIndex,
+          limit: pagination.pageSize,
+          filters: {
+            studentName: searchTerm || undefined,
+            gradeId: selectedGradeId || undefined,
+            date: selectedDate || undefined,
+          },
+        })
+      );
     } catch (error) {
       console.error(error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : typeof error === 'string'
+            ? error
+            : t('common.error');
       showToast({
-        message: t('common.error'),
+        message: errorMessage,
         type: 'error',
+        isRaw: errorMessage !== t('common.error'),
       });
     } finally {
       setIsProcessing(false);
@@ -255,16 +295,26 @@ const PersonalInterviewsTable: React.FC = () => {
             fallbackSrc={StudentIcon}
             className="h-10 w-10 rounded-full border border-gray-100 object-cover"
           />
-          <span className="font-medium text-gray-900">
+          <span
+            className="w-[200px] truncate text-start font-medium text-gray-900"
+            title={row.studentName || (isArabic ? row.nameAr : row.nameEn)}
+          >
             {row.studentName || (isArabic ? row.nameAr : row.nameEn)}
           </span>
           <IconButton
             variant="blue"
             ariaLabel="View"
-            onClick={() => {}}
-            className="h-8 w-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
+            onClick={() => {
+              const studentName = row.studentName || (isArabic ? row.nameAr : row.nameEn) || '';
+              if (studentName) {
+                navigate(`/student-interviews?StudentName=${encodeURIComponent(studentName)}`);
+              } else {
+                navigate('/student-interviews');
+              }
+            }}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
           >
-            <CustomImage src={EyeStyledIcon} className="h-4 w-4" alt="View" />
+            <CustomImage src={EyeStyledIcon} className="h-5 w-5" alt="View" />
           </IconButton>
         </div>
       ),

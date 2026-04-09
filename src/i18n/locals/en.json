@@ -1104,7 +1104,7 @@
     "nationality": "Nationality",
     "country": "Country",
     "subjectName": "Subject Name",
-    "educationalStages": "Educational Stages",
+    "educationalStages": "Responsible Grades",
     "classrooms": "Classrooms",
     "searchTeacher": "Search for teacher name",
     "selectSubject": "Subject Name",
@@ -1395,7 +1395,9 @@
       "startTimeRequired": "Start time is required",
       "endTimeRequired": "End time is required",
       "interViewTypeRequired": "Interview type is required",
-      "interViewTypeInvalid": "Interview type is invalid"
+      "interViewTypeInvalid": "Interview type is invalid",
+      "nameArInvalid": "Interview name in Arabic must contain Arabic characters only",
+      "nameEnInvalid": "Interview name in English must contain English characters only"
     }
   },
   "performance": {
@@ -2386,6 +2388,8 @@
     "form": {
       "addTitle": "Add Preparation",
       "editTitle": "Edit Preparation",
+      "preparationNumber": "Preparation Number",
+      "preparationNumberPlaceholder": "Enter preparation number",
       "date": "Date",
       "datePlaceholder": "Select Date",
       "educationalStage": "Educational Stage",
@@ -2409,6 +2413,9 @@
       "contentPlaceholder": "Enter Content",
       "attachments": "Attachments (Optional)",
       "validation": {
+        "preparationNumberRequired": "Preparation number is required",
+        "preparationNumberMustBeNumber": "Preparation number must be a valid number",
+        "preparationNumberMustBeGreaterThanZero": "Preparation number must be greater than 0",
         "dateRequired": "Preparation date is required",
         "educationalStageRequired": "Please select the educational stage",
         "gradesRequired": "Please select the grade",

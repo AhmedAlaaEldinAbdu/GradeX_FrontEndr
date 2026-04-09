@@ -42,7 +42,6 @@ export default function AddSubject() {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-    watch,
   } = useForm<AddSubjectProps>({
     resolver: yupResolver(AddSubjectSchema),
     mode: 'onBlur',
@@ -57,8 +56,6 @@ export default function AddSubject() {
     control,
     name: 'subjects',
   });
-
-  const watchedSubjects = watch('subjects');
 
   useEffect(() => {
     dispatch(fetchSubjects({ page: 1, limit: 10000 }));
@@ -146,9 +143,6 @@ export default function AddSubject() {
 
   const allSubjectsForDisplay: SubjectPreview[] = [
     ...existingSubjects.map((s) => ({ id: s.id, name: s.name, nameEn: s.nameEn || '' })),
-    ...watchedSubjects
-      .filter((s) => s.name || s.nameEn)
-      .map((s, idx) => ({ id: `new-${idx}`, name: s.name, nameEn: s.nameEn })),
   ];
 
   return (
