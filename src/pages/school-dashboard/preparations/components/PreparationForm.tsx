@@ -229,6 +229,23 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
     }
   };
 
+  const handleReset = () => {
+    setDate('');
+    setPreparationNumber('');
+    setEducationalStage('');
+    setGrades([]);
+    setSubject('');
+    setTopic('');
+    setBookName('');
+    setFromPage('');
+    setToPage('');
+    setContent('');
+    setFiles([]);
+    setErrors({});
+    clearDraft();
+    showToast({ message: t('preparations.form.formResetSuccess'), type: 'success' });
+  };
+
   // Dummy toolbar for rich text area
   const renderEditorToolbar = () => (
     <div className="flex items-center gap-4 rounded-t-lg border-b border-gray-200 bg-gray-50/50 px-4 py-2">
@@ -531,9 +548,12 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
         <div className="mt-8 flex justify-end gap-3">
           <Button
             variant="outline"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               if (isEditMode) {
                 navigate('/calendar/preparations');
+              } else {
+                handleReset();
               }
             }}
             className="px-8"
