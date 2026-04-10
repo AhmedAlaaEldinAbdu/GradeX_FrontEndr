@@ -80,6 +80,8 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [toPage, setToPage] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState<File[]>([]);
+  const [existingFileNames, setExistingFileNames] = useState<string[]>([]);
+  const [existingFileUrls, setExistingFileUrls] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
@@ -151,6 +153,13 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       setFromPage(currentPreparation.fromPage?.toString() || '');
       setToPage(currentPreparation.toPage?.toString() || '');
       setContent(currentPreparation.content || '');
+      if (currentPreparation.attachments && currentPreparation.attachments.length > 0) {
+        setExistingFileNames(currentPreparation.attachments.map((a) => a.fileName));
+        setExistingFileUrls(currentPreparation.attachments.map((a) => a.filePath));
+      } else {
+        setExistingFileNames([]);
+        setExistingFileUrls([]);
+      }
     }
   }, [isEditMode, currentPreparation]);
 
@@ -241,6 +250,8 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
     setToPage('');
     setContent('');
     setFiles([]);
+    setExistingFileNames([]);
+    setExistingFileUrls([]);
     setErrors({});
     clearDraft();
     showToast({ message: t('preparations.form.formResetSuccess'), type: 'success' });
@@ -536,10 +547,28 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                 uploadText={t('tasksManagement.form.uploadAttachment')}
                 onChange={(e) => {
                   if (e.target.files) {
-                    setFiles(Array.from(e.target.files));
+                    setFiles((prev) => [...prev, ...Array.from(e.target.files as FileList)]);
+                  }
+                }}
+                onDelete={(index) => {
+                  if (index !== undefined) {
+                    if (index < existingFileNames.length) {
+                      setExistingFileNames((prev) => prev.filter((_, i) => i !== index));
+                      setExistingFileUrls((prev) => prev.filter((_, i) => i !== index));
+                    } else {
+                      const fileIndex = index - existingFileNames.length;
+                      setFiles((prev) => prev.filter((_, i) => i !== fileIndex));
+                    }
+                  } else {
+                    setFiles([]);
+                    setExistingFileNames([]);
+                    setExistingFileUrls([]);
                   }
                 }}
                 multiple={true}
+                fileNames={[...existingFileNames, ...files.map((f) => f.name)]}
+                fileUrls={[...existingFileUrls, ...files.map(() => '')]}
+                files={files}
               />
             </div>
           </div>
