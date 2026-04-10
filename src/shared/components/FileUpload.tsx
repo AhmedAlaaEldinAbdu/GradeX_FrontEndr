@@ -17,6 +17,8 @@ interface FileUploadProps {
   onDelete?: (index?: number) => void;
   fileName?: string;
   fileNames?: string[];
+  fileUrl?: string; // Optional URL for a single remote file
+  fileUrls?: string[]; // Optional URLs for multiple remote files
   files?: File[]; // Actual File objects for viewing
   uploadText?: string;
   formatHints?: string[];
@@ -34,6 +36,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onDelete,
   fileName,
   fileNames,
+  fileUrl,
+  fileUrls,
   uploadText,
   formatHints = ['GIF', 'SVG', 'JPG', 'PNG', 'PDF'],
   required = false,
@@ -98,15 +102,26 @@ const FileUpload: React.FC<FileUploadProps> = ({
     );
   };
 
-  // Handle opening PDF in new tab
-  const handleViewPdf = (file: File) => {
-    const url = URL.createObjectURL(file);
+  const resolveUrl = (url?: string): string => {
+    if (!url) return '';
+    if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) {
+      return url;
+    }
+    const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+    const relativeUrl = url.startsWith('/') ? url : `/${url}`;
+    return `${baseUrl}${relativeUrl}`;
+  };
+
+  const handleViewPdf = (fileOrUrl: File | string) => {
+    const url =
+      typeof fileOrUrl === 'string' ? resolveUrl(fileOrUrl) : URL.createObjectURL(fileOrUrl);
     window.open(url, '_blank');
   };
 
   // Handle opening Image in new tab
-  const handleViewImage = (file: File) => {
-    const url = URL.createObjectURL(file);
+  const handleViewImage = (fileOrUrl: File | string) => {
+    const url =
+      typeof fileOrUrl === 'string' ? resolveUrl(fileOrUrl) : URL.createObjectURL(fileOrUrl);
     window.open(url, '_blank');
   };
 
@@ -222,7 +237,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   return (
     <div className="space-y-3">
-      <label className={`mb-2 block text-start text-sm font-medium text-gray-700 ${required && 'required'}`}>
+      <label
+        className={`mb-2 block text-start text-sm font-medium text-gray-700 ${required && 'required'}`}
+      >
         {label}
         {/* {required && <span className="me-1 text-red-500">*</span>} */}
         {optional && <span className="text-xs text-gray-400"> ({t('schools.optional')}) </span>}
@@ -248,7 +265,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         />
         <div className="flex flex-col items-center gap-2">
           {/* Icon Container */}
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-sm mb-1">
+          <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-sm">
             <img src={MultiFiles} alt="Upload Icon" className="h-6 w-6 object-contain" />
           </div>
           <p className="text-base font-normal text-green-500">{displayUploadText}</p>
@@ -392,11 +409,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
                         {(() => {
                           const matchingFile = files.find((f) => f.name === name);
-                          // Show image preview if it's an image file and we have the File object
-                          if (isImageFile(name) && matchingFile) {
+                          const actualIndex = displayFiles.indexOf(name);
+                          const matchingUrl =
+                            fileUrls && fileUrls[actualIndex] ? fileUrls[actualIndex] : null;
+
+                          // Show image preview if it's an image file and we have the File object or remote URL
+                          if (isImageFile(name) && (matchingFile || matchingUrl)) {
+                            const imgSrc = matchingFile
+                              ? URL.createObjectURL(matchingFile)
+                              : resolveUrl(matchingUrl!);
                             return (
                               <CustomImage
-                                src={URL.createObjectURL(matchingFile)}
+                                src={imgSrc}
                                 alt="preview"
                                 className="h-full w-full rounded-lg object-cover"
                               />
@@ -460,12 +484,17 @@ const FileUpload: React.FC<FileUploadProps> = ({
                       {/* View Button - for PDFs and Images */}
                       {(() => {
                         const matchingFile = files.find((f) => f.name === name);
-                        if (matchingFile) {
+                        const actualIndex = displayFiles.indexOf(name);
+                        const matchingUrl =
+                          fileUrls && fileUrls[actualIndex] ? fileUrls[actualIndex] : null;
+                        const viewerSource = matchingFile || matchingUrl;
+
+                        if (viewerSource) {
                           if (isPdfFile(name)) {
                             return (
                               <button
                                 type="button"
-                                onClick={() => handleViewPdf(matchingFile)}
+                                onClick={() => handleViewPdf(viewerSource)}
                                 className="flex h-8 w-8 items-center justify-center rounded-md border border-blue-300 bg-white text-blue-600 transition-colors hover:bg-blue-50"
                                 title={t('common.view')}
                               >
@@ -489,7 +518,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                             return (
                               <button
                                 type="button"
-                                onClick={() => handleViewImage(matchingFile)}
+                                onClick={() => handleViewImage(viewerSource)}
                                 className="flex h-8 w-8 items-center justify-center rounded-md border border-blue-300 bg-white text-blue-600 transition-colors hover:bg-blue-50"
                                 title={t('common.view')}
                               >
@@ -562,13 +591,30 @@ const FileUpload: React.FC<FileUploadProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* File Preview or Icon */}
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
-                {filePreview ? (
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
+                {filePreview || (fileUrl && isImageFile(label)) ? (
                   <CustomImage
-                    src={filePreview}
+                    src={filePreview || resolveUrl(fileUrl)}
                     alt="preview"
                     className="h-full w-full rounded-lg object-cover"
                   />
+                ) : fileUrl && isPdfFile(fileName || '') ? (
+                  <svg
+                    className="h-6 w-6 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                    <text x="7" y="17" fontSize="6" fill="currentColor" fontWeight="bold">
+                      PDF
+                    </text>
+                  </svg>
                 ) : (
                   <svg
                     className="h-6 w-6 text-green-600"
