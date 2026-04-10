@@ -2388,6 +2388,7 @@
     "form": {
       "draftSaved": "Draft saved successfully",
       "draftLoaded": "Data restored from draft",
+      "formResetSuccess": "Form reset successfully",
       "addTitle": "Add Preparation",
       "editTitle": "Edit Preparation",
       "preparationNumber": "Preparation Number",
