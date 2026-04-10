@@ -13,10 +13,6 @@ export default function PreparationsPage() {
     { label: t('sidebar.preparations') },
   ];
 
-  if (import.meta.env.MODE !== 'development') {
-    return <div>قريباً...</div>;
-  }
-
   return (
     <div>
       <Breadcrumb items={breadcrumbItems} />
