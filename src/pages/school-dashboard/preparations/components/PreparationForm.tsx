@@ -21,6 +21,7 @@ import {
   type PreparationFormValidation,
 } from '@/validations/preparations-validations';
 
+import { useFormDraft } from '@/hooks/useFormDraft';
 import { tokenManager } from '@/lib/auth/token-manager';
 import Card from '@/shared/components/Card';
 import Input from '@/shared/components/Input';
@@ -57,7 +58,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   useEffect(() => {
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
-    dispatch(fetchClassrooms({ filters: { schoolBranchId }, limit: 1000 }));
+    dispatch(fetchClassrooms({ filters: { schoolBranchId: '' }, limit: 1000 }));
     dispatch(fetchSubjects({ limit: 1000 }));
     dispatch(fetchBooks({ limit: 100 }));
   }, [dispatch, schoolBranchId]);
@@ -81,6 +82,41 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [files, setFiles] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  const { draftData, isDraftLoaded, saveDraft, clearDraft } = useFormDraft<{
+    date: string;
+    preparationNumber: string;
+    educationalStage: string;
+    grades: string[];
+    subject: string;
+    topic: string;
+    bookName: string;
+    fromPage: string;
+    toPage: string;
+    content: string;
+    files: File[];
+  }>('preparation_form_draft');
+
+  useEffect(() => {
+    // Only restore if the draft exists, we're not in edit mode, and the current topic is empty
+    // this avoids duplicate toast notifications and overwriting user data if they started typing
+    if (!isEditMode && isDraftLoaded && draftData && !topic) {
+      if (draftData.date) setDate(draftData.date);
+      if (draftData.preparationNumber) setPreparationNumber(draftData.preparationNumber);
+      if (draftData.educationalStage) setEducationalStage(draftData.educationalStage);
+      if (draftData.grades) setGrades(draftData.grades);
+      if (draftData.subject) setSubject(draftData.subject);
+      if (draftData.topic) setTopic(draftData.topic);
+      if (draftData.bookName) setBookName(draftData.bookName);
+      if (draftData.fromPage) setFromPage(draftData.fromPage);
+      if (draftData.toPage) setToPage(draftData.toPage);
+      if (draftData.content) setContent(draftData.content);
+      if (draftData.files && draftData.files.length > 0) setFiles(draftData.files);
+
+      showToast({ message: t('preparations.form.draftLoaded'), type: 'info' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDraftLoaded, isEditMode, draftData]);
 
   const handleBlur = async (field: keyof PreparationFormValidation, value: any) => {
     try {
@@ -178,6 +214,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           addPreparation(data as CreatePreparationRequest)
         ).unwrap();
         if (resultAction.success) {
+          clearDraft();
           setShowSuccessPopup(true);
         }
       }
@@ -507,8 +544,22 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           </Button>
           <Button
             variant="outline"
-            onClick={() => {
-              // Draft logic
+            onClick={(e) => {
+              e.preventDefault();
+              saveDraft({
+                date,
+                preparationNumber,
+                educationalStage,
+                grades,
+                subject,
+                topic,
+                bookName,
+                fromPage,
+                toPage,
+                content,
+                files,
+              });
+              showToast({ message: t('preparations.form.draftSaved'), type: 'success' });
             }}
             className="px-8"
           >
