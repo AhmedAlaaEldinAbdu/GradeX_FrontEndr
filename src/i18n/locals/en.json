@@ -2448,6 +2448,7 @@
   "financialManagement": {
     "title": "Financial Management",
     "transactions": "Transactions",
+    "totalTransactions": "Total Transactions",
     "overview": "Overview",
     "totalPayments": "Total Payments",
     "pendingAmounts": "Pending Amounts",
@@ -2466,6 +2467,38 @@
     "pending": "Pending:",
     "september": "September",
     "october": "October",
-    "november": "November"
+    "november": "November",
+    "searchClientName": "Search client name",
+    "paymentMethod": "Payment Method",
+    "paymentStatus": "Status",
+    "table": {
+      "index": "#",
+      "clientName": "Client Name",
+      "feeItem": "Fee Item",
+      "amount": "Amount",
+      "status": "Status",
+      "paymentChannel": "Payment Channel",
+      "date": "Date"
+    },
+    "statuses": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "late": "Late",
+      "pendingOrLate": "Pending / Late"
+    },
+    "paymentMethods": {
+      "cash": "Cash",
+      "deferred": "Deferred"
+    },
+    "paymentChannels": {
+      "applePay": "Apple Pay",
+      "bankAccount": "Bank Account",
+      "eWallet": "E-Wallet"
+    },
+    "feeTypes": {
+      "books": "Book Fees",
+      "tuition": "Tuition Fees",
+      "tuitionAndBooks": "Tuition and Book Fees"
+    }
   }
 }

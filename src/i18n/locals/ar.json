@@ -2457,6 +2457,7 @@
   "financialManagement": {
     "title": "الإدارة المالية",
     "transactions": "المعاملات",
+    "totalTransactions": "إجمالي المعاملات",
     "overview": "نظرة عامة",
     "totalPayments": "إجمالي المدفوعات",
     "pendingAmounts": "المبالغ المعلقة",
@@ -2475,6 +2476,38 @@
     "pending": "معلق:",
     "september": "سبتمبر",
     "october": "أكتوبر",
-    "november": "نوفمبر"
+    "november": "نوفمبر",
+    "searchClientName": "ابحث عن اسم العميل",
+    "paymentMethod": "طريقة الدفع",
+    "paymentStatus": "الحالة",
+    "table": {
+      "index": "#",
+      "clientName": "اسم العميل",
+      "feeItem": "بند الرسوم",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "paymentChannel": "قناة الدفع",
+      "date": "التاريخ"
+    },
+    "statuses": {
+      "paid": "مسدد",
+      "pending": "معلق",
+      "late": "متأخر",
+      "pendingOrLate": "المعلق / متأخر"
+    },
+    "paymentMethods": {
+      "cash": "نقداً",
+      "deferred": "أجل"
+    },
+    "paymentChannels": {
+      "applePay": "Apple pay",
+      "bankAccount": "حساب بنكي",
+      "eWallet": "محفظة إلكترونية"
+    },
+    "feeTypes": {
+      "books": "كتب دراسية",
+      "tuition": "رسوم دراسية",
+      "tuitionAndBooks": "رسوم دراسية و كتب دراسية"
+    }
   }
 }
