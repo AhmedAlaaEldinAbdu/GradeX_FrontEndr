@@ -122,6 +122,7 @@
     "enterRejectionReason": "أدخل سبب الرفض",
     "rejectionReasonRequired": "سبب الرفض مطلوب",
     "selectAnOption": "اختر خيارًا",
+    "comingSoon": "قريباً...",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
@@ -2560,6 +2561,20 @@
     "paymentMethod": "طريقة السداد",
     "item": "البند",
     "stage": "المرحلة",
+    "invoiceDetails": "بيانات الفاتورة",
+    "detailsTitle": "تفاصيل الفاتورة",
+    "personalData": "البيانات الشخصية",
+    "guardianName": "إسم ولي الأمر",
+    "guardianMobile": "رقم جوال ولي الأمر",
+    "grade": "الصف الدراسي",
+    "email": "البريد الإلكتروني",
+    "invoiceData": "بيانات الفاتورة",
+    "feesType": "نوع الرسوم",
+    "feeItem": "بند الرسوم",
+    "amount": "المبلغ",
+    "discount": "الخصم",
+    "print": "طباعة",
+    "paymentDocumentImg": "صورة الدفع.png",
     "table": {
       "index": "#",
       "invoiceDate": "تاريخ الفاتورة",
@@ -2590,6 +2605,21 @@
       "primary": "ابتدائي",
       "middle": "متوسط",
       "high": "ثانوي"
+    }
+  },
+  "clients": {
+    "title": "العملاء",
+    "addClient": "إضافة عميل",
+    "searchClientName": "ابحث عن اسم العميل",
+    "paymentStatus": "حالة الدفع",
+    "item": "البند",
+    "table": {
+      "index": "#",
+      "clientName": "اسم العميل",
+      "clientNumber": "رقم العميل",
+      "mobile": "رقم الجوال",
+      "communication": "وسائل التواصل",
+      "actions": "الإجراءات"
     }
   }
 }

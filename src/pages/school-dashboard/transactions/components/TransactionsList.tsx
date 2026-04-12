@@ -12,6 +12,7 @@ import BillingIcon from '@gradex/assets/icons/Billing.svg';
 import TimeSyncIcon from '@gradex/assets/icons/TimeSync.svg';
 import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
 import IconButton from '@/shared/components/IconButton';
+import RyalIcon from '@gradex/assets/icons/Ryal.svg';
 
 type TransactionStatus = 'paid' | 'pending' | 'late';
 type PaymentMethodType = 'cash' | 'deferred';
@@ -275,7 +276,15 @@ export default function TransactionsList() {
       accessor: (row) => (
         <div className="flex items-center justify-center gap-1 font-medium text-gray-800">
           <span>{row.amount}</span>
-          <span className="text-sm text-gray-500">﷼</span>
+          <CustomImage
+            src={RyalIcon}
+            alt="Ryal"
+            className="h-4 w-4"
+            style={{
+              filter:
+                'brightness(0) saturate(100%) invert(43%) sepia(8%) saturate(301%) hue-rotate(182deg) brightness(94%) contrast(89%)',
+            }}
+          />
         </div>
       ),
       headerClassName: 'min-w-[120px]',
