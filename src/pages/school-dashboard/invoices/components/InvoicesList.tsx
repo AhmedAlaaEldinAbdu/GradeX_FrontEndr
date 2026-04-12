@@ -281,6 +281,10 @@ export default function InvoicesList() {
       header: 'invoices.table.studentName',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
+          <div className="h-10 w-10 overflow-hidden rounded-lg border border-gray-200">
+            <CustomImage src={row.avatar} alt="Student" className="h-full w-full object-cover" />
+          </div>
+          <span className="font-medium text-gray-800">{row.studentName}</span>
           <IconButton
             variant="blue"
             ariaLabel="View"
