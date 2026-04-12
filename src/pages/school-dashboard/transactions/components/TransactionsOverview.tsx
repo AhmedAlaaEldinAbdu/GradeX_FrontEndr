@@ -201,6 +201,9 @@ export default function TransactionsOverview() {
         {/* Revenues & Expenses */}
         <Card className="app-card-shadow flex flex-col justify-between p-6">
           <div className="mb-8 flex items-center justify-between">
+            <h3 className="text-lg font-bold text-gray-800">
+              {t('financialManagement.revenuesAndExpenses')}
+            </h3>
             <div className="w-40">
               <CustomSelect
                 options={[{ label: t('financialManagement.academicYear'), value: '2024' }]}
@@ -209,9 +212,6 @@ export default function TransactionsOverview() {
                 placeholder={t('financialManagement.academicYear')}
               />
             </div>
-            <h3 className="text-lg font-bold text-gray-800">
-              {t('financialManagement.revenuesAndExpenses')}
-            </h3>
           </div>
 
           {/* Chart Wrapper */}
