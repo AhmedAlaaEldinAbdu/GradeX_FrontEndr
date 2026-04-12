@@ -54,6 +54,7 @@ import AddPreparationPage from '@/pages/school-dashboard/preparations/add-prepar
 import EditPreparationPage from '@/pages/school-dashboard/preparations/edit-preparation-page';
 import TransactionsPage from '@/pages/school-dashboard/transactions/TransactionsPage';
 import InvoicesPage from '@/pages/school-dashboard/invoices/InvoicesPage';
+import InvoiceDetailsPage from '@/pages/school-dashboard/invoices/InvoiceDetailsPage';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -608,6 +609,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <InvoicesPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/financial-management/invoices/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <InvoiceDetailsPage />
             </MainLayout>
           </ProtectedRoute>
         }
