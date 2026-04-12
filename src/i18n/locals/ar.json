@@ -2509,5 +2509,44 @@
       "tuition": "رسوم دراسية",
       "tuitionAndBooks": "رسوم دراسية و كتب دراسية"
     }
+  },
+  "invoices": {
+    "title": "الفواتير",
+    "issueInvoice": "اصدار فاتورة",
+    "searchInvoiceNumber": "ابحث عن رقم الفاتورة",
+    "paymentMethod": "طريقة السداد",
+    "item": "البند",
+    "stage": "المرحلة",
+    "table": {
+      "index": "#",
+      "invoiceDate": "تاريخ الفاتورة",
+      "invoiceNumber": "رقم الفاتورة",
+      "invoiceValue": "قيمة الفاتورة",
+      "tax": "الضريبة",
+      "totalInvoice": "إجمالي الفاتورة",
+      "studentName": "اسم الطالب",
+      "educationalStage": "المرحلة التعليمية",
+      "item": "البند",
+      "paymentMethod": "طريقة السداد",
+      "paymentTool": "وسيلة السداد",
+      "paymentDocument": "مستند السداد",
+      "actions": "الإجراءات"
+    },
+    "paymentMethods": {
+      "cash": "نقداً",
+      "bankTransfer": "تحويل بنكي",
+      "deferred": "أجل"
+    },
+    "items": {
+      "tuition": "رسوم دراسية",
+      "books": "كتب دراسية",
+      "transport": "رسوم نقل"
+    },
+    "stages": {
+      "kindergarten": "رياض الأطفال",
+      "primary": "ابتدائي",
+      "middle": "متوسط",
+      "high": "ثانوي"
+    }
   }
 }

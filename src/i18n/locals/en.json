@@ -2500,5 +2500,44 @@
       "tuition": "Tuition Fees",
       "tuitionAndBooks": "Tuition and Book Fees"
     }
+  },
+  "invoices": {
+    "title": "Invoices",
+    "issueInvoice": "Issue Invoice",
+    "searchInvoiceNumber": "Search by Invoice Number",
+    "paymentMethod": "Payment Method",
+    "item": "Item",
+    "stage": "Stage",
+    "table": {
+      "index": "#",
+      "invoiceDate": "Invoice Date",
+      "invoiceNumber": "Invoice Number",
+      "invoiceValue": "Invoice Value",
+      "tax": "Tax",
+      "totalInvoice": "Total Invoice",
+      "studentName": "Student Name",
+      "educationalStage": "Educational Stage",
+      "item": "Item",
+      "paymentMethod": "Payment Method",
+      "paymentTool": "Payment Tool",
+      "paymentDocument": "Payment Document",
+      "actions": "Actions"
+    },
+    "paymentMethods": {
+      "cash": "Cash",
+      "bankTransfer": "Bank Transfer",
+      "deferred": "Deferred"
+    },
+    "items": {
+      "tuition": "Tuition Fees",
+      "books": "Book Fees",
+      "transport": "Transport Fees"
+    },
+    "stages": {
+      "kindergarten": "Kindergarten",
+      "primary": "Primary",
+      "middle": "Middle",
+      "high": "High"
+    }
   }
 }
