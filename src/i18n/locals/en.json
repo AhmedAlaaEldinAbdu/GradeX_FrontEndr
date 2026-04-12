@@ -2444,5 +2444,28 @@
         "reset": "Reset"
       }
     }
+  },
+  "financialManagement": {
+    "title": "Financial Management",
+    "transactions": "Transactions",
+    "overview": "Overview",
+    "totalPayments": "Total Payments",
+    "pendingAmounts": "Pending Amounts",
+    "spentBudget": "Spent Budget",
+    "remainingBalance": "Remaining Balance",
+    "typesOfFees": "Types of Fees",
+    "revenuesAndExpenses": "Revenues & Expenses",
+    "academicYear": "Academic Year",
+    "revenues": "Revenues",
+    "expenses": "Expenses",
+    "tuitionFees": "Tuition Fees",
+    "transportFees": "Transport Fees",
+    "schoolUniform": "School Uniform",
+    "activities": "Activities",
+    "collected": "Collected",
+    "pending": "Pending:",
+    "september": "September",
+    "october": "October",
+    "november": "November"
   }
 }

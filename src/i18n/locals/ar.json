@@ -2453,5 +2453,28 @@
         "reset": "اعادة تعيين"
       }
     }
+  },
+  "financialManagement": {
+    "title": "الإدارة المالية",
+    "transactions": "المعاملات",
+    "overview": "نظرة عامة",
+    "totalPayments": "إجمالي المدفوعات",
+    "pendingAmounts": "المبالغ المعلقة",
+    "spentBudget": "الميزانية المنفقة",
+    "remainingBalance": "الرصيد المتبقي",
+    "typesOfFees": "أنواع الرسوم",
+    "revenuesAndExpenses": "الإيرادات والنفقات",
+    "academicYear": "السنة الدراسية",
+    "revenues": "الإيرادات",
+    "expenses": "النفقات",
+    "tuitionFees": "الرسوم الدراسية",
+    "transportFees": "رسوم النقل",
+    "schoolUniform": "الزي المدرسي",
+    "activities": "الأنشطة",
+    "collected": "تم تحصيلها",
+    "pending": "معلق:",
+    "september": "سبتمبر",
+    "october": "أكتوبر",
+    "november": "نوفمبر"
   }
 }
