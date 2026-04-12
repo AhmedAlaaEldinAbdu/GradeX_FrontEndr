@@ -114,10 +114,10 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
 
   return (
     <Card className="p-6">
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="space-y-6">
         {/* Educational Stage (Single Select) */}
         <FormField
-          label={t('registrationAnnouncement.educationalStage')}
+          label={t('registrationAnnouncement.educationalStagesLabel')}
           required
           error={errors.lkSchoolStageId?.message && t(errors.lkSchoolStageId.message)}
           htmlFor="lkSchoolStageId"
@@ -143,7 +143,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
                 placeholder={
                   isLoadingEducationalStages
                     ? t('common.loading')
-                    : t('registrationAnnouncement.selectEducationalStage')
+                    : t('registrationAnnouncement.selectEducationalStages')
                 }
                 disabled={isLoadingEducationalStages}
                 error={!!errors.lkSchoolStageId}
@@ -217,7 +217,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
             className="min-w-[120px] bg-green-800 hover:bg-green-900"
             disabled={isSubmitting}
           >
-            {isSubmitting ? t('common.saving') : isEditMode ? t('common.save') : t('common.add')}
+            {isSubmitting ? t('common.saving') : isEditMode ? t('common.saveChanges') : t('common.add')}
           </Button>
         </div>
       </form>

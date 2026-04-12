@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@gradex/shared/components/Card';
 import { useTranslation } from 'react-i18next';
@@ -11,28 +11,47 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import MetricCard from '@/shared/components/MetricCard';
+import CustomImage from '@/shared/components/CustomImage';
+import SignBlueIcon from '@gradex/assets/icons/SignBlue.svg';
+import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
+import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
+
+type AnnouncementStatus = 'valid' | 'expired';
+
+const ANNOUNCEMENT_STATUS_VALUE: Record<AnnouncementStatus, number> = {
+  valid: 1,
+  expired: 2,
+};
+
+const formatAnnouncementDate = (value: string, locale: 'ar' | 'en') => {
+  if (!value) return '-';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+
+  return date.toLocaleDateString(locale === 'ar' ? 'ar' : 'en-GB');
+};
 
 export default function RegistrationAnnouncement() {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const locale = isArabic ? 'ar' : 'en';
 
   const [announcements, setAnnouncements] = useState<RegistrationAdvertisementDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Delete state
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedAnnouncementId, setSelectedAnnouncementId] = useState<string>('');
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Filter states
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStage, setSelectedStage] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<'' | AnnouncementStatus>('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  // Pagination state
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -40,33 +59,43 @@ export default function RegistrationAnnouncement() {
     totalPages: 0,
   });
 
-  const fetchAnnouncements = useCallback(
-    async (page: number = 1) => {
-      try {
-        setIsLoading(true);
-        const response = await registrationAnnouncementApi.getAll(page, pagination.limit);
-        if (response && response.data) {
-          setAnnouncements(response.data.registrationAdvertisementDto);
-          setPagination((prev) => ({
-            ...prev,
-            page: response.data.pageIndex,
-            limit: response.data.pageSize,
-            total: response.data.totalItems,
-            totalPages: response.data.totalPages,
-          }));
-        }
-      } catch (error) {
-        console.error('Failed to fetch announcements:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [pagination.limit]
+  const requestParams = useMemo(
+    () => ({
+      pageIndex: pagination.page,
+      pageSize: pagination.limit,
+      searchTerm: searchTerm.trim() || undefined,
+      status: selectedStatus ? ANNOUNCEMENT_STATUS_VALUE[selectedStatus] : undefined,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+    }),
+    [endDate, pagination.limit, pagination.page, searchTerm, selectedStatus, startDate]
   );
 
+  const fetchAnnouncements = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await registrationAnnouncementApi.getAll(requestParams);
+
+      if (response?.data) {
+        setAnnouncements(response.data.registrationAdvertisementDto || []);
+        setPagination((prev) => ({
+          ...prev,
+          page: response.data.pageIndex,
+          limit: response.data.pageSize,
+          total: response.data.totalItems,
+          totalPages: response.data.totalPages,
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch announcements:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [requestParams]);
+
   useEffect(() => {
-    fetchAnnouncements(pagination.page);
-  }, [fetchAnnouncements, pagination.page]);
+    fetchAnnouncements();
+  }, [fetchAnnouncements]);
 
   const handlePageChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
@@ -88,7 +117,8 @@ export default function RegistrationAnnouncement() {
         type: 'success',
       });
       setShowDeletePopup(false);
-      fetchAnnouncements(pagination.page);
+      setSelectedAnnouncementId('');
+      await fetchAnnouncements();
     } catch (error) {
       console.error('Failed to delete announcement:', error);
       showToast({
@@ -100,101 +130,96 @@ export default function RegistrationAnnouncement() {
     }
   };
 
-  const getStatus = (start: string, end: string) => {
+  const getStatus = (announcement: RegistrationAdvertisementDto): AnnouncementStatus => {
+    if (announcement.status === ANNOUNCEMENT_STATUS_VALUE.valid) {
+      return 'valid';
+    }
+
+    if (announcement.status === ANNOUNCEMENT_STATUS_VALUE.expired) {
+      return 'expired';
+    }
+
     const now = new Date();
-    const startDateObj = new Date(start);
-    const endDateObj = new Date(end);
+    const startDateObj = new Date(announcement.startDate);
+    const endDateObj = new Date(announcement.endDate);
 
     if (now >= startDateObj && now <= endDateObj) {
       return 'valid';
-    } else if (now > endDateObj) {
-      return 'expired';
-    } else {
-      return 'pending';
     }
+
+    return 'expired';
   };
 
-  const filteredAnnouncements = announcements.filter((item) => {
-    // Search Term
-    if (searchTerm) {
-      const termLower = searchTerm.toLowerCase();
-      const stageAr = item.stageNameAr?.toLowerCase() || '';
-      const stageEn = item.stageNameEn?.toLowerCase() || '';
-      if (!stageAr.includes(termLower) && !stageEn.includes(termLower)) {
-        return false;
-      }
-    }
+  const selectedAnnouncement = useMemo(
+    () => announcements.find((item) => item.id === selectedAnnouncementId),
+    [announcements, selectedAnnouncementId]
+  );
 
-    // Stage Filter
-    if (selectedStage) {
-      const stageNameEnLower = item.stageNameEn?.toLowerCase();
-      if (!stageNameEnLower.includes(selectedStage.toLowerCase())) {
-        return false;
-      }
-    }
-
-    // Date Filters
-    if (startDate) {
-      if (new Date(item.startDate) < new Date(startDate)) return false;
-    }
-    if (endDate) {
-      if (new Date(item.endDate) > new Date(endDate)) return false;
-    }
-
-    return true;
-  });
+  const metrics = useMemo(
+    () => ({
+      total: pagination.total,
+      valid: announcements.filter((item) => getStatus(item) === 'valid').length,
+      expired: announcements.filter((item) => getStatus(item) === 'expired').length,
+    }),
+    [announcements, pagination.total]
+  );
 
   const columns: DataTableColumn<RegistrationAdvertisementDto>[] = [
     {
+      header: '#',
+      accessor: (_row, index = 0) => (
+        <span>{(pagination.page - 1) * pagination.limit + index + 1}</span>
+      ),
+      headerClassName: 'w-16',
+      className: 'text-center',
+    },
+    {
       header: 'registrationAnnouncement.educationalStage',
-      accessor: (row) => (isArabic ? row.stageNameAr : row.stageNameEn),
-      headerClassName: 'min-w-[200px]',
+      accessor: (row) => <span>{isArabic ? row.stageNameAr : row.stageNameEn}</span>,
+      headerClassName: 'min-w-[220px]',
     },
     {
       header: 'registrationAnnouncement.startDate',
-      accessor: (row) => new Date(row.startDate).toLocaleDateString(isArabic ? 'ar' : 'en'),
+      accessor: (row) => <span>{formatAnnouncementDate(row.startDate, locale)}</span>,
       headerClassName: 'min-w-[150px]',
+      className: 'text-center',
     },
     {
       header: 'registrationAnnouncement.endDate',
-      accessor: (row) => new Date(row.endDate).toLocaleDateString(isArabic ? 'ar' : 'en'),
+      accessor: (row) => <span>{formatAnnouncementDate(row.endDate, locale)}</span>,
       headerClassName: 'min-w-[150px]',
+      className: 'text-center',
     },
     {
       header: 'registrationAnnouncement.status',
       accessor: (row) => {
-        const status = getStatus(row.startDate, row.endDate);
+        const status = getStatus(row);
         switch (status) {
           case 'valid':
             return (
-              <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+              <span className="inline-flex min-w-[110px] justify-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
                 {t('registrationAnnouncement.valid')}
-              </span>
-            );
-          case 'expired':
-            return (
-              <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
-                {t('registrationAnnouncement.expired')}
               </span>
             );
           default:
             return (
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
-                {t('registrationAnnouncement.status')}
+              <span className="inline-flex min-w-[110px] justify-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+                {t('registrationAnnouncement.expired')}
               </span>
             );
         }
       },
       headerClassName: 'min-w-[150px]',
+      className: 'text-center',
     },
     {
       header: 'common.actions',
       accessor: (row) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <IconButton
             status="edit"
             variant="success"
-            ariaLabel="Edit"
+            ariaLabel={t('actions.edit')}
             onClick={() =>
               navigate(`/registration-announcement/edit-registration-announcement/${row.id}`)
             }
@@ -202,50 +227,58 @@ export default function RegistrationAnnouncement() {
           <IconButton
             status="delete"
             variant="danger"
-            ariaLabel="Delete"
+            ariaLabel={t('actions.delete')}
             onClick={() => handleDeleteClick(row.id)}
           />
         </div>
       ),
-      headerClassName: 'min-w-[150px]',
+      headerClassName: 'min-w-[130px]',
+      className: 'text-center',
     },
   ];
 
   const handleResetFilters = () => {
     setSearchTerm('');
-    setSelectedStage('');
+    setSelectedStatus('');
     setStartDate('');
     setEndDate('');
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const stageOptions = [
-    { value: 'primary', label: t('registrationAnnouncement.primary') || 'Primary' }, // Add keys if missing
-    { value: 'middle', label: t('registrationAnnouncement.middle') || 'Middle' },
-    { value: 'high', label: t('registrationAnnouncement.high') || 'High' },
-    { value: 'kindergarten', label: t('registrationAnnouncement.kindergarten') || 'Kindergarten' },
+  const statusOptions = [
+    { value: 'valid', label: t('registrationAnnouncement.valid') },
+    { value: 'expired', label: t('registrationAnnouncement.expired') },
   ];
 
   const filterConfigs: FilterConfig[] = [
     {
       type: 'search',
-      name: 'search',
-      placeholder: t('registrationAnnouncement.searchByStudentName'),
+      name: 'registration-announcement-search',
+      placeholder: t('registrationAnnouncement.searchByEducationalStage'),
       value: searchTerm,
-      onChange: (val) => setSearchTerm(val as string),
-      width: '25%',
+      onChange: (value) => {
+        setSearchTerm(value as string);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+      },
+      width: '35%',
     },
     {
       type: 'custom',
-      name: 'stage-filter',
-      value: selectedStage,
+      name: 'registration-announcement-status',
+      value: selectedStatus,
       onChange: () => {},
-      width: '20%',
+      width: '15%',
       customComponent: (
         <CustomSelect
-          value={selectedStage}
-          onChange={(value) => setSelectedStage(Array.isArray(value) ? (value[0] ?? '') : value)}
-          options={stageOptions}
-          placeholder={t('registrationAnnouncement.educationalStage')}
+          value={selectedStatus}
+          onChange={(value) => {
+            setSelectedStatus(
+              (Array.isArray(value) ? value[0] : value || '') as '' | AnnouncementStatus
+            );
+            setPagination((prev) => ({ ...prev, page: 1 }));
+          }}
+          options={statusOptions}
+          placeholder={t('registrationAnnouncement.status')}
           maxHeight="200px"
         />
       ),
@@ -264,7 +297,10 @@ export default function RegistrationAnnouncement() {
             onFocus={(e) => (e.target.type = 'date')}
             onBlur={(e) => (e.target.type = 'text')}
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              setPagination((prev) => ({ ...prev, page: 1 }));
+            }}
             className="h-[40px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
@@ -284,7 +320,10 @@ export default function RegistrationAnnouncement() {
             onFocus={(e) => (e.target.type = 'date')}
             onBlur={(e) => (e.target.type = 'text')}
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+              setPagination((prev) => ({ ...prev, page: 1 }));
+            }}
             className="h-[40px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
@@ -293,35 +332,76 @@ export default function RegistrationAnnouncement() {
   ];
 
   return (
-    <Card>
-      <DataTable
-        data={filteredAnnouncements}
-        columns={columns}
-        keyExtractor={(row) => row.id}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        filters={filterConfigs}
-        showFilters={true}
-        onResetFilters={handleResetFilters}
-        isLoading={isLoading}
-        emptyMessage={t('registrationAnnouncement.noAnnouncementsMessage')}
-        t={t}
-      />
-      <DeletePopup
-        open={showDeletePopup}
-        message="registrationAnnouncement.confirmDelete"
-        itemName={
-          announcements.find((a) => a.id === selectedAnnouncementId)
-            ? isArabic
-              ? announcements.find((a) => a.id === selectedAnnouncementId)?.stageNameAr || ''
-              : announcements.find((a) => a.id === selectedAnnouncementId)?.stageNameEn || ''
-            : ''
-        }
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setShowDeletePopup(false)}
-        iconSrc={BigTrashIcon}
-        isProcessing={isDeleting}
-      />
-    </Card>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <MetricCard
+          title={t('registrationAnnouncement.metrics.total')}
+          value={metrics.total}
+          icon={
+            <CustomImage
+              src={SignBlueIcon}
+              alt={t('registrationAnnouncement.alt.total')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-blue-50 text-blue-600"
+        />
+        <MetricCard
+          title={t('registrationAnnouncement.metrics.valid')}
+          value={metrics.valid}
+          icon={
+            <CustomImage
+              src={CheckMarkIcon}
+              alt={t('registrationAnnouncement.alt.valid')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-green-50 text-green-600"
+        />
+        <MetricCard
+          title={t('registrationAnnouncement.metrics.expired')}
+          value={metrics.expired}
+          icon={
+            <CustomImage
+              src={XmarkCircleRedIcon}
+              alt={t('registrationAnnouncement.alt.expired')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-red-50 text-red-600"
+        />
+      </div>
+
+      <Card>
+        <DataTable
+          data={announcements}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          filters={filterConfigs}
+          showFilters={true}
+          onResetFilters={handleResetFilters}
+          isLoading={isLoading}
+          emptyMessage={t('registrationAnnouncement.noAnnouncementsMessage')}
+          t={t}
+        />
+        <DeletePopup
+          open={showDeletePopup}
+          message="registrationAnnouncement.confirmDelete"
+          itemName={
+            selectedAnnouncement
+              ? isArabic
+                ? selectedAnnouncement.stageNameAr || ''
+                : selectedAnnouncement.stageNameEn || ''
+              : ''
+          }
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setShowDeletePopup(false)}
+          iconSrc={BigTrashIcon}
+          isProcessing={isDeleting}
+        />
+      </Card>
+    </div>
   );
 }

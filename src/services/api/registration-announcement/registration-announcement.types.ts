@@ -21,6 +21,15 @@ export interface GetRegistrationAdvertisementsResponse {
   validationErrors: null;
 }
 
+export interface RegistrationAdvertisementQueryParams {
+  pageIndex?: number;
+  pageSize?: number;
+  searchTerm?: string;
+  status?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
 export interface CreateRegistrationAdvertisementRequest {
   lkSchoolStageId: string;
   startDate: string;

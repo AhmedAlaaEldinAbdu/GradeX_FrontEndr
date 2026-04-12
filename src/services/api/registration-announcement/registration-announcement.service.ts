@@ -3,16 +3,28 @@ import type {
   GetRegistrationAdvertisementsResponse,
   CreateRegistrationAdvertisementRequest,
   UpdateRegistrationAdvertisementRequest,
+  RegistrationAdvertisementQueryParams,
 } from './registration-announcement.types';
 
 export const registrationAnnouncementApi = {
-  getAll: async (pageIndex: number = 1, pageSize: number = 10) => {
+  getAll: async ({
+    pageIndex = 1,
+    pageSize = 10,
+    searchTerm,
+    status,
+    startDate,
+    endDate,
+  }: RegistrationAdvertisementQueryParams = {}) => {
     const response = await axiosClient.get<GetRegistrationAdvertisementsResponse>(
       '/RegistrationAdvertisement',
       {
         params: {
           pageIndex,
           pageSize,
+          SearchTerm: searchTerm || undefined,
+          Status: status || undefined,
+          StartDate: startDate || undefined,
+          EndDate: endDate || undefined,
         },
       }
     );
