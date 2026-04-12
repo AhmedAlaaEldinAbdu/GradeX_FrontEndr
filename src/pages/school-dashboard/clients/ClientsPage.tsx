@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import ClientsList from './components/ClientsList';
-import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
+import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import DotsBlackIcon from '@gradex/assets/icons/DotsBlack.svg';
 
 export default function ClientsPage() {
@@ -33,7 +33,7 @@ export default function ClientsPage() {
             label: 'clients.addClient',
             onClick: () => {},
             variant: 'primary',
-            imgSrc: GreenPlusIcon,
+            imgSrc: PlusIcon,
             imgClassName: 'w-4 h-4',
           },
           {
