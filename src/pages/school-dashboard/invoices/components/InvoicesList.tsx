@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -136,6 +137,7 @@ const PAGE_SIZE = 10;
 
 export default function InvoicesList() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('');
   const [selectedItem, setSelectedItem] = useState('');
@@ -301,10 +303,6 @@ export default function InvoicesList() {
               }}
             />
           </IconButton>
-          <span className="font-medium text-gray-800">{row.studentName}</span>
-          <div className="h-10 w-10 overflow-hidden rounded-lg border border-gray-200">
-            <CustomImage src={row.avatar} alt="Student" className="h-full w-full object-cover" />
-          </div>
         </div>
       ),
       headerClassName: 'min-w-[250px]',
@@ -361,11 +359,11 @@ export default function InvoicesList() {
     },
     {
       header: 'invoices.table.actions',
-      accessor: () => (
+      accessor: (row) => (
         <div className="flex items-center justify-center">
           <IconButton
             ariaLabel="View"
-            onClick={() => {}}
+            onClick={() => navigate(`/financial-management/invoices/${row.id}`)}
             className="flex h-8 w-8 items-center justify-center rounded-full text-blue-500 transition-colors hover:bg-gray-100"
           >
             <CustomImage
