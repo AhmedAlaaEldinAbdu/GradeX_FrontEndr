@@ -103,6 +103,10 @@ export default function ClientsList() {
       header: 'clients.table.clientName',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-200">
+            <CustomImage src={row.avatar} alt="Client" className="h-full w-full object-cover" />
+          </div>
+          <span className="shrink-0 font-medium text-gray-800">{row.clientName}</span>
           <IconButton
             variant="blue"
             ariaLabel="View"
@@ -119,10 +123,6 @@ export default function ClientsList() {
               }}
             />
           </IconButton>
-          <span className="shrink-0 font-medium text-gray-800">{row.clientName}</span>
-          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-200">
-            <CustomImage src={row.avatar} alt="Client" className="h-full w-full object-cover" />
-          </div>
         </div>
       ),
       headerClassName: 'min-w-[250px]',
