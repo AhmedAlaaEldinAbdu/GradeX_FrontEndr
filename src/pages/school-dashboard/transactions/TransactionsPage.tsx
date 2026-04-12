@@ -1,0 +1,69 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
+import Breadcrumb from '@/shared/layout/Breadcrumb';
+import PageHeader from '@/shared/components/PageHeader';
+import Tabs from '@/shared/components/Tabs';
+import TransactionsOverview from './components/TransactionsOverview';
+import TransactionsList from './components/TransactionsList';
+
+export default function TransactionsPage() {
+  const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'overview');
+
+  if (import.meta.env.MODE !== 'development') {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center">
+        <h1 className="mb-4 text-3xl font-bold">{t('common.comingSoon')}</h1>
+        <p className="text-lg text-gray-600">{t('financialManagement.transactionsComingSoon')}</p>
+      </div>
+    );
+  }
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
+
+  const breadcrumbItems = [
+    { label: t('sidebar.financialManagement') },
+    { label: t('sidebar.transactions') },
+  ];
+
+  const tabItems = [
+    {
+      id: 'overview',
+      label: t('financialManagement.overview'),
+      content: activeTab === 'overview' ? <TransactionsOverview /> : null,
+    },
+    {
+      id: 'transactions',
+      label: t('financialManagement.transactions'),
+      content: activeTab === 'transactions' ? <TransactionsList /> : null,
+    },
+  ];
+
+  return (
+    <div>
+      {/* Breadcrumb */}
+      <Breadcrumb items={breadcrumbItems} />
+
+      {/* Page Header */}
+      <PageHeader title="financialManagement.transactions" />
+
+      {/* Tabs Layout */}
+      <div className="mb-5 mt-6 w-full px-1">
+        <Tabs
+          items={tabItems}
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="underline"
+          listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+          lazy={true}
+          searchParamKey="tab"
+        />
+      </div>
+    </div>
+  );
+}

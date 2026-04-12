@@ -17,6 +17,9 @@ import PeopleSolidIcon from '@gradex/assets/icons/PeopleSolid.svg';
 import TicketsIcon from '@gradex/assets/icons/Tickets.svg';
 import ReportIcon from '@gradex/assets/icons/Report.svg';
 import ReportsIcon from '@gradex/assets/icons/Reports.svg';
+import GrowthIcon from '@gradex/assets/icons/Growth.svg';
+import ProductApprovalIcon from '@gradex/assets/icons/ProductApproval.svg';
+import BilllingIcon from '@gradex/assets/icons/Billing.svg';
 import SettingsIcon from '@gradex/assets/icons/Settings.svg';
 import StudentsIcon from '@gradex/assets/icons/Students.svg';
 import WalletIcon from '@gradex/assets/icons/Wallet.svg';
@@ -262,6 +265,27 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
     path: '/fees',
   },
   {
+    key: 'financialManagement',
+    icon: <CustomImage src={GrowthIcon} className="h-6 w-6" alt="Financial Management" />,
+    subItems: [
+      {
+        icon: <CustomImage src={ProductApprovalIcon} className="h-6 w-6" alt="Transactions" />,
+        key: 'transactions',
+        path: '/financial-management/transactions',
+      },
+      {
+        icon: <CustomImage src={BilllingIcon} className="h-6 w-6" alt="Invoices" />,
+        key: 'invoices',
+        path: '/financial-management/invoices',
+      },
+      {
+        icon: <CustomImage src={PeopleSolidIcon} className="h-6 w-6" alt="Clients" />,
+        key: 'clients',
+        path: '/financial-management/clients',
+      },
+    ],
+  },
+  {
     key: 'busManagement',
     icon: <CustomImage src={BusIcon} className="h-6 w-6" alt="Bus Management" />,
     path: '/bus-management',
@@ -450,7 +474,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                       `flex items-center gap-3 px-4 py-3 ${menuTextSizeClass} transition-colors duration-200 ${
                         isActive || isSubItemActive
                           ? `bg-green-100 font-medium text-green-800 ${isLastSubItem ? 'rounded-b-[32px]' : ''}`
-                          : 'hover:bg-green-100 text-green-500'
+                          : 'text-green-500 hover:bg-green-100'
                       }`
                     }
                   >

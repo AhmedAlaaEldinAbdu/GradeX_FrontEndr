@@ -52,6 +52,8 @@ import StudentApplicationDetailsPage from '@/pages/school-dashboard/student-appl
 import PreparationsPage from '@/pages/school-dashboard/preparations/preparations-page';
 import AddPreparationPage from '@/pages/school-dashboard/preparations/add-preparation-page';
 import EditPreparationPage from '@/pages/school-dashboard/preparations/edit-preparation-page';
+import TransactionsPage from '@/pages/school-dashboard/transactions/TransactionsPage';
+import InvoicesPage from '@/pages/school-dashboard/invoices/InvoicesPage';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -586,6 +588,39 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <EditDiscountOfferPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/financial-management/transactions"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <TransactionsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/financial-management/invoices"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <InvoicesPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/financial-management/clients"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">العملاء</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
             </MainLayout>
           </ProtectedRoute>
         }

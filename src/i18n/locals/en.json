@@ -29,6 +29,10 @@
     "examResults": "Exam Results",
     "attendance": "Attendance",
     "fees": "Fees",
+    "financialManagement": "Financial Management",
+    "transactions": "Transactions",
+    "invoices": "Invoices",
+    "clients": "Clients",
     "examManagement": "Exam Management",
     "busManagement": "Bus Management",
     "notifications": "Notifications",
@@ -2471,6 +2475,101 @@
         "draft": "Draft",
         "reset": "Reset"
       }
+    }
+  },
+  "financialManagement": {
+    "title": "Financial Management",
+    "transactions": "Transactions",
+    "totalTransactions": "Total Transactions",
+    "overview": "Overview",
+    "totalPayments": "Total Payments",
+    "pendingAmounts": "Pending Amounts",
+    "spentBudget": "Spent Budget",
+    "remainingBalance": "Remaining Balance",
+    "typesOfFees": "Types of Fees",
+    "revenuesAndExpenses": "Revenues & Expenses",
+    "academicYear": "Academic Year",
+    "revenues": "Revenues",
+    "expenses": "Expenses",
+    "tuitionFees": "Tuition Fees",
+    "transportFees": "Transport Fees",
+    "schoolUniform": "School Uniform",
+    "activities": "Activities",
+    "collected": "Collected",
+    "pending": "Pending:",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "searchClientName": "Search client name",
+    "paymentMethod": "Payment Method",
+    "paymentStatus": "Status",
+    "table": {
+      "index": "#",
+      "clientName": "Client Name",
+      "feeItem": "Fee Item",
+      "amount": "Amount",
+      "status": "Status",
+      "paymentChannel": "Payment Channel",
+      "date": "Date"
+    },
+    "statuses": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "late": "Late",
+      "pendingOrLate": "Pending / Late"
+    },
+    "paymentMethods": {
+      "cash": "Cash",
+      "deferred": "Deferred"
+    },
+    "paymentChannels": {
+      "applePay": "Apple Pay",
+      "bankAccount": "Bank Account",
+      "eWallet": "E-Wallet"
+    },
+    "feeTypes": {
+      "books": "Book Fees",
+      "tuition": "Tuition Fees",
+      "tuitionAndBooks": "Tuition and Book Fees"
+    }
+  },
+  "invoices": {
+    "title": "Invoices",
+    "issueInvoice": "Issue Invoice",
+    "searchInvoiceNumber": "Search by Invoice Number",
+    "paymentMethod": "Payment Method",
+    "item": "Item",
+    "stage": "Stage",
+    "table": {
+      "index": "#",
+      "invoiceDate": "Invoice Date",
+      "invoiceNumber": "Invoice Number",
+      "invoiceValue": "Invoice Value",
+      "tax": "Tax",
+      "totalInvoice": "Total Invoice",
+      "studentName": "Student Name",
+      "educationalStage": "Educational Stage",
+      "item": "Item",
+      "paymentMethod": "Payment Method",
+      "paymentTool": "Payment Tool",
+      "paymentDocument": "Payment Document",
+      "actions": "Actions"
+    },
+    "paymentMethods": {
+      "cash": "Cash",
+      "bankTransfer": "Bank Transfer",
+      "deferred": "Deferred"
+    },
+    "items": {
+      "tuition": "Tuition Fees",
+      "books": "Book Fees",
+      "transport": "Transport Fees"
+    },
+    "stages": {
+      "kindergarten": "Kindergarten",
+      "primary": "Primary",
+      "middle": "Middle",
+      "high": "High"
     }
   }
 }

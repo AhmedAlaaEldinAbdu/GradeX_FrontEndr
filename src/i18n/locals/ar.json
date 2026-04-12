@@ -29,6 +29,10 @@
     "examResults": "نتائج الاختبارات",
     "attendance": "الحضور والإنصراف",
     "fees": "الرسوم الدراسية",
+    "financialManagement": "إلادارة المالية",
+    "transactions": "المعاملات",
+    "invoices": "الفواتير",
+    "clients": "العملاء",
     "examManagement": "إدارة الامتحانات",
     "busManagement": "إدارة الباصات",
     "notifications": "الإشعارات",
@@ -2480,6 +2484,101 @@
         "draft": "مسودة",
         "reset": "اعادة تعيين"
       }
+    }
+  },
+  "financialManagement": {
+    "title": "الإدارة المالية",
+    "transactions": "المعاملات",
+    "totalTransactions": "إجمالي المعاملات",
+    "overview": "نظرة عامة",
+    "totalPayments": "إجمالي المدفوعات",
+    "pendingAmounts": "المبالغ المعلقة",
+    "spentBudget": "الميزانية المنفقة",
+    "remainingBalance": "الرصيد المتبقي",
+    "typesOfFees": "أنواع الرسوم",
+    "revenuesAndExpenses": "الإيرادات والنفقات",
+    "academicYear": "السنة الدراسية",
+    "revenues": "الإيرادات",
+    "expenses": "النفقات",
+    "tuitionFees": "الرسوم الدراسية",
+    "transportFees": "رسوم النقل",
+    "schoolUniform": "الزي المدرسي",
+    "activities": "الأنشطة",
+    "collected": "تم تحصيلها",
+    "pending": "معلق:",
+    "september": "سبتمبر",
+    "october": "أكتوبر",
+    "november": "نوفمبر",
+    "searchClientName": "ابحث عن اسم العميل",
+    "paymentMethod": "طريقة الدفع",
+    "paymentStatus": "الحالة",
+    "table": {
+      "index": "#",
+      "clientName": "اسم العميل",
+      "feeItem": "بند الرسوم",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "paymentChannel": "قناة الدفع",
+      "date": "التاريخ"
+    },
+    "statuses": {
+      "paid": "مسدد",
+      "pending": "معلق",
+      "late": "متأخر",
+      "pendingOrLate": "المعلق / متأخر"
+    },
+    "paymentMethods": {
+      "cash": "نقداً",
+      "deferred": "أجل"
+    },
+    "paymentChannels": {
+      "applePay": "Apple pay",
+      "bankAccount": "حساب بنكي",
+      "eWallet": "محفظة إلكترونية"
+    },
+    "feeTypes": {
+      "books": "كتب دراسية",
+      "tuition": "رسوم دراسية",
+      "tuitionAndBooks": "رسوم دراسية و كتب دراسية"
+    }
+  },
+  "invoices": {
+    "title": "الفواتير",
+    "issueInvoice": "اصدار فاتورة",
+    "searchInvoiceNumber": "ابحث عن رقم الفاتورة",
+    "paymentMethod": "طريقة السداد",
+    "item": "البند",
+    "stage": "المرحلة",
+    "table": {
+      "index": "#",
+      "invoiceDate": "تاريخ الفاتورة",
+      "invoiceNumber": "رقم الفاتورة",
+      "invoiceValue": "قيمة الفاتورة",
+      "tax": "الضريبة",
+      "totalInvoice": "إجمالي الفاتورة",
+      "studentName": "اسم الطالب",
+      "educationalStage": "المرحلة التعليمية",
+      "item": "البند",
+      "paymentMethod": "طريقة السداد",
+      "paymentTool": "وسيلة السداد",
+      "paymentDocument": "مستند السداد",
+      "actions": "الإجراءات"
+    },
+    "paymentMethods": {
+      "cash": "نقداً",
+      "bankTransfer": "تحويل بنكي",
+      "deferred": "أجل"
+    },
+    "items": {
+      "tuition": "رسوم دراسية",
+      "books": "كتب دراسية",
+      "transport": "رسوم نقل"
+    },
+    "stages": {
+      "kindergarten": "رياض الأطفال",
+      "primary": "ابتدائي",
+      "middle": "متوسط",
+      "high": "ثانوي"
     }
   }
 }
