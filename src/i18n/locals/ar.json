@@ -122,6 +122,7 @@
     "enterRejectionReason": "أدخل سبب الرفض",
     "rejectionReasonRequired": "سبب الرفض مطلوب",
     "selectAnOption": "اختر خيارًا",
+    "comingSoon": "قريباً...",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
@@ -2593,6 +2594,21 @@
       "primary": "ابتدائي",
       "middle": "متوسط",
       "high": "ثانوي"
+    }
+  },
+  "clients": {
+    "title": "العملاء",
+    "addClient": "إضافة عميل",
+    "searchClientName": "ابحث عن اسم العميل",
+    "paymentStatus": "حالة الدفع",
+    "item": "البند",
+    "table": {
+      "index": "#",
+      "clientName": "اسم العميل",
+      "clientNumber": "رقم العميل",
+      "mobile": "رقم الجوال",
+      "communication": "وسائل التواصل",
+      "actions": "الإجراءات"
     }
   }
 }

@@ -122,6 +122,7 @@
     "enterRejectionReason": "Enter the reason for rejection",
     "rejectionReasonRequired": "Rejection reason is required",
     "selectAnOption": "Select an option",
+    "comingSoon": "Coming soon...",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
@@ -2584,6 +2585,21 @@
       "primary": "Primary",
       "middle": "Middle",
       "high": "High"
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "addClient": "Add Client",
+    "searchClientName": "Search for client name",
+    "paymentStatus": "Payment Status",
+    "item": "Item",
+    "table": {
+      "index": "#",
+      "clientName": "Client Name",
+      "clientNumber": "Client Number",
+      "mobile": "Mobile Number",
+      "communication": "Communication",
+      "actions": "Actions"
     }
   }
 }
