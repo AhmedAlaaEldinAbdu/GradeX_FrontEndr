@@ -66,6 +66,24 @@ const TASK_TYPE_OPTIONS: Array<{ value: SchoolTaskType; labelKey: string }> = [
   { value: SchoolTaskType.Type6, labelKey: 'tasksManagement.form.taskType' },
 ];
 
+const normalizeDateForInput = (value?: string) => {
+  if (!value) {
+    return '';
+  }
+
+  const normalizedValue = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalizedValue)) {
+    return normalizedValue;
+  }
+
+  const date = new Date(normalizedValue);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return date.toISOString().slice(0, 10);
+};
+
 const DEFAULT_VALUES = (schoolBranchId: string): TaskFormValues => ({
   id: '',
   schoolBranchesId: schoolBranchId,
@@ -165,12 +183,12 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
       nameAr: task.nameAr || task.name || '',
       nameEn: task.nameEn || task.name || '',
       taskType: task.taskType,
-      date: task.date || '',
-      deliveryDate: task.deliveryDate || '',
+      date: normalizeDateForInput(task.date),
+      deliveryDate: normalizeDateForInput(task.deliveryDate),
       startPageNumber: task.startPageNumber,
       endPageNumber: task.endPageNumber,
-      descriptionAr: task.descriptionAr || '',
-      descriptionEn: task.descriptionEn || '',
+      descriptionAr: task.descriptionAr || task.description || '',
+      descriptionEn: task.descriptionEn || task.description || '',
       assignmentType: task.assignmentType || ASSIGNMENT_TYPE_ALL,
       studentIds: task.studentIds || [],
       attachment: [],
