@@ -6,48 +6,48 @@ const SCHOOL_TASK_TYPES = [1, 2, 3, 4, 5, 6] as const;
 
 const baseSchoolTaskSchema = {
   schoolBranchesId: string()
-    .required('School branch is required')
-    .typeError('School branch is required'),
+    .required('tasksManagement.validation.schoolBranchRequired')
+    .typeError('tasksManagement.validation.schoolBranchRequired'),
   gradeId: string()
-    .required('Educational stage is required')
-    .typeError('Educational stage is required'),
+    .required('tasksManagement.validation.educationalStageRequired')
+    .typeError('tasksManagement.validation.educationalStageRequired'),
   classroomId: string()
-    .required('Classroom is required')
-    .typeError('Classroom is required'),
+    .required('tasksManagement.validation.classroomRequired')
+    .typeError('tasksManagement.validation.classroomRequired'),
   materialId: string()
-    .required('Subject is required')
-    .typeError('Subject is required'),
+    .required('tasksManagement.validation.subjectRequired')
+    .typeError('tasksManagement.validation.subjectRequired'),
   nameAr: string()
-    .required('Arabic task name is required')
-    .typeError('Arabic task name is required')
-    .matches(ARABIC_TEXT_REGEX, 'Arabic task name is invalid'),
+    .required('tasksManagement.validation.taskNameArRequired')
+    .typeError('tasksManagement.validation.taskNameArRequired')
+    .matches(ARABIC_TEXT_REGEX, 'tasksManagement.validation.taskNameArInvalid'),
   nameEn: string()
-    .required('English task name is required')
-    .typeError('English task name is required')
-    .matches(ENGLISH_TEXT_REGEX, 'English task name is invalid'),
+    .required('tasksManagement.validation.taskNameEnRequired')
+    .typeError('tasksManagement.validation.taskNameEnRequired')
+    .matches(ENGLISH_TEXT_REGEX, 'tasksManagement.validation.taskNameEnInvalid'),
   taskType: number()
-    .required('Task type is required')
-    .oneOf([...SCHOOL_TASK_TYPES], 'Task type is required')
-    .typeError('Task type is required'),
+    .required('tasksManagement.validation.taskTypeRequired')
+    .oneOf([...SCHOOL_TASK_TYPES], 'tasksManagement.validation.taskTypeRequired')
+    .typeError('tasksManagement.validation.taskTypeRequired'),
   date: string()
-    .required('Task date is required')
-    .typeError('Task date is required'),
+    .required('tasksManagement.validation.taskDateRequired')
+    .typeError('tasksManagement.validation.taskDateRequired'),
   deliveryDate: string()
-    .required('Delivery date is required')
-    .typeError('Delivery date is required'),
+    .required('tasksManagement.validation.deliveryDateRequired')
+    .typeError('tasksManagement.validation.deliveryDateRequired'),
   startPageNumber: number()
-    .required('Start page is required')
-    .integer('Start page must be a whole number')
-    .min(0, 'Start page must be at least 0')
-    .typeError('Start page is required'),
+    .required('tasksManagement.validation.startPageRequired')
+    .integer('tasksManagement.validation.startPageWholeNumber')
+    .min(0, 'tasksManagement.validation.startPageMin')
+    .typeError('tasksManagement.validation.startPageRequired'),
   endPageNumber: number()
-    .required('End page is required')
-    .integer('End page must be a whole number')
-    .min(0, 'End page must be at least 0')
-    .typeError('End page is required')
+    .required('tasksManagement.validation.endPageRequired')
+    .integer('tasksManagement.validation.endPageWholeNumber')
+    .min(0, 'tasksManagement.validation.endPageMin')
+    .typeError('tasksManagement.validation.endPageRequired')
     .test(
       'end-page-greater-than-start-page',
-      'End page must be greater than or equal to start page',
+      'tasksManagement.validation.endPageGreaterThanOrEqualStartPage',
       function validateEndPage(value) {
         const { startPageNumber } = this.parent;
         if (typeof value !== 'number' || typeof startPageNumber !== 'number') {
@@ -76,10 +76,10 @@ const baseSchoolTaskSchema = {
       return ENGLISH_TEXT_REGEX.test(value);
     }),
   assignmentType: number()
-    .required('Assignment type is required')
-    .integer('Assignment type is required')
-    .positive('Assignment type is required')
-    .typeError('Assignment type is required'),
+    .required('tasksManagement.validation.assignmentTypeRequired')
+    .integer('tasksManagement.validation.assignmentTypeRequired')
+    .positive('tasksManagement.validation.assignmentTypeRequired')
+    .typeError('tasksManagement.validation.assignmentTypeRequired'),
   attachment: mixed<File[]>().optional(),
   studentIds: array(string().required()).optional(),
 };

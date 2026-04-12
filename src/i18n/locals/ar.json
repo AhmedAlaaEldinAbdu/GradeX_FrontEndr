@@ -2111,6 +2111,38 @@
       "uploadAttachment": "اضغط هنا للإضافة صورة أو ملف",
       "attachmentFileName": "اسم الملف"
     },
+    "validation": {
+      "schoolBranchRequired": "الفرع المدرسي مطلوب",
+      "educationalStageRequired": "المرحلة الدراسية مطلوبة",
+      "classroomRequired": "الصف الدراسي مطلوب",
+      "subjectRequired": "المادة مطلوبة",
+      "taskNameArRequired": "اسم المهمة باللغة العربية مطلوب",
+      "taskNameArInvalid": "اسم المهمة باللغة العربية غير صالح",
+      "taskNameEnRequired": "اسم المهمة باللغة الإنجليزية مطلوب",
+      "taskNameEnInvalid": "اسم المهمة باللغة الإنجليزية غير صالح",
+      "taskTypeRequired": "نوع المهمة مطلوب",
+      "taskDateRequired": "تاريخ المهمة مطلوب",
+      "deliveryDateRequired": "تاريخ التسليم مطلوب",
+      "startPageRequired": "رقم صفحة البداية مطلوب",
+      "startPageWholeNumber": "رقم صفحة البداية يجب أن يكون عددًا صحيحًا",
+      "startPageMin": "رقم صفحة البداية يجب أن يكون 0 أو أكثر",
+      "endPageRequired": "رقم صفحة النهاية مطلوب",
+      "endPageWholeNumber": "رقم صفحة النهاية يجب أن يكون عددًا صحيحًا",
+      "endPageMin": "رقم صفحة النهاية يجب أن يكون 0 أو أكثر",
+      "endPageGreaterThanOrEqualStartPage": "رقم صفحة النهاية يجب أن يكون أكبر من أو يساوي رقم صفحة البداية",
+      "assignmentTypeRequired": "نوع التخصيص مطلوب"
+    },
+    "correctionValidation": {
+      "taskStudentRequired": "سجل مهمة الطالب مطلوب",
+      "correctionIdRequired": "معرف التصحيح مطلوب",
+      "correctionTypeRequired": "نوع التصحيح مطلوب",
+      "studentGradeRequired": "درجة الطالب مطلوبة",
+      "studentGradeMin": "درجة الطالب يجب أن تكون صفرًا أو أكثر",
+      "trainingGradeRequired": "الدرجة التدريبية مطلوبة",
+      "trainingGradeGreaterThanZero": "الدرجة التدريبية يجب أن تكون أكبر من صفر",
+      "studentPerformanceRequired": "أداء الطالب مطلوب",
+      "studentGradeLessThanOrEqualTrainingGrade": "درجة الطالب يجب أن تكون أقل من أو تساوي الدرجة التدريبية"
+    },
     "studentPopup": {
       "title": "تحديد الطلاب",
       "searchPlaceholder": "ابحث بسهولة عما تريد",

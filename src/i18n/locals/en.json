@@ -2108,6 +2108,38 @@
       "uploadAttachment": "Click here to add an image or file",
       "attachmentFileName": "File name"
     },
+    "validation": {
+      "schoolBranchRequired": "School branch is required",
+      "educationalStageRequired": "Educational stage is required",
+      "classroomRequired": "Classroom is required",
+      "subjectRequired": "Subject is required",
+      "taskNameArRequired": "Arabic task name is required",
+      "taskNameArInvalid": "Arabic task name is invalid",
+      "taskNameEnRequired": "English task name is required",
+      "taskNameEnInvalid": "English task name is invalid",
+      "taskTypeRequired": "Task type is required",
+      "taskDateRequired": "Task date is required",
+      "deliveryDateRequired": "Delivery date is required",
+      "startPageRequired": "Start page is required",
+      "startPageWholeNumber": "Start page must be a whole number",
+      "startPageMin": "Start page must be at least 0",
+      "endPageRequired": "End page is required",
+      "endPageWholeNumber": "End page must be a whole number",
+      "endPageMin": "End page must be at least 0",
+      "endPageGreaterThanOrEqualStartPage": "End page must be greater than or equal to start page",
+      "assignmentTypeRequired": "Assignment type is required"
+    },
+    "correctionValidation": {
+      "taskStudentRequired": "Task student is required",
+      "correctionIdRequired": "Correction id is required",
+      "correctionTypeRequired": "Correction type is required",
+      "studentGradeRequired": "Student grade is required",
+      "studentGradeMin": "Student grade must be zero or greater",
+      "trainingGradeRequired": "Training grade is required",
+      "trainingGradeGreaterThanZero": "Training grade must be greater than zero",
+      "studentPerformanceRequired": "Student performance is required",
+      "studentGradeLessThanOrEqualTrainingGrade": "Student grade must be less than or equal to training grade"
+    },
     "studentPopup": {
       "title": "Select Students",
       "searchPlaceholder": "Search easily for what you want",
