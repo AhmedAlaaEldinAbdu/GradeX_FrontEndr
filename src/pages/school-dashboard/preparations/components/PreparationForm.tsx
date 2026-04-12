@@ -58,7 +58,6 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   useEffect(() => {
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
-    dispatch(fetchClassrooms({ filters: { schoolBranchId: '' }, limit: 1000 }));
     dispatch(fetchSubjects({ limit: 1000 }));
     dispatch(fetchBooks({ limit: 100 }));
   }, [dispatch, schoolBranchId]);
@@ -84,6 +83,14 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [existingFileUrls, setExistingFileUrls] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  useEffect(() => {
+    if (educationalStage) {
+      dispatch(
+        fetchClassrooms({ filters: { gradeId: educationalStage, schoolBranchId: '' }, limit: 1000 })
+      );
+    }
+  }, [dispatch, educationalStage]);
 
   const { draftData, isDraftLoaded, saveDraft, clearDraft } = useFormDraft<{
     date: string;
@@ -369,6 +376,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                     value={educationalStage}
                     onChange={(val) => {
                       setEducationalStage(val as string);
+                      setGrades([]);
                       if (errors.educationalStage) handleBlur('educationalStage', val);
                     }}
                     options={educationalStages.map((stage) => ({
