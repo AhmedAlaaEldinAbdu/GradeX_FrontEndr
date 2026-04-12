@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, type Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -25,17 +25,11 @@ import {
   updateSchoolTask,
 } from '@/redux/features/school-tasks/schoolTasksSlice';
 import { tokenManager } from '@/lib/auth/token-manager';
-import {
-  AddSchoolTaskSchema,
-  EditSchoolTaskSchema,
-  type AddSchoolTaskProps,
-  type EditSchoolTaskProps,
-} from '@/validations/school-tasks-validations';
+import { AddSchoolTaskSchema, EditSchoolTaskSchema } from '@/validations/school-tasks-validations';
 import { SchoolTaskType, type SchoolTask } from '@/types/schoolTasks';
 import TaskStudentsPopup, { type TaskStudentOption } from '../popups/TaskStudentsPopup';
 
 export interface TaskFormValues {
-  id: string;
   schoolBranchesId: string;
   gradeId: string;
   classroomId: string;
@@ -43,7 +37,7 @@ export interface TaskFormValues {
   nameAr: string;
   nameEn: string;
   taskType: SchoolTaskType | 0;
-  taskDate: string;
+  date: string;
   deliveryDate: string;
   startPageNumber: number | undefined;
   endPageNumber: number | undefined;
@@ -52,6 +46,7 @@ export interface TaskFormValues {
   assignmentType: number;
   studentIds: string[];
   attachment: File[];
+  id?: string;
 }
 
 interface TaskFormProps {
@@ -71,6 +66,24 @@ const TASK_TYPE_OPTIONS: Array<{ value: SchoolTaskType; labelKey: string }> = [
   { value: SchoolTaskType.Type6, labelKey: 'tasksManagement.form.taskType' },
 ];
 
+const normalizeDateForInput = (value?: string) => {
+  if (!value) {
+    return '';
+  }
+
+  const normalizedValue = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalizedValue)) {
+    return normalizedValue;
+  }
+
+  const date = new Date(normalizedValue);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return date.toISOString().slice(0, 10);
+};
+
 const DEFAULT_VALUES = (schoolBranchId: string): TaskFormValues => ({
   id: '',
   schoolBranchesId: schoolBranchId,
@@ -80,7 +93,7 @@ const DEFAULT_VALUES = (schoolBranchId: string): TaskFormValues => ({
   nameAr: '',
   nameEn: '',
   taskType: 0,
-  taskDate: '',
+  date: '',
   deliveryDate: '',
   startPageNumber: undefined,
   endPageNumber: undefined,
@@ -96,7 +109,6 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const isArabic = i18n.language === 'ar';
   const currentLang = i18n.language as 'ar' | 'en';
   const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
 
@@ -130,20 +142,22 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
     setValue,
     reset,
   } = useForm<TaskFormValues>({
-    resolver: yupResolver(mode === 'edit' ? EditSchoolTaskSchema : AddSchoolTaskSchema),
+    resolver: yupResolver(
+      mode === 'edit' ? EditSchoolTaskSchema : AddSchoolTaskSchema
+    ) as Resolver<TaskFormValues>,
     mode: 'onBlur',
     defaultValues: DEFAULT_VALUES(schoolBranchId),
   });
 
-  const watchedGradeId = watch('gradeId');
   const watchedClassroomId = watch('classroomId');
   const watchedTaskType = watch('taskType');
   const watchedAssignmentType = watch('assignmentType');
-  const watchedAttachments = watch('attachment');
+  const watchedAttachments = watch('attachment') || [];
+  const watchedStudentIds = watch('studentIds') || [];
 
   useEffect(() => {
     dispatch(fetchSubjects({ page: 1, limit: 10000 }));
-    dispatch(fetchClassrooms({ page: 1, limit: 10000, filters: { schoolBranchId } }));
+    dispatch(fetchClassrooms({ page: 1, limit: 10000 }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
   }, [dispatch, schoolBranchId]);
 
@@ -169,12 +183,12 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
       nameAr: task.nameAr || task.name || '',
       nameEn: task.nameEn || task.name || '',
       taskType: task.taskType,
-      taskDate: task.date || '',
-      deliveryDate: task.deliveryDate || '',
+      date: normalizeDateForInput(task.date),
+      deliveryDate: normalizeDateForInput(task.deliveryDate),
       startPageNumber: task.startPageNumber,
       endPageNumber: task.endPageNumber,
-      descriptionAr: task.descriptionAr || '',
-      descriptionEn: task.descriptionEn || '',
+      descriptionAr: task.descriptionAr || task.description || '',
+      descriptionEn: task.descriptionEn || task.description || '',
       assignmentType: task.assignmentType || ASSIGNMENT_TYPE_ALL,
       studentIds: task.studentIds || [],
       attachment: [],
@@ -205,29 +219,20 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
 
   const classroomOptions = useMemo(
     () =>
-      classrooms
-        .filter((classroom) => !watchedGradeId || classroom.gradeId === watchedGradeId)
-        .map((classroom) => ({
-          value: classroom.id,
-          label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
-        })),
-    [classrooms, currentLang, watchedGradeId]
+      classrooms.map((classroom) => ({
+        value: classroom.id,
+        label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
+      })),
+    [classrooms, currentLang]
   );
 
   const subjectOptions = useMemo(
     () =>
-      subjects
-        .filter(
-          (subject) =>
-            !watchedGradeId ||
-            (Array.isArray(subject.schoolStages) &&
-              subject.schoolStages.some((schoolStage) => schoolStage.id === watchedGradeId))
-        )
-        .map((subject) => ({
-          value: subject.id,
-          label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
-        })),
-    [currentLang, subjects, watchedGradeId]
+      subjects.map((subject) => ({
+        value: subject.id,
+        label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
+      })),
+    [currentLang, subjects]
   );
 
   const selectedClassroom = useMemo(
@@ -304,7 +309,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
 
   const primarySelectedStudent = selectedStudents[0];
 
-  const onSubmit = async (data: AddSchoolTaskProps | EditSchoolTaskProps) => {
+  const onSubmit = async (data: TaskFormValues) => {
     try {
       const payload = {
         schoolBranchesId: schoolBranchId,
@@ -384,11 +389,9 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                 render={({ field }) => (
                   <CustomSelect
                     value={field.value}
-                    onChange={(value) => {
-                      const selectedValue = Array.isArray(value) ? (value[0] ?? '') : value;
-                      field.onChange(selectedValue);
-                      setValue('classroomId', '');
-                    }}
+                    onChange={(value) =>
+                      field.onChange(Array.isArray(value) ? (value[0] ?? '') : value)
+                    }
                     options={stageOptions}
                     placeholder={
                       isLoadingGrades
@@ -675,7 +678,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
               </div>
 
               {watchedAssignmentType === ASSIGNMENT_TYPE_SPECIFIC &&
-              (selectedStudents.length > 0 || watch('studentIds').length > 0) ? (
+              (selectedStudents.length > 0 || watchedStudentIds.length > 0) ? (
                 <button
                   type="button"
                   onClick={() => setIsStudentsPopupOpen(true)}
@@ -698,7 +701,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                       </span>
                     </div>
                     <span className="text-[1.25rem] font-semibold leading-none text-green-500">
-                      +{Math.max(selectedStudents.length, watch('studentIds').length)}
+                      +{Math.max(selectedStudents.length, watchedStudentIds.length)}
                       <span className="mx-1">{t('tasksManagement.form.student')}</span>
                     </span>
                   </div>

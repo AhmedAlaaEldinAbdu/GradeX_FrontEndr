@@ -133,7 +133,7 @@ export default function TasksManagement() {
     dispatch(
       fetchSchoolTasks({
         page: 1,
-        limit: 1000,
+        limit: 10,
         filters: {
           classroomId: selectedClassroom || undefined,
           materialId: selectedSubject || undefined,
