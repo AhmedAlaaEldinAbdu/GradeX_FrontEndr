@@ -593,6 +593,7 @@
     "title": "إعلان التسجيل",
     "addAnnouncement": "إضافة اعلان تسجيل",
     "searchByStudentName": "ابحث عن اسم الطالب",
+    "searchByEducationalStage": "ابحث عن اسم المراحل التعليمية",
     "educationalStage": "المرحلة التعليمية",
     "startDate": "تاريخ بداية التسجيل",
     "endDate": "تاريخ نهاية التسجيل",
@@ -609,15 +610,25 @@
     "chooseStartDate": "اختر تاريخ بداية التسجيل",
     "chooseEndDate": "اختر تاريخ نهاية التسجيل",
     "selectEducationalStage": "اختر المرحلة التعليمية",
-    "addedSuccessfully": "تم إضافة الإعلان بنجاح",
+    "addedSuccessfully": "تم إضافة إعلان التسجيل بنجاح",
     "primary": "المرحلة الابتدائية",
     "middle": "المرحلة الإعدادية",
     "high": "المرحلة الثانوية",
     "kindergarten": "رياض الأطفال",
-    "updatedSuccessfully": "تم تحديث الإعلان بنجاح",
+    "updatedSuccessfully": "تم حفظ التغييرات بنجاح",
     "noAnnouncementsMessage": "لا توجد إعلانات",
-    "confirmDelete": "هل أنت متأكد من حذف الإعلان؟",
-    "deletedSuccessfully": "تم حذف الإعلان بنجاح"
+    "confirmDelete": "هل متأكد من حذف إعلان التسجيل؟",
+    "deletedSuccessfully": "تم حذف إعلان التسجيل بنجاح",
+    "metrics": {
+      "total": "إعلانات التسجيل",
+      "valid": "ساري",
+      "expired": "منتهي"
+    },
+    "alt": {
+      "total": "أيقونة إجمالي الإعلانات",
+      "valid": "أيقونة الإعلانات السارية",
+      "expired": "أيقونة الإعلانات المنتهية"
+    }
   },
   "studentApplications": {
     "title": "طلبات التقديم",

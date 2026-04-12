@@ -594,6 +594,7 @@
     "title": "Registration Announcement",
     "addAnnouncement": "Add Registration Announcement",
     "searchByStudentName": "Search by student name",
+    "searchByEducationalStage": "Search by educational stage",
     "educationalStage": "Educational Stage",
     "startDate": "Registration Start Date",
     "endDate": "Registration End Date",
@@ -618,7 +619,17 @@
     "updatedSuccessfully": "Announcement updated successfully",
     "noAnnouncementsMessage": "No announcements found",
     "confirmDelete": "Are you sure you want to delete this announcement?",
-    "deletedSuccessfully": "Announcement deleted successfully"
+    "deletedSuccessfully": "Announcement deleted successfully",
+    "metrics": {
+      "total": "Total Announcements",
+      "valid": "Valid",
+      "expired": "Expired"
+    },
+    "alt": {
+      "total": "Total announcements icon",
+      "valid": "Valid announcements icon",
+      "expired": "Expired announcements icon"
+    }
   },
   "studentApplications": {
     "title": "Student Applications",
