@@ -2395,6 +2395,9 @@
     "confirmDelete": "هل أنت متأكد من حذف هذا التحضير؟",
     "deletedSuccessfully": "تم حذف التحضير بنجاح",
     "form": {
+      "draftSaved": "تم حفظ المسودة بنجاح",
+      "draftLoaded": "تم استعادة البيانات المحفوظة كمسودة",
+      "formResetSuccess": "تم إعادة ضبط النموذج بنجاح",
       "addTitle": "إضافة تحضير",
       "editTitle": "تعديل التحضير",
       "preparationNumber": "رقم التحضير",

@@ -21,6 +21,7 @@ import {
   type PreparationFormValidation,
 } from '@/validations/preparations-validations';
 
+import { useFormDraft } from '@/hooks/useFormDraft';
 import { tokenManager } from '@/lib/auth/token-manager';
 import Card from '@/shared/components/Card';
 import Input from '@/shared/components/Input';
@@ -31,13 +32,16 @@ import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import Loading from '@/shared/components/Loading';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface PreparationFormProps {
   isEditMode?: boolean;
 }
 
 export default function PreparationForm({ isEditMode = false }: PreparationFormProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   const { showToast } = useToast();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -57,7 +61,6 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   useEffect(() => {
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
-    dispatch(fetchClassrooms({ filters: { schoolBranchId }, limit: 1000 }));
     dispatch(fetchSubjects({ limit: 1000 }));
     dispatch(fetchBooks({ limit: 100 }));
   }, [dispatch, schoolBranchId]);
@@ -79,8 +82,53 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [toPage, setToPage] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState<File[]>([]);
+  const [existingFileNames, setExistingFileNames] = useState<string[]>([]);
+  const [existingFileUrls, setExistingFileUrls] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  useEffect(() => {
+    if (educationalStage) {
+      dispatch(
+        fetchClassrooms({ filters: { gradeId: educationalStage, schoolBranchId: '' }, limit: 1000 })
+      );
+    }
+  }, [dispatch, educationalStage]);
+
+  const { draftData, isDraftLoaded, saveDraft, clearDraft } = useFormDraft<{
+    date: string;
+    preparationNumber: string;
+    educationalStage: string;
+    grades: string[];
+    subject: string;
+    topic: string;
+    bookName: string;
+    fromPage: string;
+    toPage: string;
+    content: string;
+    files: File[];
+  }>('preparation_form_draft');
+
+  useEffect(() => {
+    // Only restore if the draft exists, we're not in edit mode, and the current topic is empty
+    // this avoids duplicate toast notifications and overwriting user data if they started typing
+    if (!isEditMode && isDraftLoaded && draftData && !topic) {
+      if (draftData.date) setDate(draftData.date);
+      if (draftData.preparationNumber) setPreparationNumber(draftData.preparationNumber);
+      if (draftData.educationalStage) setEducationalStage(draftData.educationalStage);
+      if (draftData.grades) setGrades(draftData.grades);
+      if (draftData.subject) setSubject(draftData.subject);
+      if (draftData.topic) setTopic(draftData.topic);
+      if (draftData.bookName) setBookName(draftData.bookName);
+      if (draftData.fromPage) setFromPage(draftData.fromPage);
+      if (draftData.toPage) setToPage(draftData.toPage);
+      if (draftData.content) setContent(draftData.content);
+      if (draftData.files && draftData.files.length > 0) setFiles(draftData.files);
+
+      showToast({ message: t('preparations.form.draftLoaded'), type: 'info' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDraftLoaded, isEditMode, draftData]);
 
   const handleBlur = async (field: keyof PreparationFormValidation, value: any) => {
     try {
@@ -115,6 +163,13 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       setFromPage(currentPreparation.fromPage?.toString() || '');
       setToPage(currentPreparation.toPage?.toString() || '');
       setContent(currentPreparation.content || '');
+      if (currentPreparation.attachments && currentPreparation.attachments.length > 0) {
+        setExistingFileNames(currentPreparation.attachments.map((a) => a.fileName));
+        setExistingFileUrls(currentPreparation.attachments.map((a) => a.filePath));
+      } else {
+        setExistingFileNames([]);
+        setExistingFileUrls([]);
+      }
     }
   }, [isEditMode, currentPreparation]);
 
@@ -178,6 +233,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           addPreparation(data as CreatePreparationRequest)
         ).unwrap();
         if (resultAction.success) {
+          clearDraft();
           setShowSuccessPopup(true);
         }
       }
@@ -192,55 +248,24 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
     }
   };
 
-  // Dummy toolbar for rich text area
-  const renderEditorToolbar = () => (
-    <div className="flex items-center gap-4 rounded-t-lg border-b border-gray-200 bg-gray-50/50 px-4 py-2">
-      <div className="flex items-center gap-2">
-        <button className="hover:text-black text-gray-500">
-          <svg
-            className="h-4 w-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-          </svg>
-        </button>
-      </div>
-      <div className="flex items-center gap-2 border-l border-gray-300 pl-4">
-        <select className="bg-transparent text-sm text-gray-700 outline-none">
-          <option>Roboto</option>
-          <option>Arial</option>
-        </select>
-        <select className="bg-transparent text-sm text-gray-700 outline-none">
-          <option>16px</option>
-          <option>14px</option>
-          <option>18px</option>
-        </select>
-      </div>
-      <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
-        <button className="font-bold text-gray-700">B</button>
-        <button className="italic text-gray-700">I</button>
-        <button className="text-gray-700 underline">U</button>
-        <button className="text-gray-700 line-through">S</button>
-      </div>
-      <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
-        <button className="text-gray-700">≡</button>
-        <button className="text-gray-700">≡</button>
-        <button className="text-gray-700">≡</button>
-        <button className="text-gray-700">≡</button>
-      </div>
-      <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
-        <button className="text-gray-700">¶</button>
-      </div>
-      <div className="flex items-center gap-3 border-l border-gray-300 pl-4">
-        <button className="text-gray-700">1.</button>
-        <button className="text-gray-700">•</button>
-      </div>
-    </div>
-  );
+  const handleReset = () => {
+    setDate('');
+    setPreparationNumber('');
+    setEducationalStage('');
+    setGrades([]);
+    setSubject('');
+    setTopic('');
+    setBookName('');
+    setFromPage('');
+    setToPage('');
+    setContent('');
+    setFiles([]);
+    setExistingFileNames([]);
+    setExistingFileUrls([]);
+    setErrors({});
+    clearDraft();
+    showToast({ message: t('preparations.form.formResetSuccess'), type: 'success' });
+  };
 
   if (isEditMode && isLoading) {
     return <Loading />;
@@ -304,6 +329,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                     value={educationalStage}
                     onChange={(val) => {
                       setEducationalStage(val as string);
+                      setGrades([]);
                       if (errors.educationalStage) handleBlur('educationalStage', val);
                     }}
                     options={educationalStages.map((stage) => ({
@@ -442,37 +468,45 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               </div>
             </div>
 
-            {/* Content Textareas (Mocks) */}
+            {/* Content Textarea */}
             <div>
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.content')} <span className="text-red-500">*</span>
               </label>
               <div
-                className={`flex flex-col overflow-hidden rounded-lg border ${errors.content ? 'border-red-500' : 'border-gray-200'} focus-within:ring-2 focus-within:ring-green-500`}
+                className={`flex flex-col overflow-hidden rounded-lg border ${errors.content ? 'border-red-500' : 'border-gray-200'}`}
                 onBlur={(e) => {
                   if (!e.currentTarget.contains(e.relatedTarget)) {
                     handleBlur('content', content);
                   }
                 }}
               >
-                {renderEditorToolbar()}
-                <textarea
-                  className="min-h-[120px] w-full resize-y p-4 outline-none"
-                  placeholder={t('preparations.form.contentPlaceholder')}
+                <ReactQuill
+                  theme="snow"
                   value={content}
-                  onChange={(e) => {
-                    setContent(e.target.value);
-                    if (errors.content) handleBlur('content', e.target.value);
+                  onChange={(val) => {
+                    setContent(val === '<p><br></p>' ? '' : val);
+                    if (errors.content) handleBlur('content', val);
+                  }}
+                  placeholder={t('preparations.form.contentPlaceholder')}
+                  className={`bg-white [&_.ql-editor]:min-h-[150px] ${isRTL ? '[&_.ql-editor]:text-right [&_.ql-editor]:[direction:rtl]' : '[&_.ql-editor]:text-left [&_.ql-editor]:[direction:ltr]'}`}
+                  modules={{
+                    toolbar: [
+                      [{ font: [] }],
+                      [{ size: ['small', false, 'large', 'huge'] }],
+                      ['bold', 'italic', 'underline', 'strike'],
+                      [{ color: [] }, { background: [] }],
+                      [{ list: 'ordered' }, { list: 'bullet' }],
+                      [{ align: [] }, { direction: 'rtl' }],
+                      ['clean'],
+                    ],
                   }}
                 />
-                <div className="flex items-center justify-between p-2 text-xs">
-                  {errors.content ? (
+                {errors.content && (
+                  <div className="flex items-center justify-between p-2 text-xs">
                     <span className="text-start text-red-500">{errors.content}</span>
-                  ) : (
-                    <span></span>
-                  )}
-                  <span className="text-gray-400">0/2000</span>
-                </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -482,10 +516,28 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                 uploadText={t('tasksManagement.form.uploadAttachment')}
                 onChange={(e) => {
                   if (e.target.files) {
-                    setFiles(Array.from(e.target.files));
+                    setFiles((prev) => [...prev, ...Array.from(e.target.files as FileList)]);
+                  }
+                }}
+                onDelete={(index) => {
+                  if (index !== undefined) {
+                    if (index < existingFileNames.length) {
+                      setExistingFileNames((prev) => prev.filter((_, i) => i !== index));
+                      setExistingFileUrls((prev) => prev.filter((_, i) => i !== index));
+                    } else {
+                      const fileIndex = index - existingFileNames.length;
+                      setFiles((prev) => prev.filter((_, i) => i !== fileIndex));
+                    }
+                  } else {
+                    setFiles([]);
+                    setExistingFileNames([]);
+                    setExistingFileUrls([]);
                   }
                 }}
                 multiple={true}
+                fileNames={[...existingFileNames, ...files.map((f) => f.name)]}
+                fileUrls={[...existingFileUrls, ...files.map(() => '')]}
+                files={files}
               />
             </div>
           </div>
@@ -494,9 +546,12 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
         <div className="mt-8 flex justify-end gap-3">
           <Button
             variant="outline"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               if (isEditMode) {
                 navigate('/calendar/preparations');
+              } else {
+                handleReset();
               }
             }}
             className="px-8"
@@ -507,8 +562,22 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           </Button>
           <Button
             variant="outline"
-            onClick={() => {
-              // Draft logic
+            onClick={(e) => {
+              e.preventDefault();
+              saveDraft({
+                date,
+                preparationNumber,
+                educationalStage,
+                grades,
+                subject,
+                topic,
+                bookName,
+                fromPage,
+                toPage,
+                content,
+                files,
+              });
+              showToast({ message: t('preparations.form.draftSaved'), type: 'success' });
             }}
             className="px-8"
           >

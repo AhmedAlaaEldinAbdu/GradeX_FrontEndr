@@ -49,7 +49,7 @@ export default function PreparationsList() {
 
   useEffect(() => {
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
-    dispatch(fetchClassrooms({ filters: { schoolBranchId }, limit: 1000 }));
+    dispatch(fetchClassrooms({ filters: { schoolBranchId: '' }, limit: 1000 }));
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
