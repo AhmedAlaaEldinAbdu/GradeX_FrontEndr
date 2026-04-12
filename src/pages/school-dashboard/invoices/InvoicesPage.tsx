@@ -11,8 +11,8 @@ export default function InvoicesPage() {
   if (import.meta.env.MODE !== 'development') {
     return (
       <div className="py-16 text-center">
-        <h2 className="text-2xl font-bold text-gray-800">الفواتير</h2>
-        <p className="mt-4 text-gray-600">قريباً...</p>
+        <h2 className="text-2xl font-bold text-gray-800">{t('invoices.title')}</h2>
+        <p className="mt-4 text-gray-600">{t('common.comingSoon')}</p>
       </div>
     );
   }
