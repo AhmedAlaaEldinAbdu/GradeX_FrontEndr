@@ -58,6 +58,7 @@ import InvoiceDetailsPage from '@/pages/school-dashboard/invoices/InvoiceDetails
 import IssueInvoicePage from '@/pages/school-dashboard/invoices/issue-invoice-page';
 import ClientsPage from '@/pages/school-dashboard/clients/ClientsPage';
 import AddClientPage from '@/pages/school-dashboard/clients/add-client/add-client-page';
+import EditClientPage from '@/pages/school-dashboard/clients/edit-client/edit-client-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -652,6 +653,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AddClientPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/financial-management/clients/edit-client/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditClientPage />
             </MainLayout>
           </ProtectedRoute>
         }
