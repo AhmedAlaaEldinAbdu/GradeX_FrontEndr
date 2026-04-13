@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { tOptional } from '@/lib/utils';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
@@ -153,7 +154,7 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
             />
           </FormField>
 
-          <FormField label={t('clients.streetNameOptional')}>
+          <FormField label={tOptional(t, 'clients.streetName')}>
             <Input
               value={streetName}
               onChange={(e) => setStreetName(e.target.value)}
@@ -162,7 +163,7 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
             />
           </FormField>
 
-          <FormField label={t('clients.districtNameOptional')}>
+          <FormField label={tOptional(t, 'clients.districtName')}>
             <Input
               value={districtName}
               onChange={(e) => setDistrictName(e.target.value)}
@@ -172,7 +173,7 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
           </FormField>
 
           <div className="md:col-span-2">
-            <FormField label={t('clients.buildingNumberOptional')}>
+            <FormField label={tOptional(t, 'clients.buildingNumber')}>
               <Input
                 value={buildingNumber}
                 onChange={(e) => setBuildingNumber(e.target.value)}
