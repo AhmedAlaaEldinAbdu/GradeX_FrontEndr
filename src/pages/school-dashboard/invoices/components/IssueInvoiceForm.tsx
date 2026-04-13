@@ -6,6 +6,12 @@ import { formatValidationErrors } from '@/lib/utils/error-utils';
 import { createInvoice, fetchInvoiceNumbers } from '@/redux/features/invoices/invoicesSlice';
 import { fetchLKPaymentMethods } from '@/redux/features/lookups/lookupsSlice';
 import { fetchOffers } from '@/redux/features/offers/offersSlice';
+import { fetchStudents } from '@/redux/features/students/studentsSlice';
+import {
+  fetchAllInstallments,
+  fetchInstallmentPlanById,
+} from '@/redux/features/tuition-fees/tuitionFeesSlice';
+import { getStudentFullName } from '@/services/api/types/students.types';
 import { InvoicePaymentType } from '@/shared/enums/enums';
 import Button from '@/shared/components/Button';
 import Card from '@/shared/components/Card';
@@ -18,25 +24,9 @@ import Table from '@/shared/components/Table';
 import StyledCalendarIcon from '@/assets/icons/StyledCalendar.svg';
 import RyalIcon from '@/assets/icons/Ryal.svg';
 import PercentIcon from '@/assets/icons/Percent.svg';
-import ErrorMessage from '@/shared/components/ErrorMessage';
 
 type IssueInvoiceFormProps = {
   onCancel?: () => void;
-};
-
-type InvoiceCustomer = {
-  id: string;
-  name: string;
-  email: string;
-  mobile: string;
-  installmentPlans: Array<{
-    id: string;
-    name: string;
-    installments: Array<{
-      id: string;
-      name: string;
-    }>;
-  }>;
 };
 
 type InvoiceClassificationRow = {
@@ -65,60 +55,6 @@ const createClassificationRow = (): InvoiceClassificationRow => ({
   discount: '',
 });
 
-const customers: InvoiceCustomer[] = [
-  {
-    id: '1',
-    name: 'أحمد حسن محمود',
-    email: 'Ahmed@gmail.com',
-    mobile: '+966 556813161',
-    installmentPlans: [
-      {
-        id: 'plan-1',
-        name: 'الخطة الأولى',
-        installments: [
-          { id: 'plan-1-installment-1', name: 'القسط الأول' },
-          { id: 'plan-1-installment-2', name: 'القسط الثاني' },
-          { id: 'plan-1-installment-3', name: 'القسط الثالث' },
-        ],
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: 'سارة محمد علي',
-    email: 'Sara@gmail.com',
-    mobile: '+966 554400221',
-    installmentPlans: [
-      {
-        id: 'plan-2',
-        name: 'الخطة الثانية',
-        installments: [
-          { id: 'plan-2-installment-1', name: 'القسط الأول' },
-          { id: 'plan-2-installment-2', name: 'القسط الثاني' },
-        ],
-      },
-    ],
-  },
-  {
-    id: '3',
-    name: 'محمد عبدالله سعد',
-    email: 'Mohamed@gmail.com',
-    mobile: '+966 553214578',
-    installmentPlans: [
-      {
-        id: 'plan-3',
-        name: 'الخطة الثالثة',
-        installments: [
-          { id: 'plan-3-installment-1', name: 'القسط الأول' },
-          { id: 'plan-3-installment-2', name: 'القسط الثاني' },
-          { id: 'plan-3-installment-3', name: 'القسط الثالث' },
-          { id: 'plan-3-installment-4', name: 'القسط الرابع' },
-        ],
-      },
-    ],
-  },
-];
-
 const toNumber = (value: string) => Number(value || 0);
 
 const currencyIcon = <CustomImage src={RyalIcon} alt="Currency" className="h-4 w-4 opacity-60" />;
@@ -134,10 +70,18 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   );
   const { lkPaymentMethods, isLoadingLKPaymentMethods } = useAppSelector((state) => state.lookups);
   const { offers, isLoading: isLoadingOffers } = useAppSelector((state) => state.offers);
+  const { students, isLoading: isLoadingStudents } = useAppSelector((state) => state.students);
+  const { installments, installmentPlan, isLoadingInstallments } = useAppSelector(
+    (state) => state.tuitionFees
+  );
 
   const customerOptions = useMemo<CustomSelectOption[]>(
-    () => customers.map((customer) => ({ value: customer.id, label: customer.name })),
-    []
+    () =>
+      students.map((student) => ({
+        value: student.id,
+        label: getStudentFullName(student),
+      })),
+    [students]
   );
 
   const paymentTypeOptions = useMemo<CustomSelectOption[]>(
@@ -176,7 +120,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const [invoiceDate, setInvoiceDate] = useState('2025-12-04');
   const [paymentType, setPaymentType] = useState(String(InvoicePaymentType.Cash));
   const [paymentMethodId, setPaymentMethodId] = useState('');
-  const [installmentPlanId, setInstallmentPlanId] = useState('');
   const [installmentId, setInstallmentId] = useState('');
   const [selectedOfferId, setSelectedOfferId] = useState('');
   const [amount, setAmount] = useState('');
@@ -189,9 +132,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   const isDeferredPayment = Number(paymentType) === InvoicePaymentType.Deferred;
 
-  const selectedCustomer = useMemo(
-    () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
-    [selectedCustomerId]
+  const selectedStudent = useMemo(
+    () => students.find((s) => s.id === selectedCustomerId) ?? null,
+    [students, selectedCustomerId]
   );
 
   const subtotal = useMemo(
@@ -204,29 +147,17 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     [offers, selectedOfferId]
   );
 
-  const installmentPlanOptions = useMemo<CustomSelectOption[]>(
-    () =>
-      (selectedCustomer?.installmentPlans ?? []).map((plan) => ({
-        value: plan.id,
-        label: plan.name,
-      })),
-    [selectedCustomer]
-  );
-
-  const selectedInstallmentPlan = useMemo(
-    () =>
-      (selectedCustomer?.installmentPlans ?? []).find((plan) => plan.id === installmentPlanId) ??
-      null,
-    [installmentPlanId, selectedCustomer]
-  );
-
   const installmentOptions = useMemo<CustomSelectOption[]>(
     () =>
-      (selectedInstallmentPlan?.installments ?? []).map((installment) => ({
-        value: installment.id,
-        label: installment.name,
+      installments.map((inst) => ({
+        value: inst.id,
+        label: new Date(inst.dueDate).toLocaleDateString('ar-SA', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
       })),
-    [selectedInstallmentPlan]
+    [installments]
   );
 
   const calculatedAmount = useMemo(() => Math.max(0, subtotal), [subtotal]);
@@ -277,18 +208,25 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
         PageSize: 1000,
       })
     );
+
+    dispatch(fetchStudents({ page: 1, limit: 1000, filters: { schoolBranchId } }));
+
+    dispatch(fetchAllInstallments({ schoolBranchId, PageNumber: 1, PageSize: 1000 }));
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
-    if (selectedCustomer) {
-      setEmail(selectedCustomer.email);
-      setMobile(selectedCustomer.mobile);
+    if (selectedStudent) {
+      const mobileWithCode = [selectedStudent.motherCountryCode, selectedStudent.motherNumber]
+        .filter(Boolean)
+        .join('');
+      setMobile(mobileWithCode);
+      setEmail('');
       return;
     }
 
     setEmail('');
     setMobile('');
-  }, [selectedCustomer]);
+  }, [selectedStudent]);
 
   useEffect(() => {
     if (!invoiceNumber && invoiceNumbers.length > 0) {
@@ -297,17 +235,19 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   }, [invoiceNumber, invoiceNumbers]);
 
   useEffect(() => {
-    setInstallmentPlanId('');
     setInstallmentId('');
   }, [selectedCustomerId]);
 
   useEffect(() => {
-    setInstallmentId('');
-  }, [installmentPlanId]);
+    if (!installmentId) {
+      return;
+    }
+
+    dispatch(fetchInstallmentPlanById(installmentId));
+  }, [dispatch, installmentId]);
 
   useEffect(() => {
     if (!isDeferredPayment) {
-      setInstallmentPlanId('');
       setInstallmentId('');
     }
   }, [isDeferredPayment]);
@@ -441,10 +381,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       nextErrors.paymentTool = t('invoices.choosePaymentTool');
     }
 
-    if (isDeferredPayment && !installmentPlanId) {
-      nextErrors.installmentPlan = 'اختر خطة القسط';
-    }
-
     if (isDeferredPayment && !installmentId) {
       nextErrors.installment = 'اختر القسط';
     }
@@ -476,7 +412,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           netAmount,
           taxPercentage: toNumber(taxPercentage),
           paymentType: Number(paymentType),
-          installmentPlanId: isDeferredPayment ? installmentPlanId || null : null,
+          installmentPlanId: isDeferredPayment ? (installmentPlan?.id ?? null) : null,
           installmentId: isDeferredPayment ? installmentId || null : null,
           invoiceItemDtos,
           paymentMethodId,
@@ -516,6 +452,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
               options={customerOptions}
               placeholder={t('invoices.chooseCustomerName')}
               maxHeight="220px"
+              disabled={isLoadingStudents}
             />
           </FormField>
 
@@ -610,35 +547,19 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           </FormField>
 
           {isDeferredPayment && (
-            <FormField label="خطط الأقساط" required error={formErrors.installmentPlan}>
-              <CustomSelect
-                value={installmentPlanId}
-                onChange={(value) => {
-                  setInstallmentPlanId(String(value));
-                  clearError('installmentPlan');
-                  clearError('installment');
-                  clearError('general');
-                }}
-                options={installmentPlanOptions}
-                placeholder="اختر خطة القسط"
-                showSearch={false}
-              />
-            </FormField>
-          )}
-
-          {isDeferredPayment && (
             <FormField label="القسط" required error={formErrors.installment}>
               <CustomSelect
                 value={installmentId}
                 onChange={(value) => {
                   setInstallmentId(String(value));
+                  clearError('installmentPlan');
                   clearError('installment');
                   clearError('general');
                 }}
                 options={installmentOptions}
                 placeholder="اختر القسط"
                 showSearch={false}
-                disabled={!installmentPlanId}
+                disabled={isLoadingInstallments}
               />
             </FormField>
           )}
