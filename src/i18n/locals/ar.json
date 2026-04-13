@@ -122,7 +122,6 @@
     "enterRejectionReason": "أدخل سبب الرفض",
     "rejectionReasonRequired": "سبب الرفض مطلوب",
     "selectAnOption": "اختر خيارًا",
-    "comingSoon": "قريباً...",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "nameRequired": "الاسم مطلوب",
@@ -584,8 +583,8 @@
     "studentName": "اسم الطالب",
     "contract": "العقد",
     "reload": "إعادة تحميل",
-    "exportPdf": "تصدير PDF",
-    "exportExcel": "تصدير Excel",
+    "exportPdf": "PDF تصدير",
+    "exportExcel": "Excel تصدير",
     "print": "طباعة",
     "confirmDeleteStudent": "هل أنت متأكد من حذف الطالب؟",
     "studentDeletedSuccessfully": "تم حذف الطالب بنجاح"
@@ -2557,9 +2556,17 @@
   "invoices": {
     "title": "الفواتير",
     "issueInvoice": "اصدار فاتورة",
+    "issueAndExport": "إضافة و تصدير",
     "searchInvoiceNumber": "ابحث عن رقم الفاتورة",
+    "customerName": "اسم العميل",
+    "chooseCustomerName": "اختر اسم العميل",
+    "mobileNumber": "رقم الجوال",
     "paymentMethod": "طريقة السداد",
+    "choosePaymentMethod": "اختر طريقة السداد",
+    "paymentTool": "وسيلة السداد",
+    "choosePaymentTool": "اختر وسيلة السداد",
     "item": "البند",
+    "chooseItem": "اختر البند",
     "stage": "المرحلة",
     "invoiceDetails": "بيانات الفاتورة",
     "detailsTitle": "تفاصيل الفاتورة",
@@ -2570,10 +2577,19 @@
     "email": "البريد الإلكتروني",
     "invoiceData": "بيانات الفاتورة",
     "feesType": "نوع الرسوم",
+    "classifications": "التصنيفات",
+    "addClassification": "إضافة تصنيف",
+    "noClassificationRows": "لا توجد تصنيفات مضافة بعد",
     "feeItem": "بند الرسوم",
     "amount": "المبلغ",
+    "enterAmount": "أدخل المبلغ",
     "discount": "الخصم",
+    "optionalDiscount": "الخصم",
+    "chooseDiscount": "اختر الخصم",
     "print": "طباعة",
+    "tax": "القيمة المضافة",
+    "enterTax": "أدخل القيمة المضافة",
+    "totalAmount": "إجمالي المبلغ",
     "paymentDocumentImg": "صورة الدفع.png",
     "table": {
       "index": "#",
@@ -2594,6 +2610,18 @@
       "cash": "نقداً",
       "bankTransfer": "تحويل بنكي",
       "deferred": "أجل"
+    },
+    "paymentTools": {
+      "cashier": "نقداً",
+      "wallet": "محفظة إلكترونية",
+      "bank": "تحويل بنكي",
+      "card": "بطاقة"
+    },
+    "discounts": {
+      "none": "اختر الخصم",
+      "seasonal": "خصم موسمي",
+      "sibling": "خصم الأخوة",
+      "staff": "خصم الموظفين"
     },
     "items": {
       "tuition": "رسوم دراسية",

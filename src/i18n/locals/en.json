@@ -122,7 +122,6 @@
     "enterRejectionReason": "Enter the reason for rejection",
     "rejectionReasonRequired": "Rejection reason is required",
     "selectAnOption": "Select an option",
-    "comingSoon": "Coming soon...",
     "validation": {
       "required": "this field is required",
       "nameRequired": "name is required",
@@ -2548,9 +2547,17 @@
   "invoices": {
     "title": "Invoices",
     "issueInvoice": "Issue Invoice",
+    "issueAndExport": "Add and Export",
     "searchInvoiceNumber": "Search by Invoice Number",
+    "customerName": "Customer Name",
+    "chooseCustomerName": "Choose customer name",
+    "mobileNumber": "Mobile Number",
     "paymentMethod": "Payment Method",
+    "choosePaymentMethod": "Choose payment method",
+    "paymentTool": "Payment Tool",
+    "choosePaymentTool": "Choose payment tool",
     "item": "Item",
+    "chooseItem": "Choose item",
     "stage": "Stage",
     "invoiceDetails": "Invoice Data",
     "detailsTitle": "Invoice Details",
@@ -2561,10 +2568,18 @@
     "email": "Email Address",
     "invoiceData": "Invoice Data",
     "feesType": "Fees Type",
+    "classifications": "Classifications",
+    "addClassification": "Add Classification",
+    "noClassificationRows": "No classifications added yet",
     "feeItem": "Fee Item",
     "amount": "Amount",
+    "enterAmount": "Enter amount",
     "discount": "Discount",
+    "optionalDiscount": "Discount (Optional)",
+    "chooseDiscount": "Choose discount",
     "print": "Print",
+    "enterTax": "Enter tax value",
+    "totalAmount": "Total Amount",
     "paymentDocumentImg": "Payment image.png",
     "table": {
       "index": "#",
@@ -2585,6 +2600,18 @@
       "cash": "Cash",
       "bankTransfer": "Bank Transfer",
       "deferred": "Deferred"
+    },
+    "paymentTools": {
+      "cashier": "Cash",
+      "wallet": "E-Wallet",
+      "bank": "Bank Transfer",
+      "card": "Card"
+    },
+    "discounts": {
+      "none": "Choose discount",
+      "seasonal": "Seasonal Discount",
+      "sibling": "Sibling Discount",
+      "staff": "Staff Discount"
     },
     "items": {
       "tuition": "Tuition Fees",
