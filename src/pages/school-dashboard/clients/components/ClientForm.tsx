@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
@@ -9,8 +10,17 @@ import Button from '@/shared/components/Button';
 
 type ClientType = 'individual' | 'institution' | 'company';
 
-export default function AddClientForm({ onCancel }: { onCancel?: () => void }) {
+interface ClientFormProps {
+  isEditMode?: boolean;
+}
+
+export default function ClientForm({ isEditMode = false }: ClientFormProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  void id; // used later when API fetch is implemented
+
+  // TODO: fetch client data by id when isEditMode && id, then populate state
 
   const [clientType, setClientType] = useState<ClientType>('individual');
   const [clientName, setClientName] = useState('');
@@ -26,8 +36,8 @@ export default function AddClientForm({ onCancel }: { onCancel?: () => void }) {
   const [districtName, setDistrictName] = useState('');
   const [buildingNumber, setBuildingNumber] = useState('');
 
-  const handleAdd = () => {
-    // Add logic later
+  const handleSubmit = () => {
+    // Add / Edit logic later
   };
 
   return (
@@ -175,11 +185,11 @@ export default function AddClientForm({ onCancel }: { onCancel?: () => void }) {
       </Card>
 
       <div className="mt-6 flex flex-wrap items-center justify-end gap-3 pt-2">
-        <Button variant="outline" onClick={onCancel}>
+        <Button variant="outline" onClick={() => navigate('/financial-management/clients')}>
           {t('common.cancel')}
         </Button>
-        <Button variant="success" onClick={handleAdd}>
-          {t('common.add')}
+        <Button variant="success" onClick={handleSubmit}>
+          {isEditMode ? t('actions.saveChanges') : t('common.add')}
         </Button>
       </div>
     </div>
