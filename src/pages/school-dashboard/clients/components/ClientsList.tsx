@@ -179,7 +179,7 @@ export default function ClientsList() {
             label: t('actions.view'),
             icon: EyeIcon,
             color: 'text-blue-500 hover:bg-blue-50',
-            onClick: () => {},
+            onClick: () => navigate(`/financial-management/clients/${row.id}`),
           },
           {
             id: 'edit',
