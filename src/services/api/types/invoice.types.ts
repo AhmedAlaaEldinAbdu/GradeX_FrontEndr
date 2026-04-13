@@ -52,6 +52,7 @@ export interface InvoiceQueryParams {
   search?: string;
   paymentMethodId?: string;
   gradeId?: string;
+  offerId?: string;
 
   SchoolBranchId?: string;
   PageSize?: number;
@@ -59,6 +60,7 @@ export interface InvoiceQueryParams {
   Search?: string;
   PaymentMethodId?: string;
   GradeId?: string;
+  OfferId?: string;
 }
 
 export interface CreateInvoiceRequest {
