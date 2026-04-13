@@ -1,16 +1,20 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
+import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import WhatsAppIcon from '@gradex/assets/icons/WhatsApp.svg';
 import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
-import DotsBlackIcon from '@gradex/assets/icons/DotsBlack.svg';
+import EyeIcon from '@gradex/assets/icons/EyeStyled.svg';
+import EditFilledIcon from '@gradex/assets/icons/Edit.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
 
 interface ClientItem {
   id: string;
@@ -36,6 +40,7 @@ const PAGE_SIZE = 10;
 
 export default function ClientsList() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedItem, setSelectedItem] = useState('');
@@ -167,16 +172,36 @@ export default function ClientsList() {
     },
     {
       header: 'clients.table.actions',
-      accessor: () => (
-        <div className="flex items-center justify-center">
-          <IconButton
-            ariaLabel="More"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
-          >
-            <CustomImage src={DotsBlackIcon} alt="More" className="h-5 w-5" />
-          </IconButton>
-        </div>
-      ),
+      accessor: (row) => {
+        const actions: Action[] = [
+          {
+            id: 'view',
+            label: t('actions.view'),
+            icon: EyeIcon,
+            color: 'text-blue-500 hover:bg-blue-50',
+            onClick: () => {},
+          },
+          {
+            id: 'edit',
+            label: t('actions.edit'),
+            icon: EditFilledIcon,
+            color: 'text-green-500 hover:bg-green-50',
+            onClick: () => navigate(`/financial-management/clients/edit-client/${row.id}`),
+          },
+          {
+            id: 'delete',
+            label: t('actions.delete'),
+            icon: TrashIcon,
+            color: 'text-red-500 hover:bg-red-50',
+            onClick: () => {},
+          },
+        ];
+        return (
+          <div className="flex items-center justify-center">
+            <ActionsDropdown actions={actions} />
+          </div>
+        );
+      },
       headerClassName: 'w-[100px]',
       className: 'text-center',
     },
