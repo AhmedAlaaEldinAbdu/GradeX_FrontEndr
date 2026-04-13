@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import ClientsList from './components/ClientsList';
@@ -6,6 +7,7 @@ import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
 export default function ClientsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   if (import.meta.env.MODE !== 'development') {
     return (
@@ -30,7 +32,7 @@ export default function ClientsPage() {
         actions={[
           {
             label: 'clients.addClient',
-            onClick: () => {},
+            onClick: () => navigate('/financial-management/clients/add-client'),
             variant: 'primary',
             imgSrc: PlusIcon,
             imgClassName: 'w-4 h-4',
