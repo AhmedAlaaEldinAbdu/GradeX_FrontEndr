@@ -15,7 +15,7 @@ export default function EditClientPage() {
   return (
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title={t('actions.edit')} />
+      <PageHeader title={t('actions.edit')} hasHeaderControls={false} />
       <ClientForm isEditMode={true} />
     </div>
   );

@@ -15,7 +15,7 @@ export default function AddClientPage() {
   return (
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title={t('clients.addClient')} />
+      <PageHeader title={t('clients.addClient')} hasHeaderControls={false} />
       <ClientForm />
     </div>
   );
