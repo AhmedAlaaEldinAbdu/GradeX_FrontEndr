@@ -11,6 +11,9 @@ export const TuitionFeesEndpoints = {
     `${TuitionFees}/${gradId}/${schoolBrancheId}`,
   getGradesFeesBySchoolBranch: (schoolBrancheId: string) =>
     `${TuitionFees}/${schoolBrancheId}/grades-fees`,
+  getAllInstallments: `${TuitionFees}/GetAllInstallments`,
+  getInstallmentPlanByInstallmentId: (installmentId: string) =>
+    `${TuitionFees}/InstallmentPlanByInstallmentId${installmentId}`,
 };
 
 export default TuitionFeesEndpoints;
