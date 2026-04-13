@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/redux/store/store';
 import { fetchInvoices } from '@/redux/features/invoices/invoicesSlice';
+import { fetchOffers } from '@/redux/features/offers/offersSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { tokenManager } from '@/lib/auth/token-manager';
+import { InvoicePaymentType } from '@/shared/enums/enums';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -30,6 +33,8 @@ export default function InvoicesList() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { invoices, pagination, isLoading } = useSelector((state: RootState) => state.invoices);
+  const { offers } = useSelector((state: RootState) => state.offers);
+  const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('');
@@ -53,6 +58,20 @@ export default function InvoicesList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, schoolBranchId, searchTerm]);
 
+  useEffect(() => {
+    if (schoolBranchId) {
+      dispatch(
+        fetchOffers({
+          SchoolBranchId: schoolBranchId,
+          IsActive: true,
+          PageIndex: 1,
+          PageSize: 1000,
+        })
+      );
+    }
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 1000 }));
+  }, [dispatch, schoolBranchId]);
+
   const handlePageChange = (page: number) => {
     dispatch(
       fetchInvoices({
@@ -71,23 +90,31 @@ export default function InvoicesList() {
     setSelectedStage('');
   };
 
-  const methodOptions = [
-    { value: 'cash', label: t('invoices.paymentMethods.cash') },
-    { value: 'bankTransfer', label: t('invoices.paymentMethods.bankTransfer') },
-    { value: 'deferred', label: t('invoices.paymentMethods.deferred') },
-  ];
+  const methodOptions = useMemo(
+    () => [
+      { value: String(InvoicePaymentType.Cash), label: t('invoices.paymentMethods.cash') },
+      { value: String(InvoicePaymentType.Deferred), label: t('invoices.paymentMethods.deferred') },
+    ],
+    [t]
+  );
 
-  const itemOptions = [
-    { value: 'tuition', label: t('invoices.items.tuition') },
-    { value: 'books', label: t('invoices.items.books') },
-    { value: 'transport', label: t('invoices.items.transport') },
-  ];
+  const itemOptions = useMemo(
+    () =>
+      offers.map((offer) => ({
+        value: offer.id,
+        label: isAr ? offer.nameAr : offer.nameEn,
+      })),
+    [offers, isAr]
+  );
 
-  const stageOptions = [
-    { value: 'primary', label: t('invoices.stages.primary') },
-    { value: 'middle', label: t('invoices.stages.middle') },
-    { value: 'high', label: t('invoices.stages.high') },
-  ];
+  const stageOptions = useMemo(
+    () =>
+      educationalStages.map((stage) => ({
+        value: stage.id,
+        label: isAr ? stage.nameAr : stage.nameEn,
+      })),
+    [educationalStages, isAr]
+  );
 
   const columns: DataTableColumn<InvoiceDto>[] = [
     {
