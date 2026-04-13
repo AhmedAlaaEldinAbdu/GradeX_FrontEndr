@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import Button from './Button';
 import { useTranslation } from 'react-i18next';
+import HeaderControls from './HeaderControls';
 
 type ActionType = {
   label: string;
@@ -19,9 +20,10 @@ type ActionType = {
 type PageHeaderProps = {
   title: string;
   actions?: ActionType[];
+  hasHeaderControls?: boolean;
 };
 
-const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
+const PageHeader = ({ title, actions = [], hasHeaderControls = true }: PageHeaderProps) => {
   const { t } = useTranslation();
 
   return (
@@ -30,27 +32,11 @@ const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
         <h1 className="text-[2rem] font-medium text-black-900">{t(`${title}`)}</h1>
       </div>
 
-      {actions.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {actions.map((action, index) =>
-            action.to ? (
-              <Link key={index} to={action.to}>
-                <Button
-                  variant={action.variant}
-                  size={action.size}
-                  icon={action.icon}
-                  imgSrc={action.imgSrc}
-                  imgClassName={action.imgClassName}
-                  fullWidth={action.fullWidth}
-                  className={action.className}
-                >
-                  {action.label ? t(`${action.label}`) : null}
-                </Button>
-              </Link>
-            ) : (
+      <div className="flex flex-wrap gap-2">
+        {actions.map((action, index) =>
+          action.to ? (
+            <Link key={index} to={action.to}>
               <Button
-                key={index}
-                onClick={action.onClick}
                 variant={action.variant}
                 size={action.size}
                 icon={action.icon}
@@ -61,10 +47,25 @@ const PageHeader = ({ title, actions = [] }: PageHeaderProps) => {
               >
                 {action.label ? t(`${action.label}`) : null}
               </Button>
-            )
-          )}
-        </div>
-      )}
+            </Link>
+          ) : (
+            <Button
+              key={index}
+              onClick={action.onClick}
+              variant={action.variant}
+              size={action.size}
+              icon={action.icon}
+              imgSrc={action.imgSrc}
+              imgClassName={action.imgClassName}
+              fullWidth={action.fullWidth}
+              className={action.className}
+            >
+              {action.label ? t(`${action.label}`) : null}
+            </Button>
+          )
+        )}
+        {hasHeaderControls && <HeaderControls />}
+      </div>
     </div>
   );
 };

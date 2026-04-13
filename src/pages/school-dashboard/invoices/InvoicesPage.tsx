@@ -3,7 +3,6 @@ import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import InvoicesList from './components/InvoicesList';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
-import DotsBlackIcon from '@gradex/assets/icons/DotsBlack.svg';
 
 export default function InvoicesPage() {
   const { t } = useTranslation();
@@ -33,19 +32,9 @@ export default function InvoicesPage() {
         actions={[
           {
             label: 'invoices.issueInvoice',
-            to: '#', // Placeholder for "Issue Invoice" logic
+            to: '/financial-management/invoices/issue',
             variant: 'primary',
             imgSrc: PlusIcon,
-            imgClassName: 'w-[20px] h-[20px]',
-          },
-          {
-            label: '',
-            onClick: () => {
-              // More options wrapper
-            },
-            variant: 'ghost',
-            className: '!p-2.5 bg-gray-50 border border-gray-200 hover:bg-gray-100',
-            imgSrc: DotsBlackIcon,
             imgClassName: 'w-[20px] h-[20px]',
           },
         ]}
