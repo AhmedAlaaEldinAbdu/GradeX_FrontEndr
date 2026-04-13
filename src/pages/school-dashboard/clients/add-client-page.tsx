@@ -9,13 +9,13 @@ export default function AddClientPage() {
   const breadcrumbItems = [
     { label: t('sidebar.financialManagement') },
     { label: t('clients.title'), path: '/financial-management/clients' },
-    { label: 'إضافة عميل' },
+    { label: t('clients.addClient') },
   ];
 
   return (
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title="إضافة عميل" />
+      <PageHeader title={t('clients.addClient')} />
       <ClientForm />
     </div>
   );
