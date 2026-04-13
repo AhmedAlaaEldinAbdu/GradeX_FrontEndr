@@ -15,6 +15,9 @@ import type {
   CreateTuitionFeesRequest,
   UpdateTuitionFeesRequest,
   TuitionFeesGradeFeesItem,
+  InstallmentDto,
+  InstallmentQueryParams,
+  InstallmentPlanByIdDto,
 } from '@/services/api/types/tuition-fees.types';
 
 interface TuitionFeesState {
@@ -22,11 +25,14 @@ interface TuitionFeesState {
   tuitionFeesDetails: TuitionFeesDto | null;
   tuitionFeesByGradeAndBranch: TuitionFeesDto | null;
   gradesFees: TuitionFeesGradeFeesItem[];
+  installments: InstallmentDto[];
+  installmentPlan: InstallmentPlanByIdDto | null;
   calculationResult: unknown;
   pagination: Pagination;
   isLoading: boolean;
   isLoadingDetails: boolean;
   isLoadingGradesFees: boolean;
+  isLoadingInstallments: boolean;
   isCalculating: boolean;
   isCreating: boolean;
   isUpdating: boolean;
@@ -40,6 +46,8 @@ const initialState: TuitionFeesState = {
   tuitionFeesDetails: null,
   tuitionFeesByGradeAndBranch: null,
   gradesFees: [],
+  installments: [],
+  installmentPlan: null,
   calculationResult: null,
   pagination: {
     pageIndex: 1,
@@ -50,6 +58,7 @@ const initialState: TuitionFeesState = {
   isLoading: false,
   isLoadingDetails: false,
   isLoadingGradesFees: false,
+  isLoadingInstallments: false,
   isCalculating: false,
   isCreating: false,
   isUpdating: false,
@@ -114,6 +123,36 @@ export const fetchGradesFeesBySchoolBranch = createAsyncThunk<TuitionFeesGradeFe
     try {
       const response = await tuitionFeesApiService.getGradesFeesBySchoolBranch(schoolBrancheId);
       return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchAllInstallments = createAsyncThunk<InstallmentDto[], InstallmentQueryParams>(
+  'tuitionFees/fetchAllInstallments',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await tuitionFeesApiService.getAllInstallments(params);
+      if (!response?.isSuccess || !response.data) {
+        return [];
+      }
+      return response.data.getAllInstallmentDtos ?? [];
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchInstallmentPlanById = createAsyncThunk<InstallmentPlanByIdDto, string>(
+  'tuitionFees/fetchInstallmentPlanById',
+  async (installmentId, { rejectWithValue }) => {
+    try {
+      const response = await tuitionFeesApiService.getInstallmentPlanByInstallmentId(installmentId);
+      if (!response?.isSuccess || !response.data) {
+        return rejectWithValue('No data returned');
+      }
+      return response.data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -260,6 +299,34 @@ const tuitionFeesSlice = createSlice({
       });
 
     builder
+      .addCase(fetchAllInstallments.pending, (state) => {
+        state.isLoadingInstallments = true;
+        state.error = null;
+      })
+      .addCase(fetchAllInstallments.fulfilled, (state, action: PayloadAction<InstallmentDto[]>) => {
+        state.isLoadingInstallments = false;
+        state.installments = action.payload;
+      })
+      .addCase(fetchAllInstallments.rejected, (state, action) => {
+        state.isLoadingInstallments = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchInstallmentPlanById.pending, (state) => {
+        state.installmentPlan = null;
+      })
+      .addCase(
+        fetchInstallmentPlanById.fulfilled,
+        (state, action: PayloadAction<InstallmentPlanByIdDto>) => {
+          state.installmentPlan = action.payload;
+        }
+      )
+      .addCase(fetchInstallmentPlanById.rejected, (state) => {
+        state.installmentPlan = null;
+      });
+
+    builder
       .addCase(calculateTuitionFees.pending, (state) => {
         state.isCalculating = true;
         state.error = null;
@@ -279,15 +346,20 @@ const tuitionFeesSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(createTuitionFees.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isCreating = false;
-        if (!action.payload.isSuccess) {
-          state.validationErrors = action.payload.validationErrors;
+      .addCase(
+        createTuitionFees.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<null>>) => {
+          state.isCreating = false;
+          if (!action.payload.isSuccess) {
+            state.validationErrors = action.payload.validationErrors;
+          }
         }
-      })
+      )
       .addCase(createTuitionFees.rejected, (state, action) => {
         state.isCreating = false;
-        const payload = action.payload as { validationErrors?: ValidationErrorResponse[] | string[] };
+        const payload = action.payload as {
+          validationErrors?: ValidationErrorResponse[] | string[];
+        };
         state.validationErrors = payload?.validationErrors ?? null;
         state.error = typeof action.payload === 'string' ? (action.payload as string) : state.error;
       });
@@ -298,15 +370,20 @@ const tuitionFeesSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(updateTuitionFees.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isUpdating = false;
-        if (!action.payload.isSuccess) {
-          state.validationErrors = action.payload.validationErrors;
+      .addCase(
+        updateTuitionFees.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<null>>) => {
+          state.isUpdating = false;
+          if (!action.payload.isSuccess) {
+            state.validationErrors = action.payload.validationErrors;
+          }
         }
-      })
+      )
       .addCase(updateTuitionFees.rejected, (state, action) => {
         state.isUpdating = false;
-        const payload = action.payload as { validationErrors?: ValidationErrorResponse[] | string[] };
+        const payload = action.payload as {
+          validationErrors?: ValidationErrorResponse[] | string[];
+        };
         state.validationErrors = payload?.validationErrors ?? null;
         state.error = typeof action.payload === 'string' ? (action.payload as string) : state.error;
       });
@@ -316,15 +393,18 @@ const tuitionFeesSlice = createSlice({
         state.isDeleting = true;
         state.error = null;
       })
-      .addCase(deleteTuitionFees.fulfilled, (state, action: PayloadAction<ApiResponseModel<string>>) => {
-        state.isDeleting = false;
-        if (action.payload.isSuccess) {
-          const deletedId = action.payload.data ?? action.payload.value;
-          if (typeof deletedId === 'string') {
-            state.tuitionFees = state.tuitionFees.filter((t) => t.id !== deletedId);
+      .addCase(
+        deleteTuitionFees.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<string>>) => {
+          state.isDeleting = false;
+          if (action.payload.isSuccess) {
+            const deletedId = action.payload.data ?? action.payload.value;
+            if (typeof deletedId === 'string') {
+              state.tuitionFees = state.tuitionFees.filter((t) => t.id !== deletedId);
+            }
           }
         }
-      })
+      )
       .addCase(deleteTuitionFees.rejected, (state, action) => {
         state.isDeleting = false;
         state.error = action.payload as string;
