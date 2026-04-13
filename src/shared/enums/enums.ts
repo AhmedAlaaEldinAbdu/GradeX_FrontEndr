@@ -125,3 +125,10 @@ export const OfferOperator = {
   Between: 9,
 } as const;
 export type OfferOperator = typeof OfferOperator[keyof typeof OfferOperator];
+
+
+export const InvoicePaymentType = {
+  Cash: 1,
+  Deferred: 2,
+} as const;
+export type InvoicePaymentType = typeof InvoicePaymentType[keyof typeof InvoicePaymentType];
