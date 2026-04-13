@@ -6,8 +6,8 @@ import type { AppDispatch, RootState } from '@/redux/store/store';
 import { fetchInvoices } from '@/redux/features/invoices/invoicesSlice';
 import { fetchOffers } from '@/redux/features/offers/offersSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchLKPaymentMethods } from '@/redux/features/lookups/lookupsSlice';
 import { tokenManager } from '@/lib/auth/token-manager';
-import { InvoicePaymentType } from '@/shared/enums/enums';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -35,6 +35,7 @@ export default function InvoicesList() {
   const { invoices, pagination, isLoading } = useSelector((state: RootState) => state.invoices);
   const { offers } = useSelector((state: RootState) => state.offers);
   const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
+  const { lkPaymentMethods } = useSelector((state: RootState) => state.lookups);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('');
@@ -53,10 +54,13 @@ export default function InvoicesList() {
         PageIndex: 1,
         PageSize: pagination.pageSize,
         Search: searchTerm || undefined,
+        PaymentMethodId: selectedMethod || undefined,
+        GradeId: selectedStage || undefined,
+        OfferId: selectedItem || undefined,
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, schoolBranchId, searchTerm]);
+  }, [dispatch, schoolBranchId, searchTerm, selectedMethod, selectedStage, selectedItem]);
 
   useEffect(() => {
     if (schoolBranchId) {
@@ -70,6 +74,7 @@ export default function InvoicesList() {
       );
     }
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 1000 }));
+    dispatch(fetchLKPaymentMethods());
   }, [dispatch, schoolBranchId]);
 
   const handlePageChange = (page: number) => {
@@ -79,6 +84,9 @@ export default function InvoicesList() {
         PageIndex: page,
         PageSize: pagination.pageSize,
         Search: searchTerm || undefined,
+        PaymentMethodId: selectedMethod || undefined,
+        GradeId: selectedStage || undefined,
+        OfferId: selectedItem || undefined,
       })
     );
   };
@@ -91,11 +99,12 @@ export default function InvoicesList() {
   };
 
   const methodOptions = useMemo(
-    () => [
-      { value: String(InvoicePaymentType.Cash), label: t('invoices.paymentMethods.cash') },
-      { value: String(InvoicePaymentType.Deferred), label: t('invoices.paymentMethods.deferred') },
-    ],
-    [t]
+    () =>
+      lkPaymentMethods.map((method) => ({
+        value: method.id,
+        label: isAr ? method.arabicName : method.englishName,
+      })),
+    [lkPaymentMethods, isAr]
   );
 
   const itemOptions = useMemo(
