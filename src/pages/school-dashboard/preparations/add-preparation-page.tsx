@@ -14,7 +14,7 @@ export default function AddPreparationPage() {
   return (
     <div>
       <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title="preparations.form.addTitle" />
+      <PageHeader title="preparations.form.addTitle" hasHeaderControls={false} />
       <PreparationForm />
     </div>
   );
