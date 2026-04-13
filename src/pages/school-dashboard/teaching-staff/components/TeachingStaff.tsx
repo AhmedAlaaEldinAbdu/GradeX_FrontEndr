@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import Tabs from '@/shared/components/Tabs';
 import TeachersList from '../../teachers/components/TeachersList';
-import EmployeesTab from './EmployeesTab';
 
 interface TeachingStaffProps {
   onTabChange?: (tab: string) => void;
@@ -30,11 +29,12 @@ export default function TeachingStaff({ onTabChange }: TeachingStaffProps) {
       label: t('sidebar.teachers'),
       content: activeTab === 'teachers' ? <TeachersList /> : null,
     },
-    {
-      id: 'administrators',
-      label: t('sidebar.administrators'),
-      content: <EmployeesTab isActive={activeTab === 'administrators'} />,
-    },
+    // {
+    //   id: 'administrators',
+    //   label: t('sidebar.administrators'),
+    //   content: <EmployeesTab isActive={activeTab === 'administrators'} />,
+    // },
+    // Administrators tab is intentionally hidden for now and will be restored later.
   ];
 
   return (
@@ -46,7 +46,8 @@ export default function TeachingStaff({ onTabChange }: TeachingStaffProps) {
             value={activeTab}
             onChange={handleTabChange}
             variant="underline"
-            listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+            // listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+            listClassName="flex w-[100%] md:w-[50%] lg:w-[20%] gap-2 mb-5 px-1 flex-wrap"
             lazy={true}
             searchParamKey="tab"
           />
