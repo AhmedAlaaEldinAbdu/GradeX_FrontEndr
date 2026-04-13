@@ -202,7 +202,7 @@ export default function InvoicesList() {
             variant="blue"
             ariaLabel="View"
             onClick={() => {
-              navigate(`/students/${row.studentId}`);
+              // navigate(`/students/${row.studentId}`);
             }}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
           >
