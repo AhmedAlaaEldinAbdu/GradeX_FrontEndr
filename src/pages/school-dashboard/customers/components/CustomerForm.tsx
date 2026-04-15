@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '@/redux/store/store';
 import { tOptional } from '@/lib/utils';
+import { fetchCountries, fetchRegionsByCountry, clearRegions } from '@/redux/features/lookups';
+import { createCustomer } from '@/redux/features/customers/customersSlice';
+import { useToast } from '@/shared/context/ToastContext';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
@@ -11,18 +16,33 @@ import Button from '@/shared/components/Button';
 
 type ClientType = 'individual' | 'institution' | 'company';
 
+const clientTypeMap: Record<ClientType, number> = {
+  individual: 1,
+  company: 2,
+  institution: 3,
+};
+
 interface ClientFormProps {
   isEditMode?: boolean;
 }
 
 export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  void id; // used later when API fetch is implemented
+  void id; // used when edit mode API fetch is wired up
+  const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
+  const lang = i18n.language as 'ar' | 'en';
 
-  // TODO: fetch client data by id when isEditMode && id, then populate state
+  // Lookups state
+  const countries = useSelector((state: RootState) => state.lookups.countries);
+  const isLoadingCountries = useSelector((state: RootState) => state.lookups.isLoadingCountries);
+  const regions = useSelector((state: RootState) => state.lookups.regions);
+  const isLoadingRegions = useSelector((state: RootState) => state.lookups.isLoadingRegions);
+  const isCreating = useSelector((state: RootState) => state.customers.isCreating);
 
+  // Form state
   const [clientType, setClientType] = useState<ClientType>('individual');
   const [clientName, setClientName] = useState('');
   const [idNumber, setIdNumber] = useState('');
@@ -31,14 +51,84 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const [mobile, setMobile] = useState('');
   const [additionalMobile, setAdditionalMobile] = useState('');
 
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');
+  const [lkCountryId, setLkCountryId] = useState('');
+  const [regionId, setRegionId] = useState('');
   const [streetName, setStreetName] = useState('');
   const [districtName, setDistrictName] = useState('');
   const [buildingNumber, setBuildingNumber] = useState('');
 
-  const handleSubmit = () => {
-    // Add / Edit logic later
+  // Fetch countries on mount
+  useEffect(() => {
+    dispatch(fetchCountries());
+  }, [dispatch]);
+
+  // Fetch regions when country changes
+  useEffect(() => {
+    if (lkCountryId) {
+      dispatch(fetchRegionsByCountry(lkCountryId));
+      setRegionId('');
+    } else {
+      dispatch(clearRegions());
+    }
+  }, [lkCountryId, dispatch]);
+
+  const countryOptions = countries.map((c) => ({
+    value: c.id,
+    label: lang === 'ar' ? c.arabicName : c.englishName,
+  }));
+
+  const regionOptions = regions.map((r) => ({
+    value: r.id,
+    label: lang === 'ar' ? r.arabicName : r.englishName,
+  }));
+
+  const parsePhone = (
+    phone: string,
+    countryId: string
+  ): { areaCode: string; phoneNumber: string } => {
+    const country = countries.find((c) => c.id === countryId);
+    const areaCode = country?.areaCode ?? '';
+    if (areaCode && phone.startsWith(areaCode)) {
+      return { areaCode, phoneNumber: phone.slice(areaCode.length) };
+    }
+    // fallback: treat digits after leading '+XX' as phone number
+    const match = phone.match(/^(\+\d{1,3})(\d+)$/);
+    if (match) return { areaCode: match[1], phoneNumber: match[2] };
+    return { areaCode, phoneNumber: phone };
+  };
+
+  const handleSubmit = async () => {
+    const { areaCode, phoneNumber } = parsePhone(mobile, lkCountryId);
+    const { areaCode: addCode, phoneNumber: addPhone } = additionalMobile
+      ? parsePhone(additionalMobile, lkCountryId)
+      : { areaCode: null, phoneNumber: null };
+
+    try {
+      await dispatch(
+        createCustomer({
+          name: clientName,
+          customerType: clientTypeMap[clientType],
+          nationalId: idNumber,
+          email,
+          areaCode,
+          phoneNumber,
+          additionalAreaCode: additionalMobile ? addCode : null,
+          additionalPhoneNumber: additionalMobile ? addPhone : null,
+          regionId,
+          lkCountryId,
+          buldingNo: buildingNumber,
+          streetNo: streetName,
+          neighborhood: districtName,
+          gradeId: null,
+          classroomId: null,
+        })
+      ).unwrap();
+      showToast({ message: t('customers.customerAddedSuccessfully'), type: 'success' });
+      navigate('/financial-management/customers');
+    } catch (error: unknown) {
+      const message = typeof error === 'string' ? error : t('common.errorOccurred');
+      showToast({ message, type: 'error', isRaw: typeof error === 'string' });
+    }
   };
 
   return (
@@ -136,20 +226,28 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <FormField label={t('customers.country')} required>
             <CustomSelect
-              value={country}
-              onChange={(val) => setCountry(String(val))}
-              options={[]}
-              placeholder={t('customers.chooseCountry')}
+              value={lkCountryId}
+              onChange={(val) => setLkCountryId(String(val))}
+              options={countryOptions}
+              placeholder={isLoadingCountries ? t('common.loading') : t('customers.chooseCountry')}
+              disabled={isLoadingCountries}
               showSearch={true}
             />
           </FormField>
 
           <FormField label={t('customers.city')} required>
             <CustomSelect
-              value={city}
-              onChange={(val) => setCity(String(val))}
-              options={[]}
-              placeholder={t('customers.chooseCity')}
+              value={regionId}
+              onChange={(val) => setRegionId(String(val))}
+              options={regionOptions}
+              placeholder={
+                isLoadingRegions
+                  ? t('common.loading')
+                  : !lkCountryId
+                    ? t('customers.chooseCountry')
+                    : t('customers.chooseCity')
+              }
+              disabled={isLoadingRegions || !lkCountryId}
               showSearch={true}
             />
           </FormField>
@@ -189,8 +287,12 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         <Button variant="outline" onClick={() => navigate('/financial-management/customers')}>
           {t('common.cancel')}
         </Button>
-        <Button variant="success" onClick={handleSubmit}>
-          {isEditMode ? t('actions.saveChanges') : t('common.add')}
+        <Button variant="success" onClick={handleSubmit} disabled={isCreating}>
+          {isCreating
+            ? t('common.loading')
+            : isEditMode
+              ? t('actions.saveChanges')
+              : t('common.add')}
         </Button>
       </div>
     </div>
