@@ -9,7 +9,10 @@ import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import { useToast } from '@/shared/context/ToastContext';
 import type { CustomerDto } from '@/services/api/types/customer.types';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
@@ -23,9 +26,14 @@ export default function CustomersList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { customers, pagination, isLoading } = useSelector((state: RootState) => state.customers);
+  const { customers, pagination, isLoading, isDeleting } = useSelector(
+    (state: RootState) => state.customers
+  );
+  const { showToast } = useToast();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(
@@ -50,6 +58,19 @@ export default function CustomersList() {
 
   const handleResetFilters = () => {
     setSearchTerm('');
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!pendingDeleteId) return;
+    try {
+      await dispatch(deleteCustomer(pendingDeleteId)).unwrap();
+      setShowDeletePopup(false);
+      setPendingDeleteId(null);
+      showToast({ message: t('customers.customerDeletedSuccessfully'), type: 'success' });
+    } catch (error: unknown) {
+      const message = typeof error === 'string' ? error : t('common.errorOccurred');
+      showToast({ message, type: 'error', isRaw: typeof error === 'string' });
+    }
   };
 
   const columns: DataTableColumn<CustomerDto>[] = [
@@ -163,7 +184,10 @@ export default function CustomersList() {
             label: t('actions.delete'),
             icon: TrashIcon,
             color: 'text-red-500 hover:bg-red-50',
-            onClick: () => dispatch(deleteCustomer(row.id)),
+            onClick: () => {
+              setPendingDeleteId(row.id);
+              setShowDeletePopup(true);
+            },
           },
         ];
         return (
@@ -190,26 +214,42 @@ export default function CustomersList() {
     },
   ];
 
+  const pendingCustomerName = customers.find((c) => c.id === pendingDeleteId)?.name ?? '';
+
   return (
-    <Card className="overflow-hidden">
-      <DataTable
-        data={customers}
-        columns={columns}
-        keyExtractor={(row) => row.id}
-        pagination={{
-          page: pagination.pageIndex,
-          limit: pagination.pageSize,
-          total: pagination.totalItems,
-          totalPages: pagination.totalPages,
+    <>
+      <Card className="overflow-hidden">
+        <DataTable
+          data={customers}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          pagination={{
+            page: pagination.pageIndex,
+            limit: pagination.pageSize,
+            total: pagination.totalItems,
+            totalPages: pagination.totalPages,
+          }}
+          onPageChange={handlePageChange}
+          filters={filterConfigs}
+          showFilters={true}
+          onResetFilters={handleResetFilters}
+          isLoading={isLoading}
+          emptyMessage={t('common.noDataFound')}
+          t={t}
+        />
+      </Card>
+      <DeletePopup
+        open={showDeletePopup}
+        message="customers.confirmDeleteCustomer"
+        itemName={pendingCustomerName}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => {
+          setShowDeletePopup(false);
+          setPendingDeleteId(null);
         }}
-        onPageChange={handlePageChange}
-        filters={filterConfigs}
-        showFilters={true}
-        onResetFilters={handleResetFilters}
-        isLoading={isLoading}
-        emptyMessage={t('common.noDataFound')}
-        t={t}
+        iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
       />
-    </Card>
+    </>
   );
 }
