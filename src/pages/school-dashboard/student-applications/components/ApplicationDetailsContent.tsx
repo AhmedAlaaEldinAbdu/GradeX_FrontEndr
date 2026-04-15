@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchStudentApplicationById } from '@/redux/features/student-applications/studentApplicationsSlice';
+import { tokenManager } from '@/lib/auth';
+import {
+  fetchStudentApplicationById,
+  updateStudentApplicationStatus,
+} from '@/redux/features/student-applications/studentApplicationsSlice';
 import Loading from '@/shared/components/Loading';
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
 import { sendEditRequest } from '@/services/api/student-applications/student-applications.service';
+import { createStudentInterview } from '@/services/api/student-interviews/student-interviews.service';
 import { assignStudentToClassroom } from '@/services/api/students/students.service';
 import { useToast } from '@/shared/context/ToastContext';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
@@ -28,30 +33,12 @@ interface ApplicationDetailsContentProps {
   applicationId: string;
 }
 
-// Mock status options for testing
-const MOCK_STATUS_OPTIONS = [
-  { value: '', label: '--- Use Real Status ---' },
-  { value: String(StudentApplicationStatus.Edited), label: 'Modified (تم التعديل)' },
-  { value: String(StudentApplicationStatus.EditRequest), label: 'Edit Requested (طلب تعديل)' },
-  { value: String(StudentApplicationStatus.Reject), label: 'Not Passed (لم يجتاز)' },
-  {
-    value: String(StudentApplicationStatus.Pending),
-    label: 'Waiting for Interview (في إنتظار التوقيع)',
-  },
-  { value: String(StudentApplicationStatus.Accept), label: 'Completed (إكتمل)' },
-];
-
-const SHOW_MOCK_STATUS_SELECTOR = import.meta.env.DEV && false;
-
 const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ applicationId }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
-
-  // Mock status override for testing (set to '' to use real data)
-  const [mockStatus, setMockStatus] = useState<string>('');
-  const [mockInterviewDate, setMockInterviewDate] = useState<boolean>(false);
+  const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
 
   // Modal states
   const [isNotPassedModalOpen, setNotPassedModalOpen] = useState(false);
@@ -59,6 +46,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   const [isEditRequestModalOpen, setEditRequestModalOpen] = useState(false);
   const [isScheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [isHousingModalOpen, setHousingModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isHousingLoading, setHousingLoading] = useState(false);
 
   const { currentApplication, currentApplicationLoading, error } = useAppSelector(
@@ -89,12 +77,8 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
 
   const data = currentApplication;
   const studentFullName = `${data.firstName} ${data.secondName} ${data.thirdName} ${data.fourthName}`;
-
-  // Determine the effective status (mock or real)
-  const effectiveStatus = mockStatus
-    ? (Number(mockStatus) as StudentApplicationStatus)
-    : data.status;
-  const effectiveInterviewDate = mockInterviewDate ? '2025-02-11T10:00:00' : data.interviewDate;
+  const effectiveStatus = data.status;
+  const effectiveInterviewDate = data.interviewDate;
 
   // Action handlers — open modals
   const handleAccept = () => {
@@ -118,76 +102,134 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   };
 
   // Modal confirm handlers
-  const handleNotPassedConfirm = (reason: string) => {
-    console.log('Not passed confirmed with reason:', reason, applicationId);
-    setNotPassedModalOpen(false);
-    // TODO: Call API to mark as not passed
+  const handleNotPassedConfirm = async (_reason: string) => {
+    try {
+      setIsProcessing(true);
+      await dispatch(
+        updateStudentApplicationStatus({
+          id: applicationId,
+          status: StudentApplicationStatus.Reject,
+        })
+      ).unwrap();
+
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setNotPassedModalOpen(false);
+      dispatch(fetchStudentApplicationById(applicationId));
+    } catch (error) {
+      console.error('Failed to update application status:', error);
+      const errorMessage = error instanceof Error ? error.message : t('common.error');
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: error instanceof Error && errorMessage !== t('common.error'),
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const handleAcceptConfirm = (contractFile?: File) => {
-    console.log('Accept confirmed with contract:', contractFile, applicationId);
-    setAcceptModalOpen(false);
-    // TODO: Call API to accept application
+  const handleAcceptConfirm = async (_contractFile?: File) => {
+    try {
+      setIsProcessing(true);
+      await dispatch(
+        updateStudentApplicationStatus({
+          id: applicationId,
+          status: StudentApplicationStatus.Accept,
+        })
+      ).unwrap();
+
+      showToast({
+        message: t('studentApplications.statusUpdated'),
+        type: 'success',
+      });
+      setAcceptModalOpen(false);
+      dispatch(fetchStudentApplicationById(applicationId));
+    } catch (error) {
+      console.error('Failed to update application status:', error);
+      const errorMessage = error instanceof Error ? error.message : t('common.error');
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: error instanceof Error && errorMessage !== t('common.error'),
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleEditRequestConfirm = async (message: string) => {
     try {
+      setIsProcessing(true);
       await sendEditRequest(applicationId, message);
       showToast({
         message: t('studentApplications.statusUpdated'),
         type: 'success',
       });
       setEditRequestModalOpen(false);
-      // Refresh the application details
       dispatch(fetchStudentApplicationById(applicationId));
     } catch (error) {
       console.error('Failed to send edit request:', error);
+      const errorMessage = error instanceof Error ? error.message : t('common.error');
       showToast({
-        message: t('common.error'),
+        message: errorMessage,
         type: 'error',
+        isRaw: error instanceof Error && errorMessage !== t('common.error'),
       });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleScheduleConfirm = (date: string, time: string) => {
-    console.log('Appointment scheduled:', date, time, applicationId);
-    setScheduleModalOpen(false);
-    // TODO: Call API to schedule appointment
+  const handleScheduleConfirm = async (date: string, time: string) => {
+    try {
+      if (!schoolBranchId) {
+        showToast({
+          message: t('common.error'),
+          type: 'error',
+        });
+        return;
+      }
+
+      setIsProcessing(true);
+
+      const interviewDate = new Date(`${date}T${time}:00`).toISOString();
+      const startDate = new Date(`${date}T${time}:00`);
+      const startTime = startDate.toISOString();
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+      const endTime = endDate.toISOString();
+
+      await createStudentInterview({
+        schoolBranchesId: schoolBranchId,
+        studentId: data.studentId,
+        interviewDate,
+        startTime,
+        endTime,
+      });
+
+      showToast({
+        message: t('studentApplications.appointmentScheduled'),
+        type: 'success',
+      });
+      setScheduleModalOpen(false);
+      dispatch(fetchStudentApplicationById(applicationId));
+    } catch (error) {
+      console.error('Failed to schedule appointment:', error);
+      const errorMessage = error instanceof Error ? error.message : t('common.error');
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: error instanceof Error && errorMessage !== t('common.error'),
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
     <>
-      {/* DEBUG: Mock Status Selector — only visible in dev */}
-      {SHOW_MOCK_STATUS_SELECTOR && (
-        <div className="mb-4 rounded-lg border-2 border-dashed border-amber-400 bg-amber-50 p-3">
-          <div className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">
-            🛠 Debug: Mock Status Override
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <select
-              className="rounded-md border border-amber-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
-              value={mockStatus}
-              onChange={(e) => setMockStatus(e.target.value)}
-            >
-              {MOCK_STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <label className="flex items-center gap-1.5 text-sm text-amber-800">
-              <input
-                type="checkbox"
-                checked={mockInterviewDate}
-                onChange={(e) => setMockInterviewDate(e.target.checked)}
-                className="rounded"
-              />
-              Mock Interview Date
-            </label>
-          </div>
-        </div>
-      )}
-
       {/* Header with Student Name and Actions */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900">{studentFullName}</h1>
@@ -233,18 +275,33 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
       {/* Action Modals */}
       <NotPassedModal
         isOpen={isNotPassedModalOpen}
-        onClose={() => setNotPassedModalOpen(false)}
+        onClose={() => {
+          if (!isProcessing) {
+            setNotPassedModalOpen(false);
+          }
+        }}
         onConfirm={handleNotPassedConfirm}
+        isProcessing={isProcessing}
       />
       <AcceptModal
         isOpen={isAcceptModalOpen}
-        onClose={() => setAcceptModalOpen(false)}
+        onClose={() => {
+          if (!isProcessing) {
+            setAcceptModalOpen(false);
+          }
+        }}
         onConfirm={handleAcceptConfirm}
+        isProcessing={isProcessing}
       />
       <EditRequestModal
         isOpen={isEditRequestModalOpen}
-        onClose={() => setEditRequestModalOpen(false)}
+        onClose={() => {
+          if (!isProcessing) {
+            setEditRequestModalOpen(false);
+          }
+        }}
         onConfirm={handleEditRequestConfirm}
+        isProcessing={isProcessing}
       />
       <ScheduleAppointmentModal
         isOpen={isScheduleModalOpen}
