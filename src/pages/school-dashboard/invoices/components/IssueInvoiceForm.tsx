@@ -250,6 +250,13 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   }, [invoiceNumber, invoiceNumbers]);
 
   useEffect(() => {
+    setEmail(selectedCustomer?.email ?? '');
+    const areaCode = selectedCustomer?.areaCode ?? '';
+    const phone = selectedCustomer?.phoneNumber ?? '';
+    setMobile(areaCode && phone ? `${areaCode}${phone}` : '');
+  }, [selectedCustomer]);
+
+  useEffect(() => {
     setInstallmentId('');
   }, [selectedCustomerId]);
 
