@@ -31,14 +31,14 @@ interface ApplicationDetailsContentProps {
 // Mock status options for testing
 const MOCK_STATUS_OPTIONS = [
   { value: '', label: '--- Use Real Status ---' },
-  { value: String(StudentApplicationStatus.Modified), label: 'Modified (تم التعديل)' },
-  { value: String(StudentApplicationStatus.EditRequested), label: 'Edit Requested (طلب تعديل)' },
-  { value: String(StudentApplicationStatus.NotPassed), label: 'Not Passed (لم يجتاز)' },
+  { value: String(StudentApplicationStatus.Edited), label: 'Modified (تم التعديل)' },
+  { value: String(StudentApplicationStatus.EditRequest), label: 'Edit Requested (طلب تعديل)' },
+  { value: String(StudentApplicationStatus.Reject), label: 'Not Passed (لم يجتاز)' },
   {
-    value: String(StudentApplicationStatus.WaitingForSignature),
+    value: String(StudentApplicationStatus.Pending),
     label: 'Waiting for Interview (في إنتظار التوقيع)',
   },
-  { value: String(StudentApplicationStatus.Completed), label: 'Completed (إكتمل)' },
+  { value: String(StudentApplicationStatus.Accept), label: 'Completed (إكتمل)' },
 ];
 
 const SHOW_MOCK_STATUS_SELECTOR = import.meta.env.DEV && false;

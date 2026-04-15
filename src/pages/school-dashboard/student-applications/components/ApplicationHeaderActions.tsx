@@ -25,7 +25,7 @@ const ApplicationHeaderActions: React.FC<ApplicationHeaderActionsProps> = ({
   const { t } = useTranslation();
 
   // Completed → only "onHousing" (Housing) button
-  if (status === StudentApplicationStatus.Completed) {
+  if (status === StudentApplicationStatus.Accept) {
     return (
       <div className="flex flex-wrap gap-2">
         <Button variant="success" onClick={onHousing}>
@@ -36,14 +36,14 @@ const ApplicationHeaderActions: React.FC<ApplicationHeaderActionsProps> = ({
   }
 
   // Not Passed → no actions
-  if (status === StudentApplicationStatus.NotPassed) {
+  if (status === StudentApplicationStatus.Reject) {
     return null;
   }
 
   // For other active statuses, show appropriate buttons
   const showAllActions =
-    status !== StudentApplicationStatus.Modified &&
-    status !== StudentApplicationStatus.EditRequested &&
+    status !== StudentApplicationStatus.Edited &&
+    status !== StudentApplicationStatus.EditRequest &&
     !hasInterview;
 
   return (
