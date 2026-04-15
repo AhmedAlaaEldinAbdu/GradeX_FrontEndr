@@ -38,16 +38,11 @@ export const isValidLandlineNumber = (phone: string): boolean => {
 
   try {
     const parsedNumber = phoneUtil.parse(phone);
-    if (!phoneUtil.isValidNumber(parsedNumber)) {
-      return false;
-    }
+    const nationalNumber = parsedNumber.getNationalNumber()?.toString() || '';
 
-    const numberType = phoneUtil.getNumberType(parsedNumber);
-    return (
-      numberType === PhoneNumberType.FIXED_LINE ||
-      numberType === PhoneNumberType.FIXED_LINE_OR_MOBILE
-    );
+    return nationalNumber.length >= 5 && nationalNumber.length <= 15;
   } catch {
-    return false;
+    const digitsOnly = phone.replace(/\D/g, '');
+    return digitsOnly.length >= 5 && digitsOnly.length <= 15;
   }
 };
