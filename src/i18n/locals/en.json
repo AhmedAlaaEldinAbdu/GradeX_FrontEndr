@@ -2656,6 +2656,8 @@
     "educationalStage": "Educational Stage",
     "schoolYear": "School Year",
     "grade": "Grade",
+    "confirmDeleteCustomer": "Are you sure you want to delete the customer",
+    "customerDeletedSuccessfully": "Customer deleted successfully",
     "table": {
       "index": "#",
       "clientName": "Client Name",
