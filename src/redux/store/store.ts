@@ -21,6 +21,7 @@ import monthlyCalendarReducer from '../features/monthly-calendar/monthlyCalendar
 import lessonsReducer from '../features/lessons/lessonsSlice';
 import academicCalendarReducer from '../features/academic-calendar/academicCalendarSlice';
 import tuitionFeesReducer from '../features/tuition-fees/tuitionFeesSlice';
+import customersReducer from '../features/customers/customersSlice';
 import invoicesReducer from '../features/invoices/invoicesSlice';
 import offersReducer from '../features/offers/offersSlice';
 import studentsReducer from '../features/students/studentsSlice';
@@ -57,6 +58,7 @@ export const store = configureStore({
     lessons: lessonsReducer,
     academicCalendar: academicCalendarReducer,
     tuitionFees: tuitionFeesReducer,
+    customers: customersReducer,
     invoices: invoicesReducer,
     offers: offersReducer,
     students: studentsReducer,

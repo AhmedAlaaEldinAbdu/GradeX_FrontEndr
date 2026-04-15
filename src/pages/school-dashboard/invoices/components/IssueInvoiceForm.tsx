@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import { formatValidationErrors } from '@/lib/utils/error-utils';
+import { fetchCustomers } from '@/redux/features/customers/customersSlice';
 import { createInvoice, fetchInvoiceNumbers } from '@/redux/features/invoices/invoicesSlice';
 import { fetchLKPaymentMethods } from '@/redux/features/lookups/lookupsSlice';
 import { fetchOffers } from '@/redux/features/offers/offersSlice';
+import type { CustomerDto } from '@/services/api/types/customer.types';
 import { InvoicePaymentType } from '@/shared/enums/enums';
 import Button from '@/shared/components/Button';
 import Card from '@/shared/components/Card';
@@ -18,25 +20,20 @@ import Table from '@/shared/components/Table';
 import StyledCalendarIcon from '@/assets/icons/StyledCalendar.svg';
 import RyalIcon from '@/assets/icons/Ryal.svg';
 import PercentIcon from '@/assets/icons/Percent.svg';
-import ErrorMessage from '@/shared/components/ErrorMessage';
 
 type IssueInvoiceFormProps = {
   onCancel?: () => void;
 };
 
-type InvoiceCustomer = {
+type InstallmentOption = {
   id: string;
   name: string;
-  email: string;
-  mobile: string;
-  installmentPlans: Array<{
-    id: string;
-    name: string;
-    installments: Array<{
-      id: string;
-      name: string;
-    }>;
-  }>;
+};
+
+type InstallmentPlanOption = {
+  id: string;
+  name: string;
+  installments: InstallmentOption[];
 };
 
 type InvoiceClassificationRow = {
@@ -65,60 +62,6 @@ const createClassificationRow = (): InvoiceClassificationRow => ({
   discount: '',
 });
 
-const customers: InvoiceCustomer[] = [
-  {
-    id: '1',
-    name: 'أحمد حسن محمود',
-    email: 'Ahmed@gmail.com',
-    mobile: '+966 556813161',
-    installmentPlans: [
-      {
-        id: 'plan-1',
-        name: 'الخطة الأولى',
-        installments: [
-          { id: 'plan-1-installment-1', name: 'القسط الأول' },
-          { id: 'plan-1-installment-2', name: 'القسط الثاني' },
-          { id: 'plan-1-installment-3', name: 'القسط الثالث' },
-        ],
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: 'سارة محمد علي',
-    email: 'Sara@gmail.com',
-    mobile: '+966 554400221',
-    installmentPlans: [
-      {
-        id: 'plan-2',
-        name: 'الخطة الثانية',
-        installments: [
-          { id: 'plan-2-installment-1', name: 'القسط الأول' },
-          { id: 'plan-2-installment-2', name: 'القسط الثاني' },
-        ],
-      },
-    ],
-  },
-  {
-    id: '3',
-    name: 'محمد عبدالله سعد',
-    email: 'Mohamed@gmail.com',
-    mobile: '+966 553214578',
-    installmentPlans: [
-      {
-        id: 'plan-3',
-        name: 'الخطة الثالثة',
-        installments: [
-          { id: 'plan-3-installment-1', name: 'القسط الأول' },
-          { id: 'plan-3-installment-2', name: 'القسط الثاني' },
-          { id: 'plan-3-installment-3', name: 'القسط الثالث' },
-          { id: 'plan-3-installment-4', name: 'القسط الرابع' },
-        ],
-      },
-    ],
-  },
-];
-
 const toNumber = (value: string) => Number(value || 0);
 
 const currencyIcon = <CustomImage src={RyalIcon} alt="Currency" className="h-4 w-4 opacity-60" />;
@@ -132,12 +75,13 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const { invoiceNumbers, isCreating, error, validationErrors } = useAppSelector(
     (state) => state.invoices
   );
+  const { customers, isLoading: isLoadingCustomers } = useAppSelector((state) => state.customers);
   const { lkPaymentMethods, isLoadingLKPaymentMethods } = useAppSelector((state) => state.lookups);
   const { offers, isLoading: isLoadingOffers } = useAppSelector((state) => state.offers);
 
   const customerOptions = useMemo<CustomSelectOption[]>(
     () => customers.map((customer) => ({ value: customer.id, label: customer.name })),
-    []
+    [customers]
   );
 
   const paymentTypeOptions = useMemo<CustomSelectOption[]>(
@@ -189,9 +133,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   const isDeferredPayment = Number(paymentType) === InvoicePaymentType.Deferred;
 
-  const selectedCustomer = useMemo(
+  const selectedCustomer = useMemo<CustomerDto | null>(
     () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
-    [selectedCustomerId]
+    [customers, selectedCustomerId]
   );
 
   const subtotal = useMemo(
@@ -204,20 +148,22 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     [offers, selectedOfferId]
   );
 
+  const customerInstallmentPlans = useMemo<InstallmentPlanOption[]>(() => {
+    return [];
+  }, []);
+
   const installmentPlanOptions = useMemo<CustomSelectOption[]>(
     () =>
-      (selectedCustomer?.installmentPlans ?? []).map((plan) => ({
+      customerInstallmentPlans.map((plan) => ({
         value: plan.id,
         label: plan.name,
       })),
-    [selectedCustomer]
+    [customerInstallmentPlans]
   );
 
   const selectedInstallmentPlan = useMemo(
-    () =>
-      (selectedCustomer?.installmentPlans ?? []).find((plan) => plan.id === installmentPlanId) ??
-      null,
-    [installmentPlanId, selectedCustomer]
+    () => customerInstallmentPlans.find((plan) => plan.id === installmentPlanId) ?? null,
+    [customerInstallmentPlans, installmentPlanId]
   );
 
   const installmentOptions = useMemo<CustomSelectOption[]>(
@@ -255,6 +201,12 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const totalAmount = netAmount + taxAmount;
 
   useEffect(() => {
+    if (customers.length === 0) {
+      dispatch(fetchCustomers({ PageIndex: 1, PageSize: 1000 }));
+    }
+  }, [customers.length, dispatch]);
+
+  useEffect(() => {
     if (lkPaymentMethods.length === 0) {
       dispatch(fetchLKPaymentMethods({ params: { PageIndex: 1, PageSize: 10000 } }));
     }
@@ -282,7 +234,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   useEffect(() => {
     if (selectedCustomer) {
       setEmail(selectedCustomer.email);
-      setMobile(selectedCustomer.mobile);
+      setMobile(`${selectedCustomer.areaCode ?? ''} ${selectedCustomer.phoneNumber ?? ''}`.trim());
       return;
     }
 
@@ -441,11 +393,11 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       nextErrors.paymentTool = t('invoices.choosePaymentTool');
     }
 
-    if (isDeferredPayment && !installmentPlanId) {
+    if (isDeferredPayment && installmentPlanOptions.length > 0 && !installmentPlanId) {
       nextErrors.installmentPlan = 'اختر خطة القسط';
     }
 
-    if (isDeferredPayment && !installmentId) {
+    if (isDeferredPayment && installmentOptions.length > 0 && !installmentId) {
       nextErrors.installment = 'اختر القسط';
     }
 
@@ -516,6 +468,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
               options={customerOptions}
               placeholder={t('invoices.chooseCustomerName')}
               maxHeight="220px"
+              disabled={isLoadingCustomers}
             />
           </FormField>
 
