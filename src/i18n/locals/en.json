@@ -13,7 +13,6 @@
     "administrators": "Administrators",
     "jobAnnouncements": "Job Announcements",
     "interviews": "Interviews",
-
     "calendarManagement": "Calendar Management",
     "tasks": "Tasks",
     "preparations": "Preparations",
@@ -32,7 +31,7 @@
     "financialManagement": "Financial Management",
     "transactions": "Transactions",
     "invoices": "Invoices",
-    "clients": "Clients",
+    "customers": "Customers",
     "examManagement": "Exam Management",
     "busManagement": "Bus Management",
     "notifications": "Notifications",
@@ -298,7 +297,6 @@
       "requiredList": "This list is required"
     }
   },
-
   "rolesManagement": {
     "title": "Employees & Administration",
     "rolesAndPermissions": "Roles & Permissions",
@@ -1934,7 +1932,6 @@
       "weeksCountLabel": "Weeks count",
       "lessonDurationLabel": "Lesson duration",
       "lessonDurationPlaceholder": "Select lesson duration",
-
       "educationalStageOptions": {
         "kg": "Kindergarten",
         "primary": "Primary",
@@ -1946,25 +1943,21 @@
         "45": "45 minutes",
         "30": "30 minutes"
       },
-
       "schoolDaySchedulesTitle": "School day schedule",
       "daysLabel": "School days",
       "chooseDaysPlaceholder": "Select days",
       "schoolDayStartLabel": "School day start",
       "schoolDayEndLabel": "School day end",
-
       "breakBetweenClassesTitle": "Break between classes",
       "breakBetweenClassesLabel": "Break schedule",
       "yearMode": "Throughout the academic year",
       "customMode": "Specific days",
       "breakStartLabel": "Break start",
       "breakEndLabel": "Break end",
-
       "morningLineTitle": "Morning line",
       "morningLineLabel": "Morning line schedule",
       "morningLineStartLabel": "Morning line start",
       "morningLineEndLabel": "Morning line end",
-
       "breakfastTitle": "Breakfast",
       "breakfastLabel": "Breakfast schedule",
       "breakfastStartLabel": "Breakfast start",
@@ -2626,8 +2619,8 @@
       "high": "High"
     }
   },
-  "clients": {
-    "title": "Clients",
+  "customers": {
+    "title": "customers",
     "addClient": "Add Client",
     "searchClientName": "Search for client name",
     "paymentStatus": "Payment Status",

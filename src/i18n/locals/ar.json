@@ -13,7 +13,6 @@
     "administrators": "الإداريين",
     "jobAnnouncements": "إعلانات توظيف",
     "interviews": "المقابلات",
-
     "calendarManagement": "إدارة التقويم",
     "tasks": "المهام",
     "preparations": "التحضيرات",
@@ -32,7 +31,7 @@
     "financialManagement": "إلادارة المالية",
     "transactions": "المعاملات",
     "invoices": "الفواتير",
-    "clients": "العملاء",
+    "customers": "العملاء",
     "examManagement": "إدارة الامتحانات",
     "busManagement": "إدارة الباصات",
     "notifications": "الإشعارات",
@@ -1937,7 +1936,6 @@
       "weeksCountLabel": "عدد الأسابيع الدراسية",
       "lessonDurationLabel": "مدة الحصة",
       "lessonDurationPlaceholder": "اختر مدة الحصة",
-
       "educationalStageOptions": {
         "kg": "رياض أطفال",
         "primary": "المرحلة الابتدائية",
@@ -1949,25 +1947,21 @@
         "45": "٤٥ دقيقة",
         "30": "٣٠ دقيقة"
       },
-
       "schoolDaySchedulesTitle": "مواعيد اليوم الدراسي",
       "daysLabel": "الأيام الدراسية",
       "chooseDaysPlaceholder": "اختر الأيام",
       "schoolDayStartLabel": "بداية اليوم الدراسي",
       "schoolDayEndLabel": "نهاية اليوم الدراسي",
-
       "breakBetweenClassesTitle": "الراحة بين الحصص",
       "breakBetweenClassesLabel": "موعد الراحة بين الحصص",
       "yearMode": "طوال العام الدراسي",
       "customMode": "أيام محددة",
       "breakStartLabel": "بداية وقت الراحة",
       "breakEndLabel": "نهاية وقت الراحة",
-
       "morningLineTitle": "الطابور الصباحي",
       "morningLineLabel": "موعد الطابور",
       "morningLineStartLabel": "بداية وقت الطابور",
       "morningLineEndLabel": "نهاية وقت الطابور",
-
       "breakfastTitle": "موعد الفطور",
       "breakfastLabel": "موعد الفطور",
       "breakfastStartLabel": "بداية وقت الفطور",
@@ -2636,7 +2630,7 @@
       "high": "ثانوي"
     }
   },
-  "clients": {
+  "customers": {
     "title": "العملاء",
     "addClient": "إضافة عميل",
     "searchClientName": "ابحث عن اسم العميل",
