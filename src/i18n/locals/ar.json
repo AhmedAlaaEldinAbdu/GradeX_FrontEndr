@@ -2634,6 +2634,7 @@
     "title": "العملاء",
     "confirmDeleteCustomer": "هل أنت متأكد أنك تريد حذف العميل",
     "customerDeletedSuccessfully": "تم حذف العميل بنجاح",
+    "customerAddedSuccessfully": "تم إضافة العميل بنجاح",
     "addClient": "إضافة عميل",
     "searchClientName": "ابحث عن اسم العميل",
     "paymentStatus": "حالة الدفع",
