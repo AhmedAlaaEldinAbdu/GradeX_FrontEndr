@@ -20,6 +20,7 @@ import CustomSelect, { type CustomSelectOption } from '@/shared/components/Custo
 import FormField from '@/shared/components/FormField';
 import IconButton from '@/shared/components/IconButton';
 import Input from '@/shared/components/Input';
+import PhoneInput from '@/shared/components/PhoneInput';
 import Table from '@/shared/components/Table';
 import StyledCalendarIcon from '@/assets/icons/StyledCalendar.svg';
 import RyalIcon from '@/assets/icons/Ryal.svg';
@@ -248,6 +249,21 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       setInvoiceNumber(invoiceNumbers[invoiceNumbers.length - 1] ?? '');
     }
   }, [invoiceNumber, invoiceNumbers]);
+
+  useEffect(() => {
+    if (!selectedCustomer) {
+      setEmail('');
+      setMobile('');
+      return;
+    }
+
+    setEmail(selectedCustomer.email ?? '');
+    setMobile(
+      selectedCustomer.areaCode && selectedCustomer.phoneNumber
+        ? `${selectedCustomer.areaCode}${selectedCustomer.phoneNumber}`
+        : ''
+    );
+  }, [selectedCustomer]);
 
   useEffect(() => {
     setInstallmentId('');
@@ -488,11 +504,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           </FormField>
 
           <FormField label={t('invoices.mobileNumber')}>
-            <Input
+            <PhoneInput
               value={mobile}
-              readOnly
-              dir="ltr"
-              className="cursor-default !bg-gray-50 !text-gray-500"
+              disabled
             />
           </FormField>
 
