@@ -40,21 +40,21 @@ const RyalAmount = ({ amount }: { amount: number }) => (
   </div>
 );
 
-export default function ClientDetailsPage() {
+export default function CustomerDetailsPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   void id; // used when API fetch is wired up
 
   const breadcrumbItems = [
     { label: t('sidebar.financialManagement') },
-    { label: t('clients.title'), path: '/financial-management/clients' },
-    { label: t('clients.viewClient') },
+    { label: t('customers.title'), path: '/financial-management/customers' },
+    { label: t('customers.viewClient') },
   ];
 
   // TODO: fetch client data by id
   const MOCK_DATA = {
     clientName: 'حازم أحمد حسن محمد',
-    clientType: t('clients.individual'),
+    clientType: t('customers.individual'),
     idNumber: '123456789012',
     email: 'Ahmed@gmail.com',
     mobile: '+20 10 1234 5678',
@@ -84,7 +84,7 @@ export default function ClientDetailsPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       <PageHeader
-        title="clients.viewClient"
+        title="customers.viewClient"
         hasHeaderControls={false}
         actions={[
           {
@@ -103,7 +103,7 @@ export default function ClientDetailsPage() {
         {/* -- SECTION 1: Client Data -- */}
         <Card className="p-6">
           <h2 className="mb-6 text-start text-lg font-bold text-gray-800">
-            {t('clients.clientData')}
+            {t('customers.clientData')}
           </h2>
           <div className="grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
             <div className="flex flex-col gap-5">
@@ -133,20 +133,27 @@ export default function ClientDetailsPage() {
                   />
                 </IconButton>
               </div>
-              <DetailRow label={t('clients.clientType')} value={MOCK_DATA.clientType} />
-              <DetailRow label={t('clients.email')} value={MOCK_DATA.email} />
+              <DetailRow label={t('customers.clientType')} value={MOCK_DATA.clientType} />
+              <DetailRow label={t('customers.email')} value={MOCK_DATA.email} />
               <DetailRow
-                label={t('clients.additionalMobileNumber')}
+                label={t('customers.additionalMobileNumber')}
                 value={MOCK_DATA.additionalMobile}
                 ltr={true}
               />
-              <DetailRow label={t('clients.educationalStage')} value={MOCK_DATA.educationalStage} />
+              <DetailRow
+                label={t('customers.educationalStage')}
+                value={MOCK_DATA.educationalStage}
+              />
             </div>
             <div className="flex flex-col gap-5 pt-0 md:pt-14">
-              <DetailRow label={t('clients.idNumber')} value={MOCK_DATA.idNumber} />
-              <DetailRow label={t('clients.guardianMobile')} value={MOCK_DATA.mobile} ltr={true} />
-              <DetailRow label={t('clients.schoolYear')} value={MOCK_DATA.schoolYear} />
-              <DetailRow label={t('clients.grade')} value={MOCK_DATA.grade} />
+              <DetailRow label={t('customers.idNumber')} value={MOCK_DATA.idNumber} />
+              <DetailRow
+                label={t('customers.guardianMobile')}
+                value={MOCK_DATA.mobile}
+                ltr={true}
+              />
+              <DetailRow label={t('customers.schoolYear')} value={MOCK_DATA.schoolYear} />
+              <DetailRow label={t('customers.grade')} value={MOCK_DATA.grade} />
             </div>
           </div>
         </Card>
@@ -154,20 +161,20 @@ export default function ClientDetailsPage() {
         {/* -- SECTION 2: Address -- */}
         <Card className="p-6">
           <h2 className="mb-6 text-start text-lg font-bold text-gray-800">
-            {t('clients.address')}
+            {t('customers.address')}
           </h2>
           <div className="grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
             <div className="flex flex-col gap-5">
-              <DetailRow label={t('clients.country')} value={MOCK_DATA.country} />
-              <DetailRow label={t('clients.streetName')} value={MOCK_DATA.streetName} />
+              <DetailRow label={t('customers.country')} value={MOCK_DATA.country} />
+              <DetailRow label={t('customers.streetName')} value={MOCK_DATA.streetName} />
             </div>
             <div className="flex flex-col gap-5">
-              <DetailRow label={t('clients.city')} value={MOCK_DATA.city} />
-              <DetailRow label={t('clients.districtName')} value={MOCK_DATA.districtName} />
+              <DetailRow label={t('customers.city')} value={MOCK_DATA.city} />
+              <DetailRow label={t('customers.districtName')} value={MOCK_DATA.districtName} />
             </div>
           </div>
           <div className="mt-5">
-            <DetailRow label={t('clients.buildingNumber')} value={MOCK_DATA.buildingNumber} />
+            <DetailRow label={t('customers.buildingNumber')} value={MOCK_DATA.buildingNumber} />
           </div>
         </Card>
 
@@ -179,11 +186,11 @@ export default function ClientDetailsPage() {
           {MOCK_DATA.classifications.map((row, index) => (
             <div key={index} className="grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
               <div className="flex flex-col gap-5">
-                <DetailRow label={t('clients.item')} value={row.item} />
+                <DetailRow label={t('customers.item')} value={row.item} />
                 <DetailRow label={t('invoices.discount')} value={row.discount} />
               </div>
               <div className="flex flex-col gap-5">
-                <DetailRow label={t('clients.quantity')} value={row.quantity} />
+                <DetailRow label={t('customers.quantity')} value={row.quantity} />
                 <DetailRow
                   label={t('invoices.amount')}
                   value={<RyalAmount amount={row.amount} />}
@@ -234,7 +241,7 @@ export default function ClientDetailsPage() {
           <div className="mb-6 grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
             <div>
               <DetailRow
-                label={t('clients.paymentStatus')}
+                label={t('customers.paymentStatus')}
                 value={
                   <span className="inline-flex rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-600">
                     {MOCK_DATA.paymentStatus}

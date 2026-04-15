@@ -37,9 +37,11 @@ export interface CustomerListResponse {
 export interface CustomerQueryParams {
   pageIndex?: number;
   pageSize?: number;
+  search?: string;
 
   PageIndex?: number;
   PageSize?: number;
+  Search?: string;
 }
 
 export interface CreateCustomerRequest {

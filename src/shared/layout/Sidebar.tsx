@@ -279,9 +279,9 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
         path: '/financial-management/invoices',
       },
       {
-        icon: <CustomImage src={PeopleSolidIcon} className="h-6 w-6" alt="Clients" />,
-        key: 'clients',
-        path: '/financial-management/clients',
+        icon: <CustomImage src={PeopleSolidIcon} className="h-6 w-6" alt="Customers" />,
+        key: 'customers',
+        path: '/financial-management/customers',
       },
     ],
   },

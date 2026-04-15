@@ -56,10 +56,10 @@ import TransactionsPage from '@/pages/school-dashboard/transactions/Transactions
 import InvoicesPage from '@/pages/school-dashboard/invoices/InvoicesPage';
 import InvoiceDetailsPage from '@/pages/school-dashboard/invoices/InvoiceDetailsPage';
 import IssueInvoicePage from '@/pages/school-dashboard/invoices/issue-invoice-page';
-import ClientsPage from '@/pages/school-dashboard/clients/ClientsPage';
-import AddClientPage from '@/pages/school-dashboard/clients/add-client-page';
-import EditClientPage from '@/pages/school-dashboard/clients/edit-client-page';
-import ClientDetailsPage from '@/pages/school-dashboard/clients/client-details-page';
+import CustomersPage from '@/pages/school-dashboard/customers/CustomersPage';
+import AddCustomerPage from '@/pages/school-dashboard/customers/add-customer-page';
+import EditCustomerPage from '@/pages/school-dashboard/customers/edit-customer-page';
+import CustomerDetailsPage from '@/pages/school-dashboard/customers/customer-details-page';
 
 const SchoolRouter: React.FC = () => {
   return (
@@ -639,41 +639,41 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/financial-management/clients"
+        path="/financial-management/customers"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <ClientsPage />
+              <CustomersPage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
       <Route
-        path="/financial-management/clients/add-client"
+        path="/financial-management/customers/add-client"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <AddClientPage />
+              <AddCustomerPage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
       <Route
-        path="/financial-management/clients/edit-client/:id"
+        path="/financial-management/customers/edit-client/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <EditClientPage />
+              <EditCustomerPage />
             </MainLayout>
           </ProtectedRoute>
         }
       />
       <Route
-        path="/financial-management/clients/:id"
+        path="/financial-management/customers/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <ClientDetailsPage />
+              <CustomerDetailsPage />
             </MainLayout>
           </ProtectedRoute>
         }

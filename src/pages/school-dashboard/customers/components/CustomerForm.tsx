@@ -15,7 +15,7 @@ interface ClientFormProps {
   isEditMode?: boolean;
 }
 
-export default function ClientForm({ isEditMode = false }: ClientFormProps) {
+export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -45,20 +45,20 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
     <div className="space-y-6">
       <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
         <h3 className="mb-6 text-start text-lg font-semibold text-gray-800">
-          {t('clients.clientData')}
+          {t('customers.clientData')}
         </h3>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <FormField label={t('clients.clientName')} required>
+          <FormField label={t('customers.clientName')} required>
             <Input
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              placeholder={t('clients.enterClientName')}
+              placeholder={t('customers.enterClientName')}
               className="!bg-white"
             />
           </FormField>
 
-          <FormField label={t('clients.clientType')} required>
+          <FormField label={t('customers.clientType')} required>
             <div className="flex items-center gap-6 text-sm">
               <label className="flex cursor-pointer items-center gap-2">
                 <input
@@ -66,7 +66,7 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
                   checked={clientType === 'company'}
                   onChange={() => setClientType('company')}
                 />
-                <span className="text-base text-black-800">{t('clients.company')}</span>
+                <span className="text-base text-black-800">{t('customers.company')}</span>
               </label>
               <label className="flex cursor-pointer items-center gap-2">
                 <input
@@ -74,7 +74,7 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
                   checked={clientType === 'institution'}
                   onChange={() => setClientType('institution')}
                 />
-                <span className="text-base text-black-800">{t('clients.institution')}</span>
+                <span className="text-base text-black-800">{t('customers.institution')}</span>
               </label>
               <label className="flex cursor-pointer items-center gap-2">
                 <input
@@ -82,17 +82,17 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
                   checked={clientType === 'individual'}
                   onChange={() => setClientType('individual')}
                 />
-                <span className="text-base text-black-800">{t('clients.individual')}</span>
+                <span className="text-base text-black-800">{t('customers.individual')}</span>
               </label>
             </div>
           </FormField>
 
           <div className="md:col-span-2">
-            <FormField label={t('clients.idNumber')} required>
+            <FormField label={t('customers.idNumber')} required>
               <Input
                 value={idNumber}
                 onChange={(e) => setIdNumber(e.target.value)}
-                placeholder={t('clients.enterIdNumber')}
+                placeholder={t('customers.enterIdNumber')}
                 className="!bg-white"
               />
             </FormField>
@@ -102,27 +102,27 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
 
       <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
         <h3 className="mb-6 text-start text-lg font-semibold text-gray-800">
-          {t('clients.contactInfo')}
+          {t('customers.contactInfo')}
         </h3>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <FormField label={t('clients.email')} required>
+            <FormField label={t('customers.email')} required>
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={t('clients.enterEmail')}
+                placeholder={t('customers.enterEmail')}
                 className="!bg-white"
               />
             </FormField>
           </div>
 
-          <FormField label={t('clients.mobileNumber')} required>
+          <FormField label={t('customers.mobileNumber')} required>
             <PhoneInput value={mobile} onChange={setMobile} />
           </FormField>
 
-          <FormField label={t('clients.additionalMobileNumber')} required>
+          <FormField label={t('customers.additionalMobileNumber')} required>
             <PhoneInput value={additionalMobile} onChange={setAdditionalMobile} />
           </FormField>
         </div>
@@ -130,54 +130,54 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
 
       <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
         <h3 className="mb-6 text-start text-lg font-semibold text-gray-800">
-          {t('clients.address')}
+          {t('customers.address')}
         </h3>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <FormField label={t('clients.country')} required>
+          <FormField label={t('customers.country')} required>
             <CustomSelect
               value={country}
               onChange={(val) => setCountry(String(val))}
               options={[]}
-              placeholder={t('clients.chooseCountry')}
+              placeholder={t('customers.chooseCountry')}
               showSearch={true}
             />
           </FormField>
 
-          <FormField label={t('clients.city')} required>
+          <FormField label={t('customers.city')} required>
             <CustomSelect
               value={city}
               onChange={(val) => setCity(String(val))}
               options={[]}
-              placeholder={t('clients.chooseCity')}
+              placeholder={t('customers.chooseCity')}
               showSearch={true}
             />
           </FormField>
 
-          <FormField label={tOptional(t, 'clients.streetName')}>
+          <FormField label={tOptional(t, 'customers.streetName')}>
             <Input
               value={streetName}
               onChange={(e) => setStreetName(e.target.value)}
-              placeholder={t('clients.enterStreetName')}
+              placeholder={t('customers.enterStreetName')}
               className="!bg-white"
             />
           </FormField>
 
-          <FormField label={tOptional(t, 'clients.districtName')}>
+          <FormField label={tOptional(t, 'customers.districtName')}>
             <Input
               value={districtName}
               onChange={(e) => setDistrictName(e.target.value)}
-              placeholder={t('clients.enterDistrictName')}
+              placeholder={t('customers.enterDistrictName')}
               className="!bg-white"
             />
           </FormField>
 
           <div className="md:col-span-2">
-            <FormField label={tOptional(t, 'clients.buildingNumber')}>
+            <FormField label={tOptional(t, 'customers.buildingNumber')}>
               <Input
                 value={buildingNumber}
                 onChange={(e) => setBuildingNumber(e.target.value)}
-                placeholder={t('clients.enterBuildingNumber')}
+                placeholder={t('customers.enterBuildingNumber')}
                 className="!bg-white"
               />
             </FormField>
@@ -186,7 +186,7 @@ export default function ClientForm({ isEditMode = false }: ClientFormProps) {
       </Card>
 
       <div className="mt-6 flex flex-wrap items-center justify-end gap-3 pt-2">
-        <Button variant="outline" onClick={() => navigate('/financial-management/clients')}>
+        <Button variant="outline" onClick={() => navigate('/financial-management/customers')}>
           {t('common.cancel')}
         </Button>
         <Button variant="success" onClick={handleSubmit}>
