@@ -36,6 +36,13 @@ export const isValidMobileNumber = (phone: string): boolean => {
 export const isValidLandlineNumber = (phone: string): boolean => {
   if (!phone) return true;
 
-  const digitsOnly = phone.replace(/\D/g, '');
-  return digitsOnly.length >= 5 && digitsOnly.length <= 15;
+  try {
+    const parsedNumber = phoneUtil.parse(phone);
+    const nationalNumber = parsedNumber.getNationalNumber()?.toString() || '';
+
+    return nationalNumber.length >= 5 && nationalNumber.length <= 15;
+  } catch {
+    const digitsOnly = phone.replace(/\D/g, '');
+    return digitsOnly.length >= 5 && digitsOnly.length <= 15;
+  }
 };
