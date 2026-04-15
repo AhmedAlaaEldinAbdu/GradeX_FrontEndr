@@ -105,3 +105,45 @@ export interface TuitionFeesGradeFeesItem {
   gradeNameEn?: string;
   tuitionAmount?: number;
 }
+
+// GetAllInstallments
+export interface InstallmentDto {
+  id: string;
+  dueDate: string;
+  percentage: number;
+}
+
+export interface InstallmentListData {
+  getAllInstallmentDtos: InstallmentDto[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface InstallmentListResponse {
+  data: InstallmentListData | null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: unknown;
+}
+
+export interface InstallmentQueryParams {
+  schoolBranchId: string;
+  PageNumber?: number;
+  PageSize?: number;
+}
+
+// InstallmentPlanByInstallmentId
+export interface InstallmentPlanByIdDto {
+  id: string;
+  installmentsCount: number;
+  distributionType: number;
+}
+
+export interface InstallmentPlanByIdResponse {
+  data: InstallmentPlanByIdDto | null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: unknown;
+}

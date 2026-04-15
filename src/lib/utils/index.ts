@@ -3,6 +3,8 @@ export type { LogLevel, LogOptions } from './logger';
 
 export { extractErrorMessage, hasErrors, throwIfApiError, ApiValidationError } from './error-utils';
 
+export { tOptional } from './i18n-utils';
+
 export {
   formatTimeDisplay,
   formatDateDisplay,

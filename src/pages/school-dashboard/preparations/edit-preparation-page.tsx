@@ -14,7 +14,7 @@ export default function EditPreparationPage() {
   return (
     <div>
       <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title="preparations.form.editTitle" />
+      <PageHeader title="preparations.form.editTitle" hasHeaderControls={false} />
       <PreparationForm isEditMode={true} />
     </div>
   );

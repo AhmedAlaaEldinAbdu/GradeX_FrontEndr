@@ -64,6 +64,7 @@ export default function InvoiceDetailsPage() {
 
       <PageHeader
         title="invoices.detailsTitle"
+        hasHeaderControls={false}
         actions={[
           {
             label: '',

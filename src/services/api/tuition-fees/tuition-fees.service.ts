@@ -9,6 +9,9 @@ import type {
   CreateTuitionFeesRequest,
   UpdateTuitionFeesRequest,
   TuitionFeesGradeFeesItem,
+  InstallmentListResponse,
+  InstallmentQueryParams,
+  InstallmentPlanByIdResponse,
 } from '../types/tuition-fees.types';
 
 const serializeParams = (params?: TuitionFeesQueryParams) => {
@@ -106,11 +109,31 @@ export async function getTuitionFeesByGradeAndSchoolBranch(
 export async function getGradesFeesBySchoolBranch(
   schoolBrancheId: string
 ): Promise<TuitionFeesGradeFeesItem[]> {
-  const response: AxiosResponse<ApiResponseModel<TuitionFeesGradeFeesItem[]>> = await axiosClient.get(
-    TuitionFeesEndpoints.getGradesFeesBySchoolBranch(schoolBrancheId)
-  );
+  const response: AxiosResponse<ApiResponseModel<TuitionFeesGradeFeesItem[]>> =
+    await axiosClient.get(TuitionFeesEndpoints.getGradesFeesBySchoolBranch(schoolBrancheId));
 
   return (response.data.data ?? response.data.value ?? []) as TuitionFeesGradeFeesItem[];
+}
+
+export async function getAllInstallments(
+  params: InstallmentQueryParams
+): Promise<InstallmentListResponse> {
+  const response: AxiosResponse<InstallmentListResponse> = await axiosClient.get(
+    TuitionFeesEndpoints.getAllInstallments,
+    { params }
+  );
+
+  return response.data;
+}
+
+export async function getInstallmentPlanByInstallmentId(
+  installmentId: string
+): Promise<InstallmentPlanByIdResponse> {
+  const response: AxiosResponse<InstallmentPlanByIdResponse> = await axiosClient.get(
+    TuitionFeesEndpoints.getInstallmentPlanByInstallmentId(installmentId)
+  );
+
+  return response.data;
 }
 
 export const tuitionFeesApiService = {
@@ -122,6 +145,8 @@ export const tuitionFeesApiService = {
   calculationTuitionFees,
   getTuitionFeesByGradeAndSchoolBranch,
   getGradesFeesBySchoolBranch,
+  getAllInstallments,
+  getInstallmentPlanByInstallmentId,
 };
 
 export default tuitionFeesApiService;

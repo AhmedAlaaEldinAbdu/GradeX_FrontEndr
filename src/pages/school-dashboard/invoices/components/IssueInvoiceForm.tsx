@@ -7,6 +7,12 @@ import { fetchCustomers } from '@/redux/features/customers/customersSlice';
 import { createInvoice, fetchInvoiceNumbers } from '@/redux/features/invoices/invoicesSlice';
 import { fetchLKPaymentMethods } from '@/redux/features/lookups/lookupsSlice';
 import { fetchOffers } from '@/redux/features/offers/offersSlice';
+import { fetchStudents } from '@/redux/features/students/studentsSlice';
+import {
+  fetchAllInstallments,
+  fetchInstallmentPlanById,
+} from '@/redux/features/tuition-fees/tuitionFeesSlice';
+import { getStudentFullName } from '@/services/api/types/students.types';
 import type { CustomerDto } from '@/services/api/types/customer.types';
 import { InvoicePaymentType } from '@/shared/enums/enums';
 import Button from '@/shared/components/Button';
@@ -78,8 +84,18 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const { customers, isLoading: isLoadingCustomers } = useAppSelector((state) => state.customers);
   const { lkPaymentMethods, isLoadingLKPaymentMethods } = useAppSelector((state) => state.lookups);
   const { offers, isLoading: isLoadingOffers } = useAppSelector((state) => state.offers);
+  const { students, isLoading: isLoadingStudents } = useAppSelector((state) => state.students);
+  const { installments, installmentPlan, isLoadingInstallments } = useAppSelector(
+    (state) => state.tuitionFees
+  );
 
   const customerOptions = useMemo<CustomSelectOption[]>(
+    () =>
+      students.map((student) => ({
+        value: student.id,
+        label: getStudentFullName(student),
+      })),
+    [students]
     () => customers.map((customer) => ({ value: customer.id, label: customer.name })),
     [customers]
   );
@@ -120,7 +136,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const [invoiceDate, setInvoiceDate] = useState('2025-12-04');
   const [paymentType, setPaymentType] = useState(String(InvoicePaymentType.Cash));
   const [paymentMethodId, setPaymentMethodId] = useState('');
-  const [installmentPlanId, setInstallmentPlanId] = useState('');
   const [installmentId, setInstallmentId] = useState('');
   const [selectedOfferId, setSelectedOfferId] = useState('');
   const [amount, setAmount] = useState('');
@@ -133,6 +148,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   const isDeferredPayment = Number(paymentType) === InvoicePaymentType.Deferred;
 
+  const selectedStudent = useMemo(
+    () => students.find((s) => s.id === selectedCustomerId) ?? null,
+    [students, selectedCustomerId]
   const selectedCustomer = useMemo<CustomerDto | null>(
     () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
     [customers, selectedCustomerId]
@@ -168,11 +186,15 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   const installmentOptions = useMemo<CustomSelectOption[]>(
     () =>
-      (selectedInstallmentPlan?.installments ?? []).map((installment) => ({
-        value: installment.id,
-        label: installment.name,
+      installments.map((inst) => ({
+        value: inst.id,
+        label: new Date(inst.dueDate).toLocaleDateString('ar-SA', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
       })),
-    [selectedInstallmentPlan]
+    [installments]
   );
 
   const calculatedAmount = useMemo(() => Math.max(0, subtotal), [subtotal]);
@@ -229,9 +251,19 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
         PageSize: 1000,
       })
     );
+
+    dispatch(fetchStudents({ page: 1, limit: 1000, filters: { schoolBranchId } }));
+
+    dispatch(fetchAllInstallments({ schoolBranchId, PageNumber: 1, PageSize: 1000 }));
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
+    if (selectedStudent) {
+      const mobileWithCode = [selectedStudent.motherCountryCode, selectedStudent.motherNumber]
+        .filter(Boolean)
+        .join('');
+      setMobile(mobileWithCode);
+      setEmail('');
     if (selectedCustomer) {
       setEmail(selectedCustomer.email);
       setMobile(`${selectedCustomer.areaCode ?? ''} ${selectedCustomer.phoneNumber ?? ''}`.trim());
@@ -240,7 +272,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
     setEmail('');
     setMobile('');
-  }, [selectedCustomer]);
+  }, [selectedStudent]);
 
   useEffect(() => {
     if (!invoiceNumber && invoiceNumbers.length > 0) {
@@ -249,17 +281,19 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   }, [invoiceNumber, invoiceNumbers]);
 
   useEffect(() => {
-    setInstallmentPlanId('');
     setInstallmentId('');
   }, [selectedCustomerId]);
 
   useEffect(() => {
-    setInstallmentId('');
-  }, [installmentPlanId]);
+    if (!installmentId) {
+      return;
+    }
+
+    dispatch(fetchInstallmentPlanById(installmentId));
+  }, [dispatch, installmentId]);
 
   useEffect(() => {
     if (!isDeferredPayment) {
-      setInstallmentPlanId('');
       setInstallmentId('');
     }
   }, [isDeferredPayment]);
@@ -428,7 +462,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           netAmount,
           taxPercentage: toNumber(taxPercentage),
           paymentType: Number(paymentType),
-          installmentPlanId: isDeferredPayment ? installmentPlanId || null : null,
+          installmentPlanId: isDeferredPayment ? (installmentPlan?.id ?? null) : null,
           installmentId: isDeferredPayment ? installmentId || null : null,
           invoiceItemDtos,
           paymentMethodId,
@@ -468,6 +502,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
               options={customerOptions}
               placeholder={t('invoices.chooseCustomerName')}
               maxHeight="220px"
+              disabled={isLoadingStudents}
               disabled={isLoadingCustomers}
             />
           </FormField>
@@ -563,35 +598,19 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           </FormField>
 
           {isDeferredPayment && (
-            <FormField label="خطط الأقساط" required error={formErrors.installmentPlan}>
-              <CustomSelect
-                value={installmentPlanId}
-                onChange={(value) => {
-                  setInstallmentPlanId(String(value));
-                  clearError('installmentPlan');
-                  clearError('installment');
-                  clearError('general');
-                }}
-                options={installmentPlanOptions}
-                placeholder="اختر خطة القسط"
-                showSearch={false}
-              />
-            </FormField>
-          )}
-
-          {isDeferredPayment && (
             <FormField label="القسط" required error={formErrors.installment}>
               <CustomSelect
                 value={installmentId}
                 onChange={(value) => {
                   setInstallmentId(String(value));
+                  clearError('installmentPlan');
                   clearError('installment');
                   clearError('general');
                 }}
                 options={installmentOptions}
                 placeholder="اختر القسط"
                 showSearch={false}
-                disabled={!installmentPlanId}
+                disabled={isLoadingInstallments}
               />
             </FormField>
           )}

@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import ClientsList from './components/ClientsList';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
-import DotsBlackIcon from '@gradex/assets/icons/DotsBlack.svg';
 
 export default function ClientsPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   if (import.meta.env.MODE !== 'development') {
     return (
@@ -31,18 +32,10 @@ export default function ClientsPage() {
         actions={[
           {
             label: 'clients.addClient',
-            onClick: () => {},
+            onClick: () => navigate('/financial-management/clients/add-client'),
             variant: 'primary',
             imgSrc: PlusIcon,
             imgClassName: 'w-4 h-4',
-          },
-          {
-            label: '',
-            onClick: () => {},
-            variant: 'ghost',
-            className: '!p-2.5 bg-gray-50 border border-gray-200 hover:bg-gray-100',
-            imgSrc: DotsBlackIcon,
-            imgClassName: 'w-[20px] h-[20px]',
           },
         ]}
       />
