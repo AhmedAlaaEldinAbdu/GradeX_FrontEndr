@@ -11,6 +11,7 @@ import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 
+import Loading from '@/shared/components/Loading';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import PrintIcon from '@gradex/assets/icons/Print.svg';
@@ -82,7 +83,13 @@ export default function InvoiceDetailsPage() {
     { label: t('invoices.invoiceDetails') },
   ];
 
-  const loading = isLoadingInvoice || !invoice;
+  if (isLoadingInvoice || !invoice) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   const gradeName = isAr ? invoice?.gradeNameAr : invoice?.gradeNameEn;
   const paymentMethodName = isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn;
@@ -135,7 +142,7 @@ export default function InvoiceDetailsPage() {
                   />
                 </div>
                 <span className="text-base font-medium text-gray-800">
-                  {loading ? '...' : (invoice.customerName ?? dash)}
+                  {invoice.customerName ?? dash}
                 </span>
                 <IconButton
                   variant="blue"
@@ -154,31 +161,20 @@ export default function InvoiceDetailsPage() {
                   />
                 </IconButton>
               </div>
-              <DetailRow
-                label={t('invoices.table.educationalStage')}
-                value={loading ? '...' : (gradeName ?? dash)}
-              />
+              <DetailRow label={t('invoices.table.educationalStage')} value={gradeName ?? dash} />
               <DetailRow
                 label={t('invoices.guardianMobile')}
                 value={
-                  loading
-                    ? '...'
-                    : invoice.phoneNumber
-                      ? `${customer?.areaCode ?? ''} ${invoice.phoneNumber}`.trim()
-                      : dash
+                  invoice.phoneNumber
+                    ? `${customer?.areaCode ?? ''} ${invoice.phoneNumber}`.trim()
+                    : dash
                 }
                 ltr={true}
               />
             </div>
             <div className="flex flex-col gap-5 pt-0 md:pt-14">
-              <DetailRow
-                label={t('invoices.grade')}
-                value={loading ? '...' : (gradeName ?? dash)}
-              />
-              <DetailRow
-                label={t('invoices.email')}
-                value={loading ? '...' : (customer?.email ?? dash)}
-              />
+              <DetailRow label={t('invoices.grade')} value={gradeName ?? dash} />
+              <DetailRow label={t('invoices.email')} value={customer?.email ?? dash} />
             </div>
           </div>
         </Card>
@@ -192,31 +188,27 @@ export default function InvoiceDetailsPage() {
             <div className="flex flex-col gap-5">
               <DetailRow
                 label={t('invoices.table.invoiceDate')}
-                value={loading ? '...' : (invoice.invoiceDate?.split('T')[0] ?? dash)}
+                value={invoice.invoiceDate?.split('T')[0] ?? dash}
               />
               <DetailRow
                 label={t('invoices.paymentMethod')}
                 value={
-                  loading ? (
-                    '...'
-                  ) : (
-                    <span
-                      className={`inline-flex rounded-full px-4 py-1.5 text-sm font-medium ${paymentBadgeClass}`}
-                    >
-                      {paymentMethodName ?? dash}
-                    </span>
-                  )
+                  <span
+                    className={`inline-flex rounded-full px-4 py-1.5 text-sm font-medium ${paymentBadgeClass}`}
+                  >
+                    {paymentMethodName ?? dash}
+                  </span>
                 }
               />
             </div>
             <div className="flex flex-col gap-5">
               <DetailRow
                 label={t('invoices.table.invoiceNumber')}
-                value={loading ? '...' : (invoice.invoiceNumber ?? dash)}
+                value={invoice.invoiceNumber ?? dash}
               />
               <DetailRow
                 label={t('invoices.table.paymentTool')}
-                value={loading ? '...' : (paymentMethodName ?? dash)}
+                value={paymentMethodName ?? dash}
               />
             </div>
           </div>
@@ -255,52 +247,48 @@ export default function InvoiceDetailsPage() {
             {t('invoices.feesType')}
           </h2>
 
-          {loading ? (
-            <p className="text-sm text-gray-400">...</p>
-          ) : (
-            <div className="flex flex-col gap-6">
-              {/* Items rows */}
-              {invoiceItems.length > 0 ? (
-                invoiceItems.map((item) => (
-                  <div
-                    key={item.id ?? item.name}
-                    className="grid grid-cols-1 gap-x-12 gap-y-4 md:grid-cols-2"
-                  >
-                    <div className="flex flex-col gap-4">
-                      <DetailRow label={t('invoices.feeItem')} value={item.name} />
-                      <DetailRow
-                        label={t('invoices.amount')}
-                        value={<RyalAmount amount={item.amount} />}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-4">
-                      <DetailRow label={t('invoices.discount')} value={item.discount} />
-                    </div>
+          <div className="flex flex-col gap-6">
+            {/* Items rows */}
+            {invoiceItems.length > 0 ? (
+              invoiceItems.map((item) => (
+                <div
+                  key={item.id ?? item.name}
+                  className="grid grid-cols-1 gap-x-12 gap-y-4 md:grid-cols-2"
+                >
+                  <div className="flex flex-col gap-4">
+                    <DetailRow label={t('invoices.feeItem')} value={item.name} />
+                    <DetailRow
+                      label={t('invoices.amount')}
+                      value={<RyalAmount amount={item.amount} />}
+                    />
                   </div>
-                ))
-              ) : (
-                <p className="text-sm text-gray-400">{dash}</p>
-              )}
+                  <div className="flex flex-col gap-4">
+                    <DetailRow label={t('invoices.discount')} value={item.discount} />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-400">{dash}</p>
+            )}
 
-              {/* Totals */}
-              <div className="grid grid-cols-1 gap-x-12 gap-y-4 border-t border-gray-100 pt-4 md:grid-cols-2">
-                <div className="flex flex-col gap-4">
-                  <DetailRow
-                    label={t('invoices.table.invoiceValue')}
-                    value={<RyalAmount amount={invoice.totalAmount} />}
-                  />
-                  <DetailRow label={t('invoices.discount')} value={invoice.totalDiscount} />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <DetailRow label={t('invoices.table.tax')} value={`${invoice.taxPercentage}%`} />
-                  <DetailRow
-                    label={t('invoices.table.totalInvoice')}
-                    value={<RyalAmount amount={invoice.netAmount} />}
-                  />
-                </div>
+            {/* Totals */}
+            <div className="grid grid-cols-1 gap-x-12 gap-y-4 border-t border-gray-100 pt-4 md:grid-cols-2">
+              <div className="flex flex-col gap-4">
+                <DetailRow
+                  label={t('invoices.table.invoiceValue')}
+                  value={<RyalAmount amount={invoice.totalAmount} />}
+                />
+                <DetailRow label={t('invoices.discount')} value={invoice.totalDiscount} />
+              </div>
+              <div className="flex flex-col gap-4">
+                <DetailRow label={t('invoices.table.tax')} value={`${invoice.taxPercentage}%`} />
+                <DetailRow
+                  label={t('invoices.table.totalInvoice')}
+                  value={<RyalAmount amount={invoice.netAmount} />}
+                />
               </div>
             </div>
-          )}
+          </div>
         </Card>
       </div>
     </div>
