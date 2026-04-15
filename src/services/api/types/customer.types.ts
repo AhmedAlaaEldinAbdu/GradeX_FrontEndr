@@ -1,5 +1,13 @@
 import type { Pagination } from '@/types/Pagination';
 
+export const CustomerTypeEnum = {
+  COMPANY: 1,
+  INSTITUTION: 2,
+  INDIVIDUAL: 3,
+} as const;
+
+export type CustomerTypeValue = (typeof CustomerTypeEnum)[keyof typeof CustomerTypeEnum];
+
 export interface CustomerDto {
   id: string;
   name: string;
@@ -37,9 +45,11 @@ export interface CustomerListResponse {
 export interface CustomerQueryParams {
   pageIndex?: number;
   pageSize?: number;
+  search?: string;
 
   PageIndex?: number;
   PageSize?: number;
+  Search?: string;
 }
 
 export interface CreateCustomerRequest {
