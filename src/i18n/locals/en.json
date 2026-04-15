@@ -2659,6 +2659,7 @@
     "confirmDeleteCustomer": "Are you sure you want to delete the customer",
     "customerDeletedSuccessfully": "Customer deleted successfully",
     "customerAddedSuccessfully": "Customer added successfully",
+    "customerUpdatedSuccessfully": "Customer updated successfully",
     "table": {
       "index": "#",
       "clientName": "Client Name",
