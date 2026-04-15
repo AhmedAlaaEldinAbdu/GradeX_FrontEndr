@@ -394,32 +394,37 @@ const RegistrationRequestsTable: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        const actions: Action[] = [
-          {
-            id: 'accept',
-            label: t('studentApplications.actions.accept'),
-            icon: CheckmarkCircleIcon,
-            onClick: () => handleAccept(row),
-          },
-          {
+        const actions: Action[] = [];
+
+        if (row.status === StudentApplicationStatus.EditRequest) {
+          actions.push({
             id: 'editRequest',
             label: t('studentApplications.actions.sendEditRequest'),
             icon: FilesIcon,
             onClick: () => handleEditRequest(row),
-          },
-          {
-            id: 'schedule',
-            label: t('studentApplications.actions.scheduleAppointment'),
-            icon: CalendarIcon,
-            onClick: () => handleScheduleAppointment(row),
-          },
-          {
-            id: 'notPassed',
-            label: t('studentApplications.actions.notPassed'),
-            icon: XMarkDangerIcon,
-            onClick: () => handleNotPassed(row),
-          },
-        ];
+          });
+        } else {
+          actions.push(
+            {
+              id: 'accept',
+              label: t('studentApplications.actions.accept'),
+              icon: CheckmarkCircleIcon,
+              onClick: () => handleAccept(row),
+            },
+            {
+              id: 'schedule',
+              label: t('studentApplications.actions.scheduleAppointment'),
+              icon: CalendarIcon,
+              onClick: () => handleScheduleAppointment(row),
+            },
+            {
+              id: 'notPassed',
+              label: t('studentApplications.actions.notPassed'),
+              icon: XMarkDangerIcon,
+              onClick: () => handleNotPassed(row),
+            }
+          );
+        }
 
         return (
           <div className="flex items-center justify-center gap-2">

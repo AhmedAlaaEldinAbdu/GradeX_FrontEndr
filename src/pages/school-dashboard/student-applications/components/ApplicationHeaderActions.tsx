@@ -40,11 +40,19 @@ const ApplicationHeaderActions: React.FC<ApplicationHeaderActionsProps> = ({
     return null;
   }
 
+  // Edit Request → only show edit request action
+  if (status === StudentApplicationStatus.EditRequest) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <Button variant="info" onClick={onEditRequest}>
+          {t('studentApplications.actions.sendEditRequest')}
+        </Button>
+      </div>
+    );
+  }
+
   // For other active statuses, show appropriate buttons
-  const showAllActions =
-    status !== StudentApplicationStatus.Edited &&
-    status !== StudentApplicationStatus.EditRequest &&
-    !hasInterview;
+  const showAllActions = status !== StudentApplicationStatus.Edited && !hasInterview;
 
   return (
     <div className="flex flex-wrap gap-2">
