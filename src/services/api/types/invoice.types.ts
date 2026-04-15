@@ -11,6 +11,8 @@ export interface InvoiceDto {
   id: string;
   customerId: string;
   schoolBranchId: string;
+  schoolBranchNameAr?: string | null;
+  schoolBranchNameEn?: string | null;
   invoiceNumber: string;
   invoiceDate: string;
   totalAmount: number;
@@ -21,6 +23,7 @@ export interface InvoiceDto {
   installmentPlanId?: string | null;
   installmentId?: string | null;
   invoiceItemDtos?: InvoiceItemDto[] | null;
+  items?: InvoiceItemDto[] | null;
   paymentMethodId: string;
   paymentMethodName?: string | null;
   paymentMethodNameAr?: string | null;
@@ -28,10 +31,17 @@ export interface InvoiceDto {
   gradeId?: string | null;
   gradeNameAr?: string | null;
   gradeNameEn?: string | null;
+  classroomId?: string | null;
+  classroomNameAr?: string | null;
+  classroomNameEn?: string | null;
   customerName?: string | null;
+  phoneNumber?: string | null;
   status?: number | null;
   receiptUrl?: string | null;
   itemsName?: string[] | null;
+  paidAmount?: number | null;
+  dueAmount?: number | null;
+  dueDate?: string | null;
 }
 
 export interface InvoiceListData extends Pagination {

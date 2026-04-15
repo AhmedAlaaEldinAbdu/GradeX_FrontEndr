@@ -1,17 +1,28 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '@/redux/store/store';
+import { fetchInvoiceById, clearInvoiceDetails } from '@/redux/features/invoices/invoicesSlice';
+import { fetchCustomerById, clearCustomerDetails } from '@/redux/features/customers/customersSlice';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 
+import Loading from '@/shared/components/Loading';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import PrintIcon from '@gradex/assets/icons/Print.svg';
 import DownloadBlueIcon from '@gradex/assets/icons/DowloadBlue.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import RyalIcon from '@gradex/assets/icons/Ryal.svg';
+
+const RyalFilter =
+  'brightness(0) saturate(100%) invert(43%) sepia(8%) saturate(301%) hue-rotate(182deg) brightness(94%) contrast(89%)';
+
+const dash = '-';
 
 const DetailRow = ({
   label,
@@ -32,11 +43,39 @@ const DetailRow = ({
   </div>
 );
 
-export default function InvoiceDetailsPage() {
-  const { t } = useTranslation();
-  const { id } = useParams<{ id: string }>();
+const RyalAmount = ({ amount }: { amount: number | null | undefined }) => (
+  <div className="flex items-center gap-1">
+    <CustomImage src={RyalIcon} alt="Ryal" className="h-4 w-4" style={{ filter: RyalFilter }} />
+    <span>{amount ?? 0}</span>
+  </div>
+);
 
-  console.log(id);
+export default function InvoiceDetailsPage() {
+  const { t, i18n } = useTranslation();
+  const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch<AppDispatch>();
+  const isAr = i18n.language === 'ar';
+
+  const invoice = useSelector((state: RootState) => state.invoices.invoiceDetails);
+  const isLoadingInvoice = useSelector((state: RootState) => state.invoices.isLoadingDetails);
+  const customer = useSelector((state: RootState) => state.customers.customerDetails);
+
+  useEffect(() => {
+    if (id) dispatch(fetchInvoiceById(id));
+    return () => {
+      dispatch(clearInvoiceDetails());
+    };
+  }, [id, dispatch]);
+
+  // Once invoice loads, fetch the customer for email / additional data
+  useEffect(() => {
+    if (invoice?.customerId) {
+      dispatch(fetchCustomerById(invoice.customerId));
+    }
+    return () => {
+      dispatch(clearCustomerDetails());
+    };
+  }, [invoice?.customerId, dispatch]);
 
   const breadcrumbItems = [
     { label: t('sidebar.financialManagement') },
@@ -44,19 +83,27 @@ export default function InvoiceDetailsPage() {
     { label: t('invoices.invoiceDetails') },
   ];
 
-  // Dummy mock data for the details view
-  const MOCK_DATA = {
-    studentName: 'أحمد معتز حسن',
-    stage: t('invoices.stages.kindergarten'),
-    guardianName: 'معتز حسن',
-    guardianMobile: '+20 10 1234 5678',
-    grade: 'KG 1',
-    email: 'Ahmed@gmail.com',
-    invoiceDate: '1/1/2020',
-    invoiceNumber: '1224556',
-    paymentMethod: 'cash',
-    paymentTool: t('financialManagement.paymentChannels.eWallet'),
+  if (isLoadingInvoice || !invoice) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  const gradeName = isAr ? invoice?.gradeNameAr : invoice?.gradeNameEn;
+  const paymentMethodName = isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn;
+
+  const invoiceItems = invoice?.items ?? invoice?.invoiceItemDtos ?? [];
+
+  const PAYMENT_TYPE_CLASSES: Record<number, string> = {
+    1: 'bg-green-50 text-green-600',
+    2: 'bg-blue-50 text-blue-600',
   };
+  const paymentBadgeClass =
+    invoice?.paymentType != null
+      ? (PAYMENT_TYPE_CLASSES[invoice.paymentType] ?? 'bg-gray-50 text-gray-600')
+      : 'bg-gray-50 text-gray-600';
 
   return (
     <div>
@@ -90,11 +137,13 @@ export default function InvoiceDetailsPage() {
                 <div className="h-10 w-10 overflow-hidden rounded-lg border border-gray-200">
                   <CustomImage
                     src={DefaultAvatar}
-                    alt="Student"
+                    alt="Customer"
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <span className="text-base font-medium text-gray-800">{MOCK_DATA.studentName}</span>
+                <span className="text-base font-medium text-gray-800">
+                  {invoice.customerName ?? dash}
+                </span>
                 <IconButton
                   variant="blue"
                   ariaLabel="View"
@@ -112,17 +161,20 @@ export default function InvoiceDetailsPage() {
                   />
                 </IconButton>
               </div>
-              <DetailRow label={t('invoices.table.educationalStage')} value={MOCK_DATA.stage} />
-              <DetailRow label={t('invoices.guardianName')} value={MOCK_DATA.guardianName} />
+              <DetailRow label={t('invoices.table.educationalStage')} value={gradeName ?? dash} />
               <DetailRow
                 label={t('invoices.guardianMobile')}
-                value={MOCK_DATA.guardianMobile}
+                value={
+                  invoice.phoneNumber
+                    ? `${customer?.areaCode ?? ''} ${invoice.phoneNumber}`.trim()
+                    : dash
+                }
                 ltr={true}
               />
             </div>
             <div className="flex flex-col gap-5 pt-0 md:pt-14">
-              <DetailRow label={t('invoices.grade')} value={MOCK_DATA.grade} />
-              <DetailRow label={t('invoices.email')} value={MOCK_DATA.email} />
+              <DetailRow label={t('invoices.grade')} value={gradeName ?? dash} />
+              <DetailRow label={t('invoices.email')} value={customer?.email ?? dash} />
             </div>
           </div>
         </Card>
@@ -134,12 +186,17 @@ export default function InvoiceDetailsPage() {
           </h2>
           <div className="mb-6 grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
             <div className="flex flex-col gap-5">
-              <DetailRow label={t('invoices.table.invoiceDate')} value={MOCK_DATA.invoiceDate} />
+              <DetailRow
+                label={t('invoices.table.invoiceDate')}
+                value={invoice.invoiceDate?.split('T')[0] ?? dash}
+              />
               <DetailRow
                 label={t('invoices.paymentMethod')}
                 value={
-                  <span className="inline-flex rounded-full bg-green-50 px-4 py-1.5 text-sm font-medium text-green-600">
-                    {t('invoices.paymentMethods.cash')}
+                  <span
+                    className={`inline-flex rounded-full px-4 py-1.5 text-sm font-medium ${paymentBadgeClass}`}
+                  >
+                    {paymentMethodName ?? dash}
                   </span>
                 }
               />
@@ -147,9 +204,12 @@ export default function InvoiceDetailsPage() {
             <div className="flex flex-col gap-5">
               <DetailRow
                 label={t('invoices.table.invoiceNumber')}
-                value={MOCK_DATA.invoiceNumber}
+                value={invoice.invoiceNumber ?? dash}
               />
-              <DetailRow label={t('invoices.table.paymentTool')} value={MOCK_DATA.paymentTool} />
+              <DetailRow
+                label={t('invoices.table.paymentTool')}
+                value={paymentMethodName ?? dash}
+              />
             </div>
           </div>
 
@@ -157,24 +217,28 @@ export default function InvoiceDetailsPage() {
             <span className="text-start text-sm font-medium text-gray-800 md:text-base">
               {t('invoices.table.paymentDocument')}:
             </span>
-            <div className="w-100 flex items-center justify-between rounded-xl border border-gray-200 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-100 bg-gray-50">
-                  <CustomImage src={PdfIcon} alt="Pdf" className="h-8 w-8 object-contain" />
+            {invoice.receiptUrl ? (
+              <div className="w-100 flex items-center justify-between rounded-xl border border-gray-200 px-5 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-100 bg-gray-50">
+                    <CustomImage src={PdfIcon} alt="Pdf" className="h-8 w-8 object-contain" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-800">
+                    {t('invoices.paymentDocumentImg')}
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-gray-800">
-                  {t('invoices.paymentDocumentImg')}
-                </span>
+                <IconButton
+                  variant="blue"
+                  ariaLabel="Download"
+                  onClick={() => window.open(invoice.receiptUrl!, '_blank')}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
+                >
+                  <CustomImage src={DownloadBlueIcon} alt="Download" className="h-5 w-5" />
+                </IconButton>
               </div>
-              <IconButton
-                variant="blue"
-                ariaLabel="Download"
-                onClick={() => {}}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
-              >
-                <CustomImage src={DownloadBlueIcon} alt="Download" className="h-5 w-5" />
-              </IconButton>
-            </div>
+            ) : (
+              <span className="text-start text-sm text-gray-500">{dash}</span>
+            )}
           </div>
         </Card>
 
@@ -183,98 +247,47 @@ export default function InvoiceDetailsPage() {
           <h2 className="mb-6 text-start text-lg font-bold text-gray-800">
             {t('invoices.feesType')}
           </h2>
-          <div className="grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
-            <div className="flex flex-col gap-5">
-              <DetailRow label={t('invoices.feeItem')} value="رسوم دراسية للصف الأول الأعدادي" />
-              <DetailRow label={t('invoices.feeItem')} value={t('invoices.items.books')} />
-              <DetailRow
-                label={t('invoices.table.invoiceValue')}
-                value={
-                  <div className="flex items-center gap-1">
-                    <CustomImage
-                      src={RyalIcon}
-                      alt="Ryal"
-                      className="h-4 w-4"
-                      style={{
-                        filter:
-                          'brightness(0) saturate(100%) invert(43%) sepia(8%) saturate(301%) hue-rotate(182deg) brightness(94%) contrast(89%)',
-                      }}
+
+          <div className="flex flex-col gap-6">
+            {/* Items rows */}
+            {invoiceItems.length > 0 ? (
+              invoiceItems.map((item) => (
+                <div
+                  key={item.id ?? item.name}
+                  className="grid grid-cols-1 gap-x-12 gap-y-4 md:grid-cols-2"
+                >
+                  <div className="flex flex-col gap-4">
+                    <DetailRow label={t('invoices.feeItem')} value={item.name} />
+                    <DetailRow
+                      label={t('invoices.amount')}
+                      value={<RyalAmount amount={item.amount} />}
                     />
-                    <span>600</span>
                   </div>
-                }
-              />
-              <DetailRow label={t('invoices.discount')} value="0" />
-            </div>
-            <div className="flex flex-col gap-5">
-              <DetailRow
-                label={t('invoices.amount')}
-                value={
-                  <div className="flex items-center gap-1">
-                    <CustomImage
-                      src={RyalIcon}
-                      alt="Ryal"
-                      className="h-4 w-4"
-                      style={{
-                        filter:
-                          'brightness(0) saturate(100%) invert(43%) sepia(8%) saturate(301%) hue-rotate(182deg) brightness(94%) contrast(89%)',
-                      }}
-                    />
-                    <span>300</span>
+                  <div className="flex flex-col gap-4">
+                    <DetailRow label={t('invoices.discount')} value={item.discount} />
                   </div>
-                }
-              />
-              <DetailRow
-                label={t('invoices.amount')}
-                value={
-                  <div className="flex items-center gap-1">
-                    <CustomImage
-                      src={RyalIcon}
-                      alt="Ryal"
-                      className="h-4 w-4"
-                      style={{
-                        filter:
-                          'brightness(0) saturate(100%) invert(43%) sepia(8%) saturate(301%) hue-rotate(182deg) brightness(94%) contrast(89%)',
-                      }}
-                    />
-                    <span>300</span>
-                  </div>
-                }
-              />
-              <DetailRow
-                label={t('invoices.table.tax')}
-                value={
-                  <div className="flex items-center gap-1">
-                    <CustomImage
-                      src={RyalIcon}
-                      alt="Ryal"
-                      className="h-4 w-4"
-                      style={{
-                        filter:
-                          'brightness(0) saturate(100%) invert(43%) sepia(8%) saturate(301%) hue-rotate(182deg) brightness(94%) contrast(89%)',
-                      }}
-                    />
-                    <span>300</span>
-                  </div>
-                }
-              />
-              <DetailRow
-                label={t('invoices.table.totalInvoice')}
-                value={
-                  <div className="flex items-center gap-1">
-                    <CustomImage
-                      src={RyalIcon}
-                      alt="Ryal"
-                      className="h-4 w-4"
-                      style={{
-                        filter:
-                          'brightness(0) saturate(100%) invert(43%) sepia(8%) saturate(301%) hue-rotate(182deg) brightness(94%) contrast(89%)',
-                      }}
-                    />
-                    <span>900</span>
-                  </div>
-                }
-              />
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-400">{dash}</p>
+            )}
+
+            {/* Totals */}
+            <div className="grid grid-cols-1 gap-x-12 gap-y-4 border-t border-gray-100 pt-4 md:grid-cols-2">
+              <div className="flex flex-col gap-4">
+                <DetailRow
+                  label={t('invoices.table.invoiceValue')}
+                  value={<RyalAmount amount={invoice.totalAmount} />}
+                />
+                <DetailRow label={t('invoices.discount')} value={invoice.totalDiscount} />
+              </div>
+              <div className="flex flex-col gap-4">
+                <DetailRow label={t('invoices.table.tax')} value={`${invoice.taxPercentage}%`} />
+                <DetailRow
+                  label={t('invoices.table.totalInvoice')}
+                  value={<RyalAmount amount={invoice.netAmount} />}
+                />
+              </div>
             </div>
           </div>
         </Card>
