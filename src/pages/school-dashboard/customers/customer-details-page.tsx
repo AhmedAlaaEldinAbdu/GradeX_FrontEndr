@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/redux/store/store';
 import { fetchCustomerById, clearCustomerDetails } from '@/redux/features/customers/customersSlice';
+import { CustomerTypeEnum } from '@/services/api/types/customer.types';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
@@ -47,9 +48,9 @@ const RyalAmount = ({ amount }: { amount: number }) => (
 const dash = '-';
 
 const customerTypeLabel = (t: (key: string) => string, type: number | null | undefined): string => {
-  if (type === 1) return t('customers.individual');
-  if (type === 2) return t('customers.company');
-  if (type === 3) return t('customers.institution');
+  if (type === CustomerTypeEnum.COMPANY) return t('customers.company');
+  if (type === CustomerTypeEnum.INSTITUTION) return t('customers.institution');
+  if (type === CustomerTypeEnum.INDIVIDUAL) return t('customers.individual');
   return dash;
 };
 
