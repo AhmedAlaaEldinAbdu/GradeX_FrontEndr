@@ -307,7 +307,7 @@ const RegistrationRequestsTable: React.FC = () => {
               className="h-10 w-10 rounded-full border border-gray-100 object-cover"
             />
             <span
-              className="w-[200px] truncate text-start font-medium text-gray-900"
+              className="w-full text-start font-medium text-gray-900"
               title={fullName}
             >
               {fullName}
@@ -323,7 +323,8 @@ const RegistrationRequestsTable: React.FC = () => {
           </div>
         );
       },
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[350px]',
+      className: 'min-w-[350px]',
     },
     {
       header: 'studentApplications.educationalStage',
