@@ -297,7 +297,7 @@ const RegistrationRequestsTable: React.FC = () => {
     {
       header: 'studentManagement.studentName',
       accessor: (row) => {
-        const fullName = `${row.firstName} ${row.secondName} ${row.thirdName} ${row.fourthName}`;
+        const fullName = `${row.firstName} ${row.secondName} ${row.thirdName}` // figma not bind fourth name ${row.fourthName};
         return (
           <div className="flex items-center gap-3">
             <CustomImage
@@ -323,8 +323,8 @@ const RegistrationRequestsTable: React.FC = () => {
           </div>
         );
       },
-      headerClassName: 'min-w-[350px]',
-      className: 'min-w-[350px]',
+      headerClassName: 'min-w-[320px]',
+      className: 'min-w-[320px]',
     },
     {
       header: 'studentApplications.educationalStage',
@@ -350,48 +350,49 @@ const RegistrationRequestsTable: React.FC = () => {
       headerClassName: 'min-w-[140px] text-center',
       className: 'text-center',
     },
-    {
-      header: 'studentApplications.parentId',
-      accessor: (row) => (
-        <div className="flex justify-center">
-          {row.guardianIdentityPath ? (
-            <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
-          ) : (
-            '-'
-          )}
-        </div>
-      ),
-      headerClassName: 'min-w-[140px] text-center',
-      className: 'text-center w-[140px]',
-    },
-    {
-      header: 'studentApplications.vaccinationCertificate',
-      accessor: (row) => (
-        <div className="flex justify-center">
-          {row.vaccinationCertificatePath ? (
-            <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
-          ) : (
-            '-'
-          )}
-        </div>
-      ),
-      headerClassName: 'min-w-[140px] text-center',
-      className: 'text-center w-[140px]',
-    },
-    {
-      header: 'studentApplications.lastEducationalCertificate',
-      accessor: (row) => (
-        <div className="flex justify-center">
-          {row.lastEducationCertificatePath ? (
-            <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
-          ) : (
-            '-'
-          )}
-        </div>
-      ),
-      headerClassName: 'min-w-[180px] text-center',
-      className: 'text-center w-[180px]',
-    },
+    // The following columns are commented out as per the original code, but can be re-enabled if needed
+    // {
+    //   header: 'studentApplications.parentId',
+    //   accessor: (row) => (
+    //     <div className="flex justify-center">
+    //       {row.guardianIdentityPath ? (
+    //         <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+    //       ) : (
+    //         '-'
+    //       )}
+    //     </div>
+    //   ),
+    //   headerClassName: 'min-w-[140px] text-center',
+    //   className: 'text-center w-[140px]',
+    // },
+    // {
+    //   header: 'studentApplications.vaccinationCertificate',
+    //   accessor: (row) => (
+    //     <div className="flex justify-center">
+    //       {row.vaccinationCertificatePath ? (
+    //         <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+    //       ) : (
+    //         '-'
+    //       )}
+    //     </div>
+    //   ),
+    //   headerClassName: 'min-w-[140px] text-center',
+    //   className: 'text-center w-[140px]',
+    // },
+    // {
+    //   header: 'studentApplications.lastEducationalCertificate',
+    //   accessor: (row) => (
+    //     <div className="flex justify-center">
+    //       {row.lastEducationCertificatePath ? (
+    //         <CustomImage src={PdfIcon} className="h-6 w-6 cursor-pointer" alt="pdf" />
+    //       ) : (
+    //         '-'
+    //       )}
+    //     </div>
+    //   ),
+    //   headerClassName: 'min-w-[180px] text-center',
+    //   className: 'text-center w-[180px]',
+    // },
     {
       header: 'common.actions',
       accessor: (row) => {
