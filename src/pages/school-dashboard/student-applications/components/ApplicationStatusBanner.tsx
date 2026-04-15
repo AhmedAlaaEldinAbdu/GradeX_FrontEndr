@@ -16,36 +16,36 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
 
   // Check if this is the "appointment scheduled" case (default with interviewDate)
   const isAppointmentScheduled =
-    status !== StudentApplicationStatus.Modified &&
-    status !== StudentApplicationStatus.EditRequested &&
-    status !== StudentApplicationStatus.NotPassed &&
-    status !== StudentApplicationStatus.WaitingForSignature &&
-    status !== StudentApplicationStatus.Completed &&
+    status !== StudentApplicationStatus.Edited &&
+    status !== StudentApplicationStatus.EditRequest &&
+    status !== StudentApplicationStatus.Reject &&
+    status !== StudentApplicationStatus.Pending &&
+    status !== StudentApplicationStatus.Accept &&
     !!interviewDate;
 
   const getBadgeContent = () => {
     switch (status) {
-      case StudentApplicationStatus.Modified:
+      case StudentApplicationStatus.Edited:
         return {
           text: t('studentApplications.status.modified'),
           badgeClassName: 'bg-purple-100 text-purple-700 border border-purple-200',
         };
-      case StudentApplicationStatus.EditRequested:
+      case StudentApplicationStatus.EditRequest:
         return {
           text: t('studentApplications.status.editRequested'),
           badgeClassName: 'bg-blue-50 text-blue-600 border border-blue-200',
         };
-      case StudentApplicationStatus.NotPassed:
+      case StudentApplicationStatus.Reject:
         return {
           text: t('studentApplications.status.notPassed'),
           badgeClassName: 'bg-red-100 text-red-700 border border-red-200',
         };
-      case StudentApplicationStatus.WaitingForSignature:
+      case StudentApplicationStatus.Pending:
         return {
           text: t('studentApplications.status.waitingInterview'),
           badgeClassName: 'bg-orange-100 text-orange-700 border border-orange-200',
         };
-      case StudentApplicationStatus.Completed:
+      case StudentApplicationStatus.Accept:
         return {
           text: t('studentApplications.status.completed'),
           badgeClassName: 'bg-green-100 text-green-700 border border-green-200',
@@ -71,15 +71,15 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
     }
     const base = 'border-s-4';
     switch (status) {
-      case StudentApplicationStatus.Modified:
+      case StudentApplicationStatus.Edited:
         return `${base} border-s-purple-400`;
-      case StudentApplicationStatus.EditRequested:
+      case StudentApplicationStatus.EditRequest:
         return `${base} border-s-blue-400`;
-      case StudentApplicationStatus.NotPassed:
+      case StudentApplicationStatus.Reject:
         return `${base} border-s-red-400`;
-      case StudentApplicationStatus.WaitingForSignature:
+      case StudentApplicationStatus.Pending:
         return `${base} border-s-orange-400`;
-      case StudentApplicationStatus.Completed:
+      case StudentApplicationStatus.Accept:
         return `${base} border-s-green-400`;
       default:
         return `${base} border-s-green-400`;

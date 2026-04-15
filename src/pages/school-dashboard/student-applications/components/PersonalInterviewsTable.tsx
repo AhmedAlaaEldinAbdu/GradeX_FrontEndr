@@ -128,7 +128,7 @@ const PersonalInterviewsTable: React.FC = () => {
       await dispatch(
         updateStudentApplicationStatus({
           id: targetId,
-          status: StudentApplicationStatus.Completed,
+          status: StudentApplicationStatus.Accept,
         })
       ).unwrap();
 
@@ -178,7 +178,7 @@ const PersonalInterviewsTable: React.FC = () => {
       await dispatch(
         updateStudentApplicationStatus({
           id: targetId,
-          status: StudentApplicationStatus.NotPassed,
+          status: StudentApplicationStatus.Reject,
         })
       ).unwrap();
 

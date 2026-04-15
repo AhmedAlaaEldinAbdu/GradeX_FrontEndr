@@ -1,9 +1,9 @@
 export const StudentApplicationStatus = {
-  NotPassed: 1, // لم يجتاز
-  EditRequested: 2, // طلب تعديل
-  Modified: 3, // تم التعديل
-  WaitingForSignature: 4, // في إنتظار التوقيع
-  Completed: 5, // إكتمل
+  Accept: 1, // مقبول
+  Reject: 2, // مرفوض
+  Pending: 3, // قيد المراجعة
+  EditRequest: 4, // طلب تعديل
+  Edited: 5, // تم التعديل
 } as const;
 
 export type StudentApplicationStatus =

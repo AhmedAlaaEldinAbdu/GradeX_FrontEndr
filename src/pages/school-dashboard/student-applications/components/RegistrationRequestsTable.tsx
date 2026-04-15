@@ -116,7 +116,7 @@ const RegistrationRequestsTable: React.FC = () => {
       await dispatch(
         updateStudentApplicationStatus({
           id: selectedApplication.id,
-          status: StudentApplicationStatus.Completed,
+          status: StudentApplicationStatus.Accept,
         })
       ).unwrap();
 
@@ -174,7 +174,7 @@ const RegistrationRequestsTable: React.FC = () => {
       await dispatch(
         updateStudentApplicationStatus({
           id: selectedApplication.id,
-          status: StudentApplicationStatus.NotPassed,
+          status: StudentApplicationStatus.Reject,
         })
       ).unwrap();
 
@@ -250,31 +250,31 @@ const RegistrationRequestsTable: React.FC = () => {
 
   const getStatusBadge = (status: StudentApplicationStatus) => {
     switch (status) {
-      case StudentApplicationStatus.Completed:
+      case StudentApplicationStatus.Accept:
         return (
           <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
             {t('studentApplications.status.completed')}
           </span>
         );
-      case StudentApplicationStatus.NotPassed:
+      case StudentApplicationStatus.Reject:
         return (
           <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
             {t('studentApplications.status.notPassed')}
           </span>
         );
-      case StudentApplicationStatus.WaitingForSignature:
+      case StudentApplicationStatus.Pending:
         return (
           <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
             {t('studentApplications.status.waitingInterview')}
           </span>
         );
-      case StudentApplicationStatus.EditRequested:
+      case StudentApplicationStatus.EditRequest:
         return (
           <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700">
             {t('studentApplications.status.editRequested')}
           </span>
         );
-      case StudentApplicationStatus.Modified:
+      case StudentApplicationStatus.Edited:
         return (
           <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
             {t('studentApplications.status.modified')}
@@ -328,25 +328,25 @@ const RegistrationRequestsTable: React.FC = () => {
     {
       header: 'studentApplications.educationalStage',
       accessor: (row) => <span>{row.lkSchoolStageNameAr || row.lkSchoolStageNameEn || '-'}</span>,
-      headerClassName: 'min-w-[150px] text-center',
+      headerClassName: 'min-w-[180px] text-center',
       className: 'text-center',
     },
     {
       header: 'common.status',
       accessor: (row) => getStatusBadge(row.status),
-      headerClassName: 'min-w-[120px] text-center',
+      headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
       header: 'studentApplications.previousSchool',
       accessor: (row) => <span>{row.previousSchoolName || '-'}</span>,
-      headerClassName: 'min-w-[150px] text-center',
+      headerClassName: 'min-w-[180px] text-center',
       className: 'text-center',
     },
     {
       header: 'studentApplications.applicationDate',
       accessor: (row) => <span>{new Date(row.created).toLocaleDateString()}</span>,
-      headerClassName: 'min-w-[120px] text-center',
+      headerClassName: 'min-w-[140px] text-center',
       className: 'text-center',
     },
     {
@@ -360,8 +360,8 @@ const RegistrationRequestsTable: React.FC = () => {
           )}
         </div>
       ),
-      headerClassName: 'min-w-[120px] text-center',
-      className: 'text-center w-[120px]',
+      headerClassName: 'min-w-[140px] text-center',
+      className: 'text-center w-[140px]',
     },
     {
       header: 'studentApplications.vaccinationCertificate',
@@ -374,8 +374,8 @@ const RegistrationRequestsTable: React.FC = () => {
           )}
         </div>
       ),
-      headerClassName: 'min-w-[120px] text-center',
-      className: 'text-center w-[120px]',
+      headerClassName: 'min-w-[140px] text-center',
+      className: 'text-center w-[140px]',
     },
     {
       header: 'studentApplications.lastEducationalCertificate',
@@ -388,38 +388,43 @@ const RegistrationRequestsTable: React.FC = () => {
           )}
         </div>
       ),
-      headerClassName: 'min-w-[150px] text-center',
-      className: 'text-center w-[150px]',
+      headerClassName: 'min-w-[180px] text-center',
+      className: 'text-center w-[180px]',
     },
     {
       header: 'common.actions',
       accessor: (row) => {
-        const actions: Action[] = [
-          {
-            id: 'accept',
-            label: t('studentApplications.actions.accept'),
-            icon: CheckmarkCircleIcon,
-            onClick: () => handleAccept(row),
-          },
-          {
+        const actions: Action[] = [];
+
+        if (row.status === StudentApplicationStatus.EditRequest) {
+          actions.push({
             id: 'editRequest',
             label: t('studentApplications.actions.sendEditRequest'),
             icon: FilesIcon,
             onClick: () => handleEditRequest(row),
-          },
-          {
-            id: 'schedule',
-            label: t('studentApplications.actions.scheduleAppointment'),
-            icon: CalendarIcon,
-            onClick: () => handleScheduleAppointment(row),
-          },
-          {
-            id: 'notPassed',
-            label: t('studentApplications.actions.notPassed'),
-            icon: XMarkDangerIcon,
-            onClick: () => handleNotPassed(row),
-          },
-        ];
+          });
+        } else {
+          actions.push(
+            {
+              id: 'accept',
+              label: t('studentApplications.actions.accept'),
+              icon: CheckmarkCircleIcon,
+              onClick: () => handleAccept(row),
+            },
+            {
+              id: 'schedule',
+              label: t('studentApplications.actions.scheduleAppointment'),
+              icon: CalendarIcon,
+              onClick: () => handleScheduleAppointment(row),
+            },
+            {
+              id: 'notPassed',
+              label: t('studentApplications.actions.notPassed'),
+              icon: XMarkDangerIcon,
+              onClick: () => handleNotPassed(row),
+            }
+          );
+        }
 
         return (
           <div className="flex items-center justify-center gap-2">
@@ -475,23 +480,23 @@ const RegistrationRequestsTable: React.FC = () => {
           }
           options={[
             {
-              value: StudentApplicationStatus.EditRequested.toString(),
+              value: StudentApplicationStatus.EditRequest.toString(),
               label: t('studentApplications.status.editRequested'),
             },
             {
-              value: StudentApplicationStatus.Completed.toString(),
+              value: StudentApplicationStatus.Accept.toString(),
               label: t('studentApplications.status.completed'),
             },
             {
-              value: StudentApplicationStatus.NotPassed.toString(),
+              value: StudentApplicationStatus.Reject.toString(),
               label: t('studentApplications.status.notPassed'),
             },
             {
-              value: StudentApplicationStatus.WaitingForSignature.toString(),
+              value: StudentApplicationStatus.Pending.toString(),
               label: t('studentApplications.status.waitingInterview'),
             },
             {
-              value: StudentApplicationStatus.Modified.toString(),
+              value: StudentApplicationStatus.Edited.toString(),
               label: t('studentApplications.status.modified'),
             },
           ]}
