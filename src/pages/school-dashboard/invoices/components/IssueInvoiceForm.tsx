@@ -7,12 +7,10 @@ import { fetchCustomers } from '@/redux/features/customers/customersSlice';
 import { createInvoice, fetchInvoiceNumbers } from '@/redux/features/invoices/invoicesSlice';
 import { fetchLKPaymentMethods } from '@/redux/features/lookups/lookupsSlice';
 import { fetchOffers } from '@/redux/features/offers/offersSlice';
-import { fetchStudents } from '@/redux/features/students/studentsSlice';
 import {
   fetchAllInstallments,
   fetchInstallmentPlanById,
 } from '@/redux/features/tuition-fees/tuitionFeesSlice';
-import { getStudentFullName } from '@/services/api/types/students.types';
 import type { CustomerDto } from '@/services/api/types/customer.types';
 import { InvoicePaymentType } from '@/shared/enums/enums';
 import Button from '@/shared/components/Button';
@@ -84,18 +82,11 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const { customers, isLoading: isLoadingCustomers } = useAppSelector((state) => state.customers);
   const { lkPaymentMethods, isLoadingLKPaymentMethods } = useAppSelector((state) => state.lookups);
   const { offers, isLoading: isLoadingOffers } = useAppSelector((state) => state.offers);
-  const { students, isLoading: isLoadingStudents } = useAppSelector((state) => state.students);
   const { installments, installmentPlan, isLoadingInstallments } = useAppSelector(
     (state) => state.tuitionFees
   );
 
   const customerOptions = useMemo<CustomSelectOption[]>(
-    () =>
-      students.map((student) => ({
-        value: student.id,
-        label: getStudentFullName(student),
-      })),
-    [students]
     () => customers.map((customer) => ({ value: customer.id, label: customer.name })),
     [customers]
   );
@@ -148,9 +139,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   const isDeferredPayment = Number(paymentType) === InvoicePaymentType.Deferred;
 
-  const selectedStudent = useMemo(
-    () => students.find((s) => s.id === selectedCustomerId) ?? null,
-    [students, selectedCustomerId]
   const selectedCustomer = useMemo<CustomerDto | null>(
     () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
     [customers, selectedCustomerId]
@@ -179,10 +167,10 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     [customerInstallmentPlans]
   );
 
-  const selectedInstallmentPlan = useMemo(
-    () => customerInstallmentPlans.find((plan) => plan.id === installmentPlanId) ?? null,
-    [customerInstallmentPlans, installmentPlanId]
-  );
+  // const selectedInstallmentPlan = useMemo(
+  //   () => customerInstallmentPlans.find((plan) => plan.id === installmentPlanId) ?? null,
+  //   [customerInstallmentPlans, installmentPlanId]
+  // );
 
   const installmentOptions = useMemo<CustomSelectOption[]>(
     () =>
@@ -252,27 +240,8 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       })
     );
 
-    dispatch(fetchStudents({ page: 1, limit: 1000, filters: { schoolBranchId } }));
-
     dispatch(fetchAllInstallments({ schoolBranchId, PageNumber: 1, PageSize: 1000 }));
   }, [dispatch, schoolBranchId]);
-
-  useEffect(() => {
-    if (selectedStudent) {
-      const mobileWithCode = [selectedStudent.motherCountryCode, selectedStudent.motherNumber]
-        .filter(Boolean)
-        .join('');
-      setMobile(mobileWithCode);
-      setEmail('');
-    if (selectedCustomer) {
-      setEmail(selectedCustomer.email);
-      setMobile(`${selectedCustomer.areaCode ?? ''} ${selectedCustomer.phoneNumber ?? ''}`.trim());
-      return;
-    }
-
-    setEmail('');
-    setMobile('');
-  }, [selectedStudent]);
 
   useEffect(() => {
     if (!invoiceNumber && invoiceNumbers.length > 0) {
@@ -427,7 +396,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       nextErrors.paymentTool = t('invoices.choosePaymentTool');
     }
 
-    if (isDeferredPayment && installmentPlanOptions.length > 0 && !installmentPlanId) {
+    if (isDeferredPayment && installmentPlanOptions.length > 0) {
       nextErrors.installmentPlan = 'اختر خطة القسط';
     }
 
@@ -453,7 +422,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     try {
       const response = await dispatch(
         createInvoice({
-          studentId: selectedCustomerId,
+          customerId: selectedCustomerId,
           schoolBranchId,
           invoiceNumber: invoiceNumber.trim(),
           invoiceDate: new Date(invoiceDate).toISOString(),
@@ -502,7 +471,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
               options={customerOptions}
               placeholder={t('invoices.chooseCustomerName')}
               maxHeight="220px"
-              disabled={isLoadingStudents}
               disabled={isLoadingCustomers}
             />
           </FormField>

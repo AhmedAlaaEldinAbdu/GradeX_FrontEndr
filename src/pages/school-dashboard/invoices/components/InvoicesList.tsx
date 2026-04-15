@@ -197,7 +197,7 @@ export default function InvoicesList() {
           <div className="h-10 w-10 overflow-hidden rounded-lg border border-gray-200">
             <CustomImage src={DefaultAvatar} alt="Student" className="h-full w-full object-cover" />
           </div>
-          <span className="font-medium text-gray-800">{row.studentName ?? '-'}</span>
+          <span className="font-medium text-gray-800">{row.customerName ?? '-'}</span>
           <IconButton
             variant="blue"
             ariaLabel="View"

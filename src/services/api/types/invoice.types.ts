@@ -9,7 +9,7 @@ export interface InvoiceItemDto {
 
 export interface InvoiceDto {
   id: string;
-  studentId: string;
+  customerId: string;
   schoolBranchId: string;
   invoiceNumber: string;
   invoiceDate: string;
@@ -28,7 +28,7 @@ export interface InvoiceDto {
   gradeId?: string | null;
   gradeNameAr?: string | null;
   gradeNameEn?: string | null;
-  studentName?: string | null;
+  customerName?: string | null;
   status?: number | null;
   receiptUrl?: string | null;
   itemsName?: string[] | null;
@@ -64,7 +64,7 @@ export interface InvoiceQueryParams {
 }
 
 export interface CreateInvoiceRequest {
-  studentId: string;
+  customerId: string;
   schoolBranchId: string;
   invoiceNumber: string;
   invoiceDate: string;
