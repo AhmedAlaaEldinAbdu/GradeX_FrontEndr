@@ -217,27 +217,28 @@ export default function InvoiceDetailsPage() {
             <span className="text-start text-sm font-medium text-gray-800 md:text-base">
               {t('invoices.table.paymentDocument')}:
             </span>
-            <div className="w-100 flex items-center justify-between rounded-xl border border-gray-200 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-100 bg-gray-50">
-                  <CustomImage src={PdfIcon} alt="Pdf" className="h-8 w-8 object-contain" />
+            {invoice.receiptUrl ? (
+              <div className="w-100 flex items-center justify-between rounded-xl border border-gray-200 px-5 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-100 bg-gray-50">
+                    <CustomImage src={PdfIcon} alt="Pdf" className="h-8 w-8 object-contain" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-800">
+                    {t('invoices.paymentDocumentImg')}
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-gray-800">
-                  {t('invoices.paymentDocumentImg')}
-                </span>
+                <IconButton
+                  variant="blue"
+                  ariaLabel="Download"
+                  onClick={() => window.open(invoice.receiptUrl!, '_blank')}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
+                >
+                  <CustomImage src={DownloadBlueIcon} alt="Download" className="h-5 w-5" />
+                </IconButton>
               </div>
-              <IconButton
-                variant="blue"
-                ariaLabel="Download"
-                onClick={() => {
-                  if (invoice?.receiptUrl) window.open(invoice.receiptUrl, '_blank');
-                }}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 transition-colors hover:bg-blue-100"
-                disabled={!invoice?.receiptUrl}
-              >
-                <CustomImage src={DownloadBlueIcon} alt="Download" className="h-5 w-5" />
-              </IconButton>
-            </div>
+            ) : (
+              <span className="text-start text-sm text-gray-500">{dash}</span>
+            )}
           </div>
         </Card>
 
