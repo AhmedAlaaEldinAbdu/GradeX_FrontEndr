@@ -234,9 +234,7 @@ export default function AddClassroom() {
                         : []
                     }
                     placeholder={
-                      isLoadingEducationalStages
-                        ? t('common.loading')
-                        : t('common.selectAnOption')
+                      isLoadingEducationalStages ? t('common.loading') : t('common.selectAnOption')
                     }
                     disabled={isLoadingEducationalStages}
                     error={!!errors.educationalStage}
@@ -406,24 +404,6 @@ export default function AddClassroom() {
                                   }
                                 };
 
-                                const handleKeyDown = (
-                                  e: React.KeyboardEvent<HTMLInputElement>
-                                ) => {
-                                  if (
-                                    !/[0-9]/.test(e.key) &&
-                                    ![
-                                      'Backspace',
-                                      'Delete',
-                                      'ArrowLeft',
-                                      'ArrowRight',
-                                      'Tab',
-                                      'Control',
-                                    ].includes(e.key)
-                                  ) {
-                                    e.preventDefault();
-                                  }
-                                };
-
                                 return (
                                   <Input
                                     {...field}
@@ -433,7 +413,6 @@ export default function AddClassroom() {
                                     id={`classrooms.${index}.maxStudents`}
                                     inputMode="numeric"
                                     onChange={handleChange}
-                                    onKeyDown={handleKeyDown}
                                   />
                                 );
                               }}
