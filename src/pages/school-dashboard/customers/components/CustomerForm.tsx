@@ -1,11 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/redux/store/store';
 import { tOptional } from '@/lib/utils';
 import { fetchCountries, fetchRegionsByCountry, clearRegions } from '@/redux/features/lookups';
-import { createCustomer } from '@/redux/features/customers/customersSlice';
+import {
+  createCustomer,
+  updateCustomer,
+  fetchCustomerById,
+} from '@/redux/features/customers/customersSlice';
+import { CustomerTypeEnum } from '@/services/api/types/customer.types';
 import { useToast } from '@/shared/context/ToastContext';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
@@ -16,10 +21,16 @@ import Button from '@/shared/components/Button';
 
 type ClientType = 'individual' | 'institution' | 'company';
 
-const clientTypeMap: Record<ClientType, number> = {
-  individual: 1,
-  company: 2,
-  institution: 3,
+const clientTypeToNumber: Record<ClientType, number> = {
+  company: CustomerTypeEnum.COMPANY,
+  institution: CustomerTypeEnum.INSTITUTION,
+  individual: CustomerTypeEnum.INDIVIDUAL,
+};
+
+const numberToClientType: Record<number, ClientType> = {
+  [CustomerTypeEnum.COMPANY]: 'company',
+  [CustomerTypeEnum.INSTITUTION]: 'institution',
+  [CustomerTypeEnum.INDIVIDUAL]: 'individual',
 };
 
 interface ClientFormProps {
@@ -30,7 +41,6 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  void id; // used when edit mode API fetch is wired up
   const dispatch = useDispatch<AppDispatch>();
   const { showToast } = useToast();
   const lang = i18n.language as 'ar' | 'en';
@@ -41,6 +51,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const regions = useSelector((state: RootState) => state.lookups.regions);
   const isLoadingRegions = useSelector((state: RootState) => state.lookups.isLoadingRegions);
   const isCreating = useSelector((state: RootState) => state.customers.isCreating);
+  const isUpdating = useSelector((state: RootState) => state.customers.isUpdating);
 
   // Form state
   const [clientType, setClientType] = useState<ClientType>('individual');
@@ -57,10 +68,37 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const [districtName, setDistrictName] = useState('');
   const [buildingNumber, setBuildingNumber] = useState('');
 
+  // Holds the regionId to restore after regions finish loading in edit mode
+  const pendingRegionId = useRef<string>('');
+
   // Fetch countries on mount
   useEffect(() => {
     dispatch(fetchCountries());
   }, [dispatch]);
+
+  // Pre-populate form when editing
+  useEffect(() => {
+    if (!isEditMode || !id) return;
+    dispatch(fetchCustomerById(id)).then((action) => {
+      if (!fetchCustomerById.fulfilled.match(action)) return;
+      const d = action.payload;
+      setClientType(numberToClientType[d.customerType] ?? 'individual');
+      setClientName(d.name ?? '');
+      setIdNumber(d.nationalId ?? '');
+      setEmail(d.email ?? '');
+      setMobile(d.areaCode && d.phoneNumber ? `${d.areaCode}${d.phoneNumber}` : '');
+      setAdditionalMobile(
+        d.additionalAreaCode && d.additionalPhoneNumber
+          ? `${d.additionalAreaCode}${d.additionalPhoneNumber}`
+          : ''
+      );
+      setBuildingNumber(d.buldingNo ?? '');
+      setStreetName(d.streetNo ?? '');
+      setDistrictName(d.neighborhood ?? '');
+      pendingRegionId.current = d.regionId ?? '';
+      setLkCountryId(d.lkCountryId ?? '');
+    });
+  }, [isEditMode, id, dispatch]);
 
   // Fetch regions when country changes
   useEffect(() => {
@@ -71,6 +109,13 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       dispatch(clearRegions());
     }
   }, [lkCountryId, dispatch]);
+
+  useEffect(() => {
+    if (pendingRegionId.current && regions.length > 0) {
+      setRegionId(pendingRegionId.current);
+      pendingRegionId.current = '';
+    }
+  }, [regions]);
 
   const countryOptions = countries.map((c) => ({
     value: c.id,
@@ -103,27 +148,30 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       ? parsePhone(additionalMobile, lkCountryId)
       : { areaCode: null, phoneNumber: null };
 
+    const payload = {
+      name: clientName,
+      customerType: clientTypeToNumber[clientType],
+      nationalId: idNumber,
+      email,
+      areaCode,
+      phoneNumber,
+      additionalAreaCode: additionalMobile ? addCode : null,
+      additionalPhoneNumber: additionalMobile ? addPhone : null,
+      regionId,
+      lkCountryId,
+      buldingNo: buildingNumber,
+      streetNo: streetName,
+      neighborhood: districtName,
+    };
+
     try {
-      await dispatch(
-        createCustomer({
-          name: clientName,
-          customerType: clientTypeMap[clientType],
-          nationalId: idNumber,
-          email,
-          areaCode,
-          phoneNumber,
-          additionalAreaCode: additionalMobile ? addCode : null,
-          additionalPhoneNumber: additionalMobile ? addPhone : null,
-          regionId,
-          lkCountryId,
-          buldingNo: buildingNumber,
-          streetNo: streetName,
-          neighborhood: districtName,
-          gradeId: null,
-          classroomId: null,
-        })
-      ).unwrap();
-      showToast({ message: t('customers.customerAddedSuccessfully'), type: 'success' });
+      if (isEditMode && id) {
+        await dispatch(updateCustomer({ ...payload, id })).unwrap();
+        showToast({ message: t('customers.customerUpdatedSuccessfully'), type: 'success' });
+      } else {
+        await dispatch(createCustomer(payload)).unwrap();
+        showToast({ message: t('customers.customerAddedSuccessfully'), type: 'success' });
+      }
       navigate('/financial-management/customers');
     } catch (error: unknown) {
       const message = typeof error === 'string' ? error : t('common.errorOccurred');
@@ -181,9 +229,10 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
             <FormField label={t('customers.idNumber')} required>
               <Input
                 value={idNumber}
-                onChange={(e) => setIdNumber(e.target.value)}
+                onChange={(e) => !isEditMode && setIdNumber(e.target.value)}
                 placeholder={t('customers.enterIdNumber')}
-                className="!bg-white"
+                className={isEditMode ? 'cursor-not-allowed !bg-gray-100' : '!bg-white'}
+                readOnly={isEditMode}
               />
             </FormField>
           </div>
@@ -287,8 +336,8 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         <Button variant="outline" onClick={() => navigate('/financial-management/customers')}>
           {t('common.cancel')}
         </Button>
-        <Button variant="success" onClick={handleSubmit} disabled={isCreating}>
-          {isCreating
+        <Button variant="success" onClick={handleSubmit} disabled={isCreating || isUpdating}>
+          {isCreating || isUpdating
             ? t('common.loading')
             : isEditMode
               ? t('actions.saveChanges')
