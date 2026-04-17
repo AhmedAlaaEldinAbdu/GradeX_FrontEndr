@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,7 +27,7 @@ import Card from '@/shared/components/Card';
 import Input from '@/shared/components/Input';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
-import FileUpload from '@/shared/components/FileUpload';
+import FileUpload, { type FileUploadRef } from '@/shared/components/FileUpload';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { useToast } from '@/shared/context/ToastContext';
@@ -81,9 +81,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [fromPage, setFromPage] = useState('');
   const [toPage, setToPage] = useState('');
   const [content, setContent] = useState('');
-  const [files, setFiles] = useState<File[]>([]);
-  const [existingFileNames, setExistingFileNames] = useState<string[]>([]);
-  const [existingFileUrls, setExistingFileUrls] = useState<string[]>([]);
+  const fileUploadRef = useRef<FileUploadRef>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
@@ -106,7 +104,6 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
     fromPage: string;
     toPage: string;
     content: string;
-    files: File[];
   }>('preparation_form_draft');
 
   useEffect(() => {
@@ -123,7 +120,6 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       if (draftData.fromPage) setFromPage(draftData.fromPage);
       if (draftData.toPage) setToPage(draftData.toPage);
       if (draftData.content) setContent(draftData.content);
-      if (draftData.files && draftData.files.length > 0) setFiles(draftData.files);
 
       showToast({ message: t('preparations.form.draftLoaded'), type: 'info' });
     }
@@ -163,13 +159,6 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       setFromPage(currentPreparation.fromPage?.toString() || '');
       setToPage(currentPreparation.toPage?.toString() || '');
       setContent(currentPreparation.content || '');
-      if (currentPreparation.attachments && currentPreparation.attachments.length > 0) {
-        setExistingFileNames(currentPreparation.attachments.map((a) => a.fileName));
-        setExistingFileUrls(currentPreparation.attachments.map((a) => a.filePath));
-      } else {
-        setExistingFileNames([]);
-        setExistingFileUrls([]);
-      }
     }
   }, [isEditMode, currentPreparation]);
 
@@ -217,7 +206,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
         bookId: bookName,
         fromPage: fromPage ? parseInt(fromPage) : undefined,
         toPage: toPage ? parseInt(toPage) : undefined,
-        attachments: files,
+        attachments: fileUploadRef.current?.getFiles() ?? [],
       };
 
       if (isEditMode && id) {
@@ -259,9 +248,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
     setFromPage('');
     setToPage('');
     setContent('');
-    setFiles([]);
-    setExistingFileNames([]);
-    setExistingFileUrls([]);
+    fileUploadRef.current?.reset();
     setErrors({});
     clearDraft();
     showToast({ message: t('preparations.form.formResetSuccess'), type: 'success' });
@@ -512,32 +499,11 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
             <div>
               <FileUpload
+                ref={fileUploadRef}
                 label={t('preparations.form.attachments')}
                 uploadText={t('tasksManagement.form.uploadAttachment')}
-                onChange={(e) => {
-                  if (e.target.files) {
-                    setFiles((prev) => [...prev, ...Array.from(e.target.files as FileList)]);
-                  }
-                }}
-                onDelete={(index) => {
-                  if (index !== undefined) {
-                    if (index < existingFileNames.length) {
-                      setExistingFileNames((prev) => prev.filter((_, i) => i !== index));
-                      setExistingFileUrls((prev) => prev.filter((_, i) => i !== index));
-                    } else {
-                      const fileIndex = index - existingFileNames.length;
-                      setFiles((prev) => prev.filter((_, i) => i !== fileIndex));
-                    }
-                  } else {
-                    setFiles([]);
-                    setExistingFileNames([]);
-                    setExistingFileUrls([]);
-                  }
-                }}
-                multiple={true}
-                fileNames={[...existingFileNames, ...files.map((f) => f.name)]}
-                fileUrls={[...existingFileUrls, ...files.map(() => '')]}
-                files={files}
+                multiple
+                attachments={isEditMode ? currentPreparation?.attachments : undefined}
               />
             </div>
           </div>
@@ -575,7 +541,6 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                 fromPage,
                 toPage,
                 content,
-                files,
               });
               showToast({ message: t('preparations.form.draftSaved'), type: 'success' });
             }}
