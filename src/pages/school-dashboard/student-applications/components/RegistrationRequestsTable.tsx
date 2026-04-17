@@ -12,7 +12,7 @@ import FilesIcon from '@gradex/assets/icons/Files.svg';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+// import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -297,7 +297,7 @@ const RegistrationRequestsTable: React.FC = () => {
     {
       header: 'studentManagement.studentName',
       accessor: (row) => {
-        const fullName = `${row.firstName} ${row.secondName} ${row.thirdName}` // figma not bind fourth name ${row.fourthName};
+        const fullName = `${row.firstName} ${row.secondName} ${row.thirdName}`; // figma not bind fourth name ${row.fourthName};
         return (
           <div className="flex items-center gap-3">
             <CustomImage
@@ -306,10 +306,7 @@ const RegistrationRequestsTable: React.FC = () => {
               alt={fullName}
               className="h-10 w-10 rounded-full border border-gray-100 object-cover"
             />
-            <span
-              className="w-full text-start font-medium text-gray-900"
-              title={fullName}
-            >
+            <span className="w-full text-start font-medium text-gray-900" title={fullName}>
               {fullName}
             </span>
             <IconButton
