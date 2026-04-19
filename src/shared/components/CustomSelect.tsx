@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import SearchDarkIcon from '@gradex/assets/icons/SearchDark.svg';
 
 export interface CustomSelectOption {
   value: string;
@@ -115,10 +116,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full text-base focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`h-[48px] w-full rounded-2xl border border-[#DDE0E0] text-base font-normal focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
           variant === 'ghost'
             ? 'min-h-[40px] border-0 bg-transparent px-4 py-2.5 font-medium text-gray-800 hover:bg-gray-50'
-            : `min-h-[40px] rounded-lg border bg-white px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-green-500 ${
+            : `min-h-[48px] w-full rounded-2xl border border-[#DDE0E0] bg-white px-3 py-2 text-base font-normal focus:border-transparent focus:ring-2 focus:ring-green-500 ${
                 error
                   ? 'border-red-500 focus-within:ring-2 focus-within:ring-red-500'
                   : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-500'
@@ -190,7 +191,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg"
+          className="absolute z-50 mt-1 w-full rounded-2xl border border-gray-300 bg-white shadow-lg"
         >
           {/* Search Input */}
           {showSearch && (
@@ -202,22 +203,16 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder={t('common.search') || 'Search...'}
-                  className={`w-full rounded-md border border-gray-300 py-2 text-base focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                  className={`h-[48px] w-full rounded-2xl border border-[#DDE0E0] px-4 py-2 text-base font-normal focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
                     isRTL ? 'pl-4 pr-7 text-right' : 'pl-7 pr-4 text-left'
                   }`}
                 />
-                <svg
-                  className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 ${isRTL ? 'right-2' : 'left-2'}`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <img
+                  src={SearchDarkIcon}
+                  alt=""
+                  aria-hidden="true"
+                  className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 ${isRTL ? 'right-2' : 'left-2'}`}
+                />
               </div>
             </div>
           )}

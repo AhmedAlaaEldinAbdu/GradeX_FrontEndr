@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
 import Table from './Table';
 import Pagination from './Pagination';
 import Loading from './Loading';
@@ -244,32 +245,11 @@ export default function DataTable<T>({
             }) && (
               <button
                 onClick={onResetFilters}
-                className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
                 title={t('actions.clearFilter')}
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M18 6L6 18"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M6 6L18 18"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />
+                <span>{t('actions.clearFilter')}</span>
               </button>
             )}
         </div>
