@@ -27,6 +27,7 @@ interface BranchData {
   street: string;
   buildingNumber: string;
   postalCode: string;
+  logo?: string;
 }
 
 interface AddressStepProps {
@@ -43,6 +44,7 @@ interface AddressStepProps {
     street: string;
     buildingNumber: string;
     postalCode: string;
+    logo?: string;
     latitude?: number;
     longitude?: number;
   }>;
@@ -55,6 +57,7 @@ interface AddressStepProps {
       street: string;
       buildingNumber: string;
       postalCode: string;
+      logo?: string;
       latitude?: number;
       longitude?: number;
     }>

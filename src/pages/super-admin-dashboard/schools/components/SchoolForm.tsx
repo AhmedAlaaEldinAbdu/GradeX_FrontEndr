@@ -44,6 +44,7 @@ interface SchoolFormProps {
       street: string;
       buildingNumber: string;
       postalCode: string;
+      logo?: string;
       latitude?: number;
       longitude?: number;
     }>;
@@ -81,6 +82,7 @@ const SchoolForm = ({
       street: string;
       buildingNumber: string;
       postalCode: string;
+      logo?: string;
       latitude?: number;
       longitude?: number;
     }>
