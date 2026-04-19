@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useForm, type Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import FormField from '@/shared/components/FormField';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
-import FileUpload from '@/shared/components/FileUpload';
+import FileUpload, { type FileUploadRef } from '@/shared/components/FileUpload';
 import Loading from '@/shared/components/Loading';
 import Button from '@/shared/components/Button';
 import PopupMessage from '@/shared/popups/PopupMessage';
@@ -119,9 +119,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
     type: 'success' | 'error';
     message: string;
   }>({ show: false, type: 'success', message: '' });
-  const [existingFileNames, setExistingFileNames] = useState<string[]>(
-    mode === 'edit' ? [t('tasksManagement.form.attachmentFileName')] : []
-  );
+  const fileUploadRef = useRef<FileUploadRef>(null);
 
   const subjects = useAppSelector((state) => state.subjects.subjects);
   const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
@@ -152,7 +150,6 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const watchedClassroomId = watch('classroomId');
   const watchedTaskType = watch('taskType');
   const watchedAssignmentType = watch('assignmentType');
-  const watchedAttachments = watch('attachment') || [];
   const watchedStudentIds = watch('studentIds') || [];
 
   useEffect(() => {
@@ -193,15 +190,6 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
       studentIds: task.studentIds || [],
       attachment: [],
     });
-
-    setExistingFileNames(
-      Array.isArray(task.attachmentUrls)
-        ? task.attachmentUrls.map((filePath) => {
-            const parts = filePath.split('/');
-            return parts[parts.length - 1] || filePath;
-          })
-        : []
-    );
   }, [currentSchoolTask, id, initialTask, mode, reset, schoolBranchId]);
 
   useEffect(() => {
@@ -252,37 +240,6 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
       : translatedLabel;
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setValue('attachment', files, { shouldValidate: true, shouldDirty: true });
-    if (files.length > 0) {
-      setExistingFileNames([]);
-    }
-  };
-
-  const handleFileDelete = (index?: number) => {
-    const currentFiles = watch('attachment') || [];
-
-    if (currentFiles.length > 0) {
-      if (typeof index === 'number') {
-        setValue(
-          'attachment',
-          currentFiles.filter((_, fileIndex) => fileIndex !== index),
-          { shouldValidate: true, shouldDirty: true }
-        );
-      } else {
-        setValue('attachment', [], { shouldValidate: true, shouldDirty: true });
-      }
-      return;
-    }
-
-    if (typeof index === 'number') {
-      setExistingFileNames((prev) => prev.filter((_, fileIndex) => fileIndex !== index));
-    } else {
-      setExistingFileNames([]);
-    }
-  };
-
   const handleAssignAll = () => {
     setValue('assignmentType', ASSIGNMENT_TYPE_ALL, { shouldDirty: true, shouldValidate: true });
     setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
@@ -326,7 +283,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
         descriptionAr: data.descriptionAr || undefined,
         descriptionEn: data.descriptionEn || undefined,
         assignmentType: Number(data.assignmentType),
-        attachment: data.attachment?.length ? data.attachment : undefined,
+        attachment: fileUploadRef.current?.getFiles() ?? [],
         studentIds:
           Number(data.assignmentType) === ASSIGNMENT_TYPE_SPECIFIC ? data.studentIds || [] : [],
       };
@@ -712,19 +669,15 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
 
           <FormField label={t('tasksManagement.form.attachments')} optional>
             <FileUpload
+              ref={fileUploadRef}
               label=""
-              onChange={handleFileChange}
-              onDelete={handleFileDelete}
-              fileNames={
-                watchedAttachments.length
-                  ? watchedAttachments.map((file) => file.name)
-                  : existingFileNames
-              }
-              files={watchedAttachments}
               accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
               uploadText={t('tasksManagement.form.uploadAttachment')}
               formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
-              multiple={true}
+              multiple
+              attachmentUrls={
+                mode === 'edit' ? (currentSchoolTask || initialTask)?.attachmentUrls : undefined
+              }
             />
           </FormField>
 

@@ -32,6 +32,7 @@ import {
   type UpdateTaskCorrectionRequest,
 } from '@/types/taskCorrections';
 import type { TaskStudentAttachment } from '@/types/taskStudents';
+import Loading from '@/shared/components/Loading';
 
 type TaskCorrectionFormMode = 'create' | 'edit';
 
@@ -126,7 +127,9 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
     reset,
     formState: { errors },
   } = useForm<TaskCorrectionFormValues>({
-    resolver: yupResolver(mode === 'edit' ? EditTaskCorrectionSchema : AddTaskCorrectionSchema),
+    resolver: yupResolver(
+      mode === 'edit' ? EditTaskCorrectionSchema : AddTaskCorrectionSchema
+    ) as any,
     mode: 'onBlur',
     defaultValues: DEFAULT_VALUES,
   });
@@ -353,7 +356,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
       <PersonSummaryCard
         name={localizedStudentName}
         subtitle={localizedClassroom}
-        avatar={submission.avatar}
+        avatar={taskStudent.avatar as string}
       />
 
       <Card>

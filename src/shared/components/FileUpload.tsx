@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
 import MultiFiles from '@/assets/icons/MultiFiles.svg';
@@ -10,16 +10,33 @@ interface FileInfo {
   progress: number;
 }
 
+export interface FileUploadRef {
+  /** Returns the new File objects the user selected in this session */
+  getFiles: () => File[];
+  /** Clears all files (new and existing) from the component */
+  reset: () => void;
+}
+
 interface FileUploadProps {
   label: string;
   accept?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDelete?: (index?: number) => void;
+  /** Callback invoked in self-managed mode whenever files change */
+  onFilesChange?: (newFiles: File[], existingNames: string[], existingUrls: string[]) => void;
   fileName?: string;
   fileNames?: string[];
   fileUrl?: string; // Optional URL for a single remote file
   fileUrls?: string[]; // Optional URLs for multiple remote files
   files?: File[]; // Actual File objects for viewing
+  /** Existing file names to pre-populate (self-managed mode) */
+  initialFileNames?: string[];
+  /** Existing file URLs to pre-populate (self-managed mode) */
+  initialFileUrls?: string[];
+  /** Pass existing attachments directly from API response — works with ref-based mode */
+  attachments?: { fileName: string; filePath: string }[];
+  /** Pass existing attachment URLs directly — fileName is derived from the URL path */
+  attachmentUrls?: string[];
   uploadText?: string;
   formatHints?: string[];
   required?: boolean;
@@ -29,24 +46,32 @@ interface FileUploadProps {
   id?: string;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({
-  label,
-  accept = 'image/*,.svg',
-  onChange,
-  onDelete,
-  fileName,
-  fileNames,
-  fileUrl,
-  fileUrls,
-  uploadText,
-  formatHints = ['GIF', 'SVG', 'JPG', 'PNG', 'PDF'],
-  required = false,
-  optional = false,
-  multiple = false,
-  error = false,
-  id = '',
-  files = [],
-}) => {
+const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUpload(
+  {
+    label,
+    accept = 'image/*,.svg',
+    onChange,
+    onDelete,
+    onFilesChange,
+    fileName,
+    fileNames,
+    fileUrl,
+    fileUrls,
+    initialFileNames,
+    initialFileUrls,
+    attachments,
+    attachmentUrls,
+    uploadText,
+    formatHints = ['GIF', 'SVG', 'JPG', 'PNG', 'PDF'],
+    required = false,
+    optional = false,
+    multiple = false,
+    error = false,
+    id = '',
+    files = [],
+  },
+  ref
+) {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
 
@@ -67,6 +92,62 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [fileInfoList, setFileInfoList] = useState<FileInfo[]>([]);
+
+  // Self-managed mode: internal state for existing (server-side) files
+  // Seed from `attachments` or `attachmentUrls` prop if provided, otherwise fall back to initialFileNames/Urls
+  const resolvedAttachments = attachments
+    ? attachments
+    : attachmentUrls
+      ? attachmentUrls.map((url) => ({ fileName: url.split('/').pop() || url, filePath: url }))
+      : null;
+
+  const seedNames = resolvedAttachments
+    ? resolvedAttachments.map((a) => a.fileName)
+    : (initialFileNames ?? []);
+  const seedUrls = resolvedAttachments
+    ? resolvedAttachments.map((a) => a.filePath)
+    : (initialFileUrls ?? []);
+
+  const [internalExistingNames, setInternalExistingNames] = useState<string[]>(seedNames);
+  const [internalExistingUrls, setInternalExistingUrls] = useState<string[]>(seedUrls);
+
+  // Sync when attachments/attachmentUrls prop changes (async data load in edit mode)
+  useEffect(() => {
+    if (resolvedAttachments) {
+      setInternalExistingNames(resolvedAttachments.map((a) => a.fileName));
+      setInternalExistingUrls(resolvedAttachments.map((a) => a.filePath));
+    }
+  }, [attachments?.map((a) => a.fileName).join(','), attachmentUrls?.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync internal existing files when initialFileNames/initialFileUrls change (e.g. async data load)
+  useEffect(() => {
+    if (!resolvedAttachments) setInternalExistingNames(initialFileNames ?? []);
+  }, [initialFileNames?.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!resolvedAttachments) setInternalExistingUrls(initialFileUrls ?? []);
+  }, [initialFileUrls?.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Whether we are in self-managed mode: ref-based (attachments/attachmentUrls prop) OR callback-based (onFilesChange)
+  const isInternalMode = !!onFilesChange || !!resolvedAttachments;
+
+  // Expose imperative API via ref
+  useImperativeHandle(ref, () => ({
+    getFiles: () => fileInfoList.map((f) => f.file),
+    reset: () => {
+      setFileInfoList([]);
+      setInternalExistingNames([]);
+      setInternalExistingUrls([]);
+      setFilePreview(null);
+      setUploadProgress(0);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    },
+  }));
+
+  // In internal mode, displayFiles comes from internal existing state.
+  // In external mode (backward compat), displayFiles comes from the fileNames prop.
+  const effectiveFileNames = isInternalMode ? internalExistingNames : (fileNames ?? []);
+  const effectiveFileUrls = isInternalMode ? internalExistingUrls : (fileUrls ?? []);
 
   // Sync fileInfoList with fileNames prop
   // This ensures consistency when parent validates and rejects some files
@@ -126,12 +207,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+    const selectedFiles = e.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    let addedFileInfos: FileInfo[] = [];
 
     if (multiple) {
       const newFileInfos: FileInfo[] = [];
-      Array.from(files).forEach((file) => {
+      Array.from(selectedFiles).forEach((file) => {
         const fileInfo: FileInfo = {
           file,
           progress: 0,
@@ -164,8 +247,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
           );
         }, 100);
       });
+
+      addedFileInfos = newFileInfos;
     } else {
-      const file = files[0];
+      const file = selectedFiles[0];
       if (file) {
         const fileInfo: FileInfo = {
           file,
@@ -198,10 +283,19 @@ const FileUpload: React.FC<FileUploadProps> = ({
         // Legacy support - keep these for backward compatibility
         setUploadProgress(100);
         setFilePreview(fileInfo.preview || null);
+
+        addedFileInfos = [fileInfo];
       }
     }
 
-    onChange(e);
+    if (isInternalMode) {
+      const allNewFiles = [
+        ...fileInfoList.map((f) => f.file),
+        ...addedFileInfos.map((f) => f.file),
+      ];
+      onFilesChange!(allNewFiles, internalExistingNames, internalExistingUrls);
+    }
+    if (onChange) onChange(e);
   };
 
   const handleEdit = () => {
@@ -210,27 +304,56 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   const handleDelete = (index?: number) => {
     if (multiple && index !== undefined) {
-      // Delete specific file from multiple files
-      setFileInfoList((prev) => prev.filter((_, i) => i !== index));
-      if (onDelete) {
-        onDelete(index);
+      if (isInternalMode) {
+        // In internal mode, indices are offset:
+        // [0 .. internalExistingNames.length - 1] = existing files
+        // [internalExistingNames.length .. ] = new files in fileInfoList
+        if (index < internalExistingNames.length) {
+          const newNames = internalExistingNames.filter((_, i) => i !== index);
+          const newUrls = internalExistingUrls.filter((_, i) => i !== index);
+          setInternalExistingNames(newNames);
+          setInternalExistingUrls(newUrls);
+          onFilesChange!(
+            fileInfoList.map((f) => f.file),
+            newNames,
+            newUrls
+          );
+        } else {
+          const fileIndex = index - internalExistingNames.length;
+          const newInfoList = fileInfoList.filter((_, i) => i !== fileIndex);
+          setFileInfoList(newInfoList);
+          onFilesChange!(
+            newInfoList.map((f) => f.file),
+            internalExistingNames,
+            internalExistingUrls
+          );
+        }
+      } else {
+        // External mode (backward compat)
+        setFileInfoList((prev) => prev.filter((_, i) => i !== index));
+        if (onDelete) onDelete(index);
       }
     } else {
-      // Delete single file
+      // Delete all
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
       setFilePreview(null);
       setUploadProgress(0);
       setFileInfoList([]);
-      if (onDelete) {
-        onDelete();
+      if (isInternalMode) {
+        setInternalExistingNames([]);
+        setInternalExistingUrls([]);
+        onFilesChange!([], [], []);
+      } else {
+        if (onDelete) onDelete();
       }
     }
   };
 
-  // Get display files list
-  const displayFiles = multiple && fileNames ? fileNames : fileName ? [fileName] : [];
+  // Get display files list (existing/server-side files shown below the upload area)
+  const displayFiles =
+    multiple && effectiveFileNames.length > 0 ? effectiveFileNames : fileName ? [fileName] : [];
   const hasFiles = multiple
     ? fileInfoList.length > 0 || displayFiles.length > 0
     : (fileName && uploadProgress > 0) || fileInfoList.length > 0;
@@ -365,7 +488,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   {/* Delete Button */}
                   <button
                     type="button"
-                    onClick={() => handleDelete(multiple ? index : undefined)}
+                    onClick={() =>
+                      handleDelete(
+                        multiple
+                          ? isInternalMode
+                            ? internalExistingNames.length + index
+                            : index
+                          : undefined
+                      )
+                    }
                     className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
                     title={t('common.delete')}
                   >
@@ -410,8 +541,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         {(() => {
                           const matchingFile = files.find((f) => f.name === name);
                           const actualIndex = displayFiles.indexOf(name);
-                          const matchingUrl =
-                            fileUrls && fileUrls[actualIndex] ? fileUrls[actualIndex] : null;
+                          const matchingUrl = effectiveFileUrls[actualIndex]
+                            ? effectiveFileUrls[actualIndex]
+                            : null;
 
                           // Show image preview if it's an image file and we have the File object or remote URL
                           if (isImageFile(name) && (matchingFile || matchingUrl)) {
@@ -485,8 +617,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
                       {(() => {
                         const matchingFile = files.find((f) => f.name === name);
                         const actualIndex = displayFiles.indexOf(name);
-                        const matchingUrl =
-                          fileUrls && fileUrls[actualIndex] ? fileUrls[actualIndex] : null;
+                        const matchingUrl = effectiveFileUrls[actualIndex]
+                          ? effectiveFileUrls[actualIndex]
+                          : null;
                         const viewerSource = matchingFile || matchingUrl;
 
                         if (viewerSource) {
@@ -686,6 +819,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
       )}
     </div>
   );
-};
+});
 
 export default FileUpload;
