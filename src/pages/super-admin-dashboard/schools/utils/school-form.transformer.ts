@@ -19,6 +19,7 @@ interface BranchData {
   street: string;
   buildingNumber: string;
   postalCode: string;
+  logo?: string;
   latitude?: number;
   longitude?: number;
   schoolSpace?: number;
@@ -54,6 +55,7 @@ interface BackendSchoolData {
     neighborhood?: string;
     buildingNumber?: string;
     zipCode?: string;
+    logo?: string;
   }>;
 }
 
@@ -290,6 +292,7 @@ function appendMainBranch(formData: FormData, schoolData: SchoolFormData): void 
     lkCountryId: schoolData.addressCountry,
     region: schoolData.region,
     buildingNumber: schoolData.buildingNumber,
+    logo: '',
     latitude: '0',
     longitude: '0',
   };
@@ -316,6 +319,7 @@ function appendBranchData(formData: FormData, branch: BranchData, index: number)
   formData.append(`${prefix}.lkCountryId`, branch.country);
   formData.append(`${prefix}.region`, branch.region);
   formData.append(`${prefix}.buildingNumber`, branch.buildingNumber);
+  formData.append(`${prefix}.logo`, branch.logo || '');
   formData.append(`${prefix}.latitude`, branch.latitude?.toString() || '0');
   formData.append(`${prefix}.longitude`, branch.longitude?.toString() || '0');
 
@@ -422,6 +426,7 @@ interface BackendSchoolResponse {
     street: string;
     buildingNumber: string;
     zipCode: string;
+    logo?: string;
     buildingCount: number;
     classCount: number;
     schoolSpace: number;
@@ -531,6 +536,7 @@ export function transformBackendSchoolToForm(
     street: string;
     buildingNumber: string;
     postalCode: string;
+    logo?: string;
     latitude?: number;
     longitude?: number;
   }>;
@@ -732,6 +738,7 @@ export function transformBackendSchoolToForm(
           street: branch.street || '',
           buildingNumber: branch.buildingNumber || '',
           postalCode: branch.zipCode || '',
+          logo: branch.logo || '',
           latitude: branch.latitude,
           longitude: branch.longitude,
         }))
