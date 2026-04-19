@@ -24,6 +24,7 @@ import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import {
   createMonthlyCalendarEvent,
@@ -533,32 +534,11 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
           </div>
           <button
             onClick={handleResetFilters}
-            className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             title={t('actions.clearFilter')}
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                d="M21 12a9 9 0 1 0-3.46 6.54"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M21 3v6h-6"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />
+            <span>{t('actions.clearFilter')}</span>
           </button>
         </div>
 
