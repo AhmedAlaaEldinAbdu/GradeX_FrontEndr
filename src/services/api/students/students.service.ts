@@ -78,6 +78,28 @@ export async function deleteStudent(id: string): Promise<ApiResponseModel<string
 }
 
 /**
+ * Search students by name for autocomplete
+ */
+export async function searchStudentsByName(
+  schoolBrancheId: string,
+  studentName: string
+): Promise<StudentDto[]> {
+  if (!studentName.trim()) return [];
+  const response: AxiosResponse<StudentListResponse> = await axiosClient.get(
+    StudentEndpoints.getStudents,
+    {
+      params: {
+        PageIndex: 1,
+        PageSize: 10,
+        SchoolBrancheId: schoolBrancheId,
+        StudentName: studentName,
+      },
+    }
+  );
+  return response?.data?.data?.studentDto ?? [];
+}
+
+/**
  * Assign a student to a classroom
  */
 export async function assignStudentToClassroom(
@@ -94,7 +116,10 @@ export async function assignStudentToClassroom(
 
   if (!response?.data?.isSuccess) {
     const firstError = response?.data?.validationErrors?.[0];
-    const errorMessage = typeof firstError === 'string' ? firstError : firstError?.errorMessage || 'Failed to assign student to classroom';
+    const errorMessage =
+      typeof firstError === 'string'
+        ? firstError
+        : firstError?.errorMessage || 'Failed to assign student to classroom';
     throw new Error(errorMessage);
   }
 }
