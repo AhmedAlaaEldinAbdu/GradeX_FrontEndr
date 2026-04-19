@@ -46,10 +46,12 @@ export interface CustomerQueryParams {
   pageIndex?: number;
   pageSize?: number;
   search?: string;
+  schoolBranchId?: string;
 
   PageIndex?: number;
   PageSize?: number;
   Search?: string;
+  SchoolBranchId?: string;
 }
 
 export interface CreateCustomerRequest {
