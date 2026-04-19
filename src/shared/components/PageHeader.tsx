@@ -23,7 +23,7 @@ type PageHeaderProps = {
   hasHeaderControls?: boolean;
 };
 
-const PageHeader = ({ title, actions = [], hasHeaderControls = true }: PageHeaderProps) => {
+const PageHeader = ({ title, actions = [], hasHeaderControls = false }: PageHeaderProps) => {
   const { t } = useTranslation();
 
   return (
