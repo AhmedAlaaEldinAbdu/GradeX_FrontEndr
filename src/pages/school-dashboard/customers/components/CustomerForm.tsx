@@ -326,19 +326,16 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
             </div>
           </FormField>
 
-          {isEditMode && (
-            <div className="md:col-span-2">
-              <FormField label={t('customers.idNumber')}>
-                <Input
-                  value={idNumber}
-                  onChange={() => {}}
-                  placeholder={t('customers.enterIdNumber')}
-                  className="cursor-not-allowed !bg-gray-100"
-                  readOnly
-                />
-              </FormField>
-            </div>
-          )}
+          <div className="md:col-span-2">
+            <FormField label={tOptional(t, 'customers.idNumber')}>
+              <Input
+                value={idNumber}
+                onChange={(e) => setIdNumber(e.target.value)}
+                placeholder={t('customers.enterIdNumber')}
+                className="!bg-white"
+              />
+            </FormField>
+          </div>
         </div>
       </Card>
 
