@@ -129,6 +129,7 @@ export const studentsApiService = {
   getStudentById,
   deleteStudent,
   assignStudentToClassroom,
+  searchStudentsByName,
 };
 
 export default studentsApiService;
