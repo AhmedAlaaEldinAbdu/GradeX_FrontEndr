@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import MultiSelectTagInput from '@gradex/shared/components/MultiSelectTagInput';
 import FormField from '@gradex/shared/components/FormField';
+import TextArea from '@gradex/shared/components/TextArea';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import type { MultiSelectOption } from '@gradex/shared/components/MultiSelectTagInput';
@@ -228,12 +229,11 @@ export default function NotificationForm({ mode, initialData }: NotificationForm
               name="content"
               control={control}
               render={({ field }) => (
-                <textarea
+                <TextArea
                   placeholder={t('notifications.enterContent')}
                   value={field.value}
                   onChange={field.onChange}
                   rows={4}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               )}
             />

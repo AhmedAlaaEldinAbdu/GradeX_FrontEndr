@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import TextArea from '@/shared/components/TextArea';
 
 interface RejectSchoolPopupProps {
   open: boolean;
@@ -75,12 +76,11 @@ export default function RejectSchoolPopup({
             <label className="required mb-2 block font-medium text-gray-700">
               {t('schools.rejectionReason')}
             </label>
-            <textarea
+            <TextArea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder={t('schools.enterRejectionReason')}
               rows={3}
-              className="w-full resize-none rounded-lg border px-4 py-2 text-gray-700 transition-all focus:border-green-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 

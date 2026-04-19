@@ -3,6 +3,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import { useTranslation } from 'react-i18next';
 import type { FacilityDetails } from '../types/school.types';
 import FormField from '@/shared/components/FormField';
+import TextArea from '@/shared/components/TextArea';
 
 interface AddFacilityDetailsPopupProps {
   open: boolean;
@@ -141,13 +142,12 @@ export default function AddFacilityDetailsPopup({
           {/* Description Field */}
           <div className="w-full text-right">
             <FormField htmlFor="description" label={t('schools.facilityDescription')} optional>
-              <textarea
+              <TextArea
                 id="description"
                 value={description}
                 onChange={(e) => !readOnly && setDescription(e.target.value)}
                 placeholder={readOnly ? '' : t('schools.enterFacilityDescription')}
                 rows={4}
-                className="w-full resize-none rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
                 disabled={readOnly}
               />
             </FormField>
