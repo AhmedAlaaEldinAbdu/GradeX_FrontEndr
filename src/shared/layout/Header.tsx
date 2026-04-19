@@ -106,7 +106,7 @@ const Header: React.FC = () => {
             <input
               type="text"
               placeholder={t('header.search')}
-              className={`w-full rounded-xl border border-[#DDE0E0] bg-white p-3 text-sm font-normal text-[#646969] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+              className={`w-full rounded-xl border border-[#DDE0E0] bg-white p-3 text-sm font-normal text-[#3A3A3A] placeholder:text-[#646969] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
                 isRTL ? 'pl-4 pr-10' : 'pl-10 pr-4'
               }`}
             />

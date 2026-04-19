@@ -70,7 +70,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 inputRef.current?.showPicker?.();
               }
             }}
-            className={`h-[48px] w-full rounded-2xl border border-[#DDE0E0] px-4 py-2 text-base font-normal transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+            className={`h-[48px] w-full rounded-2xl border border-[#DDE0E0] px-4 py-2 text-base font-normal text-[#3A3A3A] transition-all placeholder:text-[#646969] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
               showTimeIcon ? (isRTL ? 'pl-10' : 'pr-10') : ''
             } ${showIconAtEnd ? 'pr-10' : ''} ${timeInputClasses} ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'} ${className}`}
             {...props}

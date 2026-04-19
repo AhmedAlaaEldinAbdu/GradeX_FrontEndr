@@ -118,7 +118,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         disabled={disabled}
         className={`h-[48px] w-full rounded-2xl border border-[#DDE0E0] text-base font-normal focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
           variant === 'ghost'
-            ? 'min-h-[40px] border-0 bg-transparent px-4 py-2.5 font-medium text-gray-800 hover:bg-gray-50'
+            ? 'min-h-[40px] border-0 bg-transparent px-4 py-2.5 font-medium text-[#3A3A3A] placeholder:text-[#646969] hover:bg-gray-50'
             : `min-h-[48px] w-full rounded-2xl border border-[#DDE0E0] bg-white px-3 py-2 text-base font-normal focus:border-transparent focus:ring-2 focus:ring-green-500 ${
                 error
                   ? 'border-red-500 focus-within:ring-2 focus-within:ring-red-500'
