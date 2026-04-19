@@ -16,6 +16,7 @@ interface BranchData {
   street: string;
   buildingNumber: string;
   postalCode: string;
+  logo?: string;
 }
 
 interface AddressBranchProps {
