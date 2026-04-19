@@ -12,7 +12,6 @@ import FilesIcon from '@gradex/assets/icons/Files.svg';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -398,12 +397,28 @@ const RegistrationRequestsTable: React.FC = () => {
       accessor: (row) => {
         const actions: Action[] = [];
 
-        if (row.status === StudentApplicationStatus.EditRequest) {
+        if (
+          row.status === StudentApplicationStatus.Accept ||
+          row.status === StudentApplicationStatus.Reject
+        ) {
+          return null;
+        }
+
+        if (
+          row.status === StudentApplicationStatus.EditRequest ||
+          row.status === StudentApplicationStatus.Edited
+        ) {
           actions.push({
-            id: 'editRequest',
-            label: t('studentApplications.actions.sendEditRequest'),
-            icon: FilesIcon,
-            onClick: () => handleEditRequest(row),
+            id: 'accept',
+            label: t('studentApplications.actions.accept'),
+            icon: CheckmarkCircleIcon,
+            onClick: () => handleAccept(row),
+          });
+          actions.push({
+            id: 'notPassed',
+            label: t('studentApplications.actions.notPassed'),
+            icon: XMarkDangerIcon,
+            onClick: () => handleNotPassed(row),
           });
         } else {
           actions.push(
@@ -412,6 +427,12 @@ const RegistrationRequestsTable: React.FC = () => {
               label: t('studentApplications.actions.accept'),
               icon: CheckmarkCircleIcon,
               onClick: () => handleAccept(row),
+            },
+            {
+              id: 'editRequest',
+              label: t('studentApplications.actions.sendEditRequest'),
+              icon: FilesIcon,
+              onClick: () => handleEditRequest(row),
             },
             {
               id: 'schedule',
