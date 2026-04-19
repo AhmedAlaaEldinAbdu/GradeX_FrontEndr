@@ -13,6 +13,7 @@ import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import PersonSummaryCard from '@/shared/components/PersonSummaryCard';
+import TextArea from '@/shared/components/TextArea';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import {
@@ -519,10 +520,9 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
                 name="feedback"
                 control={control}
                 render={({ field }) => (
-                  <textarea
+                  <TextArea
                     {...field}
                     placeholder={t('tasksManagement.detailsPage.noDescription')}
-                    className="min-h-[100px] w-full rounded-lg border border-gray-300 px-4 py-3 transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 )}
               />

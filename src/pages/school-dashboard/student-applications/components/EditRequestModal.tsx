@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
 import Button from '@/shared/components/Button';
+import TextArea from '@/shared/components/TextArea';
 
 interface EditRequestModalProps {
   isOpen: boolean;
@@ -50,7 +51,7 @@ const EditRequestModal: React.FC<EditRequestModalProps> = ({
             {t('studentApplications.modals.editRequestLabel')}{' '}
             <span className="text-red-500">*</span>
           </label>
-          <textarea
+          <TextArea
             value={message}
             onChange={(e) => {
               setMessage(e.target.value);
@@ -58,17 +59,9 @@ const EditRequestModal: React.FC<EditRequestModalProps> = ({
             }}
             placeholder={t('studentApplications.modals.editRequestPlaceholder')}
             rows={4}
-            className={`w-full resize-y rounded-xl border px-4 py-3 text-start text-sm outline-none transition-colors ${
-              error
-                ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-200'
-                : 'border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-200'
-            }`}
+            error={error ? t('studentApplications.modals.editRequestRequired') : undefined}
+            className="text-start"
           />
-          {error && (
-            <p className="mt-1 text-start text-xs text-red-500">
-              {t('studentApplications.modals.editRequestRequired')}
-            </p>
-          )}
         </div>
 
         {/* Action buttons */}

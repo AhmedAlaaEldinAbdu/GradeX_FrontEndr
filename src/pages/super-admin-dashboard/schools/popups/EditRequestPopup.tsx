@@ -1,4 +1,5 @@
 import { useToast } from '@/shared/context/ToastContext';
+import TextArea from '@/shared/components/TextArea';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -84,12 +85,11 @@ export default function EditRequestPopup({
             <label className="required mb-2 block font-medium text-gray-700">
               {t('schools.editRequest')}
             </label>
-            <textarea
+            <TextArea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder={t('schools.enterEditRequest')}
               rows={3}
-              className="w-full resize-none rounded-lg border px-4 py-2 text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 

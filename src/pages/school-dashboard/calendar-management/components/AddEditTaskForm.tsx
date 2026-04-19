@@ -10,6 +10,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
 import FileUpload, { type FileUploadRef } from '@/shared/components/FileUpload';
 import Loading from '@/shared/components/Loading';
+import TextArea from '@/shared/components/TextArea';
 import Button from '@/shared/components/Button';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
@@ -571,11 +572,11 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                 name="descriptionAr"
                 control={control}
                 render={({ field }) => (
-                  <textarea
+                  <TextArea
                     {...field}
                     value={field.value || ''}
                     placeholder={t('tasksManagement.form.descriptionArPlaceholder')}
-                    className="min-h-[60px] w-full rounded-lg border border-gray-300 px-4 py-3 transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="min-h-[60px]"
                   />
                 )}
               />
@@ -589,11 +590,11 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                 name="descriptionEn"
                 control={control}
                 render={({ field }) => (
-                  <textarea
+                  <TextArea
                     {...field}
                     value={field.value || ''}
                     placeholder={t('tasksManagement.form.descriptionEnPlaceholder')}
-                    className="min-h-[60px] w-full rounded-lg border border-gray-300 px-4 py-3 transition-all placeholder:text-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="min-h-[60px]"
                   />
                 )}
               />
