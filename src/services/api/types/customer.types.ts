@@ -55,6 +55,8 @@ export interface CustomerQueryParams {
 }
 
 export interface CreateCustomerRequest {
+  studentId?: string | null;
+  schoolBranchId?: string | null;
   name: string;
   customerType: number;
   nationalId: string;
