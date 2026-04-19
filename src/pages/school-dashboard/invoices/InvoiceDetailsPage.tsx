@@ -325,7 +325,7 @@ export default function InvoiceDetailsPage() {
       </div>
 
       <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
-        <InvoicePDFTemplate ref={pdfRef} />
+        <InvoicePDFTemplate ref={pdfRef} invoice={invoice} customer={customer} />
       </div>
     </div>
   );
