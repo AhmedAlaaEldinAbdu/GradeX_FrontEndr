@@ -213,7 +213,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   useEffect(() => {
     if (customers.length === 0) {
-      dispatch(fetchCustomers({ PageIndex: 1, PageSize: 1000 }));
+      dispatch(fetchCustomers({ PageIndex: 1, PageSize: 1000, schoolBranchId }));
     }
   }, [customers.length, dispatch]);
 
@@ -496,10 +496,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           </FormField>
 
           <FormField label={t('invoices.mobileNumber')}>
-            <PhoneInput
-              value={mobile}
-              disabled
-            />
+            <PhoneInput value={mobile} disabled />
           </FormField>
 
           <div className="md:col-span-2">
