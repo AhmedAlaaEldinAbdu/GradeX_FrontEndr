@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,9 @@ import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import InvoicePDFTemplate from './components/InvoicePDFTemplate';
 
 import Loading from '@/shared/components/Loading';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
@@ -83,6 +86,34 @@ export default function InvoiceDetailsPage() {
     { label: t('invoices.invoiceDetails') },
   ];
 
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (!pdfRef.current || isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+
+    try {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [794, 1123],
+      });
+      pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
+      pdf.save('invoice.pdf');
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   if (isLoadingInvoice || !invoice) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -115,12 +146,12 @@ export default function InvoiceDetailsPage() {
         actions={[
           {
             label: '',
-            onClick: () => window.print(),
+            onClick: handleDownloadPdf,
             variant: 'ghost',
             className:
               'flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 transition-colors shrink-0',
             imgSrc: PrintIcon,
-            imgClassName: 'w-8 h-8',
+            imgClassName: `w-8 h-8 ${isGeneratingPdf ? 'animate-pulse' : ''}`,
           },
         ]}
       />
@@ -291,6 +322,10 @@ export default function InvoiceDetailsPage() {
             </div>
           </div>
         </Card>
+      </div>
+
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        <InvoicePDFTemplate ref={pdfRef} invoice={invoice} customer={customer} />
       </div>
     </div>
   );

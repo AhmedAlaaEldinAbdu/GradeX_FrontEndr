@@ -12,6 +12,7 @@ import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdow
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import type { CustomerDto } from '@/services/api/types/customer.types';
+import { tokenManager } from '@gradex/lib/auth/token-manager';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 
 import DefaultAvatar from '@gradex/assets/images/profile.png';
@@ -35,20 +36,27 @@ export default function CustomersList() {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
+  const schoolBranchId =
+    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
+
   useEffect(() => {
+    if (!schoolBranchId) return;
     dispatch(
       fetchCustomers({
+        SchoolBranchId: schoolBranchId,
         PageIndex: 1,
         PageSize: pagination.pageSize,
         Search: searchTerm || undefined,
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, searchTerm]);
+  }, [dispatch, searchTerm, schoolBranchId]);
 
   const handlePageChange = (page: number) => {
+    if (!schoolBranchId) return;
     dispatch(
       fetchCustomers({
+        SchoolBranchId: schoolBranchId,
         PageIndex: page,
         PageSize: pagination.pageSize,
         Search: searchTerm || undefined,
