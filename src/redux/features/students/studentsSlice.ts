@@ -170,6 +170,20 @@ export const deleteStudent = createAsyncThunk<string, string>(
   }
 );
 
+export const searchStudentsByName = createAsyncThunk<
+  StudentDto[],
+  { schoolBrancheId: string; studentName: string }
+>(
+  'students/searchStudentsByName',
+  async ({ schoolBrancheId, studentName }, { rejectWithValue }) => {
+    try {
+      return await studentsApiService.searchStudentsByName(schoolBrancheId, studentName);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const studentsSlice = createSlice({
   name: 'students',
   initialState,

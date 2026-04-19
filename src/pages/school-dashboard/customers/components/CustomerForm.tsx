@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/redux/store/store';
 import { tOptional } from '@/lib/utils';
+import { tokenManager } from '@/lib/auth';
 import { fetchCountries, fetchRegionsByCountry, clearRegions } from '@/redux/features/lookups';
 import {
   createCustomer,
@@ -11,6 +12,8 @@ import {
   fetchCustomerById,
 } from '@/redux/features/customers/customersSlice';
 import { CustomerTypeEnum } from '@/services/api/types/customer.types';
+import { searchStudentsByName } from '@/redux/features/students/studentsSlice';
+import type { StudentDto } from '@/services/api/types/students.types';
 import { useToast } from '@/shared/context/ToastContext';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
@@ -53,6 +56,17 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const isCreating = useSelector((state: RootState) => state.customers.isCreating);
   const isUpdating = useSelector((state: RootState) => state.customers.isUpdating);
 
+  const schoolBrancheId =
+    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
+
+  // Student autocomplete state
+  const [studentId, setStudentId] = useState<string | null>(null);
+  const [studentSuggestions, setStudentSuggestions] = useState<StudentDto[]>([]);
+  const [isSearchingStudents, setIsSearchingStudents] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suggestionBoxRef = useRef<HTMLDivElement>(null);
+
   // Form state
   const [clientType, setClientType] = useState<ClientType>('individual');
   const [clientName, setClientName] = useState('');
@@ -70,6 +84,55 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
 
   // Holds the regionId to restore after regions finish loading in edit mode
   const pendingRegionId = useRef<string>('');
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (suggestionBoxRef.current && !suggestionBoxRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleClientNameChange = useCallback(
+    (value: string) => {
+      setClientName(value);
+      setStudentId(null); // clear selection when user types manually
+      setShowSuggestions(false);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (!value.trim()) {
+        setStudentSuggestions([]);
+        return;
+      }
+      debounceRef.current = setTimeout(async () => {
+        setIsSearchingStudents(true);
+        try {
+          const action = await dispatch(
+            searchStudentsByName({ schoolBrancheId, studentName: value.trim() })
+          );
+          if (searchStudentsByName.fulfilled.match(action)) {
+            setStudentSuggestions(action.payload);
+            setShowSuggestions(action.payload.length > 0);
+          }
+        } finally {
+          setIsSearchingStudents(false);
+        }
+      }, 350);
+    },
+    [schoolBrancheId, dispatch]
+  );
+
+  const handleSelectStudent = (student: StudentDto) => {
+    const fullName = [student.firstName, student.secondName, student.thirdName, student.fourthName]
+      .filter(Boolean)
+      .join(' ');
+    setClientName(fullName);
+    setStudentId(student.id);
+    setShowSuggestions(false);
+    setStudentSuggestions([]);
+  };
 
   // Fetch countries on mount
   useEffect(() => {
@@ -149,6 +212,8 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       : { areaCode: null, phoneNumber: null };
 
     const payload = {
+      studentId: studentId ?? null,
+      schoolBranchId: schoolBrancheId || null,
       name: clientName,
       customerType: clientTypeToNumber[clientType],
       nationalId: idNumber,
@@ -188,12 +253,48 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <FormField label={t('customers.clientName')} required>
-            <Input
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
-              placeholder={t('customers.enterClientName')}
-              className="!bg-white"
-            />
+            <div ref={suggestionBoxRef} className="relative w-full">
+              <Input
+                value={clientName}
+                onChange={(e) => handleClientNameChange(e.target.value)}
+                onFocus={() => studentSuggestions.length > 0 && setShowSuggestions(true)}
+                placeholder={t('customers.enterClientName')}
+                className="!bg-white"
+              />
+              {isSearchingStudents && (
+                <div className="absolute end-3 top-1/2 -translate-y-1/2">
+                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-green-600" />
+                </div>
+              )}
+              {showSuggestions && studentSuggestions.length > 0 && (
+                <ul className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-gray-200 bg-white shadow-lg">
+                  {studentSuggestions.map((student) => {
+                    const fullName = [
+                      student.firstName,
+                      student.secondName,
+                      student.thirdName,
+                      student.fourthName,
+                    ]
+                      .filter(Boolean)
+                      .join(' ');
+                    return (
+                      <li
+                        key={student.id}
+                        onMouseDown={() => handleSelectStudent(student)}
+                        className="flex cursor-pointer flex-col gap-0.5 px-4 py-2.5 text-sm hover:bg-gray-50"
+                      >
+                        <span className="font-medium text-gray-800">{fullName}</span>
+                        {(student.grade || student.className) && (
+                          <span className="text-xs text-gray-400">
+                            {[student.grade, student.className].filter(Boolean).join(' - ')}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           </FormField>
 
           <FormField label={t('customers.clientType')} required>
@@ -225,17 +326,19 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
             </div>
           </FormField>
 
-          <div className="md:col-span-2">
-            <FormField label={t('customers.idNumber')} required>
-              <Input
-                value={idNumber}
-                onChange={(e) => !isEditMode && setIdNumber(e.target.value)}
-                placeholder={t('customers.enterIdNumber')}
-                className={isEditMode ? 'cursor-not-allowed !bg-gray-100' : '!bg-white'}
-                readOnly={isEditMode}
-              />
-            </FormField>
-          </div>
+          {isEditMode && (
+            <div className="md:col-span-2">
+              <FormField label={t('customers.idNumber')}>
+                <Input
+                  value={idNumber}
+                  onChange={() => {}}
+                  placeholder={t('customers.enterIdNumber')}
+                  className="cursor-not-allowed !bg-gray-100"
+                  readOnly
+                />
+              </FormField>
+            </div>
+          )}
         </div>
       </Card>
 
