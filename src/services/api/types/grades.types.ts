@@ -5,6 +5,13 @@ export interface GradeDto {
   age: number;
 }
 
+export interface GradeDetailsDto {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  age: number;
+}
+
 export interface GradeListData {
   gradeDtos: GradeDto[];
   pageIndex: number;
