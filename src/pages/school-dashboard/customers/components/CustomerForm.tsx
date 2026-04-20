@@ -8,6 +8,8 @@ import type { AppDispatch, RootState } from '@/redux/store/store';
 import { tOptional } from '@/lib/utils';
 import { tokenManager } from '@/lib/auth';
 import { fetchCountries, fetchRegionsByCountry, clearRegions } from '@/redux/features/lookups';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
+import { fetchClassroomsByGrade } from '@/redux/features/classrooms/classroomsSlice';
 import {
   createCustomer,
   updateCustomer,
@@ -58,6 +60,12 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const isLoadingRegions = useSelector((state: RootState) => state.lookups.isLoadingRegions);
   const isCreating = useSelector((state: RootState) => state.customers.isCreating);
   const isUpdating = useSelector((state: RootState) => state.customers.isUpdating);
+  const grades = useSelector((state: RootState) => state.grades.grades);
+  const isLoadingGrades = useSelector((state: RootState) => state.grades.isLoading);
+  const gradeClassrooms = useSelector((state: RootState) => state.classrooms.gradeClassrooms);
+  const isLoadingClassrooms = useSelector(
+    (state: RootState) => state.classrooms.isLoadingGradeClassrooms
+  );
 
   const schoolBrancheId =
     tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
@@ -77,6 +85,8 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const [streetName, setStreetName] = useState('');
   const [districtName, setDistrictName] = useState('');
   const [buildingNumber, setBuildingNumber] = useState('');
+  const [gradeId, setGradeId] = useState('');
+  const [classroomId, setClassroomId] = useState('');
 
   // Holds the regionId to restore after regions finish loading in edit mode
   const pendingRegionId = useRef<string>('');
@@ -158,7 +168,8 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   // Fetch countries on mount
   useEffect(() => {
     dispatch(fetchCountries());
-  }, [dispatch]);
+    dispatch(fetchGrades(schoolBrancheId));
+  }, [dispatch, schoolBrancheId]);
 
   // Pre-populate form when editing
   useEffect(() => {
@@ -204,6 +215,26 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       pendingRegionId.current = '';
     }
   }, [regions, setValue]);
+
+  // Fetch classrooms when grade changes
+  useEffect(() => {
+    if (!gradeId) {
+      setClassroomId('');
+      return;
+    }
+    setClassroomId('');
+    dispatch(fetchClassroomsByGrade(gradeId));
+  }, [gradeId, dispatch]);
+
+  const gradeOptions = grades.map((g) => ({
+    value: g.id,
+    label: lang === 'ar' ? g.nameAr : g.nameEn,
+  }));
+
+  const classroomOptions = gradeClassrooms.map((c) => ({
+    value: c.id,
+    label: lang === 'ar' ? c.name : c.nameEn,
+  }));
 
   const countryOptions = countries.map((c) => ({
     value: c.id,
@@ -252,6 +283,8 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       buldingNo: buildingNumber,
       streetNo: streetName,
       neighborhood: districtName,
+      gradeId: gradeId || null,
+      classroomId: classroomId || null,
     };
 
     try {
@@ -368,6 +401,34 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
               />
             </FormField>
           </div>
+
+          <FormField label={tOptional(t, 'customers.grade')}>
+            <CustomSelect
+              value={gradeId}
+              onChange={(val) => setGradeId(String(val))}
+              options={gradeOptions}
+              placeholder={isLoadingGrades ? t('common.loading') : t('customers.chooseGrade')}
+              disabled={isLoadingGrades}
+              showSearch={true}
+            />
+          </FormField>
+
+          <FormField label={tOptional(t, 'customers.classroom')}>
+            <CustomSelect
+              value={classroomId}
+              onChange={(val) => setClassroomId(String(val))}
+              options={classroomOptions}
+              placeholder={
+                isLoadingClassrooms
+                  ? t('common.loading')
+                  : !gradeId
+                    ? t('customers.chooseGrade')
+                    : t('customers.chooseClassroom')
+              }
+              disabled={!gradeId || isLoadingClassrooms}
+              showSearch={true}
+            />
+          </FormField>
         </div>
       </Card>
 
