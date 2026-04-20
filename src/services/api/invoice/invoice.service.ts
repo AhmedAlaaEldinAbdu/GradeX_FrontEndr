@@ -28,10 +28,13 @@ const serializeParams = (params?: InvoiceQueryParams) => {
 };
 
 export async function getInvoices(params?: InvoiceQueryParams): Promise<InvoiceListResponse> {
-  const response: AxiosResponse<InvoiceListResponse> = await axiosClient.get(InvoiceEndpoints.base, {
-    params,
-    paramsSerializer: { serialize: serializeParams },
-  });
+  const response: AxiosResponse<InvoiceListResponse> = await axiosClient.get(
+    InvoiceEndpoints.base,
+    {
+      params,
+      paramsSerializer: { serialize: serializeParams },
+    }
+  );
 
   return response.data;
 }
@@ -52,8 +55,10 @@ export async function getInvoiceNumbers(): Promise<string[]> {
   return (response.data.data ?? response.data.value ?? []) as string[];
 }
 
-export async function createInvoice(data: CreateInvoiceRequest): Promise<ApiResponseModel<null>> {
-  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
+export async function createInvoice(
+  data: CreateInvoiceRequest
+): Promise<ApiResponseModel<InvoiceDto>> {
+  const response: AxiosResponse<ApiResponseModel<InvoiceDto>> = await axiosClient.post(
     InvoiceEndpoints.create,
     data
   );
