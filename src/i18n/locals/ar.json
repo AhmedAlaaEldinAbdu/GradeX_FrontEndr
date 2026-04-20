@@ -2639,6 +2639,14 @@
       "primary": "ابتدائي",
       "middle": "متوسط",
       "high": "ثانوي"
+    },
+    "validation": {
+      "customerRequired": "يجب اختيار اسم العميل",
+      "invoiceDateRequired": "تاريخ الفاتورة مطلوب",
+      "paymentToolRequired": "يجب اختيار وسيلة السداد",
+      "taxMin": "لا يمكن أن تكون الضريبة أقل من صفر",
+      "installmentRequired": "يجب اختيار القسط",
+      "classificationsRequired": "يجب إضافة تصنيف واحد على الأقل باسم ومبلغ"
     }
   },
   "customers": {
@@ -2682,6 +2690,14 @@
     "educationalStage": "المرحلة التعليمية",
     "schoolYear": "الموسم الدراسي",
     "grade": "الصف الدراسي",
+    "validation": {
+      "clientNameRequired": "إسم العميل مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "صيغة البريد الإلكتروني غير صحيحة",
+      "mobileRequired": "رقم الجوال مطلوب",
+      "countryRequired": "يجب اختيار الدولة",
+      "cityRequired": "يجب اختيار المدينة"
+    },
     "table": {
       "index": "#",
       "clientName": "اسم العميل",

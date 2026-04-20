@@ -2627,6 +2627,14 @@
       "primary": "Primary",
       "middle": "Middle",
       "high": "High"
+    },
+    "validation": {
+      "customerRequired": "Customer name is required",
+      "invoiceDateRequired": "Invoice date is required",
+      "paymentToolRequired": "Payment tool is required",
+      "taxMin": "Tax cannot be less than zero",
+      "installmentRequired": "Installment is required",
+      "classificationsRequired": "At least one classification with a name and amount is required"
     }
   },
   "customers": {
@@ -2670,6 +2678,14 @@
     "customerDeletedSuccessfully": "Customer deleted successfully",
     "customerAddedSuccessfully": "Customer added successfully",
     "customerUpdatedSuccessfully": "Customer updated successfully",
+    "validation": {
+      "clientNameRequired": "Client name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "mobileRequired": "Mobile number is required",
+      "countryRequired": "Country is required",
+      "cityRequired": "City is required"
+    },
     "table": {
       "index": "#",
       "clientName": "Client Name",
