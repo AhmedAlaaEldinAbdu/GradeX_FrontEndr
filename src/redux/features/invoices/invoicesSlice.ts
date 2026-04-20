@@ -11,6 +11,7 @@ import invoiceApiService from '@/services/api/invoice/invoice.service';
 import type {
   CreateInvoiceRequest,
   InvoiceDto,
+  InvoiceItemsData,
   InvoiceListData,
   InvoiceQueryParams,
 } from '@/services/api/types/invoice.types';
@@ -19,10 +20,12 @@ interface InvoicesState {
   invoices: InvoiceDto[];
   invoiceDetails: InvoiceDto | null;
   invoiceNumbers: string[];
+  invoiceItems: InvoiceItemsData | null;
   pagination: Pagination;
   isLoading: boolean;
   isLoadingDetails: boolean;
   isLoadingNumbers: boolean;
+  isLoadingInvoiceItems: boolean;
   isCreating: boolean;
   isDeleting: boolean;
   error: string | null;
@@ -33,6 +36,7 @@ const initialState: InvoicesState = {
   invoices: [],
   invoiceDetails: null,
   invoiceNumbers: [],
+  invoiceItems: null,
   pagination: {
     pageIndex: 1,
     pageSize: 10,
@@ -42,6 +46,7 @@ const initialState: InvoicesState = {
   isLoading: false,
   isLoadingDetails: false,
   isLoadingNumbers: false,
+  isLoadingInvoiceItems: false,
   isCreating: false,
   isDeleting: false,
   error: null,
@@ -116,6 +121,21 @@ export const deleteInvoice = createAsyncThunk<ApiResponseModel<string>, string>(
     try {
       const response = await invoiceApiService.deleteInvoice(invoiceId);
       return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchInvoiceItems = createAsyncThunk<InvoiceItemsData, string>(
+  'invoices/fetchItems',
+  async (studentId, { rejectWithValue }) => {
+    try {
+      const response = await invoiceApiService.getInvoiceItems(studentId);
+      if (!response.isSuccess || !response.data) {
+        return rejectWithValue(response.message ?? 'Failed to fetch invoice items');
+      }
+      return response.data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -229,6 +249,22 @@ const invoicesSlice = createSlice({
       )
       .addCase(deleteInvoice.rejected, (state, action) => {
         state.isDeleting = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchInvoiceItems.pending, (state) => {
+        state.isLoadingInvoiceItems = true;
+        state.invoiceItems = null;
+        state.error = null;
+      })
+      .addCase(fetchInvoiceItems.fulfilled, (state, action: PayloadAction<InvoiceItemsData>) => {
+        state.isLoadingInvoiceItems = false;
+        state.invoiceItems = action.payload;
+      })
+      .addCase(fetchInvoiceItems.rejected, (state, action) => {
+        state.isLoadingInvoiceItems = false;
+        state.invoiceItems = null;
         state.error = action.payload as string;
       });
   },
