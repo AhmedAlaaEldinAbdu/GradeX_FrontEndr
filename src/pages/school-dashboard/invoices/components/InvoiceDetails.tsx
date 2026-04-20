@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -51,7 +51,7 @@ const RyalAmount = ({ amount }: { amount: number | null | undefined }) => (
 );
 
 export interface InvoiceDetailsHandle {
-  downloadPdf: () => Promise<void>;
+  downloadPdf: (fileName: string) => Promise<void>;
   isGeneratingPdf: boolean;
 }
 
@@ -84,31 +84,37 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
     };
   }, [invoice?.customerId, dispatch]);
 
-  const downloadPdf = async () => {
-    if (!pdfRef.current || isGeneratingPdf) return;
-    setIsGeneratingPdf(true);
-    try {
-      const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [794, 1123],
-      });
-      pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
-      pdf.save('invoice.pdf');
-    } catch (err) {
-      console.error('Failed to generate PDF', err);
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
+  const downloadPdf = useCallback(
+    async (fileName: string) => {
+      if (!pdfRef.current || isGeneratingPdf) return;
+      setIsGeneratingPdf(true);
+      try {
+        const canvas = await html2canvas(pdfRef.current, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [794, 1123],
+        });
+        pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
+        pdf.save(`${fileName}.pdf`);
+      } catch (err) {
+        console.error('Failed to generate PDF', err);
+      } finally {
+        setIsGeneratingPdf(false);
+      }
+    },
+    [isGeneratingPdf]
+  );
 
-  useImperativeHandle(ref, () => ({ downloadPdf, isGeneratingPdf }), [isGeneratingPdf]);
+  useImperativeHandle(ref, () => ({ downloadPdf, isGeneratingPdf }), [
+    downloadPdf,
+    isGeneratingPdf,
+  ]);
 
   if (isLoadingInvoice || !invoice) {
     return (
