@@ -74,9 +74,8 @@ export default function ExportInvoicePopup({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, handleClose]);
 
-  const handleFormSubmit = async (data: ExportInvoiceFormData) => {
+  const handleFormSubmit = (data: ExportInvoiceFormData) => {
     const fileName = data.invoiceName.trim();
-    await onExport(fileName);
     setExportedFileName(fileName);
     setStep('success');
   };
