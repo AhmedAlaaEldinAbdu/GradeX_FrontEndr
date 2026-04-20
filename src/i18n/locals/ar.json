@@ -662,7 +662,8 @@
       "editRequested": "طلب تعديل",
       "modified": "تم التعديل",
       "completed": "إكتمل",
-      "appointmentScheduled": "تم تحديد موعد المقابلة"
+      "appointmentScheduled": "تم تحديد موعد المقابلة",
+      "interviewScheduled": "تم تحديد مقابلة"
     },
     "actions": {
       "accept": "قبول",

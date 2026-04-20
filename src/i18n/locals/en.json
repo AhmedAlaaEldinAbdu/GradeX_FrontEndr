@@ -662,7 +662,8 @@
       "editRequested": "Edit Requested",
       "modified": "Modified",
       "completed": "Completed",
-      "appointmentScheduled": "Appointment Scheduled"
+      "appointmentScheduled": "Appointment Scheduled",
+      "interviewScheduled": "Interview Scheduled"
     },
     "actions": {
       "accept": "Accept",
