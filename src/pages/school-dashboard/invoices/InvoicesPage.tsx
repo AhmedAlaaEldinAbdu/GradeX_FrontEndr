@@ -7,15 +7,6 @@ import PlusIcon from '@gradex/assets/icons/Plus.svg';
 export default function InvoicesPage() {
   const { t } = useTranslation();
 
-  if (import.meta.env.MODE !== 'development') {
-    return (
-      <div className="py-16 text-center">
-        <h2 className="text-2xl font-bold text-gray-800">{t('invoices.title')}</h2>
-        <p className="mt-4 text-gray-600">{t('common.comingSoon')}</p>
-      </div>
-    );
-  }
-
   const breadcrumbItems = [
     { label: t('sidebar.financialManagement') },
     { label: t('invoices.title') },
