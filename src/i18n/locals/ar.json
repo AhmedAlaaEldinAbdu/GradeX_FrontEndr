@@ -2587,6 +2587,7 @@
     "enterInvoiceName": "أدخل اسم الفاتورة",
     "export": "تصدير",
     "exportSuccess": "تم تصدير الملف بنجاح",
+    "invoiceAddedAndExported": "تم إضافة الفاتورة و تصديرها بنجاح",
     "download": "تحميل",
     "tax": "القيمة المضافة",
     "enterTax": "أدخل القيمة المضافة",

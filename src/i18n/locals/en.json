@@ -2577,6 +2577,7 @@
     "enterInvoiceName": "Enter invoice name",
     "export": "Export",
     "exportSuccess": "File exported successfully",
+    "invoiceAddedAndExported": "Invoice added and exported successfully",
     "download": "Download",
     "enterTax": "Enter tax value",
     "totalAmount": "Total Amount",
