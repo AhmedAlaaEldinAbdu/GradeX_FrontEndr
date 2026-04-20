@@ -9,7 +9,7 @@ import EmailIcon from '@gradex/assets/icons/Email.svg';
 import { FiGlobe, FiSmartphone } from 'react-icons/fi';
 import { BsTelephoneFill } from 'react-icons/bs';
 
-import type { InvoiceDto, InvoiceItemDto } from '@/services/api/types/invoice.types';
+import type { InvoiceDto, InvoiceItemDto, SchoolInfo } from '@/services/api/types/invoice.types';
 import type { CustomerDto } from '@/services/api/types/customer.types';
 
 export interface InvoicePDFTemplateProps {
@@ -25,14 +25,15 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
     const isAr = i18n.language === 'ar';
     const dash = '-';
 
-    const schoolName = isAr
-      ? (invoice?.schoolBranchNameAr ?? dash)
-      : (invoice?.schoolBranchNameEn ?? dash);
-    const paymentMethodName = invoice?.paymentMethodNameAr
-      ? isAr
-        ? invoice?.paymentMethodNameAr
-        : invoice?.paymentMethodNameEn
-      : dash;
+    const schoolName =
+      invoice?.schoolBranchName ??
+      (isAr ? invoice?.schoolBranchNameAr : invoice?.schoolBranchNameEn) ??
+      dash;
+    const paymentMethodName =
+      invoice?.paymentMethodName ??
+      (isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn) ??
+      dash;
+    const schoolInfo: SchoolInfo | null | undefined = invoice?.schoolInfo;
 
     const invoiceItems = invoice?.items ?? invoice?.invoiceItemDtos ?? [];
 
@@ -513,7 +514,10 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                 {isAr ? 'ضريبة القيمة المضافة' : 'VAT'} ({invoice?.taxPercentage ?? 0}%):
               </span>
               <span style={{ fontWeight: 'bold', direction: 'ltr' }}>
-                {invoice?.taxAmount ?? dash} {currencyStr}
+                {invoice?.taxPercentage
+                  ? ((invoice.netAmount * invoice.taxPercentage) / 100).toFixed(2)
+                  : dash}{' '}
+                {currencyStr}
               </span>
             </div>
             <div
@@ -670,7 +674,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                       </td>
                       <td style={{ verticalAlign: 'middle', padding: 0, paddingRight: '8px' }}>
                         <span style={{ color: '#FFF', display: 'block', marginBottom: '15px' }}>
-                          info@elm.com
+                          {schoolInfo?.email ?? 'info@elm.com'}
                         </span>
                       </td>
                     </tr>
@@ -693,7 +697,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                       </td>
                       <td style={{ verticalAlign: 'middle', padding: 0, paddingRight: '8px' }}>
                         <span style={{ color: '#FFF', display: 'block', marginBottom: '15px' }}>
-                          www.elm.com
+                          {schoolInfo?.webSite ?? 'www.elm.com'}
                         </span>
                       </td>
                     </tr>
@@ -705,7 +709,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                     <tr>
                       <td style={{ verticalAlign: 'middle', padding: 0, paddingLeft: '8px' }}>
                         <span style={{ color: '#FFF', display: 'block', marginBottom: '15px' }}>
-                          0500029999
+                          {schoolInfo?.phoneNumber ?? '0500029999'}
                         </span>
                       </td>
                       <td style={{ verticalAlign: 'middle', padding: 0 }}>
@@ -735,7 +739,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                         }}
                       >
                         <span style={{ color: '#FFF', display: 'block', marginBottom: '15px' }}>
-                          0112223333
+                          {schoolInfo?.landlineNumber ?? '0112223333'}
                         </span>
                       </td>
                       <td style={{ verticalAlign: 'middle', padding: 0 }}>
