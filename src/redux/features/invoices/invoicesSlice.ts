@@ -95,7 +95,7 @@ export const fetchInvoiceNumbers = createAsyncThunk<string[]>(
   }
 );
 
-export const createInvoice = createAsyncThunk<ApiResponseModel<null>, CreateInvoiceRequest>(
+export const createInvoice = createAsyncThunk<ApiResponseModel<InvoiceDto>, CreateInvoiceRequest>(
   'invoices/create',
   async (data, { rejectWithValue }) => {
     try {
@@ -213,14 +213,17 @@ const invoicesSlice = createSlice({
         state.isDeleting = true;
         state.error = null;
       })
-      .addCase(deleteInvoice.fulfilled, (state, action: PayloadAction<ApiResponseModel<string>>) => {
-        state.isDeleting = false;
-        const { isSuccess, value } = action.payload;
-        if (isSuccess && value) {
-          state.invoices = state.invoices.filter((invoice) => invoice.id !== value);
-          state.pagination.totalItems = Math.max(0, state.pagination.totalItems - 1);
+      .addCase(
+        deleteInvoice.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<string>>) => {
+          state.isDeleting = false;
+          const { isSuccess, value } = action.payload;
+          if (isSuccess && value) {
+            state.invoices = state.invoices.filter((invoice) => invoice.id !== value);
+            state.pagination.totalItems = Math.max(0, state.pagination.totalItems - 1);
+          }
         }
-      })
+      )
       .addCase(deleteInvoice.rejected, (state, action) => {
         state.isDeleting = false;
         state.error = action.payload as string;
