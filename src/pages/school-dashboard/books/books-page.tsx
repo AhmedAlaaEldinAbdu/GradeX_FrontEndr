@@ -25,6 +25,7 @@ export default function BooksPage() {
             imgClassName: 'w-[24px] h-[24px]',
           },
         ]}
+        hasHeaderControls={true}
       />
 
       {/* Main Content */}

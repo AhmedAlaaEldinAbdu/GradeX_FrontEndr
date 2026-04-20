@@ -1106,6 +1106,7 @@
   },
   "teachers": {
     "title": "Teachers",
+    "totalTeachers": "Total Teachers",
     "subtitle": "Manage teachers",
     "teachersList": "Teachers List",
     "noTeachersMessage": "No teachers have been added yet. You can start by adding teachers to organize the teaching staff and manage education better.",
@@ -1224,6 +1225,8 @@
   },
   "books": {
     "title": "Books",
+    "availableBooks": "Available Books",
+    "soldBooks": "Sold Books",
     "subtitle": "Manage academic books",
     "addBook": "Add Book",
     "addBookSubtitle": "Add new book(s) to the system",

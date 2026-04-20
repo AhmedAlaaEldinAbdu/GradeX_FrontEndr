@@ -9,12 +9,18 @@ import BookIcon from '@gradex/assets/icons/Book.svg';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import {
   fetchSubjects,
   deleteSubject as deleteSubjectAction,
 } from '@/redux/features/subjects/subjectsSlice';
+import { fetchTeachers } from '@/redux/features/teachers';
+import MetricCard from '@/shared/components/MetricCard';
+import CustomImage from '@/shared/components/CustomImage';
+import SchoolYellowIcon from '@/assets/icons/SchoolYellow.svg';
+import TeachersBlueIcon from '@/assets/icons/TeachersBlue.svg';
 
 import type { Subject } from '@/types/subjects';
 import { MATERIAL_LEVELS } from '@/constants';
@@ -24,6 +30,7 @@ export default function SubjectsList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -34,6 +41,7 @@ export default function SubjectsList() {
 
   const subjects = useAppSelector((state) => state.subjects.subjects);
   const pagination = useAppSelector((state) => state.subjects.pagination);
+  const teachersPagination = useAppSelector((state) => state.teachers.pagination);
   const isLoading = useAppSelector((state) => state.subjects.isLoading);
   const isDeleting = useAppSelector((state) => state.subjects.isDeleting);
 
@@ -49,6 +57,20 @@ export default function SubjectsList() {
       })
     );
   }, [dispatch, pagination.page, limit, searchTerm, selectedLevel]);
+
+  useEffect(() => {
+    if (!schoolBranchId) return;
+
+    dispatch(
+      fetchTeachers({
+        page: 1,
+        limit: 1,
+        filters: {
+          schoolBranchesId: schoolBranchId,
+        },
+      })
+    );
+  }, [dispatch, schoolBranchId]);
 
   const handlePageChange = (page: number) => {
     dispatch(
@@ -187,7 +209,7 @@ export default function SubjectsList() {
             value: level.value,
             label: t(level.labelKey),
           }))}
-          placeholder={t('subjects.selectLevel')}
+          placeholder={t('subjects.materialLevel')}
           maxHeight="200px"
         />
       ),
@@ -232,47 +254,79 @@ export default function SubjectsList() {
   };
 
   return (
-    <Card>
-      {shouldShowEmptyState ? (
-        <EmptyState imgSrc={BookIcon} description={t('subjects.noSubjectsMessage')} blend={true} />
-      ) : shouldShowContent ? (
-        <div>
-          <DataTable
-            data={subjects}
-            columns={columns}
-            keyExtractor={(row) => row.id}
-            pagination={{
-              page: pagination.page,
-              limit: limit,
-              total: pagination.total,
-              totalPages: pagination.totalPages,
-            }}
-            onPageChange={handlePageChange}
-            filters={filterConfigs}
-            showFilters={true}
-            onResetFilters={handleResetFilters}
-            isLoading={isLoading}
-            emptyMessage={t('common.noResults')}
-            t={t}
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <MetricCard
+          title={t('subjects.totalSubjects')}
+          value={pagination.total}
+          icon={
+            <CustomImage
+              src={SchoolYellowIcon}
+              alt={t('subjects.totalSubjects')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-amber-50 text-amber-600"
+        />
+        <MetricCard
+          title={t('teachers.totalTeachers')}
+          value={teachersPagination.total}
+          icon={
+            <CustomImage
+              src={TeachersBlueIcon}
+              alt={t('teachers.totalTeachers')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-blue-50 text-blue-600"
+        />
+      </div>
+      <Card>
+        {shouldShowEmptyState ? (
+          <EmptyState
+            imgSrc={BookIcon}
+            description={t('subjects.noSubjectsMessage')}
+            blend={true}
           />
+        ) : shouldShowContent ? (
+          <div>
+            <DataTable
+              data={subjects}
+              columns={columns}
+              keyExtractor={(row) => row.id}
+              pagination={{
+                page: pagination.page,
+                limit: limit,
+                total: pagination.total,
+                totalPages: pagination.totalPages,
+              }}
+              onPageChange={handlePageChange}
+              filters={filterConfigs}
+              showFilters={true}
+              onResetFilters={handleResetFilters}
+              isLoading={isLoading}
+              emptyMessage={t('common.noResults')}
+              t={t}
+            />
 
-          {/* Popups */}
-          <DeletePopup
-            open={showDeletePopup}
-            message="subjects.confirmDeleteSubject"
-            itemName={(() => {
-              const selected = subjects.find((s) => s.id === selectedSubjectId);
-              return currentLang === 'ar'
-                ? (selected?.name ?? '')
-                : (selected?.nameEn ?? selected?.name ?? '');
-            })()}
-            onConfirm={handleDeleteConfirm}
-            onCancel={() => setShowDeletePopup(false)}
-            iconSrc={BigTrashIcon}
-            isProcessing={isDeleting}
-          />
-        </div>
-      ) : null}
-    </Card>
+            {/* Popups */}
+            <DeletePopup
+              open={showDeletePopup}
+              message="subjects.confirmDeleteSubject"
+              itemName={(() => {
+                const selected = subjects.find((s) => s.id === selectedSubjectId);
+                return currentLang === 'ar'
+                  ? (selected?.name ?? '')
+                  : (selected?.nameEn ?? selected?.name ?? '');
+              })()}
+              onConfirm={handleDeleteConfirm}
+              onCancel={() => setShowDeletePopup(false)}
+              iconSrc={BigTrashIcon}
+              isProcessing={isDeleting}
+            />
+          </div>
+        ) : null}
+      </Card>
+    </div>
   );
 }
