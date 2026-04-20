@@ -29,6 +29,7 @@ export interface CustomerDto {
   gradeName?: string | null;
   classroomId?: string | null;
   classroomName?: string | null;
+  studentId?: string | null;
 }
 
 export interface CustomerListData extends Pagination {
