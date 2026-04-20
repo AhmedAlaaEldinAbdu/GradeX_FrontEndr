@@ -2585,6 +2585,7 @@
     "enterTax": "Enter tax value",
     "totalAmount": "Total Amount",
     "paymentDocumentImg": "Payment image.png",
+    "classroom": "Classroom",
     "table": {
       "index": "#",
       "invoiceDate": "Invoice Date",
