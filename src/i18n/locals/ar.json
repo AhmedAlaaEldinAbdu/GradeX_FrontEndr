@@ -2690,6 +2690,9 @@
     "educationalStage": "المرحلة التعليمية",
     "schoolYear": "الموسم الدراسي",
     "grade": "الصف الدراسي",
+    "chooseGrade": "اختر الصف الدراسي",
+    "classroom": "الفصل الدراسي",
+    "chooseClassroom": "اختر الفصل الدراسي",
     "validation": {
       "clientNameRequired": "إسم العميل مطلوب",
       "emailRequired": "البريد الإلكتروني مطلوب",
