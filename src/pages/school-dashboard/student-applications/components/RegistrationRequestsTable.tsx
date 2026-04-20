@@ -224,6 +224,13 @@ const RegistrationRequestsTable: React.FC = () => {
         endTime,
       });
 
+      await dispatch(
+        updateStudentApplicationStatus({
+          id: selectedApplication.id,
+          status: StudentApplicationStatus.InterviewScheduled,
+        })
+      ).unwrap();
+
       showToast({
         message: t('studentApplications.appointmentScheduled'),
         type: 'success',
@@ -283,6 +290,14 @@ const RegistrationRequestsTable: React.FC = () => {
         return (
           <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
             {t('studentApplications.status.modified')}
+          </span>
+        );
+      case StudentApplicationStatus.InterviewScheduled:
+        return (
+          <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+            {t('studentApplications.status.interviewScheduled', {
+              defaultValue: 'Interview Scheduled',
+            })}
           </span>
         );
       default:
@@ -409,7 +424,8 @@ const RegistrationRequestsTable: React.FC = () => {
 
         if (
           row.status === StudentApplicationStatus.EditRequest ||
-          row.status === StudentApplicationStatus.Edited
+          row.status === StudentApplicationStatus.Edited ||
+          row.status === StudentApplicationStatus.InterviewScheduled
         ) {
           actions.push({
             id: 'accept',
@@ -524,6 +540,12 @@ const RegistrationRequestsTable: React.FC = () => {
             {
               value: StudentApplicationStatus.Edited.toString(),
               label: t('studentApplications.status.modified'),
+            },
+            {
+              value: StudentApplicationStatus.InterviewScheduled.toString(),
+              label: t('studentApplications.status.interviewScheduled', {
+                defaultValue: 'Interview Scheduled',
+              }),
             },
           ]}
           placeholder={t('common.status')}
