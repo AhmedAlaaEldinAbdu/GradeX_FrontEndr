@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
@@ -12,6 +12,7 @@ import {
   fetchInstallmentPlanById,
 } from '@/redux/features/tuition-fees/tuitionFeesSlice';
 import type { CustomerDto } from '@/services/api/types/customer.types';
+import type { InvoiceDto } from '@/services/api/types/invoice.types';
 import { InvoicePaymentType } from '@/shared/enums/enums';
 import Button from '@/shared/components/Button';
 import Card from '@/shared/components/Card';
@@ -22,6 +23,10 @@ import IconButton from '@/shared/components/IconButton';
 import Input from '@/shared/components/Input';
 import PhoneInput from '@/shared/components/PhoneInput';
 import Table from '@/shared/components/Table';
+import InvoicePDFTemplate from './InvoicePDFTemplate';
+import ExportInvoicePopup from '../popups/ExportInvoicePopup';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import StyledCalendarIcon from '@/assets/icons/StyledCalendar.svg';
 import RyalIcon from '@/assets/icons/Ryal.svg';
 import PercentIcon from '@/assets/icons/Percent.svg';
@@ -137,6 +142,10 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     createClassificationRow(),
   ]);
   const [formErrors, setFormErrors] = useState<IssueInvoiceFormErrors>({});
+  const [createdInvoice, setCreatedInvoice] = useState<InvoiceDto | null>(null);
+  const [isExportPopupOpen, setIsExportPopupOpen] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   const isDeferredPayment = Number(paymentType) === InvoicePaymentType.Deferred;
 
@@ -447,7 +456,8 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       ).unwrap();
 
       if (response.isSuccess) {
-        onCancel?.();
+        setCreatedInvoice(response.data ?? null);
+        setIsExportPopupOpen(true);
         return;
       }
 
@@ -461,6 +471,30 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           t('common.error')
         ),
       });
+    }
+  };
+
+  const handleExportPdf = async (fileName: string) => {
+    if (!pdfRef.current || isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+    try {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [794, 1123],
+      });
+      pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
+      pdf.save(`${fileName}.pdf`);
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -638,9 +672,28 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
         <Button variant="outline" onClick={onCancel}>
           {t('common.cancel')}
         </Button>
-        <Button variant="success" onClick={handleSubmit} loading={isCreating}>
-          {t('invoices.issueAndExport')}
+        <Button
+          variant="success"
+          onClick={handleSubmit}
+          disabled={isCreating}
+          className={`bg-[#005B48] px-8 ${isCreating ? 'opacity-50' : ''}`}
+        >
+          {isCreating ? t('common.saving') : t('invoices.issueAndExport')}
         </Button>
+      </div>
+
+      <ExportInvoicePopup
+        open={isExportPopupOpen}
+        onClose={() => {
+          setIsExportPopupOpen(false);
+          onCancel?.();
+        }}
+        onExport={handleExportPdf}
+        isExporting={isGeneratingPdf}
+      />
+
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        <InvoicePDFTemplate ref={pdfRef} invoice={createdInvoice} customer={selectedCustomer} />
       </div>
     </div>
   );
