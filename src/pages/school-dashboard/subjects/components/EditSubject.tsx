@@ -125,13 +125,24 @@ export default function EditSubject() {
             lKSchoolStageIds: data.lKSchoolStageIds,
           },
         })
-      ).unwrap();
-
-      setShowPopupMessage({
-        show: true,
-        type: 'success',
-        message: t('subjects.subjectUpdatedSuccessfully'),
-      });
+      )
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess || res === true) {
+            setShowPopupMessage({
+              show: true,
+              type: 'success',
+              message: t('subjects.subjectUpdatedSuccessfully'),
+            });
+            navigate(-1);
+          } else {
+            setShowPopupMessage({
+              show: true,
+              type: 'error',
+              message: t('common.errorOccurred'),
+            });
+          }
+        });
     } catch {
       setShowPopupMessage({
         show: true,

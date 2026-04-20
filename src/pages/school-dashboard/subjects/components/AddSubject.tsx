@@ -86,21 +86,40 @@ export default function AddSubject() {
               materialLevel: Number(data.materialLevel),
               lKSchoolStageIds: data.lKSchoolStageIds,
             })
-          ).unwrap()
+          )
+            .unwrap()
+            .then((res: any) => {
+              if (res.isSuccess || res === true) {
+                setShowPopupMessage({
+                  show: true,
+                  type: 'success',
+                  message: t('subjects.subjectsAddedSuccessfully'),
+                });
+                return true;
+              } else {
+                setShowPopupMessage({
+                  show: true,
+                  type: 'error',
+                  message: t('common.errorOccurred'),
+                });
+                return false;
+              }
+            })
+            .catch(() => {
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: t('common.errorOccurred'),
+              });
+              return false;
+            })
         )
       );
 
-      // Check if any failed
-      const hasError = results.some((r) => !r);
-      if (hasError) {
-        throw new Error('Some subjects failed to create');
+      // If all subjects were added successfully, navigate back
+      if (results.every((res) => res === true)) {
+        navigate(-1);
       }
-
-      setShowPopupMessage({
-        show: true,
-        type: 'success',
-        message: t('subjects.subjectsAddedSuccessfully'),
-      });
     } catch {
       setShowPopupMessage({
         show: true,
