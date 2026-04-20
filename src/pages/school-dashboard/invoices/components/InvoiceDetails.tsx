@@ -124,8 +124,12 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
     );
   }
 
-  const gradeName = isAr ? invoice?.gradeNameAr : invoice?.gradeNameEn;
-  const paymentMethodName = isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn;
+  const gradeName = invoice?.gradeName ?? (isAr ? invoice?.gradeNameAr : invoice?.gradeNameEn);
+  const paymentMethodName =
+    invoice?.paymentMethodName ??
+    (isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn);
+  const classroomName =
+    invoice?.classroomName ?? (isAr ? invoice?.classroomNameAr : invoice?.classroomNameEn);
   const invoiceItems = invoice?.items ?? invoice?.invoiceItemDtos ?? [];
 
   const PAYMENT_TYPE_CLASSES: Record<number, string> = {
@@ -176,6 +180,7 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
                 </IconButton>
               </div>
               <DetailRow label={t('invoices.table.educationalStage')} value={gradeName ?? dash} />
+              <DetailRow label={t('invoices.classroom')} value={classroomName ?? dash} />
               <DetailRow
                 label={t('invoices.guardianMobile')}
                 value={
@@ -275,9 +280,11 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
                       value={<RyalAmount amount={item.amount} />}
                     />
                   </div>
-                  <div className="flex flex-col gap-4">
-                    <DetailRow label={t('invoices.discount')} value={item.discount} />
-                  </div>
+                  {item.discount != null && (
+                    <div className="flex flex-col gap-4">
+                      <DetailRow label={t('invoices.discount')} value={item.discount} />
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
