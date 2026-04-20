@@ -16,6 +16,7 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
+import { getCurrentSchoolBranchId } from '@/lib/auth';
 
 export default function StudentManagement() {
   const { t, i18n } = useTranslation();
@@ -70,7 +71,7 @@ export default function StudentManagement() {
           search: searchTerm || undefined,
           gradeId: selectedGradeId || undefined,
           classroomId: selectedClassroomId || undefined,
-          schoolBranchId: selectedSchoolBranchId || undefined,
+          schoolBranchId: getCurrentSchoolBranchId() || undefined,
         },
       })
     );
