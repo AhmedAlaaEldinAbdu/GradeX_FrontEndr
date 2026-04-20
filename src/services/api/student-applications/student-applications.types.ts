@@ -4,6 +4,7 @@ export const StudentApplicationStatus = {
   Pending: 3, // قيد المراجعة
   EditRequest: 4, // طلب تعديل
   Edited: 5, // تم التعديل
+  InterviewScheduled: 6, // تم تحديد مقابلة
 } as const;
 
 export type StudentApplicationStatus =
