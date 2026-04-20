@@ -7,6 +7,37 @@ export interface InvoiceItemDto {
   discount: number;
 }
 
+export interface InvoiceItemFetchDto {
+  id: string;
+  nameAr: string;
+  nameEn: string | null;
+  amount: number;
+}
+
+export interface InvoiceItemsData {
+  applicationId: string | null;
+  tuitionFeesId: string;
+  tuitionFeesNameAr: string;
+  tuitionFeesNameEn: string | null;
+  tuitionFeesAmount: number;
+  items: InvoiceItemFetchDto[];
+  lKPaymentMethodId: string;
+  installmentPlanId: string | null;
+  offerAmount: number;
+  offerPercentage: number;
+  totalDiscount: number;
+  subTotal: number;
+  netTotal: number;
+  dueDate: string | null;
+}
+
+export interface InvoiceItemsResponse {
+  data: InvoiceItemsData | null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: unknown;
+}
+
 export interface InvoiceDto {
   id: string;
   customerId: string;
