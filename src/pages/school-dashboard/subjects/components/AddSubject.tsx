@@ -216,7 +216,7 @@ export default function AddSubject() {
           {/* Material Level */}
           <div className="mb-6">
             <FormField
-              label={t('subjects.level')}
+              label={t('subjects.materialLevel')}
               required
               error={errors.materialLevel?.message}
               htmlFor="materialLevel"
