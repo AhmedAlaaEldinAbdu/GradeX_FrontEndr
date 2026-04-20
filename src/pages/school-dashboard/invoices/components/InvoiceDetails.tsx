@@ -3,7 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/redux/store/store';
-import { fetchInvoiceById, clearInvoiceDetails } from '@/redux/features/invoices/invoicesSlice';
+import {
+  fetchInvoiceById,
+  clearInvoiceDetails,
+  fetchGradeById,
+  fetchClassroomById,
+} from '@/redux/features/invoices/invoicesSlice';
 import { fetchCustomerById, clearCustomerDetails } from '@/redux/features/customers/customersSlice';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
@@ -64,16 +69,18 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
   const invoice = useSelector((state: RootState) => state.invoices.invoiceDetails);
   const isLoadingInvoice = useSelector((state: RootState) => state.invoices.isLoadingDetails);
   const customer = useSelector((state: RootState) => state.customers.customerDetails);
+  const gradeDetails = useSelector((state: RootState) => state.invoices.gradeDetails);
+  const classroomDetails = useSelector((state: RootState) => state.invoices.classroomDetails);
 
   const pdfRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   useEffect(() => {
-    if (id) dispatch(fetchInvoiceById(id));
+    if (id) dispatch(fetchInvoiceById({ id, language: i18n.language }));
     return () => {
       dispatch(clearInvoiceDetails());
     };
-  }, [id, dispatch]);
+  }, [id, dispatch, i18n.language]);
 
   useEffect(() => {
     if (invoice?.customerId) {
@@ -83,6 +90,14 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
       dispatch(clearCustomerDetails());
     };
   }, [invoice?.customerId, dispatch]);
+
+  useEffect(() => {
+    if (invoice?.gradeId) dispatch(fetchGradeById(invoice.gradeId));
+  }, [invoice?.gradeId, dispatch]);
+
+  useEffect(() => {
+    if (invoice?.classroomId) dispatch(fetchClassroomById(invoice.classroomId));
+  }, [invoice?.classroomId, dispatch]);
 
   const downloadPdf = useCallback(
     async (fileName: string) => {
@@ -124,12 +139,17 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
     );
   }
 
-  const gradeName = invoice?.gradeName ?? (isAr ? invoice?.gradeNameAr : invoice?.gradeNameEn);
+  const gradeName =
+    (isAr ? gradeDetails?.nameAr : gradeDetails?.nameEn) ??
+    invoice?.gradeName ??
+    (isAr ? invoice?.gradeNameAr : invoice?.gradeNameEn);
   const paymentMethodName =
     invoice?.paymentMethodName ??
     (isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn);
   const classroomName =
-    invoice?.classroomName ?? (isAr ? invoice?.classroomNameAr : invoice?.classroomNameEn);
+    (isAr ? classroomDetails?.name : classroomDetails?.nameEn) ??
+    invoice?.classroomName ??
+    (isAr ? invoice?.classroomNameAr : invoice?.classroomNameEn);
   const invoiceItems = invoice?.items ?? invoice?.invoiceItemDtos ?? [];
 
   const PAYMENT_TYPE_CLASSES: Record<number, string> = {
