@@ -8,6 +8,7 @@ import CustomImage from '@/shared/components/CustomImage';
 
 import DownloadBlueIcon from '@gradex/assets/icons/DowloadBlue.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 
 interface ExportInvoiceFormData {
   invoiceName: string;
@@ -29,7 +30,7 @@ export default function ExportInvoicePopup({
   const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [step, setStep] = useState<'form' | 'success'>('form');
+  const [step, setStep] = useState<'form' | 'success' | 'done'>('form');
   const [exportedFileName, setExportedFileName] = useState('');
 
   const {
@@ -83,8 +84,17 @@ export default function ExportInvoicePopup({
   const handleReDownload = async () => {
     if (exportedFileName) {
       await onExport(exportedFileName);
+      setStep('done');
     }
   };
+
+  useEffect(() => {
+    if (step !== 'done') return;
+    const timer = setTimeout(() => {
+      handleClose();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [step, handleClose]);
 
   if (!open) return null;
 
@@ -105,7 +115,17 @@ export default function ExportInvoicePopup({
           ✕
         </button>
 
-        {step === 'form' ? (
+        {step === 'done' ? (
+          <>
+            {/* Done step */}
+            <div className="flex flex-col items-center gap-4 py-6 text-center">
+              <CustomImage src={BigSuccessIcon} alt="Success" className="h-24 w-24" />
+              <p className="text-base font-semibold text-gray-800">
+                {t('invoices.invoiceAddedAndExported')}
+              </p>
+            </div>
+          </>
+        ) : step === 'form' ? (
           <>
             {/* Title */}
             <h2 className="mb-6 text-center text-lg font-semibold text-gray-800">
@@ -180,14 +200,8 @@ export default function ExportInvoicePopup({
             </div>
 
             <div className="flex flex-row-reverse gap-3 pt-6">
-              <Button
-                type="button"
-                onClick={() => {
-                  handleReDownload();
-                  handleClose();
-                }}
-              >
-                {t('invoices.download')}
+              <Button type="button" onClick={handleReDownload} disabled={isExporting}>
+                {isExporting ? t('common.processing') : t('invoices.download')}
               </Button>
               <Button type="button" variant="outline" onClick={handleClose}>
                 {t('common.cancel')}
