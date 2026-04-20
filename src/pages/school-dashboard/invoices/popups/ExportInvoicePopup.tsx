@@ -19,6 +19,7 @@ interface ExportInvoicePopupProps {
   onClose: () => void;
   onExport: (fileName: string) => Promise<void>;
   isExporting?: boolean;
+  showSuccessStep?: boolean;
 }
 
 export default function ExportInvoicePopup({
@@ -26,6 +27,7 @@ export default function ExportInvoicePopup({
   onClose,
   onExport,
   isExporting = false,
+  showSuccessStep = false,
 }: ExportInvoicePopupProps) {
   const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
@@ -84,7 +86,11 @@ export default function ExportInvoicePopup({
   const handleReDownload = async () => {
     if (exportedFileName) {
       await onExport(exportedFileName);
-      setStep('done');
+      if (showSuccessStep) {
+        setStep('done');
+      } else {
+        handleClose();
+      }
     }
   };
 
