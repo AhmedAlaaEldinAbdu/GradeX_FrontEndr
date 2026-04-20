@@ -5,6 +5,7 @@ export const InvoiceEndpoints = {
   create: Invoice,
   getById: (id: string) => `${Invoice}/${id}`,
   getInvoiceNumbers: `${Invoice}/InvoiceNumbers`,
+  getItems: (studentId: string) => `${Invoice}/Items?StudentId=${studentId}`,
   delete: (invoiceId: string) => `${Invoice}/${invoiceId}`,
 };
 
