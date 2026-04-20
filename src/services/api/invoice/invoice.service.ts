@@ -40,9 +40,9 @@ export async function getInvoices(params?: InvoiceQueryParams): Promise<InvoiceL
   return response.data;
 }
 
-export async function getInvoiceById(id: string): Promise<InvoiceDto> {
+export async function getInvoiceById(id: string, language?: string): Promise<InvoiceDto> {
   const response: AxiosResponse<ApiResponseModel<InvoiceDto>> = await axiosClient.get(
-    InvoiceEndpoints.getById(id)
+    InvoiceEndpoints.getById(id, language)
   );
 
   return (response.data.data ?? response.data.value) as InvoiceDto;
