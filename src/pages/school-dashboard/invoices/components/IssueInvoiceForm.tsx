@@ -690,6 +690,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
         }}
         onExport={handleExportPdf}
         isExporting={isGeneratingPdf}
+        showSuccessStep
       />
 
       <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
