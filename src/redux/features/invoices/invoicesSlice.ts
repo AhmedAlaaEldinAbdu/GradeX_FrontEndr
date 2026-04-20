@@ -192,13 +192,16 @@ const invoicesSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(createInvoice.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isCreating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess) {
-          state.validationErrors = validationErrors;
+      .addCase(
+        createInvoice.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<InvoiceDto>>) => {
+          state.isCreating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess) {
+            state.validationErrors = validationErrors;
+          }
         }
-      })
+      )
       .addCase(createInvoice.rejected, (state, action: any) => {
         state.isCreating = false;
         if (action.payload?.validationErrors) {
