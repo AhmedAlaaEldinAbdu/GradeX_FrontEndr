@@ -5,6 +5,7 @@ import type { ApiResponseModel } from '../config';
 import type {
   CreateInvoiceRequest,
   InvoiceDto,
+  InvoiceItemsResponse,
   InvoiceListResponse,
   InvoiceQueryParams,
 } from '../types/invoice.types';
@@ -66,6 +67,14 @@ export async function createInvoice(
   return response.data;
 }
 
+export async function getInvoiceItems(studentId: string): Promise<InvoiceItemsResponse> {
+  const response: AxiosResponse<InvoiceItemsResponse> = await axiosClient.get(
+    InvoiceEndpoints.getItems(studentId)
+  );
+
+  return response.data;
+}
+
 export async function deleteInvoice(invoiceId: string): Promise<ApiResponseModel<string>> {
   const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.delete(
     InvoiceEndpoints.delete(invoiceId)
@@ -78,6 +87,7 @@ export const invoiceApiService = {
   getInvoices,
   getInvoiceById,
   getInvoiceNumbers,
+  getInvoiceItems,
   createInvoice,
   deleteInvoice,
 };
