@@ -1225,6 +1225,8 @@
   },
   "books": {
     "title": "Books",
+    "availableBooks": "Available Books",
+    "soldBooks": "Sold Books",
     "subtitle": "Manage academic books",
     "addBook": "Add Book",
     "addBookSubtitle": "Add new book(s) to the system",

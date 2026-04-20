@@ -16,7 +16,10 @@ import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/com
 import { fetchBooks, deleteBook as deleteBookAction } from '@/redux/features/books/booksSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import MetricCard from '@/shared/components/MetricCard';
 import type { FlattenedBook, BookStatus } from '@/types/books';
+import LibraryGreenIcon from '@/assets/icons/LibraryGreen.svg';
+import BookUploadBlueIcon from '@/assets/icons/BookUploadBlue.svg';
 
 const BOOK_STATUS_OPTIONS = [
   { value: '1', labelKey: 'books.available' },
@@ -100,6 +103,11 @@ export default function BooksList() {
     searchTerm || selectedMaterialId || selectedSchoolStageId || selectedStatus;
   const shouldShowEmptyState = !isLoading && flattenedBooks.length === 0 && !hasActiveFilters;
   const shouldShowContent = isLoading || flattenedBooks.length > 0 || hasActiveFilters;
+
+  const metrics = {
+    availableBooks: flattenedBooks.reduce((sum, book) => sum + (book.remainingQuantity ?? 0), 0),
+    soldBooks: flattenedBooks.reduce((sum, book) => sum + (book.soldQuantity ?? 0), 0),
+  };
 
   const getStatusLabel = (status: BookStatus) => {
     switch (status) {
@@ -307,7 +315,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedStatus,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedStatus}
@@ -316,7 +324,7 @@ export default function BooksList() {
             value: status.value,
             label: t(status.labelKey),
           }))}
-          placeholder={t('books.selectStatus')}
+          placeholder={t('books.status')}
           maxHeight="200px"
         />
       ),
@@ -349,54 +357,79 @@ export default function BooksList() {
   };
 
   return (
-    <Card>
-      {shouldShowEmptyState ? (
-        <EmptyState imgSrc={BookIcon} description={t('books.noBooksMessage')} blend={true} />
-      ) : shouldShowContent ? (
-        <div>
-          <DataTable
-            data={flattenedBooks}
-            columns={columns}
-            keyExtractor={(row) => row.id}
-            pagination={{
-              page: pagination.page,
-              limit: pagination.limit,
-              total: pagination.total,
-              totalPages: pagination.totalPages,
-            }}
-            onPageChange={handlePageChange}
-            filters={filterConfigs}
-            showFilters={true}
-            onResetFilters={handleResetFilters}
-            isLoading={isLoading}
-            emptyMessage={t('common.noResults')}
-            t={t}
-          />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <MetricCard
+          title={t('books.availableBooks')}
+          value={metrics.availableBooks}
+          icon={
+            <CustomImage
+              src={LibraryGreenIcon}
+              alt={t('books.availableBooks')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-green-50 text-green-600"
+        />
+        <MetricCard
+          title={t('books.soldBooks')}
+          value={metrics.soldBooks}
+          icon={
+            <CustomImage src={BookUploadBlueIcon} alt={t('books.soldBooks')} className="h-6 w-6" />
+          }
+          iconClassName="bg-blue-50 text-blue-600"
+        />
+      </div>
 
-          {/* Popups */}
-          <DeletePopup
-            open={showDeletePopup}
-            message="books.confirmDeleteBook"
-            itemName={flattenedBooks.find((b) => b.id === selectedBookId)?.name ?? ''}
-            onConfirm={handleDeleteConfirm}
-            onCancel={() => setShowDeletePopup(false)}
-            iconSrc={BigTrashIcon}
-            isProcessing={isDeleting}
-          />
+      <Card>
+        {shouldShowEmptyState ? (
+          <EmptyState imgSrc={BookIcon} description={t('books.noBooksMessage')} blend={true} />
+        ) : shouldShowContent ? (
+          <div>
+            <DataTable
+              data={flattenedBooks}
+              columns={columns}
+              keyExtractor={(row) => row.id}
+              pagination={{
+                page: pagination.page,
+                limit: pagination.limit,
+                total: pagination.total,
+                totalPages: pagination.totalPages,
+              }}
+              onPageChange={handlePageChange}
+              filters={filterConfigs}
+              showFilters={true}
+              onResetFilters={handleResetFilters}
+              isLoading={isLoading}
+              emptyMessage={t('common.noResults')}
+              t={t}
+            />
 
-          {/* File Viewer Modal */}
-          <FileViewer
-            isOpen={showFileViewer}
-            onClose={() => {
-              setShowFileViewer(false);
-              setSelectedFile(null);
-            }}
-            filePath={selectedFile?.filePath || null}
-            fileName={selectedFile?.fileName}
-            title={selectedFile?.fileName}
-          />
-        </div>
-      ) : null}
-    </Card>
+            {/* Popups */}
+            <DeletePopup
+              open={showDeletePopup}
+              message="books.confirmDeleteBook"
+              itemName={flattenedBooks.find((b) => b.id === selectedBookId)?.name ?? ''}
+              onConfirm={handleDeleteConfirm}
+              onCancel={() => setShowDeletePopup(false)}
+              iconSrc={BigTrashIcon}
+              isProcessing={isDeleting}
+            />
+
+            {/* File Viewer Modal */}
+            <FileViewer
+              isOpen={showFileViewer}
+              onClose={() => {
+                setShowFileViewer(false);
+                setSelectedFile(null);
+              }}
+              filePath={selectedFile?.filePath || null}
+              fileName={selectedFile?.fileName}
+              title={selectedFile?.fileName}
+            />
+          </div>
+        ) : null}
+      </Card>
+    </div>
   );
 }
