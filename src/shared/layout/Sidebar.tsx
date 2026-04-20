@@ -530,7 +530,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   return (
     <aside className="flex w-64 flex-col border-r border-gray-200 bg-white shadow-lg">
       {/* Sidebar Header */}
-      <div className="h-[96px] border-gray-200 px-6 py-4">
+      <div className="h-[88px] border-gray-200 px-6 py-4">
         {/* <h1 className="text-center text-xl font-bold text-gray-800">Logo</h1> */}
         <CustomImage src={MainLogo} alt="Logo" className="mx-auto h-[65px] w-auto" />
       </div>
