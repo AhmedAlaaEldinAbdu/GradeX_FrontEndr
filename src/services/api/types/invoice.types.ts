@@ -4,7 +4,15 @@ export interface InvoiceItemDto {
   id?: string;
   name: string;
   amount: number;
-  discount: number;
+  discount?: number;
+}
+
+export interface SchoolInfo {
+  phoneNumber?: string | null;
+  email?: string | null;
+  webSite?: string | null;
+  landlineNumber?: string | null;
+  communicationOfficer?: string | null;
 }
 
 export interface InvoiceItemFetchDto {
@@ -42,8 +50,10 @@ export interface InvoiceDto {
   id: string;
   customerId: string;
   schoolBranchId: string;
+  schoolBranchName?: string | null;
   schoolBranchNameAr?: string | null;
   schoolBranchNameEn?: string | null;
+  schoolInfo?: SchoolInfo | null;
   invoiceNumber: string;
   invoiceDate: string;
   totalAmount: number;
@@ -60,9 +70,11 @@ export interface InvoiceDto {
   paymentMethodNameAr?: string | null;
   paymentMethodNameEn?: string | null;
   gradeId?: string | null;
+  gradeName?: string | null;
   gradeNameAr?: string | null;
   gradeNameEn?: string | null;
   classroomId?: string | null;
+  classroomName?: string | null;
   classroomNameAr?: string | null;
   classroomNameEn?: string | null;
   customerName?: string | null;
