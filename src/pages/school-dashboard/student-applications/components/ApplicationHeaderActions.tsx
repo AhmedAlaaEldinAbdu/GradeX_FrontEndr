@@ -33,6 +33,7 @@ const ApplicationHeaderActions: React.FC<ApplicationHeaderActionsProps> = ({
   const showDecisionOnlyActions =
     status === StudentApplicationStatus.EditRequest ||
     status === StudentApplicationStatus.Edited ||
+    status === StudentApplicationStatus.InterviewScheduled ||
     hasInterview;
 
   if (showDecisionOnlyActions) {
