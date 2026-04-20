@@ -180,14 +180,11 @@ const customersSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(
-        createCustomer.fulfilled,
-        (state, action: PayloadAction<ApiResponseModel<null>>) => {
-          state.isCreating = false;
-          const { isSuccess, validationErrors } = action.payload;
-          if (!isSuccess) state.validationErrors = validationErrors;
-        }
-      )
+      .addCase(createCustomer.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
+        state.isCreating = false;
+        const { isSuccess, validationErrors } = action.payload;
+        if (!isSuccess) state.validationErrors = validationErrors;
+      })
       .addCase(createCustomer.rejected, (state, action: any) => {
         state.isCreating = false;
         if (action.payload?.validationErrors) {
@@ -203,14 +200,11 @@ const customersSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(
-        updateCustomer.fulfilled,
-        (state, action: PayloadAction<ApiResponseModel<null>>) => {
-          state.isUpdating = false;
-          const { isSuccess, validationErrors } = action.payload;
-          if (!isSuccess) state.validationErrors = validationErrors;
-        }
-      )
+      .addCase(updateCustomer.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
+        state.isUpdating = false;
+        const { isSuccess, validationErrors } = action.payload;
+        if (!isSuccess) state.validationErrors = validationErrors;
+      })
       .addCase(updateCustomer.rejected, (state, action: any) => {
         state.isUpdating = false;
         if (action.payload?.validationErrors) {
