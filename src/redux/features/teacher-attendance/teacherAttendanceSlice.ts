@@ -12,13 +12,7 @@ import type {
   BulkAttendanceRequest,
 } from '@/types/teacherAttendance';
 import { getErrorMessage } from '@/lib/http';
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-// Static School Branch ID - to be replaced with dynamic value later
-export const STATIC_SCHOOL_BRANCH_ID = '471d89c1-61a8-4b13-d682-08de1657abad';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 // ============================================================================
 // Types
@@ -108,8 +102,14 @@ export const fetchTeacherAttendance = createAsyncThunk<
   FetchTeacherAttendancePayload | void
 >('teacherAttendance/fetchTeacherAttendance', async (payload, { rejectWithValue }) => {
   try {
+    const schoolBranchId = payload?.schoolBranchId || getCurrentSchoolBranchId();
+
+    if (!schoolBranchId) {
+      return rejectWithValue('School branch ID is missing');
+    }
+
     const params: TeacherAttendanceQueryParams = {
-      SchoolBrancheId: payload?.schoolBranchId || STATIC_SCHOOL_BRANCH_ID,
+      SchoolBrancheId: schoolBranchId,
     };
 
     if (payload) {

@@ -8,7 +8,7 @@ import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import Loading from '@/shared/components/Loading';
 import { useAppSelector } from '@/hooks/useRedux';
 import { teacherApiService } from '@/services/api/teachers/teachers.service';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
 
 interface PersonalDataTabProps {
@@ -19,6 +19,7 @@ interface PersonalDataTabProps {
 export default function PersonalDataTab({ teacherId, isActive = true }: PersonalDataTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   // Redux state for personal data
   const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
@@ -32,13 +33,13 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
   // Fetch assignments when component becomes active
   useEffect(() => {
     const fetchAssignments = async () => {
-      if (!teacherId || !isActive) return;
+      if (!teacherId || !isActive || !schoolBranchId) return;
 
       setIsLoadingAssignments(true);
       try {
         const data = await teacherApiService.getTeacherAssignmentList({
           TeacherId: teacherId,
-          SchoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+          SchoolBranchesId: schoolBranchId,
         });
         if (data?.teacherAssignmentDto) {
           setAssignmentsData(data.teacherAssignmentDto);
@@ -51,7 +52,7 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
     };
 
     fetchAssignments();
-  }, [teacherId, isActive]);
+  }, [teacherId, isActive, schoolBranchId]);
 
   // Helper functions for placement info
   const getGradeName = (assignment: TeacherAssignmentListItem) =>

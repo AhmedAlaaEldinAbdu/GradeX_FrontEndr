@@ -24,7 +24,7 @@ import { StudentApplicationStatus } from '@/services/api/student-applications/st
 import useLanguage from '@/hooks/useLanguage';
 import { useToast } from '@/shared/context/ToastContext';
 import { updateStudentInterview } from '@/services/api/student-interviews/student-interviews.service';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import AcceptModal from './AcceptModal';
 import NotPassedModal from './NotPassedModal';
@@ -36,6 +36,7 @@ const PersonalInterviewsTable: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGradeId, setSelectedGradeId] = useState('');
@@ -229,9 +230,14 @@ const PersonalInterviewsTable: React.FC = () => {
       const startTime = startDate.toISOString();
       const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
       const endTime = endDate.toISOString();
+      const targetSchoolBranchId = selectedInterview.schoolBranchesId || schoolBranchId;
+
+      if (!targetSchoolBranchId) {
+        throw new Error(t('common.error'));
+      }
 
       await updateStudentInterview(selectedInterview.id, {
-        schoolBranchesId: selectedInterview.schoolBranchesId || STATIC_SCHOOL_BRANCH_ID,
+        schoolBranchesId: targetSchoolBranchId,
         studentId: selectedInterview.studentId,
         interviewDate,
         startTime,

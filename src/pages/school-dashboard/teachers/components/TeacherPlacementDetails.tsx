@@ -9,7 +9,7 @@ import Loading from '@/shared/components/Loading';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchTeacherPersonalData } from '@/redux/features/teachers';
 import { teacherApiService } from '@/services/api/teachers/teachers.service';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
 
 interface TeacherPlacementDetailsProps {
@@ -24,6 +24,7 @@ export default function TeacherPlacementDetails({
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   // Local state for assignments data (multiple assignments)
   const [assignmentsData, setAssignmentsData] = useState<TeacherAssignmentListItem[]>([]);
@@ -38,7 +39,7 @@ export default function TeacherPlacementDetails({
   // Fetch assignments data
   useEffect(() => {
     const fetchAssignments = async () => {
-      if (!teacherId) return;
+      if (!teacherId || !schoolBranchId) return;
 
       setIsLoadingAssignment(true);
       setAssignmentError(null);
@@ -46,7 +47,7 @@ export default function TeacherPlacementDetails({
       try {
         const data = await teacherApiService.getTeacherAssignmentList({
           TeacherId: teacherId,
-          SchoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+          SchoolBranchesId: schoolBranchId,
         });
         if (data && data.teacherAssignmentDto && data.teacherAssignmentDto.length > 0) {
           setAssignmentsData(data.teacherAssignmentDto);
@@ -66,7 +67,7 @@ export default function TeacherPlacementDetails({
     if (isActive) {
       fetchAssignments();
     }
-  }, [teacherId, isActive, dispatch, t]);
+  }, [teacherId, isActive, dispatch, t, schoolBranchId]);
 
   // Loading state
   if (!isActive || isLoadingAssignment || (isLoadingPersonalData && !teacherPersonalData)) {

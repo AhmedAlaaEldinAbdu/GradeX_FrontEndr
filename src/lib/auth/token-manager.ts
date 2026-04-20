@@ -247,3 +247,8 @@ export const tokenManager = {
     }
   },
 };
+
+export const getCurrentSchoolBranchId = (): string | undefined => {
+  const userData = tokenManager.getUserData();
+  return userData?.schoolBrancheId ?? userData?.schoolBranchId ?? undefined;
+};

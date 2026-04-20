@@ -7,14 +7,15 @@ import Attendance from './components/Attendance';
 import AddAttendanceSchedulePopup, {
   type AttendanceScheduleFormData,
 } from './popups/AddAttendanceSchedulePopup';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { updateWorkingHours } from '@/services/api/schools/schools.service';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
 export default function AttendancePage() {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const [searchParams] = useSearchParams();
+  const schoolBranchId = getCurrentSchoolBranchId();
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'students');
   const [isSchedulePopupOpen, setIsSchedulePopupOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,9 +36,14 @@ export default function AttendancePage() {
   };
 
   const handleSubmitSchedule = async (data: AttendanceScheduleFormData) => {
+    if (!schoolBranchId) {
+      showToast({ message: t('common.errorOccurred'), type: 'error' });
+      return;
+    }
+
     try {
       setIsSubmitting(true);
-      await updateWorkingHours(STATIC_SCHOOL_BRANCH_ID, {
+      await updateWorkingHours(schoolBranchId, {
         workingHoursFrom: data.workingHoursFrom,
         workingHoursTo: data.workingHoursTo,
       });

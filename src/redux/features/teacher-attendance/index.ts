@@ -9,7 +9,6 @@ export {
   deselectAttendance,
   selectAllAttendances,
   clearSelection,
-  STATIC_SCHOOL_BRANCH_ID,
 } from './teacherAttendanceSlice';
 
 export type {

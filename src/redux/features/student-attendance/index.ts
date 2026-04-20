@@ -7,5 +7,4 @@ export {
   selectAllAttendances,
   clearSelection,
   clearError,
-  STATIC_SCHOOL_BRANCH_ID,
 } from './studentAttendanceSlice';

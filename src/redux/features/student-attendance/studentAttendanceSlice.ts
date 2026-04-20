@@ -7,9 +7,7 @@ import {
 import { studentAttendanceApiService } from '@/services/api/student-attendance/student-attendance.service';
 import type { StudentAttendanceDto, StudentBulkAttendanceRequest } from '@/types/studentAttendance';
 import { getErrorMessage } from '@/lib/http';
-
-// Use the same static branch ID as teacher attendance
-export const STATIC_SCHOOL_BRANCH_ID = '471d89c1-61a8-4b13-d682-08de1657abad';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 // ============================================================================
 // Types
@@ -72,8 +70,14 @@ export const fetchStudentAttendance = createAsyncThunk<
   { rejectValue: string }
 >('studentAttendance/fetchStudentAttendance', async (payload, { rejectWithValue }) => {
   try {
+    const schoolBranchId = payload?.schoolBranchId || getCurrentSchoolBranchId();
+
+    if (!schoolBranchId) {
+      return rejectWithValue('School branch ID is missing');
+    }
+
     const response = await studentAttendanceApiService.getStudentAttendanceByBranch({
-      SchoolBrancheId: payload?.schoolBranchId || STATIC_SCHOOL_BRANCH_ID,
+      SchoolBrancheId: schoolBranchId,
       PageIndex: payload?.page || 1,
       PageSize: payload?.limit || 10,
       Search: payload?.search,

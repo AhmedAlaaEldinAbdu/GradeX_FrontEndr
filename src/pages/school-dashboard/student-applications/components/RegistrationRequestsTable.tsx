@@ -29,7 +29,7 @@ import ScheduleStudentAppointmentPopup from '../popups/ScheduleStudentAppointmen
 import type { ScheduleAppointmentFormProps } from '@/validations/student-applications-validations';
 import { useToast } from '@/shared/context/ToastContext';
 import { createStudentInterview } from '@/services/api/student-interviews/student-interviews.service';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import AcceptModal from './AcceptModal';
 import EditRequestModal from './EditRequestModal';
@@ -42,6 +42,7 @@ const RegistrationRequestsTable: React.FC = () => {
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
@@ -211,8 +212,12 @@ const RegistrationRequestsTable: React.FC = () => {
       const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
       const endTime = endDate.toISOString();
 
+      if (!schoolBranchId) {
+        throw new Error(t('common.error'));
+      }
+
       await createStudentInterview({
-        schoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+        schoolBranchesId: schoolBranchId,
         studentId: selectedApplication.studentId,
         interviewDate,
         startTime,

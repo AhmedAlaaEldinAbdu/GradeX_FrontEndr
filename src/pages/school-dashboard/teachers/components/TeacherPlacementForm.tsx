@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { fetchBooks } from '@/redux/features/books/booksSlice';
 import { createTeacherAssignment } from '@/redux/features/teachers';
-import { STATIC_SCHOOL_BRANCH_ID } from '@/redux/features/teacher-attendance/teacherAttendanceSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { EducationalStagesApiService } from '@/services/api/educational-stages/educational-stages.service';
 import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
 import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
@@ -46,6 +46,7 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   // Redux state
   const subjects = useAppSelector((state) => state.subjects.subjects);
@@ -246,6 +247,11 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
   };
 
   const handleSubmit = async () => {
+    if (!schoolBranchId) {
+      showToast({ message: t('common.errorOccurred'), type: 'error' });
+      return;
+    }
+
     if (!validateForm()) {
       showToast({ message: t('common.validation.pleaseFillRequiredFields'), type: 'error' });
       return;
@@ -260,7 +266,7 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
 
         const result = await dispatch(
           createTeacherAssignment({
-            schoolBranchesId: STATIC_SCHOOL_BRANCH_ID,
+            schoolBranchesId: schoolBranchId,
             teacherId,
             gradeId: row.gradeId,
             materialId: row.subjectId,
