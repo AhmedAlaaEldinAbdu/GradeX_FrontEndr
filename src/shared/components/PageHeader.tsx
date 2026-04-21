@@ -20,13 +20,25 @@ type ActionType = {
   type?: 'button' | 'submit' | 'reset';
 };
 
+type StatisticType = {
+  value: string | number;
+  label: string;
+  className?: string;
+};
+
 type PageHeaderProps = {
   title: string;
   actions?: ActionType[];
+  statistics?: StatisticType;
   hasHeaderControls?: boolean;
 };
 
-const PageHeader = ({ title, actions = [], hasHeaderControls = false }: PageHeaderProps) => {
+const PageHeader = ({
+  title,
+  actions = [],
+  statistics,
+  hasHeaderControls = false,
+}: PageHeaderProps) => {
   const { t } = useTranslation();
 
   return (
@@ -35,7 +47,7 @@ const PageHeader = ({ title, actions = [], hasHeaderControls = false }: PageHead
         <h1 className="text-[2rem] font-medium text-black-900">{t(`${title}`)}</h1>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {actions.map((action, index) =>
           action.to ? (
             <Link key={index} to={action.to}>
@@ -73,6 +85,17 @@ const PageHeader = ({ title, actions = [], hasHeaderControls = false }: PageHead
             </Button>
           )
         )}
+
+        {statistics && (
+          <div
+            className={`flex items-center justify-center rounded-3xl bg-blue-100 px-4 py-1 text-sm font-normal text-[#0A6FC2] ${statistics.className ?? ''}`}
+          >
+            <span className="whitespace-nowrap">
+              {statistics.value} {t(`${statistics.label}`)}
+            </span>
+          </div>
+        )}
+
         {hasHeaderControls && <HeaderControls />}
       </div>
     </div>
