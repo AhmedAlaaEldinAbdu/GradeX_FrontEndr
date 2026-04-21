@@ -13,6 +13,13 @@ export interface SchoolInfo {
   webSite?: string | null;
   landlineNumber?: string | null;
   communicationOfficer?: string | null;
+  city?: string | null;
+  codeSchoolCity?: string | null;
+  neighborhood?: string | null;
+  region?: string | null;
+  street?: string | null;
+  buildingNumber?: string | null;
+  zipCode?: string | null;
 }
 
 export interface InvoiceItemFetchDto {
