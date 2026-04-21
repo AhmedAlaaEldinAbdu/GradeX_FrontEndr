@@ -588,7 +588,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
 
           {/* Footer Area Elements */}
           {/* QR Code */}
-          <div
+          {/* <div
             style={{
               position: 'absolute',
               [isAr ? 'right' : 'left']: '40px',
@@ -601,7 +601,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
               alt="QR"
               style={{ width: '85px', height: '85px' }}
             />
-          </div>
+          </div> */}
 
           {/* Pencil Cup */}
           <img
