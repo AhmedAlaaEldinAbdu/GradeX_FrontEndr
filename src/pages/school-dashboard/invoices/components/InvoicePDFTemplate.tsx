@@ -35,6 +35,13 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
       dash;
     const schoolInfo: SchoolInfo | null | undefined = invoice?.schoolInfo;
 
+    const schoolAddress =
+      [schoolInfo?.street, schoolInfo?.neighborhood, schoolInfo?.city, schoolInfo?.region]
+        .filter(Boolean)
+        .join(' - ') ||
+      (invoice as any)?.schoolAddress ||
+      dash;
+
     const invoiceItems = invoice?.items ?? invoice?.invoiceItemDtos ?? [];
 
     // Format helpers
@@ -160,7 +167,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
             <div style={{ textAlign: isAr ? 'right' : 'left' }}>
               <h1 style={{ margin: 0, fontSize: '26px', color: '#111' }}>{schoolName}</h1>
               <p style={{ margin: '14px 0 0 0', fontSize: '13px', color: '#666' }}>
-                {invoice?.schoolAddress ?? dash}
+                {schoolAddress}
               </p>
             </div>
 
