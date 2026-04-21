@@ -80,7 +80,6 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
 
   // Non-validated form state
   const [clientType, setClientType] = useState<ClientType>('individual');
-  const [idNumber, setIdNumber] = useState('');
   const [additionalMobile, setAdditionalMobile] = useState('');
   const [streetName, setStreetName] = useState('');
   const [districtName, setDistrictName] = useState('');
@@ -109,6 +108,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       email: '',
       mobile: '',
       additionalMobile: undefined,
+      nationalId: '',
       lkCountryId: '',
       regionId: '',
     },
@@ -178,7 +178,6 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       if (!fetchCustomerById.fulfilled.match(action)) return;
       const d = action.payload;
       setClientType(numberToClientType[d.customerType] ?? 'individual');
-      setIdNumber(d.nationalId ?? '');
       setAdditionalMobile(
         d.additionalAreaCode && d.additionalPhoneNumber
           ? `${d.additionalAreaCode}${d.additionalPhoneNumber}`
@@ -193,6 +192,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         email: d.email ?? '',
         mobile: d.areaCode && d.phoneNumber ? `${d.areaCode}${d.phoneNumber}` : '',
         additionalMobile: undefined,
+        nationalId: d.nationalId ?? '',
         lkCountryId: d.lkCountryId ?? '',
         regionId: '',
       });
@@ -272,7 +272,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       schoolBranchId: schoolBrancheId || null,
       name: data.clientName,
       customerType: clientTypeToNumber[clientType],
-      nationalId: idNumber,
+      nationalId: data.nationalId ?? '',
       email: data.email,
       areaCode,
       phoneNumber,
@@ -392,12 +392,20 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
           </FormField>
 
           <div className="md:col-span-2">
-            <FormField label={tOptional(t, 'customers.idNumber')}>
-              <Input
-                value={idNumber}
-                onChange={(e) => setIdNumber(e.target.value)}
-                placeholder={t('customers.enterIdNumber')}
-                className="!bg-white"
+            <FormField
+              label={tOptional(t, 'customers.idNumber')}
+              error={errors.nationalId?.message}
+            >
+              <Controller
+                name="nationalId"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder={t('customers.enterIdNumber')}
+                    className="!bg-white"
+                  />
+                )}
               />
             </FormField>
           </div>

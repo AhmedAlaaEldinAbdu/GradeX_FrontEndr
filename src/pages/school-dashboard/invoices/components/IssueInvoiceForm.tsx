@@ -7,7 +7,9 @@ import { tokenManager } from '@/lib/auth';
 import { formatValidationErrors } from '@/lib/utils/error-utils';
 import { fetchCustomers } from '@/redux/features/customers/customersSlice';
 import {
+  clearInvoiceItems,
   createInvoice,
+  fetchInvoiceById,
   fetchInvoiceItems,
   fetchInvoiceNumbers,
 } from '@/redux/features/invoices/invoicesSlice';
@@ -225,6 +227,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   useEffect(() => {
     dispatch(fetchInvoiceNumbers());
+    return () => {
+      dispatch(clearInvoiceItems());
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -250,6 +255,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     setMobile(areaCode && phone ? `${areaCode}${phone}` : '');
 
     if (selectedCustomer?.studentId) {
+      setClassificationRows([createClassificationRow()]);
       dispatch(fetchInvoiceItems(selectedCustomer.studentId));
     } else {
       setClassificationRows([createClassificationRow()]);
@@ -428,7 +434,17 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       ).unwrap();
 
       if (response.isSuccess) {
-        setCreatedInvoice(response.data ?? null);
+        const createdId = response.data?.id;
+        if (createdId) {
+          const fullAction = await dispatch(fetchInvoiceById({ id: createdId }));
+          if (fetchInvoiceById.fulfilled.match(fullAction)) {
+            setCreatedInvoice(fullAction.payload);
+          } else {
+            setCreatedInvoice(response.data ?? null);
+          }
+        } else {
+          setCreatedInvoice(response.data ?? null);
+        }
         setIsExportPopupOpen(true);
         return;
       }

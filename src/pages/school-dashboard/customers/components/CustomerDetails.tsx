@@ -7,10 +7,11 @@ import { fetchCustomerById, clearCustomerDetails } from '@/redux/features/custom
 import { CustomerTypeEnum } from '@/services/api/types/customer.types';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
-import IconButton from '@/shared/components/IconButton';
+import Loading from '@/shared/components/Loading';
 
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import IconButton from '@/shared/components/IconButton';
 
 const DetailRow = ({
   label,
@@ -58,12 +59,16 @@ export default function CustomerDetails() {
     };
   }, [id, dispatch]);
 
-  if (isLoading || !customer) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20 text-gray-400">
-        {isLoading ? '...' : dash}
+      <div className="flex h-64 items-center justify-center">
+        <Loading />
       </div>
     );
+  }
+
+  if (!customer) {
+    return <div className="flex items-center justify-center py-20 text-gray-400">{dash}</div>;
   }
 
   return (

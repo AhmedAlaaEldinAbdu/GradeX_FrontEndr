@@ -33,7 +33,6 @@ export default function InvoicesList() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { invoices, pagination, isLoading } = useSelector((state: RootState) => state.invoices);
-  const { offers } = useSelector((state: RootState) => state.offers);
   const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
   const { lkPaymentMethods } = useSelector((state: RootState) => state.lookups);
 
@@ -105,15 +104,6 @@ export default function InvoicesList() {
         label: isAr ? method.arabicName : method.englishName,
       })),
     [lkPaymentMethods, isAr]
-  );
-
-  const itemOptions = useMemo(
-    () =>
-      offers.map((offer) => ({
-        value: offer.id,
-        label: isAr ? offer.nameAr : offer.nameEn,
-      })),
-    [offers, isAr]
   );
 
   const stageOptions = useMemo(
@@ -191,11 +181,15 @@ export default function InvoicesList() {
       className: 'text-center',
     },
     {
-      header: 'invoices.table.studentName',
+      header: 'invoices.table.customerName',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
           <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-200">
-            <CustomImage src={DefaultAvatar} alt="Student" className="h-full w-full object-cover" />
+            <CustomImage
+              src={DefaultAvatar}
+              alt="customer"
+              className="h-full w-full object-cover"
+            />
           </div>
           <span
             className="w-[150px] truncate text-start font-medium text-gray-800"
@@ -206,9 +200,7 @@ export default function InvoicesList() {
           <IconButton
             variant="blue"
             ariaLabel="View"
-            onClick={() => {
-              // navigate(`/students/${row.studentId}`);
-            }}
+            onClick={() => navigate(`/financial-management/customers/${row.customerId}`)}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
           >
             <CustomImage
@@ -347,24 +339,6 @@ export default function InvoicesList() {
           }}
           options={methodOptions}
           placeholder={t('invoices.paymentMethod')}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'item',
-      value: selectedItem,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedItem}
-          onChange={(value) => {
-            setSelectedItem(Array.isArray(value) ? (value[0] ?? '') : value);
-          }}
-          options={itemOptions}
-          placeholder={t('invoices.item')}
           maxHeight="200px"
         />
       ),

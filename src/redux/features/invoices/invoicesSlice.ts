@@ -189,6 +189,9 @@ const invoicesSlice = createSlice({
       state.gradeDetails = null;
       state.classroomDetails = null;
     },
+    clearInvoiceItems: (state) => {
+      state.invoiceItems = null;
+    },
   },
   extraReducers: (builder: ActionReducerMapBuilder<InvoicesState>) => {
     builder
@@ -332,5 +335,5 @@ const invoicesSlice = createSlice({
   },
 });
 
-export const { clearInvoicesError, clearInvoiceDetails } = invoicesSlice.actions;
+export const { clearInvoicesError, clearInvoiceDetails, clearInvoiceItems } = invoicesSlice.actions;
 export default invoicesSlice.reducer;

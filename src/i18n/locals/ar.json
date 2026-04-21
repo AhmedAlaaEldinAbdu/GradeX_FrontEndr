@@ -2619,7 +2619,7 @@
       "invoiceValue": "قيمة الفاتورة",
       "tax": "الضريبة",
       "totalInvoice": "إجمالي الفاتورة",
-      "studentName": "اسم الطالب",
+      "customerName": "اسم العميل",
       "educationalStage": "المرحلة التعليمية",
       "item": "البند",
       "paymentMethod": "طريقة السداد",
@@ -2714,7 +2714,8 @@
       "emailInvalid": "صيغة البريد الإلكتروني غير صحيحة",
       "mobileRequired": "رقم الجوال مطلوب",
       "countryRequired": "يجب اختيار الدولة",
-      "cityRequired": "يجب اختيار المدينة"
+      "cityRequired": "يجب اختيار المدينة",
+      "nationalIdInvalid": "رقم الهوية يجب أن يتكون من 10 أرقام إنجليزية فقط"
     },
     "table": {
       "index": "#",

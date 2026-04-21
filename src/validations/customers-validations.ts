@@ -15,6 +15,13 @@ export const customerSchema = yup.object({
     .required('customers.validation.mobileRequired')
     .typeError('customers.validation.mobileRequired'),
   additionalMobile: yup.string().optional(),
+  nationalId: yup
+    .string()
+    .optional()
+    .test('national-id', 'customers.validation.nationalIdInvalid', (value) => {
+      if (!value) return true;
+      return /^[0-9]{10}$/.test(value);
+    }),
   lkCountryId: yup
     .string()
     .required('customers.validation.countryRequired')
