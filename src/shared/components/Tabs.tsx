@@ -105,12 +105,12 @@ const Tabs: React.FC<TabsProps> = ({
 
   const baseTab =
     tabClassName ??
-    'flex-1 py-2 text-center font-normal text-lg transition-colors duration-200 text-gray-500 hover:text-green-500 focus:outline-none';
+    'flex-1 py-2 text-center font-normal text-base leading-8 transition-colors duration-200 text-[#646969] hover:text-green-500 focus:outline-none';
   const activeTab =
     activeTabClassName ??
     (variant === 'underline'
-      ? 'border-b-2 border-green-500 text-green-500 rounded'
-      : 'bg-green-100 text-green-700 rounded-md');
+      ? 'border-b-2 border-green-500 !text-green-500 rounded-lg'
+      : 'bg-green-100 text-green-700 rounded-lg');
 
   const listCls = listClassName ?? (variant === 'underline' ? 'flex w-full' : 'flex w-full gap-2');
 
