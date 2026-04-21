@@ -10,9 +10,10 @@ import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/com
 import IconButton from '@/shared/components/IconButton';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 import DeletePopup from '@/shared/popups/DeletePopup';
+import EmptyState from '@/shared/components/EmptyState';
 import { useToast } from '@/shared/context/ToastContext';
 import type { CustomerDto } from '@/services/api/types/customer.types';
-import { tokenManager } from '@gradex/lib/auth/token-manager';
+import { getCurrentSchoolBranchId } from '@gradex/lib/auth/token-manager';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 
 import DefaultAvatar from '@gradex/assets/images/profile.png';
@@ -22,6 +23,7 @@ import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
 import EyeIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EditFilledIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import UserSearchGroupIcon from '@gradex/assets/icons/userSearchGroup.svg';
 
 export default function CustomersList() {
   const { t } = useTranslation();
@@ -36,8 +38,7 @@ export default function CustomersList() {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
-  const schoolBranchId =
-    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   useEffect(() => {
     if (!schoolBranchId) return;
@@ -229,27 +230,39 @@ export default function CustomersList() {
 
   const pendingCustomerName = customers.find((c) => c.id === pendingDeleteId)?.name ?? '';
 
+  const hasActiveFilters = !!searchTerm;
+  const shouldShowEmptyState = !isLoading && customers.length === 0 && !hasActiveFilters;
+  const shouldShowContent = isLoading || customers.length > 0 || hasActiveFilters;
+
   return (
     <>
-      <Card className="overflow-hidden">
-        <DataTable
-          data={customers}
-          columns={columns}
-          keyExtractor={(row) => row.id}
-          pagination={{
-            page: pagination.pageIndex,
-            limit: pagination.pageSize,
-            total: pagination.totalItems,
-            totalPages: pagination.totalPages,
-          }}
-          onPageChange={handlePageChange}
-          filters={filterConfigs}
-          showFilters={true}
-          onResetFilters={handleResetFilters}
-          isLoading={isLoading}
-          emptyMessage={t('common.noDataFound')}
-          t={t}
-        />
+      <Card className={shouldShowEmptyState ? '' : 'overflow-hidden'}>
+        {shouldShowEmptyState ? (
+          <EmptyState
+            imgSrc={UserSearchGroupIcon}
+            description={t('customers.emptyState')}
+            blend={true}
+          />
+        ) : shouldShowContent ? (
+          <DataTable
+            data={customers}
+            columns={columns}
+            keyExtractor={(row) => row.id}
+            pagination={{
+              page: pagination.pageIndex,
+              limit: pagination.pageSize,
+              total: pagination.totalItems,
+              totalPages: pagination.totalPages,
+            }}
+            onPageChange={handlePageChange}
+            filters={filterConfigs}
+            showFilters={true}
+            onResetFilters={handleResetFilters}
+            isLoading={isLoading}
+            emptyMessage={t('common.noDataFound')}
+            t={t}
+          />
+        ) : null}
       </Card>
       <DeletePopup
         open={showDeletePopup}
