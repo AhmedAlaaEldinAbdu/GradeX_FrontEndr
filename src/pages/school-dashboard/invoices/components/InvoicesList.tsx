@@ -206,9 +206,7 @@ export default function InvoicesList() {
           <IconButton
             variant="blue"
             ariaLabel="View"
-            onClick={() => {
-              // navigate(`/students/${row.studentId}`);
-            }}
+            onClick={() => navigate(`/financial-management/customers/${row.customerId}`)}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
           >
             <CustomImage
