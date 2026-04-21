@@ -113,6 +113,7 @@ export const fetchStudents = createAsyncThunk<FetchStudentsResponse, FetchStuden
           if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
           if (payload.filters.schoolBranchId)
             params.SchoolBranchId = payload.filters.schoolBranchId;
+          params.SchoolBrancheId = payload.filters.schoolBranchId; // TODO: temp fix for inconsistent API param name, should be removed once API is fixed
         }
       }
 

@@ -194,10 +194,15 @@ export default function InvoicesList() {
       header: 'invoices.table.studentName',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
-          <div className="h-10 w-10 overflow-hidden rounded-lg border border-gray-200">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-200">
             <CustomImage src={DefaultAvatar} alt="Student" className="h-full w-full object-cover" />
           </div>
-          <span className="font-medium text-gray-800">{row.customerName ?? '-'}</span>
+          <span
+            className="w-[150px] truncate text-start font-medium text-gray-800"
+            title={row.customerName ?? ''}
+          >
+            {row.customerName ?? '-'}
+          </span>
           <IconButton
             variant="blue"
             ariaLabel="View"
@@ -234,7 +239,11 @@ export default function InvoicesList() {
     {
       header: 'invoices.table.item',
       accessor: (row) => (
-        <span className="font-medium text-gray-600">{row.itemsName?.join(', ') ?? '-'}</span>
+        <span className="font-medium text-gray-600">
+          {row.items && row.items.length > 0
+            ? row.items.map((item) => item.name).join(' - ')
+            : (row.itemsName?.join(' - ') ?? '-')}
+        </span>
       ),
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
@@ -243,12 +252,17 @@ export default function InvoicesList() {
       header: 'invoices.table.paymentMethod',
       accessor: (row) => {
         const className = PAYMENT_TYPE_CLASSES[row.paymentType] ?? 'bg-gray-50 text-gray-600';
-        const name = isAr ? row.paymentMethodNameAr : row.paymentMethodNameEn;
+        const label =
+          row.paymentType === 1
+            ? t('invoices.paymentMethods.cash')
+            : row.paymentType === 2
+              ? t('invoices.paymentMethods.deferred')
+              : '-';
         return (
           <span
             className={`inline-flex min-w-[80px] justify-center rounded-full px-4 py-1.5 text-sm font-medium ${className}`}
           >
-            {name ?? row.paymentMethodName ?? '-'}
+            {label}
           </span>
         );
       },

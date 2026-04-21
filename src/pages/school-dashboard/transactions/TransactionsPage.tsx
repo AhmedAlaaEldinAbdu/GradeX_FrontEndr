@@ -14,9 +14,11 @@ export default function TransactionsPage() {
 
   if (import.meta.env.MODE !== 'development') {
     return (
-      <div className="flex h-screen flex-col items-center justify-center">
-        <h1 className="mb-4 text-3xl font-bold">{t('common.comingSoon')}</h1>
-        <p className="text-lg text-gray-600">{t('financialManagement.transactionsComingSoon')}</p>
+      <div className="py-16 text-center">
+        <h2 className="text-2xl font-bold text-gray-800">
+          {t('financialManagement.transactions')}
+        </h2>
+        <p className="mt-4 text-gray-600">{t('common.comingSoon')}</p>
       </div>
     );
   }

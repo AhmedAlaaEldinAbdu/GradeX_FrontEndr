@@ -5,6 +5,7 @@ import type { ApiResponseModel } from '../config';
 import type {
   CreateInvoiceRequest,
   InvoiceDto,
+  InvoiceItemsResponse,
   InvoiceListResponse,
   InvoiceQueryParams,
 } from '../types/invoice.types';
@@ -28,17 +29,20 @@ const serializeParams = (params?: InvoiceQueryParams) => {
 };
 
 export async function getInvoices(params?: InvoiceQueryParams): Promise<InvoiceListResponse> {
-  const response: AxiosResponse<InvoiceListResponse> = await axiosClient.get(InvoiceEndpoints.base, {
-    params,
-    paramsSerializer: { serialize: serializeParams },
-  });
+  const response: AxiosResponse<InvoiceListResponse> = await axiosClient.get(
+    InvoiceEndpoints.base,
+    {
+      params,
+      paramsSerializer: { serialize: serializeParams },
+    }
+  );
 
   return response.data;
 }
 
-export async function getInvoiceById(id: string): Promise<InvoiceDto> {
+export async function getInvoiceById(id: string, language?: string): Promise<InvoiceDto> {
   const response: AxiosResponse<ApiResponseModel<InvoiceDto>> = await axiosClient.get(
-    InvoiceEndpoints.getById(id)
+    InvoiceEndpoints.getById(id, language)
   );
 
   return (response.data.data ?? response.data.value) as InvoiceDto;
@@ -52,10 +56,20 @@ export async function getInvoiceNumbers(): Promise<string[]> {
   return (response.data.data ?? response.data.value ?? []) as string[];
 }
 
-export async function createInvoice(data: CreateInvoiceRequest): Promise<ApiResponseModel<null>> {
-  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
+export async function createInvoice(
+  data: CreateInvoiceRequest
+): Promise<ApiResponseModel<InvoiceDto>> {
+  const response: AxiosResponse<ApiResponseModel<InvoiceDto>> = await axiosClient.post(
     InvoiceEndpoints.create,
     data
+  );
+
+  return response.data;
+}
+
+export async function getInvoiceItems(studentId: string): Promise<InvoiceItemsResponse> {
+  const response: AxiosResponse<InvoiceItemsResponse> = await axiosClient.get(
+    InvoiceEndpoints.getItems(studentId)
   );
 
   return response.data;
@@ -73,6 +87,7 @@ export const invoiceApiService = {
   getInvoices,
   getInvoiceById,
   getInvoiceNumbers,
+  getInvoiceItems,
   createInvoice,
   deleteInvoice,
 };

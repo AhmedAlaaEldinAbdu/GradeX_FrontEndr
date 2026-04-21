@@ -8,21 +8,32 @@ import { getErrorMessage } from '@/lib/http';
 import type { ApiResponseModel, ValidationErrorResponse } from '@/services/api/config';
 import type { Pagination } from '@/types/Pagination';
 import invoiceApiService from '@/services/api/invoice/invoice.service';
+import { gradeApiService } from '@/services/api/grades/grades.service';
+import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
 import type {
   CreateInvoiceRequest,
   InvoiceDto,
+  InvoiceItemsData,
   InvoiceListData,
   InvoiceQueryParams,
 } from '@/services/api/types/invoice.types';
+import type { GradeDetailsDto } from '@/services/api/types/grades.types';
+import type { Classroom } from '@/services/api/types/classrooms.types';
 
 interface InvoicesState {
   invoices: InvoiceDto[];
   invoiceDetails: InvoiceDto | null;
   invoiceNumbers: string[];
+  invoiceItems: InvoiceItemsData | null;
+  gradeDetails: GradeDetailsDto | null;
+  classroomDetails: Classroom | null;
   pagination: Pagination;
   isLoading: boolean;
   isLoadingDetails: boolean;
   isLoadingNumbers: boolean;
+  isLoadingInvoiceItems: boolean;
+  isLoadingGradeDetails: boolean;
+  isLoadingClassroomDetails: boolean;
   isCreating: boolean;
   isDeleting: boolean;
   error: string | null;
@@ -33,6 +44,9 @@ const initialState: InvoicesState = {
   invoices: [],
   invoiceDetails: null,
   invoiceNumbers: [],
+  invoiceItems: null,
+  gradeDetails: null,
+  classroomDetails: null,
   pagination: {
     pageIndex: 1,
     pageSize: 10,
@@ -42,6 +56,9 @@ const initialState: InvoicesState = {
   isLoading: false,
   isLoadingDetails: false,
   isLoadingNumbers: false,
+  isLoadingInvoiceItems: false,
+  isLoadingGradeDetails: false,
+  isLoadingClassroomDetails: false,
   isCreating: false,
   isDeleting: false,
   error: null,
@@ -71,12 +88,34 @@ export const fetchInvoices = createAsyncThunk<InvoiceListData, InvoiceQueryParam
   }
 );
 
-export const fetchInvoiceById = createAsyncThunk<InvoiceDto, string>(
+export const fetchInvoiceById = createAsyncThunk<InvoiceDto, { id: string; language?: string }>(
   'invoices/fetchById',
-  async (id, { rejectWithValue }) => {
+  async ({ id, language }, { rejectWithValue }) => {
     try {
-      const response = await invoiceApiService.getInvoiceById(id);
+      const response = await invoiceApiService.getInvoiceById(id, language);
       return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchGradeById = createAsyncThunk<GradeDetailsDto, string>(
+  'invoices/fetchGradeById',
+  async (gradeId, { rejectWithValue }) => {
+    try {
+      return await gradeApiService.getGradeById(gradeId);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchClassroomById = createAsyncThunk<Classroom, string>(
+  'invoices/fetchClassroomById',
+  async (classroomId, { rejectWithValue }) => {
+    try {
+      return await classroomApiService.getClassroomById(classroomId);
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -95,7 +134,7 @@ export const fetchInvoiceNumbers = createAsyncThunk<string[]>(
   }
 );
 
-export const createInvoice = createAsyncThunk<ApiResponseModel<null>, CreateInvoiceRequest>(
+export const createInvoice = createAsyncThunk<ApiResponseModel<InvoiceDto>, CreateInvoiceRequest>(
   'invoices/create',
   async (data, { rejectWithValue }) => {
     try {
@@ -122,6 +161,21 @@ export const deleteInvoice = createAsyncThunk<ApiResponseModel<string>, string>(
   }
 );
 
+export const fetchInvoiceItems = createAsyncThunk<InvoiceItemsData, string>(
+  'invoices/fetchItems',
+  async (studentId, { rejectWithValue }) => {
+    try {
+      const response = await invoiceApiService.getInvoiceItems(studentId);
+      if (!response.isSuccess || !response.data) {
+        return rejectWithValue(response.message ?? 'Failed to fetch invoice items');
+      }
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const invoicesSlice = createSlice({
   name: 'invoices',
   initialState,
@@ -132,6 +186,8 @@ const invoicesSlice = createSlice({
     },
     clearInvoiceDetails: (state) => {
       state.invoiceDetails = null;
+      state.gradeDetails = null;
+      state.classroomDetails = null;
     },
   },
   extraReducers: (builder: ActionReducerMapBuilder<InvoicesState>) => {
@@ -192,13 +248,16 @@ const invoicesSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(createInvoice.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isCreating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess) {
-          state.validationErrors = validationErrors;
+      .addCase(
+        createInvoice.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<InvoiceDto>>) => {
+          state.isCreating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess) {
+            state.validationErrors = validationErrors;
+          }
         }
-      })
+      )
       .addCase(createInvoice.rejected, (state, action: any) => {
         state.isCreating = false;
         if (action.payload?.validationErrors) {
@@ -213,17 +272,62 @@ const invoicesSlice = createSlice({
         state.isDeleting = true;
         state.error = null;
       })
-      .addCase(deleteInvoice.fulfilled, (state, action: PayloadAction<ApiResponseModel<string>>) => {
-        state.isDeleting = false;
-        const { isSuccess, value } = action.payload;
-        if (isSuccess && value) {
-          state.invoices = state.invoices.filter((invoice) => invoice.id !== value);
-          state.pagination.totalItems = Math.max(0, state.pagination.totalItems - 1);
+      .addCase(
+        deleteInvoice.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<string>>) => {
+          state.isDeleting = false;
+          const { isSuccess, value } = action.payload;
+          if (isSuccess && value) {
+            state.invoices = state.invoices.filter((invoice) => invoice.id !== value);
+            state.pagination.totalItems = Math.max(0, state.pagination.totalItems - 1);
+          }
         }
-      })
+      )
       .addCase(deleteInvoice.rejected, (state, action) => {
         state.isDeleting = false;
         state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchInvoiceItems.pending, (state) => {
+        state.isLoadingInvoiceItems = true;
+        state.invoiceItems = null;
+        state.error = null;
+      })
+      .addCase(fetchInvoiceItems.fulfilled, (state, action: PayloadAction<InvoiceItemsData>) => {
+        state.isLoadingInvoiceItems = false;
+        state.invoiceItems = action.payload;
+      })
+      .addCase(fetchInvoiceItems.rejected, (state, action) => {
+        state.isLoadingInvoiceItems = false;
+        state.invoiceItems = null;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchGradeById.pending, (state) => {
+        state.isLoadingGradeDetails = true;
+      })
+      .addCase(fetchGradeById.fulfilled, (state, action: PayloadAction<GradeDetailsDto>) => {
+        state.isLoadingGradeDetails = false;
+        state.gradeDetails = action.payload;
+      })
+      .addCase(fetchGradeById.rejected, (state) => {
+        state.isLoadingGradeDetails = false;
+        // keep gradeDetails null; component will fall back to invoice value
+      });
+
+    builder
+      .addCase(fetchClassroomById.pending, (state) => {
+        state.isLoadingClassroomDetails = true;
+      })
+      .addCase(fetchClassroomById.fulfilled, (state, action: PayloadAction<Classroom>) => {
+        state.isLoadingClassroomDetails = false;
+        state.classroomDetails = action.payload;
+      })
+      .addCase(fetchClassroomById.rejected, (state) => {
+        state.isLoadingClassroomDetails = false;
+        // keep classroomDetails null; component will fall back to invoice value
       });
   },
 });

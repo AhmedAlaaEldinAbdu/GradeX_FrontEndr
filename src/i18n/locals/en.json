@@ -662,7 +662,8 @@
       "editRequested": "Edit Requested",
       "modified": "Modified",
       "completed": "Completed",
-      "appointmentScheduled": "Appointment Scheduled"
+      "appointmentScheduled": "Appointment Scheduled",
+      "interviewScheduled": "Interview Scheduled"
     },
     "actions": {
       "accept": "Accept",
@@ -2575,9 +2576,17 @@
     "optionalDiscount": "Discount (Optional)",
     "chooseDiscount": "Choose discount",
     "print": "Print",
+    "exportInvoice": "Export Invoice",
+    "invoiceName": "Invoice Name",
+    "enterInvoiceName": "Enter invoice name",
+    "export": "Export",
+    "exportSuccess": "File exported successfully",
+    "invoiceAddedAndExported": "Invoice added and exported successfully",
+    "download": "Download",
     "enterTax": "Enter tax value",
     "totalAmount": "Total Amount",
     "paymentDocumentImg": "Payment image.png",
+    "classroom": "Classroom",
     "table": {
       "index": "#",
       "invoiceDate": "Invoice Date",
@@ -2620,6 +2629,14 @@
       "primary": "Primary",
       "middle": "Middle",
       "high": "High"
+    },
+    "validation": {
+      "customerRequired": "Customer name is required",
+      "invoiceDateRequired": "Invoice date is required",
+      "paymentToolRequired": "Payment tool is required",
+      "taxMin": "Tax cannot be less than zero",
+      "installmentRequired": "Installment is required",
+      "classificationsRequired": "At least one classification with a name and amount is required"
     }
   },
   "customers": {
@@ -2659,10 +2676,21 @@
     "educationalStage": "Educational Stage",
     "schoolYear": "School Year",
     "grade": "Grade",
+    "chooseGrade": "Choose grade",
+    "classroom": "Classroom",
+    "chooseClassroom": "Choose classroom",
     "confirmDeleteCustomer": "Are you sure you want to delete the customer",
     "customerDeletedSuccessfully": "Customer deleted successfully",
     "customerAddedSuccessfully": "Customer added successfully",
     "customerUpdatedSuccessfully": "Customer updated successfully",
+    "validation": {
+      "clientNameRequired": "Client name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "mobileRequired": "Mobile number is required",
+      "countryRequired": "Country is required",
+      "cityRequired": "City is required"
+    },
     "table": {
       "index": "#",
       "clientName": "Client Name",

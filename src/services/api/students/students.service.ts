@@ -78,25 +78,24 @@ export async function deleteStudent(id: string): Promise<ApiResponseModel<string
 }
 
 /**
- * Search students by name for autocomplete
+ * Search students by full name for autocomplete
  */
 export async function searchStudentsByName(
   schoolBrancheId: string,
   studentName: string
 ): Promise<StudentDto[]> {
   if (!studentName.trim()) return [];
-  const response: AxiosResponse<StudentListResponse> = await axiosClient.get(
-    StudentEndpoints.getStudents,
+  const response = await axiosClient.get<{ data: StudentDto | null; isSuccess: boolean }>(
+    StudentEndpoints.searchByFullName,
     {
       params: {
-        PageIndex: 1,
-        PageSize: 10,
-        SchoolBrancheId: schoolBrancheId,
-        StudentName: studentName,
+        schoolBrancheId,
+        fullName: studentName,
       },
     }
   );
-  return response?.data?.data?.studentDto ?? [];
+  const student = response?.data?.data;
+  return student ? [student] : [];
 }
 
 /**

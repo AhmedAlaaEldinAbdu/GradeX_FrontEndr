@@ -47,6 +47,7 @@ export interface StudentQueryParams {
   PageSize?: number;
   Search?: string;
   SchoolBranchId?: string;
+  SchoolBrancheId?: string; // TODO: temp fix for inconsistent API param name, should be removed once API is fixed
   GradeId?: string;
   ClassroomId?: string;
 }

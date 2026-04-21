@@ -7,6 +7,7 @@ export const StudentEndpoints = {
   updateStudent: Student,
   deleteStudent: (id: string) => `${Student}/${id}`,
   assignToClassroom: `${Student}/AssignToClassroomCommand`,
+  searchByFullName: `${Student}/GetStudentByFullName`,
 };
 
 export default StudentEndpoints;

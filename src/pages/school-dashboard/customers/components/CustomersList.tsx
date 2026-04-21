@@ -103,7 +103,12 @@ export default function CustomersList() {
               className="h-full w-full object-cover"
             />
           </div>
-          <span className="shrink-0 font-medium text-gray-800">{row.name}</span>
+          <span
+            className="w-[150px] truncate text-start font-medium text-gray-800"
+            title={row.name}
+          >
+            {row.name}
+          </span>
           <IconButton
             variant="blue"
             ariaLabel="View"

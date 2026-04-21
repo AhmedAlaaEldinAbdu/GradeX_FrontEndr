@@ -1,10 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import { formatValidationErrors } from '@/lib/utils/error-utils';
 import { fetchCustomers } from '@/redux/features/customers/customersSlice';
-import { createInvoice, fetchInvoiceNumbers } from '@/redux/features/invoices/invoicesSlice';
+import {
+  createInvoice,
+  fetchInvoiceItems,
+  fetchInvoiceNumbers,
+} from '@/redux/features/invoices/invoicesSlice';
 import { fetchLKPaymentMethods } from '@/redux/features/lookups/lookupsSlice';
 import { fetchOffers } from '@/redux/features/offers/offersSlice';
 import {
@@ -12,16 +18,25 @@ import {
   fetchInstallmentPlanById,
 } from '@/redux/features/tuition-fees/tuitionFeesSlice';
 import type { CustomerDto } from '@/services/api/types/customer.types';
+import type { InvoiceDto } from '@/services/api/types/invoice.types';
 import { InvoicePaymentType } from '@/shared/enums/enums';
 import Button from '@/shared/components/Button';
+import IconButton from '@/shared/components/IconButton';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import FormField from '@/shared/components/FormField';
-import IconButton from '@/shared/components/IconButton';
 import Input from '@/shared/components/Input';
 import PhoneInput from '@/shared/components/PhoneInput';
 import Table from '@/shared/components/Table';
+import InvoicePDFTemplate from './InvoicePDFTemplate';
+import ExportInvoicePopup from '../popups/ExportInvoicePopup';
+import {
+  IssueInvoiceSchema,
+  type IssueInvoiceFormValues,
+} from '@/validations/invoices-validations';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import StyledCalendarIcon from '@/assets/icons/StyledCalendar.svg';
 import RyalIcon from '@/assets/icons/Ryal.svg';
 import PercentIcon from '@/assets/icons/Percent.svg';
@@ -30,44 +45,23 @@ type IssueInvoiceFormProps = {
   onCancel?: () => void;
 };
 
-type InstallmentOption = {
+type ClassificationRow = {
   id: string;
-  name: string;
-};
-
-type InstallmentPlanOption = {
-  id: string;
-  name: string;
-  installments: InstallmentOption[];
-};
-
-type InvoiceClassificationRow = {
-  id: string;
-  name: string;
+  nameAr: string;
+  nameEn: string | null;
   amount: string;
   discount: string;
 };
 
-type IssueInvoiceFormErrors = {
-  customerName?: string;
-  paymentMethod?: string;
-  paymentTool?: string;
-  installmentPlan?: string;
-  installment?: string;
-  classifications?: string;
-  general?: string;
-};
-
 const createId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
-const createClassificationRow = (): InvoiceClassificationRow => ({
+const toNumber = (value: string) => Number(value || 0);
+const createClassificationRow = (): ClassificationRow => ({
   id: createId(),
-  name: '',
+  nameAr: '',
+  nameEn: null,
   amount: '',
   discount: '',
 });
-
-const toNumber = (value: string) => Number(value || 0);
 
 const currencyIcon = <CustomImage src={RyalIcon} alt="Currency" className="h-4 w-4 opacity-60" />;
 
@@ -77,9 +71,14 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
 
-  const { invoiceNumbers, isCreating, error, validationErrors } = useAppSelector(
-    (state) => state.invoices
-  );
+  const {
+    invoiceNumbers,
+    invoiceItems,
+    isLoadingInvoiceItems,
+    isCreating,
+    error,
+    validationErrors,
+  } = useAppSelector((state) => state.invoices);
   const { customers, isLoading: isLoadingCustomers } = useAppSelector((state) => state.customers);
   const { lkPaymentMethods, isLoadingLKPaymentMethods } = useAppSelector((state) => state.lookups);
   const { offers, isLoading: isLoadingOffers } = useAppSelector((state) => state.offers);
@@ -112,31 +111,46 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     [currentLang, lkPaymentMethods]
   );
 
-  const offerOptions = useMemo<CustomSelectOption[]>(
-    () =>
-      offers.map((offer) => ({
-        value: offer.id,
-        label: currentLang === 'ar' ? offer.nameAr : offer.nameEn,
-      })),
-    [currentLang, offers]
-  );
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<IssueInvoiceFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: yupResolver(IssueInvoiceSchema) as any,
+    mode: 'onBlur',
+    defaultValues: {
+      customerId: '',
+      invoiceDate: new Date().toISOString().split('T')[0],
+      paymentMethodId: '',
+      taxPercentage: null,
+      paymentType: String(InvoicePaymentType.Cash),
+      installmentId: null,
+    },
+  });
 
-  const [selectedCustomerId, setSelectedCustomerId] = useState('');
+  const selectedCustomerId = watch('customerId');
+  const paymentType = watch('paymentType') ?? String(InvoicePaymentType.Cash);
+  const installmentId = watch('installmentId');
+  const taxPercentage = watch('taxPercentage');
+
+  // Non-validated state
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
-  const [invoiceDate, setInvoiceDate] = useState('2025-12-04');
-  const [paymentType, setPaymentType] = useState(String(InvoicePaymentType.Cash));
-  const [paymentMethodId, setPaymentMethodId] = useState('');
-  const [installmentId, setInstallmentId] = useState('');
   const [selectedOfferId, setSelectedOfferId] = useState('');
-  const [amount, setAmount] = useState('');
-  const [isAmountEdited, setIsAmountEdited] = useState(false);
-  const [taxPercentage, setTaxPercentage] = useState('');
-  const [classificationRows, setClassificationRows] = useState<InvoiceClassificationRow[]>([
+  const [taxPercentageInput, setTaxPercentageInput] = useState('');
+  const [classificationRows, setClassificationRows] = useState<ClassificationRow[]>([
     createClassificationRow(),
   ]);
-  const [formErrors, setFormErrors] = useState<IssueInvoiceFormErrors>({});
+  const [classificationsError, setClassificationsError] = useState('');
+  const [generalError, setGeneralError] = useState('');
+  const [createdInvoice, setCreatedInvoice] = useState<InvoiceDto | null>(null);
+  const [isExportPopupOpen, setIsExportPopupOpen] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   const isDeferredPayment = Number(paymentType) === InvoicePaymentType.Deferred;
 
@@ -144,34 +158,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
     [customers, selectedCustomerId]
   );
-
-  const subtotal = useMemo(
-    () => classificationRows.reduce((sum, row) => sum + toNumber(row.amount), 0),
-    [classificationRows]
-  );
-
-  const selectedOffer = useMemo(
-    () => offers.find((offer) => offer.id === selectedOfferId) ?? null,
-    [offers, selectedOfferId]
-  );
-
-  const customerInstallmentPlans = useMemo<InstallmentPlanOption[]>(() => {
-    return [];
-  }, []);
-
-  const installmentPlanOptions = useMemo<CustomSelectOption[]>(
-    () =>
-      customerInstallmentPlans.map((plan) => ({
-        value: plan.id,
-        label: plan.name,
-      })),
-    [customerInstallmentPlans]
-  );
-
-  // const selectedInstallmentPlan = useMemo(
-  //   () => customerInstallmentPlans.find((plan) => plan.id === installmentPlanId) ?? null,
-  //   [customerInstallmentPlans, installmentPlanId]
-  // );
 
   const installmentOptions = useMemo<CustomSelectOption[]>(
     () =>
@@ -186,36 +172,50 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     [installments]
   );
 
-  const calculatedAmount = useMemo(() => Math.max(0, subtotal), [subtotal]);
-  const amountValue = toNumber(amount);
+  const offerOptions = useMemo<CustomSelectOption[]>(
+    () =>
+      offers.map((offer) => ({
+        value: offer.id,
+        label: currentLang === 'ar' ? offer.nameAr : offer.nameEn,
+      })),
+    [currentLang, offers]
+  );
 
-  const offerDiscount = useMemo(() => {
-    if (!selectedOffer) {
-      return 0;
-    }
-
-    if (selectedOffer.percentage !== null && selectedOffer.percentage !== undefined) {
-      return (amountValue * selectedOffer.percentage) / 100;
-    }
-
-    return selectedOffer.amount ?? 0;
-  }, [amountValue, selectedOffer]);
+  const subtotal = useMemo(
+    () => classificationRows.reduce((sum, row) => sum + toNumber(row.amount), 0),
+    [classificationRows]
+  );
 
   const rowDiscountTotal = useMemo(
     () => classificationRows.reduce((sum, row) => sum + toNumber(row.discount), 0),
     [classificationRows]
   );
 
+  const selectedOffer = useMemo(
+    () => offers.find((offer) => offer.id === selectedOfferId) ?? null,
+    [offers, selectedOfferId]
+  );
+
+  const calculatedAmount = subtotal;
+
+  const offerDiscount = useMemo(() => {
+    if (!selectedOffer) return 0;
+    if (selectedOffer.percentage !== null && selectedOffer.percentage !== undefined) {
+      return (calculatedAmount * selectedOffer.percentage) / 100;
+    }
+    return selectedOffer.amount ?? 0;
+  }, [calculatedAmount, selectedOffer]);
+
   const discountTotal = rowDiscountTotal + offerDiscount;
-  const netAmount = Math.max(0, amountValue - discountTotal);
-  const taxAmount = (netAmount * toNumber(taxPercentage)) / 100;
+  const netAmount = Math.max(0, subtotal - discountTotal);
+  const taxAmount = (netAmount * Number(taxPercentage ?? 0)) / 100;
   const totalAmount = netAmount + taxAmount;
 
   useEffect(() => {
     if (customers.length === 0) {
       dispatch(fetchCustomers({ PageIndex: 1, PageSize: 1000, schoolBranchId }));
     }
-  }, [customers.length, dispatch]);
+  }, [customers.length, dispatch, schoolBranchId]);
 
   useEffect(() => {
     if (lkPaymentMethods.length === 0) {
@@ -231,17 +231,10 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     if (!schoolBranchId) {
       return;
     }
-
-    dispatch(
-      fetchOffers({
-        SchoolBranchId: schoolBranchId,
-        IsActive: true,
-        PageIndex: 1,
-        PageSize: 1000,
-      })
-    );
-
     dispatch(fetchAllInstallments({ schoolBranchId, PageNumber: 1, PageSize: 1000 }));
+    dispatch(
+      fetchOffers({ SchoolBranchId: schoolBranchId, IsActive: true, PageIndex: 1, PageSize: 1000 })
+    );
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -255,11 +248,31 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     const areaCode = selectedCustomer?.areaCode ?? '';
     const phone = selectedCustomer?.phoneNumber ?? '';
     setMobile(areaCode && phone ? `${areaCode}${phone}` : '');
-  }, [selectedCustomer]);
+
+    if (selectedCustomer?.studentId) {
+      dispatch(fetchInvoiceItems(selectedCustomer.studentId));
+    } else {
+      setClassificationRows([createClassificationRow()]);
+    }
+  }, [dispatch, selectedCustomer]);
 
   useEffect(() => {
-    setInstallmentId('');
-  }, [selectedCustomerId]);
+    if (invoiceItems?.items && invoiceItems.items.length > 0) {
+      setClassificationRows(
+        invoiceItems.items.map((item) => ({
+          id: item.id,
+          nameAr: item.nameAr,
+          nameEn: item.nameEn,
+          amount: String(item.amount),
+          discount: '',
+        }))
+      );
+    }
+  }, [invoiceItems]);
+
+  useEffect(() => {
+    setValue('installmentId', null);
+  }, [selectedCustomerId, setValue]);
 
   useEffect(() => {
     if (!installmentId) {
@@ -271,41 +284,29 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   useEffect(() => {
     if (!isDeferredPayment) {
-      setInstallmentId('');
+      setValue('installmentId', null);
     }
-  }, [isDeferredPayment]);
+  }, [isDeferredPayment, setValue]);
 
-  useEffect(() => {
-    if (!isAmountEdited) {
-      setAmount(calculatedAmount ? String(calculatedAmount) : '');
-    }
-  }, [calculatedAmount, isAmountEdited]);
-
-  const clearError = (field: keyof IssueInvoiceFormErrors) => {
-    setFormErrors((prev) => {
-      if (!prev[field]) {
-        return prev;
-      }
-
-      return { ...prev, [field]: undefined };
-    });
-  };
-
-  const handleRowChange = (rowId: string, field: 'name' | 'amount' | 'discount', value: string) => {
-    clearError('classifications');
-    clearError('general');
+  const handleRowChange = (
+    rowId: string,
+    field: 'nameAr' | 'amount' | 'discount',
+    value: string
+  ) => {
+    setClassificationsError('');
+    setGeneralError('');
     setClassificationRows((prev) =>
       prev.map((row) => (row.id === rowId ? { ...row, [field]: value } : row))
     );
   };
 
   const handleAddRow = () => {
-    clearError('classifications');
+    setClassificationsError('');
     setClassificationRows((prev) => [...prev, createClassificationRow()]);
   };
 
   const handleRemoveRow = (rowId: string) => {
-    clearError('classifications');
+    setClassificationsError('');
     setClassificationRows((prev) =>
       prev.length > 1 ? prev.filter((row) => row.id !== rowId) : [createClassificationRow()]
     );
@@ -314,17 +315,17 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const classificationColumns = [
     {
       header: '#',
-      accessor: (_row: InvoiceClassificationRow, index?: number) => (index ? index + 1 : 1),
+      accessor: (_row: ClassificationRow, index?: number) => (index !== undefined ? index + 1 : 1),
       headerClassName: 'w-16',
       className: 'w-16',
     },
     {
       header: 'invoices.item',
-      accessor: (row: InvoiceClassificationRow) => (
+      accessor: (row: ClassificationRow) => (
         <div className="min-w-[260px]">
           <Input
-            value={row.name}
-            onChange={(event) => handleRowChange(row.id, 'name', event.target.value)}
+            value={currentLang === 'ar' ? row.nameAr : (row.nameEn ?? row.nameAr)}
+            onChange={(e) => handleRowChange(row.id, 'nameAr', e.target.value)}
             placeholder={t('invoices.chooseItem')}
             className="!bg-white"
           />
@@ -335,14 +336,14 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     },
     {
       header: 'invoices.discount',
-      accessor: (row: InvoiceClassificationRow) => (
+      accessor: (row: ClassificationRow) => (
         <div className="min-w-[160px]">
           <Input
             type="number"
             min="0"
             icon={currencyIcon}
             value={row.discount}
-            onChange={(event) => handleRowChange(row.id, 'discount', event.target.value)}
+            onChange={(e) => handleRowChange(row.id, 'discount', e.target.value)}
             placeholder={t('invoices.chooseDiscount')}
             className="!bg-white"
           />
@@ -353,14 +354,14 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     },
     {
       header: 'invoices.amount',
-      accessor: (row: InvoiceClassificationRow) => (
+      accessor: (row: ClassificationRow) => (
         <div className="min-w-[160px]">
           <Input
             type="number"
             min="0"
             icon={currencyIcon}
             value={row.amount}
-            onChange={(event) => handleRowChange(row.id, 'amount', event.target.value)}
+            onChange={(e) => handleRowChange(row.id, 'amount', e.target.value)}
             placeholder={t('invoices.enterAmount')}
             className="!bg-white"
           />
@@ -371,7 +372,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     },
     {
       header: 'common.actions',
-      accessor: (row: InvoiceClassificationRow) => (
+      accessor: (row: ClassificationRow) => (
         <IconButton
           status="delete"
           variant="danger"
@@ -385,82 +386,82 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     },
   ];
 
-  const handleSubmit = async () => {
-    const nextErrors: IssueInvoiceFormErrors = {};
-
-    if (!selectedCustomerId) {
-      nextErrors.customerName = t('invoices.chooseCustomerName');
-    }
-
+  const onSubmit = async (data: IssueInvoiceFormValues) => {
     if (!schoolBranchId) {
-      nextErrors.general = t('common.error');
-    }
-
-    if (!paymentType) {
-      nextErrors.paymentMethod = t('invoices.choosePaymentMethod');
-    }
-
-    if (!paymentMethodId) {
-      nextErrors.paymentTool = t('invoices.choosePaymentTool');
-    }
-
-    if (isDeferredPayment && installmentPlanOptions.length > 0) {
-      nextErrors.installmentPlan = 'اختر خطة القسط';
-    }
-
-    if (isDeferredPayment && installmentOptions.length > 0 && !installmentId) {
-      nextErrors.installment = 'اختر القسط';
+      setGeneralError(t('common.error'));
+      return;
     }
 
     const invoiceItemDtos = classificationRows
       .map((row) => ({
-        name: row.name.trim(),
+        name: currentLang === 'ar' ? row.nameAr : (row.nameEn ?? row.nameAr),
         amount: toNumber(row.amount),
         discount: toNumber(row.discount),
       }))
-      .filter((row) => row.name && row.amount > 0);
+      .filter((row) => row.name.trim() && row.amount > 0);
 
-    if (Object.values(nextErrors).some(Boolean)) {
-      setFormErrors(nextErrors);
+    if (invoiceItemDtos.length === 0) {
+      setClassificationsError(t('invoices.validation.classificationsRequired'));
       return;
     }
 
-    setFormErrors({});
+    setClassificationsError('');
+    setGeneralError('');
 
     try {
       const response = await dispatch(
         createInvoice({
-          customerId: selectedCustomerId,
+          customerId: data.customerId,
           schoolBranchId,
           invoiceNumber: invoiceNumber.trim(),
-          invoiceDate: new Date(invoiceDate).toISOString(),
+          invoiceDate: new Date(data.invoiceDate).toISOString(),
           totalAmount,
           totalDiscount: discountTotal,
           netAmount,
-          taxPercentage: toNumber(taxPercentage),
-          paymentType: Number(paymentType),
+          taxPercentage: data.taxPercentage ?? 0,
+          paymentType: Number(data.paymentType),
           installmentPlanId: isDeferredPayment ? (installmentPlan?.id ?? null) : null,
-          installmentId: isDeferredPayment ? installmentId || null : null,
+          installmentId: isDeferredPayment ? data.installmentId || null : null,
           invoiceItemDtos,
-          paymentMethodId,
+          paymentMethodId: data.paymentMethodId,
         })
       ).unwrap();
 
       if (response.isSuccess) {
-        onCancel?.();
+        setCreatedInvoice(response.data ?? null);
+        setIsExportPopupOpen(true);
         return;
       }
 
-      setFormErrors({
-        general: formatValidationErrors(response.validationErrors, t('common.error')),
-      });
+      setGeneralError(formatValidationErrors(response.validationErrors, t('common.error')));
     } catch (submitError) {
-      setFormErrors({
-        general: formatValidationErrors(
-          validationErrors || error || submitError,
-          t('common.error')
-        ),
+      setGeneralError(
+        formatValidationErrors(validationErrors || error || submitError, t('common.error'))
+      );
+    }
+  };
+
+  const handleExportPdf = async (fileName: string) => {
+    if (!pdfRef.current || isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+    try {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
       });
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [794, 1123],
+      });
+      pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
+      pdf.save(`${fileName}.pdf`);
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -468,18 +469,20 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     <div className="space-y-6">
       <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <FormField label={t('invoices.customerName')} required error={formErrors.customerName}>
-            <CustomSelect
-              value={selectedCustomerId}
-              onChange={(value) => {
-                setSelectedCustomerId(String(value));
-                clearError('customerName');
-                clearError('general');
-              }}
-              options={customerOptions}
-              placeholder={t('invoices.chooseCustomerName')}
-              maxHeight="220px"
-              disabled={isLoadingCustomers}
+          <FormField label={t('invoices.customerName')} required error={errors.customerId?.message}>
+            <Controller
+              name="customerId"
+              control={control}
+              render={({ field }) => (
+                <CustomSelect
+                  value={field.value}
+                  onChange={(value) => field.onChange(String(value))}
+                  options={customerOptions}
+                  placeholder={t('invoices.chooseCustomerName')}
+                  maxHeight="220px"
+                  disabled={isLoadingCustomers}
+                />
+              )}
             />
           </FormField>
 
@@ -500,13 +503,24 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           </FormField>
 
           <div className="md:col-span-2">
-            <FormField label={t('invoices.table.invoiceDate')} required>
-              <Input
-                type="date"
-                value={invoiceDate}
-                onChange={(event) => setInvoiceDate(event.target.value)}
-                icon={<CustomImage src={StyledCalendarIcon} alt="Calendar" className="h-5 w-5" />}
-                className="!bg-white"
+            <FormField
+              label={t('invoices.table.invoiceDate')}
+              required
+              error={errors.invoiceDate?.message}
+            >
+              <Controller
+                name="invoiceDate"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="date"
+                    icon={
+                      <CustomImage src={StyledCalendarIcon} alt="Calendar" className="h-5 w-5" />
+                    }
+                    className="!bg-white"
+                  />
+                )}
               />
             </FormField>
           </div>
@@ -527,75 +541,89 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
         </div>
 
         <div className="px-4 pb-4">
-          <Table
-            columns={classificationColumns}
-            data={classificationRows}
-            keyExtractor={(row) => row.id}
-          />
+          {isLoadingInvoiceItems ? (
+            <p className="py-4 text-center text-sm text-gray-500">{t('common.loading')}</p>
+          ) : (
+            <Table
+              columns={classificationColumns}
+              data={classificationRows}
+              keyExtractor={(row) => row.id}
+            />
+          )}
+          {!isLoadingInvoiceItems && classificationsError && (
+            <p className="mt-2 text-sm text-red-500">{classificationsError}</p>
+          )}
         </div>
       </Card>
 
       <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <FormField label={t('invoices.paymentMethod')} required error={formErrors.paymentMethod}>
-            <CustomSelect
-              value={paymentType}
-              onChange={(value) => {
-                setPaymentType(String(value));
-                clearError('paymentMethod');
-                clearError('installmentPlan');
-                clearError('installment');
-                clearError('general');
-              }}
-              options={paymentTypeOptions}
-              placeholder={t('invoices.choosePaymentMethod')}
-              showSearch={false}
+          <FormField
+            label={t('invoices.paymentMethod')}
+            required
+            error={errors.paymentType?.message}
+          >
+            <Controller
+              name="paymentType"
+              control={control}
+              render={({ field }) => (
+                <CustomSelect
+                  value={field.value ?? ''}
+                  onChange={(value) => field.onChange(String(value))}
+                  options={paymentTypeOptions}
+                  placeholder={t('invoices.choosePaymentMethod')}
+                  showSearch={false}
+                />
+              )}
             />
           </FormField>
 
-          <FormField label={t('invoices.paymentTool')} required error={formErrors.paymentTool}>
-            <CustomSelect
-              value={paymentMethodId}
-              onChange={(value) => {
-                setPaymentMethodId(String(value));
-                clearError('paymentTool');
-                clearError('general');
-              }}
-              options={paymentMethodOptions}
-              placeholder={t('invoices.choosePaymentTool')}
-              showSearch={false}
-              disabled={isLoadingLKPaymentMethods}
+          <FormField
+            label={t('invoices.paymentTool')}
+            required
+            error={errors.paymentMethodId?.message}
+          >
+            <Controller
+              name="paymentMethodId"
+              control={control}
+              render={({ field }) => (
+                <CustomSelect
+                  value={field.value}
+                  onChange={(value) => field.onChange(String(value))}
+                  options={paymentMethodOptions}
+                  placeholder={t('invoices.choosePaymentTool')}
+                  showSearch={false}
+                  disabled={isLoadingLKPaymentMethods}
+                />
+              )}
             />
           </FormField>
 
           {isDeferredPayment && (
-            <FormField label="القسط" required error={formErrors.installment}>
-              <CustomSelect
-                value={installmentId}
-                onChange={(value) => {
-                  setInstallmentId(String(value));
-                  clearError('installmentPlan');
-                  clearError('installment');
-                  clearError('general');
-                }}
-                options={installmentOptions}
-                placeholder="اختر القسط"
-                showSearch={false}
-                disabled={isLoadingInstallments}
+            <FormField label="القسط" required error={errors.installmentId?.message}>
+              <Controller
+                name="installmentId"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value ?? ''}
+                    onChange={(value) => field.onChange(String(value))}
+                    options={installmentOptions}
+                    placeholder="اختر القسط"
+                    showSearch={false}
+                    disabled={isLoadingInstallments}
+                  />
+                )}
               />
             </FormField>
           )}
 
           <FormField label={t('invoices.amount')}>
             <Input
-              value={amount}
-              onChange={(event) => {
-                setAmount(event.target.value);
-                setIsAmountEdited(true);
-                clearError('general');
-              }}
+              value={String(calculatedAmount || '')}
+              readOnly
               icon={currencyIcon}
-              className="!bg-white"
+              className="cursor-default !bg-gray-50 !text-gray-500"
             />
           </FormField>
 
@@ -610,15 +638,28 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             />
           </FormField>
 
-          <FormField label={t('invoices.tax')} required>
-            <Input
-              type="number"
-              min="0"
-              value={taxPercentage}
-              onChange={(event) => setTaxPercentage(event.target.value)}
-              placeholder={t('invoices.enterTax')}
-              icon={<CustomImage src={PercentIcon} alt="Percent" className="h-4 w-4 opacity-60" />}
-              className="!bg-white"
+          <FormField label={t('invoices.tax')}>
+            <Controller
+              name="taxPercentage"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  type="number"
+                  min="0"
+                  value={taxPercentageInput}
+                  onChange={(event) => {
+                    const val = event.target.value;
+                    setTaxPercentageInput(val);
+                    field.onChange(val === '' ? null : Number(val));
+                  }}
+                  onBlur={field.onBlur}
+                  placeholder={t('invoices.enterTax')}
+                  icon={
+                    <CustomImage src={PercentIcon} alt="Percent" className="h-4 w-4 opacity-60" />
+                  }
+                  className="!bg-white"
+                />
+              )}
             />
           </FormField>
 
@@ -631,16 +672,36 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             />
           </FormField>
         </div>
-        {formErrors.general && <p className="mt-4 text-sm text-red-500">{formErrors.general}</p>}
+        {generalError && <p className="mt-4 text-sm text-red-500">{generalError}</p>}
       </Card>
 
       <div className="mt-6 flex flex-wrap items-center justify-end gap-3 pt-2">
         <Button variant="outline" onClick={onCancel}>
           {t('common.cancel')}
         </Button>
-        <Button variant="success" onClick={handleSubmit} loading={isCreating}>
-          {t('invoices.issueAndExport')}
+        <Button
+          variant="success"
+          onClick={handleSubmit(onSubmit)}
+          disabled={isCreating}
+          className={`bg-[#005B48] px-8 ${isCreating ? 'opacity-50' : ''}`}
+        >
+          {isCreating ? t('common.saving') : t('invoices.issueAndExport')}
         </Button>
+      </div>
+
+      <ExportInvoicePopup
+        open={isExportPopupOpen}
+        onClose={() => {
+          setIsExportPopupOpen(false);
+          onCancel?.();
+        }}
+        onExport={handleExportPdf}
+        isExporting={isGeneratingPdf}
+        showSuccessStep
+      />
+
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        <InvoicePDFTemplate ref={pdfRef} invoice={createdInvoice} customer={selectedCustomer} />
       </div>
     </div>
   );

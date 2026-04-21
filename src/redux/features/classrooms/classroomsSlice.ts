@@ -5,7 +5,11 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
-import type { Classroom, ClassroomQueryParams, CreateClassroomRequest } from '@/services/api/types/classrooms.types';
+import type {
+  Classroom,
+  ClassroomQueryParams,
+  CreateClassroomRequest,
+} from '@/services/api/types/classrooms.types';
 import { getErrorMessage } from '@/lib/http';
 import type { ApiResponseModel } from '@/services/api';
 
@@ -49,6 +53,8 @@ export interface ClassroomsState {
   // UI States
   selectedClassroomIds: string[];
   isInitialized: boolean;
+  gradeClassrooms: Classroom[];
+  isLoadingGradeClassrooms: boolean;
 }
 
 export interface FetchClassroomsPayload {
@@ -96,54 +102,57 @@ const initialState: ClassroomsState = {
   // UI States
   selectedClassroomIds: [],
   isInitialized: false,
+  gradeClassrooms: [],
+  isLoadingGradeClassrooms: false,
 };
 
-export const fetchClassrooms = createAsyncThunk<FetchClassroomsResponse, FetchClassroomsPayload | void>(
-  'classrooms/fetchClassrooms',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const params: Partial<ClassroomQueryParams> = {};
+export const fetchClassrooms = createAsyncThunk<
+  FetchClassroomsResponse,
+  FetchClassroomsPayload | void
+>('classrooms/fetchClassrooms', async (payload, { rejectWithValue }) => {
+  try {
+    const params: Partial<ClassroomQueryParams> = {};
 
-      if (payload) {
-        if (payload.page) params.pageIndex = payload.page;
-        if (payload.limit) params.pageSize = payload.limit;
+    if (payload) {
+      if (payload.page) params.pageIndex = payload.page;
+      if (payload.limit) params.pageSize = payload.limit;
 
-        if (payload.filters) {
-          if (payload.filters.name) params.name = payload.filters.name;
-          if (payload.filters.academicSystemId) params.academicSystemId = payload.filters.academicSystemId;
-          if (payload.filters.gradeId) params.gradeId = payload.filters.gradeId;
-          if (payload.filters.schoolBranchId) params.schoolBranchId = payload.filters.schoolBranchId;
-        }
+      if (payload.filters) {
+        if (payload.filters.name) params.name = payload.filters.name;
+        if (payload.filters.academicSystemId)
+          params.academicSystemId = payload.filters.academicSystemId;
+        if (payload.filters.gradeId) params.gradeId = payload.filters.gradeId;
+        if (payload.filters.schoolBranchId) params.schoolBranchId = payload.filters.schoolBranchId;
       }
+    }
 
-      const response = await classroomApiService.getClassrooms(params as ClassroomQueryParams);
+    const response = await classroomApiService.getClassrooms(params as ClassroomQueryParams);
 
-      if (!response?.isSuccess || !response.data) {
-        return {
-          data: [],
-          meta: {
-            total: 0,
-            page: 1,
-            limit: 10,
-            totalPages: 0,
-          },
-        };
-      }
-
+    if (!response?.isSuccess || !response.data) {
       return {
-        data: response.data.classroomDto || [],
+        data: [],
         meta: {
-          total: response.data.totalItems || 0,
-          page: response.data.pageIndex || 1,
-          limit: response.data.pageSize || 10,
-          totalPages: response.data.totalPages || 0,
+          total: 0,
+          page: 1,
+          limit: 10,
+          totalPages: 0,
         },
       };
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
     }
+
+    return {
+      data: response.data.classroomDto || [],
+      meta: {
+        total: response.data.totalItems || 0,
+        page: response.data.pageIndex || 1,
+        limit: response.data.pageSize || 10,
+        totalPages: response.data.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
   }
-);
+});
 
 export const fetchClassroomById = createAsyncThunk<Classroom, string>(
   'classrooms/fetchClassroomById',
@@ -172,20 +181,20 @@ export const createClassroom = createAsyncThunk<ApiResponseModel<null>, CreateCl
   }
 );
 
-export const editClassroom = createAsyncThunk<
-  ApiResponseModel<null>,
-  { data: FormData }
->('classrooms/editClassroom', async ({ data }, { rejectWithValue }) => {
-  try {
-    const response = await classroomApiService.updateClassroom(data);
-    return response;
-  } catch (error: any) {
-    if (error.isValidationError && error.validationErrors) {
-      return rejectWithValue({ validationErrors: error.validationErrors });
+export const editClassroom = createAsyncThunk<ApiResponseModel<null>, { data: FormData }>(
+  'classrooms/editClassroom',
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await classroomApiService.updateClassroom(data);
+      return response;
+    } catch (error: any) {
+      if (error.isValidationError && error.validationErrors) {
+        return rejectWithValue({ validationErrors: error.validationErrors });
+      }
+      return rejectWithValue(getErrorMessage(error));
     }
-    return rejectWithValue(getErrorMessage(error));
   }
-});
+);
 
 export const deleteClassroom = createAsyncThunk<string, string>(
   'classrooms/deleteClassroom',
@@ -193,6 +202,18 @@ export const deleteClassroom = createAsyncThunk<string, string>(
     try {
       await classroomApiService.deleteClassroom(id);
       return id;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchClassroomsByGrade = createAsyncThunk<Classroom[], string>(
+  'classrooms/fetchClassroomsByGrade',
+  async (gradeId, { rejectWithValue }) => {
+    try {
+      const response = await classroomApiService.getClassrooms({ gradeId });
+      return response.data?.classroomDto ?? [];
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -222,9 +243,7 @@ const classroomsSlice = createSlice({
       }
     },
     deselectClassroom: (state, action: PayloadAction<string>) => {
-      state.selectedClassroomIds = state.selectedClassroomIds.filter(
-        (id) => id !== action.payload
-      );
+      state.selectedClassroomIds = state.selectedClassroomIds.filter((id) => id !== action.payload);
     },
     selectAllClassrooms: (state) => {
       state.selectedClassroomIds = state.classrooms.map((classroom) => classroom.id);
@@ -281,14 +300,17 @@ const classroomsSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(createClassroom.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isCreating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess && validationErrors) {
-          state.validationErrors = validationErrors as any;
+      .addCase(
+        createClassroom.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<null>>) => {
+          state.isCreating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess && validationErrors) {
+            state.validationErrors = validationErrors as any;
+          }
+          // Note: API doesn't return created classrooms, need to refetch list after creation
         }
-        // Note: API doesn't return created classrooms, need to refetch list after creation
-      })
+      )
       .addCase(createClassroom.rejected, (state, action) => {
         state.isCreating = false;
         const payload = action.payload as any;
@@ -331,9 +353,7 @@ const classroomsSlice = createSlice({
       })
       .addCase(deleteClassroom.fulfilled, (state, action: PayloadAction<string>) => {
         state.isDeleting = false;
-        state.classrooms = state.classrooms.filter(
-          (classroom) => classroom.id !== action.payload
-        );
+        state.classrooms = state.classrooms.filter((classroom) => classroom.id !== action.payload);
         state.selectedClassroomIds = state.selectedClassroomIds.filter(
           (id) => id !== action.payload
         );
@@ -341,6 +361,21 @@ const classroomsSlice = createSlice({
       .addCase(deleteClassroom.rejected, (state, action) => {
         state.isDeleting = false;
         state.error = action.payload as string;
+      });
+
+    // Fetch Classrooms By Grade
+    builder
+      .addCase(fetchClassroomsByGrade.pending, (state) => {
+        state.isLoadingGradeClassrooms = true;
+        state.gradeClassrooms = [];
+      })
+      .addCase(fetchClassroomsByGrade.fulfilled, (state, action: PayloadAction<Classroom[]>) => {
+        state.isLoadingGradeClassrooms = false;
+        state.gradeClassrooms = action.payload;
+      })
+      .addCase(fetchClassroomsByGrade.rejected, (state) => {
+        state.isLoadingGradeClassrooms = false;
+        state.gradeClassrooms = [];
       });
   },
 });

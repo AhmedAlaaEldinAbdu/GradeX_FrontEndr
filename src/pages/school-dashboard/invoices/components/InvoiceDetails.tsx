@@ -1,9 +1,14 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/redux/store/store';
-import { fetchInvoiceById, clearInvoiceDetails } from '@/redux/features/invoices/invoicesSlice';
+import {
+  fetchInvoiceById,
+  clearInvoiceDetails,
+  fetchGradeById,
+  fetchClassroomById,
+} from '@/redux/features/invoices/invoicesSlice';
 import { fetchCustomerById, clearCustomerDetails } from '@/redux/features/customers/customersSlice';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
@@ -51,7 +56,7 @@ const RyalAmount = ({ amount }: { amount: number | null | undefined }) => (
 );
 
 export interface InvoiceDetailsHandle {
-  downloadPdf: () => Promise<void>;
+  downloadPdf: (fileName: string) => Promise<void>;
   isGeneratingPdf: boolean;
 }
 
@@ -64,16 +69,18 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
   const invoice = useSelector((state: RootState) => state.invoices.invoiceDetails);
   const isLoadingInvoice = useSelector((state: RootState) => state.invoices.isLoadingDetails);
   const customer = useSelector((state: RootState) => state.customers.customerDetails);
+  const gradeDetails = useSelector((state: RootState) => state.invoices.gradeDetails);
+  const classroomDetails = useSelector((state: RootState) => state.invoices.classroomDetails);
 
   const pdfRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   useEffect(() => {
-    if (id) dispatch(fetchInvoiceById(id));
+    if (id) dispatch(fetchInvoiceById({ id, language: i18n.language }));
     return () => {
       dispatch(clearInvoiceDetails());
     };
-  }, [id, dispatch]);
+  }, [id, dispatch, i18n.language]);
 
   useEffect(() => {
     if (invoice?.customerId) {
@@ -84,31 +91,45 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
     };
   }, [invoice?.customerId, dispatch]);
 
-  const downloadPdf = async () => {
-    if (!pdfRef.current || isGeneratingPdf) return;
-    setIsGeneratingPdf(true);
-    try {
-      const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [794, 1123],
-      });
-      pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
-      pdf.save('invoice.pdf');
-    } catch (err) {
-      console.error('Failed to generate PDF', err);
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
+  useEffect(() => {
+    if (invoice?.gradeId) dispatch(fetchGradeById(invoice.gradeId));
+  }, [invoice?.gradeId, dispatch]);
 
-  useImperativeHandle(ref, () => ({ downloadPdf, isGeneratingPdf }), [isGeneratingPdf]);
+  useEffect(() => {
+    if (invoice?.classroomId) dispatch(fetchClassroomById(invoice.classroomId));
+  }, [invoice?.classroomId, dispatch]);
+
+  const downloadPdf = useCallback(
+    async (fileName: string) => {
+      if (!pdfRef.current || isGeneratingPdf) return;
+      setIsGeneratingPdf(true);
+      try {
+        const canvas = await html2canvas(pdfRef.current, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [794, 1123],
+        });
+        pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
+        pdf.save(`${fileName}.pdf`);
+      } catch (err) {
+        console.error('Failed to generate PDF', err);
+      } finally {
+        setIsGeneratingPdf(false);
+      }
+    },
+    [isGeneratingPdf]
+  );
+
+  useImperativeHandle(ref, () => ({ downloadPdf, isGeneratingPdf }), [
+    downloadPdf,
+    isGeneratingPdf,
+  ]);
 
   if (isLoadingInvoice || !invoice) {
     return (
@@ -118,8 +139,17 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
     );
   }
 
-  const gradeName = isAr ? invoice?.gradeNameAr : invoice?.gradeNameEn;
-  const paymentMethodName = isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn;
+  const gradeName =
+    (isAr ? gradeDetails?.nameAr : gradeDetails?.nameEn) ??
+    invoice?.gradeName ??
+    (isAr ? invoice?.gradeNameAr : invoice?.gradeNameEn);
+  const paymentMethodName =
+    invoice?.paymentMethodName ??
+    (isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn);
+  const classroomName =
+    (isAr ? classroomDetails?.name : classroomDetails?.nameEn) ??
+    invoice?.classroomName ??
+    (isAr ? invoice?.classroomNameAr : invoice?.classroomNameEn);
   const invoiceItems = invoice?.items ?? invoice?.invoiceItemDtos ?? [];
 
   const PAYMENT_TYPE_CLASSES: Record<number, string> = {
@@ -170,6 +200,7 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
                 </IconButton>
               </div>
               <DetailRow label={t('invoices.table.educationalStage')} value={gradeName ?? dash} />
+              <DetailRow label={t('invoices.classroom')} value={classroomName ?? dash} />
               <DetailRow
                 label={t('invoices.guardianMobile')}
                 value={
@@ -269,9 +300,11 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
                       value={<RyalAmount amount={item.amount} />}
                     />
                   </div>
-                  <div className="flex flex-col gap-4">
-                    <DetailRow label={t('invoices.discount')} value={item.discount} />
-                  </div>
+                  {item.discount != null && (
+                    <div className="flex flex-col gap-4">
+                      <DetailRow label={t('invoices.discount')} value={item.discount} />
+                    </div>
+                  )}
                 </div>
               ))
             ) : (

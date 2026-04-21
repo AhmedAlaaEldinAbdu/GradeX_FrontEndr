@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +8,8 @@ import type { AppDispatch, RootState } from '@/redux/store/store';
 import { tOptional } from '@/lib/utils';
 import { tokenManager } from '@/lib/auth';
 import { fetchCountries, fetchRegionsByCountry, clearRegions } from '@/redux/features/lookups';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
+import { fetchClassroomsByGrade } from '@/redux/features/classrooms/classroomsSlice';
 import {
   createCustomer,
   updateCustomer,
@@ -15,6 +19,7 @@ import { CustomerTypeEnum } from '@/services/api/types/customer.types';
 import { searchStudentsByName } from '@/redux/features/students/studentsSlice';
 import type { StudentDto } from '@/services/api/types/students.types';
 import { useToast } from '@/shared/context/ToastContext';
+import { customerSchema, type CustomerFormValues } from '@/validations/customers-validations';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
@@ -55,6 +60,12 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const isLoadingRegions = useSelector((state: RootState) => state.lookups.isLoadingRegions);
   const isCreating = useSelector((state: RootState) => state.customers.isCreating);
   const isUpdating = useSelector((state: RootState) => state.customers.isUpdating);
+  const grades = useSelector((state: RootState) => state.grades.grades);
+  const isLoadingGrades = useSelector((state: RootState) => state.grades.isLoading);
+  const gradeClassrooms = useSelector((state: RootState) => state.classrooms.gradeClassrooms);
+  const isLoadingClassrooms = useSelector(
+    (state: RootState) => state.classrooms.isLoadingGradeClassrooms
+  );
 
   const schoolBrancheId =
     tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
@@ -67,25 +78,45 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suggestionBoxRef = useRef<HTMLDivElement>(null);
 
-  // Form state
+  // Non-validated form state
   const [clientType, setClientType] = useState<ClientType>('individual');
-  const [clientName, setClientName] = useState('');
   const [idNumber, setIdNumber] = useState('');
-
-  const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
   const [additionalMobile, setAdditionalMobile] = useState('');
-
-  const [lkCountryId, setLkCountryId] = useState('');
-  const [regionId, setRegionId] = useState('');
   const [streetName, setStreetName] = useState('');
   const [districtName, setDistrictName] = useState('');
   const [buildingNumber, setBuildingNumber] = useState('');
+  const [gradeId, setGradeId] = useState('');
+  const [classroomId, setClassroomId] = useState('');
 
   // Holds the regionId to restore after regions finish loading in edit mode
   const pendingRegionId = useRef<string>('');
 
   // Close suggestions on outside click
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<CustomerFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: yupResolver(customerSchema) as any,
+    mode: 'onBlur',
+    defaultValues: {
+      clientName: '',
+      email: '',
+      mobile: '',
+      additionalMobile: undefined,
+      lkCountryId: '',
+      regionId: '',
+    },
+  });
+
+  const watchedLkCountryId = watch('lkCountryId');
+
+  // Student autocomplete state
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (suggestionBoxRef.current && !suggestionBoxRef.current.contains(e.target as Node)) {
@@ -98,7 +129,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
 
   const handleClientNameChange = useCallback(
     (value: string) => {
-      setClientName(value);
+      setValue('clientName', value, { shouldValidate: true });
       setStudentId(null); // clear selection when user types manually
       setShowSuggestions(false);
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -121,14 +152,14 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         }
       }, 350);
     },
-    [schoolBrancheId, dispatch]
+    [schoolBrancheId, dispatch, setValue]
   );
 
   const handleSelectStudent = (student: StudentDto) => {
     const fullName = [student.firstName, student.secondName, student.thirdName, student.fourthName]
       .filter(Boolean)
       .join(' ');
-    setClientName(fullName);
+    setValue('clientName', fullName, { shouldValidate: true });
     setStudentId(student.id);
     setShowSuggestions(false);
     setStudentSuggestions([]);
@@ -137,7 +168,8 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
   // Fetch countries on mount
   useEffect(() => {
     dispatch(fetchCountries());
-  }, [dispatch]);
+    dispatch(fetchGrades(schoolBrancheId));
+  }, [dispatch, schoolBrancheId]);
 
   // Pre-populate form when editing
   useEffect(() => {
@@ -146,10 +178,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       if (!fetchCustomerById.fulfilled.match(action)) return;
       const d = action.payload;
       setClientType(numberToClientType[d.customerType] ?? 'individual');
-      setClientName(d.name ?? '');
       setIdNumber(d.nationalId ?? '');
-      setEmail(d.email ?? '');
-      setMobile(d.areaCode && d.phoneNumber ? `${d.areaCode}${d.phoneNumber}` : '');
       setAdditionalMobile(
         d.additionalAreaCode && d.additionalPhoneNumber
           ? `${d.additionalAreaCode}${d.additionalPhoneNumber}`
@@ -159,26 +188,53 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       setStreetName(d.streetNo ?? '');
       setDistrictName(d.neighborhood ?? '');
       pendingRegionId.current = d.regionId ?? '';
-      setLkCountryId(d.lkCountryId ?? '');
+      reset({
+        clientName: d.name ?? '',
+        email: d.email ?? '',
+        mobile: d.areaCode && d.phoneNumber ? `${d.areaCode}${d.phoneNumber}` : '',
+        additionalMobile: undefined,
+        lkCountryId: d.lkCountryId ?? '',
+        regionId: '',
+      });
     });
-  }, [isEditMode, id, dispatch]);
+  }, [isEditMode, id, dispatch, reset]);
 
   // Fetch regions when country changes
   useEffect(() => {
-    if (lkCountryId) {
-      dispatch(fetchRegionsByCountry(lkCountryId));
-      setRegionId('');
+    if (watchedLkCountryId) {
+      dispatch(fetchRegionsByCountry(watchedLkCountryId));
+      setValue('regionId', '');
     } else {
       dispatch(clearRegions());
     }
-  }, [lkCountryId, dispatch]);
+  }, [watchedLkCountryId, dispatch, setValue]);
 
   useEffect(() => {
     if (pendingRegionId.current && regions.length > 0) {
-      setRegionId(pendingRegionId.current);
+      setValue('regionId', pendingRegionId.current);
       pendingRegionId.current = '';
     }
-  }, [regions]);
+  }, [regions, setValue]);
+
+  // Fetch classrooms when grade changes
+  useEffect(() => {
+    if (!gradeId) {
+      setClassroomId('');
+      return;
+    }
+    setClassroomId('');
+    dispatch(fetchClassroomsByGrade(gradeId));
+  }, [gradeId, dispatch]);
+
+  const gradeOptions = grades.map((g) => ({
+    value: g.id,
+    label: lang === 'ar' ? g.nameAr : g.nameEn,
+  }));
+
+  const classroomOptions = gradeClassrooms.map((c) => ({
+    value: c.id,
+    label: lang === 'ar' ? c.name : c.nameEn,
+  }));
 
   const countryOptions = countries.map((c) => ({
     value: c.id,
@@ -205,28 +261,30 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
     return { areaCode, phoneNumber: phone };
   };
 
-  const handleSubmit = async () => {
-    const { areaCode, phoneNumber } = parsePhone(mobile, lkCountryId);
+  const onSubmit = async (data: CustomerFormValues) => {
+    const { areaCode, phoneNumber } = parsePhone(data.mobile, data.lkCountryId);
     const { areaCode: addCode, phoneNumber: addPhone } = additionalMobile
-      ? parsePhone(additionalMobile, lkCountryId)
+      ? parsePhone(additionalMobile, data.lkCountryId)
       : { areaCode: null, phoneNumber: null };
 
     const payload = {
       studentId: studentId ?? null,
       schoolBranchId: schoolBrancheId || null,
-      name: clientName,
+      name: data.clientName,
       customerType: clientTypeToNumber[clientType],
       nationalId: idNumber,
-      email,
+      email: data.email,
       areaCode,
       phoneNumber,
       additionalAreaCode: additionalMobile ? addCode : null,
       additionalPhoneNumber: additionalMobile ? addPhone : null,
-      regionId,
-      lkCountryId,
+      regionId: data.regionId,
+      lkCountryId: data.lkCountryId,
       buldingNo: buildingNumber,
       streetNo: streetName,
       neighborhood: districtName,
+      gradeId: gradeId || null,
+      classroomId: classroomId || null,
     };
 
     try {
@@ -252,14 +310,21 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         </h3>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <FormField label={t('customers.clientName')} required>
+          <FormField label={t('customers.clientName')} required error={errors.clientName?.message}>
             <div ref={suggestionBoxRef} className="relative w-full">
-              <Input
-                value={clientName}
-                onChange={(e) => handleClientNameChange(e.target.value)}
-                onFocus={() => studentSuggestions.length > 0 && setShowSuggestions(true)}
-                placeholder={t('customers.enterClientName')}
-                className="!bg-white"
+              <Controller
+                name="clientName"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    value={field.value}
+                    onChange={(e) => handleClientNameChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    onFocus={() => studentSuggestions.length > 0 && setShowSuggestions(true)}
+                    placeholder={t('customers.enterClientName')}
+                    className="!bg-white"
+                  />
+                )}
               />
               {isSearchingStudents && (
                 <div className="absolute end-3 top-1/2 -translate-y-1/2">
@@ -336,6 +401,34 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
               />
             </FormField>
           </div>
+
+          <FormField label={tOptional(t, 'customers.grade')}>
+            <CustomSelect
+              value={gradeId}
+              onChange={(val) => setGradeId(String(val))}
+              options={gradeOptions}
+              placeholder={isLoadingGrades ? t('common.loading') : t('customers.chooseGrade')}
+              disabled={isLoadingGrades}
+              showSearch={true}
+            />
+          </FormField>
+
+          <FormField label={tOptional(t, 'customers.classroom')}>
+            <CustomSelect
+              value={classroomId}
+              onChange={(val) => setClassroomId(String(val))}
+              options={classroomOptions}
+              placeholder={
+                isLoadingClassrooms
+                  ? t('common.loading')
+                  : !gradeId
+                    ? t('customers.chooseGrade')
+                    : t('customers.chooseClassroom')
+              }
+              disabled={!gradeId || isLoadingClassrooms}
+              showSearch={true}
+            />
+          </FormField>
         </div>
       </Card>
 
@@ -346,19 +439,28 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <FormField label={t('customers.email')} required>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t('customers.enterEmail')}
-                className="!bg-white"
+            <FormField label={t('customers.email')} required error={errors.email?.message}>
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder={t('customers.enterEmail')}
+                    className="!bg-white"
+                  />
+                )}
               />
             </FormField>
           </div>
 
-          <FormField label={t('customers.mobileNumber')} required>
-            <PhoneInput value={mobile} onChange={setMobile} />
+          <FormField label={t('customers.mobileNumber')} required error={errors.mobile?.message}>
+            <Controller
+              name="mobile"
+              control={control}
+              render={({ field }) => <PhoneInput value={field.value} onChange={field.onChange} />}
+            />
           </FormField>
 
           <FormField label={t('customers.additionalMobileNumber')} required>
@@ -373,31 +475,45 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         </h3>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <FormField label={t('customers.country')} required>
-            <CustomSelect
-              value={lkCountryId}
-              onChange={(val) => setLkCountryId(String(val))}
-              options={countryOptions}
-              placeholder={isLoadingCountries ? t('common.loading') : t('customers.chooseCountry')}
-              disabled={isLoadingCountries}
-              showSearch={true}
+          <FormField label={t('customers.country')} required error={errors.lkCountryId?.message}>
+            <Controller
+              name="lkCountryId"
+              control={control}
+              render={({ field }) => (
+                <CustomSelect
+                  value={field.value}
+                  onChange={(val) => field.onChange(String(val))}
+                  options={countryOptions}
+                  placeholder={
+                    isLoadingCountries ? t('common.loading') : t('customers.chooseCountry')
+                  }
+                  disabled={isLoadingCountries}
+                  showSearch={true}
+                />
+              )}
             />
           </FormField>
 
-          <FormField label={t('customers.city')} required>
-            <CustomSelect
-              value={regionId}
-              onChange={(val) => setRegionId(String(val))}
-              options={regionOptions}
-              placeholder={
-                isLoadingRegions
-                  ? t('common.loading')
-                  : !lkCountryId
-                    ? t('customers.chooseCountry')
-                    : t('customers.chooseCity')
-              }
-              disabled={isLoadingRegions || !lkCountryId}
-              showSearch={true}
+          <FormField label={t('customers.city')} required error={errors.regionId?.message}>
+            <Controller
+              name="regionId"
+              control={control}
+              render={({ field }) => (
+                <CustomSelect
+                  value={field.value}
+                  onChange={(val) => field.onChange(String(val))}
+                  options={regionOptions}
+                  placeholder={
+                    isLoadingRegions
+                      ? t('common.loading')
+                      : !watchedLkCountryId
+                        ? t('customers.chooseCountry')
+                        : t('customers.chooseCity')
+                  }
+                  disabled={isLoadingRegions || !watchedLkCountryId}
+                  showSearch={true}
+                />
+              )}
             />
           </FormField>
 
@@ -436,7 +552,11 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         <Button variant="outline" onClick={() => navigate('/financial-management/customers')}>
           {t('common.cancel')}
         </Button>
-        <Button variant="success" onClick={handleSubmit} disabled={isCreating || isUpdating}>
+        <Button
+          variant="success"
+          onClick={handleSubmit(onSubmit)}
+          disabled={isCreating || isUpdating}
+        >
           {isCreating || isUpdating
             ? t('common.loading')
             : isEditMode
