@@ -15,6 +15,7 @@ export default function AcademicCalendarPage() {
             imgClassName: 'w-[24px] h-[24px]',
           },
         ]}
+        hasHeaderControls={true}
       />
 
       <AcademicCalendarList />

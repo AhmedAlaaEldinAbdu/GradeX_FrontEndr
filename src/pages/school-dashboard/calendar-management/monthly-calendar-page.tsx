@@ -22,6 +22,7 @@ export default function MonthlyCalendarPage() {
             imgClassName: 'w-[24px] h-[24px]',
           },
         ]}
+        hasHeaderControls={true}
       />
 
       <MonthlyCalendar ref={calendarRef} />

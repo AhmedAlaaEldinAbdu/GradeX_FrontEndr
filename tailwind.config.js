@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
+        sans: ['Tajawal', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       colors: {
         /* ================= Base Colors ================= */
