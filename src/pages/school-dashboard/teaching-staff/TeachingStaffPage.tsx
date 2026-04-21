@@ -29,7 +29,10 @@ export default function TeachingStaffPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Page Header */}
-      <PageHeader title={activeTab === 'teachers' ? 'teachers.title' : 'sidebar.administrators'} />
+      <PageHeader
+        title={activeTab === 'teachers' ? 'teachers.title' : 'sidebar.administrators'}
+        hasHeaderControls={true}
+      />
 
       {/* Main Content */}
       <TeachingStaff onTabChange={setActiveTab} />
