@@ -157,6 +157,7 @@ export default function JobAnnouncementsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
+  const [selectedAnnouncementStatus, setSelectedAnnouncementStatus] = useState('');
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [selectedWorkType, setSelectedWorkType] = useState('');
   const [selectedJobId, setSelectedJobId] = useState('');
@@ -217,7 +218,14 @@ export default function JobAnnouncementsList() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCountryId, selectedStageId, selectedSubjectId, selectedWorkType]);
+  }, [
+    searchTerm,
+    selectedCountryId,
+    selectedStageId,
+    selectedAnnouncementStatus,
+    selectedSubjectId,
+    selectedWorkType,
+  ]);
 
   const countryOptions = Array.isArray(countries)
     ? countries.map((country) => ({
@@ -270,11 +278,24 @@ export default function JobAnnouncementsList() {
     return baseOptions.map(({ value, labelKey }) => ({ value, label: t(labelKey) }));
   }, [t]);
 
+  const announcementStatusOptions = useMemo(
+    () => [
+      { value: 'active', label: t('jobAnnouncement.statusOptions.active') },
+      { value: 'expired', label: t('jobAnnouncement.statusOptions.expired') },
+    ],
+    [t]
+  );
+
   const numberLocale = currentLang === 'ar' ? 'ar-EG' : 'en-US';
   const joinSeparator = currentLang === 'ar' ? '، ' : ', ';
 
   const hasActiveFilters = Boolean(
-    searchTerm || selectedCountryId || selectedStageId || selectedSubjectId || selectedWorkType
+    searchTerm ||
+      selectedCountryId ||
+      selectedStageId ||
+      selectedAnnouncementStatus ||
+      selectedSubjectId ||
+      selectedWorkType
   );
   const dataSource = Array.isArray(jobAdvertisments) ? jobAdvertisments : [];
   const shouldShowEmptyState = !isLoading && dataSource.length === 0 && !hasActiveFilters;
@@ -294,6 +315,7 @@ export default function JobAnnouncementsList() {
     setSearchTerm('');
     setSelectedCountryId('');
     setSelectedStageId('');
+    setSelectedAnnouncementStatus('');
     setSelectedSubjectId('');
     setSelectedWorkType('');
   };
@@ -607,40 +629,41 @@ export default function JobAnnouncementsList() {
     {
       type: 'search',
       name: 'job-announcements-search',
-      placeholder: t('jobAnnouncement.searchTeacherName'),
+      placeholder: t('jobAnnouncement.searchJobGrade'),
       value: filtered?.name ? filtered?.name : searchTerm,
       onChange: (value) => setSearchTerm((value as string) ?? ''),
       width: '30%',
     },
-    {
+     {
       type: 'custom',
-      name: 'job-announcements-country',
+      name: 'job-announcements-subject',
       placeholder: '',
-      value: selectedCountryId,
+      value: selectedSubjectId,
       onChange: () => {},
-      width: '20%',
+      width: '15%',
       customComponent: (
         <CustomSelect
-          value={selectedCountryId}
+          value={selectedSubjectId}
           onChange={(value) =>
-            setSelectedCountryId(
+            setSelectedSubjectId(
               Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
             )
           }
-          options={countryOptions}
-          placeholder={isLoadingCountries ? t('common.loading') : t('jobAnnouncement.country')}
-          disabled={isLoadingCountries}
+          options={subjectOptions}
+          placeholder={isLoadingSubjects ? t('common.loading') : t('jobAnnouncement.subjectName')}
+          disabled={isLoadingSubjects}
           maxHeight="200px"
         />
       ),
     },
+    
     {
       type: 'custom',
       name: 'job-announcements-stage',
       placeholder: '',
       value: selectedStageId,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedStageId}
@@ -660,11 +683,54 @@ export default function JobAnnouncementsList() {
     },
     {
       type: 'custom',
+      name: 'job-announcements-status',
+      placeholder: '',
+      value: selectedAnnouncementStatus,
+      onChange: () => {},
+      width: '15%',
+      customComponent: (
+        <CustomSelect
+          value={selectedAnnouncementStatus}
+          onChange={(value) =>
+            setSelectedAnnouncementStatus(
+              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+            )
+          }
+          options={announcementStatusOptions}
+          placeholder={t('jobAnnouncement.announcementStatus')}
+          maxHeight="160px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'job-announcements-country',
+      placeholder: '',
+      value: selectedCountryId,
+      onChange: () => {},
+      width: '12%',
+      customComponent: (
+        <CustomSelect
+          value={selectedCountryId}
+          onChange={(value) =>
+            setSelectedCountryId(
+              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
+            )
+          }
+          options={countryOptions}
+          placeholder={isLoadingCountries ? t('common.loading') : t('jobAnnouncement.country')}
+          disabled={isLoadingCountries}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
       name: 'job-announcements-work-type',
       placeholder: '',
       value: selectedWorkType,
       onChange: () => {},
-      width: '20%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={selectedWorkType}
@@ -679,28 +745,7 @@ export default function JobAnnouncementsList() {
         />
       ),
     },
-    {
-      type: 'custom',
-      name: 'job-announcements-subject',
-      placeholder: '',
-      value: selectedSubjectId,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedSubjectId}
-          onChange={(value) =>
-            setSelectedSubjectId(
-              Array.isArray(value) ? ((value[0] as string) ?? '') : (value as string)
-            )
-          }
-          options={subjectOptions}
-          placeholder={isLoadingSubjects ? t('common.loading') : t('jobAnnouncement.subjectName')}
-          disabled={isLoadingSubjects}
-          maxHeight="200px"
-        />
-      ),
-    },
+   
   ];
 
   const handleDeleteConfirm = async () => {

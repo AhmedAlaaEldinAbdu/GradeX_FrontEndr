@@ -1658,9 +1658,11 @@
   "jobAnnouncement": {
     "title": "Job announcement",
     "jobAnnouncement": "Job announcement",
+    "announcementStatus": "Announcement Status",
     "addAnnouncement": "Add announcement",
     "editAnnouncement": "Edit announcement",
     "searchTeacherName": "Search for teacher name",
+    "searchJobGrade": "Search for job grade",
     "country": "Country",
     "educationalStages": "Educational stages",
     "workType": "Work type",
@@ -1686,6 +1688,10 @@
       "employeeAnnouncements": "Employee Announcements",
       "activeAnnouncements": "Active Announcements",
       "expiredAnnouncements": "Expired Announcements"
+    },
+    "statusOptions": {
+      "active": "Active",
+      "expired": "Expired"
     },
     "applicantsPage": {
       "title": "Applicants list",

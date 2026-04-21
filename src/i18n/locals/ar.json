@@ -1663,9 +1663,11 @@
   },
   "jobAnnouncement": {
     "title": "إعلان التوظيف",
+    "announcementStatus": "حالة الإعلان",
     "addAnnouncement": "إضافة إعلان",
     "editAnnouncement": "تعديل الإعلان",
     "searchTeacherName": "ابحث عن اسم المعلم",
+    "searchJobGrade": "ابحث عن الدرجة الوظيفية",
     "country": "الدولة",
     "educationalStages": "المراحل التعليمية",
     "workType": "نوع الدوام",
@@ -1691,6 +1693,10 @@
       "employeeAnnouncements": "إعلانات للموظفين",
       "activeAnnouncements": "الإعلانات النشطة",
       "expiredAnnouncements": "الإعلانات المنتهية"
+    },
+    "statusOptions": {
+      "active": "نشط",
+      "expired": "منتهي"
     },
     "applicantsPage": {
       "title": "طلبات التقديم",
