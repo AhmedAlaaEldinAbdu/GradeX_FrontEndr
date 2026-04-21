@@ -2544,6 +2544,7 @@
   },
   "invoices": {
     "title": "Invoices",
+    "emptyState": "No invoices have been added yet.",
     "issueInvoice": "Issue Invoice",
     "issueAndExport": "Add and Export",
     "searchInvoiceNumber": "Search by Invoice Number",

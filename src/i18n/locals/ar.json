@@ -2555,6 +2555,7 @@
   },
   "invoices": {
     "title": "الفواتير",
+    "emptyState": "لم يتم إضافة أي الفواتير حتى الآن.",
     "issueInvoice": "اصدار فاتورة",
     "issueAndExport": "إضافة و تصدير",
     "searchInvoiceNumber": "ابحث عن رقم الفاتورة",
