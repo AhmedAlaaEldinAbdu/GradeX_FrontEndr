@@ -33,7 +33,6 @@ export default function InvoicesList() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { invoices, pagination, isLoading } = useSelector((state: RootState) => state.invoices);
-  const { offers } = useSelector((state: RootState) => state.offers);
   const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
   const { lkPaymentMethods } = useSelector((state: RootState) => state.lookups);
 
@@ -105,15 +104,6 @@ export default function InvoicesList() {
         label: isAr ? method.arabicName : method.englishName,
       })),
     [lkPaymentMethods, isAr]
-  );
-
-  const itemOptions = useMemo(
-    () =>
-      offers.map((offer) => ({
-        value: offer.id,
-        label: isAr ? offer.nameAr : offer.nameEn,
-      })),
-    [offers, isAr]
   );
 
   const stageOptions = useMemo(
@@ -345,24 +335,6 @@ export default function InvoicesList() {
           }}
           options={methodOptions}
           placeholder={t('invoices.paymentMethod')}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'item',
-      value: selectedItem,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedItem}
-          onChange={(value) => {
-            setSelectedItem(Array.isArray(value) ? (value[0] ?? '') : value);
-          }}
-          options={itemOptions}
-          placeholder={t('invoices.item')}
           maxHeight="200px"
         />
       ),
