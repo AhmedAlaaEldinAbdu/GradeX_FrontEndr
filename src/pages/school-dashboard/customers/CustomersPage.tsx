@@ -20,6 +20,7 @@ export default function CustomersPage() {
 
       <PageHeader
         title="customers.title"
+        hasHeaderControls={true}
         actions={[
           {
             label: 'customers.addClient',
