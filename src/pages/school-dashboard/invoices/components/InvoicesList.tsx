@@ -13,12 +13,14 @@ import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
+import EmptyState from '@/shared/components/EmptyState';
 import type { InvoiceDto } from '@/services/api/types/invoice.types';
 
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import RyalIcon from '@gradex/assets/icons/Ryal.svg';
+import FullReceiptIcon from '@gradex/assets/icons/FullReceipt.svg';
 
 const RyalFilter =
   'brightness(0) saturate(100%) invert(43%) sepia(8%) saturate(301%) hue-rotate(182deg) brightness(94%) contrast(89%)';
@@ -363,26 +365,34 @@ export default function InvoicesList() {
     },
   ];
 
+  const hasActiveFilters = searchTerm || selectedMethod || selectedItem || selectedStage;
+  const shouldShowEmptyState = !isLoading && invoices.length === 0 && !hasActiveFilters;
+  const shouldShowContent = isLoading || invoices.length > 0 || hasActiveFilters;
+
   return (
-    <Card className="overflow-hidden">
-      <DataTable
-        data={invoices}
-        columns={columns}
-        keyExtractor={(row) => row.id}
-        pagination={{
-          page: pagination.pageIndex,
-          limit: pagination.pageSize,
-          total: pagination.totalItems,
-          totalPages: pagination.totalPages,
-        }}
-        onPageChange={handlePageChange}
-        filters={filterConfigs}
-        showFilters={true}
-        onResetFilters={handleResetFilters}
-        isLoading={isLoading}
-        emptyMessage={t('common.noDataFound')}
-        t={t}
-      />
+    <Card className={shouldShowEmptyState ? '' : 'overflow-hidden'}>
+      {shouldShowEmptyState ? (
+        <EmptyState imgSrc={FullReceiptIcon} description={t('invoices.emptyState')} blend={true} />
+      ) : shouldShowContent ? (
+        <DataTable
+          data={invoices}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          pagination={{
+            page: pagination.pageIndex,
+            limit: pagination.pageSize,
+            total: pagination.totalItems,
+            totalPages: pagination.totalPages,
+          }}
+          onPageChange={handlePageChange}
+          filters={filterConfigs}
+          showFilters={true}
+          onResetFilters={handleResetFilters}
+          isLoading={isLoading}
+          emptyMessage={t('common.noDataFound')}
+          t={t}
+        />
+      ) : null}
     </Card>
   );
 }
