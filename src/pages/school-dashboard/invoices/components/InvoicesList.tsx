@@ -181,11 +181,15 @@ export default function InvoicesList() {
       className: 'text-center',
     },
     {
-      header: 'invoices.table.studentName',
+      header: 'invoices.table.customerName',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
           <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-200">
-            <CustomImage src={DefaultAvatar} alt="Student" className="h-full w-full object-cover" />
+            <CustomImage
+              src={DefaultAvatar}
+              alt="customer"
+              className="h-full w-full object-cover"
+            />
           </div>
           <span
             className="w-[150px] truncate text-start font-medium text-gray-800"
