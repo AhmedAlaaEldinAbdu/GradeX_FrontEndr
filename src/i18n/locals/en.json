@@ -2655,6 +2655,7 @@
   },
   "customers": {
     "title": "customers",
+    "emptyState": "No customers have been added yet.",
     "addClient": "Add Client",
     "searchClientName": "Search for client name",
     "paymentStatus": "Payment Status",

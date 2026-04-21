@@ -2667,6 +2667,7 @@
   },
   "customers": {
     "title": "العملاء",
+    "emptyState": "لم يتم إضافة أي عملاء حتى الآن.",
     "confirmDeleteCustomer": "هل أنت متأكد أنك تريد حذف العميل",
     "customerDeletedSuccessfully": "تم حذف العميل بنجاح",
     "customerAddedSuccessfully": "تم إضافة العميل بنجاح",
