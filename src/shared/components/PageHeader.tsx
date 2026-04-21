@@ -15,6 +15,9 @@ type ActionType = {
   imgClassName?: string;
   fullWidth?: boolean;
   className?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 };
 
 type PageHeaderProps = {
@@ -44,6 +47,9 @@ const PageHeader = ({ title, actions = [], hasHeaderControls = false }: PageHead
                 imgClassName={action.imgClassName}
                 fullWidth={action.fullWidth}
                 className={action.className}
+                disabled={action.disabled}
+                loading={action.loading}
+                type={action.type}
               >
                 {action.label ? t(`${action.label}`) : null}
               </Button>
@@ -59,6 +65,9 @@ const PageHeader = ({ title, actions = [], hasHeaderControls = false }: PageHead
               imgClassName={action.imgClassName}
               fullWidth={action.fullWidth}
               className={action.className}
+              disabled={action.disabled}
+              loading={action.loading}
+              type={action.type}
             >
               {action.label ? t(`${action.label}`) : null}
             </Button>
