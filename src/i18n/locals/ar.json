@@ -2701,7 +2701,8 @@
       "emailInvalid": "صيغة البريد الإلكتروني غير صحيحة",
       "mobileRequired": "رقم الجوال مطلوب",
       "countryRequired": "يجب اختيار الدولة",
-      "cityRequired": "يجب اختيار المدينة"
+      "cityRequired": "يجب اختيار المدينة",
+      "nationalIdInvalid": "رقم الهوية يجب أن يتكون من 10 أرقام إنجليزية فقط"
     },
     "table": {
       "index": "#",

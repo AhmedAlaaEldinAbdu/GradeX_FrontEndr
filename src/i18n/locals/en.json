@@ -2689,7 +2689,8 @@
       "emailInvalid": "Invalid email format",
       "mobileRequired": "Mobile number is required",
       "countryRequired": "Country is required",
-      "cityRequired": "City is required"
+      "cityRequired": "City is required",
+      "nationalIdInvalid": "ID number must be exactly 10 English digits"
     },
     "table": {
       "index": "#",
