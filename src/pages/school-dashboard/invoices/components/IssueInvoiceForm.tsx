@@ -7,6 +7,7 @@ import { tokenManager } from '@/lib/auth';
 import { formatValidationErrors } from '@/lib/utils/error-utils';
 import { fetchCustomers } from '@/redux/features/customers/customersSlice';
 import {
+  clearInvoiceItems,
   createInvoice,
   fetchInvoiceItems,
   fetchInvoiceNumbers,
@@ -225,6 +226,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   useEffect(() => {
     dispatch(fetchInvoiceNumbers());
+    return () => {
+      dispatch(clearInvoiceItems());
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -250,6 +254,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     setMobile(areaCode && phone ? `${areaCode}${phone}` : '');
 
     if (selectedCustomer?.studentId) {
+      setClassificationRows([createClassificationRow()]);
       dispatch(fetchInvoiceItems(selectedCustomer.studentId));
     } else {
       setClassificationRows([createClassificationRow()]);
