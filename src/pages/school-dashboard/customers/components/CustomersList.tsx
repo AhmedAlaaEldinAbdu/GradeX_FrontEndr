@@ -152,13 +152,6 @@ export default function CustomersList() {
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
           <IconButton
-            ariaLabel="Email"
-            onClick={() => window.open(`mailto:${row.email}`, '_blank')}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 transition-colors hover:bg-orange-100"
-          >
-            <CustomImage src={EmailYellowIcon} alt="Email" className="h-4 w-4" />
-          </IconButton>
-          <IconButton
             ariaLabel="WhatsApp"
             onClick={() =>
               window.open(
@@ -169,6 +162,13 @@ export default function CustomersList() {
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-50 transition-colors hover:bg-green-100"
           >
             <CustomImage src={WhatsAppIcon} alt="WhatsApp" className="h-4 w-4" />
+          </IconButton>
+          <IconButton
+            ariaLabel="Email"
+            onClick={() => window.open(`mailto:${row.email}`, '_blank')}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 transition-colors hover:bg-orange-100"
+          >
+            <CustomImage src={EmailYellowIcon} alt="Email" className="h-4 w-4" />
           </IconButton>
         </div>
       ),
