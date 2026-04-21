@@ -12,6 +12,7 @@ import {
   fetchInvoiceNumbers,
 } from '@/redux/features/invoices/invoicesSlice';
 import { fetchLKPaymentMethods } from '@/redux/features/lookups/lookupsSlice';
+import { fetchOffers } from '@/redux/features/offers/offersSlice';
 import {
   fetchAllInstallments,
   fetchInstallmentPlanById,
@@ -20,6 +21,7 @@ import type { CustomerDto } from '@/services/api/types/customer.types';
 import type { InvoiceDto } from '@/services/api/types/invoice.types';
 import { InvoicePaymentType } from '@/shared/enums/enums';
 import Button from '@/shared/components/Button';
+import IconButton from '@/shared/components/IconButton';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
@@ -43,12 +45,23 @@ type IssueInvoiceFormProps = {
   onCancel?: () => void;
 };
 
-type ReadOnlyItemRow = {
+type ClassificationRow = {
   id: string;
   nameAr: string;
   nameEn: string | null;
-  amount: number;
+  amount: string;
+  discount: string;
 };
+
+const createId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const toNumber = (value: string) => Number(value || 0);
+const createClassificationRow = (): ClassificationRow => ({
+  id: createId(),
+  nameAr: '',
+  nameEn: null,
+  amount: '',
+  discount: '',
+});
 
 const currencyIcon = <CustomImage src={RyalIcon} alt="Currency" className="h-4 w-4 opacity-60" />;
 
@@ -68,6 +81,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   } = useAppSelector((state) => state.invoices);
   const { customers, isLoading: isLoadingCustomers } = useAppSelector((state) => state.customers);
   const { lkPaymentMethods, isLoadingLKPaymentMethods } = useAppSelector((state) => state.lookups);
+  const { offers, isLoading: isLoadingOffers } = useAppSelector((state) => state.offers);
   const { installments, installmentPlan, isLoadingInstallments } = useAppSelector(
     (state) => state.tuitionFees
   );
@@ -126,7 +140,11 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
+  const [selectedOfferId, setSelectedOfferId] = useState('');
   const [taxPercentageInput, setTaxPercentageInput] = useState('');
+  const [classificationRows, setClassificationRows] = useState<ClassificationRow[]>([
+    createClassificationRow(),
+  ]);
   const [classificationsError, setClassificationsError] = useState('');
   const [generalError, setGeneralError] = useState('');
   const [createdInvoice, setCreatedInvoice] = useState<InvoiceDto | null>(null);
@@ -139,17 +157,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const selectedCustomer = useMemo<CustomerDto | null>(
     () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
     [customers, selectedCustomerId]
-  );
-
-  const readOnlyItems = useMemo<ReadOnlyItemRow[]>(
-    () =>
-      invoiceItems?.items.map((item) => ({
-        id: item.id,
-        nameAr: item.nameAr,
-        nameEn: item.nameEn,
-        amount: item.amount,
-      })) ?? [],
-    [invoiceItems]
   );
 
   const installmentOptions = useMemo<CustomSelectOption[]>(
@@ -165,15 +172,41 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     [installments]
   );
 
-  const subtotal = invoiceItems?.subTotal ?? 0;
-  const offerDiscount = useMemo(() => {
-    if (!invoiceItems) return 0;
-    const byPercentage = (subtotal * invoiceItems.offerPercentage) / 100;
-    return byPercentage + invoiceItems.offerAmount;
-  }, [invoiceItems, subtotal]);
+  const offerOptions = useMemo<CustomSelectOption[]>(
+    () =>
+      offers.map((offer) => ({
+        value: offer.id,
+        label: currentLang === 'ar' ? offer.nameAr : offer.nameEn,
+      })),
+    [currentLang, offers]
+  );
 
-  const discountTotal = invoiceItems?.totalDiscount ?? offerDiscount;
+  const subtotal = useMemo(
+    () => classificationRows.reduce((sum, row) => sum + toNumber(row.amount), 0),
+    [classificationRows]
+  );
+
+  const rowDiscountTotal = useMemo(
+    () => classificationRows.reduce((sum, row) => sum + toNumber(row.discount), 0),
+    [classificationRows]
+  );
+
+  const selectedOffer = useMemo(
+    () => offers.find((offer) => offer.id === selectedOfferId) ?? null,
+    [offers, selectedOfferId]
+  );
+
   const calculatedAmount = subtotal;
+
+  const offerDiscount = useMemo(() => {
+    if (!selectedOffer) return 0;
+    if (selectedOffer.percentage !== null && selectedOffer.percentage !== undefined) {
+      return (calculatedAmount * selectedOffer.percentage) / 100;
+    }
+    return selectedOffer.amount ?? 0;
+  }, [calculatedAmount, selectedOffer]);
+
+  const discountTotal = rowDiscountTotal + offerDiscount;
   const netAmount = Math.max(0, subtotal - discountTotal);
   const taxAmount = (netAmount * Number(taxPercentage ?? 0)) / 100;
   const totalAmount = netAmount + taxAmount;
@@ -199,6 +232,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       return;
     }
     dispatch(fetchAllInstallments({ schoolBranchId, PageNumber: 1, PageSize: 1000 }));
+    dispatch(
+      fetchOffers({ SchoolBranchId: schoolBranchId, IsActive: true, PageIndex: 1, PageSize: 1000 })
+    );
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -215,8 +251,24 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
     if (selectedCustomer?.studentId) {
       dispatch(fetchInvoiceItems(selectedCustomer.studentId));
+    } else {
+      setClassificationRows([createClassificationRow()]);
     }
   }, [dispatch, selectedCustomer]);
+
+  useEffect(() => {
+    if (invoiceItems?.items && invoiceItems.items.length > 0) {
+      setClassificationRows(
+        invoiceItems.items.map((item) => ({
+          id: item.id,
+          nameAr: item.nameAr,
+          nameEn: item.nameEn,
+          amount: String(item.amount),
+          discount: '',
+        }))
+      );
+    }
+  }, [invoiceItems]);
 
   useEffect(() => {
     setValue('installmentId', null);
@@ -236,33 +288,101 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     }
   }, [isDeferredPayment, setValue]);
 
+  const handleRowChange = (
+    rowId: string,
+    field: 'nameAr' | 'amount' | 'discount',
+    value: string
+  ) => {
+    setClassificationsError('');
+    setGeneralError('');
+    setClassificationRows((prev) =>
+      prev.map((row) => (row.id === rowId ? { ...row, [field]: value } : row))
+    );
+  };
+
+  const handleAddRow = () => {
+    setClassificationsError('');
+    setClassificationRows((prev) => [...prev, createClassificationRow()]);
+  };
+
+  const handleRemoveRow = (rowId: string) => {
+    setClassificationsError('');
+    setClassificationRows((prev) =>
+      prev.length > 1 ? prev.filter((row) => row.id !== rowId) : [createClassificationRow()]
+    );
+  };
+
   const classificationColumns = [
     {
       header: '#',
-      accessor: (_row: ReadOnlyItemRow, index?: number) => (index !== undefined ? index + 1 : 1),
+      accessor: (_row: ClassificationRow, index?: number) => (index !== undefined ? index + 1 : 1),
       headerClassName: 'w-16',
       className: 'w-16',
     },
     {
       header: 'invoices.item',
-      accessor: (row: ReadOnlyItemRow) => (
-        <span className="text-gray-700">
-          {currentLang === 'ar' ? row.nameAr : (row.nameEn ?? row.nameAr)}
-        </span>
+      accessor: (row: ClassificationRow) => (
+        <div className="min-w-[260px]">
+          <Input
+            value={currentLang === 'ar' ? row.nameAr : (row.nameEn ?? row.nameAr)}
+            onChange={(e) => handleRowChange(row.id, 'nameAr', e.target.value)}
+            placeholder={t('invoices.chooseItem')}
+            className="!bg-white"
+          />
+        </div>
       ),
       headerClassName: 'min-w-[260px]',
       className: 'min-w-[260px]',
     },
     {
-      header: 'invoices.amount',
-      accessor: (row: ReadOnlyItemRow) => (
-        <span className="flex items-center gap-1 text-gray-700">
-          {row.amount}
-          {currencyIcon}
-        </span>
+      header: 'invoices.discount',
+      accessor: (row: ClassificationRow) => (
+        <div className="min-w-[160px]">
+          <Input
+            type="number"
+            min="0"
+            icon={currencyIcon}
+            value={row.discount}
+            onChange={(e) => handleRowChange(row.id, 'discount', e.target.value)}
+            placeholder={t('invoices.chooseDiscount')}
+            className="!bg-white"
+          />
+        </div>
       ),
       headerClassName: 'min-w-[160px]',
       className: 'min-w-[160px]',
+    },
+    {
+      header: 'invoices.amount',
+      accessor: (row: ClassificationRow) => (
+        <div className="min-w-[160px]">
+          <Input
+            type="number"
+            min="0"
+            icon={currencyIcon}
+            value={row.amount}
+            onChange={(e) => handleRowChange(row.id, 'amount', e.target.value)}
+            placeholder={t('invoices.enterAmount')}
+            className="!bg-white"
+          />
+        </div>
+      ),
+      headerClassName: 'min-w-[160px]',
+      className: 'min-w-[160px]',
+    },
+    {
+      header: 'common.actions',
+      accessor: (row: ClassificationRow) => (
+        <IconButton
+          status="delete"
+          variant="danger"
+          ariaLabel={t('actions.delete')}
+          onClick={() => handleRemoveRow(row.id)}
+          className="mx-auto bg-red-50 text-red-500 shadow-none hover:bg-red-100"
+        />
+      ),
+      headerClassName: 'min-w-[120px]',
+      className: 'min-w-[120px]',
     },
   ];
 
@@ -272,11 +392,13 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       return;
     }
 
-    const invoiceItemDtos = readOnlyItems.map((item) => ({
-      name: currentLang === 'ar' ? item.nameAr : (item.nameEn ?? item.nameAr),
-      amount: item.amount,
-      discount: 0,
-    }));
+    const invoiceItemDtos = classificationRows
+      .map((row) => ({
+        name: currentLang === 'ar' ? row.nameAr : (row.nameEn ?? row.nameAr),
+        amount: toNumber(row.amount),
+        discount: toNumber(row.discount),
+      }))
+      .filter((row) => row.name.trim() && row.amount > 0);
 
     if (invoiceItemDtos.length === 0) {
       setClassificationsError(t('invoices.validation.classificationsRequired'));
@@ -406,8 +528,16 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       </Card>
 
       <Card className="rounded-[28px] border border-gray-100 px-0 py-0 shadow-sm" padding="none">
-        <div className="px-6 py-5">
+        <div className="flex items-center justify-between px-6 py-5">
           <h2 className="text-lg font-semibold text-gray-800">{t('invoices.classifications')}</h2>
+          <Button
+            variant="outline"
+            size="sm"
+            className="!rounded-full !px-5 !py-2 !text-sm"
+            onClick={handleAddRow}
+          >
+            {t('invoices.addClassification')}
+          </Button>
         </div>
 
         <div className="px-4 pb-4">
@@ -416,7 +546,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           ) : (
             <Table
               columns={classificationColumns}
-              data={readOnlyItems}
+              data={classificationRows}
               keyExtractor={(row) => row.id}
             />
           )}
@@ -494,6 +624,17 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
               readOnly
               icon={currencyIcon}
               className="cursor-default !bg-gray-50 !text-gray-500"
+            />
+          </FormField>
+
+          <FormField label={t('invoices.optionalDiscount')} optional>
+            <CustomSelect
+              value={selectedOfferId}
+              onChange={(value) => setSelectedOfferId(String(value))}
+              options={offerOptions}
+              placeholder={t('invoices.chooseDiscount')}
+              showSearch={false}
+              disabled={isLoadingOffers}
             />
           </FormField>
 
