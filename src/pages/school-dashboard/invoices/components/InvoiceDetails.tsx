@@ -293,25 +293,18 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
                   key={item.id ?? item.name}
                   className="grid grid-cols-1 gap-x-12 gap-y-4 md:grid-cols-2"
                 >
-                  <div className="flex flex-col gap-4">
-                    <DetailRow label={t('invoices.feeItem')} value={item.name} />
-                    <DetailRow
-                      label={t('invoices.amount')}
-                      value={<RyalAmount amount={item.amount} />}
-                    />
-                  </div>
-                  {item.discount != null && (
-                    <div className="flex flex-col gap-4">
-                      <DetailRow label={t('invoices.discount')} value={item.discount} />
-                    </div>
-                  )}
+                  <DetailRow label={t('invoices.feeItem')} value={item.name} />
+                  <DetailRow
+                    label={t('invoices.amount')}
+                    value={<RyalAmount amount={item.amount} />}
+                  />
                 </div>
               ))
             ) : (
               <p className="text-sm text-gray-400">{dash}</p>
             )}
 
-            <div className="grid grid-cols-1 gap-x-12 gap-y-4 border-t border-gray-100 pt-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-x-12 gap-y-4 md:grid-cols-2">
               <div className="flex flex-col gap-4">
                 <DetailRow
                   label={t('invoices.table.invoiceValue')}
@@ -320,7 +313,16 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
                 <DetailRow label={t('invoices.discount')} value={invoice.totalDiscount} />
               </div>
               <div className="flex flex-col gap-4">
-                <DetailRow label={t('invoices.table.tax')} value={`${invoice.taxPercentage}%`} />
+                <DetailRow
+                  label={t('invoices.table.tax')}
+                  value={
+                    <RyalAmount
+                      amount={
+                        invoice.netAmount - (invoice.totalAmount - (invoice.totalDiscount || 0))
+                      }
+                    />
+                  }
+                />
                 <DetailRow
                   label={t('invoices.table.totalInvoice')}
                   value={<RyalAmount amount={invoice.netAmount} />}
