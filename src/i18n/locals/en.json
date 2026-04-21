@@ -2594,7 +2594,7 @@
       "invoiceValue": "Invoice Value",
       "tax": "Tax",
       "totalInvoice": "Total Invoice",
-      "studentName": "Student Name",
+      "customerName": "Customer Name",
       "educationalStage": "Educational Stage",
       "item": "Item",
       "paymentMethod": "Payment Method",

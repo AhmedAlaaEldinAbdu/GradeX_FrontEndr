@@ -2606,7 +2606,7 @@
       "invoiceValue": "قيمة الفاتورة",
       "tax": "الضريبة",
       "totalInvoice": "إجمالي الفاتورة",
-      "studentName": "اسم الطالب",
+      "customerName": "اسم العميل",
       "educationalStage": "المرحلة التعليمية",
       "item": "البند",
       "paymentMethod": "طريقة السداد",
