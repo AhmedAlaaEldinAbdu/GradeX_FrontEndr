@@ -79,6 +79,7 @@ export default function CustomerDetails() {
           {t('customers.clientData')}
         </h2>
         <div className="grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
+          {/* COLUMN 1: Right Side (in RTL) */}
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 overflow-hidden rounded-lg border border-gray-200">
@@ -106,6 +107,18 @@ export default function CustomerDetails() {
                 />
               </IconButton>
             </div>
+            <DetailRow label={t('customers.clientName')} value={customer.name || dash} />
+            <DetailRow label={t('customers.idNumber')} value={customer.nationalId || dash} />
+            <DetailRow
+              label={t('customers.guardianMobile')}
+              value={formatPhone(customer.areaCode, customer.phoneNumber)}
+              ltr={true}
+            />
+            <DetailRow label={t('customers.educationalStage')} value={customer.gradeName || dash} />
+          </div>
+
+          {/* COLUMN 2: Left Side (in RTL) */}
+          <div className="flex flex-col gap-5 pt-0 md:pt-14">
             <DetailRow
               label={t('customers.clientType')}
               value={customerTypeLabel(t, customer.customerType)}
@@ -116,17 +129,7 @@ export default function CustomerDetails() {
               value={formatPhone(customer.additionalAreaCode, customer.additionalPhoneNumber)}
               ltr={true}
             />
-            <DetailRow label={t('customers.educationalStage')} value={customer.gradeName || dash} />
-          </div>
-          <div className="flex flex-col gap-5 pt-0 md:pt-14">
-            <DetailRow label={t('customers.idNumber')} value={customer.nationalId || dash} />
-            <DetailRow
-              label={t('customers.guardianMobile')}
-              value={formatPhone(customer.areaCode, customer.phoneNumber)}
-              ltr={true}
-            />
-            <DetailRow label={t('customers.schoolYear')} value={customer.classroomName || dash} />
-            <DetailRow label={t('customers.grade')} value={customer.gradeName || dash} />
+            <DetailRow label={t('customers.grade')} value={customer.classroomName || dash} />
           </div>
         </div>
       </Card>
