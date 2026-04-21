@@ -1352,6 +1352,7 @@
   },
   "interviews": {
     "title": "Interviews",
+    "interviewCount": "Interview",
     "noInterviewsYet": "No interviews have been added yet.",
     "searchTeacherName": "Search for teacher name",
     "supervisorName": "Supervisor name",
@@ -1680,6 +1681,12 @@
     "viewApplicants": "View applicants",
     "viewApplicant": "View applicant",
     "backToAnnouncements": "Back to announcements list",
+    "statistics": {
+      "teacherAnnouncements": "Teacher Announcements",
+      "employeeAnnouncements": "Employee Announcements",
+      "activeAnnouncements": "Active Announcements",
+      "expiredAnnouncements": "Expired Announcements"
+    },
     "applicantsPage": {
       "title": "Applicants list",
       "breadcrumb": "Applicants",

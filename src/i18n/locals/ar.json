@@ -1352,6 +1352,7 @@
   },
   "interviews": {
     "title": "المقابلات",
+    "interviewCount": "مقابلة",
     "noInterviewsYet": "لم يتم إضافة أي مقابلات حتى الآن.",
     "searchTeacherName": "ابحث عن اسم المعلم",
     "supervisorName": "اسم المشرف",
@@ -1685,6 +1686,12 @@
     "viewApplicants": "عرض المتقدمين",
     "viewApplicant": "عرض المتقدم",
     "backToAnnouncements": "العودة لقائمة الإعلانات",
+    "statistics": {
+      "teacherAnnouncements": "إعلانات للمعلمين",
+      "employeeAnnouncements": "إعلانات للموظفين",
+      "activeAnnouncements": "الإعلانات النشطة",
+      "expiredAnnouncements": "الإعلانات المنتهية"
+    },
     "applicantsPage": {
       "title": "طلبات التقديم",
       "breadcrumb": "طلبات التقديم",
