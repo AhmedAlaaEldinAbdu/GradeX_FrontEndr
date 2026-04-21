@@ -1,12 +1,9 @@
 import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import WeeklyCalendar, { type WeeklyCalendarHandle } from './components/WeeklyCalendar';
 import PageHeader from '@/shared/components/PageHeader';
 
 export default function WeeklyCalendarPage() {
-  const { i18n } = useTranslation();
   const calendarRef = useRef<WeeklyCalendarHandle>(null);
-  const currentLang = i18n.language;
   const [isRecovering, setIsRecovering] = useState(false);
 
   const handleRecoverLessons = async () => {

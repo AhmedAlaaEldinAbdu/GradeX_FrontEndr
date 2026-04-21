@@ -1352,6 +1352,7 @@
   },
   "interviews": {
     "title": "المقابلات",
+    "interviewCount": "مقابلة",
     "noInterviewsYet": "لم يتم إضافة أي مقابلات حتى الآن.",
     "searchTeacherName": "ابحث عن اسم المعلم",
     "supervisorName": "اسم المشرف",
@@ -1662,9 +1663,11 @@
   },
   "jobAnnouncement": {
     "title": "إعلان التوظيف",
+    "announcementStatus": "حالة الإعلان",
     "addAnnouncement": "إضافة إعلان",
     "editAnnouncement": "تعديل الإعلان",
     "searchTeacherName": "ابحث عن اسم المعلم",
+    "searchJobGrade": "ابحث عن الدرجة الوظيفية",
     "country": "الدولة",
     "educationalStages": "المراحل التعليمية",
     "workType": "نوع الدوام",
@@ -1685,6 +1688,16 @@
     "viewApplicants": "عرض المتقدمين",
     "viewApplicant": "عرض المتقدم",
     "backToAnnouncements": "العودة لقائمة الإعلانات",
+    "statistics": {
+      "teacherAnnouncements": "إعلانات للمعلمين",
+      "employeeAnnouncements": "إعلانات للموظفين",
+      "activeAnnouncements": "الإعلانات النشطة",
+      "expiredAnnouncements": "الإعلانات المنتهية"
+    },
+    "statusOptions": {
+      "active": "نشط",
+      "expired": "منتهي"
+    },
     "applicantsPage": {
       "title": "طلبات التقديم",
       "breadcrumb": "طلبات التقديم",

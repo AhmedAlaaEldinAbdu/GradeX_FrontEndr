@@ -17,7 +17,19 @@ export interface FilterConfig {
   disabled?: boolean;
   loading?: boolean;
   customComponent?: ReactNode;
-  width?: 'full' | '70%' | '60%' | '50%' | '40%' | '35%' | '30%' | '25%' | '20%' | '15%' | 'auto';
+  width?:
+    | 'full'
+    | '70%'
+    | '60%'
+    | '50%'
+    | '40%'
+    | '35%'
+    | '30%'
+    | '25%'
+    | '20%'
+    | '15%'
+    | '12%'
+    | 'auto';
 }
 
 export interface DataTableColumn<T> {
@@ -169,6 +181,8 @@ export default function DataTable<T>({
         return 'w-full lg:w-[20%]';
       case '15%':
         return 'w-full lg:w-[15%]';
+      case '12%':
+        return 'w-full lg:w-[12%]';
       case 'auto':
         return 'w-auto min-w-[120px]';
       default:

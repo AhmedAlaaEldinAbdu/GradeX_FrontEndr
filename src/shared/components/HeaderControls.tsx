@@ -75,7 +75,7 @@ export default function HeaderControls() {
       <ActionsDropdown
         actions={builtInDropdownActions}
         triggerIcon={DotsBlackIcon}
-        triggerClassName="flex items-center justify-center rounded-full bg-gray-200 p-2.5 transition-colors hover:bg-gray-300"
+        triggerClassName="flex items-center justify-center rounded-full bg-[#878F8F1A] w-[37px] h-[37px] p-2.5 transition-colors hover:bg-gray-200"
         iconClassName="h-5 w-5"
         dropdownClassName={`fixed z-10 mt-2 w-max min-w-[7rem] max-w-[10rem] ${i18n.language === 'ar' ? 'max-w-[10rem]' : 'max-w-[11rem]'} rounded-lg border border-gray-200 bg-white flex flex-col gap-3 p-3 shadow-lg`}
       />

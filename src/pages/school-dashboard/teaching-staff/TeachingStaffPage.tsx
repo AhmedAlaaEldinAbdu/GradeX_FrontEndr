@@ -3,12 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
+import { useAppSelector } from '@/hooks/useRedux';
 import TeachingStaff from './components/TeachingStaff';
 
 export default function TeachingStaffPage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'teachers');
+  const teachersCount = useAppSelector((state) => state.teachers.pagination.total);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -31,6 +33,9 @@ export default function TeachingStaffPage() {
       {/* Page Header */}
       <PageHeader
         title={activeTab === 'teachers' ? 'teachers.title' : 'sidebar.administrators'}
+        statistics={
+          activeTab === 'teachers' ? { value: teachersCount, label: 'teachers.teacher' } : undefined
+        }
         hasHeaderControls={true}
       />
 

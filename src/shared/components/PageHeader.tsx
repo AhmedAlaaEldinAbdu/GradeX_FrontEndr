@@ -42,9 +42,9 @@ const PageHeader = ({
   const { t } = useTranslation();
 
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-3">
-        <h1 className="text-[2rem] font-medium text-black-900">{t(`${title}`)}</h1>
+        <h1 className="text-lg font-medium text-black-900">{t(`${title}`)}</h1>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
