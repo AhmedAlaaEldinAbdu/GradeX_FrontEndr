@@ -57,6 +57,8 @@ export default function AddEditStudentInterviewPopup({
     control,
     setValue,
     watch,
+    trigger,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<StudentInterviewApiProps>({
     resolver: yupResolver(StudentInterviewApiSchema) as any,
@@ -159,6 +161,15 @@ export default function AddEditStudentInterviewPopup({
       reset({ ...createInterviewFormDefaults(), ...(initialValues ?? {}) });
     }
   }, [isOpen, initialValues, reset, selectedDate]);
+
+  const watchedStartTime = watch('startTime');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (getValues('endTime')) {
+      void trigger('endTime');
+    }
+  }, [watchedStartTime, isOpen, trigger, getValues]);
 
   const formattedSelectedDate = selectedDate
     ? format(selectedDate, 'PPP', { locale: i18n.language === 'ar' ? ar : undefined })
@@ -324,7 +335,6 @@ export default function AddEditStudentInterviewPopup({
                     value={field.value ?? ''}
                     id="endTime"
                     type="time"
-                    min={watch('startTime') || undefined}
                     icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
                     placeholder={t('interviews.selectEndTime')}
                     className="flex justify-end"
