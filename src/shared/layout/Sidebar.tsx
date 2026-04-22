@@ -150,7 +150,7 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
     subItems: [
       {
         icon: <CustomImage src={TeachersIcon} className="h-6 w-6" alt="Teachers" />,
-        key: 'classrooms',
+        key: 'stagesClassrooms',
         path: '/classrooms',
       },
       {
