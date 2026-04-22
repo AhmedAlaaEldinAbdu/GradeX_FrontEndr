@@ -9,6 +9,7 @@ import StudentDetailsPage from '@/pages/school-dashboard/student-management/stud
 import StudentInterviewsPage from '@/pages/school-dashboard/student-interviews/student-interviews-page';
 import ClassroomsPage from '@/pages/school-dashboard/classrooms/classrooms-page';
 import ClassroomDetailsPage from '../pages/school-dashboard/classrooms/classroom-details-page';
+import ClassroomRosterPage from '@/pages/school-dashboard/classrooms/classroom-roster-page';
 import AddClassroomPage from '@/pages/school-dashboard/classrooms/add-classroom-page';
 import EditClassroomPage from '@/pages/school-dashboard/classrooms/edit-classroom-page';
 import SubjectsPage from '@/pages/school-dashboard/subjects/subjects-page';
@@ -180,6 +181,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <ClassroomDetailsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/classrooms/:id/roster"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <ClassroomRosterPage />
             </MainLayout>
           </ProtectedRoute>
         }
