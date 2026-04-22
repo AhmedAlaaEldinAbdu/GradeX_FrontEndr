@@ -1,73 +1,48 @@
 import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
-import IconButton from '@/shared/components/IconButton';
-import DeletePopup from '@/shared/popups/DeletePopup';
-import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
+import MetricCard from '@/shared/components/MetricCard';
+import ProgressSummaryCard from '../../../../shared/components/ProgressSummaryCard';
 import MathIcon from '@gradex/assets/icons/Math.svg';
-import FileViewer from '@/shared/components/FileViewer';
-import { useEffect, useState } from 'react';
+import SchoolYellowIcon from '@gradex/assets/icons/SchoolYellow.svg';
+import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
+import StudentGreenIcon from '@gradex/assets/icons/StudentGreen.svg';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import CustomSelect from '@/shared/components/CustomSelect';
-import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
-import {
-  fetchClassrooms,
-  deleteClassroom as deleteClassroomAction,
-} from '@/redux/features/classrooms/classroomsSlice';
-import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import type { Classroom } from '@/services/api/types/classrooms.types';
+import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
+
+type StageOverview = {
+  id: string;
+  title: string;
+  totalStudents: number;
+  classrooms: Classroom[];
+};
 
 export default function ClassroomsList() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
-  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
   const userData = localStorage.getItem('userData') || undefined;
   const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
-  const formatDate = (value?: string | null) => {
-    if (!value) return '-';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-GB');
-  };
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [selectedClassroomId, setSelectedClassroomId] = useState<string>('');
-  const [selectedAcademicSystemId, setSelectedAcademicSystemId] = useState('');
-  const [selectedGradeId, setSelectedGradeId] = useState('');
-  const [fileViewerOpen, setFileViewerOpen] = useState(false);
-  const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
-  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
-
-  const { showToast } = useToast();
+  const searchTerm = '';
+  const selectedAcademicSystemId = '';
+  const selectedGradeId = '';
 
   // Access state directly
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
-  const pagination = useAppSelector((state) => state.classrooms.pagination);
   const isLoading = useAppSelector((state) => state.classrooms.isLoading);
-  const isDeleting = useAppSelector((state) => state.classrooms.isDeleting);
-
-  // AcademicSystems
-  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
-  const isLoadingAcademicSystems = useAppSelector((state) => state.academicSystems.isLoading);
 
   // EducationalStages
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
-  const isLoadingEducationalStages = useAppSelector((state) => state.educationalStages.isLoading);
 
   useEffect(() => {
-    dispatch(
-      getAcademicSystems({
-        pageIndex: 1,
-        pageSize: 10000,
-      })
-    );
     dispatch(
       getEducationalStages({
         pageIndex: 1,
@@ -80,8 +55,8 @@ export default function ClassroomsList() {
   useEffect(() => {
     dispatch(
       fetchClassrooms({
-        page: pagination.page,
-        limit: pagination.limit,
+        page: 1,
+        limit: 10000,
         filters: {
           name: searchTerm || undefined,
           academicSystemId: selectedAcademicSystemId || undefined,
@@ -90,300 +65,140 @@ export default function ClassroomsList() {
         },
       })
     );
-  }, [
-    dispatch,
-    pagination.page,
-    pagination.limit,
-    searchTerm,
-    selectedAcademicSystemId,
-    selectedGradeId,
-  ]);
-
-  const handlePageChange = (page: number) => {
-    dispatch(
-      fetchClassrooms({
-        page,
-        limit: pagination.limit,
-        filters: {
-          name: searchTerm || undefined,
-          academicSystemId: selectedAcademicSystemId || undefined,
-          gradeId: selectedGradeId || undefined,
-          schoolBranchId: schoolBranchId || undefined,
-        },
-      })
-    );
-  };
+  }, [dispatch, searchTerm, selectedAcademicSystemId, selectedGradeId]);
 
   const hasActiveFilters = searchTerm || selectedAcademicSystemId || selectedGradeId;
   const shouldShowEmptyState = !isLoading && classrooms.length === 0 && !hasActiveFilters;
   const shouldShowContent = isLoading || classrooms.length > 0 || hasActiveFilters;
 
-  const columns: DataTableColumn<any>[] = [
-    {
-      header: '#',
-      accessor: (_row) => {
-        const index = classrooms?.findIndex((g) => g?.id === _row?.id);
-        return (pagination.page - 1) * pagination.limit + (index + 1);
+  const educationalStageMap = useMemo(
+    () =>
+      (Array.isArray(educationalStages) ? educationalStages : []).reduce<
+        Record<string, EducationalStageResponse>
+      >((accumulator, stage) => {
+        accumulator[stage.id] = stage;
+        return accumulator;
+      }, {}),
+    [educationalStages]
+  );
+
+  const stageOverview = useMemo<StageOverview[]>(() => {
+    const groupedStages = classrooms.reduce<Record<string, StageOverview>>(
+      (accumulator, classroom) => {
+        const stageId = classroom.gradeId;
+        const stage = educationalStageMap[stageId];
+        const stageTitle =
+          currentLang === 'ar'
+            ? stage?.nameAr || classroom.gradeName
+            : stage?.nameEn || classroom.gradeName;
+
+        if (!accumulator[stageId]) {
+          accumulator[stageId] = {
+            id: stageId,
+            title: stageTitle,
+            totalStudents: 0,
+            classrooms: [],
+          };
+        }
+
+        accumulator[stageId].totalStudents += classroom.studentNumber || 0;
+        accumulator[stageId].classrooms.push(classroom);
+
+        return accumulator;
       },
-      headerClassName: 'w-16',
-      className: 'text-center',
-    },
-    {
-      header: 'grades.gradeName',
-      accessor: (row) => <span>{currentLang === 'ar' ? row.name : row.nameEn}</span>,
-      headerClassName: 'min-w-[150px]',
-    },
-    {
-      header: 'grades.classImages',
-      accessor: (row) => (
-        <div className="flex items-center justify-center">
-          {row.imagePath ? (
-            <CustomImage
-              src={baseUrl + '/' + row.imagePath}
-              alt={currentLang === 'ar' ? row.name : row.nameEn}
-              className="h-10 w-10 cursor-pointer rounded-md object-cover"
-              onClick={() => {
-                setSelectedFilePath(row.imagePath);
-                setSelectedFileName(currentLang === 'ar' ? row.name : row.nameEn);
-                setFileViewerOpen(true);
-              }}
-            />
-          ) : (
-            <CustomImage
-              src={MathIcon}
-              alt={t('common.notAvailable')}
-              className="h-10 w-10 rounded-md object-cover mix-blend-luminosity"
-            />
-          )}
-        </div>
-      ),
-      headerClassName: 'min-w-[160px]',
-      className: 'text-center',
-    },
-    {
-      header: 'grades.academicSystem',
-      accessor: (row) => (
-        <div>
-          <span>{row.academicSystemName}</span>
-        </div>
-      ),
-      headerClassName: 'min-w-[180px]',
-    },
-    {
-      header: 'grades.educationalStage',
-      accessor: (row) => (
-        <div>
-          <span>{row.gradeName}</span>
-        </div>
-      ),
-      headerClassName: 'min-w-[260px]',
-    },
-    {
-      header: 'grades.studentCount',
-      accessor: (row) => (
-        <span>{typeof row.studentNumber === 'number' ? row.studentNumber : '-'}</span>
-      ),
-      headerClassName: 'min-w-[200px]',
-      className: 'text-center',
-    },
-    {
-      header: 'grades.note',
-      accessor: (row) => {
-        const noteValue = currentLang === 'ar' ? row.note : row.noteEn;
-        return (
-          <span>
-            {noteValue?.trim() ? noteValue : currentLang === 'ar' ? 'لا يوجد' : 'No note'}
-          </span>
-        );
-      },
-      headerClassName: 'min-w-[220px]',
-    },
-    {
-      header: 'grades.addedDate',
-      accessor: (row) => <span>{formatDate(row.creationDate)}</span>,
-      headerClassName: 'min-w-[160px]',
-      className: 'text-center',
-    },
-    {
-      header: 'common.actions',
-      accessor: (row) => (
-        <div className="flex items-center gap-2">
-          <IconButton
-            status="edit"
-            variant="success"
-            onClick={() => navigate(`/classrooms/edit-classroom/${row.id}`)}
-            ariaLabel="Edit"
-          />
-          <IconButton
-            status="delete"
-            variant="danger"
-            onClick={() => {
-              setSelectedClassroomId(row.id);
-              setShowDeletePopup(true);
-            }}
-            disabled={isDeleting}
-            ariaLabel="Delete"
-          />
-        </div>
-      ),
-      headerClassName: 'min-w-[140px]',
-      className: 'text-center',
-    },
-  ];
+      {}
+    );
 
-  const filterConfigs: FilterConfig[] = [
-    {
-      type: 'search',
-      name: 'searchGrade',
-      placeholder: t('grades.searchGrade'),
-      value: searchTerm,
-      onChange: (value) => setSearchTerm(value as string),
-      width: '40%',
-    },
-    {
-      type: 'custom',
-      name: 'academic-system-filter',
-      placeholder: '',
-      value: selectedAcademicSystemId,
-      onChange: () => {},
-      width: '30%',
-      customComponent: (
-        <CustomSelect
-          value={selectedAcademicSystemId}
-          onChange={(value) =>
-            setSelectedAcademicSystemId(Array.isArray(value) ? (value[0] ?? '') : value)
-          }
-          options={
-            Array.isArray(academicSystems)
-              ? academicSystems.map((system) => ({
-                  value: system?.id || '',
-                  label: currentLang === 'ar' ? system?.nameAr || '' : system?.nameEn || '',
-                }))
-              : []
-          }
-          placeholder={isLoadingAcademicSystems ? t('common.loading') : t('grades.academicSystem')}
-          disabled={isLoadingAcademicSystems}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'grade-filter',
-      placeholder: '',
-      value: selectedGradeId,
-      onChange: () => {},
-      width: '30%',
-      customComponent: (
-        <CustomSelect
-          value={selectedGradeId}
-          onChange={(value) => setSelectedGradeId(Array.isArray(value) ? (value[0] ?? '') : value)}
-          options={
-            Array.isArray(educationalStages)
-              ? educationalStages.map((stage) => ({
-                  value: stage?.id || '',
-                  label: currentLang === 'ar' ? stage?.nameAr || '' : stage?.nameEn || '',
-                }))
-              : []
-          }
-          placeholder={
-            isLoadingEducationalStages ? t('common.loading') : t('grades.educationalStageName')
-          }
-          disabled={isLoadingEducationalStages}
-          maxHeight="200px"
-        />
-      ),
-    },
-  ];
+    return Object.values(groupedStages);
+  }, [classrooms, currentLang, educationalStageMap]);
 
-  const handleResetFilters = () => {
-    setSearchTerm('');
-    setSelectedAcademicSystemId('');
-    setSelectedGradeId('');
-  };
+  const totalEducationalStages = stageOverview.length;
+  const totalClassrooms = classrooms.length;
+  const totalStudents = classrooms.reduce(
+    (accumulator, classroom) => accumulator + (classroom.studentNumber || 0),
+    0
+  );
 
-  const handleDeleteConfirm = async () => {
-    if (!selectedClassroomId) return;
-
-    try {
-      await dispatch(deleteClassroomAction(selectedClassroomId))
-        .unwrap()
-        .then((res: any) => {
-          if (res === selectedClassroomId || res.isSuccess === true) {
-            showToast({
-              message: 'grades.gradeDeletedSuccessfully',
-              type: 'success',
-            });
-          } else {
-            showToast({
-              message: 'common.errorOccurred',
-              type: 'error',
-            });
-          }
-        });
-      setShowDeletePopup(false);
-    } catch (error) {
-      showToast({
-        message: 'common.errorOccurred',
-        type: 'error',
-      });
-    }
-  };
+  const maxStudentCount = useMemo(
+    () =>
+      classrooms.reduce((maximum, classroom) => Math.max(maximum, classroom.studentNumber || 0), 0),
+    [classrooms]
+  );
 
   return (
-    <Card>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <MetricCard
+          title={t('grades.totalEducationalStages')}
+          value={totalEducationalStages}
+          icon={
+            <CustomImage
+              src={SchoolYellowIcon}
+              alt={t('grades.totalEducationalStages')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-yellow-50 text-yellow-600"
+        />
+        <MetricCard
+          title={t('grades.totalClassrooms')}
+          value={totalClassrooms}
+          icon={
+            <CustomImage src={BookBlueIcon} alt={t('grades.totalClassrooms')} className="h-6 w-6" />
+          }
+          iconClassName="bg-blue-50 text-blue-600"
+        />
+        <MetricCard
+          title={t('grades.totalStudents')}
+          value={totalStudents}
+          icon={
+            <CustomImage
+              src={StudentGreenIcon}
+              alt={t('grades.totalStudents')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-green-50 text-green-600"
+        />
+      </div>
+
       {shouldShowEmptyState ? (
-        <EmptyState imgSrc={MathIcon} description={t('grades.noGradesMessage')} blend={true} />
+        <Card className="rounded-3xl border border-[#E6E6E6]" padding="lg">
+          <EmptyState imgSrc={MathIcon} description={t('grades.noGradesMessage')} blend={true} />
+        </Card>
       ) : shouldShowContent ? (
-        <div>
-          <DataTable
-            data={classrooms}
-            columns={columns}
-            keyExtractor={(row) => row.id}
-            pagination={{
-              page: pagination.page,
-              limit: pagination.limit,
-              total: pagination.total,
-              totalPages: pagination.totalPages,
-            }}
-            onPageChange={handlePageChange}
-            filters={filterConfigs}
-            showFilters={true}
-            onResetFilters={handleResetFilters}
-            isLoading={isLoading}
-            emptyMessage={t('common.noResults')}
-            t={t}
-          />
+        <div className="space-y-8">
+          {stageOverview.map((stage) => (
+            <Card key={stage.id} className="rounded-3xl border border-[#E6E6E6] p-4">
+              <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+                <div className="text-base font-medium text-black-900">{stage.title}</div>
+                <span className="text-sm font-normal text-[#646969]">
+                  {stage.totalStudents} {t('grades.studentPlural')}
+                </span>
+              </div>
 
-          {/* Popups */}
-          <DeletePopup
-            open={showDeletePopup}
-            message="grades.confirmDeleteGrade"
-            itemName={(() => {
-              const selected = classrooms.find((c) => c.id === selectedClassroomId);
-              return currentLang === 'ar'
-                ? (selected?.name ?? '')
-                : (selected?.nameEn ?? selected?.name ?? '');
-            })()}
-            onConfirm={handleDeleteConfirm}
-            onCancel={() => setShowDeletePopup(false)}
-            iconSrc={BigTrashIcon}
-            isProcessing={isDeleting}
-          />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {stage.classrooms.map((classroom) => {
+                  const classroomName = currentLang === 'ar' ? classroom.name : classroom.nameEn;
+                  const studentCount = classroom.studentNumber || 0;
+                  const progress =
+                    maxStudentCount > 0 ? Math.round((studentCount / maxStudentCount) * 100) : 0;
 
-          <FileViewer
-            isOpen={fileViewerOpen}
-            onClose={() => {
-              setFileViewerOpen(false);
-              setSelectedFilePath(null);
-              setSelectedFileName(undefined);
-            }}
-            filePath={selectedFilePath}
-            fileName={selectedFileName}
-            title={t('grades.classImages')}
-          />
+                  return (
+                    <ProgressSummaryCard
+                      key={classroom.id}
+                      title={classroomName}
+                      subtitle={`${studentCount} ${t('grades.studentPlural')}`}
+                      progress={progress}
+                      onClick={() => navigate(`/classrooms/${classroom.id}`)}
+                    />
+                  );
+                })}
+              </div>
+            </Card>
+          ))}
         </div>
       ) : null}
-    </Card>
+    </div>
   );
 }
