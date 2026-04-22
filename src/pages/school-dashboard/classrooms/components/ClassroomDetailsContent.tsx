@@ -1,0 +1,194 @@
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import Card from '@/shared/components/Card';
+import Loading from '@/shared/components/Loading';
+import EmptyState from '@/shared/components/EmptyState';
+import CustomImage from '@/shared/components/CustomImage';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { deleteClassroom, fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import MathIcon from '@gradex/assets/icons/Math.svg';
+import StudentGreenIcon from '@gradex/assets/icons/StudentGreen.svg';
+import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
+import ProgressSummaryCard from '../../../../shared/components/ProgressSummaryCard';
+import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import type { Action } from '@/shared/components/ActionsDropdown';
+import type { Classroom } from '@/services/api/types/classrooms.types';
+
+type ClassroomDetailsContentProps = {
+  currentLang: 'ar' | 'en';
+  schoolBranchId?: string;
+};
+
+export default function ClassroomDetailsContent({
+  currentLang,
+  schoolBranchId,
+}: ClassroomDetailsContentProps) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [classroomPendingDelete, setClassroomPendingDelete] = useState<Classroom | null>(null);
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
+
+  const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
+  const isLoading = useAppSelector((state) => state.classrooms.isLoading);
+  const isDeleting = useAppSelector((state) => state.classrooms.isDeleting);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+
+  useEffect(() => {
+    if (!currentClassroom?.gradeId) {
+      return;
+    }
+
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: {
+          gradeId: currentClassroom.gradeId,
+          schoolBranchId: schoolBranchId || undefined,
+        },
+      })
+    );
+  }, [currentClassroom?.gradeId, dispatch, schoolBranchId]);
+
+  const classroomTitle = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
+  const totalStudents = classrooms.reduce(
+    (accumulator, classroom) => accumulator + (classroom.studentNumber || 0),
+    0
+  );
+  const maxStudentCount = classrooms.reduce(
+    (maximum, classroom) => Math.max(maximum, classroom.studentNumber || 0),
+    0
+  );
+
+  const handleDeleteConfirm = async () => {
+    if (!classroomPendingDelete) {
+      return;
+    }
+
+    try {
+      await dispatch(deleteClassroom(classroomPendingDelete.id)).unwrap();
+
+      const deletedCurrentClassroom = classroomPendingDelete.id === currentClassroom?.id;
+      setClassroomPendingDelete(null);
+      setShowPopupMessage({
+        show: true,
+        type: 'success',
+        message: t('grades.gradeDeletedSuccessfully'),
+      });
+
+      if (deletedCurrentClassroom) {
+        navigate('/classrooms');
+      }
+    } catch (error) {
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: t('common.errorOccurred'),
+      });
+    }
+  };
+
+  const getCardActions = (classroom: Classroom): Action[] => [
+    {
+      id: `edit-${classroom.id}`,
+      label: t('actions.edit'),
+      icon: EditFilledIcon,
+      color: 'text-gray-500 hover:bg-gray-100',
+      onClick: () => navigate(`/classrooms/edit-classroom/${classroom.id}`),
+    },
+    {
+      id: `delete-${classroom.id}`,
+      label: t('actions.delete'),
+      icon: TrashIcon,
+      color: 'text-red-500 hover:bg-red-100',
+      onClick: () => setClassroomPendingDelete(classroom),
+      disabled: isDeleting,
+    },
+  ];
+
+  if (isLoading && !currentClassroom) {
+    return (
+      <Card>
+        <Loading />
+      </Card>
+    );
+  }
+
+  if (!currentClassroom) {
+    return (
+      <Card>
+        <EmptyState imgSrc={MathIcon} description={t('common.noDataFound')} blend={true} />
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card className="rounded-3xl border border-[#E6E6E6] p-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {classrooms.map((classroom) => {
+            const title = currentLang === 'ar' ? classroom.name : classroom.nameEn;
+            const subtitle = `${classroom.studentNumber || 0} ${t('grades.studentPlural')}`;
+            const progress =
+              maxStudentCount > 0
+                ? Math.round(((classroom.studentNumber || 0) / maxStudentCount) * 100)
+                : 0;
+            const imageSrc = classroom.imagePath ? `${baseUrl}/${classroom.imagePath}` : undefined;
+
+            return (
+              <ProgressSummaryCard
+                key={classroom.id}
+                title={title}
+                subtitle={subtitle}
+                meta={classroom.alias || classroom.aliasEn || undefined}
+                imageSrc={imageSrc}
+                imageAlt={title}
+                progress={progress}
+                actions={getCardActions(classroom)}
+              />
+            );
+          })}
+        </div>
+      </Card>
+
+      <DeletePopup
+        open={Boolean(classroomPendingDelete)}
+        message="grades.confirmDeleteGrade"
+        itemName={
+          classroomPendingDelete
+            ? currentLang === 'ar'
+              ? classroomPendingDelete.name
+              : classroomPendingDelete.nameEn
+            : ''
+        }
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setClassroomPendingDelete(null)}
+        iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
+      />
+
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        message={showPopupMessage.message}
+        isMessageRaw={true}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        autoClose={showPopupMessage.type === 'success'}
+        onClose={() => setShowPopupMessage((current) => ({ ...current, show: false }))}
+      />
+    </>
+  );
+}
