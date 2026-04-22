@@ -987,7 +987,7 @@
     }
   },
   "grades": {
-    "title": "Grades",
+    "title": "Stages & Classrooms",
     "subtitle": "Manage academic grades",
     "addGrade": "Add Grade",
     "addGradeSubtitle": "Add new grade(s) to the system",
@@ -1026,6 +1026,12 @@
     "enterMaxStudents": "Enter maximum number of students",
     "addAnotherGrade": "Add Another Grade",
     "searchGrade": "Search for grade name",
+    "totalEducationalStages": "Total Educational Stages",
+    "totalClassrooms": "Total Classrooms",
+    "totalStudents": "Total Students",
+    "studentPlural": "Students",
+    "classroomPlural": "Classrooms",
+    "classroomDetails": "Classroom Details",
     "gradesAddedSuccessfully": "Grades added successfully",
     "gradeUpdatedSuccessfully": "Grade updated successfully",
     "gradeDeletedSuccessfully": "Grade deleted successfully",

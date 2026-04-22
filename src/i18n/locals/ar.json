@@ -987,7 +987,7 @@
     }
   },
   "grades": {
-    "title": "الصفوف الدراسية",
+    "title": "المراحل و الصفوف",
     "subtitle": "إدارة الصفوف الدراسية",
     "addGrade": "إضافة صف دراسي",
     "addGradeSubtitle": "إضافة صف/صفوف دراسية جديدة للنظام",
@@ -1026,6 +1026,12 @@
     "enterMaxStudents": "العدد",
     "addAnotherGrade": "إضافة صف آخر",
     "searchGrade": "ابحث عن اسم الصف",
+    "totalEducationalStages": "إجمالي المراحل التعليمية",
+    "totalClassrooms": "إجمالي الصفوف",
+    "totalStudents": "إجمالي الطلاب",
+    "studentPlural": "طالب",
+    "classroomPlural": "صفوف",
+    "classroomDetails": "تفاصيل الصف",
     "gradesAddedSuccessfully": "تم إضافة الصفوف بنجاح",
     "gradeUpdatedSuccessfully": "تم تحديث الصف بنجاح",
     "gradeDeletedSuccessfully": "تم حذف الصف بنجاح",
