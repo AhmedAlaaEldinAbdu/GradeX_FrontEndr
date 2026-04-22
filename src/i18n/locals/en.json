@@ -1420,6 +1420,7 @@
       "interviewDateRequired": "Interview date is required",
       "startTimeRequired": "Start time is required",
       "endTimeRequired": "End time is required",
+      "endTimeAfterStart": "End time must be after start time",
       "interViewTypeRequired": "Interview type is required",
       "interViewTypeInvalid": "Interview type is invalid",
       "nameArInvalid": "Interview name in Arabic must contain Arabic characters only",

@@ -1420,6 +1420,7 @@
       "interviewDateRequired": "تاريخ المقابلة مطلوب",
       "startTimeRequired": "وقت البدء مطلوب",
       "endTimeRequired": "وقت الانتهاء مطلوب",
+      "endTimeAfterStart": "يجب أن يكون وقت الانتهاء بعد وقت البدء",
       "interViewTypeRequired": "نوع المقابلة مطلوب",
       "interViewTypeInvalid": "نوع المقابلة غير صالح",
       "nameArInvalid": "اسم المقابلة بالعربية يجب أن يحتوي على أحرف عربية فقط",
