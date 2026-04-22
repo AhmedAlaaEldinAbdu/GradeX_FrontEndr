@@ -56,6 +56,7 @@ export default function AddEditStudentInterviewPopup({
     reset,
     control,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<StudentInterviewApiProps>({
     resolver: yupResolver(StudentInterviewApiSchema) as any,
@@ -310,6 +311,7 @@ export default function AddEditStudentInterviewPopup({
             </FormField>
             <FormField
               label={t('interviews.endTime')}
+              required
               error={errors.endTime?.message && t(errors.endTime.message)}
               htmlFor="endTime"
             >
@@ -322,6 +324,7 @@ export default function AddEditStudentInterviewPopup({
                     value={field.value ?? ''}
                     id="endTime"
                     type="time"
+                    min={watch('startTime') || undefined}
                     icon={<CustomImage src={ClockIcon} className="h-5 w-5 text-gray-400" />}
                     placeholder={t('interviews.selectEndTime')}
                     className="flex justify-end"
