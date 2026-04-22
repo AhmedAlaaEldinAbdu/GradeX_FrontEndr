@@ -70,6 +70,7 @@ const PersonalInterviewsTable: React.FC = () => {
           studentName: searchTerm || undefined,
           gradeId: selectedGradeId || undefined,
           date: selectedDate || undefined,
+          schoolBranchId: schoolBranchId || undefined,
         },
       })
     );
@@ -77,6 +78,7 @@ const PersonalInterviewsTable: React.FC = () => {
     dispatch,
     pagination.pageIndex,
     pagination.pageSize,
+    schoolBranchId,
     searchTerm,
     selectedGradeId,
     selectedDate,
@@ -148,6 +150,7 @@ const PersonalInterviewsTable: React.FC = () => {
             studentName: searchTerm || undefined,
             gradeId: selectedGradeId || undefined,
             date: selectedDate || undefined,
+            schoolBranchId: schoolBranchId || undefined,
           },
         })
       );
@@ -198,6 +201,7 @@ const PersonalInterviewsTable: React.FC = () => {
             studentName: searchTerm || undefined,
             gradeId: selectedGradeId || undefined,
             date: selectedDate || undefined,
+            schoolBranchId: schoolBranchId || undefined,
           },
         })
       );
@@ -259,6 +263,7 @@ const PersonalInterviewsTable: React.FC = () => {
             studentName: searchTerm || undefined,
             gradeId: selectedGradeId || undefined,
             date: selectedDate || undefined,
+            schoolBranchId: schoolBranchId || undefined,
           },
         })
       );
@@ -455,6 +460,7 @@ const PersonalInterviewsTable: React.FC = () => {
                 studentName: searchTerm || undefined,
                 gradeId: selectedGradeId || undefined,
                 date: selectedDate || undefined,
+                schoolBranchId: schoolBranchId || undefined,
               },
             })
           );
@@ -467,6 +473,9 @@ const PersonalInterviewsTable: React.FC = () => {
             fetchStudentInterviews({
               page: 1,
               limit: pagination.pageSize,
+              filters: {
+                schoolBranchId: schoolBranchId || undefined,
+              },
             })
           );
         }}

@@ -76,12 +76,14 @@ const RegistrationRequestsTable: React.FC = () => {
         searchTerm: searchTerm || undefined,
         status: selectedStatus ? Number(selectedStatus) : undefined,
         educationalStageId: selectedStageId || undefined,
+        schoolBranchId: schoolBranchId || undefined,
       })
     );
   }, [
     dispatch,
     pagination.pageIndex,
     pagination.pageSize,
+    schoolBranchId,
     searchTerm,
     selectedStageId,
     selectedStatus,
@@ -245,6 +247,7 @@ const RegistrationRequestsTable: React.FC = () => {
           searchTerm: searchTerm || undefined,
           status: selectedStatus ? Number(selectedStatus) : undefined,
           educationalStageId: selectedStageId || undefined,
+          schoolBranchId: schoolBranchId || undefined,
         })
       );
     } catch (error) {
@@ -575,7 +578,13 @@ const RegistrationRequestsTable: React.FC = () => {
           totalPages: pagination.totalPages,
         }}
         onPageChange={(newPage) =>
-          dispatch(fetchStudentApplications({ page: newPage, limit: pagination.pageSize }))
+          dispatch(
+            fetchStudentApplications({
+              page: newPage,
+              limit: pagination.pageSize,
+              schoolBranchId: schoolBranchId || undefined,
+            })
+          )
         }
         onResetFilters={handleResetFilters}
         t={t}
