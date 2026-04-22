@@ -40,6 +40,7 @@ export interface FetchStudentApplicationsPayload {
   searchTerm?: string;
   status?: number;
   educationalStageId?: string;
+  schoolBranchId?: string;
 }
 
 export interface FetchStudentApplicationsResponse {
@@ -64,6 +65,7 @@ export const fetchStudentApplications = createAsyncThunk<
       Search: payload.searchTerm,
       Status: payload.status,
       LKSchoolStageId: payload.educationalStageId,
+      SchoolBranchId: payload.schoolBranchId,
     });
 
     if (!response?.isSuccess || !response.data) {
