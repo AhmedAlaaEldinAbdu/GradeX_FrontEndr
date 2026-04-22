@@ -45,7 +45,14 @@ export const StudentInterviewApiSchema = object({
   startTime: string()
     .required('interviews.validation.startTimeRequired')
     .typeError('interviews.validation.startTimeRequired'),
-  endTime: string().notRequired().default(''),
+  endTime: string()
+    .required('interviews.validation.endTimeRequired')
+    .typeError('interviews.validation.endTimeRequired')
+    .test('end-after-start', 'interviews.validation.endTimeAfterStart', function (value) {
+      const { startTime } = this.parent;
+      if (!value || !startTime) return true;
+      return value > startTime;
+    }),
 });
 
 export type StudentInterviewApiProps = InferType<typeof StudentInterviewApiSchema>;
