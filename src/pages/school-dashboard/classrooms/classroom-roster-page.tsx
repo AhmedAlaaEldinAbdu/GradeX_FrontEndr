@@ -22,7 +22,6 @@ export default function ClassroomRosterPage() {
   }, [dispatch, id]);
 
   const classroomTitle = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
-  const classroomProgress = Math.max(0, Math.min(100, currentClassroom?.studentNumber || 0));
 
   const breadcrumbItems = [
     { label: t('sidebar.educationalStages') },

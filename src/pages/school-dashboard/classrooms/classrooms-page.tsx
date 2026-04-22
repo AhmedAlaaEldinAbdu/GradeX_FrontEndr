@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
-import PlusIcon from '@gradex/assets/icons/Plus.svg';
+// import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import ClassroomsList from './components/ClassroomsList';
 
 export default function ClassroomsPage() {
