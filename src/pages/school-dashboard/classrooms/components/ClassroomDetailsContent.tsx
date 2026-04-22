@@ -4,12 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import Loading from '@/shared/components/Loading';
 import EmptyState from '@/shared/components/EmptyState';
-import CustomImage from '@/shared/components/CustomImage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { deleteClassroom, fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import MathIcon from '@gradex/assets/icons/Math.svg';
-import StudentGreenIcon from '@gradex/assets/icons/StudentGreen.svg';
-import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
 import ProgressSummaryCard from '../../../../shared/components/ProgressSummaryCard';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
@@ -63,11 +60,6 @@ export default function ClassroomDetailsContent({
     );
   }, [currentClassroom?.gradeId, dispatch, schoolBranchId]);
 
-  const classroomTitle = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
-  const totalStudents = classrooms.reduce(
-    (accumulator, classroom) => accumulator + (classroom.studentNumber || 0),
-    0
-  );
   const maxStudentCount = classrooms.reduce(
     (maximum, classroom) => Math.max(maximum, classroom.studentNumber || 0),
     0
@@ -80,7 +72,6 @@ export default function ClassroomDetailsContent({
 
     try {
       await dispatch(deleteClassroom(classroomPendingDelete.id)).unwrap();
-
       const deletedCurrentClassroom = classroomPendingDelete.id === currentClassroom?.id;
       setClassroomPendingDelete(null);
       setShowPopupMessage({
@@ -157,6 +148,7 @@ export default function ClassroomDetailsContent({
                 imageSrc={imageSrc}
                 imageAlt={title}
                 progress={progress}
+                onClick={() => navigate(`/classrooms/${classroom.id}/roster`)}
                 actions={getCardActions(classroom)}
               />
             );

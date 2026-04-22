@@ -2,17 +2,17 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
+import Card from '@gradex/shared/components/Card';
+import CustomImage from '@/shared/components/CustomImage';
 import PageHeader from '@/shared/components/PageHeader';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassroomById } from '@/redux/features/classrooms/classroomsSlice';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
-import ClassroomDetailsContent from './components/ClassroomDetailsContent';
-import Card from '@gradex/shared/components/Card';
-import CustomImage from '@/shared/components/CustomImage';
 import SchoolPurpleIcon from '@gradex/assets/icons/SchoolPurple.svg';
 import TeachersNewBlueIcon from '@gradex/assets/icons/TeachersNewBlue.svg';
 import FilesTealIcon from '@gradex/assets/icons/FilesTeal.svg';
 import BookYellowIcon from '@gradex/assets/icons/BookYellow.svg';
+import ClassroomDetailsContent from './components/ClassroomDetailsContent';
 
 export default function ClassroomDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -88,9 +88,7 @@ export default function ClassroomDetailsPage() {
           ]}
         />
         <div className="flex flex-col items-start gap-6">
-          <div className="text-base font-normal text-[#646969]">
-            المعلم المسؤول: الأستاذة منى سليمان
-          </div>
+          <div className="text-base font-normal text-[#646969]">المعلم المسؤول: الأستاذة منى سليمان</div>
 
           <div className="flex w-full flex-wrap items-center justify-between gap-4">
             {classroomSummaryItems.map((item) => (
