@@ -63,17 +63,20 @@ export const getEducationalStages = createAsyncThunk<
 export const getEducationalStagesBySubSystemId = createAsyncThunk<
   EducationalStagesListValue,
   { academicSubSystemId: string; params?: Partial<EducationalStageParams> }
->('educationalStages/fetchBySubSystemId', async ({ academicSubSystemId, params }, { rejectWithValue }) => {
-  try {
-    const response = await EducationalStagesApiService.fetchEducationalStagesBySubSystemId(
-      academicSubSystemId,
-      params
-    );
-    return response;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+>(
+  'educationalStages/fetchBySubSystemId',
+  async ({ academicSubSystemId, params }, { rejectWithValue }) => {
+    try {
+      const response = await EducationalStagesApiService.fetchEducationalStagesBySubSystemId(
+        academicSubSystemId,
+        params
+      );
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 export const getEducationalStageBySubsystemId = createAsyncThunk<EducationalStageResponse, string>(
   'educationalStages/fetchById',
