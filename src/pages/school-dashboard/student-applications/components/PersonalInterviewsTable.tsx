@@ -57,7 +57,13 @@ const PersonalInterviewsTable: React.FC = () => {
 
   // Fetch educational stages for grade filter
   useEffect(() => {
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 100,
+        schoolBranchId: schoolBranchId || undefined,
+      })
+    );
   }, [dispatch]);
 
   // Fetch interviews when filters or pagination change

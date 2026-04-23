@@ -65,7 +65,13 @@ const RegistrationRequestsTable: React.FC = () => {
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
 
   useEffect(() => {
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 100,
+        schoolBranchId: schoolBranchId || undefined,
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {

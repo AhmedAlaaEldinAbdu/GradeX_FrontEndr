@@ -48,6 +48,7 @@ export default function StudentManagement() {
       getEducationalStages({
         pageIndex: 1,
         pageSize: 1000,
+        schoolBranchId: schoolBranchId || undefined,
       })
     );
     dispatch(
