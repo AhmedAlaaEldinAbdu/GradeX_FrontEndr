@@ -2246,6 +2246,7 @@
       "selectStage": "Select stages",
       "classrooms": "Classrooms",
       "selectClassrooms": "Select classrooms",
+      "selectStageFirst": "Please select a stage first",
       "date": "Day",
       "duration": "Duration",
       "fullDay": "Full day",
