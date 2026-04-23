@@ -17,6 +17,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import { useToast } from '@/shared/context/ToastContext';
 import Card from '@/shared/components/Card';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import {
   createInterview,
   deleteInterview,
@@ -52,6 +53,7 @@ export default function Interviews() {
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
   const { interviews: interviewsData, isLoading } = useAppSelector((state) => state.interviews);
+  const schoolBranchesId = getCurrentSchoolBranchId();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
   const [allSupervisors, setAllSupervisors] = useState<Array<{ value: string; label: string }>>([]);
@@ -71,6 +73,7 @@ export default function Interviews() {
     const filters = {
       ...(trimmedSearch ? { teacherName: trimmedSearch } : {}),
       ...(selectedSupervisorName ? { supervisorName: selectedSupervisorName } : {}),
+      ...(schoolBranchesId ? { schoolBranchesId } : {}),
     };
 
     try {
