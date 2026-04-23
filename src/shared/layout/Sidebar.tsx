@@ -557,7 +557,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             className={`h-[65px] w-auto flex-shrink-0 ${schoolName ? '' : 'mx-auto'}`}
           />
           {dashboardType === UserRole.SCHOOL_ADMIN && schoolName && (
-            <span className="text-sm font-semibold leading-tight text-gray-800">{schoolName}</span>
+            <span className="text-lg font-bold leading-tight text-gray-800">{schoolName}</span>
           )}
         </div>
       </div>
