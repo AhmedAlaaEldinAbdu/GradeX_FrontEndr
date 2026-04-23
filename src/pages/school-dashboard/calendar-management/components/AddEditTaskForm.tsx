@@ -151,6 +151,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   });
 
   const watchedClassroomId = watch('classroomId');
+  const watchedGradeId = watch('gradeId');
   const watchedTaskType = watch('taskType');
   const watchedAssignmentType = watch('assignmentType');
   const watchedStudentIds = watch('studentIds') || [];
@@ -163,15 +164,25 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
         filters: { schoolBranchesId: schoolBranchId || undefined },
       })
     );
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
+  }, [dispatch, schoolBranchId]);
+
+  useEffect(() => {
+    if (!watchedGradeId) {
+      return;
+    }
+    setValue('classroomId', '');
     dispatch(
       fetchClassrooms({
         page: 1,
         limit: 10000,
-        filters: { schoolBranchId: schoolBranchId || undefined },
+        filters: {
+          gradeId: watchedGradeId,
+          schoolBranchId: schoolBranchId || undefined,
+        },
       })
     );
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
-  }, [dispatch, schoolBranchId]);
+  }, [dispatch, watchedGradeId, schoolBranchId, setValue]);
 
   useEffect(() => {
     if (mode === 'edit' && id) {
@@ -370,7 +381,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                         ? t('common.loading')
                         : t('tasksManagement.form.educationalStagePlaceholder')
                     }
-                    showSearch={false}
+                    showSearch={true}
                     disabled={isLoadingGrades}
                   />
                 )}
@@ -393,12 +404,14 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                     }
                     options={classroomOptions}
                     placeholder={
-                      isLoadingClassrooms
-                        ? t('common.loading')
-                        : t('tasksManagement.form.classroomPlaceholder')
+                      !watchedGradeId
+                        ? t('tasksManagement.form.educationalStagePlaceholder')
+                        : isLoadingClassrooms
+                          ? t('common.loading')
+                          : t('tasksManagement.form.classroomPlaceholder')
                     }
                     showSearch={false}
-                    disabled={isLoadingClassrooms}
+                    disabled={!watchedGradeId || isLoadingClassrooms}
                   />
                 )}
               />
