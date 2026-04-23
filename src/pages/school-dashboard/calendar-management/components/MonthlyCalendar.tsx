@@ -236,15 +236,6 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     [stageOptions, t]
   );
 
-  const classroomOptions = useMemo<CustomSelectOption[]>(
-    () =>
-      classroomEntities.map((classroom) => ({
-        value: classroom.id,
-        label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
-      })),
-    [classroomEntities, currentLang]
-  );
-
   const calendarEvents = useMemo<CalendarMonthlyEvent[]>(() => {
     return normalizedEvents.map((event) => {
       const startTime = event.isFullDay
@@ -567,7 +558,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         selectedDate={editorMode === 'add' ? selectedDateForEditor : undefined}
         mode={editorMode}
         gradeOptions={stageOptions}
-        classroomOptions={classroomOptions}
+        classroomEntities={classroomEntities}
         schoolBranchId={schoolBranchId}
         gradeOptionsLoading={isEducationalStagesLoading}
         classroomOptionsLoading={isClassroomsLoading}
