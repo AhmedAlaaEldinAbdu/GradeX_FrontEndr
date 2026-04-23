@@ -19,6 +19,7 @@ export interface LessonsFilters {
   date?: string;
   fromDate?: string;
   toDate?: string;
+  schoolBranchesId?: string;
 }
 
 export interface LessonsState {
@@ -77,6 +78,7 @@ export const fetchLessons = createAsyncThunk<FetchLessonsResponse, FetchLessonsP
             date,
             fromDate,
             toDate,
+            schoolBranchesId,
           } = payload.filters;
           if (searchTerm) params.Search = searchTerm;
           if (gradeId) params.GradeId = gradeId;
@@ -86,6 +88,7 @@ export const fetchLessons = createAsyncThunk<FetchLessonsResponse, FetchLessonsP
           if (date) params.Date = date;
           if (fromDate) params.FromDate = fromDate;
           if (toDate) params.ToDate = toDate;
+          if (schoolBranchesId) params.SchoolBranchesId = schoolBranchesId;
         }
       }
 
