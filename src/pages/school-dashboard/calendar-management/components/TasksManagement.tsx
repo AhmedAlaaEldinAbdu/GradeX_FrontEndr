@@ -134,7 +134,13 @@ export default function TasksManagement() {
         filters: { schoolBranchesId: schoolBranchId || undefined },
       })
     );
-    dispatch(fetchClassrooms({ page: 1, limit: 10000 }));
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchId: schoolBranchId || undefined },
+      })
+    );
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {

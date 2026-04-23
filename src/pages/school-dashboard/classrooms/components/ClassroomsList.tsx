@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { Classroom } from '@/services/api/types/classrooms.types';
 import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
 
@@ -28,8 +29,7 @@ export default function ClassroomsList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const searchTerm = '';
   const selectedAcademicSystemId = '';

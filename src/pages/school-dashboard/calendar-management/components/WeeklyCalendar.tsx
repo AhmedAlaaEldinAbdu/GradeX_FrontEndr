@@ -705,7 +705,11 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       fetchClassrooms({
         page: 1,
         limit: 10000,
-        filters: stage ? { gradeId: stage } : schoolBranchId ? { schoolBranchId } : {},
+        filters: stage
+          ? { gradeId: stage, ...(schoolBranchId && { schoolBranchId }) }
+          : schoolBranchId
+            ? { schoolBranchId }
+            : {},
       })
     );
   }, [dispatch, stage, schoolBranchId]);
@@ -937,28 +941,28 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       // Update the lesson with new end time (via slice thunk)
       await dispatch(
         updateLesson({
-        id: fullLesson.id,
-        materialId: fullLesson.materialId,
-        teacherId: fullLesson.teacherId,
-        bookId: fullLesson.bookId,
-        gradeId: fullLesson.gradeId,
-        classroomId: fullLesson.classroomId,
-        schoolBranchesId: fullLesson.schoolBranchesId,
-        date: fullLesson.date,
-        startTime: fullLesson.startTime,
-        endTime: apiNewEndTime,
-        classworkFromPage: fullLesson.classworkFromPage,
-        classworkToPage: fullLesson.classworkToPage,
-        homeworkFromPage: fullLesson.homeworkFromPage,
-        homeworkToPage: fullLesson.homeworkToPage,
-        homeworkDescriptionAr: fullLesson.homeworkDescriptionAr || '',
-        homeworkDescriptionEn: fullLesson.homeworkDescriptionEn || '',
-        isHomeworkForAllStudents: fullLesson.isHomeworkForAllStudents,
-        lessonsStudent: fullLesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
-        attachments: fullLesson.attachments.map((a) => ({
-          fileName: a.fileName,
-          fileUrl: a.fileUrl,
-        })),
+          id: fullLesson.id,
+          materialId: fullLesson.materialId,
+          teacherId: fullLesson.teacherId,
+          bookId: fullLesson.bookId,
+          gradeId: fullLesson.gradeId,
+          classroomId: fullLesson.classroomId,
+          schoolBranchesId: fullLesson.schoolBranchesId,
+          date: fullLesson.date,
+          startTime: fullLesson.startTime,
+          endTime: apiNewEndTime,
+          classworkFromPage: fullLesson.classworkFromPage,
+          classworkToPage: fullLesson.classworkToPage,
+          homeworkFromPage: fullLesson.homeworkFromPage,
+          homeworkToPage: fullLesson.homeworkToPage,
+          homeworkDescriptionAr: fullLesson.homeworkDescriptionAr || '',
+          homeworkDescriptionEn: fullLesson.homeworkDescriptionEn || '',
+          isHomeworkForAllStudents: fullLesson.isHomeworkForAllStudents,
+          lessonsStudent: fullLesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
+          attachments: fullLesson.attachments.map((a) => ({
+            fileName: a.fileName,
+            fileUrl: a.fileUrl,
+          })),
         })
       ).unwrap();
 
