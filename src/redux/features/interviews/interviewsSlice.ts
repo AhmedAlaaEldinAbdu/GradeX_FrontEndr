@@ -27,6 +27,7 @@ export interface InterviewFilters {
   month?: number;
   year?: number;
   date?: string;
+  schoolBranchesId?: string;
 }
 
 export interface InterviewsState {
@@ -111,6 +112,7 @@ export const fetchInterviews = createAsyncThunk<
           month,
           year,
           date,
+          schoolBranchesId,
         } = payload.filters;
 
         if (teacherId) params.teacherId = teacherId;
@@ -121,6 +123,7 @@ export const fetchInterviews = createAsyncThunk<
         if (month !== undefined) params.Month = month;
         if (year !== undefined) params.Year = year;
         if (date) params.Date = date;
+        if (schoolBranchesId) params.SchoolBranchesId = schoolBranchesId;
       }
     }
 
@@ -292,13 +295,16 @@ const interviewsSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(createInterview.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isCreating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess && validationErrors) {
-          state.validationErrors = validationErrors as any;
+      .addCase(
+        createInterview.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<null>>) => {
+          state.isCreating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess && validationErrors) {
+            state.validationErrors = validationErrors as any;
+          }
         }
-      })
+      )
       .addCase(createInterview.rejected, (state, action) => {
         state.isCreating = false;
         const payload = action.payload as any;
@@ -336,7 +342,9 @@ const interviewsSlice = createSlice({
       .addCase(deleteInterview.fulfilled, (state, action: PayloadAction<string>) => {
         state.isDeleting = false;
         state.interviews = state.interviews.filter((interview) => interview.id !== action.payload);
-        state.selectedInterviewIds = state.selectedInterviewIds.filter((id) => id !== action.payload);
+        state.selectedInterviewIds = state.selectedInterviewIds.filter(
+          (id) => id !== action.payload
+        );
       })
       .addCase(deleteInterview.rejected, (state, action) => {
         state.isDeleting = false;
