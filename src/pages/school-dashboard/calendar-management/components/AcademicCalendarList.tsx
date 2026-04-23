@@ -63,7 +63,13 @@ export default function AcademicCalendarList() {
 
   useEffect(() => {
     if (educationalStages.length > 0) return;
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 10000,
+        schoolBranchId: schoolBranchId || undefined,
+      })
+    );
   }, [dispatch, educationalStages.length, schoolBranchId]);
 
   useEffect(() => {

@@ -74,7 +74,13 @@ export default function InvoicesList() {
         })
       );
     }
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 1000 }));
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 1000,
+        schoolBranchId: schoolBranchId || undefined,
+      })
+    );
     dispatch(fetchLKPaymentMethods());
   }, [dispatch, schoolBranchId]);
 
