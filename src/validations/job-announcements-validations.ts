@@ -67,9 +67,9 @@ export const AddJobAnnouncementSchema = object({
     .when('qualificationType', {
       is: JobCategory.TEACHER,
       then: (schema) =>
-        schema.min(1, 'jobAnnouncement.validation.subjectNameRequired').required(
-          'jobAnnouncement.validation.subjectNameRequired'
-        ),
+        schema
+          .min(1, 'jobAnnouncement.validation.subjectNameRequired')
+          .required('jobAnnouncement.validation.subjectNameRequired'),
       otherwise: (schema) => schema.optional(),
     }),
   educationalStage: array()
@@ -77,16 +77,22 @@ export const AddJobAnnouncementSchema = object({
     .when('qualificationType', {
       is: JobCategory.TEACHER,
       then: (schema) =>
-        schema.min(1, 'jobAnnouncement.validation.educationalStageRequired').required(
-          'jobAnnouncement.validation.educationalStageRequired'
-        ),
+        schema
+          .min(1, 'jobAnnouncement.validation.educationalStageRequired')
+          .required('jobAnnouncement.validation.educationalStageRequired'),
       otherwise: (schema) => schema.optional(),
     }),
-  jobDescriptionAr: string().nullable().optional(),
-  jobDescriptionEn: string().nullable().optional(),
-  jobResponsibilitiesAr: string().nullable().optional(),
-  jobResponsibilitiesEn: string().nullable().optional(),
-  applicationStartDate: string().required('jobAnnouncement.validation.applicationStartDateRequired'),
+  jobDescriptionAr: string().required('jobAnnouncement.validation.jobDescriptionRequired'),
+  jobDescriptionEn: string().required('jobAnnouncement.validation.jobDescriptionEnRequired'),
+  jobResponsibilitiesAr: string().required(
+    'jobAnnouncement.validation.jobResponsibilitiesRequired'
+  ),
+  jobResponsibilitiesEn: string().required(
+    'jobAnnouncement.validation.jobResponsibilitiesEnRequired'
+  ),
+  applicationStartDate: string().required(
+    'jobAnnouncement.validation.applicationStartDateRequired'
+  ),
   applicationEndDate: string().required('jobAnnouncement.validation.applicationEndDateRequired'),
   nationalityMode: mixed<NationalityModeValue>()
     .oneOf(Object.values(NationalityMode))
