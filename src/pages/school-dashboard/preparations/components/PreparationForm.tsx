@@ -61,7 +61,9 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   useEffect(() => {
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
-    dispatch(fetchSubjects({ limit: 1000 }));
+    dispatch(
+      fetchSubjects({ limit: 1000, filters: { schoolBranchesId: schoolBranchId || undefined } })
+    );
     dispatch(fetchBooks({ limit: 100 }));
   }, [dispatch, schoolBranchId]);
 
