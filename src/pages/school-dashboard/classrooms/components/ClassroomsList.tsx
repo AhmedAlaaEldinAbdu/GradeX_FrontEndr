@@ -12,10 +12,10 @@ import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
-import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { Classroom } from '@/services/api/types/classrooms.types';
-import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
+import type { GradeDto } from '@/services/api/types/grades.types';
 
 type StageOverview = {
   id: string;
@@ -39,18 +39,12 @@ export default function ClassroomsList() {
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
   const isLoading = useAppSelector((state) => state.classrooms.isLoading);
 
-  // EducationalStages
-  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  // Grades
+  const grades = useAppSelector((state) => state.grades.grades);
 
   useEffect(() => {
-    dispatch(
-      getEducationalStages({
-        pageIndex: 1,
-        pageSize: 10000,
-        schoolBranchId: schoolBranchId,
-      })
-    );
-  }, [dispatch]);
+    dispatch(fetchGrades(schoolBranchId ?? ''));
+  }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
     dispatch(
@@ -65,44 +59,45 @@ export default function ClassroomsList() {
         },
       })
     );
-  }, [dispatch, searchTerm, selectedAcademicSystemId, selectedGradeId]);
+  }, [dispatch, searchTerm, selectedAcademicSystemId, selectedGradeId, schoolBranchId]);
 
   const hasActiveFilters = searchTerm || selectedAcademicSystemId || selectedGradeId;
   const shouldShowEmptyState = !isLoading && classrooms.length === 0 && !hasActiveFilters;
   const shouldShowContent = isLoading || classrooms.length > 0 || hasActiveFilters;
 
-  const educationalStageMap = useMemo(
+  const gradeMap = useMemo(
     () =>
-      (Array.isArray(educationalStages) ? educationalStages : []).reduce<
-        Record<string, EducationalStageResponse>
-      >((accumulator, stage) => {
-        accumulator[stage.id] = stage;
-        return accumulator;
-      }, {}),
-    [educationalStages]
+      (Array.isArray(grades) ? grades : []).reduce<Record<string, GradeDto>>(
+        (accumulator, grade) => {
+          accumulator[grade.id] = grade;
+          return accumulator;
+        },
+        {}
+      ),
+    [grades]
   );
 
   const stageOverview = useMemo<StageOverview[]>(() => {
     const groupedStages = classrooms.reduce<Record<string, StageOverview>>(
       (accumulator, classroom) => {
-        const stageId = classroom.gradeId;
-        const stage = educationalStageMap[stageId];
+        const gradeId = classroom.gradeId;
+        const grade = gradeMap[gradeId];
         const stageTitle =
           currentLang === 'ar'
-            ? stage?.nameAr || classroom.gradeName
-            : stage?.nameEn || classroom.gradeName;
+            ? grade?.nameAr || classroom.gradeName
+            : grade?.nameEn || classroom.gradeName;
 
-        if (!accumulator[stageId]) {
-          accumulator[stageId] = {
-            id: stageId,
+        if (!accumulator[gradeId]) {
+          accumulator[gradeId] = {
+            id: gradeId,
             title: stageTitle,
             totalStudents: 0,
             classrooms: [],
           };
         }
 
-        accumulator[stageId].totalStudents += classroom.studentNumber || 0;
-        accumulator[stageId].classrooms.push(classroom);
+        accumulator[gradeId].totalStudents += classroom.studentNumber || 0;
+        accumulator[gradeId].classrooms.push(classroom);
 
         return accumulator;
       },
@@ -110,7 +105,7 @@ export default function ClassroomsList() {
     );
 
     return Object.values(groupedStages);
-  }, [classrooms, currentLang, educationalStageMap]);
+  }, [classrooms, currentLang, gradeMap]);
 
   const totalEducationalStages = stageOverview.length;
   const totalClassrooms = classrooms.length;

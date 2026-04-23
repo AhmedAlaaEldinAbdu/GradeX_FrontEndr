@@ -93,7 +93,7 @@ export default function StudentManagement() {
           search: searchTerm || undefined,
           gradeId: selectedGradeId || undefined,
           classroomId: selectedClassroomId || undefined,
-          schoolBranchId: selectedSchoolBranchId || undefined,
+          schoolBranchId: getCurrentSchoolBranchId() || undefined,
         },
       })
     );

@@ -8,6 +8,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { fetchStudents } from '@/redux/features/students/studentsSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 export interface Student {
   id: string;
@@ -49,6 +50,7 @@ export default function SelectStudentsPopup({
           limit: 100,
           filters: {
             classroomId,
+            schoolBranchId: getCurrentSchoolBranchId() || undefined,
           },
         })
       ).unwrap();

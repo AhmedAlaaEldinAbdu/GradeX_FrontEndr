@@ -10,6 +10,7 @@ import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudents } from '@/redux/features/students/studentsSlice';
 import { getStudentFullName } from '@/services/api/types/students.types';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 export interface TaskStudentOption {
   id: string;
@@ -51,6 +52,9 @@ export default function TaskStudentsPopup({
       fetchStudents({
         page: 1,
         limit: 100,
+        filters: {
+          schoolBranchId: getCurrentSchoolBranchId() || undefined,
+        },
       })
     );
   }, [dispatch, isOpen]);
