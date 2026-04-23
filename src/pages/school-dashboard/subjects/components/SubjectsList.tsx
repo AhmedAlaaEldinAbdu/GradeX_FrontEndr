@@ -148,10 +148,9 @@ export default function SubjectsList() {
       header: 'subjects.educationalStage',
       accessor: (row) => (
         <div>
-          <>{console.log(row)}</>
-          {row.schoolStages && row.schoolStages.length > 0 ? (
-            row.schoolStages
-              .map((stage) => (currentLang === 'ar' ? stage.nameAr : stage.nameEn))
+          {row.schoolGrades && row.schoolGrades.length > 0 ? (
+            row.schoolGrades
+              .map((grade) => (currentLang === 'ar' ? grade.nameAr : grade.nameEn))
               .join(' - ')
           ) : (
             <span className="text-gray-400">-</span>
