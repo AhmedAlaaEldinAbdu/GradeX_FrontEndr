@@ -34,6 +34,7 @@ export interface SubjectQueryParams {
   SearchName?: string;
   Level?: number;
   SchoolBranchId?: string;
+  GradeId?: string;
 }
 
 export interface SubjectDto {

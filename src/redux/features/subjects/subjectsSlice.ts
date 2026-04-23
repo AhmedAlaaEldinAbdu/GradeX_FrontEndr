@@ -21,6 +21,7 @@ export interface SubjectFilters {
   searchName?: string;
   level?: number;
   schoolBranchesId?: string;
+  gradeId?: string;
 }
 
 export interface SubjectsState {
@@ -116,6 +117,7 @@ export const fetchSubjects = createAsyncThunk<FetchSubjectsResponse, FetchSubjec
           if (payload.filters.level) params.Level = payload.filters.level;
           if (payload.filters.schoolBranchesId)
             params.SchoolBranchId = payload.filters.schoolBranchesId;
+          if (payload.filters.gradeId) params.GradeId = payload.filters.gradeId;
         }
       }
 
