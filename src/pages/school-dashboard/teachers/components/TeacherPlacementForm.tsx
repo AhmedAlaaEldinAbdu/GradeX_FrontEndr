@@ -87,7 +87,13 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
         filters: { schoolBranchesId: schoolBranchId || undefined },
       })
     );
-    dispatch(fetchBooks({ page: 1, limit: 1000 }));
+    dispatch(
+      fetchBooks({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchesId: schoolBranchId || undefined },
+      })
+    );
 
     // Fetch grades from API
     const loadGrades = async () => {
