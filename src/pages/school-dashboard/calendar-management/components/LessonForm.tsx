@@ -214,6 +214,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
           filters: {
             materialId: watchedMaterialId,
             gradeId: watchedGradeId,
+            schoolBranchesId: schoolBranchId || undefined,
           },
         })
       );
