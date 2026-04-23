@@ -26,6 +26,7 @@ import {
   updateSchoolTask,
 } from '@/redux/features/school-tasks/schoolTasksSlice';
 import { tokenManager } from '@/lib/auth/token-manager';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { AddSchoolTaskSchema, EditSchoolTaskSchema } from '@/validations/school-tasks-validations';
 import { SchoolTaskType, type SchoolTask } from '@/types/schoolTasks';
 import TaskStudentsPopup, { type TaskStudentOption } from '../popups/TaskStudentsPopup';
@@ -111,7 +112,8 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
-  const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
+  const schoolBranchId =
+    getCurrentSchoolBranchId() ?? tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const [isStudentsPopupOpen, setIsStudentsPopupOpen] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState<TaskStudentOption[]>([]);
@@ -161,7 +163,13 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
         filters: { schoolBranchesId: schoolBranchId || undefined },
       })
     );
-    dispatch(fetchClassrooms({ page: 1, limit: 10000 }));
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchId: schoolBranchId || undefined },
+      })
+    );
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
   }, [dispatch, schoolBranchId]);
 
