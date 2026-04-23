@@ -157,13 +157,6 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const watchedStudentIds = watch('studentIds') || [];
 
   useEffect(() => {
-    dispatch(
-      fetchSubjects({
-        page: 1,
-        limit: 10000,
-        filters: { schoolBranchesId: schoolBranchId || undefined },
-      })
-    );
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
   }, [dispatch, schoolBranchId]);
 
@@ -172,6 +165,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
       return;
     }
     setValue('classroomId', '');
+    setValue('materialId', '');
     dispatch(
       fetchClassrooms({
         page: 1,
@@ -180,6 +174,13 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
           gradeId: watchedGradeId,
           schoolBranchId: schoolBranchId || undefined,
         },
+      })
+    );
+    dispatch(
+      fetchSubjects({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchesId: schoolBranchId || undefined, gradeId: watchedGradeId },
       })
     );
   }, [dispatch, watchedGradeId, schoolBranchId, setValue]);
@@ -439,7 +440,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                       : t('tasksManagement.form.subjectPlaceholder')
                   }
                   showSearch={false}
-                  disabled={isLoadingSubjects}
+                  disabled={!watchedGradeId || isLoadingSubjects}
                 />
               )}
             />

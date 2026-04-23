@@ -113,9 +113,21 @@ export default function AddBook() {
   const isLoadingExistingBooks = useAppSelector((state) => state.books.isLoading);
 
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
-  }, [dispatch, schoolBranchesId]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (watchedLkSchoolStageId) {
+      setValue('materialId', '');
+      dispatch(
+        fetchSubjects({
+          page: 1,
+          limit: 100,
+          filters: { schoolBranchesId, gradeId: watchedLkSchoolStageId },
+        })
+      );
+    }
+  }, [dispatch, watchedLkSchoolStageId, schoolBranchesId, setValue]);
 
   // Fetch existing books when gradeId or materialId changes
   useEffect(() => {
@@ -417,7 +429,7 @@ export default function AddBook() {
                       label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
                     }))}
                     placeholder={isLoadingSubjects ? t('common.loading') : t('books.selectSubject')}
-                    disabled={isLoadingSubjects}
+                    disabled={!watchedLkSchoolStageId || isLoadingSubjects}
                     error={!!errors.materialId}
                     id="materialId"
                   />
