@@ -8,6 +8,7 @@ import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import ArrowIcon from '@gradex/assets/icons/Arrow.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { fetchInterviews, deleteInterview } from '@/redux/features/interviews/interviewsSlice';
 import type { InterviewFilters } from '@/redux/features/interviews/interviewsSlice';
 import type { Interview } from '@/services/api/types/interviews.types';
@@ -44,6 +45,7 @@ export default function InterviewDetailsPopup({
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
   const { popupInterviews, popupIsLoading } = useAppSelector((state) => state.interviews);
+  const schoolBranchesId = getCurrentSchoolBranchId();
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -91,6 +93,7 @@ export default function InterviewDetailsPopup({
 
     const filters: InterviewFilters & { Date?: string } = {
       date: dateFilter,
+      ...(schoolBranchesId ? { schoolBranchesId } : {}),
     };
 
     setFetchError(null);
@@ -197,12 +200,12 @@ export default function InterviewDetailsPopup({
               type: 'success',
             });
             if (dateFilter) {
-              const filters: InterviewFilters & { Date?: string } = {
-                date: dateFilter,
-              };
               dispatch(
                 fetchInterviews({
-                  filters,
+                  filters: {
+                    date: dateFilter,
+                    ...(schoolBranchesId ? { schoolBranchesId } : {}),
+                  },
                   target: 'popup',
                 })
               );
