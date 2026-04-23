@@ -24,6 +24,7 @@ import {
 import { updateTeacherAttendance } from '@/redux/features/teachers';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchSchoolStages } from '@/redux/features/lookups';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { TeacherAttendance } from '@/types/teacherAttendance';
 import { AttendanceStatus } from '@/types/teacherAttendance';
 import { formatTime, formatDateDisplay } from '@/shared/common/common';
@@ -80,6 +81,8 @@ export default function EmployeesAttendanceTab({
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
+  const schoolBranchId = getCurrentSchoolBranchId();
+
   // Redux state
   const { attendances, pagination, isLoading, selectedAttendanceIds } = useAppSelector(
     (state) => state.teacherAttendance
@@ -110,9 +113,15 @@ export default function EmployeesAttendanceTab({
 
   // Fetch classrooms and school stages for filter dropdowns on mount
   useEffect(() => {
-    dispatch(fetchClassrooms({ page: 1, limit: 100 }));
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 100,
+        filters: { schoolBranchId: schoolBranchId || undefined },
+      })
+    );
     dispatch(fetchSchoolStages());
-  }, [dispatch]);
+  }, [dispatch, schoolBranchId]);
 
   // Fetch data when component mounts or filters change
   useEffect(() => {

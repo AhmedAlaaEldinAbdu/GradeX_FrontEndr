@@ -200,6 +200,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
       getEducationalStages({
         pageIndex: 1,
         pageSize: 100,
+        schoolBranchId: schoolBranchId || undefined,
       })
     );
   }, [dispatch, schoolBranchId]);
@@ -221,7 +222,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     } else {
       setValue('bookId', '');
     }
-  }, [dispatch, watchedMaterialId, watchedGradeId, setValue]);
+  }, [dispatch, watchedMaterialId, watchedGradeId, schoolBranchId, setValue]);
 
   // Fetch classrooms when grade changes
   useEffect(() => {
@@ -232,13 +233,14 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
           limit: 100,
           filters: {
             gradeId: watchedGradeId,
+            schoolBranchId: schoolBranchId || undefined,
           },
         })
       );
     } else {
       setValue('classroomId', '');
     }
-  }, [dispatch, watchedGradeId, setValue]);
+  }, [dispatch, watchedGradeId, schoolBranchId, setValue]);
 
   // Build options for selects
   const materialOptions = useMemo(() => {

@@ -60,7 +60,13 @@ export default function BooksList() {
 
   useEffect(() => {
     dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 100,
+        schoolBranchId: schoolBranchesId || undefined,
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {

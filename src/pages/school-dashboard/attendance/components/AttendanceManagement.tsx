@@ -23,6 +23,7 @@ import {
 } from '@/redux/features/student-attendance/studentAttendanceSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { StudentAttendanceDto } from '@/types/studentAttendance';
 import { StudentAttendanceStatus } from '@/types/studentAttendance';
 import { formatTime } from '@/shared/common/common';
@@ -35,6 +36,8 @@ export default function AttendanceManagement() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   // Redux state
   const { attendances, pagination, isLoading, selectedAttendanceIds } = useAppSelector(
@@ -63,9 +66,21 @@ export default function AttendanceManagement() {
 
   // Load educational stages and classrooms for filters
   useEffect(() => {
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 1000 }));
-    dispatch(fetchClassrooms({ page: 1, limit: 1000 }));
-  }, [dispatch]);
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 1000,
+        schoolBranchId: schoolBranchId || undefined,
+      })
+    );
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchId: schoolBranchId || undefined },
+      })
+    );
+  }, [dispatch, schoolBranchId]);
 
   // Fetch student attendance
   useEffect(() => {
