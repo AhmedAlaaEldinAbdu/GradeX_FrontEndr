@@ -113,7 +113,13 @@ export default function AddBook() {
   const isLoadingExistingBooks = useAppSelector((state) => state.books.isLoading);
 
   useEffect(() => {
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 100,
+        schoolBranchId: schoolBranchesId || undefined,
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {

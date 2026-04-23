@@ -90,7 +90,13 @@ export default function EditBook() {
       dispatch(fetchBookById({ bookId, gradeBookId }));
     }
     dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 100,
+        schoolBranchId: schoolBranchesId || undefined,
+      })
+    );
   }, [dispatch, gradeBookId, bookId]);
 
   // Populate form when book data is loaded
