@@ -4,6 +4,9 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { UserRole, type UserRoleType } from '@gradex/constants';
 import CustomImage from '@/shared/components/CustomImage';
+import { axiosClient } from '@/lib/http';
+import { SchoolsEndpoints } from '@/services/api/endpoints/schools-endpoints';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 // Import icons
 import HomeIcon from '@gradex/assets/icons/Home.svg';
@@ -334,6 +337,22 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const location = useLocation();
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [schoolName, setSchoolName] = useState<string>('');
+
+  useEffect(() => {
+    if (dashboardType === UserRole.SCHOOL_ADMIN) {
+      const branchId = getCurrentSchoolBranchId();
+      if (branchId) {
+        axiosClient
+          .get(SchoolsEndpoints.getSchoolBranchMobile(branchId))
+          .then((res) => {
+            const name = res?.data?.data?.nameBranch;
+            if (name) setSchoolName(name);
+          })
+          .catch(() => {});
+      }
+    }
+  }, [dashboardType]);
 
   const isEnglish = i18n.language?.toLowerCase().startsWith('en');
   const menuTextSizeClass = isEnglish ? 'text-sm' : 'text-xl';
@@ -531,8 +550,16 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     <aside className="flex w-64 flex-col border-r border-gray-200 bg-white shadow-lg">
       {/* Sidebar Header */}
       <div className="h-[88px] border-gray-200 px-6 py-4">
-        {/* <h1 className="text-center text-xl font-bold text-gray-800">Logo</h1> */}
-        <CustomImage src={MainLogo} alt="Logo" className="mx-auto h-[65px] w-auto" />
+        <div className="flex h-full items-center gap-3">
+          <CustomImage
+            src={MainLogo}
+            alt="Logo"
+            className={`h-[65px] w-auto flex-shrink-0 ${schoolName ? '' : 'mx-auto'}`}
+          />
+          {dashboardType === UserRole.SCHOOL_ADMIN && schoolName && (
+            <span className="text-sm font-semibold leading-tight text-gray-800">{schoolName}</span>
+          )}
+        </div>
       </div>
 
       {/* Navigation Menu */}
