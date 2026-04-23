@@ -8,7 +8,7 @@ export const InterviewType = {
   OFFLINE: 2,
 } as const;
 
-export type InterviewType = typeof InterviewType[keyof typeof InterviewType];
+export type InterviewType = (typeof InterviewType)[keyof typeof InterviewType];
 
 export interface Interview {
   id: string;
@@ -56,6 +56,7 @@ export interface InterviewQueryParams {
   teacherId?: string;
   supervisorId?: string;
   jobAdvertisementId?: string;
+  SchoolBranchesId?: string;
 }
 
 export interface CreateInterviewRequest {
