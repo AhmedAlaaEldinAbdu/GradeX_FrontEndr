@@ -152,10 +152,11 @@ export default function TasksManagement() {
           classroomId: selectedClassroom || undefined,
           materialId: selectedSubject || undefined,
           taskType: selectedTaskType ? (Number(selectedTaskType) as SchoolTaskType) : undefined,
+          schoolBranchesId: schoolBranchId || undefined,
         },
       })
     );
-  }, [dispatch, selectedClassroom, selectedSubject, selectedTaskType]);
+  }, [dispatch, selectedClassroom, selectedSubject, selectedTaskType, schoolBranchId]);
 
   const metrics = useMemo(() => {
     return {
