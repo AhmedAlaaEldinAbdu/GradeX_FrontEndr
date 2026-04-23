@@ -188,8 +188,7 @@ export default function AcademicCalendarForm({
     return educationalStages
       .map((stage) => ({
         value: stage.id,
-        label:
-          (currentLang === 'ar' ? stage.nameAr : stage.nameEn) || stage.nameAr || stage.nameEn,
+        label: (currentLang === 'ar' ? stage.nameAr : stage.nameEn) || stage.nameAr || stage.nameEn,
       }))
       .filter((opt) => Boolean(opt.label));
   }, [currentLang, educationalStages]);
@@ -221,6 +220,19 @@ export default function AcademicCalendarForm({
   const patch = (partial: Partial<AcademicCalendarFormValues>) => {
     setValues((prev) => ({ ...prev, ...partial }));
   };
+
+  // Auto-calculate weeks count from start/end dates
+  useEffect(() => {
+    if (!values.studyStartDate || !values.studyEndDate) return;
+    const start = new Date(values.studyStartDate);
+    const end = new Date(values.studyEndDate);
+    const diffMs = end.getTime() - start.getTime();
+    if (diffMs <= 0) {
+      patch({ weeksCount: 0 });
+      return;
+    }
+    patch({ weeksCount: Math.floor(diffMs / (1000 * 60 * 60 * 24 * 7)) });
+  }, [values.studyStartDate, values.studyEndDate]);
 
   const updateSchedule = (
     listKey:
@@ -313,14 +325,7 @@ export default function AcademicCalendarForm({
 
           <div className="grid grid-cols-1 gap-4">
             <FormField label={t('academicCalendar.form.weeksCountLabel')} required>
-              <Input
-                type="number"
-                min={0}
-                value={values.weeksCount}
-                onChange={(e) =>
-                  patch({ weeksCount: e.target.value === '' ? '' : Number(e.target.value) })
-                }
-              />
+              <Input type="number" min={0} value={values.weeksCount} readOnly />
             </FormField>
 
             <FormField label={t('academicCalendar.form.lessonDurationLabel')} required>
