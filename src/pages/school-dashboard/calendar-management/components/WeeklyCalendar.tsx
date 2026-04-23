@@ -677,9 +677,9 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
     // Fetch lessons with filters (or no filters if nothing selected)
     if (Object.keys(filters).length > 0) {
-      dispatch(fetchLessons({ filters }));
+      dispatch(fetchLessons({ filters: { ...filters, schoolBranchesId: schoolBranchId } }));
     } else {
-      dispatch(fetchLessons());
+      dispatch(fetchLessons({ filters: { schoolBranchesId: schoolBranchId } }));
     }
 
     // Fetch monthly calendar events with schoolBranchId and optional grade filter
@@ -977,6 +977,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           filters: {
             gradeId: stage || undefined,
             classroomId: grade || undefined,
+            schoolBranchesId: schoolBranchId,
           },
         })
       );
