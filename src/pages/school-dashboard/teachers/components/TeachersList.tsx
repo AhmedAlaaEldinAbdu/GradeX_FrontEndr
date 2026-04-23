@@ -9,6 +9,7 @@ import Card from '@/shared/components/Card';
 import PeopleRegularIcon from '@gradex/assets/icons/PeopleRegular.svg';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import {
@@ -30,8 +31,7 @@ export default function TeachersList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -57,7 +57,13 @@ export default function TeachersList() {
 
   // Fetch filter data on mount
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(
+      fetchSubjects({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchesId: schoolBranchId || undefined },
+      })
+    );
     dispatch(fetchClassrooms({ page: 1, limit: 100, filters: { schoolBranchId: schoolBranchId } }));
     dispatch(fetchSchoolStages());
   }, [dispatch]);

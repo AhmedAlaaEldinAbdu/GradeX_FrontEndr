@@ -80,7 +80,13 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
 
   // Fetch lookup data on mount
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 100 }));
+    dispatch(
+      fetchSubjects({
+        page: 1,
+        limit: 100,
+        filters: { schoolBranchesId: schoolBranchId || undefined },
+      })
+    );
     dispatch(fetchBooks({ page: 1, limit: 1000 }));
 
     // Fetch grades from API
