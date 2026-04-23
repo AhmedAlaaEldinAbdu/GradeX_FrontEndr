@@ -69,6 +69,7 @@ export interface LessonsQueryParams {
   Date?: string;
   FromDate?: string;
   ToDate?: string;
+  SchoolBranchesId?: string;
 }
 
 /**
