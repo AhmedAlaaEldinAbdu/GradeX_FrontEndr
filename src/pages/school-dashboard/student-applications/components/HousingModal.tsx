@@ -4,6 +4,7 @@ import Modal from '@/shared/popups/Modal';
 import Button from '@/shared/components/Button';
 import Select from '@/shared/components/Select';
 import { getClassrooms } from '@/services/api/classrooms/classrooms.service';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { Classroom } from '@/services/api/types/classrooms.types';
 
 interface HousingModalProps {
@@ -34,7 +35,10 @@ const HousingModal: React.FC<HousingModalProps> = ({
     const fetchClassrooms = async () => {
       setLoading(true);
       try {
-        const response = await getClassrooms({ pageSize: 100 });
+        const response = await getClassrooms({
+          pageSize: 100,
+          schoolBranchId: getCurrentSchoolBranchId() || undefined,
+        });
         setClassrooms(response.data.classroomDto || []);
       } catch (err) {
         console.error('Failed to fetch classrooms:', err);

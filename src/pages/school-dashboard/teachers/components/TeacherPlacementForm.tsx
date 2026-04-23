@@ -197,6 +197,7 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
         pageIndex: 1,
         pageSize: 100,
         gradeId,
+        schoolBranchId: schoolBranchId || undefined,
       });
       setClassroomsPerRow((prev) => ({
         ...prev,
