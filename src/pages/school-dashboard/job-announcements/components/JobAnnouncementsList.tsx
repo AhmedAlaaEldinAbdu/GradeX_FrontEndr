@@ -782,7 +782,7 @@ export default function JobAnnouncementsList() {
     }
 
     const filtersPayload = buildFiltersPayload({
-      schoolBranchId: schoolBranchId,
+      schoolBranchId: schoolBranchId || '',
       searchTerm,
       selectedCountryId,
       selectedStageId,

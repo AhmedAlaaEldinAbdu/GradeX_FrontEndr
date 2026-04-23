@@ -71,7 +71,7 @@ export default function TeachersList() {
   useEffect(() => {
     dispatch(
       fetchTeacherAssignmentList({
-        schoolBranchesId: schoolBranchId,
+        schoolBranchesId: schoolBranchId || '',
         page: pagination.page,
         limit: pagination.limit,
       })
@@ -81,7 +81,7 @@ export default function TeachersList() {
   const handlePageChange = (page: number) => {
     dispatch(
       fetchTeacherAssignmentList({
-        schoolBranchesId: schoolBranchId,
+        schoolBranchesId: schoolBranchId || '',
         page,
         limit: pagination.limit,
       })
@@ -397,7 +397,7 @@ export default function TeachersList() {
             });
             dispatch(
               fetchTeacherAssignmentList({
-                schoolBranchesId: schoolBranchId,
+                schoolBranchesId: schoolBranchId || '',
                 page: pagination.page,
                 limit: pagination.limit,
               })
