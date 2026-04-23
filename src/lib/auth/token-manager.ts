@@ -58,7 +58,14 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       return null;
     }
 
-    const payload = JSON.parse(atob(parts[1]));
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const jsonString = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+        .join('')
+    );
+    const payload = JSON.parse(jsonString);
 
     // Extract role from JWT and normalize it
     const rawRole =
