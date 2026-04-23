@@ -154,7 +154,13 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   const watchedStudentIds = watch('studentIds') || [];
 
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(
+      fetchSubjects({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchesId: schoolBranchId || undefined },
+      })
+    );
     dispatch(fetchClassrooms({ page: 1, limit: 10000 }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
   }, [dispatch, schoolBranchId]);

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -103,6 +104,7 @@ export default function TasksManagement() {
   const { showToast } = useToast();
   const isArabic = i18n.language === 'ar';
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchId = getCurrentSchoolBranchId();
   const handleViewTask = (taskId: string) => navigate(`/calendar/tasks/details/${taskId}`);
   const handleViewTeacher = (teacherId: string) =>
     navigate(`/teachers/${teacherId}`, { state: { comeFrom: 'calendar-tasks' } });
@@ -125,9 +127,15 @@ export default function TasksManagement() {
   const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
 
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(
+      fetchSubjects({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchesId: schoolBranchId || undefined },
+      })
+    );
     dispatch(fetchClassrooms({ page: 1, limit: 10000 }));
-  }, [dispatch]);
+  }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
     dispatch(
