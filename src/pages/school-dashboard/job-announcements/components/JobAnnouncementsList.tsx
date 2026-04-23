@@ -12,6 +12,7 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import {
   fetchJobAdvertisments,
   deleteJobAdvertisment,
@@ -152,8 +153,7 @@ export default function JobAnnouncementsList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const schoolBranchId = getCurrentSchoolBranchId();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
@@ -177,7 +177,13 @@ export default function JobAnnouncementsList() {
   useEffect(() => {
     dispatch(fetchCountries());
     dispatch(fetchSchoolStages());
-    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(
+      fetchSubjects({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchesId: schoolBranchId || undefined },
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {
@@ -634,7 +640,7 @@ export default function JobAnnouncementsList() {
       onChange: (value) => setSearchTerm((value as string) ?? ''),
       width: '30%',
     },
-     {
+    {
       type: 'custom',
       name: 'job-announcements-subject',
       placeholder: '',
@@ -656,7 +662,7 @@ export default function JobAnnouncementsList() {
         />
       ),
     },
-    
+
     {
       type: 'custom',
       name: 'job-announcements-stage',
@@ -745,7 +751,6 @@ export default function JobAnnouncementsList() {
         />
       ),
     },
-   
   ];
 
   const handleDeleteConfirm = async () => {

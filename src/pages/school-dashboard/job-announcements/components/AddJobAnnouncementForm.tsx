@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import type { InferType } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
@@ -206,8 +207,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const schoolBranchId = getCurrentSchoolBranchId();
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
     type: 'success' | 'error';
@@ -294,11 +294,13 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     dispatch(fetchLanguages());
     dispatch(fetchLanguageLevels());
     dispatch(fetchJobBenefits());
-    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(
+      fetchSubjects({ page: 1, limit: 10000, filters: { schoolBranchesId: schoolBranchId } })
+    );
     dispatch(
       getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId: schoolBranchId })
     );
-  }, [dispatch]);
+  }, [dispatch, schoolBranchId]);
 
   // Helper function to populate form with job data
   const populateFormWithJobData = (job: typeof currentJobAdvertisment) => {
@@ -662,7 +664,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     const rawPayload: CreateJobAdvertismentRequest = {
       name: values.name,
       nameEn: values.nameEn,
-      schoolBranchId: schoolBranchId,
+      schoolBranchId: schoolBranchId ?? '',
       qualificationType: qualificationTypeNumber,
       materialId: primarySubjectId,
       jobDescription: values.jobDescriptionAr ?? '',
@@ -955,7 +957,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.jobDescriptionAr')}
-              optional
+              required
               error={errors.jobDescriptionAr?.message as string | undefined}
               htmlFor="jobDescriptionAr"
             >
@@ -975,7 +977,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
             <FormField
               label={t('jobAnnouncement.form.jobDescriptionEn')}
-              optional
+              required
               error={errors.jobDescriptionEn?.message as string | undefined}
               htmlFor="jobDescriptionEn"
             >
@@ -995,7 +997,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
             <FormField
               label={t('jobAnnouncement.form.jobResponsibilitiesAr')}
-              optional
+              required
               error={errors.jobResponsibilitiesAr?.message as string | undefined}
               htmlFor="jobResponsibilitiesAr"
             >
@@ -1015,7 +1017,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
             <FormField
               label={t('jobAnnouncement.form.jobResponsibilitiesEn')}
-              optional
+              required
               error={errors.jobResponsibilitiesEn?.message as string | undefined}
               htmlFor="jobResponsibilitiesEn"
             >
