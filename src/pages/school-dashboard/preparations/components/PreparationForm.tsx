@@ -90,7 +90,10 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   useEffect(() => {
     if (educationalStage) {
       dispatch(
-        fetchClassrooms({ filters: { gradeId: educationalStage, schoolBranchId: '' }, limit: 1000 })
+        fetchClassrooms({
+          filters: { gradeId: educationalStage, schoolBranchId: schoolBranchId || undefined },
+          limit: 1000,
+        })
       );
     }
   }, [dispatch, educationalStage]);
