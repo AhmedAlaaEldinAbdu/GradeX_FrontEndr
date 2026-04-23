@@ -9,5 +9,5 @@ export const SchoolsEndpoints = {
   addSchoolRequest: (id: string) => `${SCHOOLS}/${id}/update-request`,
   getLocationFilters: `${SCHOOLS}/location/filters`,
   updateWorkingHours: (id: string) => `${SCHOOLS}/${id}/WorkingHours`,
-  // getSchoolBranchMobile: (id: string) => `${SCHOOLS}/schoolBranchMobile/${id}`,
+  getSchoolBranchMobile: (id: string) => `${SCHOOLS}/schoolBranchMobile/${id}`,
 };
