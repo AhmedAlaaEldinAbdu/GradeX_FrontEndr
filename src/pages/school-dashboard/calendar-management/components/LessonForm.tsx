@@ -188,7 +188,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
 
   // Initial data fetches
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 100 }));
+    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId: schoolBranchId } }));
     dispatch(
       fetchTeachersThunk({
         page: 1,

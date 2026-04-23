@@ -59,7 +59,7 @@ export default function AddSubject() {
   });
 
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 10000 }));
+    dispatch(fetchSubjects({ page: 1, limit: 10000, filters: { schoolBranchesId } }));
     if (schoolBranchesId) {
       dispatch(fetchGrades(schoolBranchesId));
     }
