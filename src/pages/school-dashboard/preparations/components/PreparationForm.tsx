@@ -61,10 +61,6 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   useEffect(() => {
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
-    dispatch(
-      fetchSubjects({ limit: 1000, filters: { schoolBranchesId: schoolBranchId || undefined } })
-    );
-    dispatch(fetchBooks({ limit: 100 }));
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -89,14 +85,38 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   useEffect(() => {
     if (educationalStage) {
+      setSubject('');
+      setBookName('');
       dispatch(
         fetchClassrooms({
           filters: { gradeId: educationalStage, schoolBranchId: schoolBranchId || undefined },
           limit: 1000,
         })
       );
+      dispatch(
+        fetchSubjects({
+          limit: 1000,
+          filters: { schoolBranchesId: schoolBranchId || undefined, gradeId: educationalStage },
+        })
+      );
     }
-  }, [dispatch, educationalStage]);
+  }, [dispatch, educationalStage, schoolBranchId]);
+
+  useEffect(() => {
+    if (educationalStage && subject) {
+      setBookName('');
+      dispatch(
+        fetchBooks({
+          limit: 1000,
+          filters: {
+            gradeId: educationalStage,
+            materialId: subject,
+            schoolBranchesId: schoolBranchId || undefined,
+          },
+        })
+      );
+    }
+  }, [dispatch, educationalStage, subject, schoolBranchId]);
 
   const { draftData, isDraftLoaded, saveDraft, clearDraft } = useFormDraft<{
     date: string;
@@ -363,6 +383,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                     }))}
                     error={!!errors.grades}
                     placeholder={t('preparations.form.gradesPlaceholder')}
+                    disabled={!educationalStage}
                   />
                   {errors.grades && (
                     <p className="mt-1 text-start text-sm text-red-500">{errors.grades}</p>
@@ -391,6 +412,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                   options={subjectOptions}
                   error={!!errors.subject}
                   placeholder={t('preparations.form.subjectPlaceholder')}
+                  disabled={!educationalStage}
                 />
                 {errors.subject && (
                   <p className="mt-1 text-start text-sm text-red-500">{errors.subject}</p>
@@ -429,6 +451,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                     onChange={(val) => setBookName(val as string)}
                     options={bookOptions}
                     placeholder={t('preparations.form.bookSection.bookNamePlaceholder')}
+                    disabled={!educationalStage || !subject}
                   />
                 </div>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
