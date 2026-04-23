@@ -1,6 +1,7 @@
 import { axiosClient } from '@/lib/http';
 import type { AxiosResponse } from 'axios';
 import { EducationalStagesEndpoints } from '../endpoints/educational-stages-endpoints';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type {
   EducationalStagesListValue,
   EducationalStageParams,
@@ -12,10 +13,13 @@ import type {
 import type { ApiResponseModel } from '../config';
 
 export async function fetchEducationalStages(
-  params?: Partial<EducationalStageParams>
+  params?: Partial<Omit<EducationalStageParams, 'schoolBranchId'>>
 ): Promise<EducationalStagesListValue> {
+  const schoolBranchId = getCurrentSchoolBranchId();
   const response: AxiosResponse<ApiResponseModel<EducationalStagesListValue>> =
-    await axiosClient.get(EducationalStagesEndpoints.base, { params });
+    await axiosClient.get(EducationalStagesEndpoints.base, {
+      params: { ...params, schoolBranchId },
+    });
   return response.data.value;
 }
 
