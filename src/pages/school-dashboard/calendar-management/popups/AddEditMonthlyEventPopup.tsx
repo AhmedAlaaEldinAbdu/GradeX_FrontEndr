@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -13,6 +13,7 @@ import {
   MonthlyEventFormSchema,
   type MonthlyEventFormValues,
 } from '@/validations/monthly-calendar-validations';
+import type { Classroom } from '@/services/api/types/classrooms.types';
 
 interface AddEditMonthlyEventPopupProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ interface AddEditMonthlyEventPopupProps {
   selectedDate?: Date;
   mode?: 'add' | 'edit';
   gradeOptions: CustomSelectOption[];
-  classroomOptions: CustomSelectOption[];
+  classroomEntities: Classroom[];
   schoolBranchId: string;
   gradeOptionsLoading?: boolean;
   classroomOptionsLoading?: boolean;
@@ -36,12 +37,13 @@ export default function AddEditMonthlyEventPopup({
   selectedDate,
   mode = 'add',
   gradeOptions,
-  classroomOptions,
+  classroomEntities,
   schoolBranchId,
   gradeOptionsLoading = false,
   classroomOptionsLoading = false,
 }: AddEditMonthlyEventPopupProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language;
 
   const {
     control,
@@ -67,6 +69,24 @@ export default function AddEditMonthlyEventPopup({
   });
 
   const isFullDay = watch('isFullDay');
+  const watchedGrades = watch('grades');
+
+  // Filter classrooms to only those belonging to the selected grade(s)
+  const filteredClassroomOptions = useMemo<CustomSelectOption[]>(() => {
+    if (!watchedGrades || watchedGrades.length === 0) return [];
+    const selectedGradeSet = new Set(watchedGrades);
+    return classroomEntities
+      .filter((c) => selectedGradeSet.has(c.gradeId))
+      .map((c) => ({
+        value: c.id,
+        label: currentLang === 'ar' ? c.name : c.nameEn || c.name,
+      }));
+  }, [watchedGrades, classroomEntities, currentLang]);
+
+  // Reset classrooms when grades change
+  useEffect(() => {
+    setValue('classRomms', []);
+  }, [watchedGrades, setValue]);
 
   const createDefaultValues = (): MonthlyEventFormValues => ({
     nameAr: '',
@@ -118,9 +138,12 @@ export default function AddEditMonthlyEventPopup({
   const gradePlaceholder = gradeOptionsLoading
     ? t('common.loading')
     : t('monthlyCalendar.form.selectStage');
-  const classroomPlaceholder = classroomOptionsLoading
-    ? t('common.loading')
-    : t('monthlyCalendar.form.selectClassrooms');
+  const classroomPlaceholder =
+    !watchedGrades || watchedGrades.length === 0
+      ? t('monthlyCalendar.form.selectStageFirst')
+      : classroomOptionsLoading
+        ? t('common.loading')
+        : t('monthlyCalendar.form.selectClassrooms');
 
   return (
     <Modal
@@ -213,10 +236,10 @@ export default function AddEditMonthlyEventPopup({
                   id="monthly-event-classrooms"
                   value={field.value || []}
                   onChange={(value) => field.onChange(Array.isArray(value) ? value : [value])}
-                  options={classroomOptions}
+                  options={filteredClassroomOptions}
                   placeholder={classroomPlaceholder}
                   isMulti
-                  disabled={classroomOptionsLoading}
+                  disabled={!watchedGrades || watchedGrades.length === 0 || classroomOptionsLoading}
                   error={Boolean(errors.classRomms)}
                 />
               )}
