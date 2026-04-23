@@ -8,6 +8,7 @@ export interface Subject {
   id: string;
   name: string;
   nameEn: string | null;
+  schoolBranchesId: string | null;
   materialLevel: number;
   schoolGrades: SchoolStage[];
 }
