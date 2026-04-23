@@ -31,8 +31,7 @@ export default function StudentManagement() {
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const students = useAppSelector((state) => state.students.students);
   const pagination = useAppSelector((state) => state.students.pagination);
