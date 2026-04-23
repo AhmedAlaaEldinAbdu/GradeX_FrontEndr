@@ -15,6 +15,7 @@ import Button from '@/shared/components/Button';
 import { fetchBookById, updateBook } from '@/redux/features/books/booksSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { EditBookSchema, type EditBookProps } from '@/validations/books-validations';
 import FileUpload from '@/shared/components/FileUpload';
 import Loading from '@/shared/components/Loading';
@@ -37,6 +38,7 @@ export default function EditBook() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchesId = getCurrentSchoolBranchId() || undefined;
 
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
@@ -130,6 +132,7 @@ export default function EditBook() {
             materialId: data.materialId,
             fileName: pdfFile?.name ?? currentBook?.fileName ?? '',
             file: pdfFile ?? undefined,
+            schoolBranchesId,
           },
         })
       ).unwrap();

@@ -16,6 +16,7 @@ import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/com
 import { fetchBooks, deleteBook as deleteBookAction } from '@/redux/features/books/booksSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import MetricCard from '@/shared/components/MetricCard';
 import type { FlattenedBook, BookStatus } from '@/types/books';
 import LibraryGreenIcon from '@/assets/icons/LibraryGreen.svg';
@@ -31,6 +32,7 @@ export default function BooksList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchesId = getCurrentSchoolBranchId() || undefined;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -71,6 +73,7 @@ export default function BooksList() {
           materialId: selectedMaterialId || undefined,
           gradeId: selectedSchoolStageId || undefined,
           status: selectedStatus ? (Number(selectedStatus) as BookStatus) : undefined,
+          schoolBranchesId,
         },
       })
     );
@@ -78,6 +81,7 @@ export default function BooksList() {
     dispatch,
     pagination.page,
     pagination.limit,
+    schoolBranchesId,
     searchTerm,
     selectedMaterialId,
     selectedSchoolStageId,
@@ -94,6 +98,7 @@ export default function BooksList() {
           materialId: selectedMaterialId || undefined,
           gradeId: selectedSchoolStageId || undefined,
           status: selectedStatus ? (Number(selectedStatus) as BookStatus) : undefined,
+          schoolBranchesId,
         },
       })
     );

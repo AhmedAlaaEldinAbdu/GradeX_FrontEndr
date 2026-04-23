@@ -16,6 +16,7 @@ import Button from '@/shared/components/Button';
 import { addBook, fetchBooks } from '@/redux/features/books/booksSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { FlattenedBook } from '@/types/books';
 import { AddBookSchema, type AddBookProps } from '@/validations/books-validations';
 import FileUpload from '@/shared/components/FileUpload';
@@ -51,6 +52,7 @@ export default function AddBook() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchesId = getCurrentSchoolBranchId() || undefined;
 
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
@@ -132,11 +134,14 @@ export default function AddBook() {
         fetchBooks({
           page: 1,
           limit: 100,
-          filters,
+          filters: {
+            ...filters,
+            schoolBranchesId,
+          },
         })
       );
     }
-  }, [dispatch, watchedLkSchoolStageId, watchedMaterialId]);
+  }, [dispatch, watchedLkSchoolStageId, watchedMaterialId, schoolBranchesId]);
 
   // Get selected stage and subject names
   const selectedGrade = grades.find((g) => g.id === watchedLkSchoolStageId);
@@ -215,6 +220,7 @@ export default function AddBook() {
           fileName: imageFile?.name ?? '',
           filePath: '',
           file: imageFile ?? undefined,
+          schoolBranchesId,
         })
       ).unwrap();
 

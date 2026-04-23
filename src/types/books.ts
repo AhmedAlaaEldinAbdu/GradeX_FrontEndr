@@ -80,6 +80,7 @@ export interface BookQueryParams {
   MaterialId?: string;
   GradeId?: string;
   Status?: BookStatus;
+  SchoolBranchesId?: string;
 }
 
 // ============================================================================
@@ -123,6 +124,7 @@ export interface CreateBookRequest {
   fileName?: string;
   filePath?: string;
   file?: File;
+  schoolBranchesId?: string;
 }
 
 export interface UpdateBookRequest extends CreateBookRequest {
