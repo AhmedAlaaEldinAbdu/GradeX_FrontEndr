@@ -52,9 +52,10 @@ export const registrationAnnouncementApi = {
     const response = await axiosClient.put(
       `/RegistrationAdvertisement`,
       {
-        lkSchoolStageId: data.lkSchoolStageId,
+        lkSchoolStageIds: data.lkSchoolStageIds,
         startDate: data.startDate,
         endDate: data.endDate,
+        schoolBranchesId: data.schoolBranchesId,
       },
       {
         params: { Id: data.id },

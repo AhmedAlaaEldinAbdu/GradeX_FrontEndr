@@ -1,11 +1,16 @@
-export interface RegistrationAdvertisementDto {
-  id: string;
+export interface LkSchoolStageItem {
   lkSchoolStageId: string;
   stageNameAr: string;
   stageNameEn: string;
+}
+
+export interface RegistrationAdvertisementDto {
+  id: string;
   startDate: string;
   endDate: string;
+  schoolBranchesId: string;
   status: number;
+  lkSchoolStages: LkSchoolStageItem[];
 }
 
 export interface GetRegistrationAdvertisementsResponse {
@@ -32,9 +37,10 @@ export interface RegistrationAdvertisementQueryParams {
 }
 
 export interface CreateRegistrationAdvertisementRequest {
-  lkSchoolStageId: string;
+  lkSchoolStageIds: string[];
   startDate: string;
   endDate: string;
+  schoolBranchesId?: string;
 }
 
 export interface UpdateRegistrationAdvertisementRequest
