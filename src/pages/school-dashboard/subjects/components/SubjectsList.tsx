@@ -228,8 +228,8 @@ export default function SubjectsList() {
     try {
       await dispatch(deleteSubjectAction(selectedSubjectId))
         .unwrap()
-        .then((res: any) => {
-          if (res.isSuccess === true || res === selectedSubjectId) {
+        .then((res: string | { isSuccess: boolean }) => {
+          if (res === selectedSubjectId || (typeof res === 'object' && res.isSuccess === true)) {
             showToast({
               message: 'subjects.subjectDeletedSuccessfully',
               type: 'success',
