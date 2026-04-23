@@ -20,6 +20,7 @@ import { getErrorMessage } from '@/lib/http';
 export interface SubjectFilters {
   searchName?: string;
   level?: number;
+  schoolBranchesId?: string;
 }
 
 export interface SubjectsState {
@@ -113,6 +114,8 @@ export const fetchSubjects = createAsyncThunk<FetchSubjectsResponse, FetchSubjec
         if (payload.filters) {
           if (payload.filters.searchName) params.SearchName = payload.filters.searchName;
           if (payload.filters.level) params.Level = payload.filters.level;
+          if (payload.filters.schoolBranchesId)
+            params.SchoolBranchId = payload.filters.schoolBranchesId;
         }
       }
 

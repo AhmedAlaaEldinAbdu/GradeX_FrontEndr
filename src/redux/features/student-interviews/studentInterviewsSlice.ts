@@ -119,7 +119,7 @@ export const fetchStudentInterviews = createAsyncThunk<
         if (studentName) params.StudentName = studentName;
         if (studentId) params.StudentId = studentId;
         if (supervisorId) params.SupervisorId = supervisorId;
-        if (schoolBranchId) params.SchoolBranchId = schoolBranchId;
+        if (schoolBranchId) params.schoolBranchId = schoolBranchId;
         if (gradeId) params.GradeId = gradeId;
         if (date) params.Date = date;
         if (month !== undefined) params.Month = month;

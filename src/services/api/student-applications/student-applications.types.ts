@@ -45,7 +45,7 @@ export interface StudentApplicationQueryParams {
   Search?: string;
   Status?: number;
   LKSchoolStageId?: string;
-  SchoolBranchId?: string;
+  SchoolBranchesId?: string;
 }
 
 export const RelationshipType = {

@@ -27,6 +27,7 @@ import {
 } from '@/redux/features/student-interviews/studentInterviewsSlice';
 import type { StudentInterviewApiProps } from '@/validations/student-interviews-validations';
 import type { StudentInterview as StudentInterviewEntity } from '@/services/api/types/student-interviews.types';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 interface CalendarStudentInterview extends CalendarEvent {
   nameAr?: string;
@@ -73,8 +74,10 @@ export default function StudentInterviewsCalendar() {
 
   const fetchStudentInterviewsData = useCallback(async () => {
     const trimmedSearch = searchTerm.trim();
+    const schoolBranchId = getCurrentSchoolBranchId();
     const filters = {
       ...(trimmedSearch ? { studentName: trimmedSearch } : {}),
+      ...(schoolBranchId ? { schoolBranchId } : {}),
     };
 
     try {

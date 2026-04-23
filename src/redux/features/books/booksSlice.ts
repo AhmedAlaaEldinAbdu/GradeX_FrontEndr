@@ -30,6 +30,7 @@ export interface BookFilters {
   materialId?: string;
   gradeId?: string;
   status?: BookStatus;
+  schoolBranchesId?: string;
 }
 
 export interface BooksState {
@@ -136,6 +137,8 @@ export const fetchBooks = createAsyncThunk<FetchBooksResponse, FetchBooksPayload
           if (payload.filters.materialId) params.MaterialId = payload.filters.materialId;
           if (payload.filters.gradeId) params.GradeId = payload.filters.gradeId;
           if (payload.filters.status !== undefined) params.Status = payload.filters.status;
+          if (payload.filters.schoolBranchesId)
+            params.SchoolBranchesId = payload.filters.schoolBranchesId;
         }
       }
 

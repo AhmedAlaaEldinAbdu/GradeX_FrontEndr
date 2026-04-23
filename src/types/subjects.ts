@@ -9,7 +9,7 @@ export interface Subject {
   name: string;
   nameEn: string | null;
   materialLevel: number;
-  schoolStages: SchoolStage[];
+  schoolGrades: SchoolStage[];
 }
 
 export interface SubjectListData {
@@ -32,20 +32,21 @@ export interface SubjectQueryParams {
   PageSize?: number;
   SearchName?: string;
   Level?: number;
+  SchoolBranchId?: string;
 }
 
 export interface SubjectDto {
   name: string;
   nameEn?: string;
   materialLevel: number;
-  lKSchoolStageIds?: string[];
 }
 
 export interface CreateSubjectRequest {
   name: string;
   nameEn?: string;
   materialLevel: number;
-  lKSchoolStageIds?: string[];
+  gradeIds?: string[];
+  schoolBranchesId?: string;
 }
 
 export interface UpdateSubjectRequest {
@@ -53,7 +54,8 @@ export interface UpdateSubjectRequest {
   name: string;
   nameEn?: string;
   materialLevel: number;
-  lKSchoolStageIds?: string[];
+  gradeIds?: string[];
+  schoolBranchesId?: string;
 }
 
 export const MaterialLevel = {

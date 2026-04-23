@@ -28,6 +28,7 @@ export interface RegistrationAdvertisementQueryParams {
   status?: number;
   startDate?: string;
   endDate?: string;
+  SchoolBranchesId?: string;
 }
 
 export interface CreateRegistrationAdvertisementRequest {

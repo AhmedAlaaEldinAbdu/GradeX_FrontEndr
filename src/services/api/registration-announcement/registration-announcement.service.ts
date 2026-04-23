@@ -14,6 +14,7 @@ export const registrationAnnouncementApi = {
     status,
     startDate,
     endDate,
+    SchoolBranchesId,
   }: RegistrationAdvertisementQueryParams = {}) => {
     const response = await axiosClient.get<GetRegistrationAdvertisementsResponse>(
       '/RegistrationAdvertisement',
@@ -25,6 +26,7 @@ export const registrationAnnouncementApi = {
           Status: status || undefined,
           StartDate: startDate || undefined,
           EndDate: endDate || undefined,
+          SchoolBranchesId: SchoolBranchesId || undefined,
         },
       }
     );

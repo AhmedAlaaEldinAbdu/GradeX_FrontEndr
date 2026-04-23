@@ -6,6 +6,7 @@ import IconButton from '@/shared/components/IconButton';
 import { registrationAnnouncementApi } from '@/services/api/registration-announcement/registration-announcement.service';
 import type { RegistrationAdvertisementDto } from '@/services/api/registration-announcement/registration-announcement.types';
 import useLanguage from '@/hooks/useLanguage';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DeletePopup from '@/shared/popups/DeletePopup';
@@ -39,6 +40,7 @@ export default function RegistrationAnnouncement() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const locale = isArabic ? 'ar' : 'en';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const [announcements, setAnnouncements] = useState<RegistrationAdvertisementDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +59,7 @@ export default function RegistrationAnnouncement() {
     limit: 10,
     total: 0,
     totalPages: 0,
+    SchoolBranchesId: schoolBranchId,
   });
 
   const requestParams = useMemo(
@@ -67,8 +70,17 @@ export default function RegistrationAnnouncement() {
       status: selectedStatus ? ANNOUNCEMENT_STATUS_VALUE[selectedStatus] : undefined,
       startDate: startDate || undefined,
       endDate: endDate || undefined,
+      SchoolBranchesId: schoolBranchId,
     }),
-    [endDate, pagination.limit, pagination.page, searchTerm, selectedStatus, startDate]
+    [
+      endDate,
+      pagination.limit,
+      pagination.page,
+      searchTerm,
+      selectedStatus,
+      startDate,
+      schoolBranchId,
+    ]
   );
 
   const fetchAnnouncements = useCallback(async () => {

@@ -65,7 +65,7 @@ export const fetchStudentApplications = createAsyncThunk<
       Search: payload.searchTerm,
       Status: payload.status,
       LKSchoolStageId: payload.educationalStageId,
-      SchoolBranchId: payload.schoolBranchId,
+      SchoolBranchesId: payload.schoolBranchId,
     });
 
     if (!response?.isSuccess || !response.data) {

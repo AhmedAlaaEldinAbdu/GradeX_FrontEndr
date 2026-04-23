@@ -47,7 +47,7 @@ export interface StudentInterviewQueryParams {
   StudentName?: string;
   StudentId?: string;
   SupervisorId?: string;
-  SchoolBranchId?: string;
+  schoolBranchId?: string;
   GradeId?: string;
   Date?: string;
   Month?: number;

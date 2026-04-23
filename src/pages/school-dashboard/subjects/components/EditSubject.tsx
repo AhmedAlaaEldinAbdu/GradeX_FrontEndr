@@ -18,10 +18,11 @@ import {
   fetchSubjects,
   updateSubject,
 } from '@/redux/features/subjects/subjectsSlice';
-import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { EditSubjectSchema, type EditSubjectProps } from '@/validations/subjects-validations';
 import { MATERIAL_LEVELS } from '@/constants';
 import Loading from '@/shared/components/Loading';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 export default function EditSubject() {
   const { t, i18n } = useTranslation();
@@ -29,6 +30,7 @@ export default function EditSubject() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const schoolBranchesId = getCurrentSchoolBranchId() || undefined;
 
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
@@ -41,27 +43,20 @@ export default function EditSubject() {
   const isLoading = useAppSelector((state) => state.subjects.isLoading);
   const isUpdating = useAppSelector((state) => state.subjects.isUpdating);
 
-  const grades = useAppSelector((state) => state.educationalStages.educationalStages);
-  const isLoadingGrades = useAppSelector((state) => state.educationalStages.isLoading);
+  const grades = useAppSelector((state) => state.grades.grades);
+  const isLoadingGrades = useAppSelector((state) => state.grades.isLoading);
 
-  const schoolStagesOptions = useMemo(() => {
-    type StageOption = { id: string; nameAr: string; nameEn: string };
+  const gradeOptions = useMemo(() => {
+    type GradeOption = { id: string; nameAr: string; nameEn: string };
 
-    const subjectStages = currentSubject?.schoolStages || [];
-    const lookupStagesMap = new Map<string, StageOption>(
-      grades.map((grade) => [
-        grade.id,
-        {
-          id: grade.id,
-          nameAr: grade.nameAr,
-          nameEn: grade.nameEn,
-        },
-      ])
+    const subjectGrades = currentSubject?.schoolGrades || [];
+    const gradeMap = new Map<string, GradeOption>(
+      grades.map((g) => [g.id, { id: g.id, nameAr: g.nameAr, nameEn: g.nameEn }])
     );
 
-    subjectStages.forEach((stage) => {
-      if (!lookupStagesMap.has(stage.id)) {
-        lookupStagesMap.set(stage.id, {
+    subjectGrades.forEach((stage) => {
+      if (!gradeMap.has(stage.id)) {
+        gradeMap.set(stage.id, {
           id: stage.id,
           nameAr: stage.nameAr,
           nameEn: stage.nameEn,
@@ -69,8 +64,8 @@ export default function EditSubject() {
       }
     });
 
-    return Array.from(lookupStagesMap.values());
-  }, [grades, currentSubject?.schoolStages]);
+    return Array.from(gradeMap.values());
+  }, [grades, currentSubject?.schoolGrades]);
 
   const {
     control,
@@ -85,7 +80,7 @@ export default function EditSubject() {
       name: '',
       nameEn: '',
       materialLevel: '',
-      lKSchoolStageIds: [],
+      gradeIds: [],
     },
   });
 
@@ -96,20 +91,22 @@ export default function EditSubject() {
     if (id) {
       dispatch(fetchSubjectById(id));
     }
-    dispatch(fetchSubjects({ page: 1, limit: 100 }));
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000 }));
-  }, [dispatch, id]);
+    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
+    if (schoolBranchesId) {
+      dispatch(fetchGrades(schoolBranchesId));
+    }
+  }, [dispatch, id, schoolBranchesId]);
 
   useEffect(() => {
-    if (currentSubject && schoolStagesOptions.length > 0) {
+    if (currentSubject) {
       reset({
         name: currentSubject.name || '',
         nameEn: currentSubject.nameEn ?? '',
         materialLevel: String(currentSubject.materialLevel) || '',
-        lKSchoolStageIds: currentSubject.schoolStages?.map((stage) => stage.id) || [],
+        gradeIds: currentSubject.schoolGrades?.map((stage) => stage.id) || [],
       });
     }
-  }, [currentSubject, schoolStagesOptions, reset]);
+  }, [currentSubject, reset]);
 
   const onSubmit = async (data: EditSubjectProps) => {
     if (!id) return;
@@ -122,7 +119,8 @@ export default function EditSubject() {
             name: data.name,
             nameEn: data.nameEn,
             materialLevel: Number(data.materialLevel),
-            lKSchoolStageIds: data.lKSchoolStageIds,
+            gradeIds: data.gradeIds,
+            schoolBranchesId,
           },
         })
       )
@@ -284,16 +282,16 @@ export default function EditSubject() {
             </FormField>
           </div>
 
-          {/* School Stages - Multi Select */}
+          {/* Grades - Multi Select */}
           <div className="mb-6">
             <FormField
               label={t('subjects.schoolStages')}
               required
-              error={errors.lKSchoolStageIds?.message}
-              htmlFor="lKSchoolStageIds"
+              error={errors.gradeIds?.message}
+              htmlFor="gradeIds"
             >
               <Controller
-                name="lKSchoolStageIds"
+                name="gradeIds"
                 control={control}
                 render={({ field }) => (
                   <CustomSelect
@@ -301,17 +299,17 @@ export default function EditSubject() {
                     onChange={(value) => {
                       field.onChange(value);
                     }}
-                    options={schoolStagesOptions.map((stage) => ({
-                      value: stage.id,
-                      label: currentLang === 'ar' ? stage.nameAr : stage.nameEn || stage.nameAr,
+                    options={gradeOptions.map((grade) => ({
+                      value: grade.id,
+                      label: currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr,
                     }))}
                     placeholder={
                       isLoadingGrades ? t('common.loading') : t('subjects.selectSchoolStages')
                     }
                     disabled={isLoadingGrades}
-                    error={!!errors.lKSchoolStageIds}
+                    error={!!errors.gradeIds}
                     isMulti={true}
-                    id="lKSchoolStageIds"
+                    id="gradeIds"
                   />
                 )}
               />

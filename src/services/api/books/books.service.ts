@@ -123,6 +123,9 @@ export async function createBook(
   formData.append('GradeId', data.gradeId);
   formData.append('MaterialId', data.materialId);
   formData.append('FileName', data.fileName ?? '');
+  if (data.schoolBranchesId) {
+    formData.append('SchoolBranchesId', data.schoolBranchesId);
+  }
   if (data.file) {
     formData.append('FilePath', data.file);
   }
@@ -231,6 +234,9 @@ export async function updateBook(
   formData.append('GradeId', data.gradeId);
   formData.append('MaterialId', data.materialId);
   formData.append('FileName', data.fileName ?? '');
+  if (data.schoolBranchesId) {
+    formData.append('SchoolBranchesId', data.schoolBranchesId);
+  }
 
   if (data.file) {
     formData.append('FilePath', data.file);

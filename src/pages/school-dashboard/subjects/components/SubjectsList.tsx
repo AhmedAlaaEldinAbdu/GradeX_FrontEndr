@@ -53,10 +53,11 @@ export default function SubjectsList() {
         filters: {
           searchName: searchTerm || undefined,
           level: selectedLevel ? Number(selectedLevel) : undefined,
+          schoolBranchesId: schoolBranchId || undefined,
         },
       })
     );
-  }, [dispatch, pagination.page, limit, searchTerm, selectedLevel]);
+  }, [dispatch, pagination.page, limit, searchTerm, selectedLevel, schoolBranchId]);
 
   useEffect(() => {
     if (!schoolBranchId) return;
@@ -80,6 +81,7 @@ export default function SubjectsList() {
         filters: {
           searchName: searchTerm || undefined,
           level: selectedLevel ? Number(selectedLevel) : undefined,
+          schoolBranchesId: schoolBranchId || undefined,
         },
       })
     );
