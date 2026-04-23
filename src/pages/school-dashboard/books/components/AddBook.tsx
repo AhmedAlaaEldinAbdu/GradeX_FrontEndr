@@ -113,9 +113,9 @@ export default function AddBook() {
   const isLoadingExistingBooks = useAppSelector((state) => state.books.isLoading);
 
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 100 }));
+    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
-  }, [dispatch]);
+  }, [dispatch, schoolBranchesId]);
 
   // Fetch existing books when gradeId or materialId changes
   useEffect(() => {

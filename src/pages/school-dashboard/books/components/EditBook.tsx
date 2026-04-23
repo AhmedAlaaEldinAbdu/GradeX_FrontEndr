@@ -89,7 +89,7 @@ export default function EditBook() {
     if (gradeBookId && bookId) {
       dispatch(fetchBookById({ bookId, gradeBookId }));
     }
-    dispatch(fetchSubjects({ page: 1, limit: 100 }));
+    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
   }, [dispatch, gradeBookId, bookId]);
 

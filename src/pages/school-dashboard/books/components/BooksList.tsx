@@ -59,7 +59,7 @@ export default function BooksList() {
   const isLoadingGrades = useAppSelector((state) => state.educationalStages.isLoading);
 
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 100 }));
+    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 100 }));
   }, [dispatch]);
 
