@@ -18,6 +18,7 @@ import { registrationAnnouncementApi } from '@/services/api/registration-announc
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 interface RegistrationAnnouncementFormProps {
   initialValues?: Partial<RegistrationAnnouncementProps>;
@@ -35,6 +36,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const schoolBranchesId = getCurrentSchoolBranchId() || undefined;
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
     type: 'success' | 'error';
@@ -56,7 +58,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   } = useForm<RegistrationAnnouncementProps>({
     resolver: yupResolver(RegistrationAnnouncementSchema),
     defaultValues: {
-      lkSchoolStageId: initialValues?.lkSchoolStageId || '',
+      lkSchoolStageIds: initialValues?.lkSchoolStageIds || [],
       startDate: initialValues?.startDate || '',
       endDate: initialValues?.endDate || '',
     },
@@ -71,9 +73,10 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
       if (isEditMode && registrationId) {
         await registrationAnnouncementApi.update({
           id: registrationId,
-          lkSchoolStageId: data.lkSchoolStageId,
+          lkSchoolStageIds: data.lkSchoolStageIds,
           startDate: new Date(data.startDate).toISOString(),
           endDate: new Date(data.endDate).toISOString(),
+          schoolBranchesId,
         });
 
         setShowPopupMessage({
@@ -83,9 +86,10 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
         });
       } else {
         await registrationAnnouncementApi.create({
-          lkSchoolStageId: data.lkSchoolStageId,
+          lkSchoolStageIds: data.lkSchoolStageIds,
           startDate: new Date(data.startDate).toISOString(),
           endDate: new Date(data.endDate).toISOString(),
+          schoolBranchesId,
         });
 
         setShowPopupMessage({
@@ -115,23 +119,20 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="space-y-6">
-        {/* Educational Stage (Single Select) */}
+        {/* Educational Stage (Multi Select) */}
         <FormField
           label={t('registrationAnnouncement.educationalStagesLabel')}
           required
-          error={errors.lkSchoolStageId?.message && t(errors.lkSchoolStageId.message)}
-          htmlFor="lkSchoolStageId"
+          error={errors.lkSchoolStageIds?.message && t(errors.lkSchoolStageIds.message)}
+          htmlFor="lkSchoolStageIds"
         >
           <Controller
-            name="lkSchoolStageId"
+            name="lkSchoolStageIds"
             control={control}
             render={({ field }) => (
               <CustomSelect
-                value={field.value}
-                onChange={(value) => {
-                  const val = Array.isArray(value) ? value[0] : value;
-                  field.onChange(val);
-                }}
+                value={field.value as string[]}
+                onChange={(value) => field.onChange(value)}
                 options={
                   Array.isArray(educationalStages)
                     ? educationalStages.map((stage) => ({
@@ -146,7 +147,8 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
                     : t('registrationAnnouncement.selectEducationalStages')
                 }
                 disabled={isLoadingEducationalStages}
-                error={!!errors.lkSchoolStageId}
+                error={!!errors.lkSchoolStageIds}
+                isMulti={true}
               />
             )}
           />
@@ -217,7 +219,11 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
             className="min-w-[120px] bg-green-800 hover:bg-green-900"
             disabled={isSubmitting}
           >
-            {isSubmitting ? t('common.saving') : isEditMode ? t('common.saveChanges') : t('common.add')}
+            {isSubmitting
+              ? t('common.saving')
+              : isEditMode
+                ? t('common.saveChanges')
+                : t('common.add')}
           </Button>
         </div>
       </form>

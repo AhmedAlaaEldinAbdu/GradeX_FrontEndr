@@ -47,7 +47,10 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
           };
 
           const values = {
-            lkSchoolStageId: announcement.lkSchoolStageId,
+            lkSchoolStageIds:
+              announcement.lkSchoolStages?.map(
+                (s: { lkSchoolStageId: string }) => s.lkSchoolStageId
+              ) || [],
             startDate: formatDateTime(announcement.startDate),
             endDate: formatDateTime(announcement.endDate),
           };

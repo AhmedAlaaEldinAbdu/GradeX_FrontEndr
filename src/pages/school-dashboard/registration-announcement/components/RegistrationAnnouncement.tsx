@@ -4,7 +4,10 @@ import Card from '@gradex/shared/components/Card';
 import { useTranslation } from 'react-i18next';
 import IconButton from '@/shared/components/IconButton';
 import { registrationAnnouncementApi } from '@/services/api/registration-announcement/registration-announcement.service';
-import type { RegistrationAdvertisementDto } from '@/services/api/registration-announcement/registration-announcement.types';
+import type {
+  RegistrationAdvertisementDto,
+  LkSchoolStageItem,
+} from '@/services/api/registration-announcement/registration-announcement.types';
 import useLanguage from '@/hooks/useLanguage';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
@@ -187,7 +190,13 @@ export default function RegistrationAnnouncement() {
     },
     {
       header: 'registrationAnnouncement.educationalStage',
-      accessor: (row) => <span>{isArabic ? row.stageNameAr : row.stageNameEn}</span>,
+      accessor: (row) => (
+        <span>
+          {(row.lkSchoolStages || [])
+            .map((s: LkSchoolStageItem) => (isArabic ? s.stageNameAr : s.stageNameEn))
+            .join(' - ')}
+        </span>
+      ),
       headerClassName: 'min-w-[220px]',
     },
     {
@@ -403,9 +412,9 @@ export default function RegistrationAnnouncement() {
           message="registrationAnnouncement.confirmDelete"
           itemName={
             selectedAnnouncement
-              ? isArabic
-                ? selectedAnnouncement.stageNameAr || ''
-                : selectedAnnouncement.stageNameEn || ''
+              ? (selectedAnnouncement.lkSchoolStages || [])
+                  .map((s) => (isArabic ? s.stageNameAr : s.stageNameEn))
+                  .join(' - ')
               : ''
           }
           onConfirm={handleDeleteConfirm}
