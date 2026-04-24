@@ -23,9 +23,7 @@ import type {
 /**
  * Get list of classrooms with pagination and filters
  */
-export async function getClassrooms(
-  params?: Omit<ClassroomQueryParams, 'schoolBranchId'>
-): Promise<ClassroomListResponse> {
+export async function getClassrooms(params?: ClassroomQueryParams): Promise<ClassroomListResponse> {
   const schoolBranchId = getCurrentSchoolBranchId();
   const response: AxiosResponse<ClassroomListResponse> = await axiosClient.get(
     ClassroomEndpoints.getClassrooms,
