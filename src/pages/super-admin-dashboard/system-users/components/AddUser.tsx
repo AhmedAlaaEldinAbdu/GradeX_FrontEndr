@@ -36,6 +36,7 @@ import i18n from '@/i18n';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { extractErrorMessage } from '@/lib/utils';
 import { normalizePhoneForApi } from '@/lib/utils/phone-utils';
+import { SchoolStatusEnum } from '@/services/api';
 
 export default function AddUser() {
   const { t } = useTranslation();
@@ -105,7 +106,9 @@ export default function AddUser() {
   useEffect(() => {
     dispatch(fetchRoles({ page: 1, limit: 1000 }));
     dispatch(fetchCountries());
-    dispatch(fetchSchools({ page: 1, limit: 1000 }));
+    dispatch(
+      fetchSchools({ page: 1, limit: 1000, filters: { schoolStatus: SchoolStatusEnum.ACTIVE } })
+    );
   }, [dispatch]);
 
   /**
