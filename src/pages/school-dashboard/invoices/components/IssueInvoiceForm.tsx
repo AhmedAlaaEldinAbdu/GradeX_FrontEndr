@@ -14,7 +14,6 @@ import {
   fetchInvoiceNumbers,
 } from '@/redux/features/invoices/invoicesSlice';
 import { fetchLKPaymentMethods } from '@/redux/features/lookups/lookupsSlice';
-import { fetchOffers } from '@/redux/features/offers/offersSlice';
 import {
   fetchAllInstallments,
   fetchInstallmentPlanById,
@@ -83,7 +82,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   } = useAppSelector((state) => state.invoices);
   const { customers, isLoading: isLoadingCustomers } = useAppSelector((state) => state.customers);
   const { lkPaymentMethods, isLoadingLKPaymentMethods } = useAppSelector((state) => state.lookups);
-  const { offers, isLoading: isLoadingOffers } = useAppSelector((state) => state.offers);
   const { installments, installmentPlan, isLoadingInstallments } = useAppSelector(
     (state) => state.tuitionFees
   );
@@ -142,7 +140,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
-  const [selectedOfferId, setSelectedOfferId] = useState('');
+  const [extraDiscountInput, setExtraDiscountInput] = useState('');
   const [taxPercentageInput, setTaxPercentageInput] = useState('');
   const [classificationRows, setClassificationRows] = useState<ClassificationRow[]>([
     createClassificationRow(),
@@ -174,15 +172,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     [installments]
   );
 
-  const offerOptions = useMemo<CustomSelectOption[]>(
-    () =>
-      offers.map((offer) => ({
-        value: offer.id,
-        label: currentLang === 'ar' ? offer.nameAr : offer.nameEn,
-      })),
-    [currentLang, offers]
-  );
-
   const subtotal = useMemo(
     () => classificationRows.reduce((sum, row) => sum + toNumber(row.amount), 0),
     [classificationRows]
@@ -193,22 +182,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     [classificationRows]
   );
 
-  const selectedOffer = useMemo(
-    () => offers.find((offer) => offer.id === selectedOfferId) ?? null,
-    [offers, selectedOfferId]
-  );
-
   const calculatedAmount = subtotal;
 
-  const offerDiscount = useMemo(() => {
-    if (!selectedOffer) return 0;
-    if (selectedOffer.percentage !== null && selectedOffer.percentage !== undefined) {
-      return (calculatedAmount * selectedOffer.percentage) / 100;
-    }
-    return selectedOffer.amount ?? 0;
-  }, [calculatedAmount, selectedOffer]);
-
-  const discountTotal = rowDiscountTotal + offerDiscount;
+  const discountTotal = rowDiscountTotal + toNumber(extraDiscountInput);
   const netAmount = Math.max(0, subtotal - discountTotal);
   const taxAmount = (netAmount * Number(taxPercentage ?? 0)) / 100;
   const totalAmount = netAmount + taxAmount;
@@ -237,9 +213,6 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       return;
     }
     dispatch(fetchAllInstallments({ schoolBranchId, PageNumber: 1, PageSize: 1000 }));
-    dispatch(
-      fetchOffers({ SchoolBranchId: schoolBranchId, IsActive: true, PageIndex: 1, PageSize: 1000 })
-    );
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -644,13 +617,13 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           </FormField>
 
           <FormField label={t('invoices.optionalDiscount')} optional>
-            <CustomSelect
-              value={selectedOfferId}
-              onChange={(value) => setSelectedOfferId(String(value))}
-              options={offerOptions}
+            <Input
+              type="number"
+              min="0"
+              icon={currencyIcon}
+              value={extraDiscountInput}
+              onChange={(e) => setExtraDiscountInput(e.target.value)}
               placeholder={t('invoices.chooseDiscount')}
-              showSearch={false}
-              disabled={isLoadingOffers}
             />
           </FormField>
 
