@@ -9,6 +9,16 @@ interface FileAttachments {
   license: File[];
   image: File[];
   certificate: File[];
+  logo?: File[];
+  existingLogo?: string; // existing logo URL (edit mode)
+}
+
+export type { ExistingImageAttachment };
+
+interface ExistingImageAttachment {
+  id?: string;
+  attachmentFile: string;
+  name?: string;
 }
 
 interface BranchData {
@@ -20,11 +30,14 @@ interface BranchData {
   buildingNumber: string;
   postalCode: string;
   logo?: string;
+  logoFile?: File;
   latitude?: number;
   longitude?: number;
   schoolSpace?: number;
   buildingCount?: number;
   classCount?: number;
+  schoolImageFiles?: File[];
+  existingSchoolImages?: ExistingImageAttachment[];
 }
 
 interface BackendSchoolData {
@@ -67,7 +80,7 @@ export function transformSchoolFormBackend(
   formData: SchoolFormData,
   files: FileAttachments,
   branches?: BranchData[],
-  existingSchoolImageFiles?: string[]
+  existingSchoolImageFiles?: ExistingImageAttachment[]
 ): FormData {
   const backendFormData = new FormData();
 
@@ -75,8 +88,7 @@ export function transformSchoolFormBackend(
   appendLicenseAttachments(backendFormData, files);
   appendFinancialData(backendFormData, formData);
   appendContactInformation(backendFormData, formData);
-  appendAddressAndBranches(backendFormData, formData, branches);
-  appendSchoolImageAttachments(backendFormData, files, existingSchoolImageFiles);
+  appendAddressAndBranches(backendFormData, formData, branches, files, existingSchoolImageFiles);
   appendApplicationFeatures(backendFormData, formData);
   appendFacilities(backendFormData, formData, files);
 
@@ -170,11 +182,13 @@ function appendContactInformation(formData: FormData, schoolData: SchoolFormData
 function appendAddressAndBranches(
   formData: FormData,
   schoolData: SchoolFormData,
-  branches?: BranchData[]
+  branches?: BranchData[],
+  files?: FileAttachments,
+  existingSchoolImageFiles?: ExistingImageAttachment[]
 ): void {
   formData.append('OtherBranches', schoolData.hasBranches ? 'true' : 'false');
 
-  appendMainBranch(formData, schoolData);
+  appendMainBranch(formData, schoolData, files, existingSchoolImageFiles);
 
   if (branches && branches.length > 0) {
     appendAdditionalBranches(formData, branches);
@@ -283,7 +297,12 @@ function appendFacilities(
 // Helper Functions - Branch Handling
 // ============================================================================
 
-function appendMainBranch(formData: FormData, schoolData: SchoolFormData): void {
+function appendMainBranch(
+  formData: FormData,
+  schoolData: SchoolFormData,
+  files?: FileAttachments,
+  existingSchoolImageFiles?: ExistingImageAttachment[]
+): void {
   const branchFields = {
     street: schoolData.street,
     city: schoolData.city,
@@ -292,13 +311,49 @@ function appendMainBranch(formData: FormData, schoolData: SchoolFormData): void 
     lkCountryId: schoolData.addressCountry,
     region: schoolData.region,
     buildingNumber: schoolData.buildingNumber,
-    logo: '',
     latitude: '0',
     longitude: '0',
   };
 
   Object.entries(branchFields).forEach(([key, value]) => {
     formData.append(`SchoolBranches[0].${key}`, value);
+  });
+
+  // Logo for main branch
+  const logoFile = files?.logo?.[0];
+  if (logoFile) {
+    formData.append('SchoolBranches[0].logo', logoFile);
+  } else if (files?.existingLogo) {
+    // Re-send the existing logo URL so the backend keeps it
+    formData.append('SchoolBranches[0].logo', files.existingLogo);
+  } else {
+    formData.append('SchoolBranches[0].logo', '');
+  }
+
+  // schoolImageAttachmentsDto for main branch
+  const existing = (existingSchoolImageFiles || []).filter(
+    (a) => typeof a.attachmentFile === 'string' && a.attachmentFile.trim().length > 0
+  );
+  const newImageFiles = files?.image || [];
+  let imgIndex = 0;
+
+  // Re-send existing attachments with their id so the backend keeps them
+  existing.forEach((attachment) => {
+    const prefix = `SchoolBranches[0].schoolImageAttachmentsDto[${imgIndex}]`;
+    if (attachment.id) {
+      formData.append(`${prefix}.id`, attachment.id);
+    }
+    formData.append(`${prefix}.attachmentFile`, attachment.attachmentFile);
+    formData.append(`${prefix}.name`, attachment.name || 'schoolImage');
+    imgIndex++;
+  });
+
+  // Append newly uploaded image files (no id — backend generates one)
+  newImageFiles.forEach((file) => {
+    const prefix = `SchoolBranches[0].schoolImageAttachmentsDto[${imgIndex}]`;
+    formData.append(`${prefix}.attachmentFile`, file);
+    formData.append(`${prefix}.name`, 'schoolImage');
+    imgIndex++;
   });
 }
 
@@ -319,7 +374,13 @@ function appendBranchData(formData: FormData, branch: BranchData, index: number)
   formData.append(`${prefix}.lkCountryId`, branch.country);
   formData.append(`${prefix}.region`, branch.region);
   formData.append(`${prefix}.buildingNumber`, branch.buildingNumber);
-  formData.append(`${prefix}.logo`, branch.logo || '');
+  // Logo: prefer uploaded file, fall back to existing URL
+  if (branch.logoFile) {
+    formData.append(`${prefix}.logo`, branch.logoFile);
+  } else {
+    formData.append(`${prefix}.logo`, branch.logo || '');
+  }
+
   formData.append(`${prefix}.latitude`, branch.latitude?.toString() || '0');
   formData.append(`${prefix}.longitude`, branch.longitude?.toString() || '0');
 
@@ -332,11 +393,39 @@ function appendBranchData(formData: FormData, branch: BranchData, index: number)
   if (branch.classCount !== undefined) {
     formData.append(`${prefix}.classCount`, branch.classCount.toString());
   }
+
+  // schoolImageAttachmentsDto per additional branch
+  const existingImgs = (branch.existingSchoolImages || []).filter(
+    (a) => typeof a.attachmentFile === 'string' && a.attachmentFile.trim().length > 0
+  );
+  const newImgFiles = branch.schoolImageFiles || [];
+  let imgIdx = 0;
+
+  // Re-send existing attachments with their id so the backend keeps them
+  existingImgs.forEach((attachment) => {
+    const imgPrefix = `${prefix}.schoolImageAttachmentsDto[${imgIdx}]`;
+    if (attachment.id) {
+      formData.append(`${imgPrefix}.id`, attachment.id);
+    }
+    formData.append(`${imgPrefix}.attachmentFile`, attachment.attachmentFile);
+    formData.append(`${imgPrefix}.name`, attachment.name || 'schoolImage');
+    imgIdx++;
+  });
+
+  // Append newly uploaded image files (no id — backend generates one)
+  newImgFiles.forEach((file) => {
+    const imgPrefix = `${prefix}.schoolImageAttachmentsDto[${imgIdx}]`;
+    formData.append(`${imgPrefix}.attachmentFile`, file);
+    formData.append(`${imgPrefix}.name`, 'schoolImage');
+    imgIdx++;
+  });
 }
 
 function extractAcademicSystemIds(academicSystemIds: unknown): string[] {
   if (Array.isArray(academicSystemIds)) {
-    return academicSystemIds.filter((value) => typeof value === 'string' && value.trim().length > 0);
+    return academicSystemIds.filter(
+      (value) => typeof value === 'string' && value.trim().length > 0
+    );
   }
   if (typeof academicSystemIds === 'string' && academicSystemIds.trim().length > 0) {
     return [academicSystemIds];
@@ -434,6 +523,9 @@ interface BackendSchoolResponse {
     longitude: number;
     address: string;
     schoolId: string;
+    // backend may return either name variant
+    schoolImageAttachmentsDto?: Array<{ id: string; attachmentFile: string; name?: string }>;
+    schoolImageAttachments?: Array<{ id: string; attachmentFile: string; name?: string }>;
   }>;
   facilities?: Array<{
     id: string;
@@ -526,8 +618,9 @@ export function transformBackendSchoolToForm(
   lookupFacilities?: Array<{ id: string; arabicName: string; englishName: string }>
 ): SchoolFormData & {
   licenseFiles?: string[];
-  imageFiles?: string[];
+  imageFiles?: ExistingImageAttachment[];
   certificateFiles?: string[];
+  logoFile?: string;
   branches?: Array<{
     country: string;
     region: string;
@@ -537,6 +630,9 @@ export function transformBackendSchoolToForm(
     buildingNumber: string;
     postalCode: string;
     logo?: string;
+    logoFile?: File;
+    schoolImageFiles?: File[];
+    existingSchoolImages?: Array<{ id: string; attachmentFile: string; name: string }>;
     latitude?: number;
     longitude?: number;
   }>;
@@ -547,12 +643,16 @@ export function transformBackendSchoolToForm(
   const applicationFeatures =
     data.applicationFeaturesDto?.map((feature) => feature.lkApplicationFeatureId) || [];
 
-  const subSystemIdsRaw = (data as any).subSystemIds ?? (data as any).SubSystemIds ?? (data as any).subSystemId ?? (data as any).SubSystemId;
+  const subSystemIdsRaw =
+    (data as any).subSystemIds ??
+    (data as any).SubSystemIds ??
+    (data as any).subSystemId ??
+    (data as any).SubSystemId;
   const subSystemIds = Array.isArray(subSystemIdsRaw)
     ? subSystemIdsRaw.filter((value) => typeof value === 'string' && value.trim().length > 0)
     : typeof subSystemIdsRaw === 'string' && subSystemIdsRaw.trim().length > 0
-    ? [subSystemIdsRaw]
-    : [];
+      ? [subSystemIdsRaw]
+      : [];
 
   const academicSystemIdsRaw =
     (data as any).academicSystemIds ??
@@ -564,11 +664,18 @@ export function transformBackendSchoolToForm(
   // Extract license file paths from attachments (use filePath for full URL access)
   const licenseFiles = data.licensesAttachments?.map((attachment) => attachment.filePath) || [];
 
-  // Extract school images (Step 3 attachments)
-  const imageFiles =
-    data.schoolImageAttachmentsDto
-      ?.map((attachment) => attachment.attachmentFile)
-      .filter((value) => typeof value === 'string' && value.trim().length > 0) || [];
+  // Extract school images - prefer per-branch images from main branch, fall back to top-level
+  const rawImageAttachments =
+    data.schoolBranches?.[0]?.schoolImageAttachments ??
+    data.schoolBranches?.[0]?.schoolImageAttachmentsDto ??
+    data.schoolImageAttachmentsDto ??
+    [];
+  const imageFiles: ExistingImageAttachment[] = rawImageAttachments
+    .filter((a) => typeof a.attachmentFile === 'string' && a.attachmentFile.trim().length > 0)
+    .map((a) => ({ id: a.id, attachmentFile: a.attachmentFile, name: a.name }));
+
+  // Extract logo URL from main branch
+  const logoFile = data.schoolBranches?.[0]?.logo || '';
 
   // Extract certificate files from all facilities
   const certificateFiles: string[] = [];
@@ -726,22 +833,28 @@ export function transformBackendSchoolToForm(
     licenseFiles,
     imageFiles,
     certificateFiles,
+    logoFile,
 
     // Additional branches (for view/edit mode) - skip the first branch as it's the main address
     branches:
       data.schoolBranches && data.schoolBranches.length > 1
         ? data.schoolBranches.slice(1).map((branch) => ({
-          country: branch.lkCountryId || '',
-          region: branch.region || '',
-          city: branch.city || '',
-          district: branch.neighborhood || '',
-          street: branch.street || '',
-          buildingNumber: branch.buildingNumber || '',
-          postalCode: branch.zipCode || '',
-          logo: branch.logo || '',
-          latitude: branch.latitude,
-          longitude: branch.longitude,
-        }))
+            country: branch.lkCountryId || '',
+            region: branch.region || '',
+            city: branch.city || '',
+            district: branch.neighborhood || '',
+            street: branch.street || '',
+            buildingNumber: branch.buildingNumber || '',
+            postalCode: branch.zipCode || '',
+            logo: branch.logo || '',
+            latitude: branch.latitude,
+            longitude: branch.longitude,
+            schoolImageFiles: [] as File[],
+            existingSchoolImages:
+              (branch.schoolImageAttachments ?? branch.schoolImageAttachmentsDto)
+                ?.filter((a) => a.attachmentFile)
+                .map((a) => ({ id: a.id, attachmentFile: a.attachmentFile, name: a.name })) ?? [],
+          }))
         : [],
   };
 }
