@@ -11,6 +11,7 @@ import MapLocationModal from '@gradex/shared/components/MapLocationModal';
 import AddressBranch from './AddressBranch';
 import ViewModeFileDisplay from './ViewModeFileDisplay';
 import type { SchoolFormData } from '../types/school.types';
+import type { ExistingImageAttachment } from '../utils/school-form.transformer';
 import {
   fetchCountries,
   selectCountries,
@@ -28,6 +29,11 @@ interface BranchData {
   buildingNumber: string;
   postalCode: string;
   logo?: string;
+  logoFile?: File;
+  schoolImageFiles?: File[];
+  existingSchoolImages?: ExistingImageAttachment[];
+  latitude?: number;
+  longitude?: number;
 }
 
 interface AddressStepProps {
@@ -36,6 +42,9 @@ interface AddressStepProps {
   onSchoolImageDelete?: (index?: number) => void;
   schoolImageFileNames?: string[];
   schoolImageFiles?: File[];
+  onLogoUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onLogoDelete?: () => void;
+  logoFileName?: string;
   initialBranches?: Array<{
     country: string;
     region: string;
@@ -45,6 +54,9 @@ interface AddressStepProps {
     buildingNumber: string;
     postalCode: string;
     logo?: string;
+    logoFile?: File;
+    schoolImageFiles?: File[];
+    existingSchoolImages?: ExistingImageAttachment[];
     latitude?: number;
     longitude?: number;
   }>;
@@ -58,6 +70,9 @@ interface AddressStepProps {
       buildingNumber: string;
       postalCode: string;
       logo?: string;
+      logoFile?: File;
+      schoolImageFiles?: File[];
+      existingSchoolImages?: ExistingImageAttachment[];
       latitude?: number;
       longitude?: number;
     }>
@@ -74,6 +89,9 @@ const AddressStep: React.FC<AddressStepProps> = ({
   onSchoolImageDelete,
   schoolImageFileNames,
   schoolImageFiles,
+  onLogoUpload,
+  onLogoDelete,
+  logoFileName,
   initialBranches,
   onBranchesChange,
 }) => {
@@ -103,6 +121,8 @@ const AddressStep: React.FC<AddressStepProps> = ({
       street: '',
       buildingNumber: '',
       postalCode: '',
+      schoolImageFiles: [],
+      existingSchoolImages: [],
     },
   ]);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
@@ -132,6 +152,8 @@ const AddressStep: React.FC<AddressStepProps> = ({
         street: '',
         buildingNumber: '',
         postalCode: '',
+        schoolImageFiles: [],
+        existingSchoolImages: [],
       },
     ];
     setBranches(newBranches);
@@ -139,6 +161,49 @@ const AddressStep: React.FC<AddressStepProps> = ({
     if (onBranchesChange) {
       onBranchesChange(newBranches);
     }
+  };
+
+  const handleBranchLogoChange = (branchIndex: number, file: File | null) => {
+    const updatedBranches = [...branches];
+    updatedBranches[branchIndex] = {
+      ...updatedBranches[branchIndex],
+      logoFile: file ?? undefined,
+    };
+    setBranches(updatedBranches);
+    if (onBranchesChange) onBranchesChange(updatedBranches);
+  };
+
+  const handleBranchImagesAdd = (branchIndex: number, newFiles: File[]) => {
+    const updatedBranches = [...branches];
+    const existing = updatedBranches[branchIndex].schoolImageFiles || [];
+    updatedBranches[branchIndex] = {
+      ...updatedBranches[branchIndex],
+      schoolImageFiles: [...existing, ...newFiles],
+    };
+    setBranches(updatedBranches);
+    if (onBranchesChange) onBranchesChange(updatedBranches);
+  };
+
+  const handleBranchImageDelete = (branchIndex: number, fileIndex: number) => {
+    const updatedBranches = [...branches];
+    const branch = updatedBranches[branchIndex];
+    const existingCount = (branch.existingSchoolImages || []).length;
+
+    if (fileIndex < existingCount) {
+      updatedBranches[branchIndex] = {
+        ...branch,
+        existingSchoolImages: (branch.existingSchoolImages || []).filter((_, i) => i !== fileIndex),
+      };
+    } else {
+      const newIdx = fileIndex - existingCount;
+      updatedBranches[branchIndex] = {
+        ...branch,
+        schoolImageFiles: (branch.schoolImageFiles || []).filter((_, i) => i !== newIdx),
+      };
+    }
+
+    setBranches(updatedBranches);
+    if (onBranchesChange) onBranchesChange(updatedBranches);
   };
 
   const handleOpenMapModal = (branchIndex: number | null = null) => {
@@ -345,13 +410,33 @@ const AddressStep: React.FC<AddressStepProps> = ({
 
         <div className="md:col-span-1"></div>
       </div>
+      {/* Main Branch Logo Upload (Optional) */}
+      {!readOnly ? (
+        <div className="space-y-4 rounded-lg border border-gray-200 p-4">
+          <FormField label={t('schools.branchLogo') || 'شعار الفرع الرئيسي'} optional>
+            <FileUpload
+              label=""
+              accept="image/*"
+              formatHints={['JPG', 'JPEG', 'PNG', 'SVG', 'WEBP']}
+              onChange={onLogoUpload || (() => {})}
+              onDelete={onLogoDelete ? () => onLogoDelete() : undefined}
+              fileNames={logoFileName ? [logoFileName] : []}
+              files={[]}
+              uploadText={t('schools.uploadLogo') || 'رفع الشعار'}
+              multiple={false}
+            />
+          </FormField>
+        </div>
+      ) : null}
+
       {/* School Images Upload (Optional) */}
       {!readOnly ? (
         <div className="space-y-4 rounded-lg border border-gray-200 p-4">
           <FormField label={t('schools.schoolImages')} optional>
             <FileUpload
               label=""
-              accept="image/*,.svg,.jpg,.jpeg,.png,.pdf"
+              accept="image/*"
+              formatHints={['JPG', 'JPEG', 'PNG', 'SVG', 'WEBP']}
               onChange={onSchoolImageUpload || (() => {})}
               onDelete={onSchoolImageDelete}
               fileNames={schoolImageFileNames || []}
@@ -414,6 +499,9 @@ const AddressStep: React.FC<AddressStepProps> = ({
           onBranchChange={handleBranchChange}
           onAddBranch={handleAddBranch}
           onOpenMapModal={handleOpenMapModal}
+          onBranchLogoChange={handleBranchLogoChange}
+          onBranchImagesAdd={handleBranchImagesAdd}
+          onBranchImageDelete={handleBranchImageDelete}
           readOnly={readOnly}
         />
       )}
