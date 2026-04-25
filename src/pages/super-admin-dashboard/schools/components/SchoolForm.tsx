@@ -13,7 +13,10 @@ import ContactInfoStep from './ContactInfoStep';
 import FacilitiesStep from './FacilitiesStep';
 import { useSchoolForm } from '../hooks/useSchoolForm';
 import type { SchoolFormData } from '../types/school.types';
-import { transformSchoolFormBackend } from '../utils/school-form.transformer';
+import {
+  transformSchoolFormBackend,
+  type ExistingImageAttachment,
+} from '../utils/school-form.transformer';
 import { logFormData } from '@/shared/common/common';
 import {
   createSchoolWithFormData,
@@ -34,8 +37,9 @@ interface SchoolFormProps {
   mode: 'add' | 'edit' | 'view';
   initialData?: SchoolFormData & {
     licenseFiles?: string[];
-    imageFiles?: string[];
+    imageFiles?: ExistingImageAttachment[];
     certificateFiles?: string[];
+    logoFile?: string;
     branches?: Array<{
       country: string;
       region: string;
@@ -45,6 +49,9 @@ interface SchoolFormProps {
       buildingNumber: string;
       postalCode: string;
       logo?: string;
+      logoFile?: File;
+      schoolImageFiles?: File[];
+      existingSchoolImages?: ExistingImageAttachment[];
       latitude?: number;
       longitude?: number;
     }>;
@@ -83,12 +90,16 @@ const SchoolForm = ({
       buildingNumber: string;
       postalCode: string;
       logo?: string;
+      logoFile?: File;
+      schoolImageFiles?: File[];
+      existingSchoolImages?: ExistingImageAttachment[];
       latitude?: number;
       longitude?: number;
     }>
   >([]);
 
-  const [schoolImageFiles, setSchoolImageFiles] = useState<string[]>([]);
+  const [schoolImageFiles, setSchoolImageFiles] = useState<ExistingImageAttachment[]>([]);
+  const [existingLogo, setExistingLogo] = useState<string>('');
 
   // Ref to prevent accidental submission immediately after navigation
   const justNavigatedToStep4Ref = useRef(false);
@@ -111,6 +122,7 @@ const SchoolForm = ({
     } else {
       setSchoolImageFiles([]);
     }
+    setExistingLogo(initialData?.logoFile || '');
   }, [initialData]);
 
   // Show validation errors in toast when they occur
@@ -241,7 +253,12 @@ const SchoolForm = ({
    */
   const onFormSubmit = async (data: SchoolFormData) => {
     try {
-      const backendFormData = transformSchoolFormBackend(data, files, branches, schoolImageFiles);
+      const backendFormData = transformSchoolFormBackend(
+        data,
+        { ...files, existingLogo: existingLogo || undefined },
+        branches,
+        schoolImageFiles
+      );
 
       if (import.meta.env.DEV) {
         logFormData(backendFormData);
@@ -383,8 +400,17 @@ const SchoolForm = ({
               onBranchesChange={setBranches}
               onSchoolImageUpload={handleFileUpload('image')}
               onSchoolImageDelete={handleSchoolImageDelete}
-              schoolImageFileNames={[...schoolImageFiles, ...getFileNames('image')]}
+              schoolImageFileNames={[
+                ...schoolImageFiles.map((a) => a.attachmentFile),
+                ...getFileNames('image'),
+              ]}
               schoolImageFiles={files.image}
+              onLogoUpload={handleFileUpload('logo')}
+              onLogoDelete={() => {
+                handleFileDelete('logo')();
+                setExistingLogo('');
+              }}
+              logoFileName={existingLogo || files.logo?.[0]?.name}
             />
           )}
 
