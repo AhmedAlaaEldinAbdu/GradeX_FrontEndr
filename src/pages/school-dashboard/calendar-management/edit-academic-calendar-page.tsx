@@ -200,7 +200,7 @@ export default function EditAcademicCalendarPage() {
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
-  const schoolBranchId = getCurrentSchoolBranchId();
+  const schoolBranchId = getCurrentSchoolBranchId() || '';
 
   const { currentCalendar, isLoading } = useAppSelector((state) => state.academicCalendar);
 
