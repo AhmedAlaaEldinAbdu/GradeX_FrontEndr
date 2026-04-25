@@ -184,7 +184,10 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   const calculatedAmount = subtotal;
 
-  const discountTotal = rowDiscountTotal + toNumber(extraDiscountInput);
+  // Always treat extraDiscountInput as percent (0-100)
+  const extraDiscountAmount =
+    (subtotal * Math.min(100, Math.max(0, toNumber(extraDiscountInput)))) / 100;
+  const discountTotal = rowDiscountTotal + extraDiscountAmount;
   const netAmount = Math.max(0, subtotal - discountTotal);
   const taxAmount = (netAmount * Number(taxPercentage ?? 0)) / 100;
   const totalAmount = netAmount + taxAmount;
@@ -620,10 +623,15 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             <Input
               type="number"
               min="0"
-              icon={currencyIcon}
+              max="100"
+              icon={<CustomImage src={PercentIcon} alt="%" className="h-4 w-4 opacity-60" />}
               value={extraDiscountInput}
-              onChange={(e) => setExtraDiscountInput(e.target.value)}
-              placeholder={t('invoices.chooseDiscount')}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (Number(val) > 100) return;
+                setExtraDiscountInput(val);
+              }}
+              placeholder="0 – 100"
             />
           </FormField>
 
