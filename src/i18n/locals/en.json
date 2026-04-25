@@ -478,6 +478,8 @@
     "enterFacilityNameEn": "Enter facility name in English",
     "images": "Images",
     "schoolImages": "School Images",
+    "branchLogo": "Branch Logo",
+    "uploadLogo": "Upload Logo",
     "certificates": "Certificates",
     "schoolAdded": "School has been added successfully",
     "addData": "Add Data",
