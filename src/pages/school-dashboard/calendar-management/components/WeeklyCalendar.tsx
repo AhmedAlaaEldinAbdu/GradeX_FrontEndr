@@ -316,10 +316,19 @@ const getEventColor = (index: number): ScheduleEvent['color'] => {
 };
 
 const getEventPeriodRange = (
-  startTime: string,
+  startTime: string | null | undefined,
   duration: number
 ): { startPeriod: number; endPeriod: number } => {
-  const startTimeParsed = parseTimeString(startTime.split('T')[1] || startTime);
+  if (!startTime) {
+    return { startPeriod: 0, endPeriod: 0 };
+  }
+
+  const timeOnly = startTime.includes('T') ? startTime.split('T')[1] : startTime;
+  if (!timeOnly) {
+    return { startPeriod: 0, endPeriod: 0 };
+  }
+
+  const startTimeParsed = parseTimeString(timeOnly);
 
   const startPeriod = getPeriodIndexFromTime(startTimeParsed.hours, startTimeParsed.minutes);
 
@@ -344,6 +353,11 @@ const transformEventsForWeek = (
   const weekEnd = addDays(weekStart, 6);
 
   apiEvents.forEach((event, index) => {
+    // Skip events with missing required fields
+    if (!event.day || !event.startTime) {
+      return;
+    }
+
     // Parse the event day
     const eventDate = parseISO(event.day);
     const eventDayStart = startOfDay(eventDate);
@@ -364,7 +378,7 @@ const transformEventsForWeek = (
     const dayIndex = getDayIndexFromDate(eventDate);
 
     // Get period range from start time and duration
-    const { startPeriod, endPeriod } = getEventPeriodRange(event.startTime, event.duration);
+    const { startPeriod, endPeriod } = getEventPeriodRange(event.startTime, event.duration ?? 0);
 
     // Get title based on language
     const title = lang === 'ar' ? event.nameAr : event.nameEn || event.nameAr;
