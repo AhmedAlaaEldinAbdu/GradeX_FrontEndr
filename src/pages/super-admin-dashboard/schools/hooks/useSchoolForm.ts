@@ -12,12 +12,14 @@ interface FileState {
   license: File[];
   image: File[];
   certificate: File[];
+  logo: File[];
 }
 
 interface FileErrors {
   license?: string;
   image?: string;
   certificate?: string;
+  logo?: string;
 }
 
 interface UseSchoolFormReturn {
@@ -43,6 +45,7 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
     license: [],
     image: [],
     certificate: [],
+    logo: [],
   });
 
   const [fileErrors, setFileErrors] = useState<FileErrors>({});
@@ -100,6 +103,20 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
       const uploadedFiles = Array.from(e.target.files);
       const validFiles: File[] = [];
 
+      // Image-only types
+      const imageOnlyTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/jpg',
+        'image/svg+xml',
+        'image/webp',
+      ];
+      // Types that also allow PDFs
+      const allowedTypes =
+        type === 'logo' || type === 'image'
+          ? imageOnlyTypes
+          : [...imageOnlyTypes, 'application/pdf'];
+
       uploadedFiles.forEach((file) => {
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
@@ -108,13 +125,6 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
         }
 
         // Validate file type
-        const allowedTypes = [
-          'image/jpeg',
-          'image/png',
-          'image/jpg',
-          'application/pdf',
-          'image/svg+xml',
-        ];
         if (!allowedTypes.includes(file.type)) {
           console.error('Invalid file type:', file.name);
           return;
@@ -124,7 +134,11 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
       });
 
       if (validFiles.length > 0) {
-        setFiles((prev) => ({ ...prev, [type]: [...prev[type], ...validFiles] }));
+        setFiles((prev) => ({
+          ...prev,
+          // Logo is single-file: replace instead of append
+          [type]: type === 'logo' ? [validFiles[0]] : [...(prev[type] ?? []), ...validFiles],
+        }));
 
         // Clear error for this file when uploaded
         setFileErrors((prev) => {
@@ -146,7 +160,7 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
     if (index !== undefined) {
       setFiles((prev) => ({
         ...prev,
-        [type]: prev[type].filter((_, i) => i !== index),
+        [type]: (prev[type] ?? []).filter((_, i) => i !== index),
       }));
     } else {
       setFiles((prev) => ({ ...prev, [type]: [] }));
@@ -201,7 +215,7 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
    */
   const resetForm = () => {
     form.reset(initialSchoolFormData);
-    setFiles({ license: [], image: [], certificate: [] });
+    setFiles({ license: [], image: [], certificate: [], logo: [] });
     setFileErrors({});
   };
 
