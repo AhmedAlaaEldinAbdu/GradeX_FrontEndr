@@ -41,14 +41,9 @@ export interface AcademicCalendarEntity {
   schoolBrancheId?: string;
   schoolBranchId?: string;
 
-  // Newer backend fields
-  gradeId?: string;
+  gradeId: string;
   gradeNameAr?: string | null;
   gradeNameEn?: string | null;
-
-  lkSchoolStageId: string;
-  lkSchoolStageNameAr?: string | null;
-  lkSchoolStageNameEn?: string | null;
   studyStartDate: string;
   studyEndDate: string;
   topicAr?: string | null;
