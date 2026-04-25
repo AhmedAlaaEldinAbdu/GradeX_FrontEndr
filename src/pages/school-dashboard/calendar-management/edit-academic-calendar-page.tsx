@@ -174,7 +174,7 @@ const mapApiEntityToFormInitialValues = (
   const breakfasts = mapTimed(entity.breakfasts);
 
   return {
-    educationalStageId: entity.lkSchoolStageId ?? '',
+    educationalStageId: entity.gradeId ?? '',
     studyStartDate: entity.studyStartDate ? entity.studyStartDate.slice(0, 10) : '',
     studyEndDate: entity.studyEndDate ? entity.studyEndDate.slice(0, 10) : '',
     weeksCount: entity.weeksCount ?? '',
