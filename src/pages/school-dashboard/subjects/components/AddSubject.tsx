@@ -67,7 +67,7 @@ export default function AddSubject() {
 
   const onSubmit = async (data: AddSubjectProps) => {
     try {
-      const results = await Promise.all(
+      await Promise.all(
         data.subjects.map((subject) =>
           dispatch(
             addSubject({
@@ -77,45 +77,21 @@ export default function AddSubject() {
               gradeIds: data.gradeIds,
               schoolBranchesId,
             })
-          )
-            .unwrap()
-            .then((res: any) => {
-              if (res.isSuccess || res === true) {
-                setShowPopupMessage({
-                  show: true,
-                  type: 'success',
-                  message: t('subjects.subjectsAddedSuccessfully'),
-                });
-                return true;
-              } else {
-                setShowPopupMessage({
-                  show: true,
-                  type: 'error',
-                  message: t('common.errorOccurred'),
-                });
-                return false;
-              }
-            })
-            .catch(() => {
-              setShowPopupMessage({
-                show: true,
-                type: 'error',
-                message: t('common.errorOccurred'),
-              });
-              return false;
-            })
+          ).unwrap()
         )
       );
 
-      // If all subjects were added successfully, navigate back
-      if (results.every((res) => res === true)) {
-        navigate(-1);
-      }
-    } catch {
+      setShowPopupMessage({
+        show: true,
+        type: 'success',
+        message: t('subjects.subjectsAddedSuccessfully'),
+      });
+    } catch (error) {
+      const errorMessage = typeof error === 'string' ? error : t('common.errorOccurred');
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: t('common.errorOccurred'),
+        message: errorMessage,
       });
     }
   };
