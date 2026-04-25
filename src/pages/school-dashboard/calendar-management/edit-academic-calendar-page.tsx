@@ -26,7 +26,7 @@ import type {
   CreateAcademicCalendarRequest,
   UpdateAcademicCalendarRequest,
 } from '@/services/api/types/academic-calendar.types';
-import { tokenManager } from '@gradex/lib/auth/token-manager';
+import { getCurrentSchoolBranchId } from '@gradex/lib/auth/token-manager';
 
 type DayKey = AcademicCalendarScheduleItem['days'][number];
 
@@ -200,8 +200,7 @@ export default function EditAcademicCalendarPage() {
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
-  const schoolBranchId =
-    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const { currentCalendar, isLoading } = useAppSelector((state) => state.academicCalendar);
 
