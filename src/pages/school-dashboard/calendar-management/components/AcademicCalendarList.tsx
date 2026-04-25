@@ -97,10 +97,10 @@ export default function AcademicCalendarList() {
 
   const tableRows = useMemo<AcademicCalendarRow[]>(() => {
     return (calendars || []).map((calendar) => {
-      const gradeId = calendar.gradeId ?? calendar.lkSchoolStageId;
+      const gradeId = calendar.gradeId;
       const grade = gradeNameById.get(gradeId);
-      const apiGradeNameAr = (calendar.gradeNameAr ?? calendar.lkSchoolStageNameAr) || undefined;
-      const apiGradeNameEn = (calendar.gradeNameEn ?? calendar.lkSchoolStageNameEn) || undefined;
+      const apiGradeNameAr = calendar.gradeNameAr || undefined;
+      const apiGradeNameEn = calendar.gradeNameEn || undefined;
 
       return {
         id: calendar.id,
