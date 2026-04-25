@@ -91,7 +91,7 @@ const mapTimedGroup = (
 const mapFormValuesToCreateRequest = (
   values: AcademicCalendarFormValues,
   schoolBrancheId: string,
-  lkSchoolStageId: string
+  gradeId: string
 ): CreateAcademicCalendarRequest => {
   const daySchedules: AcademicCalendarDaySchedule[] = (values.schoolDaySchedules || []).map(
     (item) => ({
@@ -103,7 +103,7 @@ const mapFormValuesToCreateRequest = (
 
   return {
     schoolBrancheId,
-    lkSchoolStageId,
+    gradeId,
     studyStartDate: normalizeDateToApi(values.studyStartDate),
     studyEndDate: normalizeDateToApi(values.studyEndDate),
     weeksCount: values.weeksCount === '' ? 0 : Number(values.weeksCount),
@@ -118,10 +118,10 @@ const mapFormValuesToCreateRequest = (
 const mapFormValuesToUpdateRequest = (
   values: AcademicCalendarFormValues,
   schoolBrancheId: string,
-  lkSchoolStageId: string,
+  gradeId: string,
   id: string
 ): UpdateAcademicCalendarRequest => {
-  const createReq = mapFormValuesToCreateRequest(values, schoolBrancheId, lkSchoolStageId);
+  const createReq = mapFormValuesToCreateRequest(values, schoolBrancheId, gradeId);
   return {
     ...createReq,
     id,
@@ -251,7 +251,7 @@ export default function EditAcademicCalendarPage() {
                 return;
               }
 
-              const stageId = values.educationalStageId || currentCalendar.lkSchoolStageId;
+              const stageId = values.educationalStageId || currentCalendar.gradeId;
               const req = mapFormValuesToUpdateRequest(
                 values,
                 schoolBranchId,

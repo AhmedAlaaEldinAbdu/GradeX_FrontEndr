@@ -55,8 +55,8 @@ const mapFormValuesToCreateRequests = (
   values: AcademicCalendarFormValues,
   schoolBrancheId: string
 ): CreateAcademicCalendarRequest[] => {
-  const lkSchoolStageId = values.educationalStageId;
-  if (!lkSchoolStageId) return [];
+  const gradeId = values.educationalStageId;
+  if (!gradeId) return [];
 
   const daySchedules: AcademicCalendarDaySchedule[] = (values.schoolDaySchedules || []).map(
     (item) => ({
@@ -69,7 +69,7 @@ const mapFormValuesToCreateRequests = (
   return [
     {
       schoolBrancheId,
-      lkSchoolStageId,
+      gradeId,
       studyStartDate: normalizeDateToApi(values.studyStartDate),
       studyEndDate: normalizeDateToApi(values.studyEndDate),
       weeksCount: values.weeksCount === '' ? 0 : Number(values.weeksCount),

@@ -91,7 +91,7 @@ export interface AcademicCalendarQueryParams {
 
 export interface CreateAcademicCalendarRequest {
   schoolBrancheId: string;
-  lkSchoolStageId: string;
+  gradeId: string;
   studyStartDate: string;
   studyEndDate: string;
   weeksCount: number;
