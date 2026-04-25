@@ -18,7 +18,7 @@ export type { ExistingImageAttachment };
 interface ExistingImageAttachment {
   id?: string;
   attachmentFile: string;
-  name?: string;
+  name: string;
 }
 
 interface BranchData {
@@ -131,37 +131,6 @@ function appendLicenseAttachments(formData: FormData, files: FileAttachments): v
   files.license.forEach((file, index) => {
     formData.append(`LicensesAttachments[${index}].attachmentFile`, file);
     formData.append(`LicensesAttachments[${index}].attachmentName`, file.name || 'School Logo');
-  });
-}
-
-function appendSchoolImageAttachments(
-  formData: FormData,
-  files: FileAttachments,
-  existingSchoolImageFiles?: string[]
-): void {
-  const existing = (existingSchoolImageFiles || []).filter(
-    (value) => typeof value === 'string' && value.trim().length > 0
-  );
-  const newFiles = files.image || [];
-
-  if (existing.length === 0 && newFiles.length === 0) return;
-
-  let index = 0;
-
-  // Keep existing attachments by sending their paths/values back
-  existing.forEach((filePath) => {
-    const prefix = `schoolImageAttachmentsDto[${index}]`;
-    formData.append(`${prefix}.attachmentFile`, filePath);
-    formData.append(`${prefix}.name`, 'schoolImage');
-    index++;
-  });
-
-  // Add newly uploaded files
-  newFiles.forEach((file) => {
-    const prefix = `schoolImageAttachmentsDto[${index}]`;
-    formData.append(`${prefix}.attachmentFile`, file);
-    formData.append(`${prefix}.name`, 'schoolImage');
-    index++;
   });
 }
 
@@ -672,7 +641,7 @@ export function transformBackendSchoolToForm(
     [];
   const imageFiles: ExistingImageAttachment[] = rawImageAttachments
     .filter((a) => typeof a.attachmentFile === 'string' && a.attachmentFile.trim().length > 0)
-    .map((a) => ({ id: a.id, attachmentFile: a.attachmentFile, name: a.name }));
+    .map((a) => ({ id: a.id, attachmentFile: a.attachmentFile, name: a.name ?? 'schoolImage' }));
 
   // Extract logo URL from main branch
   const logoFile = data.schoolBranches?.[0]?.logo || '';
@@ -853,7 +822,11 @@ export function transformBackendSchoolToForm(
             existingSchoolImages:
               (branch.schoolImageAttachments ?? branch.schoolImageAttachmentsDto)
                 ?.filter((a) => a.attachmentFile)
-                .map((a) => ({ id: a.id, attachmentFile: a.attachmentFile, name: a.name })) ?? [],
+                .map((a) => ({
+                  id: a.id,
+                  attachmentFile: a.attachmentFile,
+                  name: a.name ?? 'schoolImage',
+                })) ?? [],
           }))
         : [],
   };
