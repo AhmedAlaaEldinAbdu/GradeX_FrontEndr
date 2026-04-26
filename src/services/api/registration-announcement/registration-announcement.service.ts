@@ -1,9 +1,10 @@
 import { axiosClient } from '@/lib/http';
 import type {
-  GetRegistrationAdvertisementsResponse,
-  CreateRegistrationAdvertisementRequest,
-  UpdateRegistrationAdvertisementRequest,
-  RegistrationAdvertisementQueryParams,
+  GetRegistrationAnnouncementsResponse,
+  GetRegistrationAnnouncementByIdResponse,
+  CreateRegistrationAnnouncementRequest,
+  UpdateRegistrationAnnouncementRequest,
+  RegistrationAnnouncementQueryParams,
 } from './registration-announcement.types';
 
 export const registrationAnnouncementApi = {
@@ -14,58 +15,56 @@ export const registrationAnnouncementApi = {
     status,
     startDate,
     endDate,
-    SchoolBranchesId,
-  }: RegistrationAdvertisementQueryParams = {}) => {
-    const response = await axiosClient.get<GetRegistrationAdvertisementsResponse>(
-      '/RegistrationAdvertisement',
+    schoolBranchId,
+  }: RegistrationAnnouncementQueryParams = {}) => {
+    const response = await axiosClient.get<GetRegistrationAnnouncementsResponse>(
+      '/RegistrationAnouncement',
       {
         params: {
-          pageIndex,
-          pageSize,
+          PageIndex: pageIndex,
+          PageSize: pageSize,
           SearchTerm: searchTerm || undefined,
           Status: status || undefined,
           StartDate: startDate || undefined,
           EndDate: endDate || undefined,
-          SchoolBranchesId: SchoolBranchesId || undefined,
+          SchoolBranchId: schoolBranchId || undefined,
         },
       }
     );
     return response.data;
   },
 
-  create: async (data: CreateRegistrationAdvertisementRequest) => {
-    const response = await axiosClient.post('/RegistrationAdvertisement', data);
+  create: async (data: CreateRegistrationAnnouncementRequest) => {
+    const response = await axiosClient.post('/RegistrationAnouncement', data);
     return response.data;
   },
 
   getById: async (id: string) => {
-    const response = await axiosClient.get<GetRegistrationAdvertisementsResponse>(
-      `/RegistrationAdvertisement`,
-      {
-        params: { Id: id },
-      }
+    const response = await axiosClient.get<GetRegistrationAnnouncementByIdResponse>(
+      `/RegistrationAnouncement/${id}`
     );
     return response.data;
   },
 
-  update: async (data: UpdateRegistrationAdvertisementRequest) => {
+  update: async (data: UpdateRegistrationAnnouncementRequest) => {
     const response = await axiosClient.put(
-      `/RegistrationAdvertisement`,
+      `/RegistrationAnouncement`,
       {
-        lkSchoolStageIds: data.lkSchoolStageIds,
+        id: data.id,
+        gradeIds: data.gradeIds,
         startDate: data.startDate,
         endDate: data.endDate,
-        schoolBranchesId: data.schoolBranchesId,
-      },
-      {
-        params: { Id: data.id },
+        schoolBranchId: data.schoolBranchId,
+        registrationAnouncementStatus: data.registrationAnouncementStatus,
       }
     );
     return response.data;
   },
 
   delete: async (id: string) => {
-    const response = await axiosClient.delete(`/RegistrationAdvertisement/${id}`);
+    const response = await axiosClient.delete(`/RegistrationAnouncement`, {
+      params: { Id: id }
+    });
     return response.data;
   },
 };
