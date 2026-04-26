@@ -49,10 +49,14 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
   const selectedValues = isMulti ? (Array.isArray(value) ? value : []) : [];
   const selectedOption =
-    !isMulti && typeof value === 'string' ? options.find((opt) => opt.value === value) : null;
+    !isMulti && typeof value === 'string'
+      ? options.find((opt) => opt.value.toLowerCase() === value.toLowerCase())
+      : null;
 
   const selectedOptions = isMulti
-    ? options.filter((opt) => selectedValues.includes(opt.value))
+    ? options.filter((opt) =>
+        selectedValues.some((v) => v.toLowerCase() === opt.value.toLowerCase())
+      )
     : [];
 
   const filteredOptions = options.filter((option) =>
@@ -60,7 +64,13 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   );
 
   const availableOptions = isMulti
-    ? filteredOptions.filter((option) => !selectedValues.includes(option.value))
+    ? filteredOptions.filter(
+        (option) =>
+          !selectedValues.some((v) => v.toLowerCase() === option.value.toLowerCase()) &&
+          !selectedOptions.some(
+            (selOpt) => selOpt.label.toLowerCase() === option.label.toLowerCase()
+          )
+      )
     : filteredOptions;
 
   useEffect(() => {
@@ -102,7 +112,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const handleRemoveTag = (optionValue: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (isMulti && Array.isArray(value)) {
-      const newValues = value.filter((v) => v !== optionValue);
+      const newValues = value.filter((v) => v.toLowerCase() !== optionValue.toLowerCase());
       onChange(newValues);
     }
   };
@@ -118,7 +128,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`h-[40px] w-full ${isWrap ? 'text-nowrap' : "text-nowrap"} rounded-2xl border border-[#DDE0E0] text-sm font-normal focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`h-[40px] w-full ${isWrap ? 'text-nowrap' : 'text-nowrap'} rounded-2xl border border-[#DDE0E0] text-sm font-normal focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
           variant === 'ghost'
             ? 'min-h-[40px] border-0 bg-transparent px-4 py-2.5 font-normal text-[#3A3A3A] placeholder:text-[#646969] hover:bg-gray-50'
             : `min-h-[40px] w-full rounded-2xl border border-[#DDE0E0] bg-white px-3 py-2 text-sm font-normal focus:border-transparent focus:ring-2 focus:ring-green-500 ${
@@ -226,7 +236,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           >
             {availableOptions.length > 0 ? (
               availableOptions.map((option) => {
-                const isSelected = !isMulti && option.value === value;
+                const isSelected =
+                  !isMulti &&
+                  typeof value === 'string' &&
+                  option.value.toLowerCase() === value.toLowerCase();
 
                 return (
                   <button

@@ -4,12 +4,12 @@ import Card from '@gradex/shared/components/Card';
 import { useTranslation } from 'react-i18next';
 import IconButton from '@/shared/components/IconButton';
 import { registrationAnnouncementApi } from '@/services/api/registration-announcement/registration-announcement.service';
-import type {
-  RegistrationAdvertisementDto,
-  LkSchoolStageItem,
-} from '@/services/api/registration-announcement/registration-announcement.types';
+import type { RegistrationAnnouncementDto } from '@/services/api/registration-announcement/registration-announcement.types';
+import type { GradeDto } from '@/services/api/types/grades.types';
 import useLanguage from '@/hooks/useLanguage';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DeletePopup from '@/shared/popups/DeletePopup';
@@ -41,11 +41,20 @@ export default function RegistrationAnnouncement() {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { showToast } = useToast();
   const locale = isArabic ? 'ar' : 'en';
   const schoolBranchId = getCurrentSchoolBranchId();
 
-  const [announcements, setAnnouncements] = useState<RegistrationAdvertisementDto[]>([]);
+  const allGrades = useAppSelector((state) => state.grades.grades);
+
+  useEffect(() => {
+    if (schoolBranchId) {
+      dispatch(fetchGrades(schoolBranchId));
+    }
+  }, [dispatch, schoolBranchId]);
+
+  const [announcements, setAnnouncements] = useState<RegistrationAnnouncementDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -62,7 +71,7 @@ export default function RegistrationAnnouncement() {
     limit: 10,
     total: 0,
     totalPages: 0,
-    SchoolBranchesId: schoolBranchId,
+    schoolBranchId: schoolBranchId,
   });
 
   const requestParams = useMemo(
@@ -73,7 +82,7 @@ export default function RegistrationAnnouncement() {
       status: selectedStatus ? ANNOUNCEMENT_STATUS_VALUE[selectedStatus] : undefined,
       startDate: startDate || undefined,
       endDate: endDate || undefined,
-      SchoolBranchesId: schoolBranchId,
+      schoolBranchId: schoolBranchId,
     }),
     [
       endDate,
@@ -92,7 +101,7 @@ export default function RegistrationAnnouncement() {
       const response = await registrationAnnouncementApi.getAll(requestParams);
 
       if (response?.data) {
-        setAnnouncements(response.data.registrationAdvertisementDto || []);
+        setAnnouncements(response.data.registrationAnouncementDto || []);
         setPagination((prev) => ({
           ...prev,
           page: response.data.pageIndex,
@@ -145,12 +154,12 @@ export default function RegistrationAnnouncement() {
     }
   };
 
-  const getStatus = (announcement: RegistrationAdvertisementDto): AnnouncementStatus => {
-    if (announcement.status === ANNOUNCEMENT_STATUS_VALUE.valid) {
+  const getStatus = (announcement: RegistrationAnnouncementDto): AnnouncementStatus => {
+    if (announcement.registrationAnouncementStatus === ANNOUNCEMENT_STATUS_VALUE.valid) {
       return 'valid';
     }
 
-    if (announcement.status === ANNOUNCEMENT_STATUS_VALUE.expired) {
+    if (announcement.registrationAnouncementStatus === ANNOUNCEMENT_STATUS_VALUE.expired) {
       return 'expired';
     }
 
@@ -179,7 +188,7 @@ export default function RegistrationAnnouncement() {
     [announcements, pagination.total]
   );
 
-  const columns: DataTableColumn<RegistrationAdvertisementDto>[] = [
+  const columns: DataTableColumn<RegistrationAnnouncementDto>[] = [
     {
       header: '#',
       accessor: (_row, index = 0) => (
@@ -189,14 +198,14 @@ export default function RegistrationAnnouncement() {
       className: 'text-center',
     },
     {
-      header: 'registrationAnnouncement.educationalStage',
-      accessor: (row) => (
-        <span>
-          {(row.lkSchoolStages || [])
-            .map((s: LkSchoolStageItem) => (isArabic ? s.stageNameAr : s.stageNameEn))
-            .join(' - ')}
-        </span>
-      ),
+      header: 'registrationAnnouncement.gradesLabel',
+      accessor: (row) => {
+        const rowGrades = (row.gradeIds || [])
+          .map((id) => allGrades.find((g) => g.id.toLowerCase() === id.toLowerCase()))
+          .filter(Boolean) as GradeDto[];
+
+        return <span>{rowGrades.map((g) => (isArabic ? g.nameAr : g.nameEn)).join(' - ')}</span>;
+      },
       headerClassName: 'min-w-[220px]',
     },
     {
@@ -412,8 +421,10 @@ export default function RegistrationAnnouncement() {
           message="registrationAnnouncement.confirmDelete"
           itemName={
             selectedAnnouncement
-              ? (selectedAnnouncement.lkSchoolStages || [])
-                  .map((s) => (isArabic ? s.stageNameAr : s.stageNameEn))
+              ? (selectedAnnouncement.gradeIds || [])
+                  .map((id) => allGrades.find((g) => g.id.toLowerCase() === id.toLowerCase()))
+                  .filter(Boolean)
+                  .map((g) => (isArabic ? g?.nameAr : g?.nameEn))
                   .join(' - ')
               : ''
           }

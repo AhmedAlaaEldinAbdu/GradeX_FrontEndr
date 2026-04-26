@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 export const RegistrationAnnouncementSchema = yup.object().shape({
-  lkSchoolStageIds: yup
+  gradeIds: yup
     .array()
     .of(yup.string().required())
     .min(1, 'common.validation.required')

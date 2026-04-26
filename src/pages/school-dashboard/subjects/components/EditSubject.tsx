@@ -123,29 +123,19 @@ export default function EditSubject() {
             schoolBranchesId,
           },
         })
-      )
-        .unwrap()
-        .then((res: any) => {
-          if (res.isSuccess || res === true) {
-            setShowPopupMessage({
-              show: true,
-              type: 'success',
-              message: t('subjects.subjectUpdatedSuccessfully'),
-            });
-            navigate(-1);
-          } else {
-            setShowPopupMessage({
-              show: true,
-              type: 'error',
-              message: t('common.errorOccurred'),
-            });
-          }
-        });
-    } catch {
+      ).unwrap();
+
+      setShowPopupMessage({
+        show: true,
+        type: 'success',
+        message: t('subjects.subjectUpdatedSuccessfully'),
+      });
+    } catch (error) {
+      const errorMessage = typeof error === 'string' ? error : t('common.errorOccurred');
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: t('common.errorOccurred'),
+        message: errorMessage,
       });
     }
   };

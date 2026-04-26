@@ -1,21 +1,15 @@
-export interface LkSchoolStageItem {
-  lkSchoolStageId: string;
-  stageNameAr: string;
-  stageNameEn: string;
-}
-
-export interface RegistrationAdvertisementDto {
+export interface RegistrationAnnouncementDto {
   id: string;
   startDate: string;
   endDate: string;
-  schoolBranchesId: string;
-  status: number;
-  lkSchoolStages: LkSchoolStageItem[];
+  schoolBranchId: string;
+  registrationAnouncementStatus: number;
+  gradeIds: string[];
 }
 
-export interface GetRegistrationAdvertisementsResponse {
+export interface GetRegistrationAnnouncementsResponse {
   data: {
-    registrationAdvertisementDto: RegistrationAdvertisementDto[];
+    registrationAnouncementDto: RegistrationAnnouncementDto[];
     pageIndex: number;
     totalPages: number;
     totalItems: number;
@@ -26,24 +20,32 @@ export interface GetRegistrationAdvertisementsResponse {
   validationErrors: null;
 }
 
-export interface RegistrationAdvertisementQueryParams {
+export interface GetRegistrationAnnouncementByIdResponse {
+  data: RegistrationAnnouncementDto;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: null;
+}
+
+export interface RegistrationAnnouncementQueryParams {
   pageIndex?: number;
   pageSize?: number;
   searchTerm?: string;
   status?: number;
   startDate?: string;
   endDate?: string;
-  SchoolBranchesId?: string;
+  schoolBranchId?: string;
 }
 
-export interface CreateRegistrationAdvertisementRequest {
-  lkSchoolStageIds: string[];
+export interface CreateRegistrationAnnouncementRequest {
+  gradeIds: string[];
   startDate: string;
   endDate: string;
-  schoolBranchesId?: string;
+  schoolBranchId?: string;
 }
 
-export interface UpdateRegistrationAdvertisementRequest
-  extends CreateRegistrationAdvertisementRequest {
+export interface UpdateRegistrationAnnouncementRequest
+  extends CreateRegistrationAnnouncementRequest {
   id: string;
+  registrationAnouncementStatus: number;
 }
