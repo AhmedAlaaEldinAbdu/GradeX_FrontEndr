@@ -6,7 +6,7 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
-import BookIcon from '@gradex/assets/icons/Book.svg';
+import BooksBadgeIcon from '@gradex/assets/icons/BooksBadge.svg';
 import FileViewer from '@/shared/components/FileViewer';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -194,7 +194,7 @@ export default function BooksList() {
             title={row.filePath ? t('books.openBook') : t('books.noBookFile')}
           >
             <CustomImage
-              src={BookIcon}
+              src={BooksBadgeIcon}
               alt={row.name}
               className={`h-6 w-6 ${row.filePath ? 'opacity-100' : 'opacity-50'}`}
             />
@@ -393,8 +393,8 @@ export default function BooksList() {
       </div>
 
       <Card>
-        {shouldShowEmptyState ? (
-          <EmptyState imgSrc={BookIcon} description={t('books.noBooksMessage')} blend={true} />
+        {!shouldShowEmptyState ? (
+          <EmptyState imgSrc={BooksBadgeIcon} description={t('books.noBooksMessage')} blend={true} />
         ) : shouldShowContent ? (
           <div>
             <DataTable
