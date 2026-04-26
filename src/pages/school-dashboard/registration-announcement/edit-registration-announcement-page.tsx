@@ -23,11 +23,8 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
         setIsLoading(true);
         setError(null);
         const response = await registrationAnnouncementApi.getById(id);
-        if (response.isSuccess && response.data && response.data.registrationAdvertisementDto) {
-          // Find the announcement with the matching ID, or take the first one if exact match is expected
-          const announcement =
-            response.data.registrationAdvertisementDto.find((item: any) => item.id === id) ||
-            response.data.registrationAdvertisementDto[0];
+        if (response.isSuccess && response.data) {
+          const announcement = response.data;
 
           if (!announcement) {
             setError(t('common.noDataFound'));
@@ -47,10 +44,7 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
           };
 
           const values = {
-            lkSchoolStageIds:
-              announcement.lkSchoolStages?.map(
-                (s: { lkSchoolStageId: string }) => s.lkSchoolStageId
-              ) || [],
+            gradeIds: announcement.gradeIds || [],
             startDate: formatDateTime(announcement.startDate),
             endDate: formatDateTime(announcement.endDate),
           };
