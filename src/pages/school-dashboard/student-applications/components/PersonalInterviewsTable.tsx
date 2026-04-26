@@ -318,21 +318,6 @@ const PersonalInterviewsTable: React.FC = () => {
           >
             {row.studentName || (isArabic ? row.nameAr : row.nameEn)}
           </span>
-          <IconButton
-            variant="blue"
-            ariaLabel="View"
-            onClick={() => {
-              const studentName = row.studentName || (isArabic ? row.nameAr : row.nameEn) || '';
-              if (studentName) {
-                navigate(`/student-interviews?StudentName=${encodeURIComponent(studentName)}`);
-              } else {
-                navigate('/student-interviews');
-              }
-            }}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
-          >
-            <CustomImage src={EyeStyledIcon} className="h-5 w-5" alt="View" />
-          </IconButton>
         </div>
       ),
       headerClassName: 'min-w-[200px]',
