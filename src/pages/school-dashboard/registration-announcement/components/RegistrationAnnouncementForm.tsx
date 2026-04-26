@@ -9,7 +9,7 @@ import Button from '@/shared/components/Button';
 import CustomSelect from '@/shared/components/CustomSelect';
 import FormField from '@/shared/components/FormField';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { getLKSchoolStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import {
   RegistrationAnnouncementSchema,
   type RegistrationAnnouncementProps,
@@ -25,6 +25,30 @@ interface RegistrationAnnouncementFormProps {
   isEditMode?: boolean;
   registrationId?: string;
 }
+
+const normalizeGradeIds = (
+  gradeIds: unknown
+): RegistrationAnnouncementProps['gradeIds'] => {
+  if (!Array.isArray(gradeIds)) return [];
+
+  return gradeIds
+    .map((grade) => {
+      if (typeof grade === 'string') return grade;
+      if (grade && typeof grade === 'object') {
+        const gradeId =
+          'id' in grade && typeof grade.id === 'string'
+            ? grade.id
+            : 'value' in grade && typeof grade.value === 'string'
+              ? grade.value
+              : '';
+
+        return gradeId;
+      }
+
+      return '';
+    })
+    .filter(Boolean);
+};
 
 const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> = ({
   initialValues,
@@ -43,40 +67,61 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
-  const educationalStages = useAppSelector((state) => state.educationalStages.lkEducationalStages);
-  const isLoadingEducationalStages = useAppSelector((state) => state.educationalStages.isLoading);
+  const grades = useAppSelector((state) => state.grades.grades);
+  const isLoadingGrades = useAppSelector((state) => state.grades.isLoading);
 
   useEffect(() => {
-    dispatch(getLKSchoolStages());
-  }, [dispatch]);
+    if (schoolBranchesId) {
+      dispatch(fetchGrades(schoolBranchesId));
+    }
+  }, [dispatch, schoolBranchesId]);
+
+  const gradeOptions = React.useMemo(() => {
+    if (!Array.isArray(grades)) return [];
+    return grades.map((grade) => ({
+      value: grade.id,
+      label: currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr,
+    }));
+  }, [grades, currentLang]);
 
   const {
     control,
     handleSubmit,
+    reset,
     watch,
     formState: { errors },
   } = useForm<RegistrationAnnouncementProps>({
     resolver: yupResolver(RegistrationAnnouncementSchema),
     defaultValues: {
-      lkSchoolStageIds: initialValues?.lkSchoolStageIds || [],
+      gradeIds: normalizeGradeIds(initialValues?.gradeIds),
       startDate: initialValues?.startDate || '',
       endDate: initialValues?.endDate || '',
     },
   });
+
+  useEffect(() => {
+    reset({
+      gradeIds: normalizeGradeIds(initialValues?.gradeIds),
+      startDate: initialValues?.startDate || '',
+      endDate: initialValues?.endDate || '',
+    });
+  }, [initialValues, reset]);
 
   const startDate = watch('startDate');
   const endDate = watch('endDate');
 
   const handleFormSubmit = async (data: RegistrationAnnouncementProps) => {
     setIsSubmitting(true);
+    const normalizedGradeIds = normalizeGradeIds(data.gradeIds);
     try {
       if (isEditMode && registrationId) {
         await registrationAnnouncementApi.update({
           id: registrationId,
-          lkSchoolStageIds: data.lkSchoolStageIds,
+          gradeIds: normalizedGradeIds,
           startDate: new Date(data.startDate).toISOString(),
           endDate: new Date(data.endDate).toISOString(),
-          schoolBranchesId,
+          schoolBranchId: schoolBranchesId,
+          registrationAnouncementStatus: 1, // Status needs to be 1 for update based on requirement
         });
 
         setShowPopupMessage({
@@ -86,10 +131,10 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
         });
       } else {
         await registrationAnnouncementApi.create({
-          lkSchoolStageIds: data.lkSchoolStageIds,
+          gradeIds: normalizedGradeIds,
           startDate: new Date(data.startDate).toISOString(),
           endDate: new Date(data.endDate).toISOString(),
-          schoolBranchesId,
+          schoolBranchId: schoolBranchesId,
         });
 
         setShowPopupMessage({
@@ -119,36 +164,30 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="space-y-6">
-        {/* Educational Stage (Multi Select) */}
+        {/* Grades (Multi Select) */}
         <FormField
-          label={t('registrationAnnouncement.educationalStagesLabel')}
+          label={t('registrationAnnouncement.gradesLabel', 'Grades')} // You might want to add translations or just use existing
           required
-          error={errors.lkSchoolStageIds?.message && t(errors.lkSchoolStageIds.message)}
-          htmlFor="lkSchoolStageIds"
+          error={errors.gradeIds?.message && t(errors.gradeIds.message)}
+          htmlFor="gradeIds"
         >
           <Controller
-            name="lkSchoolStageIds"
+            name="gradeIds"
             control={control}
             render={({ field }) => (
               <CustomSelect
-                value={field.value as string[]}
+                value={normalizeGradeIds(field.value)}
                 onChange={(value) => field.onChange(value)}
-                options={
-                  Array.isArray(educationalStages)
-                    ? educationalStages.map((stage) => ({
-                        value: stage?.id || '',
-                        label: currentLang === 'ar' ? stage?.nameAR || '' : stage?.nameEN || '',
-                      }))
-                    : []
-                }
+                options={gradeOptions}
                 placeholder={
-                  isLoadingEducationalStages
+                  isLoadingGrades
                     ? t('common.loading')
-                    : t('registrationAnnouncement.selectEducationalStages')
+                    : t('registrationAnnouncement.selectGrades', 'Select Grades')
                 }
-                disabled={isLoadingEducationalStages}
-                error={!!errors.lkSchoolStageIds}
+                disabled={isLoadingGrades}
+                error={!!errors.gradeIds}
                 isMulti={true}
+                id="gradeIds"
               />
             )}
           />
