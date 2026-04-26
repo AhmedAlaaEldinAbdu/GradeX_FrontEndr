@@ -5,7 +5,7 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
-import BookIcon from '@gradex/assets/icons/Book.svg';
+import BookBadgeIcon from '@gradex/assets/icons/BookBadge.svg';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -285,7 +285,7 @@ export default function SubjectsList() {
       <Card>
         {shouldShowEmptyState ? (
           <EmptyState
-            imgSrc={BookIcon}
+            imgSrc={BookBadgeIcon}
             description={t('subjects.noSubjectsMessage')}
             blend={true}
           />

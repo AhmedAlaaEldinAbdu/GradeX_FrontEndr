@@ -7,7 +7,7 @@ export default function AddClassroomPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
-    { label: t('sidebar.educationalStages') },
+    { label: t('sidebar.eduStages') },
     { label: t('grades.title'), path: '/classrooms' },
     { label: t('grades.addGrade') },
   ];

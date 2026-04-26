@@ -148,7 +148,7 @@ const getSchoolAdminMenuItems = (): MenuItem[] => [
     path: '/dashboard',
   },
   {
-    key: 'educationalStages',
+    key: 'eduStages',
     icon: <CustomImage src={EducationIcon} className="h-6 w-6" alt="Education" />,
     subItems: [
       {
