@@ -608,6 +608,8 @@
     "editPageTitle": "Edit Registration Announcement",
     "educationalStagesLabel": "Educational Stages",
     "selectEducationalStages": "Select educational stages",
+    "gradesLabel": "Grades",
+    "selectGrades": "Select grades",
     "startDateLabel": "Registration Start Date",
     "endDateLabel": "Registration End Date",
     "chooseStartDate": "Select start date",
