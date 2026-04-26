@@ -996,6 +996,7 @@
     "title": "Stages & Classrooms",
     "subtitle": "Manage academic grades",
     "addGrade": "Add Grade",
+    "addClassroom": "Add Classroom",
     "addGradeSubtitle": "Add new grade(s) to the system",
     "editGrade": "Edit Grade",
     "editGradeSubtitle": "Update grade information",

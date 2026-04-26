@@ -80,7 +80,7 @@ export default function ClassroomDetailsPage() {
           title={classroomTitle || 'grades.classroomDetails'}
           actions={[
             {
-              label: 'grades.addGrade',
+              label: 'grades.addClassroom',
               to: '/classrooms/add-classroom',
               imgSrc: PlusIcon,
               imgClassName: 'h-6 w-6',
