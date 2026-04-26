@@ -134,6 +134,7 @@ export default function SharedCalendar({
       value: Date;
       children?: React.ReactNode;
     }) {
+      const isAddActionHidden = addAction?.hidden?.(value) ?? false;
       const hasEvents = condensedEvents.some((event) => {
         const ed = new Date(event.start);
         return (
@@ -143,7 +144,7 @@ export default function SharedCalendar({
         );
       });
 
-      if (hasEvents || !addAction) {
+      if (hasEvents || !addAction || isAddActionHidden) {
         return <div className="custom-date-cell-wrapper">{children}</div>;
       }
 

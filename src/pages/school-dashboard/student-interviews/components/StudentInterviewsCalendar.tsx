@@ -72,6 +72,20 @@ export default function StudentInterviewsCalendar() {
   const [interviewIdPendingDelete, setInterviewIdPendingDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const isPastDate = useCallback((date?: Date) => {
+    if (!date) {
+      return false;
+    }
+
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return targetDate < today;
+  }, []);
+
   const fetchStudentInterviewsData = useCallback(async () => {
     const trimmedSearch = searchTerm.trim();
     const schoolBranchId = getCurrentSchoolBranchId();
@@ -409,6 +423,7 @@ export default function StudentInterviewsCalendar() {
       icon: GreenPlusIcon,
       onClick: (date) => handleOpenAddPopup(date),
       color: 'green',
+      hidden: (date) => isPastDate(date),
     },
     {
       label: t('interviews.editInterview'),
@@ -427,7 +442,9 @@ export default function StudentInterviewsCalendar() {
       hidden: (_date, event) => {
         if (event) {
           const fullEvent = calendarStudentInterviews.find((e) => e.id === event.id);
-          return fullEvent ? hasMultipleInterviewsOnDay(fullEvent.start) : false;
+          return fullEvent
+            ? hasMultipleInterviewsOnDay(fullEvent.start) || isPastDate(fullEvent.start)
+            : false;
         }
         return false;
       },
@@ -449,7 +466,9 @@ export default function StudentInterviewsCalendar() {
       hidden: (_date, event) => {
         if (event) {
           const fullEvent = calendarStudentInterviews.find((e) => e.id === event.id);
-          return fullEvent ? hasMultipleInterviewsOnDay(fullEvent.start) : false;
+          return fullEvent
+            ? hasMultipleInterviewsOnDay(fullEvent.start) || isPastDate(fullEvent.start)
+            : false;
         }
         return false;
       },
