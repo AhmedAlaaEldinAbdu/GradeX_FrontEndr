@@ -7,7 +7,7 @@ import BooksList from './components/BooksList';
 export default function BooksPage() {
   const { t } = useTranslation();
 
-  const breadcrumbItems = [{ label: t('sidebar.educationalStages') }, { label: t('books.title') }];
+  const breadcrumbItems = [{ label: t('sidebar.eduStages') }, { label: t('books.title') }];
 
   return (
     <div>

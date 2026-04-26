@@ -7,7 +7,7 @@ import ClassroomsList from './components/ClassroomsList';
 export default function ClassroomsPage() {
   const { t } = useTranslation();
 
-  const breadcrumbItems = [{ label: t('sidebar.educationalStages') }, { label: t('grades.title') }];
+  const breadcrumbItems = [{ label: t('sidebar.eduStages') }, { label: t('grades.title') }];
   // actions={[
   //           {
   //             label: 'grades.addGrade',

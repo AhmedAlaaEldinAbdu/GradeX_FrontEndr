@@ -24,7 +24,7 @@ export default function ClassroomRosterPage() {
   const classroomTitle = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
 
   const breadcrumbItems = [
-    { label: t('sidebar.educationalStages') },
+    { label: t('sidebar.eduStages') },
     { label: t('grades.title'), path: '/classrooms' },
     { label: classroomTitle || t('grades.classroomDetails') },
   ];
