@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
+import CustomImage from '@/shared/components/CustomImage';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import ProfileImage from '@gradex/assets/images/profile.png';
+import { useAppSelector } from '@/hooks/useRedux';
 import StudentsTab, { type StudentRow } from './StudentsTab';
 import TeacherTab, { type TeacherRow } from './TeacherTab';
 
@@ -12,6 +14,7 @@ type ClassroomRosterContentProps = {
 
 export default function ClassroomRosterContent({ currentLang }: ClassroomRosterContentProps) {
   const { t } = useTranslation();
+  const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
   const [activeTab, setActiveTab] = useState('students');
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
   const [teacherSearchTerm, setTeacherSearchTerm] = useState('');
@@ -19,6 +22,47 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
   const [studentPage, setStudentPage] = useState(1);
   const [teacherPage, setTeacherPage] = useState(1);
   const itemsPerPage = 6;
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+
+  const classroomImageSrc = currentClassroom?.imagePath
+    ? `${baseUrl}/${currentClassroom.imagePath}`
+    : undefined;
+  const classroomName = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
+  const classroomNote = currentLang === 'ar' ? currentClassroom?.note : currentClassroom?.noteEn;
+  const occupancyRate = Math.max(0, Math.min(100, currentClassroom?.studentNumber || 0));
+  const attendanceRate = Math.max(0, Math.min(100, occupancyRate + 5));
+  const formattedCreationDate = currentClassroom?.creationDate
+    ? new Intl.DateTimeFormat(currentLang === 'ar' ? 'ar-EG' : 'en-GB').format(
+        new Date(currentClassroom.creationDate)
+      )
+    : '-';
+
+  const classroomDetails = [
+    {
+      label: currentLang === 'ar' ? 'النظام التعليمي' : 'Academic System',
+      value: currentClassroom?.academicSystemName || '-',
+    },
+    {
+      label: currentLang === 'ar' ? 'المرحلة الدراسية' : 'Educational Stage',
+      value: currentClassroom?.gradeName || '-',
+    },
+    {
+      label: currentLang === 'ar' ? 'الصف الدراسي' : 'Grade',
+      value: currentClassroom?.gradeName || '-',
+    },
+    {
+      label: currentLang === 'ar' ? 'عدد الطلاب' : 'Students Count',
+      value: currentClassroom?.studentNumber ?? 0,
+    },
+    {
+      label: currentLang === 'ar' ? 'تاريخ الإضافة' : 'Creation Date',
+      value: formattedCreationDate,
+    },
+    {
+      label: currentLang === 'ar' ? 'ملاحظات عن الصف' : 'Classroom Notes',
+      value: classroomNote || (currentLang === 'ar' ? 'لا يوجد' : 'No notes'),
+    },
+  ];
 
   const studentRows = useMemo<StudentRow[]>(
     () => [
@@ -211,6 +255,58 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
 
   return (
     <div className="space-y-6">
+      <Card className="app-card-shadow rounded-[2rem] border border-[#E6F5EF] bg-white p-5">
+        <div className="rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
+          <div className="flex flex-col-reverse gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex items-center justify-between gap-4">
+              <div className="app-card-shadow h-[100px] w-[100px] overflow-hidden rounded-2xl border border-white bg-white">
+                {classroomImageSrc ? (
+                  <CustomImage
+                    src={classroomImageSrc}
+                    alt={classroomName || 'classroom'}
+                    className="h-full w-full rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-[#DDF7EC] text-center text-xs font-medium text-[#53A785]">
+                    {currentLang === 'ar' ? 'صورة الصف' : 'Classroom Image'}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2 text-start">
+                <div className="text-base font-medium text-black-900">
+                  {currentLang === 'ar' ? 'اسم الصف' : 'Classroom Name'}
+                </div>
+                <div className="text-sm font-normal text-[#646969]">{classroomName || '-'}</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:w-auto">
+              <div className="app-card-shadow rounded-3xl border border-black-100 bg-white px-8 py-4">
+                <div className="text-center text-sm font-normal text-[#646969]">
+                  {currentLang === 'ar' ? 'نسبة الحضور' : 'Attendance Rate'}
+                </div>
+                <div className="mt-4 text-base font-medium text-[#F8951B]">{attendanceRate}%</div>
+              </div>
+              <div className="app-card-shadow rounded-3xl border border-black-100 bg-white px-8 py-4">
+                <div className="text-center text-sm font-normal text-[#646969]">
+                  {currentLang === 'ar' ? 'نسبة الإشغال' : 'Occupancy Rate'}
+                </div>
+                <div className="mt-4 text-base font-medium text-[#1A9F58]">{occupancyRate}%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-x-12 gap-y-6 px-2 pt-6 md:grid-cols-2">
+          {classroomDetails.map((item) => (
+            <div key={item.label} className="flex items-center gap-4">
+              <span className="text-base font-medium text-[#3A3A3A]">{item.label}:</span>
+              <span className="text-sm font-normal text-[#3A3A3A]">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+
       <div className="text-start text-base font-medium text-[#3A3A3A]">
         {t('sidebar.teachingStaff')}
       </div>

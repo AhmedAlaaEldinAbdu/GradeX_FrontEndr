@@ -5,6 +5,8 @@ import Breadcrumb from '@/shared/layout/Breadcrumb';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassroomById } from '@/redux/features/classrooms/classroomsSlice';
 import ClassroomRosterContent from './components/ClassroomRosterContent';
+import Card from '@/shared/components/Card';
+import PageHeader from '@/shared/components/PageHeader';
 
 export default function ClassroomRosterPage() {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +34,7 @@ export default function ClassroomRosterPage() {
   return (
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
+      <PageHeader title={classroomTitle || 'grades.classroomDetails'} hasHeaderControls={true} />
       <ClassroomRosterContent currentLang={currentLang} />
     </div>
   );

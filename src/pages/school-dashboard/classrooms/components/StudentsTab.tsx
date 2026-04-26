@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable from '@/shared/components/DataTable';
-import NoteEditGreenIcon from '@gradex/assets/icons/NoteEditGreen.svg';
-import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
+import EditGreenIcon from '@gradex/assets/icons/EditGreen.svg';
+import EyeViewIcon from '@gradex/assets/icons/EyeView.svg';
 
 export type StudentRow = {
   id: string;
@@ -36,16 +36,19 @@ export default function StudentsTab({
   const { t } = useTranslation();
 
   const renderPersonCell = (name: string, imageSrc: string) => (
-    <div className="flex items-center justify-end gap-3">
-      <span className="text-base font-normal text-[#646969]">{name}</span>
-      <CustomImage src={imageSrc} alt={name} className="h-12 w-12 rounded-xl object-cover" />
+    <div className="flex w-[100%] items-center justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <CustomImage src={imageSrc} alt={name} className="h-11 w-11 rounded-lg object-cover" />
+        <span className="text-base font-normal text-[#646969]">{name}</span>
+      </div>
+      <div>{renderIconButton(EyeViewIcon, 'bg-blue-100', t('actions.view'))}</div>
     </div>
   );
 
   const renderIconButton = (icon: string, backgroundClassName: string, alt: string) => (
     <button
       type="button"
-      className={`flex h-12 w-12 items-center justify-center rounded-full ${backgroundClassName}`}
+      className={`flex h-10 w-10 items-center justify-center rounded-full ${backgroundClassName}`}
       aria-label={alt}
     >
       <CustomImage src={icon} alt={alt} className="h-6 w-6" />
@@ -63,18 +66,13 @@ export default function StudentsTab({
     {
       header: 'studentManagement.studentName',
       accessor: (row: StudentRow) => renderPersonCell(row.name, row.imageSrc),
-      headerClassName: 'min-w-[320px]',
-      className: 'min-w-[320px]',
+      headerClassName: 'min-w-[250px] text-start',
+      className: 'min-w-[250px]',
     },
-    {
-      header: '',
-      accessor: () => renderIconButton(EyeDarkBlueIcon, 'bg-[#E5F1FF]', t('actions.view')),
-      headerClassName: 'w-24',
-      className: 'w-24',
-    },
+
     {
       header: 'actions.actions',
-      accessor: () => renderIconButton(NoteEditGreenIcon, 'bg-[#E5F7F0]', t('actions.edit')),
+      accessor: () => renderIconButton(EditGreenIcon, 'bg-[#30B97E1A]', t('actions.edit')),
       headerClassName: 'min-w-[180px]',
       className: 'min-w-[180px]',
     },

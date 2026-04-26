@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable from '@/shared/components/DataTable';
-import NoteEditGreenIcon from '@gradex/assets/icons/NoteEditGreen.svg';
-import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
+import EditGreenIcon from '@gradex/assets/icons/EditGreen.svg';
+import EyeViewIcon from '@gradex/assets/icons/EyeView.svg';
 
 export type TeacherRow = {
   id: string;
@@ -49,9 +49,12 @@ export default function TeacherTab({
   const { t } = useTranslation();
 
   const renderPersonCell = (name: string, imageSrc: string) => (
-    <div className="flex items-center justify-end gap-3">
-      <span className="text-base font-normal text-[#646969]">{name}</span>
-      <CustomImage src={imageSrc} alt={name} className="h-12 w-12 rounded-xl object-cover" />
+    <div className="flex w-[100%] items-center justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <CustomImage src={imageSrc} alt={name} className="h-11 w-11 rounded-lg object-cover" />
+        <span className="text-base font-normal text-[#646969]">{name}</span>
+      </div>
+      <div>{renderIconButton(EyeViewIcon, 'bg-blue-100', t('actions.view'))}</div>
     </div>
   );
 
@@ -76,24 +79,18 @@ export default function TeacherTab({
     {
       header: 'teachers.teacherName',
       accessor: (row: TeacherRow) => renderPersonCell(row.name, row.imageSrc),
-      headerClassName: 'min-w-[320px]',
-      className: 'min-w-[320px]',
+      headerClassName: 'min-w-[250px] text-start',
+      className: 'min-w-[250px]',
     },
     {
       header: 'teachers.subjectName',
       accessor: (row: TeacherRow) => row.subject,
-      headerClassName: 'min-w-[220px]',
-      className: 'min-w-[220px]',
-    },
-    {
-      header: '',
-      accessor: () => renderIconButton(EyeDarkBlueIcon, 'bg-[#E5F1FF]', t('actions.view')),
-      headerClassName: 'w-24',
-      className: 'w-24',
+      headerClassName: 'min-w-[250px]',
+      className: 'min-w-[250px]',
     },
     {
       header: 'actions.actions',
-      accessor: () => renderIconButton(NoteEditGreenIcon, 'bg-[#E5F7F0]', t('actions.edit')),
+      accessor: () => renderIconButton(EditGreenIcon, 'bg-[#30B97E1A]', t('actions.edit')),
       headerClassName: 'min-w-[180px]',
       className: 'min-w-[180px]',
     },
