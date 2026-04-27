@@ -55,9 +55,10 @@ export default function EditSubject() {
     );
 
     subjectGrades.forEach((stage) => {
-      if (!gradeMap.has(stage.id)) {
-        gradeMap.set(stage.id, {
-          id: stage.id,
+      const targetId = stage.gradeId || stage.id;
+      if (!gradeMap.has(targetId)) {
+        gradeMap.set(targetId, {
+          id: targetId,
           nameAr: stage.nameAr,
           nameEn: stage.nameEn,
         });
@@ -103,7 +104,7 @@ export default function EditSubject() {
         name: currentSubject.name || '',
         nameEn: currentSubject.nameEn ?? '',
         materialLevel: String(currentSubject.materialLevel) || '',
-        gradeIds: currentSubject.schoolGrades?.map((stage) => stage.id) || [],
+        gradeIds: currentSubject.schoolGrades?.map((stage) => stage.gradeId || stage.id) || [],
       });
     }
   }, [currentSubject, reset]);
