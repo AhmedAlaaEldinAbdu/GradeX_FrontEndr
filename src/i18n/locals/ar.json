@@ -48,7 +48,19 @@
     "rolesPermissions": "الأدوار والصلاحيات",
     "systemUsers": "مستخدمي النظام",
     "messages": "الرسائل",
-    "employees": "الموظفين"
+    "employees": "الموظفين",
+    "academicAffairs": "الشؤون الأكاديمية",
+    "studentAffairs": "شؤون الطلاب",
+    "humanResources": "الموارد البشرية",
+    "financialAffairs": "الشؤون المالية",
+    "lms": "التعليم الإلكتروني",
+    "requests": "الطلبات",
+    "adminRequests": "الطلبات الإدارية",
+    "contracts": "العقود",
+    "financialTransactions": "المعاملات المالية",
+    "tuitionFees": "الرسوم الدراسية",
+    "defaultSchoolName": "مدرسة ريما العالمية",
+    "schoolSubtitle": "عالمي - أمريكي"
   },
   "header": {
     "search": "ابحث بسهولة عما تريد",

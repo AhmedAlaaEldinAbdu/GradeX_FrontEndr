@@ -48,7 +48,19 @@
     "rolesPermissions": "Roles & Permissions",
     "systemUsers": "System Users",
     "messages": "Messages",
-    "employees": "Employees"
+    "employees": "Employees",
+    "academicAffairs": "Academic Affairs",
+    "studentAffairs": "Student Affairs",
+    "humanResources": "Human Resources",
+    "financialAffairs": "Financial Affairs",
+    "lms": "E-Learning",
+    "requests": "Requests",
+    "adminRequests": "Admin Requests",
+    "contracts": "Contracts",
+    "financialTransactions": "Financial Transactions",
+    "tuitionFees": "Tuition Fees",
+    "defaultSchoolName": "Rima International School",
+    "schoolSubtitle": "International - American"
   },
   "header": {
     "search": "Search easily for what you want",
