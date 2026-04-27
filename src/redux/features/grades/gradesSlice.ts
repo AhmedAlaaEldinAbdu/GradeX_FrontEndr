@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { gradeApiService } from '@/services/api/grades/grades.service';
 import { getErrorMessage } from '@/lib/http';
-import type { GradeDto } from '@/services/api/types/grades.types';
+import type { GradeDto, GradeQueryParams } from '@/services/api/types/grades.types';
 
 // ============================================================================
 // Types
@@ -17,14 +17,39 @@ export interface GradesState {
 // Thunks
 // ============================================================================
 
-export const fetchGrades = createAsyncThunk<GradeDto[], string>(
+const normalizeOptionalParam = (value?: string) => {
+  const normalizedValue = value?.trim();
+  return normalizedValue ? normalizedValue : undefined;
+};
+
+export const fetchGrades = createAsyncThunk<GradeDto[], string | GradeQueryParams | undefined>(
   'grades/fetchAll',
-  async (schoolBranchId, { rejectWithValue }) => {
+  async (params, { rejectWithValue }) => {
     try {
+      const schoolBranchIdParam =
+        typeof params === 'string'
+          ? normalizeOptionalParam(params)
+          : normalizeOptionalParam(params?.SchoolBranchId);
+
+      const normalizedParams: GradeQueryParams =
+        typeof params === 'string'
+          ? {
+            PageIndex: 1,
+            PageSize: 1000,
+            SchoolBranchId: schoolBranchIdParam,
+          }
+          : {
+            PageIndex: params?.PageIndex ?? 1,
+            PageSize: params?.PageSize ?? 1000,
+            NameAr: normalizeOptionalParam(params?.NameAr),
+            NameEn: normalizeOptionalParam(params?.NameEn),
+            AcdemicSubsystemId: normalizeOptionalParam(params?.AcdemicSubsystemId),
+            AcdemicsystemId: normalizeOptionalParam(params?.AcdemicsystemId),
+            SchoolBranchId: schoolBranchIdParam,
+          };
+
       const response = await gradeApiService.getGrades({
-        PageIndex: 1,
-        PageSize: 1000,
-        SchoolBranchId: schoolBranchId,
+        ...normalizedParams,
       });
       return response.value?.gradeDtos ?? [];
     } catch (error) {

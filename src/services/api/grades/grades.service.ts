@@ -1,7 +1,12 @@
 import { axiosClient } from '@/lib/http';
 import type { AxiosResponse } from 'axios';
 import { GradeEndpoints } from '../endpoints/grade-endpoints';
-import type { GradeDetailsDto, GradeListResponse, GradeQueryParams } from '../types/grades.types';
+import type {
+  GradeDetailsDto,
+  GradeDetailsResponse,
+  GradeListResponse,
+  GradeQueryParams,
+} from '../types/grades.types';
 
 export async function getGrades(params?: GradeQueryParams): Promise<GradeListResponse> {
   const response = await axiosClient.get<GradeListResponse>(GradeEndpoints.getGrades, { params });
@@ -9,7 +14,7 @@ export async function getGrades(params?: GradeQueryParams): Promise<GradeListRes
 }
 
 export async function getGradeById(id: string): Promise<GradeDetailsDto> {
-  const response: AxiosResponse<{ value: GradeDetailsDto; isSuccess: boolean }> =
+  const response: AxiosResponse<GradeDetailsResponse> =
     await axiosClient.get(GradeEndpoints.getGradeById(id));
   return response.data.value;
 }

@@ -1,16 +1,33 @@
+import type { ApiResponseModel } from '../config';
+
+export interface GradeAcademicSubSystemDto {
+  id: string;
+  nameEn: string | null;
+  nameAr: string | null;
+}
+
+export interface GradeAcademicSystemDto {
+  id: string;
+  nameEn: string | null;
+  nameAr: string | null;
+}
+
 export interface GradeDto {
   id: string;
   nameAr: string;
   nameEn: string;
   age: number;
+  classroomCount?: number;
+  createdDate?: string;
+  lkSchoolStageId?: string | null;
+  lkSchoolStageNameAr?: string | null;
+  lkSchoolStageNameEn?: string | null;
+  academicSubSystemGradeId?: string | null;
+  academicSubSystemGradeDto?: GradeAcademicSubSystemDto | null;
+  academicSystemsDto?: GradeAcademicSystemDto[];
 }
 
-export interface GradeDetailsDto {
-  id: string;
-  nameAr: string;
-  nameEn: string;
-  age: number;
-}
+export interface GradeDetailsDto extends GradeDto {}
 
 export interface GradeListData {
   gradeDtos: GradeDto[];
@@ -20,14 +37,15 @@ export interface GradeListData {
   pageSize: number;
 }
 
-export interface GradeListResponse {
-  value: GradeListData;
-  isSuccess: boolean;
-  successMessage: string;
-}
+export type GradeListResponse = ApiResponseModel<GradeListData>;
+export type GradeDetailsResponse = ApiResponseModel<GradeDetailsDto>;
 
 export interface GradeQueryParams {
   PageIndex?: number;
   PageSize?: number;
+  NameAr?: string;
+  NameEn?: string;
+  AcdemicSubsystemId?: string;
+  AcdemicsystemId?: string;
   SchoolBranchId?: string;
 }
