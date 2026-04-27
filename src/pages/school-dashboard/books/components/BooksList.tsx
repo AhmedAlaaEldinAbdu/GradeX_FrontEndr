@@ -393,8 +393,12 @@ export default function BooksList() {
       </div>
 
       <Card>
-        {!shouldShowEmptyState ? (
-          <EmptyState imgSrc={BooksBadgeIcon} description={t('books.noBooksMessage')} blend={true} />
+        {shouldShowEmptyState ? (
+          <EmptyState
+            imgSrc={BooksBadgeIcon}
+            description={t('books.noBooksMessage')}
+            blend={true}
+          />
         ) : shouldShowContent ? (
           <div>
             <DataTable
