@@ -5,7 +5,6 @@ import Breadcrumb from '@/shared/layout/Breadcrumb';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassroomById } from '@/redux/features/classrooms/classroomsSlice';
 import ClassroomRosterContent from './components/ClassroomRosterContent';
-import Card from '@/shared/components/Card';
 import PageHeader from '@/shared/components/PageHeader';
 
 export default function ClassroomRosterPage() {
