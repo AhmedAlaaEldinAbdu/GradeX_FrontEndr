@@ -1,5 +1,6 @@
 export interface SchoolStage {
   id: string;
+  gradeId?: string;
   nameAr: string;
   nameEn: string;
 }
