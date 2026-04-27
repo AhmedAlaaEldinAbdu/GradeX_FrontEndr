@@ -106,6 +106,11 @@ export interface FetchTeacherAttendanceResponse {
 
 export interface FetchTeacherAssignmentListPayload {
   schoolBranchesId: string;
+  teacherId?: string;
+  teacherName?: string;
+  grageId?: string;
+  classId?: string;
+  materialId?: string;
   page?: number;
   limit?: number;
 }
@@ -330,6 +335,11 @@ export const fetchTeacherAssignmentList = createAsyncThunk<
   try {
     const response = await teacherApiService.getTeacherAssignmentList({
       SchoolBranchesId: payload.schoolBranchesId,
+      TeacherId: payload.teacherId,
+      TeacherName: payload.teacherName,
+      GrageId: payload.grageId,
+      ClassId: payload.classId,
+      MaterialId: payload.materialId,
       PageIndex: payload.page || 1,
       PageSize: payload.limit || 10,
     });
