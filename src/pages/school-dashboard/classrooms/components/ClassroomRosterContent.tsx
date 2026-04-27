@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import ProfileImage from '@gradex/assets/images/profile.png';
-import { useAppSelector } from '@/hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchClassroomById } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchStudentsByClassroomId } from '@/redux/features/students/studentsSlice';
 import StudentsTab, { type StudentRow } from './StudentsTab';
 import TeacherTab, { type TeacherRow } from './TeacherTab';
 
@@ -14,7 +17,13 @@ type ClassroomRosterContentProps = {
 
 export default function ClassroomRosterContent({ currentLang }: ClassroomRosterContentProps) {
   const { t } = useTranslation();
+  const { id } = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
   const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
+  const classroomStudents = useAppSelector((state) => state.students.classroomStudents);
+  const isLoadingClassroomStudents = useAppSelector(
+    (state) => state.students.isLoadingClassroomStudents
+  );
   const [activeTab, setActiveTab] = useState('students');
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
   const [teacherSearchTerm, setTeacherSearchTerm] = useState('');
@@ -23,6 +32,15 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
   const [teacherPage, setTeacherPage] = useState(1);
   const itemsPerPage = 6;
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    dispatch(fetchClassroomById(id));
+    dispatch(fetchStudentsByClassroomId(id));
+  }, [dispatch, id]);
 
   const classroomImageSrc = currentClassroom?.imagePath
     ? `${baseUrl}/${currentClassroom.imagePath}`
@@ -65,44 +83,17 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
   ];
 
   const studentRows = useMemo<StudentRow[]>(
-    () => [
-      {
-        id: 'student-1',
-        name: currentLang === 'ar' ? 'أحمد معتز حسن' : 'Ahmed Moataz Hassan',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'student-2',
-        name: currentLang === 'ar' ? 'محمد سامي علي' : 'Mohamed Sami Ali',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'student-3',
-        name: currentLang === 'ar' ? 'عبدالله خالد سالم' : 'Abdullah Khaled Salem',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'student-4',
-        name: currentLang === 'ar' ? 'يوسف محمود طارق' : 'Youssef Mahmoud Tarek',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'student-5',
-        name: currentLang === 'ar' ? 'عمر ناصر فهد' : 'Omar Nasser Fahad',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'student-6',
-        name: currentLang === 'ar' ? 'سالم عادل حسن' : 'Salem Adel Hassan',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'student-7',
-        name: currentLang === 'ar' ? 'حسن إبراهيم جابر' : 'Hassan Ibrahim Jaber',
-        imageSrc: ProfileImage,
-      },
-    ],
-    [currentLang]
+    () =>
+      classroomStudents.map((student) => ({
+        id: student.id,
+        name: [student.firstName, student.secondName, student.thirdName, student.fourthName]
+          .filter(Boolean)
+          .join(' '),
+        imageSrc: student.profilePicture
+          ? `${baseUrl}/${student.profilePicture.replace(/^\/+/, '')}`
+          : ProfileImage,
+      })),
+    [baseUrl, classroomStudents]
   );
 
   const teacherRows = useMemo<TeacherRow[]>(
@@ -204,6 +195,7 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
       content: (
         <StudentsTab
           rows={paginatedStudents}
+          isLoading={isLoadingClassroomStudents}
           currentPage={studentPage}
           totalPages={studentsTotalPages}
           totalCount={filteredStudents.length}
