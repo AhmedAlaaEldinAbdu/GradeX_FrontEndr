@@ -289,11 +289,22 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
     }
 
     if (isInternalMode) {
-      const allNewFiles = [
-        ...fileInfoList.map((f) => f.file),
-        ...addedFileInfos.map((f) => f.file),
-      ];
-      onFilesChange!(allNewFiles, internalExistingNames, internalExistingUrls);
+      if (!multiple) {
+        setInternalExistingNames([]);
+        setInternalExistingUrls([]);
+      }
+
+      const allNewFiles = multiple
+        ? [...fileInfoList.map((f) => f.file), ...addedFileInfos.map((f) => f.file)]
+        : addedFileInfos.map((f) => f.file);
+
+      if (onFilesChange) {
+        onFilesChange(
+          allNewFiles,
+          multiple ? internalExistingNames : [],
+          multiple ? internalExistingUrls : []
+        );
+      }
     }
     if (onChange) onChange(e);
   };
@@ -313,20 +324,24 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
           const newUrls = internalExistingUrls.filter((_, i) => i !== index);
           setInternalExistingNames(newNames);
           setInternalExistingUrls(newUrls);
-          onFilesChange!(
-            fileInfoList.map((f) => f.file),
-            newNames,
-            newUrls
-          );
+          if (onFilesChange) {
+            onFilesChange(
+              fileInfoList.map((f) => f.file),
+              newNames,
+              newUrls
+            );
+          }
         } else {
           const fileIndex = index - internalExistingNames.length;
           const newInfoList = fileInfoList.filter((_, i) => i !== fileIndex);
           setFileInfoList(newInfoList);
-          onFilesChange!(
-            newInfoList.map((f) => f.file),
-            internalExistingNames,
-            internalExistingUrls
-          );
+          if (onFilesChange) {
+            onFilesChange(
+              newInfoList.map((f) => f.file),
+              internalExistingNames,
+              internalExistingUrls
+            );
+          }
         }
       } else {
         // External mode (backward compat)
@@ -344,19 +359,31 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
       if (isInternalMode) {
         setInternalExistingNames([]);
         setInternalExistingUrls([]);
-        onFilesChange!([], [], []);
+        if (onFilesChange) {
+          onFilesChange([], [], []);
+        }
       } else {
         if (onDelete) onDelete();
       }
     }
   };
 
+  const singleFileName =
+    fileName ||
+    (isInternalMode && effectiveFileNames.length > 0 ? effectiveFileNames[0] : undefined);
+  const singleFileUrl =
+    fileUrl || (isInternalMode && effectiveFileUrls.length > 0 ? effectiveFileUrls[0] : undefined);
+
   // Get display files list (existing/server-side files shown below the upload area)
   const displayFiles =
-    multiple && effectiveFileNames.length > 0 ? effectiveFileNames : fileName ? [fileName] : [];
+    multiple && effectiveFileNames.length > 0
+      ? effectiveFileNames
+      : singleFileName
+        ? [singleFileName]
+        : [];
   const hasFiles = multiple
     ? fileInfoList.length > 0 || displayFiles.length > 0
-    : (fileName && uploadProgress > 0) || fileInfoList.length > 0;
+    : (singleFileName && (uploadProgress > 0 || singleFileUrl)) || fileInfoList.length > 0;
 
   return (
     <div className="space-y-3">
@@ -401,7 +428,7 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
       </div>
 
       {/* Files Preview Section (works for both single and multiple) */}
-      {hasFiles && (
+      {hasFiles && (multiple || !singleFileName || fileInfoList.length > 0) && (
         <div className="space-y-2">
           {/* Render files from internal fileInfoList (newly uploaded during this session) */}
           {fileInfoList.map((fileInfo, index) => (
@@ -719,104 +746,109 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
       )}
 
       {/* Single File Preview Section - Only show if no fileInfoList items */}
-      {!multiple && fileName && uploadProgress > 0 && fileInfoList.length === 0 && (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {/* File Preview or Icon */}
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
-                {filePreview || (fileUrl && isImageFile(label)) ? (
-                  <CustomImage
-                    src={filePreview || resolveUrl(fileUrl)}
-                    alt="preview"
-                    className="h-full w-full rounded-lg object-cover"
-                  />
-                ) : fileUrl && isPdfFile(fileName || '') ? (
-                  <svg
-                    className="h-6 w-6 text-red-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+      {!multiple &&
+        singleFileName &&
+        (uploadProgress > 0 || singleFileUrl) &&
+        fileInfoList.length === 0 && (
+          <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {/* File Preview or Icon */}
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
+                  {filePreview || (singleFileUrl && isImageFile(singleFileName || label)) ? (
+                    <CustomImage
+                      src={filePreview || resolveUrl(singleFileUrl)}
+                      alt="preview"
+                      className="h-full w-full rounded-lg object-cover"
+                    />
+                  ) : singleFileUrl && isPdfFile(singleFileName || '') ? (
+                    <svg
+                      className="h-6 w-6 text-red-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                      <text x="7" y="17" fontSize="6" fill="currentColor" fontWeight="bold">
+                        PDF
+                      </text>
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-6 w-6 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                  )}
+                </div>
+
+                {/* File Info */}
+                <div className="flex-1 text-start">
+                  <p className="text-sm font-medium text-gray-900">{singleFileName || label}</p>
+                  <p className="text-xs text-gray-500">
+                    {uploadProgress > 0 ? `${uploadProgress}%` : '100%'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleEdit}
+                  className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50"
+                  title={t('common.edit')}
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                     />
-                    <text x="7" y="17" fontSize="6" fill="currentColor" fontWeight="bold">
-                      PDF
-                    </text>
                   </svg>
-                ) : (
-                  <svg
-                    className="h-6 w-6 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleDelete()}
+                  className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
+                  title={t('common.delete')}
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                   </svg>
-                )}
-              </div>
-
-              {/* File Info */}
-              <div className="flex-1 text-start">
-                <p className="text-sm font-medium text-gray-900">{label}</p>
-                <p className="text-xs text-gray-500">{uploadProgress}%</p>
+                </button>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleEdit}
-                className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50"
-                title={t('common.edit')}
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                  />
-                </svg>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDelete()}
-                className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
-                title={t('common.delete')}
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              </button>
+            {/* Progress Bar */}
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="h-full bg-green-600 transition-all duration-300"
+                style={{ width: uploadProgress > 0 ? `${uploadProgress}%` : '100%' }}
+              ></div>
             </div>
           </div>
-
-          {/* Progress Bar */}
-          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200">
-            <div
-              className="h-full bg-green-600 transition-all duration-300"
-              style={{ width: `${uploadProgress}%` }}
-            ></div>
-          </div>
-        </div>
-      )}
+        )}
     </div>
   );
 });
