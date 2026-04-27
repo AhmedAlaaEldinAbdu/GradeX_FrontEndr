@@ -321,7 +321,7 @@ export default function TeacherPlacementDetails({
                     target="_blank"
                     rel="noopener noreferrer"
                     download={attachment.name}
-                    className="rounded-lg p-2 text-primary-600 transition-colors hover:bg-gray-200"
+                    className="text-primary-600 rounded-lg p-2 transition-colors hover:bg-gray-200"
                     title={t('common.download')}
                   >
                     <CustomImage src={DownloadIcon} alt="Download" className="h-5 w-5" />
@@ -511,9 +511,9 @@ export default function TeacherPlacementDetails({
           </div>
           <div className="text-start">
             <p className="mb-2 text-sm text-gray-600">{t('teachers.details.computerSkills')}</p>
-            {technicalSkill?.technicalApps?.length > 0 ? (
+            {technicalSkill && technicalSkill?.technicalApps?.length > 0 ? (
               <ul className="space-y-1 text-gray-900">
-                {technicalSkill.technicalApps.map((skill, index) => (
+                {technicalSkill?.technicalApps?.map((skill, index) => (
                   <li key={index}>{skill.level ? `${skill.name} — ${skill.level}` : skill.name}</li>
                 ))}
               </ul>
