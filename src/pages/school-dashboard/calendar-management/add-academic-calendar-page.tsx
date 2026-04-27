@@ -78,7 +78,11 @@ const mapFormValuesToCreateRequests = (
       weeksCount: values.weeksCount === '' ? 0 : Number(values.weeksCount),
       lessonDuration: Number(values.lessonDuration || 0),
       daySchedules,
-      breaks: mapTimedGroup(values.breakBetweenClassesMode, values.breakBetweenClassesSchedules, allSchoolDays),
+      breaks: mapTimedGroup(
+        values.breakBetweenClassesMode,
+        values.breakBetweenClassesSchedules,
+        allSchoolDays
+      ),
       assemblies: mapTimedGroup(values.morningLineMode, values.morningLineSchedules, allSchoolDays),
       breakfasts: mapTimedGroup(values.breakfastMode, values.breakfastSchedules, allSchoolDays),
     },
