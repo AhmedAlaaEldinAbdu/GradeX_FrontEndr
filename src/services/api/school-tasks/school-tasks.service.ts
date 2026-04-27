@@ -42,7 +42,9 @@ const serializeParams = (
   return searchParams.toString();
 };
 
-function buildSchoolTaskFormData(data: CreateSchoolTaskRequest | UpdateSchoolTaskRequest): FormData {
+function buildSchoolTaskFormData(
+  data: CreateSchoolTaskRequest | UpdateSchoolTaskRequest
+): FormData {
   const formData = new FormData();
 
   formData.append('SchoolBranchesId', data.schoolBranchesId);
@@ -81,7 +83,9 @@ function buildSchoolTaskFormData(data: CreateSchoolTaskRequest | UpdateSchoolTas
   return formData;
 }
 
-const buildEmptySchoolTaskListResponse = (params?: SchoolTaskQueryParams): SchoolTaskListResponse => ({
+const buildEmptySchoolTaskListResponse = (
+  params?: SchoolTaskQueryParams
+): SchoolTaskListResponse => ({
   data: {
     schoolTaskDto: [],
     totalItems: 0,
@@ -130,6 +134,7 @@ const mapStatusItems = (data?: Record<string, unknown>): SchoolTaskStatusItem[] 
   }
 
   const candidates = [
+    data.getTaskStatusDto,
     data.taskStatuses,
     data.schoolTaskStatusDto,
     data.taskStatusDto,
@@ -151,7 +156,9 @@ const mapStudentTaskItems = (data?: Record<string, unknown>): StudentSchoolTask[
   return Array.isArray(matched) ? (matched as StudentSchoolTask[]) : [];
 };
 
-export async function getSchoolTasks(params?: SchoolTaskQueryParams): Promise<SchoolTaskListResponse> {
+export async function getSchoolTasks(
+  params?: SchoolTaskQueryParams
+): Promise<SchoolTaskListResponse> {
   const response: AxiosResponse<SchoolTaskListResponse> = await axiosClient.get(
     SchoolTaskEndpoints.getSchoolTasks,
     {
@@ -225,9 +232,7 @@ export async function updateSchoolTask(
   };
 }
 
-export async function deleteSchoolTask(
-  id: string
-): Promise<{ success: boolean; message: string }> {
+export async function deleteSchoolTask(id: string): Promise<{ success: boolean; message: string }> {
   const response: AxiosResponse<{
     data: string | null;
     isSuccess: boolean;
