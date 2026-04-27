@@ -44,9 +44,9 @@ export default function AddClassroom() {
   const isCreating = useAppSelector((state) => state.classrooms.isCreating);
 
   useEffect(() => {
-    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000 }));
+    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
-  }, [dispatch]);
+  }, [dispatch, schoolBranchId]);
 
   const {
     control,

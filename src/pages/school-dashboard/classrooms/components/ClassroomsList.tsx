@@ -37,10 +37,12 @@ export default function ClassroomsList() {
 
   // Access state directly
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
-  const isLoading = useAppSelector((state) => state.classrooms.isLoading);
+  const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
 
   // Grades
   const grades = useAppSelector((state) => state.grades.grades);
+  const isLoadingGrades = useAppSelector((state) => state.grades.isLoading);
+  const isLoading = isLoadingClassrooms || isLoadingGrades;
 
   useEffect(() => {
     dispatch(fetchGrades(schoolBranchId ?? ''));
@@ -62,8 +64,6 @@ export default function ClassroomsList() {
   }, [dispatch, searchTerm, selectedAcademicSystemId, selectedGradeId, schoolBranchId]);
 
   const hasActiveFilters = searchTerm || selectedAcademicSystemId || selectedGradeId;
-  const shouldShowEmptyState = !isLoading && classrooms.length === 0 && !hasActiveFilters;
-  const shouldShowContent = isLoading || classrooms.length > 0 || hasActiveFilters;
 
   const gradeMap = useMemo(
     () =>
@@ -77,35 +77,55 @@ export default function ClassroomsList() {
     [grades]
   );
 
-  const stageOverview = useMemo<StageOverview[]>(() => {
-    const groupedStages = classrooms.reduce<Record<string, StageOverview>>(
-      (accumulator, classroom) => {
-        const gradeId = classroom.gradeId;
-        const grade = gradeMap[gradeId];
-        const stageTitle =
-          currentLang === 'ar'
-            ? grade?.nameAr || classroom.gradeName
-            : grade?.nameEn || classroom.gradeName;
-
-        if (!accumulator[gradeId]) {
-          accumulator[gradeId] = {
-            id: gradeId,
-            title: stageTitle,
-            totalStudents: 0,
-            classrooms: [],
-          };
+  const classroomsByGradeId = useMemo(
+    () =>
+      classrooms.reduce<Record<string, Classroom[]>>((accumulator, classroom) => {
+        if (!accumulator[classroom.gradeId]) {
+          accumulator[classroom.gradeId] = [];
         }
 
-        accumulator[gradeId].totalStudents += classroom.studentNumber || 0;
-        accumulator[gradeId].classrooms.push(classroom);
-
+        accumulator[classroom.gradeId].push(classroom);
         return accumulator;
-      },
-      {}
-    );
+      }, {}),
+    [classrooms]
+  );
 
-    return Object.values(groupedStages);
-  }, [classrooms, currentLang, gradeMap]);
+  const stageOverview = useMemo<StageOverview[]>(() => {
+    const gradeDrivenStages = (Array.isArray(grades) ? grades : []).map((grade) => {
+      const stageClassrooms = classroomsByGradeId[grade.id] || [];
+
+      return {
+        id: grade.id,
+        title: currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr,
+        totalStudents: stageClassrooms.reduce(
+          (accumulator, classroom) => accumulator + (classroom.studentNumber || 0),
+          0
+        ),
+        classrooms: stageClassrooms,
+      };
+    });
+
+    const orphanStages = Object.entries(classroomsByGradeId)
+      .filter(([gradeId]) => !gradeMap[gradeId])
+      .map(([gradeId, stageClassrooms]) => ({
+        id: gradeId,
+        title:
+          currentLang === 'ar'
+            ? stageClassrooms[0]?.gradeName || '-'
+            : stageClassrooms[0]?.gradeName || '-',
+        totalStudents: stageClassrooms.reduce(
+          (accumulator, classroom) => accumulator + (classroom.studentNumber || 0),
+          0
+        ),
+        classrooms: stageClassrooms,
+      }));
+
+    return [...gradeDrivenStages, ...orphanStages];
+  }, [classroomsByGradeId, currentLang, gradeMap, grades]);
+
+  const hasDisplayableStages = stageOverview.length > 0;
+  const shouldShowEmptyState = !isLoading && !hasDisplayableStages && !hasActiveFilters;
+  const shouldShowContent = isLoading || hasDisplayableStages || hasActiveFilters;
 
   const totalEducationalStages = stageOverview.length;
   const totalClassrooms = classrooms.length;
