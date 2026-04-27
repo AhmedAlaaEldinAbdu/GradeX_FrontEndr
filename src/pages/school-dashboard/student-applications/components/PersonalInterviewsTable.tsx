@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@gradex/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
-import IconButton from '@/shared/components/IconButton';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
@@ -34,7 +31,6 @@ const PersonalInterviewsTable: React.FC = () => {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { showToast } = useToast();
   const schoolBranchId = getCurrentSchoolBranchId();
 
