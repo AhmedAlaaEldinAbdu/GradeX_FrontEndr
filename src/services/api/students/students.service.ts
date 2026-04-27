@@ -70,6 +70,30 @@ export async function getStudentById(id: string): Promise<StudentDto> {
   return response.data.value as StudentDto;
 }
 
+/**
+ * Get students by classroom ID
+ */
+export async function getStudentsByClassroomId(classroomId: string): Promise<StudentDto[]> {
+  const response: AxiosResponse<ApiResponseModel<StudentDto[]>> = await axiosClient.get(
+    StudentEndpoints.getByClassroomId,
+    {
+      params: {
+        ClassroomId: classroomId,
+      },
+    }
+  );
+
+  if (Array.isArray(response.data.data)) {
+    return response.data.data;
+  }
+
+  if (Array.isArray(response.data.value)) {
+    return response.data.value;
+  }
+
+  return [];
+}
+
 export async function deleteStudent(id: string): Promise<ApiResponseModel<string>> {
   const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.delete(
     StudentEndpoints.deleteStudent(id)
@@ -126,6 +150,7 @@ export async function assignStudentToClassroom(
 export const studentsApiService = {
   getStudents,
   getStudentById,
+  getStudentsByClassroomId,
   deleteStudent,
   assignStudentToClassroom,
   searchStudentsByName,

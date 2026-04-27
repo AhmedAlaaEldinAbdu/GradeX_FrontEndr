@@ -12,6 +12,7 @@ export type StudentRow = {
 
 type StudentsTabProps = {
   rows: StudentRow[];
+  isLoading?: boolean;
   currentPage: number;
   totalPages: number;
   totalCount: number;
@@ -24,6 +25,7 @@ type StudentsTabProps = {
 
 export default function StudentsTab({
   rows,
+  isLoading = false,
   currentPage,
   totalPages,
   totalCount,
@@ -83,6 +85,7 @@ export default function StudentsTab({
       data={rows}
       columns={studentColumns}
       keyExtractor={(row) => row.id}
+      isLoading={isLoading}
       pagination={{
         page: currentPage,
         limit: itemsPerPage,

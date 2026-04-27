@@ -22,6 +22,7 @@ export interface StudentFilters {
 export interface StudentsState {
   // Data
   students: StudentDto[];
+  classroomStudents: StudentDto[];
   currentStudent: StudentDto | null;
 
   // Pagination
@@ -37,6 +38,7 @@ export interface StudentsState {
 
   // Loading States
   isLoading: boolean;
+  isLoadingClassroomStudents: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
@@ -69,6 +71,7 @@ export interface FetchStudentsResponse {
 const initialState: StudentsState = {
   // Data
   students: [],
+  classroomStudents: [],
   currentStudent: null,
 
   // Pagination
@@ -84,6 +87,7 @@ const initialState: StudentsState = {
 
   // Loading States
   isLoading: false,
+  isLoadingClassroomStudents: false,
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
@@ -185,6 +189,17 @@ export const searchStudentsByName = createAsyncThunk<
   }
 );
 
+export const fetchStudentsByClassroomId = createAsyncThunk<StudentDto[], string>(
+  'students/fetchStudentsByClassroomId',
+  async (classroomId, { rejectWithValue }) => {
+    try {
+      return await studentsApiService.getStudentsByClassroomId(classroomId);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const studentsSlice = createSlice({
   name: 'students',
   initialState,
@@ -237,6 +252,25 @@ const studentsSlice = createSlice({
       })
       .addCase(fetchStudents.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      // Fetch Students By Classroom Id
+      .addCase(fetchStudentsByClassroomId.pending, (state) => {
+        state.isLoadingClassroomStudents = true;
+        state.error = null;
+        state.classroomStudents = [];
+      })
+      .addCase(
+        fetchStudentsByClassroomId.fulfilled,
+        (state, action: PayloadAction<StudentDto[]>) => {
+          state.isLoadingClassroomStudents = false;
+          state.classroomStudents = action.payload;
+        }
+      )
+      .addCase(fetchStudentsByClassroomId.rejected, (state, action) => {
+        state.isLoadingClassroomStudents = false;
+        state.classroomStudents = [];
         state.error = action.payload as string;
       })
 
