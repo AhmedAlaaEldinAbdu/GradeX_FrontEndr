@@ -143,6 +143,7 @@ export default function TeacherPlacementDetails({
     });
   }
   attachment.qualificationcertificateUrls?.forEach((url, index) => {
+    if (!url) return;
     attachmentsList.push({
       id: `qual-${index}`,
       name: `${t('teachers.details.qualificationCertificate')} ${index + 1}`,
@@ -152,6 +153,7 @@ export default function TeacherPlacementDetails({
     });
   });
   attachment.trainingCoursecertificateUrls?.forEach((url, index) => {
+    if (!url) return;
     attachmentsList.push({
       id: `training-${index}`,
       name: `${t('teachers.details.trainingCertificate')} ${index + 1}`,
@@ -346,7 +348,11 @@ export default function TeacherPlacementDetails({
           <InfoRow label={t('teachers.details.email')} value={personalData.email} />
           <InfoRow
             label={t('teachers.details.maritalStatus')}
-            value={personalData.socialStatus || t('common.notAvailable')}
+            value={
+              personalData.socialStatus !== null
+                ? String(personalData.socialStatus)
+                : t('common.notAvailable')
+            }
           />
           <InfoRow
             label={t('teachers.details.nationality')}
@@ -376,7 +382,11 @@ export default function TeacherPlacementDetails({
           />
           <InfoRow
             label={t('teachers.details.idType')}
-            value={personalData.identityType || t('common.notAvailable')}
+            value={
+              personalData.identityType !== null
+                ? String(personalData.identityType)
+                : t('common.notAvailable')
+            }
           />
           <InfoRow
             label={t('teachers.details.dateOfBirth')}
@@ -394,17 +404,35 @@ export default function TeacherPlacementDetails({
           {t('teachers.details.educationalQualifications')}
         </h3>
         {qualifications.length > 0 ? (
-          qualifications.map((qualification) => (
+          qualifications.map((qualification, index) => (
             <div
-              key={qualification.id}
+              key={`${qualification.englishName || qualification.arabicName || 'qualification'}-${index}`}
               className="grid grid-cols-1 gap-y-4 md:grid-cols-2 lg:grid-cols-4"
             >
-              <InfoRow label={t('teachers.details.university')} value={qualification.university} />
-              <InfoRow label={t('teachers.details.degree')} value={qualification.degree} />
-              <InfoRow label={t('teachers.details.subject')} value={qualification.subject} />
+              <InfoRow
+                label={t('teachers.details.university')}
+                value={qualification.college || t('common.notAvailable')}
+              />
+              <InfoRow
+                label={t('teachers.details.degree')}
+                value={
+                  (currentLang === 'ar' ? qualification.arabicName : qualification.englishName) ||
+                  qualification.arabicName ||
+                  qualification.englishName ||
+                  t('common.notAvailable')
+                }
+              />
+              <InfoRow
+                label={t('teachers.details.subject')}
+                value={qualification.specialty || t('common.notAvailable')}
+              />
               <InfoRow
                 label={t('teachers.details.graduationYear')}
-                value={qualification.graduationYear}
+                value={
+                  qualification.graduationYear !== null
+                    ? String(qualification.graduationYear)
+                    : t('common.notAvailable')
+                }
               />
             </div>
           ))
@@ -419,10 +447,23 @@ export default function TeacherPlacementDetails({
           {t('teachers.details.trainingCourses')}
         </h3>
         {trainingCourses.length > 0 ? (
-          trainingCourses.map((course) => (
-            <div key={course.id} className="grid grid-cols-1 gap-y-4 md:grid-cols-2">
-              <InfoRow label={t('teachers.details.courseName')} value={course.courseName} />
-              <InfoRow label={t('teachers.details.duration')} value={course.duration} />
+          trainingCourses.map((course, index) => (
+            <div
+              key={`${course.name || course.providerName || 'course'}-${index}`}
+              className="grid grid-cols-1 gap-y-4 md:grid-cols-2"
+            >
+              <InfoRow
+                label={t('teachers.details.courseName')}
+                value={course.name || t('common.notAvailable')}
+              />
+              <InfoRow
+                label={t('teachers.details.duration')}
+                value={
+                  course.startDate && course.endDate
+                    ? `${formatDate(course.startDate)} - ${formatDate(course.endDate)}`
+                    : course.providerName || t('common.notAvailable')
+                }
+              />
             </div>
           ))
         ) : (
@@ -452,7 +493,15 @@ export default function TeacherPlacementDetails({
               <ul className="space-y-1 text-gray-900">
                 {languages.map((lang, index) => (
                   <li key={index}>
-                    {lang.language}: {lang.level}
+                    {(currentLang === 'ar' ? lang.arabicName : lang.englishName) ||
+                      lang.arabicName ||
+                      lang.englishName ||
+                      t('common.notAvailable')}
+                    :{' '}
+                    {(currentLang === 'ar' ? lang.levelArabicName : lang.levelEnglishName) ||
+                      lang.levelArabicName ||
+                      lang.levelEnglishName ||
+                      t('common.notAvailable')}
                   </li>
                 ))}
               </ul>

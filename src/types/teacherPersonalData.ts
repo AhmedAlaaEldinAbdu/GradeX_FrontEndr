@@ -6,14 +6,14 @@ export interface TeacherPersonalData {
   countryCode: string;
   phoneNumber: string;
   email: string;
-  socialStatus: string | null;
+  socialStatus: number | null;
   nationalAr: string | null;
   nationalEn: string | null;
   countryAr: string | null;
   countryEN: string | null;
   countryOfResidenceAR: string | null;
   countryOfResidenceEN: string | null;
-  identityType: string | null;
+  identityType: number | null;
   identityNumber: string | null;
   berthDate: string;
   regionAr: string | null;
@@ -33,11 +33,12 @@ export interface TeacherPersonalData {
 // ============================================================================
 
 export interface TeacherQualification {
-  id: string;
-  university: string;
-  degree: string;
-  subject: string;
-  graduationYear: string;
+  arabicName: string | null;
+  englishName: string | null;
+  graduationYear: number | null;
+  college: string | null;
+  specialty: string | null;
+  qualificationStudyType: number | null;
 }
 
 // ============================================================================
@@ -45,9 +46,10 @@ export interface TeacherQualification {
 // ============================================================================
 
 export interface TeacherTrainingCourse {
-  id: string;
-  courseName: string;
-  duration: string;
+  name: string | null;
+  providerName: string | null;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 // ============================================================================
@@ -55,8 +57,10 @@ export interface TeacherTrainingCourse {
 // ============================================================================
 
 export interface TeacherLanguage {
-  language: string;
-  level: string;
+  arabicName: string | null;
+  englishName: string | null;
+  levelArabicName: string | null;
+  levelEnglishName: string | null;
 }
 
 // ============================================================================
@@ -80,8 +84,8 @@ export interface TeacherTechnicalSkill {
 
 export interface TeacherAttachment {
   resumeFile: string | null;
-  trainingCoursecertificateUrls: string[];
-  qualificationcertificateUrls: string[];
+  trainingCoursecertificateUrls: Array<string | null>;
+  qualificationcertificateUrls: Array<string | null>;
 }
 
 // ============================================================================
@@ -96,7 +100,7 @@ export interface TeacherPersonalDataDetails {
   qualifications: TeacherQualification[];
   trainingCourses: TeacherTrainingCourse[];
   languages: TeacherLanguage[];
-  technicalSkill: TeacherTechnicalSkill;
+  technicalSkill: TeacherTechnicalSkill | null;
   attachment: TeacherAttachment;
 }
 
