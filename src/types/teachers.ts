@@ -85,4 +85,6 @@ export interface TeacherFilters {
   classroomId?: string;
   schoolBranchId?: string;
   schoolBranchesId?: string;
+  SchoolBranchId?: string;
+  SchoolBranchesId?: string;
 }

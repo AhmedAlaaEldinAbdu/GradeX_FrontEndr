@@ -75,7 +75,7 @@ export default function TeachersList() {
           subjectId: selectedSubject || undefined,
           educationalStageId: selectedEducationalStage || undefined,
           classroomId: selectedClassroom || undefined,
-          schoolBranchesId: schoolBranchId || undefined,
+          schoolBranchId: schoolBranchId || undefined,
         },
       })
     );

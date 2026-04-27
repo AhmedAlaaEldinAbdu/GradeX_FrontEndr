@@ -185,16 +185,21 @@ export const fetchTeachers = createAsyncThunk<FetchTeachersResponse, FetchTeache
         if (payload.limit) params.PageSize = payload.limit;
 
         if (payload.filters) {
+          const normalizedSchoolBranchId =
+            payload.filters.schoolBranchId ||
+            payload.filters.schoolBranchesId ||
+            payload.filters.SchoolBranchId ||
+            payload.filters.SchoolBranchesId;
+
           if (payload.filters.searchName) params.SearchName = payload.filters.searchName;
           if (payload.filters.subjectId) params.SubjectId = payload.filters.subjectId;
           if (payload.filters.educationalStageId)
             params.EducationalStageId = payload.filters.educationalStageId;
           if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
-          if (payload.filters.schoolBranchId)
-            params.SchoolBranchId = payload.filters.schoolBranchId;
-        }
-        if (payload.filters?.schoolBranchesId) {
-          params.SchoolBranchesId = payload.filters.schoolBranchesId;
+          if (normalizedSchoolBranchId) {
+            params.SchoolBranchId = normalizedSchoolBranchId;
+            params.SchoolBranchesId = normalizedSchoolBranchId;
+          }
         }
       }
 
