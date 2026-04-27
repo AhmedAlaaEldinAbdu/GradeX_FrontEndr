@@ -39,6 +39,7 @@ export interface AcademicSubSystemParams {
   nameEn?: string;
   subsystemId?: string;
   countryId?: string;
+  schoolBranchId?: string;
 }
 
 export interface CreateAcademicSystem {
