@@ -129,7 +129,11 @@ export interface TeacherAssignmentQueryParams {
 
 export interface TeacherAssignmentListQueryParams {
   SchoolBranchesId: string;
+  TeacherName?: string;
   TeacherId?: string;
+  GrageId?: string;
+  ClassId?: string;
+  MaterialId?: string;
   PageIndex?: number;
   PageSize?: number;
 }

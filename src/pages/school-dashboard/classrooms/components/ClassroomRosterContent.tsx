@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassroomById } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchStudentsByClassroomId } from '@/redux/features/students/studentsSlice';
 import StudentsTab, { type StudentRow } from './StudentsTab';
-import TeacherTab, { type TeacherRow } from './TeacherTab';
+import TeacherTab from './TeacherTab';
 
 type ClassroomRosterContentProps = {
   currentLang: 'ar' | 'en';
@@ -96,65 +96,6 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
     [baseUrl, classroomStudents]
   );
 
-  const teacherRows = useMemo<TeacherRow[]>(
-    () => [
-      {
-        id: 'teacher-1',
-        name: currentLang === 'ar' ? 'أحمد معتز حسن' : 'Ahmed Moataz Hassan',
-        subject: currentLang === 'ar' ? 'مادة اللغة العربية' : 'Arabic Language',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'teacher-2',
-        name: currentLang === 'ar' ? 'محمد سامي علي' : 'Mohamed Sami Ali',
-        subject: currentLang === 'ar' ? 'مادة الرياضيات' : 'Mathematics',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'teacher-3',
-        name: currentLang === 'ar' ? 'عبدالله خالد سالم' : 'Abdullah Khaled Salem',
-        subject: currentLang === 'ar' ? 'مادة العلوم' : 'Science',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'teacher-4',
-        name: currentLang === 'ar' ? 'يوسف محمود طارق' : 'Youssef Mahmoud Tarek',
-        subject: currentLang === 'ar' ? 'مادة اللغة الإنجليزية' : 'English Language',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'teacher-5',
-        name: currentLang === 'ar' ? 'عمر ناصر فهد' : 'Omar Nasser Fahad',
-        subject: currentLang === 'ar' ? 'مادة الدراسات الاجتماعية' : 'Social Studies',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'teacher-6',
-        name: currentLang === 'ar' ? 'سالم عادل حسن' : 'Salem Adel Hassan',
-        subject: currentLang === 'ar' ? 'مادة التربية الإسلامية' : 'Islamic Studies',
-        imageSrc: ProfileImage,
-      },
-      {
-        id: 'teacher-7',
-        name: currentLang === 'ar' ? 'حسن إبراهيم جابر' : 'Hassan Ibrahim Jaber',
-        subject: currentLang === 'ar' ? 'مادة الحاسب الآلي' : 'Computer Studies',
-        imageSrc: ProfileImage,
-      },
-    ],
-    [currentLang]
-  );
-
-  const subjectOptions = useMemo(
-    () =>
-      [
-        { value: '', label: t('teachers.selectSubject') },
-        ...teacherRows.map((teacher) => ({ value: teacher.subject, label: teacher.subject })),
-      ].filter(
-        (option, index, array) => array.findIndex((item) => item.value === option.value) === index
-      ),
-    [t, teacherRows]
-  );
-
   const filteredStudents = useMemo(
     () =>
       studentRows.filter((student) =>
@@ -163,30 +104,12 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
     [studentRows, studentSearchTerm]
   );
 
-  const filteredTeachers = useMemo(
-    () =>
-      teacherRows.filter((teacher) => {
-        const matchesName = teacher.name
-          .toLowerCase()
-          .includes(teacherSearchTerm.trim().toLowerCase());
-        const matchesSubject = selectedSubject ? teacher.subject === selectedSubject : true;
-        return matchesName && matchesSubject;
-      }),
-    [selectedSubject, teacherRows, teacherSearchTerm]
-  );
-
   const paginatedStudents = useMemo(
     () => filteredStudents.slice((studentPage - 1) * itemsPerPage, studentPage * itemsPerPage),
     [filteredStudents, studentPage]
   );
 
-  const paginatedTeachers = useMemo(
-    () => filteredTeachers.slice((teacherPage - 1) * itemsPerPage, teacherPage * itemsPerPage),
-    [filteredTeachers, teacherPage]
-  );
-
   const studentsTotalPages = Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage));
-  const teachersTotalPages = Math.max(1, Math.ceil(filteredTeachers.length / itemsPerPage));
 
   const tabItems: TabItem[] = [
     {
@@ -218,14 +141,10 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
       label: t('sidebar.teachers'),
       content: (
         <TeacherTab
-          rows={paginatedTeachers}
           currentPage={teacherPage}
-          totalPages={teachersTotalPages}
-          totalCount={filteredTeachers.length}
           searchTerm={teacherSearchTerm}
           selectedSubject={selectedSubject}
           itemsPerPage={itemsPerPage}
-          subjectOptions={subjectOptions}
           onSearchChange={(value) => {
             setTeacherSearchTerm(value);
             setTeacherPage(1);
