@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import PopupMessage from '@/shared/popups/PopupMessage';
@@ -17,7 +17,7 @@ import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { EditBookSchema, type EditBookProps } from '@/validations/books-validations';
-import FileUpload from '@/shared/components/FileUpload';
+import FileUpload, { type FileUploadRef } from '@/shared/components/FileUpload';
 import Loading from '@/shared/components/Loading';
 
 // Package type options
@@ -46,7 +46,7 @@ export default function EditBook() {
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const fileUploadRef = useRef<FileUploadRef>(null);
 
   const currentBook = useAppSelector((state) => state.books.currentBook);
   const isLoading = useAppSelector((state) => state.books.isLoading);
@@ -136,8 +136,10 @@ export default function EditBook() {
             number: data.packageType === '2' ? Number(data.setQuantity) || 0 : 0,
             gradeId: data.lkSchoolStageId,
             materialId: data.materialId,
-            fileName: pdfFile?.name ?? currentBook?.fileName ?? '',
-            file: pdfFile ?? undefined,
+            fileName: fileUploadRef.current?.getFiles().length
+              ? fileUploadRef.current.getFiles()[0].name
+              : (currentBook?.fileName ?? ''),
+            file: fileUploadRef.current?.getFiles()[0] ?? undefined,
             schoolBranchesId,
           },
         })
@@ -441,18 +443,16 @@ export default function EditBook() {
           {/* Book PDF */}
           <div className="mb-6">
             <FileUpload
+              ref={fileUploadRef}
               label={t('books.uploadBook')}
-              accept="application/pdf,image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setPdfFile(file);
-                }
-              }}
-              onDelete={() => setPdfFile(null)}
-              fileName={pdfFile?.name || currentBook?.fileName}
               uploadText={t('books.uploadBookFile')}
               formatHints={['PDF', 'JPG', 'PNG']}
+              multiple={false}
+              attachments={
+                currentBook?.filePath
+                  ? [{ fileName: currentBook.fileName || 'file', filePath: currentBook.filePath }]
+                  : undefined
+              }
               id="bookPdf"
             />
           </div>
