@@ -11,7 +11,6 @@ import StudentGreenIcon from '@gradex/assets/icons/StudentGreen.svg';
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { Classroom } from '@/services/api/types/classrooms.types';
@@ -47,21 +46,6 @@ export default function ClassroomsList() {
   useEffect(() => {
     dispatch(fetchGrades(schoolBranchId ?? ''));
   }, [dispatch, schoolBranchId]);
-
-  useEffect(() => {
-    dispatch(
-      fetchClassrooms({
-        page: 1,
-        limit: 10000,
-        filters: {
-          name: searchTerm || undefined,
-          academicSystemId: selectedAcademicSystemId || undefined,
-          gradeId: selectedGradeId || undefined,
-          schoolBranchId: schoolBranchId || undefined,
-        },
-      })
-    );
-  }, [dispatch, searchTerm, selectedAcademicSystemId, selectedGradeId, schoolBranchId]);
 
   const hasActiveFilters = searchTerm || selectedAcademicSystemId || selectedGradeId;
 
