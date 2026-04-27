@@ -6,20 +6,17 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
-import PeopleRegularIcon from '@gradex/assets/icons/PeopleRegular.svg';
+import StudentIcon from '@gradex/assets/icons/Student.svg';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
-import {
-  fetchTeacherAssignmentList,
-  deleteTeacher as deleteTeacherAction,
-} from '@/redux/features/teachers';
+import { fetchTeachers, deleteTeacher as deleteTeacherAction } from '@/redux/features/teachers';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchSchoolStages } from '@/redux/features/lookups';
-import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
+import type { Teacher } from '@/types/teachers';
 import CustomImage from '@/shared/components/CustomImage';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
@@ -42,9 +39,9 @@ export default function TeachersList() {
 
   const { showToast } = useToast();
 
-  const teacherAssignmentList = useAppSelector((state) => state.teachers.teacherAssignmentList);
+  const teachers = useAppSelector((state) => state.teachers.teachers);
   const pagination = useAppSelector((state) => state.teachers.pagination);
-  const isLoading = useAppSelector((state) => state.teachers.isLoadingAssignmentList);
+  const isLoading = useAppSelector((state) => state.teachers.isLoading);
   const isDeleting = useAppSelector((state) => state.teachers.isDeleting);
 
   // Get subjects and classrooms from other slices for filter options
@@ -70,66 +67,55 @@ export default function TeachersList() {
 
   useEffect(() => {
     dispatch(
-      fetchTeacherAssignmentList({
-        schoolBranchesId: schoolBranchId || '',
+      fetchTeachers({
         page: pagination.page,
         limit: pagination.limit,
+        filters: {
+          searchName: searchTerm || undefined,
+          subjectId: selectedSubject || undefined,
+          educationalStageId: selectedEducationalStage || undefined,
+          classroomId: selectedClassroom || undefined,
+          schoolBranchesId: schoolBranchId || undefined,
+        },
       })
     );
-  }, [dispatch, pagination.page, pagination.limit]);
+  }, [
+    dispatch,
+    pagination.page,
+    pagination.limit,
+    searchTerm,
+    selectedSubject,
+    selectedEducationalStage,
+    selectedClassroom,
+    schoolBranchId,
+  ]);
 
   const handlePageChange = (page: number) => {
     dispatch(
-      fetchTeacherAssignmentList({
-        schoolBranchesId: schoolBranchId || '',
+      fetchTeachers({
         page,
         limit: pagination.limit,
+        filters: {
+          searchName: searchTerm || undefined,
+          subjectId: selectedSubject || undefined,
+          educationalStageId: selectedEducationalStage || undefined,
+          classroomId: selectedClassroom || undefined,
+          schoolBranchesId: schoolBranchId || undefined,
+        },
       })
     );
   };
 
-  // Filter locally since the API doesn't support these filters
-  const filteredTeachers = teacherAssignmentList.filter((teacher) => {
-    // Search term filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch =
-        teacher.teacherName.toLowerCase().includes(searchLower) ||
-        teacher.email.toLowerCase().includes(searchLower) ||
-        teacher.phone.includes(searchTerm);
-      if (!matchesSearch) return false;
-    }
-
-    // Subject filter
-    if (selectedSubject && teacher.materialId !== selectedSubject) {
-      return false;
-    }
-
-    // Educational stage filter
-    if (selectedEducationalStage && teacher.gradeId !== selectedEducationalStage) {
-      return false;
-    }
-
-    // Classroom filter
-    if (selectedClassroom) {
-      const hasClassroom = teacher.classrooms?.some((c) => c.id === selectedClassroom);
-      if (!hasClassroom) return false;
-    }
-
-    return true;
-  });
-
   const hasActiveFilters =
     searchTerm || selectedSubject || selectedEducationalStage || selectedClassroom;
-  const shouldShowEmptyState =
-    !isLoading && teacherAssignmentList.length === 0 && !hasActiveFilters;
-  const shouldShowContent = isLoading || teacherAssignmentList.length > 0 || hasActiveFilters;
+  const shouldShowEmptyState = !isLoading && teachers.length === 0 && !hasActiveFilters;
+  const shouldShowContent = isLoading || teachers.length > 0 || hasActiveFilters;
 
-  const columns: DataTableColumn<TeacherAssignmentListItem>[] = [
+  const columns: DataTableColumn<Teacher>[] = [
     {
       header: '#',
       accessor: (_row) => {
-        const index = filteredTeachers?.findIndex((t) => t?.id === _row?.id);
+        const index = teachers?.findIndex((teacher) => teacher?.id === _row?.id);
         return (pagination.page - 1) * pagination.limit + (index + 1);
       },
       headerClassName: 'w-16',
@@ -141,21 +127,21 @@ export default function TeachersList() {
         <div className="flex items-center gap-2">
           <div className="">
             <CustomImage
-              src={ProfileImage}
-              alt={row.teacherName}
+              src={row.pictureProfilePath || ProfileImage}
+              alt={row.fullName}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = ProfileImage;
               }}
               className="h-8 w-8 rounded-md object-cover"
             />
           </div>
-          {row.teacherName}
+          {row.fullName}
           <IconButton
             variant="blue"
             ariaLabel={t('jobAnnouncement.viewApplicants')}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/teachers/${row.teacherId}`);
+              navigate(`/teachers/${row.id}`);
             }}
             className="h-8 w-8"
           >
@@ -172,7 +158,7 @@ export default function TeachersList() {
     {
       header: 'teachers.mobile',
       accessor: (row) => {
-        const phone = row?.phone?.trim();
+        const phone = row?.phoneNumber?.trim();
         const countryCode = row?.countryCode?.trim();
 
         if (!phone && !countryCode) return <span className="text-gray-400">-</span>;
@@ -187,7 +173,7 @@ export default function TeachersList() {
     {
       header: 'teachers.contactMethods',
       accessor: (row) => {
-        const phone = row?.phone?.trim();
+        const phone = row?.phoneNumber?.trim();
         const countryCode = row?.countryCode?.trim();
         const tel = phone ? `${countryCode ?? ''}${phone}`.replace(/\s+/g, '') : '';
 
@@ -220,9 +206,19 @@ export default function TeachersList() {
     {
       header: 'teachers.subjectName',
       accessor: (row) => {
-        const materialName = currentLang === 'ar' ? row.materialNameAR : row.materialNameEN;
-        return materialName ? (
-          <span>{materialName}</span>
+        const subjectNames =
+          row.subjects && row.subjects.length > 0
+            ? row.subjects
+                .map((subject) => (currentLang === 'ar' ? subject.nameAr : subject.nameEn))
+                .filter(Boolean)
+            : [
+                currentLang === 'ar'
+                  ? row.subjectNameAr
+                  : row.subjectNameEn || row.subjectName || '',
+              ].filter(Boolean);
+
+        return subjectNames.length > 0 ? (
+          <span>{subjectNames.join(' - ')}</span>
         ) : (
           <span className="text-gray-400">-</span>
         );
@@ -232,14 +228,12 @@ export default function TeachersList() {
     {
       header: 'teachers.educationalStages',
       accessor: (row) => {
-        const gradeName = currentLang === 'ar' ? row.gradeNameAR : row.gradeNameEN;
-        return gradeName ? (
-          <span className="text-base font-medium text-gray-800">
-            {gradeName
-              .split(',')
-              .map((s) => s.trim())
-              .join(' - ')}
-          </span>
+        const stageNames = (row.educationalStages || [])
+          .map((stage) => (currentLang === 'ar' ? stage.nameAr : stage.nameEn))
+          .filter(Boolean);
+
+        return stageNames.length > 0 ? (
+          <span className="text-base font-medium text-gray-800">{stageNames.join(' - ')}</span>
         ) : (
           <span className="text-gray-400">-</span>
         );
@@ -256,7 +250,7 @@ export default function TeachersList() {
                 key={classroom.id}
                 className="inline-flex rounded-full bg-green-100 px-2 py-1 text-base font-medium text-green-500"
               >
-                {currentLang === 'ar' ? classroom.nameAR : classroom.nameEN || classroom.nameAR}
+                {currentLang === 'ar' ? classroom.nameAr : classroom.nameEn || classroom.nameAr}
               </span>
             ))
           ) : (
@@ -274,7 +268,7 @@ export default function TeachersList() {
             status="delete"
             variant="danger"
             onClick={() => {
-              setSelectedTeacherId(row.teacherId);
+              setSelectedTeacherId(row.id);
               setShowDeletePopup(true);
             }}
             disabled={isDeleting}
@@ -396,10 +390,16 @@ export default function TeachersList() {
               type: 'success',
             });
             dispatch(
-              fetchTeacherAssignmentList({
-                schoolBranchesId: schoolBranchId || '',
+              fetchTeachers({
                 page: pagination.page,
                 limit: pagination.limit,
+                filters: {
+                  searchName: searchTerm || undefined,
+                  subjectId: selectedSubject || undefined,
+                  educationalStageId: selectedEducationalStage || undefined,
+                  classroomId: selectedClassroom || undefined,
+                  schoolBranchesId: schoolBranchId || undefined,
+                },
               })
             );
           } else {
@@ -427,14 +427,14 @@ export default function TeachersList() {
     <Card>
       {shouldShowEmptyState ? (
         <EmptyState
-          imgSrc={PeopleRegularIcon}
+          imgSrc={StudentIcon}
           description={t('teachers.noTeachersMessage')}
           blend={true}
         />
       ) : shouldShowContent ? (
         <div>
           <DataTable
-            data={filteredTeachers}
+            data={teachers}
             columns={columns}
             keyExtractor={(row) => row.id}
             pagination={{
@@ -456,9 +456,7 @@ export default function TeachersList() {
           <DeletePopup
             open={showDeletePopup}
             message="teachers.confirmDeleteTeacher"
-            itemName={
-              filteredTeachers.find((t) => t.teacherId === selectedTeacherId)?.teacherName ?? ''
-            }
+            itemName={teachers.find((teacher) => teacher.id === selectedTeacherId)?.fullName ?? ''}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
