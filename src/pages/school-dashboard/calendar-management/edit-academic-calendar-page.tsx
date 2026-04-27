@@ -59,12 +59,18 @@ const normalizeTimeForInput = (value: string) => {
 };
 
 const toDaysEnumKeys = (days: number[]): DayKey[] => {
-  return (days || []).map((dayNumber) => (DaysEnum as any)[dayNumber] as unknown).filter(isDayKey);
+  return (days || [])
+    .map((dayNumber) => {
+      const entry = Object.entries(DaysEnum).find(([, val]) => val === dayNumber);
+      return entry ? entry[0] : undefined;
+    })
+    .filter(isDayKey);
 };
 
 const mapTimedGroup = (
   mode: 'year' | 'custom',
-  items: AcademicCalendarScheduleItem[]
+  items: AcademicCalendarScheduleItem[],
+  allSchoolDays: number[]
 ): AcademicCalendarTimedSchedule[] => {
   const list = items?.length ? items : [{ id: '0', days: [], startTime: '', endTime: '' }];
 
@@ -75,7 +81,7 @@ const mapTimedGroup = (
         timePeriodScope: 1,
         startTime: first.startTime,
         endTime: first.endTime,
-        days: [],
+        days: allSchoolDays,
       },
     ];
   }
@@ -101,6 +107,8 @@ const mapFormValuesToCreateRequest = (
     })
   );
 
+  const allSchoolDays = Array.from(new Set(daySchedules.flatMap((ds) => ds.days)));
+
   return {
     schoolBrancheId,
     gradeId,
@@ -109,9 +117,13 @@ const mapFormValuesToCreateRequest = (
     weeksCount: values.weeksCount === '' ? 0 : Number(values.weeksCount),
     lessonDuration: Number(values.lessonDuration || 0),
     daySchedules,
-    breaks: mapTimedGroup(values.breakBetweenClassesMode, values.breakBetweenClassesSchedules),
-    assemblies: mapTimedGroup(values.morningLineMode, values.morningLineSchedules),
-    breakfasts: mapTimedGroup(values.breakfastMode, values.breakfastSchedules),
+    breaks: mapTimedGroup(
+      values.breakBetweenClassesMode,
+      values.breakBetweenClassesSchedules,
+      allSchoolDays
+    ),
+    assemblies: mapTimedGroup(values.morningLineMode, values.morningLineSchedules, allSchoolDays),
+    breakfasts: mapTimedGroup(values.breakfastMode, values.breakfastSchedules, allSchoolDays),
   };
 };
 
@@ -162,7 +174,7 @@ const mapApiEntityToFormInitialValues = (
       mode: inferredMode,
       items: list.map((item) => ({
         id: createId(),
-        days: inferredMode === 'year' ? [] : toDaysEnumKeys(item.days || []),
+        days: toDaysEnumKeys(item.days || []),
         startTime: normalizeTimeForInput(item.startTime),
         endTime: normalizeTimeForInput(item.endTime),
       })),
