@@ -42,7 +42,7 @@ const C = {
   activeBorder: 'rgba(143, 168, 154, 0.35)',
   activeGradient: 'linear-gradient(180deg, #0A4A2E 0%, #073924 100%)',
   blobGradient:
-    'radial-gradient(circle at 50% 50%, rgba(0, 200, 130, 1) 0%, rgba(0, 130, 80, 0.5) 35%, rgba(15, 31, 23, 0) 70%)',
+    'radial-gradient(50% 50% at 50% 50%, rgba(134, 249, 142, 0.15) 0%, rgba(134, 249, 142, 0) 100%)',
 } as const;
 
 const ICON_FILTER_WHITE: React.CSSProperties = {
@@ -837,47 +837,60 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       }}
       aria-label="Main navigation"
     >
-      {/* Decorative gradient blobs */}
       <span
         aria-hidden
-        className="pointer-events-none absolute z-0 rounded-full"
+        className="pointer-events-none absolute"
         style={{
-          width: 401,
-          height: 400,
-          top: -200,
-          left: -164,
-          opacity: 0.18,
-          background: C.blobGradient,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute z-0 rounded-full"
-        style={{
-          width: 401,
-          height: 400,
-          bottom: -200,
-          left: -67,
-          opacity: 0.18,
-          background: C.blobGradient,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute right-0 top-0"
-        style={{
-          width: 220,
-          height: 90,
-          opacity: 0.35,
-          mixBlendMode: 'screen',
-          zIndex: 1,
+          width: 280,
+          height: 200,
+          right: -60,
+          top: -40,
+          zIndex: 0,
           background:
-            'radial-gradient(180px 60px at 100% 0%, rgba(80,200,150,0.25), transparent 60%), radial-gradient(220px 80px at 60% -20px, rgba(80,200,150,0.12), transparent 60%)',
+            'radial-gradient(ellipse 60% 70% at 70% 30%, rgba(103, 203, 160, 0.18) 0%, rgba(83, 159, 126, 0.10) 30%, rgba(15, 31, 23, 0) 70%)',
         }}
       />
 
-      {/* Brand (sticky top) */}
-      <div className="relative flex-shrink-0" style={{ zIndex: 3, background: C.bg }}>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          width: 280,
+          height: 200,
+          left: -60,
+          bottom: -40,
+          zIndex: 0,
+          background:
+            'radial-gradient(ellipse 60% 70% at 30% 70%, rgba(103, 203, 160, 0.18) 0%, rgba(83, 159, 126, 0.10) 30%, rgba(15, 31, 23, 0) 70%)',
+        }}
+      />
+
+      <span
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          width: 401,
+          height: 400,
+          top: -199,
+          left: -164,
+          zIndex: 1,
+          background: C.blobGradient,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          width: 401,
+          height: 400,
+          bottom: -228,
+          right: -104,
+          zIndex: 1,
+          background: C.blobGradient,
+        }}
+      />
+
+      <div className="relative flex-shrink-0" style={{ zIndex: 3 }}>
         {isCollapsed ? (
           // Collapsed: just the logo centered (the school crest reads on its own).
           <div className="flex items-center justify-center px-2 pb-3 pt-3">
@@ -955,8 +968,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           </div>
         )}
 
-        {/* Top rule */}
-        <div className="mx-2" style={{ height: 1, background: C.line }} />
+        {/* Top rule — matches the inset and color of the inter-section
+            dividers (`margin: 0 22px`, `background: C.rule`). */}
+        <div style={{ height: 1, background: C.rule, margin: '0 22px' }} />
       </div>
 
       {/* Scroll region wrapper — positioning context for the custom scrollbar
