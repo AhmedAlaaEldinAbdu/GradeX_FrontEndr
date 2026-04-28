@@ -114,15 +114,16 @@ export const fetchClassrooms = createAsyncThunk<
     const params: Partial<ClassroomQueryParams> = {};
 
     if (payload) {
-      if (payload.page) params.pageIndex = payload.page;
-      if (payload.limit) params.pageSize = payload.limit;
+      if (payload.page) params.PageIndex = payload.page;
+      if (payload.limit) params.PageSize = payload.limit;
 
       if (payload.filters) {
-        if (payload.filters.name) params.name = payload.filters.name;
+        if (payload.filters.name) params.Name = payload.filters.name;
         if (payload.filters.academicSystemId)
-          params.academicSystemId = payload.filters.academicSystemId;
-        if (payload.filters.gradeId) params.gradeId = payload.filters.gradeId;
-        if (payload.filters.schoolBranchId) params.schoolBranchId = payload.filters.schoolBranchId;
+          params.AcademicSystemId = payload.filters.academicSystemId;
+        if (payload.filters.gradeId) params.GradeId = payload.filters.gradeId;
+        if (payload.filters.schoolBranchId)
+          params.SchoolBranchId = payload.filters.schoolBranchId;
       }
     }
 
@@ -212,7 +213,7 @@ export const fetchClassroomsByGrade = createAsyncThunk<Classroom[], string>(
   'classrooms/fetchClassroomsByGrade',
   async (gradeId, { rejectWithValue }) => {
     try {
-      const response = await classroomApiService.getClassrooms({ gradeId });
+      const response = await classroomApiService.getClassrooms({ GradeId: gradeId });
       return response.data?.classroomDto ?? [];
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));

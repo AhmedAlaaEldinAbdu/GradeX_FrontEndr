@@ -10,10 +10,21 @@ export default function ClassroomRosterPage() {
   const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
 
   const classroomTitle = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
+  const gradeTitle = currentClassroom?.gradeName;
 
   const breadcrumbItems = [
     { label: t('sidebar.eduStages') },
     { label: t('grades.title'), path: '/classrooms' },
+    ...(gradeTitle
+      ? [
+          {
+            label: gradeTitle,
+            ...(currentClassroom?.gradeId
+              ? { path: `/classrooms/${currentClassroom.gradeId}` }
+              : {}),
+          },
+        ]
+      : []),
     { label: classroomTitle || t('grades.classroomDetails') },
   ];
 

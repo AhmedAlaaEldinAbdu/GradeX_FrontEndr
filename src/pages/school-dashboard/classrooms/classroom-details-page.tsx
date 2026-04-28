@@ -6,7 +6,8 @@ import Card from '@gradex/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import PageHeader from '@/shared/components/PageHeader';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchClassroomById } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import SchoolPurpleIcon from '@gradex/assets/icons/SchoolPurple.svg';
 import TeachersNewBlueIcon from '@gradex/assets/icons/TeachersNewBlue.svg';
@@ -19,26 +20,39 @@ export default function ClassroomDetailsPage() {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+  const schoolBranchId = getCurrentSchoolBranchId();
 
-  const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
 
   useEffect(() => {
     if (!id) {
       return;
     }
 
-    dispatch(fetchClassroomById(id));
-  }, [dispatch, id]);
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: {
+          gradeId: id,
+          schoolBranchId,
+        },
+      })
+    );
+  }, [dispatch, id, schoolBranchId]);
 
-  const classroomTitle = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
-  const classroomProgress = Math.max(0, Math.min(100, currentClassroom?.studentNumber || 0));
+  const gradeDetails = classrooms[0];
+  const classroomTitle = gradeDetails?.gradeName;
+  const totalStudents = classrooms.reduce(
+    (total, classroom) => total + (classroom.studentNumber || 0),
+    0
+  );
+  const classroomProgress = Math.max(0, Math.min(100, totalStudents));
   const classroomSummaryItems = [
     {
       icon: SchoolPurpleIcon,
       alt: currentLang === 'ar' ? 'صفوف دراسية' : 'Classrooms',
-      value: 0,
+      value: classrooms.length,
       label: currentLang === 'ar' ? 'صفوف دراسية' : 'Classrooms',
       iconClassName: 'bg-[#ECE5FF]',
     },
@@ -88,7 +102,9 @@ export default function ClassroomDetailsPage() {
           ]}
         />
         <div className="flex flex-col items-start gap-6">
-          <div className="text-base font-normal text-[#646969]">المعلم المسؤول: الأستاذة منى سليمان</div>
+          <div className="text-base font-normal text-[#646969]">
+            المعلم المسؤول: الأستاذة منى سليمان
+          </div>
 
           <div className="flex w-full flex-wrap items-center justify-between gap-4">
             {classroomSummaryItems.map((item) => (
@@ -117,7 +133,7 @@ export default function ClassroomDetailsPage() {
         </div>
       </Card>
 
-      <ClassroomDetailsContent currentLang={currentLang} schoolBranchId={schoolBranchId} />
+      <ClassroomDetailsContent currentLang={currentLang} />
     </div>
   );
 }
