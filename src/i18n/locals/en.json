@@ -676,7 +676,7 @@
     "status": {
       "accepted": "Accepted",
       "notPassed": "Not Passed",
-      "waitingInterview": "Waiting for Interview",
+      "underReview": "Under Review",
       "editRequested": "Edit Requested",
       "modified": "Modified",
       "completed": "Completed",

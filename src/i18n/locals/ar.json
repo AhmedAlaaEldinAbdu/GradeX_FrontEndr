@@ -676,7 +676,7 @@
     "status": {
       "accepted": "تم قبول",
       "notPassed": "لم يجتاز",
-      "waitingInterview": "في إنتظار التوقيع",
+      "underReview": "قيد المراجعه",
       "editRequested": "طلب تعديل",
       "modified": "تم التعديل",
       "completed": "إكتمل",

@@ -42,7 +42,7 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
         };
       case StudentApplicationStatus.Pending:
         return {
-          text: t('studentApplications.status.waitingInterview'),
+          text: t('studentApplications.status.underReview'),
           badgeClassName: 'bg-orange-100 text-orange-700 border border-orange-200',
         };
       case StudentApplicationStatus.Accept:

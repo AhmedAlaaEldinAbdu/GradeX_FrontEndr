@@ -286,7 +286,7 @@ const RegistrationRequestsTable: React.FC = () => {
       case StudentApplicationStatus.Pending:
         return (
           <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
-            {t('studentApplications.status.waitingInterview')}
+            {t('studentApplications.status.underReview')}
           </span>
         );
       case StudentApplicationStatus.EditRequest:
@@ -544,7 +544,7 @@ const RegistrationRequestsTable: React.FC = () => {
             },
             {
               value: StudentApplicationStatus.Pending.toString(),
-              label: t('studentApplications.status.waitingInterview'),
+              label: t('studentApplications.status.underReview'),
             },
             {
               value: StudentApplicationStatus.Edited.toString(),
