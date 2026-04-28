@@ -313,6 +313,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         isOpen={isHousingModalOpen}
         onClose={() => setHousingModalOpen(false)}
         isLoading={isHousingLoading}
+        gradeId={data.gradeId}
         onConfirm={async (classroomId) => {
           try {
             setHousingLoading(true);
