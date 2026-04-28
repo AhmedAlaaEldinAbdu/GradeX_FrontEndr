@@ -6,6 +6,7 @@ import { StudentApplicationStatus } from '@/services/api/student-applications/st
 interface ApplicationHeaderActionsProps {
   status: StudentApplicationStatus;
   hasInterview: boolean;
+  isHoused?: boolean;
   onAccept: () => void;
   onNotPassed: () => void;
   onEditRequest: () => void;
@@ -16,6 +17,7 @@ interface ApplicationHeaderActionsProps {
 const ApplicationHeaderActions: React.FC<ApplicationHeaderActionsProps> = ({
   status,
   hasInterview,
+  isHoused,
   onAccept,
   onNotPassed,
   onEditRequest,
@@ -25,6 +27,7 @@ const ApplicationHeaderActions: React.FC<ApplicationHeaderActionsProps> = ({
   const { t } = useTranslation();
 
   if (status === StudentApplicationStatus.Accept) {
+    if (isHoused) return null;
     if (!onHousing) return null;
     return (
       <div className="flex flex-wrap gap-2">

@@ -236,6 +236,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         <ApplicationHeaderActions
           status={effectiveStatus}
           hasInterview={!!effectiveInterviewDate}
+          isHoused={!!data.classroomid}
           onAccept={handleAccept}
           onNotPassed={handleNotPassed}
           onEditRequest={handleEditRequest}
@@ -312,6 +313,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         isOpen={isHousingModalOpen}
         onClose={() => setHousingModalOpen(false)}
         isLoading={isHousingLoading}
+        gradeId={data.gradeId}
         onConfirm={async (classroomId) => {
           try {
             setHousingLoading(true);

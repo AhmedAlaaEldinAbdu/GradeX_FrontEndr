@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -286,22 +287,189 @@ const BadgeView: React.FC<{ badge: MenuBadge }> = ({ badge }) => {
   );
 };
 
-/* Brand mark — local AlNukhba SVG. The SVG ships with white raster pixels
-   around the crest; `mix-blend-mode: multiply` blends those white pixels
-   into the dark sidebar background so only the colored emblem reads. */
 const BrandMark: React.FC = () => (
-  <div
-    className="flex h-16 w-16 flex-shrink-0 items-center justify-center"
-    style={{ isolation: 'isolate' }}
-  >
-    <CustomImage
-      src={AlNukhbaLogo}
-      alt="School"
-      className="h-16 w-16"
-      style={{ mixBlendMode: 'multiply' }}
-    />
+  <div className="flex h-[76px] w-[76px] flex-shrink-0 items-center justify-center">
+    <CustomImage src={AlNukhbaLogo} alt="School" className="h-[76px] w-[76px]" />
   </div>
 );
+
+interface CollapsedGroupItemProps {
+  item: MenuItem;
+  iconCell: React.ReactNode;
+  isActive: boolean;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  onToggle: () => void;
+  isRTL: boolean;
+  textAlignClass: string;
+  currentPath: string;
+  t: (k: string) => string;
+}
+
+const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
+  item,
+  iconCell,
+  isActive,
+  isOpen,
+  onOpen,
+  onClose,
+  onToggle,
+  isRTL,
+  textAlignClass,
+  currentPath,
+  t,
+}) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const flyoutRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<number | null>(null);
+  const [coords, setCoords] = useState<{ top: number; left?: number; right?: number } | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+  const handleEnter = () => {
+    cancelClose();
+    onOpen();
+  };
+  const handleLeave = () => {
+    cancelClose();
+    closeTimerRef.current = window.setTimeout(() => {
+      onClose();
+      closeTimerRef.current = null;
+    }, 180);
+  };
+  // Make sure no stray timer survives unmount.
+  useEffect(() => () => cancelClose(), []);
+
+  // Compute fixed-position coords each time the flyout opens.
+  useEffect(() => {
+    if (!isOpen) {
+      setCoords(null);
+      return;
+    }
+    const compute = () => {
+      const rect = wrapperRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      if (isRTL) {
+        setCoords({ top: rect.top, right: window.innerWidth - rect.left + 8 });
+      } else {
+        setCoords({ top: rect.top, left: rect.right + 8 });
+      }
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    window.addEventListener('scroll', compute, true);
+    return () => {
+      window.removeEventListener('resize', compute);
+      window.removeEventListener('scroll', compute, true);
+    };
+  }, [isOpen, isRTL]);
+
+  // Click outside closes.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (!wrapperRef.current?.contains(target) && !flyoutRef.current?.contains(target)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [isOpen, onClose]);
+
+  return (
+    <div ref={wrapperRef} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+      <button
+        type="button"
+        title={t(`sidebar.${item.key}`)}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        onClick={() => {
+          cancelClose();
+          onToggle();
+        }}
+        className={`flex w-full items-center justify-center py-3 transition-colors ${
+          isActive || isOpen ? '' : 'hover:bg-white/[0.03]'
+        }`}
+      >
+        {iconCell}
+      </button>
+
+      {isOpen &&
+        coords &&
+        createPortal(
+          <div
+            ref={flyoutRef}
+            role="menu"
+            onMouseEnter={handleEnter}
+            onMouseLeave={handleLeave}
+            style={{
+              position: 'fixed',
+              top: coords.top,
+              left: coords.left,
+              right: coords.right,
+              minWidth: 220,
+              padding: 8,
+              borderRadius: 12,
+              background: '#0F1F17',
+              boxShadow: '0 12px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06)',
+              zIndex: 1000,
+            }}
+          >
+            <div
+              className={`mb-1 px-3 pb-2 pt-1 text-[12px] font-semibold text-white ${textAlignClass}`}
+              style={{ borderBottom: `1px solid rgba(255,255,255,0.10)` }}
+            >
+              {t(`sidebar.${item.key}`)}
+            </div>
+            <div className="mt-1 flex flex-col" style={{ gap: 1 }}>
+              {item.subItems!.map((sub) => {
+                const isSubActive =
+                  currentPath === sub.path || currentPath.startsWith(sub.path + '/');
+                return (
+                  <NavLink
+                    key={sub.path}
+                    to={sub.path}
+                    onClick={onClose}
+                    className={`flex items-center transition-colors ${
+                      isSubActive ? '' : 'hover:bg-white/[0.04]'
+                    }`}
+                    style={{
+                      gap: 10,
+                      padding: '8px 12px',
+                      fontSize: 13,
+                      borderRadius: 8,
+                      color: isSubActive ? '#ffffff' : '#D6DDD8',
+                      fontWeight: isSubActive ? 700 : 400,
+                      background: isSubActive ? '#073924' : 'transparent',
+                    }}
+                  >
+                    <span
+                      className="flex-shrink-0 rounded-full"
+                      style={{
+                        width: 5,
+                        height: 5,
+                        background: isSubActive ? '#ffffff' : '#8FA89A',
+                      }}
+                    />
+                    <span className={`flex-1 truncate ${textAlignClass}`}>
+                      {t(`sidebar.${sub.key}`)}
+                    </span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>,
+          document.body
+        )}
+    </div>
+  );
+};
 
 /**
  * Sidebar Component
@@ -313,18 +481,77 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [schoolName, setSchoolName] = useState<string>('');
+  const [isLoadingSchoolName, setIsLoadingSchoolName] = useState<boolean>(false);
+  // Collapse the sidebar to icon-only mode on small screens (< lg).
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 1023px)').matches;
+  });
+  // Which parent's flyout panel is currently open (collapsed mode only).
+  const [flyoutKey, setFlyoutKey] = useState<string | null>(null);
+
+  const navRef = useRef<HTMLElement | null>(null);
+  const [scroll, setScroll] = useState<{
+    visible: boolean;
+    thumbTop: number;
+    thumbHeight: number;
+  }>({ visible: false, thumbTop: 0, thumbHeight: 0 });
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const recompute = () => {
+      const { scrollTop, scrollHeight, clientHeight } = nav;
+      const overflow = scrollHeight - clientHeight;
+      if (overflow <= 1) {
+        setScroll({ visible: false, thumbTop: 0, thumbHeight: 0 });
+        return;
+      }
+      const trackHeight = clientHeight;
+      const thumbHeight = Math.max(28, (clientHeight / scrollHeight) * trackHeight);
+      const thumbTop = (scrollTop / overflow) * (trackHeight - thumbHeight);
+      setScroll({ visible: true, thumbTop, thumbHeight });
+    };
+
+    recompute();
+    nav.addEventListener('scroll', recompute, { passive: true });
+    const ro = new ResizeObserver(recompute);
+    ro.observe(nav);
+    // Also observe content size changes
+    if (nav.firstElementChild) ro.observe(nav.firstElementChild as Element);
+    return () => {
+      nav.removeEventListener('scroll', recompute);
+      ro.disconnect();
+    };
+  }, [isCollapsed]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)');
+    const update = (e: MediaQueryListEvent | MediaQueryList) => setIsCollapsed(e.matches);
+    update(mq);
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  // Close any open flyout when route changes or when the sidebar uncollapses.
+  useEffect(() => {
+    setFlyoutKey(null);
+  }, [location.pathname, isCollapsed]);
 
   useEffect(() => {
     if (dashboardType === UserRole.SCHOOL_ADMIN) {
       const branchId = getCurrentSchoolBranchId();
       if (branchId) {
+        setIsLoadingSchoolName(true);
         axiosClient
           .get(SchoolsEndpoints.getSchoolBranchMobile(branchId))
           .then((res) => {
             const name = res?.data?.data?.nameBranch;
             if (name) setSchoolName(name);
           })
-          .catch(() => {});
+          .catch(() => {})
+          .finally(() => setIsLoadingSchoolName(false));
       }
     }
   }, [dashboardType]);
@@ -414,7 +641,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         style={{
           gridTemplateColumns: '22px 1fr auto 14px',
           columnGap: 10,
-          fontSize: 12,
+          fontSize: 14,
           fontWeight: active ? 500 : 400,
           width: '100%',
         }}
@@ -444,7 +671,61 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     );
   };
 
+  const renderCollapsedItem = (item: MenuItem) => {
+    const hasSubItems = !!(item.subItems && item.subItems.length > 0);
+    const isActive = hasSubItems
+      ? item.subItems!.some(
+          (s) => location.pathname === s.path || location.pathname.startsWith(s.path + '/')
+        )
+      : !!item.path &&
+        (location.pathname === item.path || location.pathname.startsWith(item.path + '/'));
+
+    const iconCell = (
+      <span
+        className="grid h-6 w-6 place-items-center"
+        style={isActive ? ICON_FILTER_WHITE : ICON_FILTER_MUTE}
+      >
+        {item.icon}
+      </span>
+    );
+
+    if (!hasSubItems) {
+      return (
+        <NavLink
+          key={item.key}
+          to={item.path!}
+          title={t(`sidebar.${item.key}`)}
+          className={`flex items-center justify-center py-3 transition-colors ${
+            isActive ? '' : 'hover:bg-white/[0.03]'
+          }`}
+        >
+          {iconCell}
+        </NavLink>
+      );
+    }
+
+    // Parent with sub-items: hover/tap toggles a flyout panel.
+    return (
+      <CollapsedGroupItem
+        key={item.key}
+        item={item}
+        iconCell={iconCell}
+        isActive={isActive}
+        isOpen={flyoutKey === item.key}
+        onOpen={() => setFlyoutKey(item.key)}
+        onClose={() => setFlyoutKey((k) => (k === item.key ? null : k))}
+        onToggle={() => setFlyoutKey(flyoutKey === item.key ? null : item.key)}
+        isRTL={isRTL}
+        textAlignClass={textAlignClass}
+        currentPath={location.pathname}
+        t={t}
+      />
+    );
+  };
+
   const renderMenuItem = (item: MenuItem) => {
+    if (isCollapsed) return renderCollapsedItem(item);
+
     const isExpanded = expandedItems.includes(item.key);
     const hasSubItems = !!(item.subItems && item.subItems.length > 0);
     const isAnySubItemActive =
@@ -496,7 +777,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                       marginInlineEnd: PILL_MARGIN_END,
                       marginTop: 2,
                       marginBottom: 2,
-                      fontSize: 12,
+                      fontSize: 13,
                       borderRadius: 10,
                       background: isSubActive ? C.subActive : 'transparent',
                     }}
@@ -547,7 +828,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
   return (
     <aside
-      className="relative flex w-[230px] flex-col overflow-hidden text-white"
+      className={`relative flex flex-shrink-0 flex-col overflow-hidden text-white ${
+        isCollapsed ? 'w-[64px]' : 'w-[clamp(240px,17vw,300px)]'
+      }`}
       style={{
         background: C.bg,
         boxShadow: '0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03)',
@@ -595,35 +878,70 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
       {/* Brand (sticky top) */}
       <div className="relative flex-shrink-0" style={{ zIndex: 3, background: C.bg }}>
-        {isSchoolAdmin ? (
-          // Grid columns: [logo 44px] [text 1fr]. In RTL the first column
-          // (logo) renders on the RIGHT — matches the screenshot. In LTR the
-          // logo stays on the LEFT (typical pattern).
-          <div
-            className="grid items-center gap-[10px] px-[14px] pb-[14px] pt-[16px]"
-            style={{ gridTemplateColumns: '64px 1fr' }}
-          >
+        {isCollapsed ? (
+          // Collapsed: just the logo centered (the school crest reads on its own).
+          <div className="flex items-center justify-center px-2 pb-3 pt-3">
+            {isSchoolAdmin ? (
+              <BrandMark />
+            ) : (
+              <CustomImage
+                src={GradeXLogo}
+                alt="GradeX"
+                className="h-9 w-auto"
+                style={ICON_FILTER_WHITE}
+              />
+            )}
+          </div>
+        ) : isSchoolAdmin ? (
+          <div className="flex items-center px-4 pb-4 pt-4">
             <BrandMark />
-            <div className="min-w-0">
-              <div
-                className={`truncate text-[14px] font-bold leading-tight text-white ${
-                  isRTL ? 'text-right' : 'text-left'
-                }`}
-              >
-                {schoolName ||
-                  t(
-                    'sidebar.defaultSchoolName',
-                    isRTL ? 'مدرسة ريما العالمية' : 'Rima International School'
+            <div className="flex min-w-0 flex-col items-center">
+              {isLoadingSchoolName && !schoolName ? (
+                <>
+                  <div
+                    className="animate-pulse rounded-md"
+                    style={{
+                      width: 140,
+                      height: 18,
+                      background: 'rgba(255,255,255,0.10)',
+                    }}
+                  />
+                  <div
+                    className="mt-2 animate-pulse rounded-md"
+                    style={{
+                      width: 90,
+                      height: 12,
+                      background: 'rgba(255,255,255,0.06)',
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  <div
+                    className={`text-[18px] font-bold text-white ${
+                      isRTL ? 'text-right' : 'text-left'
+                    }`}
+                    style={{
+                      fontFamily: 'Tajawal, "IBM Plex Sans Arabic", system-ui, sans-serif',
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {schoolName}
+                  </div>
+                  {t('sidebar.schoolSubtitle', { defaultValue: '' }) && (
+                    <div
+                      className="mt-1 text-center text-[13px] font-normal"
+                      style={{
+                        fontFamily: 'Tajawal, "IBM Plex Sans Arabic", system-ui, sans-serif',
+                        lineHeight: 1.4,
+                        color: C.inkMute,
+                      }}
+                    >
+                      {t('sidebar.schoolSubtitle')}
+                    </div>
                   )}
-              </div>
-              <div
-                className={`mt-1 truncate text-[10px] font-normal ${
-                  isRTL ? 'text-right' : 'text-left'
-                }`}
-                style={{ color: C.inkMute }}
-              >
-                {t('sidebar.schoolSubtitle', isRTL ? 'عالمي - أمريكي' : 'International - American')}
-              </div>
+                </>
+              )}
             </div>
           </div>
         ) : (
@@ -641,43 +959,85 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         <div className="mx-2" style={{ height: 1, background: C.line }} />
       </div>
 
-      {/* Scrollable nav — custom emerald scrollbar lives on the inline-end edge */}
-      <nav
-        className="sidebar-scroll relative flex-1 overflow-y-auto overflow-x-hidden"
-        style={{ zIndex: 2, padding: '12px 0 16px' }}
-        aria-label="primary"
-      >
-        {sections.map((section, idx) => {
-          const showRule = !!section.titleKey && idx > firstTitledIdx;
-          return (
-            <div key={`section-${idx}`} className={idx > 0 ? 'mt-2' : ''}>
-              {showRule && (
-                <div
-                  style={{
-                    height: 1,
-                    background: C.rule,
-                    margin: '6px 22px 0',
-                  }}
-                />
-              )}
-              {section.titleKey && (
-                <div
-                  className={`text-[10px] font-normal ${textAlignClass}`}
-                  style={{
-                    color: C.inkMute,
-                    padding: '12px 28px 8px',
-                  }}
-                >
-                  {t(`sidebar.${section.titleKey}`)}
+      {/* Scroll region wrapper — positioning context for the custom scrollbar
+          thumb so the thumb only spans the nav area, not the brand header. */}
+      <div className="relative min-h-0 flex-1" style={{ zIndex: 2 }}>
+        <nav
+          ref={navRef}
+          className="sidebar-scroll absolute inset-0 overflow-y-auto overflow-x-hidden"
+          style={{ padding: '12px 0 16px' }}
+          aria-label="primary"
+        >
+          {sections.map((section, idx) => {
+            const showRule = !!section.titleKey && idx > firstTitledIdx;
+            // In collapsed mode, every titled section just gets a thin divider
+            // line above it — no header text.
+            const showCollapsedRule = isCollapsed && !!section.titleKey && idx > 0;
+
+            return (
+              <div key={`section-${idx}`} className={idx > 0 ? 'mt-2' : ''}>
+                {showCollapsedRule && (
+                  <div
+                    style={{
+                      height: 1,
+                      background: C.rule,
+                      margin: '8px 14px',
+                    }}
+                  />
+                )}
+                {!isCollapsed && showRule && (
+                  <div
+                    style={{
+                      height: 1,
+                      background: C.rule,
+                      margin: '6px 22px 0',
+                    }}
+                  />
+                )}
+                {!isCollapsed && section.titleKey && (
+                  <div
+                    className={`text-[11px] font-normal ${textAlignClass}`}
+                    style={{
+                      color: C.inkMute,
+                      padding: '12px 28px 8px',
+                    }}
+                  >
+                    {t(`sidebar.${section.titleKey}`)}
+                  </div>
+                )}
+                <div className="flex flex-col" style={{ gap: 1 }}>
+                  {section.items.map(renderMenuItem)}
                 </div>
-              )}
-              <div className="flex flex-col" style={{ gap: 1 }}>
-                {section.items.map(renderMenuItem)}
               </div>
-            </div>
-          );
-        })}
-      </nav>
+            );
+          })}
+        </nav>
+
+        {scroll.visible && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0"
+            style={{
+              insetInlineEnd: 4,
+              width: 4,
+              zIndex: 4,
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: scroll.thumbTop,
+                insetInlineEnd: 0,
+                width: 4,
+                height: scroll.thumbHeight,
+                background: '#e6ece8',
+                borderRadius: 999,
+                transition: 'background 0.2s ease',
+              }}
+            />
+          </div>
+        )}
+      </div>
     </aside>
   );
 };
