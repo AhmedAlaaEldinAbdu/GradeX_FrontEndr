@@ -188,6 +188,7 @@ export default function JobAnnouncementsPage() {
 
       <PageHeader
         title="jobAnnouncement.title"
+        hasHeaderControls={true}
         actions={[
           {
             label: 'jobAnnouncement.addAnnouncement',
