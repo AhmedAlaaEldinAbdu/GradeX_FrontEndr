@@ -481,6 +481,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [schoolName, setSchoolName] = useState<string>('');
+  const [isLoadingSchoolName, setIsLoadingSchoolName] = useState<boolean>(false);
   // Collapse the sidebar to icon-only mode on small screens (< lg).
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -542,13 +543,15 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     if (dashboardType === UserRole.SCHOOL_ADMIN) {
       const branchId = getCurrentSchoolBranchId();
       if (branchId) {
+        setIsLoadingSchoolName(true);
         axiosClient
           .get(SchoolsEndpoints.getSchoolBranchMobile(branchId))
           .then((res) => {
             const name = res?.data?.data?.nameBranch;
             if (name) setSchoolName(name);
           })
-          .catch(() => {});
+          .catch(() => {})
+          .finally(() => setIsLoadingSchoolName(false));
       }
     }
   }, [dashboardType]);
@@ -893,30 +896,52 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           <div className="flex items-center px-4 pb-4 pt-4">
             <BrandMark />
             <div className="flex min-w-0 flex-col items-center">
-              <div
-                className={`text-[18px] font-bold text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                style={{
-                  fontFamily: 'Tajawal, "IBM Plex Sans Arabic", system-ui, sans-serif',
-                  lineHeight: 1.4,
-                }}
-              >
-                {schoolName ||
-                  t(
-                    'sidebar.defaultSchoolName',
-                    isRTL ? 'مدرسة ريما العالمية' : 'Rima International School'
+              {isLoadingSchoolName && !schoolName ? (
+                <>
+                  <div
+                    className="animate-pulse rounded-md"
+                    style={{
+                      width: 140,
+                      height: 18,
+                      background: 'rgba(255,255,255,0.10)',
+                    }}
+                  />
+                  <div
+                    className="mt-2 animate-pulse rounded-md"
+                    style={{
+                      width: 90,
+                      height: 12,
+                      background: 'rgba(255,255,255,0.06)',
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  <div
+                    className={`text-[18px] font-bold text-white ${
+                      isRTL ? 'text-right' : 'text-left'
+                    }`}
+                    style={{
+                      fontFamily: 'Tajawal, "IBM Plex Sans Arabic", system-ui, sans-serif',
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {schoolName}
+                  </div>
+                  {t('sidebar.schoolSubtitle', { defaultValue: '' }) && (
+                    <div
+                      className="mt-1 text-center text-[13px] font-normal"
+                      style={{
+                        fontFamily: 'Tajawal, "IBM Plex Sans Arabic", system-ui, sans-serif',
+                        lineHeight: 1.4,
+                        color: C.inkMute,
+                      }}
+                    >
+                      {t('sidebar.schoolSubtitle')}
+                    </div>
                   )}
-              </div>
-              {/* Subtitle: Tajawal Regular, smaller */}
-              <div
-                className="mt-1 text-center text-[13px] font-normal"
-                style={{
-                  fontFamily: 'Tajawal, "IBM Plex Sans Arabic", system-ui, sans-serif',
-                  lineHeight: 1.4,
-                  color: C.inkMute,
-                }}
-              >
-                {t('sidebar.schoolSubtitle', isRTL ? 'عالمي - أمريكي' : 'International - American')}
-              </div>
+                </>
+              )}
             </div>
           </div>
         ) : (
