@@ -645,17 +645,17 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const userData = tokenManager.getUserData();
   const schoolBranchId = userData?.schoolBrancheId ?? userData?.schoolBranchId ?? undefined;
 
-  // Initial fetch: academic systems
   useEffect(() => {
-    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000 }));
-  }, [dispatch]);
+    dispatch(
+      getAcademicSystems({
+        pageIndex: 1,
+        pageSize: 10000,
+        ...(schoolBranchId && { schoolBranchId }),
+      })
+    );
+  }, [dispatch, schoolBranchId]);
 
-  // Fetch stages when subSystemId changes
   useEffect(() => {
-    // Reset dependent filters
-    setStage('');
-    setGrade('');
-
     if (subSystemId) {
       dispatch(
         getEducationalStagesBySubSystemId({
@@ -675,7 +675,12 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         })
       );
     }
-  }, [dispatch, subSystemId]);
+  }, [dispatch, subSystemId, schoolBranchId]);
+
+  useEffect(() => {
+    setStage('');
+    setGrade('');
+  }, [subSystemId]);
 
   // Fetch lessons when classroom (grade) or stage changes
   useEffect(() => {
@@ -709,21 +714,19 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     );
   }, [dispatch, grade, stage, schoolBranchId]);
 
-  // Fetch classrooms when stage changes (filter by stage if selected, otherwise fetch all)
+  // Fetch classrooms only when a stage is picked (cascade). Reset the
+  // classroom selection if the stage clears.
   useEffect(() => {
     if (!stage) {
       setGrade('');
+      return;
     }
 
     dispatch(
       fetchClassrooms({
         page: 1,
         limit: 10000,
-        filters: stage
-          ? { gradeId: stage, ...(schoolBranchId && { schoolBranchId }) }
-          : schoolBranchId
-            ? { schoolBranchId }
-            : {},
+        filters: { gradeId: stage, ...(schoolBranchId && { schoolBranchId }) },
       })
     );
   }, [dispatch, stage, schoolBranchId]);
@@ -1128,7 +1131,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
                     ? classroomOptions.find((c) => c.value === grade)?.label || ''
                     : ''
               }
-              disabled={isLoadingClassrooms}
+              disabled={!stage || isLoadingClassrooms}
               variant="ghost"
               showSearch={false}
               className="min-w-[100px]"
