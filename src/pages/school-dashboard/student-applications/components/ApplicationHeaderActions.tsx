@@ -20,13 +20,22 @@ const ApplicationHeaderActions: React.FC<ApplicationHeaderActionsProps> = ({
   onNotPassed,
   onEditRequest,
   onSchedule,
+  onHousing,
 }) => {
   const { t } = useTranslation();
 
-  if (
-    status === StudentApplicationStatus.Accept ||
-    status === StudentApplicationStatus.Reject
-  ) {
+  if (status === StudentApplicationStatus.Accept) {
+    if (!onHousing) return null;
+    return (
+      <div className="flex flex-wrap gap-2">
+        <Button variant="success" onClick={onHousing}>
+          {t('studentApplications.actions.housing')}
+        </Button>
+      </div>
+    );
+  }
+
+  if (status === StudentApplicationStatus.Reject) {
     return null;
   }
 
