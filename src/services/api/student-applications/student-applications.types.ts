@@ -110,5 +110,6 @@ export interface StudentApplicationDetailDto {
   vaccinationCertificatePath: string | null;
   lastEducationCertificatePath: string | null;
   interviewDate?: string | null;
+  classroomid?: string | null;
   parentInfo: ParentInfo;
 }
