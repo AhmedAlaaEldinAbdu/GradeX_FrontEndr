@@ -236,6 +236,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         <ApplicationHeaderActions
           status={effectiveStatus}
           hasInterview={!!effectiveInterviewDate}
+          isHoused={!!data.classroomid}
           onAccept={handleAccept}
           onNotPassed={handleNotPassed}
           onEditRequest={handleEditRequest}
