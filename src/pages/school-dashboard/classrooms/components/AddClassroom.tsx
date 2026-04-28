@@ -10,7 +10,7 @@ import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';
 import Input from '@/shared/components/Input';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
@@ -24,8 +24,10 @@ import CustomImage from '@/shared/components/CustomImage';
 export default function AddClassroom() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
+  const gradeIdFromQuery = searchParams.get('gradeId') || '';
   const [numOfClassrooms, setNumOfClassrooms] = useState<number[]>([1]);
   const [uploadedFiles, setUploadedFiles] = useState<{ [key: number]: File | null }>({});
   const [showPopupMessage, setShowPopupMessage] = useState<{
@@ -58,7 +60,7 @@ export default function AddClassroom() {
     mode: 'onBlur',
     defaultValues: {
       academicSystem: '',
-      educationalStage: '',
+      educationalStage: gradeIdFromQuery,
       classrooms: [
         {
           name: '',
@@ -72,6 +74,18 @@ export default function AddClassroom() {
       ],
     },
   });
+
+  useEffect(() => {
+    if (!gradeIdFromQuery) {
+      return;
+    }
+
+    setValue('educationalStage', gradeIdFromQuery, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+  }, [gradeIdFromQuery, setValue]);
 
   const onSubmit = async (data: ClassroomsProps) => {
     try {
@@ -236,7 +250,7 @@ export default function AddClassroom() {
                     placeholder={
                       isLoadingEducationalStages ? t('common.loading') : t('common.selectAnOption')
                     }
-                    disabled={isLoadingEducationalStages}
+                    disabled={isLoadingEducationalStages || Boolean(gradeIdFromQuery)}
                     error={!!errors.educationalStage}
                   />
                 )}

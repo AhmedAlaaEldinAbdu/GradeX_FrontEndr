@@ -189,7 +189,7 @@ export default function ClassroomsList() {
                           label: t('grades.addClassroom'),
                           iconSrc: GreenPlusIcon,
                           iconAlt: t('grades.addClassroom'),
-                          onClick: () => navigate('/classrooms/add-classroom'),
+                          onClick: () => navigate(`/classrooms/add-classroom?gradeId=${grade.id}`),
                         }
                       : undefined;
 
