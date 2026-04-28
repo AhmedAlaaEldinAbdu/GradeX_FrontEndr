@@ -12,6 +12,7 @@ interface HousingModalProps {
   onClose: () => void;
   onConfirm: (classroomId: string) => void;
   isLoading?: boolean;
+  gradeId?: string;
 }
 
 const HousingModal: React.FC<HousingModalProps> = ({
@@ -19,6 +20,7 @@ const HousingModal: React.FC<HousingModalProps> = ({
   onClose,
   onConfirm,
   isLoading: externalLoading,
+  gradeId,
 }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
@@ -38,6 +40,7 @@ const HousingModal: React.FC<HousingModalProps> = ({
         const response = await getClassrooms({
           pageSize: 100,
           schoolBranchId: getCurrentSchoolBranchId() || undefined,
+          ...(gradeId && { gradeId }),
         });
         setClassrooms(response.data.classroomDto || []);
       } catch (err) {
@@ -49,7 +52,7 @@ const HousingModal: React.FC<HousingModalProps> = ({
     };
 
     fetchClassrooms();
-  }, [isOpen]);
+  }, [isOpen, gradeId]);
 
   const selectedClassroom = classrooms.find((c) => c.id === selectedClassroomId);
 
@@ -117,7 +120,7 @@ const HousingModal: React.FC<HousingModalProps> = ({
             variant="success"
             fullWidth
             onClick={handleConfirm}
-            disabled={externalLoading || loading}
+            disabled={!selectedClassroomId || externalLoading || loading}
           >
             {externalLoading ? t('common.processing') : t('studentApplications.modals.housing')}
           </Button>
