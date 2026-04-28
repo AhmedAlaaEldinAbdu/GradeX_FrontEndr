@@ -680,7 +680,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   useEffect(() => {
     setStage('');
     setGrade('');
-  }, [subSystemId]);
+  }, [subSystemId, educationSystem]);
 
   // Fetch lessons when classroom (grade) or stage changes
   useEffect(() => {
@@ -714,10 +714,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     );
   }, [dispatch, grade, stage, schoolBranchId]);
 
-  // Fetch classrooms only when a stage is picked (cascade). Reset the
-  // classroom selection if the stage clears.
   useEffect(() => {
-    if (!stage) {
+    if (!educationSystem) {
       setGrade('');
       return;
     }
@@ -726,10 +724,14 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       fetchClassrooms({
         page: 1,
         limit: 10000,
-        filters: { gradeId: stage, ...(schoolBranchId && { schoolBranchId }) },
+        filters: {
+          academicSystemId: educationSystem,
+          ...(stage && { gradeId: stage }),
+          ...(schoolBranchId && { schoolBranchId }),
+        },
       })
     );
-  }, [dispatch, stage, schoolBranchId]);
+  }, [dispatch, educationSystem, stage, schoolBranchId]);
 
   useEffect(() => {
     if (!schoolBranchId) {
@@ -1131,7 +1133,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
                     ? classroomOptions.find((c) => c.value === grade)?.label || ''
                     : ''
               }
-              disabled={!stage || isLoadingClassrooms}
+              disabled={!educationSystem || isLoadingClassrooms}
               variant="ghost"
               showSearch={false}
               className="min-w-[100px]"
