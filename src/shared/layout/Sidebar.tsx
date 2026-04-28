@@ -489,6 +489,42 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   // Which parent's flyout panel is currently open (collapsed mode only).
   const [flyoutKey, setFlyoutKey] = useState<string | null>(null);
 
+  const navRef = useRef<HTMLElement | null>(null);
+  const [scroll, setScroll] = useState<{
+    visible: boolean;
+    thumbTop: number;
+    thumbHeight: number;
+  }>({ visible: false, thumbTop: 0, thumbHeight: 0 });
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const recompute = () => {
+      const { scrollTop, scrollHeight, clientHeight } = nav;
+      const overflow = scrollHeight - clientHeight;
+      if (overflow <= 1) {
+        setScroll({ visible: false, thumbTop: 0, thumbHeight: 0 });
+        return;
+      }
+      const trackHeight = clientHeight;
+      const thumbHeight = Math.max(28, (clientHeight / scrollHeight) * trackHeight);
+      const thumbTop = (scrollTop / overflow) * (trackHeight - thumbHeight);
+      setScroll({ visible: true, thumbTop, thumbHeight });
+    };
+
+    recompute();
+    nav.addEventListener('scroll', recompute, { passive: true });
+    const ro = new ResizeObserver(recompute);
+    ro.observe(nav);
+    // Also observe content size changes
+    if (nav.firstElementChild) ro.observe(nav.firstElementChild as Element);
+    return () => {
+      nav.removeEventListener('scroll', recompute);
+      ro.disconnect();
+    };
+  }, [isCollapsed]);
+
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 1023px)');
     const update = (e: MediaQueryListEvent | MediaQueryList) => setIsCollapsed(e.matches);
@@ -898,56 +934,85 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         <div className="mx-2" style={{ height: 1, background: C.line }} />
       </div>
 
-      {/* Scrollable nav — custom emerald scrollbar lives on the inline-end edge */}
-      <nav
-        className="sidebar-scroll relative flex-1 overflow-y-auto overflow-x-hidden"
-        style={{ zIndex: 2, padding: '12px 0 16px' }}
-        aria-label="primary"
-      >
-        {sections.map((section, idx) => {
-          const showRule = !!section.titleKey && idx > firstTitledIdx;
-          // In collapsed mode, every titled section just gets a thin divider
-          // line above it — no header text.
-          const showCollapsedRule = isCollapsed && !!section.titleKey && idx > 0;
+      {/* Scroll region wrapper — positioning context for the custom scrollbar
+          thumb so the thumb only spans the nav area, not the brand header. */}
+      <div className="relative min-h-0 flex-1" style={{ zIndex: 2 }}>
+        <nav
+          ref={navRef}
+          className="sidebar-scroll absolute inset-0 overflow-y-auto overflow-x-hidden"
+          style={{ padding: '12px 0 16px' }}
+          aria-label="primary"
+        >
+          {sections.map((section, idx) => {
+            const showRule = !!section.titleKey && idx > firstTitledIdx;
+            // In collapsed mode, every titled section just gets a thin divider
+            // line above it — no header text.
+            const showCollapsedRule = isCollapsed && !!section.titleKey && idx > 0;
 
-          return (
-            <div key={`section-${idx}`} className={idx > 0 ? 'mt-2' : ''}>
-              {showCollapsedRule && (
-                <div
-                  style={{
-                    height: 1,
-                    background: C.rule,
-                    margin: '8px 14px',
-                  }}
-                />
-              )}
-              {!isCollapsed && showRule && (
-                <div
-                  style={{
-                    height: 1,
-                    background: C.rule,
-                    margin: '6px 22px 0',
-                  }}
-                />
-              )}
-              {!isCollapsed && section.titleKey && (
-                <div
-                  className={`text-[11px] font-normal ${textAlignClass}`}
-                  style={{
-                    color: C.inkMute,
-                    padding: '12px 28px 8px',
-                  }}
-                >
-                  {t(`sidebar.${section.titleKey}`)}
+            return (
+              <div key={`section-${idx}`} className={idx > 0 ? 'mt-2' : ''}>
+                {showCollapsedRule && (
+                  <div
+                    style={{
+                      height: 1,
+                      background: C.rule,
+                      margin: '8px 14px',
+                    }}
+                  />
+                )}
+                {!isCollapsed && showRule && (
+                  <div
+                    style={{
+                      height: 1,
+                      background: C.rule,
+                      margin: '6px 22px 0',
+                    }}
+                  />
+                )}
+                {!isCollapsed && section.titleKey && (
+                  <div
+                    className={`text-[11px] font-normal ${textAlignClass}`}
+                    style={{
+                      color: C.inkMute,
+                      padding: '12px 28px 8px',
+                    }}
+                  >
+                    {t(`sidebar.${section.titleKey}`)}
+                  </div>
+                )}
+                <div className="flex flex-col" style={{ gap: 1 }}>
+                  {section.items.map(renderMenuItem)}
                 </div>
-              )}
-              <div className="flex flex-col" style={{ gap: 1 }}>
-                {section.items.map(renderMenuItem)}
               </div>
-            </div>
-          );
-        })}
-      </nav>
+            );
+          })}
+        </nav>
+
+        {scroll.visible && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0"
+            style={{
+              insetInlineEnd: 4,
+              width: 4,
+              zIndex: 4,
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: scroll.thumbTop,
+                insetInlineEnd: 0,
+                width: 4,
+                height: scroll.thumbHeight,
+                background: '#e6ece8',
+                borderRadius: 999,
+                transition: 'background 0.2s ease',
+              }}
+            />
+          </div>
+        )}
+      </div>
     </aside>
   );
 };
