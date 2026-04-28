@@ -8,6 +8,7 @@ import MathIcon from '@gradex/assets/icons/Math.svg';
 import SchoolYellowIcon from '@gradex/assets/icons/SchoolYellow.svg';
 import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
 import StudentGreenIcon from '@gradex/assets/icons/StudentGreen.svg';
+import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -19,6 +20,14 @@ type StageOverview = {
   id: string;
   title: string;
   grades: GradeDto[];
+};
+
+type GradeWithStudentCount = GradeDto & {
+  studentCount?: number | null;
+  studentsCount?: number | null;
+  totalStudents?: number | null;
+  numberOfStudents?: number | null;
+  studentNumber?: number | null;
 };
 
 export default function ClassroomsList() {
@@ -40,6 +49,19 @@ export default function ClassroomsList() {
   useEffect(() => {
     dispatch(fetchGrades(schoolBranchId ?? ''));
   }, [dispatch, schoolBranchId]);
+
+  const getGradeStudentCount = (grade: GradeDto) => {
+    const gradeWithStudentCount = grade as GradeWithStudentCount;
+
+    return (
+      gradeWithStudentCount.studentCount ??
+      gradeWithStudentCount.studentsCount ??
+      gradeWithStudentCount.totalStudents ??
+      gradeWithStudentCount.numberOfStudents ??
+      gradeWithStudentCount.studentNumber ??
+      0
+    );
+  };
 
   const hasActiveFilters = searchTerm || selectedAcademicSystemId || selectedGradeId;
 
@@ -84,7 +106,10 @@ export default function ClassroomsList() {
     (accumulator, grade) => accumulator + (grade.classroomCount || 0),
     0
   );
-  const totalStudents = 0;
+  const totalStudents = (Array.isArray(grades) ? grades : []).reduce(
+    (accumulator, grade) => accumulator + getGradeStudentCount(grade),
+    0
+  );
 
   const maxStudentCount = useMemo(
     () =>
@@ -143,24 +168,38 @@ export default function ClassroomsList() {
               <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
                 <div className="text-base font-medium text-black-900">{stage.title}</div>
                 <span className="text-sm font-normal text-[#646969]">
-                  {stage.grades.length} {t('grades.totalEducationalStages')}
+                  {stage.grades.reduce(
+                    (accumulator, grade) => accumulator + getGradeStudentCount(grade),
+                    0
+                  )}{' '}
+                  {t('grades.studentPlural')}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {stage.grades.map((grade) => {
                   const gradeName =
                     currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr;
                   const classroomCount = grade.classroomCount || 0;
                   const progress =
                     maxStudentCount > 0 ? Math.round((classroomCount / maxStudentCount) * 100) : 0;
+                  const footerAction =
+                    classroomCount === 0
+                      ? {
+                          label: t('grades.addClassroom'),
+                          iconSrc: GreenPlusIcon,
+                          iconAlt: t('grades.addClassroom'),
+                          onClick: () => navigate('/classrooms/add-classroom'),
+                        }
+                      : undefined;
 
                   return (
                     <ProgressSummaryCard
                       key={grade.id}
                       title={gradeName}
-                      subtitle={`${classroomCount} ${t('grades.classroomPlural')}`}
+                      subtitle={classroomCount ? `${classroomCount} ${t('grades.classroomPlural')}` : ""}
                       progress={progress}
+                      footerAction={footerAction}
                       onClick={() => navigate(`/classrooms/${grade.id}`)}
                     />
                   );

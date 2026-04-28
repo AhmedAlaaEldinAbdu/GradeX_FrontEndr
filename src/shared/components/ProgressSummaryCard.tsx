@@ -2,6 +2,13 @@ import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 
+type FooterAction = {
+  label: string;
+  onClick: () => void;
+  iconSrc?: string;
+  iconAlt?: string;
+};
+
 export type ProgressSummaryCardProps = {
   title: string;
   subtitle?: string;
@@ -13,6 +20,7 @@ export type ProgressSummaryCardProps = {
   onClick?: () => void;
   actions?: Action[];
   className?: string;
+  footerAction?: FooterAction;
 };
 
 const clampProgress = (value?: number) => {
@@ -45,6 +53,7 @@ export default function ProgressSummaryCard({
   onClick,
   actions = [],
   className = '',
+  footerAction,
 }: ProgressSummaryCardProps) {
   const normalizedProgress = clampProgress(progress);
   const isClickable = Boolean(onClick);
@@ -100,15 +109,35 @@ export default function ProgressSummaryCard({
           </div>
         </div>
 
-        <div className="mt-auto flex items-center gap-3">
-          <span className="text-base font-medium text-black-900">{normalizedProgress}%</span>
-          <div className="h-3 flex-1 rounded-full bg-[#EEEEEE]">
-            <div
-              className={`h-full rounded-full ${resolvedProgressColorClassName}`}
-              style={{ width: `${normalizedProgress}%` }}
-            />
+        {footerAction ? (
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 rounded-2xl border border-green-500 px-6 py-1.5 text-base font-medium text-green-500 transition-colors"
+            onClick={(event) => {
+              event.stopPropagation();
+              footerAction.onClick();
+            }}
+          >
+            {footerAction.iconSrc ? (
+              <CustomImage
+                src={footerAction.iconSrc}
+                alt={footerAction.iconAlt || footerAction.label}
+                className="h-5 w-5"
+              />
+            ) : null}
+            <span>{footerAction.label}</span>
+          </button>
+        ) : (
+          <div className="mt-auto flex items-center gap-3">
+            <span className="text-base font-medium text-black-900">{normalizedProgress}%</span>
+            <div className="h-3 flex-1 rounded-full bg-[#EEEEEE]">
+              <div
+                className={`h-full rounded-full ${resolvedProgressColorClassName}`}
+                style={{ width: `${normalizedProgress}%` }}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </Card>
   );
