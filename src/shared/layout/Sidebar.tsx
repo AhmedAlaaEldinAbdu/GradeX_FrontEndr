@@ -547,7 +547,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
   return (
     <aside
-      className="relative flex w-[230px] flex-col overflow-hidden text-white"
+      className="relative flex w-[240px] flex-col overflow-hidden text-white"
       style={{
         background: C.bg,
         boxShadow: '0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03)',
