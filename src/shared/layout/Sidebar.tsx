@@ -13,20 +13,26 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import HomeIcon from '@gradex/assets/icons/Home.svg';
 import BookIcon from '@gradex/assets/icons/Book.svg';
 import BusIcon from '@gradex/assets/icons/Bus.svg';
-import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import EducationIcon from '@gradex/assets/icons/Education.svg';
 import NotificationIcon from '@gradex/assets/icons/Notification.svg';
 import PeopleRegularIcon from '@gradex/assets/icons/PeopleRegular.svg';
 import TicketsIcon from '@gradex/assets/icons/Tickets.svg';
-import ReportIcon from '@gradex/assets/icons/Report.svg';
 import ReportsIcon from '@gradex/assets/icons/Reports.svg';
 import SettingsIcon from '@gradex/assets/icons/Settings.svg';
-import StudentsIcon from '@gradex/assets/icons/Students.svg';
-import WalletIcon from '@gradex/assets/icons/Wallet.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
 import AlNukhbaLogo from '@/assets/identity/AlNukhbaLogo.svg';
 import GradeXLogo from '@gradex/assets/identity/GradeX.svg';
+import DataSourcesIcon from '@gradex/assets/icons/DataSources.svg';
+import DatePickerIcon from '@gradex/assets/icons/DatePicker.svg';
+import DocumentEditIcon from '@gradex/assets/icons/DocumentEdit.svg';
+import LedgerIcon from '@gradex/assets/icons/Ledger.svg';
+import MembersIcon from '@gradex/assets/icons/Members.svg';
+import NotesIcon from '@gradex/assets/icons/Notes.svg';
+import OpenBookIcon from '@gradex/assets/icons/OpenBook.svg';
+import PCIcon from '@gradex/assets/icons/PC.svg';
+import ReportApprovedIcon from '@gradex/assets/icons/ReportApproved.svg';
+import UserIcon from '@gradex/assets/icons/User.svg';
 
 /* === Design tokens (match standalone HTML) ============================ */
 const C = {
@@ -139,7 +145,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
     items: [
       {
         key: 'eduStages',
-        icon: renderIcon(BookIcon, 'Educational Stages'),
+        icon: renderIcon(OpenBookIcon, 'Educational Stages'),
         subItems: [
           { key: 'stagesClassrooms', path: '/classrooms' },
           { key: 'subjects', path: '/subjects' },
@@ -148,13 +154,13 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
       {
         key: 'lms',
-        icon: renderIcon(EducationIcon, 'E-Learning'),
+        icon: renderIcon(PCIcon, 'E-Learning'),
         path: '/lms',
         badge: { type: 'tag', value: 'LMS' },
       },
       {
         key: 'calendarManagement',
-        icon: renderIcon(CalendarIcon, 'Academic Calendar'),
+        icon: renderIcon(DatePickerIcon, 'Academic Calendar'),
         subItems: [
           { key: 'tasks', path: '/calendar/tasks' },
           { key: 'preparations', path: '/calendar/preparations' },
@@ -165,7 +171,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
       {
         key: 'examResults',
-        icon: renderIcon(ReportIcon, 'Exam Results'),
+        icon: renderIcon(NotesIcon, 'Exam Results'),
         path: '/exam-results',
       },
     ],
@@ -175,7 +181,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
     items: [
       {
         key: 'studentManagement',
-        icon: renderIcon(StudentsIcon, 'Student Management'),
+        icon: renderIcon(MembersIcon, 'Student Management'),
         subItems: [
           { key: 'students', path: '/students' },
           { key: 'studentApplications', path: '/student-applications' },
@@ -185,7 +191,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
       {
         key: 'requests',
-        icon: renderIcon(ReportIcon, 'Requests'),
+        icon: renderIcon(ReportApprovedIcon, 'Requests'),
         path: '/requests',
         badge: { type: 'count', value: 1 },
       },
@@ -201,17 +207,17 @@ const getSchoolAdminSections = (): MenuSection[] => [
     items: [
       {
         key: 'teachingStaff',
-        icon: renderIcon(ContactIcon, 'Staff'),
+        icon: renderIcon(UserIcon, 'Staff'),
         subItems: [
           { key: 'staff', path: '/teaching-staff' },
           { key: 'jobAnnouncements', path: '/job-announcements' },
           { key: 'interviews', path: '/interviews' },
         ],
       },
-      { key: 'attendance', icon: renderIcon(TicketsIcon, 'Attendance'), path: '/attendance' },
+      { key: 'attendance', icon: renderIcon(DocumentEditIcon, 'Attendance'), path: '/attendance' },
       {
         key: 'adminRequests',
-        icon: renderIcon(ReportsIcon, 'Admin Requests'),
+        icon: renderIcon(LedgerIcon, 'Admin Requests'),
         path: '/admin-requests',
         badge: { type: 'count', value: 1 },
       },
@@ -222,7 +228,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
     items: [
       {
         key: 'financialManagement',
-        icon: renderIcon(WalletIcon, 'Financial Management'),
+        icon: renderIcon(DataSourcesIcon, 'Financial Management'),
         subItems: [
           { key: 'financialTransactions', path: '/financial-management/transactions' },
           { key: 'tuitionFees', path: '/fees' },
