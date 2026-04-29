@@ -1067,6 +1067,24 @@
     }
   },
   "classrooms": {
+    "details": {
+      "classrooms": "صفوف دراسية",
+      "teacher": "معلم",
+      "studyMaterials": "مواد دراسية",
+      "studyBooks": "كتب دراسية",
+      "responsibleTeacher": "المعلم المسؤول: الأستاذة منى سليمان",
+      "academicSystem": "النظام التعليمي",
+      "educationalStage": "المرحلة الدراسية",
+      "grade": "الصف الدراسي",
+      "studentsCount": "عدد الطلاب",
+      "creationDate": "تاريخ الإضافة",
+      "classroomNotes": "ملاحظات عن الصف",
+      "noNotes": "لا يوجد",
+      "classroomImage": "صورة الصف",
+      "classroomName": "اسم الصف",
+      "attendanceRate": "نسبة الحضور",
+      "occupancyRate": "نسبة الإشغال"
+    },
     "validation": {
       "academicSystemRequired": "النظام التعليمي مطلوب",
       "educationalStageRequired": "المرحلة التعليمية مطلوبة",

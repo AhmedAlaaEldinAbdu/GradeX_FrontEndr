@@ -1067,6 +1067,24 @@
     }
   },
   "classrooms": {
+    "details": {
+      "classrooms": "Classrooms",
+      "teacher": "Teacher",
+      "studyMaterials": "Study Materials",
+      "studyBooks": "Study Books",
+      "responsibleTeacher": "Homeroom teacher: Ms. Mona Soliman",
+      "academicSystem": "Academic System",
+      "educationalStage": "Educational Stage",
+      "grade": "Grade",
+      "studentsCount": "Students Count",
+      "creationDate": "Creation Date",
+      "classroomNotes": "Classroom Notes",
+      "noNotes": "No notes",
+      "classroomImage": "Classroom Image",
+      "classroomName": "Classroom Name",
+      "attendanceRate": "Attendance Rate",
+      "occupancyRate": "Occupancy Rate"
+    },
     "validation": {
       "academicSystemRequired": "Academic system is required",
       "educationalStageRequired": "Educational stage is required",

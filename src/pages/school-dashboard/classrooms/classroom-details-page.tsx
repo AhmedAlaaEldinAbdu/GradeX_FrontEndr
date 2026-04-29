@@ -51,30 +51,30 @@ export default function ClassroomDetailsPage() {
   const classroomSummaryItems = [
     {
       icon: SchoolPurpleIcon,
-      alt: currentLang === 'ar' ? 'صفوف دراسية' : 'Classrooms',
+      alt: t('classrooms.details.classrooms'),
       value: classrooms.length,
-      label: currentLang === 'ar' ? 'صفوف دراسية' : 'Classrooms',
+      label: t('classrooms.details.classrooms'),
       iconClassName: 'bg-[#ECE5FF]',
     },
     {
       icon: TeachersNewBlueIcon,
-      alt: currentLang === 'ar' ? 'معلم' : 'Teacher',
+      alt: t('classrooms.details.teacher'),
       value: 0,
-      label: currentLang === 'ar' ? 'معلم' : 'Teacher',
+      label: t('classrooms.details.teacher'),
       iconClassName: 'bg-[#DDF1FF]',
     },
     {
       icon: FilesTealIcon,
-      alt: currentLang === 'ar' ? 'مواد دراسية' : 'Study Materials',
+      alt: t('classrooms.details.studyMaterials'),
       value: 0,
-      label: currentLang === 'ar' ? 'مواد دراسية' : 'Study Materials',
+      label: t('classrooms.details.studyMaterials'),
       iconClassName: 'bg-[#D9F5F7]',
     },
     {
       icon: BookYellowIcon,
-      alt: currentLang === 'ar' ? 'كتب دراسية' : 'Study Books',
+      alt: t('classrooms.details.studyBooks'),
       value: 0,
-      label: currentLang === 'ar' ? 'كتب دراسية' : 'Study Books',
+      label: t('classrooms.details.studyBooks'),
       iconClassName: 'bg-[#FFF6D8]',
     },
   ];
@@ -103,7 +103,7 @@ export default function ClassroomDetailsPage() {
         />
         <div className="flex flex-col items-start gap-6">
           <div className="text-base font-normal text-[#646969]">
-            المعلم المسؤول: الأستاذة منى سليمان
+            {t('classrooms.details.responsibleTeacher')}
           </div>
 
           <div className="flex w-full flex-wrap items-center justify-between gap-4">

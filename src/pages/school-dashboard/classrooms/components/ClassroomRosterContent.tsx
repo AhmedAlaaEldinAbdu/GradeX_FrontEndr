@@ -57,28 +57,28 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
 
   const classroomDetails = [
     {
-      label: currentLang === 'ar' ? 'النظام التعليمي' : 'Academic System',
+      label: t('classrooms.details.academicSystem'),
       value: currentClassroom?.academicSystemName || '-',
     },
     {
-      label: currentLang === 'ar' ? 'المرحلة الدراسية' : 'Educational Stage',
+      label: t('classrooms.details.educationalStage'),
       value: currentClassroom?.gradeName || '-',
     },
     {
-      label: currentLang === 'ar' ? 'الصف الدراسي' : 'Grade',
+      label: t('classrooms.details.grade'),
       value: currentClassroom?.gradeName || '-',
     },
     {
-      label: currentLang === 'ar' ? 'عدد الطلاب' : 'Students Count',
+      label: t('classrooms.details.studentsCount'),
       value: currentClassroom?.studentNumber ?? 0,
     },
     {
-      label: currentLang === 'ar' ? 'تاريخ الإضافة' : 'Creation Date',
+      label: t('classrooms.details.creationDate'),
       value: formattedCreationDate,
     },
     {
-      label: currentLang === 'ar' ? 'ملاحظات عن الصف' : 'Classroom Notes',
-      value: classroomNote || (currentLang === 'ar' ? 'لا يوجد' : 'No notes'),
+      label: t('classrooms.details.classroomNotes'),
+      value: classroomNote || t('classrooms.details.noNotes'),
     },
   ];
 
@@ -174,18 +174,18 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
                 {classroomImageSrc ? (
                   <CustomImage
                     src={classroomImageSrc}
-                    alt={classroomName || 'classroom'}
+                    alt={classroomName || t('classrooms.details.classroomImage')}
                     className="h-full w-full rounded-lg object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-[#DDF7EC] text-center text-xs font-medium text-[#53A785]">
-                    {currentLang === 'ar' ? 'صورة الصف' : 'Classroom Image'}
+                    {t('classrooms.details.classroomImage')}
                   </div>
                 )}
               </div>
               <div className="space-y-2 text-start">
                 <div className="text-base font-medium text-black-900">
-                  {currentLang === 'ar' ? 'اسم الصف' : 'Classroom Name'}
+                  {t('classrooms.details.classroomName')}
                 </div>
                 <div className="text-sm font-normal text-[#646969]">{classroomName || '-'}</div>
               </div>
@@ -194,15 +194,19 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:w-auto">
               <div className="app-card-shadow rounded-3xl border border-black-100 bg-white px-8 py-4">
                 <div className="text-center text-sm font-normal text-[#646969]">
-                  {currentLang === 'ar' ? 'نسبة الحضور' : 'Attendance Rate'}
+                  {t('classrooms.details.attendanceRate')}
                 </div>
-                <div className="mt-4 text-base font-medium text-[#F8951B]">{attendanceRate}%</div>
+                <div className="mt-4 text-start text-base font-medium text-[#F8951B]">
+                  {attendanceRate}%
+                </div>
               </div>
               <div className="app-card-shadow rounded-3xl border border-black-100 bg-white px-8 py-4">
                 <div className="text-center text-sm font-normal text-[#646969]">
-                  {currentLang === 'ar' ? 'نسبة الإشغال' : 'Occupancy Rate'}
+                  {t('classrooms.details.occupancyRate')}
                 </div>
-                <div className="mt-4 text-base font-medium text-[#1A9F58]">{occupancyRate}%</div>
+                <div className="mt-4 text-start text-base font-medium text-[#1A9F58]">
+                  {occupancyRate}%
+                </div>
               </div>
             </div>
           </div>
