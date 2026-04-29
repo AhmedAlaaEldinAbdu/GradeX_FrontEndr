@@ -8,19 +8,26 @@ import MathIcon from '@gradex/assets/icons/Math.svg';
 import SchoolYellowIcon from '@gradex/assets/icons/SchoolYellow.svg';
 import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
 import StudentGreenIcon from '@gradex/assets/icons/StudentGreen.svg';
+import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import type { Classroom } from '@/services/api/types/classrooms.types';
 import type { GradeDto } from '@/services/api/types/grades.types';
 
 type StageOverview = {
   id: string;
   title: string;
-  totalStudents: number;
-  classrooms: Classroom[];
+  grades: GradeDto[];
+};
+
+type GradeWithStudentCount = GradeDto & {
+  studentCount?: number | null;
+  studentsCount?: number | null;
+  totalStudents?: number | null;
+  numberOfStudents?: number | null;
+  studentNumber?: number | null;
 };
 
 export default function ClassroomsList() {
@@ -34,94 +41,83 @@ export default function ClassroomsList() {
   const selectedAcademicSystemId = '';
   const selectedGradeId = '';
 
-  // Access state directly
-  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
-  const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
-
   // Grades
   const grades = useAppSelector((state) => state.grades.grades);
   const isLoadingGrades = useAppSelector((state) => state.grades.isLoading);
-  const isLoading = isLoadingClassrooms || isLoadingGrades;
+  const isLoading = isLoadingGrades;
 
   useEffect(() => {
     dispatch(fetchGrades(schoolBranchId ?? ''));
   }, [dispatch, schoolBranchId]);
 
+  const getGradeStudentCount = (grade: GradeDto) => {
+    const gradeWithStudentCount = grade as GradeWithStudentCount;
+
+    return (
+      gradeWithStudentCount.studentCount ??
+      gradeWithStudentCount.studentsCount ??
+      gradeWithStudentCount.totalStudents ??
+      gradeWithStudentCount.numberOfStudents ??
+      gradeWithStudentCount.studentNumber ??
+      0
+    );
+  };
+
   const hasActiveFilters = searchTerm || selectedAcademicSystemId || selectedGradeId;
 
-  const gradeMap = useMemo(
-    () =>
-      (Array.isArray(grades) ? grades : []).reduce<Record<string, GradeDto>>(
-        (accumulator, grade) => {
-          accumulator[grade.id] = grade;
-          return accumulator;
-        },
-        {}
-      ),
-    [grades]
-  );
+  const stageOverview = useMemo<StageOverview[]>(() => {
+    const gradeDrivenStages = (Array.isArray(grades) ? grades : []).reduce<StageOverview[]>(
+      (accumulator, grade) => {
+        const schoolStageTitle =
+          currentLang === 'ar'
+            ? grade.lkSchoolStageNameAr || grade.nameAr
+            : grade.lkSchoolStageNameEn ||
+              grade.lkSchoolStageNameAr ||
+              grade.nameEn ||
+              grade.nameAr;
+        const stageId = grade.lkSchoolStageId || grade.id;
+        const existingStage = accumulator.find((stage) => stage.id === stageId);
 
-  const classroomsByGradeId = useMemo(
-    () =>
-      classrooms.reduce<Record<string, Classroom[]>>((accumulator, classroom) => {
-        if (!accumulator[classroom.gradeId]) {
-          accumulator[classroom.gradeId] = [];
+        if (existingStage) {
+          existingStage.grades.push(grade);
+          return accumulator;
         }
 
-        accumulator[classroom.gradeId].push(classroom);
+        accumulator.push({
+          id: stageId,
+          title: schoolStageTitle,
+          grades: [grade],
+        });
+
         return accumulator;
-      }, {}),
-    [classrooms]
-  );
+      },
+      []
+    );
 
-  const stageOverview = useMemo<StageOverview[]>(() => {
-    const gradeDrivenStages = (Array.isArray(grades) ? grades : []).map((grade) => {
-      const stageClassrooms = classroomsByGradeId[grade.id] || [];
-
-      return {
-        id: grade.id,
-        title: currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr,
-        totalStudents: stageClassrooms.reduce(
-          (accumulator, classroom) => accumulator + (classroom.studentNumber || 0),
-          0
-        ),
-        classrooms: stageClassrooms,
-      };
-    });
-
-    const orphanStages = Object.entries(classroomsByGradeId)
-      .filter(([gradeId]) => !gradeMap[gradeId])
-      .map(([gradeId, stageClassrooms]) => ({
-        id: gradeId,
-        title:
-          currentLang === 'ar'
-            ? stageClassrooms[0]?.gradeName || '-'
-            : stageClassrooms[0]?.gradeName || '-',
-        totalStudents: stageClassrooms.reduce(
-          (accumulator, classroom) => accumulator + (classroom.studentNumber || 0),
-          0
-        ),
-        classrooms: stageClassrooms,
-      }));
-
-    return [...gradeDrivenStages, ...orphanStages];
-  }, [classroomsByGradeId, currentLang, gradeMap, grades]);
+    return gradeDrivenStages;
+  }, [currentLang, grades]);
 
   const hasDisplayableStages = stageOverview.length > 0;
   const shouldShowEmptyState = !isLoading && !hasDisplayableStages && !hasActiveFilters;
   const shouldShowContent = isLoading || hasDisplayableStages || hasActiveFilters;
 
   const totalEducationalStages = stageOverview.length;
-  const totalClassrooms = classrooms.length;
-  const totalStudents = classrooms.reduce(
-    (accumulator, classroom) => accumulator + (classroom.studentNumber || 0),
+  const totalClassrooms = (Array.isArray(grades) ? grades : []).reduce(
+    (accumulator, grade) => accumulator + (grade.classroomCount || 0),
+    0
+  );
+  const totalStudents = (Array.isArray(grades) ? grades : []).reduce(
+    (accumulator, grade) => accumulator + getGradeStudentCount(grade),
     0
   );
 
   const maxStudentCount = useMemo(
     () =>
-      classrooms.reduce((maximum, classroom) => Math.max(maximum, classroom.studentNumber || 0), 0),
-    [classrooms]
+      (Array.isArray(grades) ? grades : []).reduce(
+        (maximum, grade) => Math.max(maximum, grade.classroomCount || 0),
+        0
+      ),
+    [grades]
   );
 
   return (
@@ -172,24 +168,39 @@ export default function ClassroomsList() {
               <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
                 <div className="text-base font-medium text-black-900">{stage.title}</div>
                 <span className="text-sm font-normal text-[#646969]">
-                  {stage.totalStudents} {t('grades.studentPlural')}
+                  {stage.grades.reduce(
+                    (accumulator, grade) => accumulator + getGradeStudentCount(grade),
+                    0
+                  )}{' '}
+                  {t('grades.studentPlural')}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {stage.classrooms.map((classroom) => {
-                  const classroomName = currentLang === 'ar' ? classroom.name : classroom.nameEn;
-                  const studentCount = classroom.studentNumber || 0;
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {stage.grades.map((grade) => {
+                  const gradeName =
+                    currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr;
+                  const classroomCount = grade.classroomCount || 0;
                   const progress =
-                    maxStudentCount > 0 ? Math.round((studentCount / maxStudentCount) * 100) : 0;
+                    maxStudentCount > 0 ? Math.round((classroomCount / maxStudentCount) * 100) : 0;
+                  const footerAction =
+                    classroomCount === 0
+                      ? {
+                          label: t('grades.addClassroom'),
+                          iconSrc: GreenPlusIcon,
+                          iconAlt: t('grades.addClassroom'),
+                          onClick: () => navigate(`/classrooms/add-classroom?gradeId=${grade.id}`),
+                        }
+                      : undefined;
 
                   return (
                     <ProgressSummaryCard
-                      key={classroom.id}
-                      title={classroomName}
-                      subtitle={`${studentCount} ${t('grades.studentPlural')}`}
+                      key={grade.id}
+                      title={gradeName}
+                      subtitle={classroomCount ? `${classroomCount} ${t('grades.classroomPlural')}` : ""}
                       progress={progress}
-                      onClick={() => navigate(`/classrooms/${classroom.id}`)}
+                      footerAction={footerAction}
+                      onClick={() => navigate(`/classrooms/${grade.id}`)}
                     />
                   );
                 })}

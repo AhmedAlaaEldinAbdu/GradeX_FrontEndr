@@ -25,10 +25,19 @@ import type {
  */
 export async function getClassrooms(params?: ClassroomQueryParams): Promise<ClassroomListResponse> {
   const schoolBranchId = getCurrentSchoolBranchId();
+  const normalizedParams = params as ClassroomQueryParams & {
+    SchoolBranchId?: string;
+    PageIndex?: number;
+    PageSize?: number;
+  };
+
   const response: AxiosResponse<ClassroomListResponse> = await axiosClient.get(
     ClassroomEndpoints.getClassrooms,
     {
-      params: { ...params, schoolBranchId },
+      params: {
+        ...normalizedParams,
+        SchoolBranchId: normalizedParams?.SchoolBranchId || schoolBranchId,
+      },
       paramsSerializer: {
         serialize: (params) => {
           const searchParams = new URLSearchParams();
@@ -55,8 +64,8 @@ export async function getClassrooms(params?: ClassroomQueryParams): Promise<Clas
         classroomDto: [],
         totalItems: 0,
         totalPages: 0,
-        pageIndex: params?.pageIndex || 1,
-        pageSize: params?.pageSize || 10,
+        pageIndex: normalizedParams?.PageIndex || 1,
+        pageSize: normalizedParams?.PageSize || 10,
       },
       isSuccess: false,
       message: '',
@@ -97,8 +106,8 @@ export async function createClassroom(
       headers:
         data instanceof FormData
           ? {
-              'Content-Type': 'multipart/form-data',
-            }
+            'Content-Type': 'multipart/form-data',
+          }
           : undefined,
     }
   );
@@ -119,8 +128,8 @@ export async function updateClassroom(
       headers:
         data instanceof FormData
           ? {
-              'Content-Type': 'multipart/form-data',
-            }
+            'Content-Type': 'multipart/form-data',
+          }
           : undefined,
     }
   );

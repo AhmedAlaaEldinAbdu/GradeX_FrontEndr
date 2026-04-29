@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import Loading from '@/shared/components/Loading';
 import EmptyState from '@/shared/components/EmptyState';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { deleteClassroom, fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { deleteClassroom } from '@/redux/features/classrooms/classroomsSlice';
 import MathIcon from '@gradex/assets/icons/Math.svg';
 import ProgressSummaryCard from '../../../../shared/components/ProgressSummaryCard';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
@@ -20,13 +20,9 @@ import type { Classroom } from '@/services/api/types/classrooms.types';
 
 type ClassroomDetailsContentProps = {
   currentLang: 'ar' | 'en';
-  schoolBranchId?: string;
 };
 
-export default function ClassroomDetailsContent({
-  currentLang,
-  schoolBranchId,
-}: ClassroomDetailsContentProps) {
+export default function ClassroomDetailsContent({ currentLang }: ClassroomDetailsContentProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -37,28 +33,10 @@ export default function ClassroomDetailsContent({
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
-  const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
   const isLoading = useAppSelector((state) => state.classrooms.isLoading);
   const isDeleting = useAppSelector((state) => state.classrooms.isDeleting);
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
-
-  useEffect(() => {
-    if (!currentClassroom?.gradeId) {
-      return;
-    }
-
-    dispatch(
-      fetchClassrooms({
-        page: 1,
-        limit: 10000,
-        filters: {
-          gradeId: currentClassroom.gradeId,
-          schoolBranchId: schoolBranchId || undefined,
-        },
-      })
-    );
-  }, [currentClassroom?.gradeId, dispatch, schoolBranchId]);
 
   const maxStudentCount = classrooms.reduce(
     (maximum, classroom) => Math.max(maximum, classroom.studentNumber || 0),
@@ -71,8 +49,10 @@ export default function ClassroomDetailsContent({
     }
 
     try {
+      const willDeleteLastClassroom =
+        classrooms.length === 1 && classrooms[0]?.id === classroomPendingDelete.id;
+
       await dispatch(deleteClassroom(classroomPendingDelete.id)).unwrap();
-      const deletedCurrentClassroom = classroomPendingDelete.id === currentClassroom?.id;
       setClassroomPendingDelete(null);
       setShowPopupMessage({
         show: true,
@@ -80,7 +60,7 @@ export default function ClassroomDetailsContent({
         message: t('grades.gradeDeletedSuccessfully'),
       });
 
-      if (deletedCurrentClassroom) {
+      if (willDeleteLastClassroom) {
         navigate('/classrooms');
       }
     } catch (error) {
@@ -110,7 +90,7 @@ export default function ClassroomDetailsContent({
     },
   ];
 
-  if (isLoading && !currentClassroom) {
+  if (isLoading && classrooms.length === 0) {
     return (
       <Card>
         <Loading />
@@ -118,7 +98,7 @@ export default function ClassroomDetailsContent({
     );
   }
 
-  if (!currentClassroom) {
+  if (!isLoading && classrooms.length === 0) {
     return (
       <Card>
         <EmptyState imgSrc={MathIcon} description={t('common.noDataFound')} blend={true} />

@@ -36,12 +36,12 @@ export interface ClassroomListResponse {
 }
 
 export interface ClassroomQueryParams {
-    pageIndex?: number;
-    pageSize?: number;
-    name?: string;
-    academicSystemId?: string;
-    gradeId?: string;
-    schoolBranchId?: string;
+    PageIndex?: number;
+    PageSize?: number;
+    Name?: string;
+    AcademicSystemId?: string;
+    GradeId?: string;
+    SchoolBranchId?: string;
 }
 
 export interface ClassroomDto {
