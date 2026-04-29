@@ -7,7 +7,6 @@ export default function AddTaskPage() {
     <div className="space-y-6">
       <Breadcrumb
         items={[
-          { label: 'sidebar.academicAffairs' },
           { label: 'sidebar.tasks', path: '/calendar/tasks' },
           { label: 'tasksManagement.addPage.title' },
         ]}
