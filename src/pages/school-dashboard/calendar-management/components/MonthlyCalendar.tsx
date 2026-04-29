@@ -497,6 +497,8 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     ]
   );
 
+  const hasActiveFilters = Boolean(searchTerm.trim() || stageFilter);
+
   const handleResetFilters = () => {
     setSearchTerm('');
     setStageFilter('');
@@ -523,14 +525,16 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
               disabled={isEducationalStagesLoading}
             />
           </div>
-          <button
-            onClick={handleResetFilters}
-            className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-            title={t('actions.clearFilter')}
-          >
-            <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />
-            <span>{t('actions.clearFilter')}</span>
-          </button>
+          {hasActiveFilters && (
+            <button
+              onClick={handleResetFilters}
+              className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+              title={t('actions.clearFilter')}
+            >
+              <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />
+              <span>{t('actions.clearFilter')}</span>
+            </button>
+          )}
         </div>
 
         {isLoading ? (
