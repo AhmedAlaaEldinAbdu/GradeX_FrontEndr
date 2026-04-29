@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
@@ -19,6 +18,7 @@ import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import MetricCard from '@/shared/components/MetricCard';
+import { getBookStatusBadgeColor } from '@/shared/components/SharedBadges';
 import type { FlattenedBook, BookStatus } from '@/types/books';
 import LibraryGreenIcon from '@/assets/icons/LibraryGreen.svg';
 import BookUploadBlueIcon from '@/assets/icons/BookUploadBlue.svg';
@@ -27,11 +27,6 @@ const BOOK_STATUS_OPTIONS = [
   { value: '1', labelKey: 'books.available' },
   { value: '2', labelKey: 'books.unavailable' },
 ];
-
-const bookStatusBadgeClasses: Record<number, string> = {
-  1: 'text-green-800',
-  2: 'bg-red-100 text-red-800',
-};
 
 export default function BooksList() {
   const { t, i18n } = useTranslation();
@@ -202,13 +197,9 @@ export default function BooksList() {
     {
       header: 'books.status',
       accessor: (row) => (
-        <Badge
-          variant="default"
-          size="sm"
-          className={bookStatusBadgeClasses[row.status] || 'text-gray-800'}
-        >
+        <span className={getBookStatusBadgeColor(row.status)}>
           {getStatusLabel(row.status)}
-        </Badge>
+        </span>
       ),
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
