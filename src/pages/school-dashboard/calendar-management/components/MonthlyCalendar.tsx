@@ -65,6 +65,20 @@ const buildDateTime = (date: string, time: string) => {
   return new Date(`${date}T${normalizedTime}`);
 };
 
+const isPastCalendarDate = (date?: Date | string) => {
+  if (!date) return false;
+
+  const targetDate = new Date(date);
+  if (Number.isNaN(targetDate.getTime())) return false;
+
+  targetDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return targetDate < today;
+};
+
 const mapApiEventToEntity = (event: MonthlyCalendarEvent): MonthlyEventEntity => {
   const day = event.day ? format(new Date(event.day), 'yyyy-MM-dd') : '';
   const startTime = event.startTime ? format(new Date(event.startTime), 'HH:mm') : '';
@@ -261,12 +275,20 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   }, []);
 
   const handleOpenAddPopup = useCallback((date?: Date) => {
+    if (isPastCalendarDate(date)) {
+      showToast({
+        message: t('monthlyCalendar.messages.cannotAddPastEvent'),
+        type: 'error',
+      });
+      return;
+    }
+
     setEditorMode('add');
     setEditingEventId(null);
     setEditorInitialValues(null);
     setSelectedDateForEditor(date);
     setIsEditorOpen(true);
-  }, []);
+  }, [showToast, t]);
 
   useImperativeHandle(
     ref,
@@ -345,6 +367,14 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
 
   const handleSaveEvent = useCallback(
     async (values: MonthlyEventFormValues) => {
+      if (editorMode === 'add' && isPastCalendarDate(values.day)) {
+        showToast({
+          message: t('monthlyCalendar.messages.cannotAddPastEvent'),
+          type: 'error',
+        });
+        return;
+      }
+
       const payload = transformValuesToRequest(values);
       try {
         if (editorMode === 'edit' && editingEventId) {
@@ -448,6 +478,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         label: t('monthlyCalendar.actions.addEvent'),
         icon: GreenPlusIcon,
         onClick: (date) => handleOpenAddPopup(date),
+        hidden: (date) => isPastCalendarDate(date),
       },
       {
         label: t('monthlyCalendar.actions.editEvent'),

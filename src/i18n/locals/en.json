@@ -2314,7 +2314,8 @@
     "messages": {
       "eventAdded": "Event added successfully",
       "eventUpdated": "Event updated successfully",
-      "eventDeleted": "Event deleted successfully"
+      "eventDeleted": "Event deleted successfully",
+      "cannotAddPastEvent": "You cannot add an event on a previous day."
     },
     "validation": {
       "nameAr": "Arabic name is required",

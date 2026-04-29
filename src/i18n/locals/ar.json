@@ -2325,7 +2325,8 @@
     "messages": {
       "eventAdded": "تم إضافة الحدث بنجاح",
       "eventUpdated": "تم تحديث الحدث بنجاح",
-      "eventDeleted": "تم حذف الحدث بنجاح"
+      "eventDeleted": "تم حذف الحدث بنجاح",
+      "cannotAddPastEvent": "لا يمكن إضافة حدث في تاريخ سابق."
     },
     "validation": {
       "nameAr": "اسم الحدث بالعربية مطلوب",
