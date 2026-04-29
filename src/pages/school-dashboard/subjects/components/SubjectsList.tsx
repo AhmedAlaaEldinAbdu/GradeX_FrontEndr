@@ -179,7 +179,7 @@ export default function SubjectsList() {
       placeholder: t('subjects.searchByMaterialOrStageName'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
-      width: '60%',
+      width: '40%',
     },
     {
       type: 'custom',
@@ -187,7 +187,7 @@ export default function SubjectsList() {
       placeholder: '',
       value: selectedLevel,
       onChange: () => {},
-      width: '40%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedLevel}

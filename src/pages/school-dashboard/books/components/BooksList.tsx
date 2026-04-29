@@ -186,7 +186,7 @@ export default function BooksList() {
             <CustomImage
               src={BooksBadgeIcon}
               alt={row.name}
-              className={`h-6 w-6 ${row.filePath ? 'opacity-100' : 'opacity-50'}`}
+              className={`h-[45px] w-[45px] ${row.filePath ? 'opacity-100' : 'opacity-50'}`}
             />
           </button>
         </div>
@@ -197,9 +197,7 @@ export default function BooksList() {
     {
       header: 'books.status',
       accessor: (row) => (
-        <span className={getBookStatusBadgeColor(row.status)}>
-          {getStatusLabel(row.status)}
-        </span>
+        <span className={getBookStatusBadgeColor(row.status)}>{getStatusLabel(row.status)}</span>
       ),
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
@@ -270,7 +268,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedMaterialId,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedMaterialId}
@@ -293,7 +291,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedSchoolStageId,
       onChange: () => {},
-      width: '30%',
+      width: '25%',
       customComponent: (
         <CustomSelect
           value={selectedSchoolStageId}
@@ -316,7 +314,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedStatus,
       onChange: () => {},
-      width: '20%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={selectedStatus}
