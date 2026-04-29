@@ -200,10 +200,10 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
     setLoadingClassroomsForRow((prev) => ({ ...prev, [rowId]: true }));
     try {
       const response = await classroomApiService.getClassrooms({
-        pageIndex: 1,
-        pageSize: 100,
-        gradeId,
-        schoolBranchId: schoolBranchId || undefined,
+        PageIndex: 1,
+        PageSize: 100,
+        GradeId: gradeId,
+        SchoolBranchId: schoolBranchId || undefined,
       });
       setClassroomsPerRow((prev) => ({
         ...prev,

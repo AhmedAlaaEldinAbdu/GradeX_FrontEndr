@@ -38,8 +38,8 @@ const HousingModal: React.FC<HousingModalProps> = ({
       setLoading(true);
       try {
         const response = await getClassrooms({
-          pageSize: 100,
-          schoolBranchId: getCurrentSchoolBranchId() || undefined,
+          PageSize: 100,
+          SchoolBranchId: getCurrentSchoolBranchId() || undefined,
           ...(gradeId && { gradeId }),
         });
         setClassrooms(response.data.classroomDto || []);
