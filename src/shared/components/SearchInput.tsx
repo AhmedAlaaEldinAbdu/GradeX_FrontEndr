@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import SearchDarkIcon from '@gradex/assets/icons/SearchDark.svg';
+import CustomImage from './CustomImage';
 
 type SearchInputProps = {
   value: string;
@@ -48,7 +49,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   const inputClasses = useMemo(
     () =>
       className ??
-      `w-full h-[40px] w-full rounded-2xl border border-[#DDE0E0] text-sm font-normal text-[#3A3A3A] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+      `w-full h-[48px] w-full rounded-2xl py-1 border border-[#DDE0E0] text-sm font-normal text-[#3A3A3A] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
         isRTL ? 'pl-4 pr-10' : 'pl-10 pr-4'
       }`,
     [className, isRTL]
@@ -74,7 +75,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         autoFocus={autoFocus}
         aria-label={placeholder}
       />
-      <img
+      <CustomImage
         src={SearchDarkIcon}
         alt=""
         className={`pointer-events-none absolute top-1/2 -translate-y-1/2 transform text-gray-400 ${
