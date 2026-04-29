@@ -86,6 +86,7 @@ export default function ClassroomDetailsPage() {
   ];
 
   const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.eduStages') },
     { label: t('grades.title'), path: '/classrooms' },
     { label: classroomTitle || t('grades.classroomDetails') },
