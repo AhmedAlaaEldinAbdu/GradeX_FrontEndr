@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
@@ -26,6 +27,11 @@ const BOOK_STATUS_OPTIONS = [
   { value: '1', labelKey: 'books.available' },
   { value: '2', labelKey: 'books.unavailable' },
 ];
+
+const bookStatusBadgeClasses: Record<number, string> = {
+  1: 'text-green-800',
+  2: 'bg-red-100 text-red-800',
+};
 
 export default function BooksList() {
   const { t, i18n } = useTranslation();
@@ -131,17 +137,6 @@ export default function BooksList() {
     }
   };
 
-  const getStatusBadgeColor = (status: BookStatus) => {
-    switch (status) {
-      case 1:
-        return 'bg-green-100 text-green-800';
-      case 2:
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const columns: DataTableColumn<FlattenedBook>[] = [
     {
       header: '#',
@@ -207,9 +202,13 @@ export default function BooksList() {
     {
       header: 'books.status',
       accessor: (row) => (
-        <span className={`inline-flex rounded-full px-2 py-1 ${getStatusBadgeColor(row.status)}`}>
+        <Badge
+          variant="default"
+          size="sm"
+          className={bookStatusBadgeClasses[row.status] || 'text-gray-800'}
+        >
           {getStatusLabel(row.status)}
-        </span>
+        </Badge>
       ),
       headerClassName: 'min-w-[150px]',
       className: 'text-center',

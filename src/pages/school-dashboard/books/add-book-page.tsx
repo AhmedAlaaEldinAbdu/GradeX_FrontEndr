@@ -7,6 +7,7 @@ export default function AddBookPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.eduStages') },
     { label: t('books.title'), path: '/books' },
     { label: t('books.addBook') },
