@@ -310,7 +310,7 @@ export default function EditSubject() {
           {/* All Subjects Preview Table */}
           {allSubjectsForDisplay.length > 0 && (
             <div className="mb-6">
-              <h3 className="mb-4 text-start text-2xl font-medium text-green-500">
+              <h3 className="mb-4 text-start text-base font-medium text-green-500">
                 {t('subjects.addedSubjects')}
               </h3>
               <DataTable

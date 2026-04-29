@@ -18,6 +18,7 @@ import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import MetricCard from '@/shared/components/MetricCard';
+import { getBookStatusBadgeColor } from '@/shared/components/SharedBadges';
 import type { FlattenedBook, BookStatus } from '@/types/books';
 import LibraryGreenIcon from '@/assets/icons/LibraryGreen.svg';
 import BookUploadBlueIcon from '@/assets/icons/BookUploadBlue.svg';
@@ -131,17 +132,6 @@ export default function BooksList() {
     }
   };
 
-  const getStatusBadgeColor = (status: BookStatus) => {
-    switch (status) {
-      case 1:
-        return 'bg-green-100 text-green-800';
-      case 2:
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const columns: DataTableColumn<FlattenedBook>[] = [
     {
       header: '#',
@@ -196,7 +186,7 @@ export default function BooksList() {
             <CustomImage
               src={BooksBadgeIcon}
               alt={row.name}
-              className={`h-6 w-6 ${row.filePath ? 'opacity-100' : 'opacity-50'}`}
+              className={`h-[45px] w-[45px] ${row.filePath ? 'opacity-100' : 'opacity-50'}`}
             />
           </button>
         </div>
@@ -207,9 +197,7 @@ export default function BooksList() {
     {
       header: 'books.status',
       accessor: (row) => (
-        <span className={`inline-flex rounded-full px-2 py-1 ${getStatusBadgeColor(row.status)}`}>
-          {getStatusLabel(row.status)}
-        </span>
+        <span className={getBookStatusBadgeColor(row.status)}>{getStatusLabel(row.status)}</span>
       ),
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
@@ -280,7 +268,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedMaterialId,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedMaterialId}
@@ -303,7 +291,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedSchoolStageId,
       onChange: () => {},
-      width: '30%',
+      width: '25%',
       customComponent: (
         <CustomSelect
           value={selectedSchoolStageId}
@@ -326,7 +314,7 @@ export default function BooksList() {
       placeholder: '',
       value: selectedStatus,
       onChange: () => {},
-      width: '20%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={selectedStatus}

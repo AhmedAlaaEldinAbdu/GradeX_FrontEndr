@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import SearchDarkIcon from '@gradex/assets/icons/SearchDark.svg';
+import CustomImage from './CustomImage';
+import XmarkCircleBlackIcon from '@gradex/assets/icons/XmarkCircleBlack.svg';
+import ArrowDownSmIcon from '@gradex/assets/icons/ArrowDownSm.svg';
 
 export interface CustomSelectOption {
   value: string;
@@ -128,10 +131,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`h-[40px] w-full ${isWrap ? 'text-nowrap' : 'text-nowrap'} rounded-2xl border border-[#DDE0E0] text-sm font-normal focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`h-[48px] w-full overflow-auto ${isWrap ? 'text-nowrap' : 'text-nowrap'} rounded-2xl border border-[#DDE0E0] text-sm font-normal focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
           variant === 'ghost'
-            ? 'min-h-[40px] border-0 bg-transparent px-4 py-2.5 font-normal text-[#3A3A3A] placeholder:text-[#646969] hover:bg-gray-50'
-            : `min-h-[40px] w-full rounded-2xl border border-[#DDE0E0] bg-white px-3 py-2 text-sm font-normal focus:border-transparent focus:ring-2 focus:ring-green-500 ${
+            ? 'min-h-[48px] border-0 bg-transparent px-4 py-2.5 font-normal text-[#3A3A3A] placeholder:text-[#646969] hover:bg-gray-50'
+            : `min-h-[48px] w-full rounded-2xl border border-[#DDE0E0] bg-white px-3 py-2 text-sm font-normal focus:border-transparent focus:ring-2 focus:ring-green-500 ${
                 error
                   ? 'border-red-500 focus-within:ring-2 focus-within:ring-red-500'
                   : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-500'
@@ -139,7 +142,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         } ${isRTL ? 'text-right' : 'text-left'}`}
       >
         <div
-          className={`flex flex-row${isRTL ? '-reverse' : ''} items-center justify-between ${variant === 'ghost' ? 'gap-1' : 'gap-2'}`}
+          className={`flex flex-row${isRTL ? '-reverse' : ''} w-full items-center justify-between ${variant === 'ghost' ? 'gap-1' : 'gap-2'}`}
         >
           {/* Display selected items */}
           <div className="flex-1 overflow-hidden">
@@ -149,28 +152,20 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   {selectedOptions.map((opt) => (
                     <div
                       key={opt.value}
-                      className="flex items-center gap-1.5 rounded-lg bg-teal-50 px-2.5 py-1"
+                      className="flex items-center gap-1.5 rounded-lg bg-[#DFF8ED] px-2.5 py-[5px]"
                     >
-                      <span className="text-sm font-medium text-teal-800">{opt.label}</span>
+                      <span className="text-sm font-normal text-[#3A3A3A]">{opt.label}</span>
+
                       <button
                         type="button"
                         onClick={(e) => handleRemoveTag(opt.value, e)}
-                        className="flex h-4 w-4 items-center justify-center rounded-full bg-teal-800 text-white transition-colors hover:bg-teal-900"
                         aria-label={`Remove ${opt.label}`}
                       >
-                        <svg
-                          className="h-2.5 w-2.5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={3}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
+                        <CustomImage
+                          src={XmarkCircleBlackIcon}
+                          alt={'close icon'}
+                          className="w-20px h-20px"
+                        />
                       </button>
                     </div>
                   ))}
@@ -184,18 +179,14 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
               </span>
             )}
           </div>
-          <svg
-            className={`${variant === 'ghost' ? 'h-4 w-4' : 'h-5 w-5'} flex-shrink-0 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''} ${isRTL ? 'order-first' : ''}`}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clipRule="evenodd"
+          <div className="absolute left-6 top-1/2 -translate-y-1/2">
+            <CustomImage
+              src={ArrowDownSmIcon}
+              alt="A"
+              aria-hidden="true"
+              className={`${variant === 'ghost' ? 'h-2.5 w-2.5' : 'h-2.5 w-2.5'} flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''} ${isRTL ? 'order-first' : ''}`}
             />
-          </svg>
+          </div>
         </div>
       </button>
 

@@ -7,7 +7,11 @@ import PlusIcon from '@gradex/assets/icons/Plus.svg';
 export default function ClassroomsPage() {
   const { t } = useTranslation();
 
-  const breadcrumbItems = [{ label: t('sidebar.eduStages') }, { label: t('grades.title') }];
+  const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
+    { label: t('sidebar.eduStages') },
+    { label: t('grades.title') },
+  ];
 
   return (
     <div>
@@ -25,7 +29,6 @@ export default function ClassroomsPage() {
             imgClassName: 'w-[24px] h-[24px]',
           },
         ]}
-        hasHeaderControls={true}
       />
 
       {/* Main Content */}

@@ -13,6 +13,7 @@ export default function ClassroomRosterPage() {
   const gradeTitle = currentClassroom?.gradeName;
 
   const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.eduStages') },
     { label: t('grades.title'), path: '/classrooms' },
     ...(gradeTitle

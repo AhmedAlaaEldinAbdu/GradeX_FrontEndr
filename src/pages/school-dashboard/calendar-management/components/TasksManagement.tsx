@@ -20,6 +20,10 @@ import ClockYellowBoldIcon from '@gradex/assets/icons/ClockYellowBold.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import TasksBadgeIcon from '@gradex/assets/icons/TasksBadge.svg';
+import {
+  getTaskCorrectionBadgeColor,
+  getTaskTypeBadgeColor,
+} from '@/shared/components/SharedBadges';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import {
@@ -38,6 +42,8 @@ type TaskTableRow = SchoolTask & {
   submissionsLabel: string;
 };
 
+const TASK_CORRECTION_STATUS_OPTIONS: CorrectionStatusKey[] = ['corrected', 'notCorrected'];
+
 const PAGE_SIZE = 7;
 
 const TASK_TYPE_LABEL_KEYS: Partial<Record<SchoolTaskType, string>> = {
@@ -45,24 +51,6 @@ const TASK_TYPE_LABEL_KEYS: Partial<Record<SchoolTaskType, string>> = {
   2: 'tasksManagement.taskTypes.training',
   3: 'tasksManagement.taskTypes.dictation',
   4: 'tasksManagement.taskTypes.quiz',
-};
-
-const TASK_TYPE_META: Record<number, { className: string }> = {
-  1: { className: 'bg-emerald-100 text-emerald-700' },
-  2: { className: 'bg-amber-100 text-amber-700' },
-  3: { className: 'bg-cyan-100 text-cyan-700' },
-  4: { className: 'bg-violet-100 text-violet-700' },
-  5: { className: 'bg-blue-100 text-blue-700' },
-  6: { className: 'bg-rose-100 text-rose-700' },
-};
-
-const TASK_CORRECTION_META: Record<CorrectionStatusKey, { className: string }> = {
-  corrected: {
-    className: 'bg-emerald-100 text-emerald-700',
-  },
-  notCorrected: {
-    className: 'bg-rose-100 text-rose-700',
-  },
 };
 
 const formatTaskDate = (value: string) => {
@@ -191,7 +179,7 @@ export default function TasksManagement() {
     label: getTaskTypeLabel(value),
   }));
 
-  const correctionStatusOptions = Object.keys(TASK_CORRECTION_META).map((value) => ({
+  const correctionStatusOptions = TASK_CORRECTION_STATUS_OPTIONS.map((value) => ({
     value,
     label: t(`tasksManagement.correctionStatuses.${value}`),
   }));
@@ -301,16 +289,11 @@ export default function TasksManagement() {
     },
     {
       header: 'tasksManagement.table.correctionStatus',
-      accessor: (row) => {
-        const meta = TASK_CORRECTION_META[row.correctionStatusKey];
-        return (
-          <span
-            className={`inline-flex min-w-[130px] justify-center rounded-full px-4 py-2 ${meta.className}`}
-          >
-            {t(`tasksManagement.correctionStatuses.${row.correctionStatusKey}`)}
-          </span>
-        );
-      },
+      accessor: (row) => (
+        <span className={getTaskCorrectionBadgeColor(row.correctionStatusKey)}>
+          {t(`tasksManagement.correctionStatuses.${row.correctionStatusKey}`)}
+        </span>
+      ),
       headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
@@ -322,16 +305,9 @@ export default function TasksManagement() {
     },
     {
       header: 'tasksManagement.table.taskType',
-      accessor: (row) => {
-        const meta = TASK_TYPE_META[row.taskType];
-        return (
-          <span
-            className={`inline-flex min-w-[130px] justify-center rounded-full px-4 py-2 ${meta.className}`}
-          >
-            {getTaskTypeLabel(row.taskType)}
-          </span>
-        );
-      },
+      accessor: (row) => (
+        <span className={getTaskTypeBadgeColor(row.taskType)}>{getTaskTypeLabel(row.taskType)}</span>
+      ),
       headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
