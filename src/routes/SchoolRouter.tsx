@@ -23,6 +23,8 @@ import TeacherPlacementPage from '@/pages/school-dashboard/teachers/teacher-plac
 import TeachingStaffPage from '@/pages/school-dashboard/teaching-staff/TeachingStaffPage';
 import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page';
 import AttendancePage from '@/pages/school-dashboard/attendance/attendance-page';
+import StudentsAttendancePage from '@/pages/school-dashboard/attendance/students-attendance-page';
+import EmployeesAttendancePage from '@/pages/school-dashboard/attendance/employees-attendance-page';
 import JobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/job-announcements-page';
 import AddJobAnnouncementsPage from '@/pages/school-dashboard/job-announcements/add-job-announcements-page';
 import EditJobAnnouncementPage from '@/pages/school-dashboard/job-announcements/edit-job-announcement-page';
@@ -80,7 +82,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/students"
+        path="/students-record"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
@@ -561,6 +563,27 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
+        path="/students/attendance"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <StudentsAttendancePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees/attendance"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EmployeesAttendancePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      {/* Legacy tabbed page kept for backward-compat with deep links */}
+      <Route
         path="/attendance"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
@@ -701,12 +724,25 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/bus-management"
+        path="/bus-management/bus"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
                 <h2 className="text-2xl font-bold text-gray-800">إدارة الحافلات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bus-management/drivers"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">السائقين</h2>
                 <p className="mt-4 text-gray-600">قريباً...</p>
               </div>
             </MainLayout>
@@ -746,6 +782,201 @@ const SchoolRouter: React.FC = () => {
             <MainLayout>
               <div className="py-16 text-center">
                 <h2 className="text-2xl font-bold text-gray-800">الإعدادات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/studio"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الاستوديو</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/school-data"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">بيانات المدرسة</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/job-roles"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الأدوار الوظيفية</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/payment-channels"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">قنوات الدفع</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/holidays"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">إعدادات الإجازات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/site"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">إعدادات الموقع</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/notifications"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الإشعارات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/overview"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">نظرة عامة</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/live-classes"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الحصص المباشرة</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/online-exams"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الأختبارات الإلكترونية</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/courses"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الدورات التدريبية</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/question-bank"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">بنك الأسئلة</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/requests"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الطلبات</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-requests"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">الطلبات الإدارية</h2>
+                <p className="mt-4 text-gray-600">قريباً...</p>
+              </div>
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/financial-management/contracts"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <div className="py-16 text-center">
+                <h2 className="text-2xl font-bold text-gray-800">العقود</h2>
                 <p className="mt-4 text-gray-600">قريباً...</p>
               </div>
             </MainLayout>
