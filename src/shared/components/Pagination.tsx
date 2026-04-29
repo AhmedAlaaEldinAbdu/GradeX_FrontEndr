@@ -93,7 +93,7 @@ const Pagination: React.FC<PaginationProps> = ({
                 disabled={currentPage === page}
                 className={`min-w-[36px] rounded-md px-3 py-1.5 text-center transition-colors ${
                   currentPage === page
-                    ? 'cursor-default border bg-white text-green-600'
+                    ? 'cursor-default border bg-white text-green-500'
                     : 'cursor-pointer text-gray-500 hover:bg-gray-50'
                 }`}
               >
