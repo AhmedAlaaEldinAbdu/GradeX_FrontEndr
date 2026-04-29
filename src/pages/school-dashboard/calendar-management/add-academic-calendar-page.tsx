@@ -99,6 +99,7 @@ export default function AddAcademicCalendarPage() {
     tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.calendarManagement') },
     { label: t('sidebar.academicCalendar'), path: '/calendar/academic' },
     { label: t('academicCalendar.addTitle') },

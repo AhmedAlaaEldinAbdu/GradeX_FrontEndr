@@ -10,6 +10,7 @@ export default function TaskCorrectionPreviewPage() {
     <div className="space-y-6">
       <Breadcrumb
         items={[
+          { label: 'sidebar.academicAffairs' },
           { label: 'sidebar.tasks', path: '/calendar/tasks' },
           { label: 'tasksManagement.detailsPage.title', path: `/calendar/tasks/details/${id}` },
           { label: 'tasksManagement.correctionPage.title' },

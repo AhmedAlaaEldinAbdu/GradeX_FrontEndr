@@ -7,6 +7,7 @@ export default function AddLessonPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.calendarManagement') },
     { label: t('sidebar.weeklyCalendar'), path: '/school/calendar/weekly' },
     { label: t('lesson.addTitle') },
