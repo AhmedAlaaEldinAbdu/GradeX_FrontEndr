@@ -13,20 +13,26 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import HomeIcon from '@gradex/assets/icons/Home.svg';
 import BookIcon from '@gradex/assets/icons/Book.svg';
 import BusIcon from '@gradex/assets/icons/Bus.svg';
-import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import EducationIcon from '@gradex/assets/icons/Education.svg';
 import NotificationIcon from '@gradex/assets/icons/Notification.svg';
 import PeopleRegularIcon from '@gradex/assets/icons/PeopleRegular.svg';
 import TicketsIcon from '@gradex/assets/icons/Tickets.svg';
-import ReportIcon from '@gradex/assets/icons/Report.svg';
 import ReportsIcon from '@gradex/assets/icons/Reports.svg';
 import SettingsIcon from '@gradex/assets/icons/Settings.svg';
-import StudentsIcon from '@gradex/assets/icons/Students.svg';
-import WalletIcon from '@gradex/assets/icons/Wallet.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
 import AlNukhbaLogo from '@/assets/identity/AlNukhbaLogo.svg';
 import GradeXLogo from '@gradex/assets/identity/GradeX.svg';
+import DataSourcesIcon from '@gradex/assets/icons/DataSources.svg';
+import DatePickerIcon from '@gradex/assets/icons/DatePicker.svg';
+import DocumentEditIcon from '@gradex/assets/icons/DocumentEdit.svg';
+import LedgerIcon from '@gradex/assets/icons/Ledger.svg';
+import MembersIcon from '@gradex/assets/icons/Members.svg';
+import NotesIcon from '@gradex/assets/icons/Notes.svg';
+import OpenBookIcon from '@gradex/assets/icons/OpenBook.svg';
+import PCIcon from '@gradex/assets/icons/PC.svg';
+import ReportApprovedIcon from '@gradex/assets/icons/ReportApproved.svg';
+import UserIcon from '@gradex/assets/icons/User.svg';
 
 /* === Design tokens (match standalone HTML) ============================ */
 const C = {
@@ -42,7 +48,7 @@ const C = {
   activeBorder: 'rgba(143, 168, 154, 0.35)',
   activeGradient: 'linear-gradient(180deg, #0A4A2E 0%, #073924 100%)',
   blobGradient:
-    'radial-gradient(circle at 50% 50%, rgba(0, 200, 130, 1) 0%, rgba(0, 130, 80, 0.5) 35%, rgba(15, 31, 23, 0) 70%)',
+    'radial-gradient(50% 50% at 50% 50%, rgba(134, 249, 142, 0.15) 0%, rgba(134, 249, 142, 0) 100%)',
 } as const;
 
 const ICON_FILTER_WHITE: React.CSSProperties = {
@@ -139,7 +145,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
     items: [
       {
         key: 'eduStages',
-        icon: renderIcon(BookIcon, 'Educational Stages'),
+        icon: renderIcon(OpenBookIcon, 'Educational Stages'),
         subItems: [
           { key: 'stagesClassrooms', path: '/classrooms' },
           { key: 'subjects', path: '/subjects' },
@@ -148,13 +154,13 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
       {
         key: 'lms',
-        icon: renderIcon(EducationIcon, 'E-Learning'),
+        icon: renderIcon(PCIcon, 'E-Learning'),
         path: '/lms',
         badge: { type: 'tag', value: 'LMS' },
       },
       {
         key: 'calendarManagement',
-        icon: renderIcon(CalendarIcon, 'Academic Calendar'),
+        icon: renderIcon(DatePickerIcon, 'Academic Calendar'),
         subItems: [
           { key: 'tasks', path: '/calendar/tasks' },
           { key: 'preparations', path: '/calendar/preparations' },
@@ -165,7 +171,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
       {
         key: 'examResults',
-        icon: renderIcon(ReportIcon, 'Exam Results'),
+        icon: renderIcon(NotesIcon, 'Exam Results'),
         path: '/exam-results',
       },
     ],
@@ -175,7 +181,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
     items: [
       {
         key: 'studentManagement',
-        icon: renderIcon(StudentsIcon, 'Student Management'),
+        icon: renderIcon(MembersIcon, 'Student Management'),
         subItems: [
           { key: 'students', path: '/students' },
           { key: 'studentApplications', path: '/student-applications' },
@@ -185,7 +191,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
       {
         key: 'requests',
-        icon: renderIcon(ReportIcon, 'Requests'),
+        icon: renderIcon(ReportApprovedIcon, 'Requests'),
         path: '/requests',
         badge: { type: 'count', value: 1 },
       },
@@ -201,17 +207,17 @@ const getSchoolAdminSections = (): MenuSection[] => [
     items: [
       {
         key: 'teachingStaff',
-        icon: renderIcon(ContactIcon, 'Staff'),
+        icon: renderIcon(UserIcon, 'Staff'),
         subItems: [
           { key: 'staff', path: '/teaching-staff' },
           { key: 'jobAnnouncements', path: '/job-announcements' },
           { key: 'interviews', path: '/interviews' },
         ],
       },
-      { key: 'attendance', icon: renderIcon(TicketsIcon, 'Attendance'), path: '/attendance' },
+      { key: 'attendance', icon: renderIcon(DocumentEditIcon, 'Attendance'), path: '/attendance' },
       {
         key: 'adminRequests',
-        icon: renderIcon(ReportsIcon, 'Admin Requests'),
+        icon: renderIcon(LedgerIcon, 'Admin Requests'),
         path: '/admin-requests',
         badge: { type: 'count', value: 1 },
       },
@@ -222,7 +228,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
     items: [
       {
         key: 'financialManagement',
-        icon: renderIcon(WalletIcon, 'Financial Management'),
+        icon: renderIcon(DataSourcesIcon, 'Financial Management'),
         subItems: [
           { key: 'financialTransactions', path: '/financial-management/transactions' },
           { key: 'tuitionFees', path: '/fees' },
@@ -837,47 +843,60 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       }}
       aria-label="Main navigation"
     >
-      {/* Decorative gradient blobs */}
       <span
         aria-hidden
-        className="pointer-events-none absolute z-0 rounded-full"
+        className="pointer-events-none absolute"
         style={{
-          width: 401,
-          height: 400,
-          top: -200,
-          left: -164,
-          opacity: 0.18,
-          background: C.blobGradient,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute z-0 rounded-full"
-        style={{
-          width: 401,
-          height: 400,
-          bottom: -200,
-          left: -67,
-          opacity: 0.18,
-          background: C.blobGradient,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute right-0 top-0"
-        style={{
-          width: 220,
-          height: 90,
-          opacity: 0.35,
-          mixBlendMode: 'screen',
-          zIndex: 1,
+          width: 280,
+          height: 200,
+          right: -60,
+          top: -40,
+          zIndex: 0,
           background:
-            'radial-gradient(180px 60px at 100% 0%, rgba(80,200,150,0.25), transparent 60%), radial-gradient(220px 80px at 60% -20px, rgba(80,200,150,0.12), transparent 60%)',
+            'radial-gradient(ellipse 60% 70% at 70% 30%, rgba(103, 203, 160, 0.18) 0%, rgba(83, 159, 126, 0.10) 30%, rgba(15, 31, 23, 0) 70%)',
         }}
       />
 
-      {/* Brand (sticky top) */}
-      <div className="relative flex-shrink-0" style={{ zIndex: 3, background: C.bg }}>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          width: 280,
+          height: 200,
+          left: -60,
+          bottom: -40,
+          zIndex: 0,
+          background:
+            'radial-gradient(ellipse 60% 70% at 30% 70%, rgba(103, 203, 160, 0.18) 0%, rgba(83, 159, 126, 0.10) 30%, rgba(15, 31, 23, 0) 70%)',
+        }}
+      />
+
+      <span
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          width: 401,
+          height: 400,
+          top: -199,
+          left: -164,
+          zIndex: 1,
+          background: C.blobGradient,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{
+          width: 401,
+          height: 400,
+          bottom: -228,
+          right: -104,
+          zIndex: 1,
+          background: C.blobGradient,
+        }}
+      />
+
+      <div className="relative flex-shrink-0" style={{ zIndex: 3 }}>
         {isCollapsed ? (
           // Collapsed: just the logo centered (the school crest reads on its own).
           <div className="flex items-center justify-center px-2 pb-3 pt-3">
@@ -955,8 +974,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           </div>
         )}
 
-        {/* Top rule */}
-        <div className="mx-2" style={{ height: 1, background: C.line }} />
+        {/* Top rule — matches the inset and color of the inter-section
+            dividers (`margin: 0 22px`, `background: C.rule`). */}
+        <div style={{ height: 1, background: C.rule, margin: '0 22px' }} />
       </div>
 
       {/* Scroll region wrapper — positioning context for the custom scrollbar
