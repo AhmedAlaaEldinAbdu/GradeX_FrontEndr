@@ -6,6 +6,7 @@ import { useToast } from '@/shared/context/ToastContext';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
 import BookBadgeIcon from '@gradex/assets/icons/BookBadge.svg';
+import { getLevelBadgeColor } from '@/shared/components/SharedBadges';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -104,19 +105,6 @@ export default function SubjectsList() {
     }
   };
 
-  const getLevelBadgeColor = (level: number) => {
-    switch (level) {
-      case 1:
-        return 'bg-lightGreen-100 text-lightGreen-500';
-      case 2:
-        return 'bg-orange-100 text-orange-500';
-      case 3:
-        return 'bg-sky-100 text-sky-500';
-      default:
-        return 'bg-gray-100 text-gray-500';
-    }
-  };
-
   const columns: DataTableColumn<Subject>[] = [
     {
       header: '#',
@@ -135,9 +123,7 @@ export default function SubjectsList() {
     {
       header: 'subjects.materialLevel',
       accessor: (row) => (
-        <span
-          className={`inline-flex rounded-full px-3 py-1 ${getLevelBadgeColor(row.materialLevel)}`}
-        >
+        <span className={`${getLevelBadgeColor(row.materialLevel)}`}>
           {getLevelLabel(row.materialLevel)}
         </span>
       ),

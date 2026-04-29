@@ -7,6 +7,7 @@ export default function EditSubjectPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.subjects') },
     { label: t('subjects.title'), path: '/subjects' },
     { label: t('subjects.editSubject') },

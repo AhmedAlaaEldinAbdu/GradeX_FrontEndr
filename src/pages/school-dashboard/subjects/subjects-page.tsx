@@ -8,6 +8,7 @@ export default function SubjectsPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.eduStages') },
     { label: t('subjects.title') },
   ];
