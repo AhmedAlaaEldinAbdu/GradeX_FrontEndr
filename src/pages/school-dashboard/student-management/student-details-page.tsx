@@ -52,12 +52,12 @@ export default function StudentDetailsPage() {
   const breadcrumbItems = isFromAttendance
     ? [
         { label: t('sidebar.attendance') },
-        { label: t('attendance.students'), path: '/attendance?tab=students' },
+        { label: t('attendance.students'), path: '/students/attendance' },
         { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
       ]
     : [
         { label: t('sidebar.studentManagement') },
-        { label: t('students.title'), path: '/students' },
+        { label: t('students.title'), path: '/students-record' },
         { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
       ];
 
