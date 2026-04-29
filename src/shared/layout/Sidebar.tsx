@@ -33,6 +33,9 @@ import OpenBookIcon from '@gradex/assets/icons/OpenBook.svg';
 import PCIcon from '@gradex/assets/icons/PC.svg';
 import ReportApprovedIcon from '@gradex/assets/icons/ReportApproved.svg';
 import UserIcon from '@gradex/assets/icons/User.svg';
+import ImageIcon from '@gradex/assets/icons/Image.svg';
+import AnalyticsIcon from '@gradex/assets/icons/Analytics.svg';
+import SideArrow from '@/assets/icons/SideArrow.svg';
 
 /* === Design tokens (match standalone HTML) ============================ */
 const C = {
@@ -155,15 +158,21 @@ const getSchoolAdminSections = (): MenuSection[] => [
       {
         key: 'lms',
         icon: renderIcon(PCIcon, 'E-Learning'),
-        path: '/lms',
         badge: { type: 'tag', value: 'LMS' },
+        subItems: [
+          { key: 'overview', path: '/lms/overview' },
+          { key: 'liveClasses', path: '/lms/live-classes' },
+          { key: 'onlineExams', path: '/lms/online-exams' },
+          { key: 'trainingCourses', path: '/lms/courses' },
+          { key: 'questionBank', path: '/lms/question-bank' },
+          { key: 'assignments', path: '/calendar/tasks' },
+          { key: 'lessonPreparation', path: '/calendar/preparations' },
+        ],
       },
       {
         key: 'calendarManagement',
         icon: renderIcon(DatePickerIcon, 'Academic Calendar'),
         subItems: [
-          { key: 'tasks', path: '/calendar/tasks' },
-          { key: 'preparations', path: '/calendar/preparations' },
           { key: 'weeklyCalendar', path: '/calendar/weekly' },
           { key: 'monthlyCalendar', path: '/calendar/monthly' },
           { key: 'academicCalendar', path: '/calendar/academic' },
@@ -183,10 +192,11 @@ const getSchoolAdminSections = (): MenuSection[] => [
         key: 'studentManagement',
         icon: renderIcon(MembersIcon, 'Student Management'),
         subItems: [
-          { key: 'students', path: '/students' },
+          { key: 'students', path: '/students-record' },
+          { key: 'studentAttendance', path: '/students/attendance' },
           { key: 'studentApplications', path: '/student-applications' },
-          { key: 'interviews', path: '/student-interviews' },
           { key: 'registrationAnnouncement', path: '/registration-announcement' },
+          { key: 'interviews', path: '/student-interviews' },
         ],
       },
       {
@@ -198,7 +208,10 @@ const getSchoolAdminSections = (): MenuSection[] => [
       {
         key: 'busManagement',
         icon: renderIcon(BusIcon, 'School Transport'),
-        path: '/bus-management',
+        subItems: [
+          { key: 'buses', path: '/bus-management/bus' },
+          { key: 'drivers', path: '/bus-management/drivers' },
+        ],
       },
     ],
   },
@@ -214,7 +227,11 @@ const getSchoolAdminSections = (): MenuSection[] => [
           { key: 'interviews', path: '/interviews' },
         ],
       },
-      { key: 'attendance', icon: renderIcon(DocumentEditIcon, 'Attendance'), path: '/attendance' },
+      {
+        key: 'attendance',
+        icon: renderIcon(DocumentEditIcon, 'Attendance'),
+        path: '/employees/attendance',
+      },
       {
         key: 'adminRequests',
         icon: renderIcon(LedgerIcon, 'Admin Requests'),
@@ -239,6 +256,38 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
     ],
   },
+  {
+    titleKey: 'tools',
+    items: [
+      {
+        key: 'studio',
+        icon: renderIcon(ImageIcon, 'Studio'),
+        path: '/studio',
+      },
+      {
+        key: 'reports',
+        icon: renderIcon(AnalyticsIcon, 'Reports'),
+        path: '/reports',
+      },
+    ],
+  },
+  {
+    titleKey: 'systemSettings',
+    items: [
+      {
+        key: 'settings',
+        icon: renderIcon(SettingsIcon, 'Settings'),
+        subItems: [
+          { key: 'schoolData', path: '/settings/school-data' },
+          { key: 'jobRoles', path: '/settings/job-roles' },
+          { key: 'paymentChannels', path: '/settings/payment-channels' },
+          { key: 'holidaysSettings', path: '/settings/holidays' },
+          { key: 'siteSettings', path: '/settings/site' },
+          { key: 'notifications', path: '/settings/notifications' },
+        ],
+      },
+    ],
+  },
 ];
 
 const getSectionsForDashboard = (dashboardType: UserRoleType): MenuSection[] => {
@@ -252,25 +301,43 @@ const getSectionsForDashboard = (dashboardType: UserRoleType): MenuSection[] => 
   }
 };
 
-/* Chevron — single icon rotated when expanded (matches standalone CSS) */
-const Chevron: React.FC<{ expanded: boolean; isRTL: boolean }> = ({ expanded, isRTL }) => (
-  <svg
-    width="9"
-    height="9"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{
-      transition: 'transform .2s ease',
-      transform: expanded ? (isRTL ? 'rotate(-90deg)' : 'rotate(90deg)') : 'none',
-    }}
-  >
-    {isRTL ? <polyline points="15 6 9 12 15 18" /> : <polyline points="9 6 15 12 9 18" />}
-  </svg>
-);
+/* Chevron — uses the SideArrow.svg asset, rotated to match direction
+   and expand/collapse state. SideArrow's native shape points LEFT (<),
+   so rotations are computed relative to that:
+     RTL collapsed → 0deg   (<)
+     RTL expanded  → -90deg (v)
+     LTR collapsed → 180deg (>)
+     LTR expanded  →  90deg (v)
+   When the row is active the icon is filtered white; otherwise it keeps
+   the asset's native muted #8FA89A so it matches inactive icons. */
+const Chevron: React.FC<{ expanded: boolean; isRTL: boolean; active: boolean }> = ({
+  expanded,
+  isRTL,
+  active,
+}) => {
+  const rotation = isRTL
+    ? expanded
+      ? 'rotate(-90deg)'
+      : 'rotate(0deg)'
+    : expanded
+      ? 'rotate(90deg)'
+      : 'rotate(180deg)';
+
+  return (
+    <img
+      src={SideArrow}
+      alt=""
+      aria-hidden
+      style={{
+        width: 5,
+        height: 9,
+        transition: 'transform .2s ease',
+        transform: rotation,
+        ...(active ? ICON_FILTER_WHITE : null),
+      }}
+    />
+  );
+};
 
 const BadgeView: React.FC<{ badge: MenuBadge }> = ({ badge }) => {
   if (badge.type === 'tag') {
@@ -671,7 +738,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           className="grid h-3.5 w-3.5 place-items-center"
           style={{ color: active ? '#ffffff' : C.inkMute }}
         >
-          {hasSubItems && <Chevron expanded={expanded} isRTL={isRTL} />}
+          {hasSubItems && <Chevron expanded={expanded} isRTL={isRTL} active={active} />}
         </span>
       </div>
     );
@@ -788,7 +855,6 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                       background: isSubActive ? C.subActive : 'transparent',
                     }}
                   >
-                    {/* Bullet on START side (right in RTL, left in LTR) */}
                     <span
                       className="flex-shrink-0 rounded-full"
                       style={{
