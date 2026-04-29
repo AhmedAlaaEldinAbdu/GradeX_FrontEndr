@@ -9,7 +9,7 @@ export default function EditClassroomPage() {
   const breadcrumbItems = [
     { label: t('sidebar.eduStages') },
     { label: t('grades.title'), path: '/classrooms' },
-    { label: t('grades.editGrade') },
+    { label: t('grades.editClassroom') },
   ];
 
   return (
@@ -18,7 +18,7 @@ export default function EditClassroomPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Page Header */}
-      <PageHeader title="grades.editGrade" />
+      <PageHeader title={t('grades.editClassroom')} />
 
       {/* Main Content */}
       <EditClassroom />

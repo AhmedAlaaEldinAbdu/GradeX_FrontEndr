@@ -1009,6 +1009,7 @@
     "subtitle": "Manage academic grades",
     "addGrade": "Add Grade",
     "addClassroom": "Add Classroom",
+    "editClassroom": "Edit Classroom",
     "addGradeSubtitle": "Add new grade(s) to the system",
     "editGrade": "Edit Grade",
     "editGradeSubtitle": "Update grade information",
@@ -1072,7 +1073,7 @@
       "teacher": "Teacher",
       "studyMaterials": "Study Materials",
       "studyBooks": "Study Books",
-      "responsibleTeacher": "Homeroom teacher: Ms. Mona Soliman",
+      "responsibleTeacher": "Homeroom teacher",
       "academicSystem": "Academic System",
       "educationalStage": "Educational Stage",
       "grade": "Grade",
@@ -1085,6 +1086,10 @@
       "attendanceRate": "Attendance Rate",
       "occupancyRate": "Occupancy Rate"
     },
+    "classroomNameAr": "Classroom Name (Arabic)",
+    "classroomNameEn": "Classroom Name (English)",
+    "enterClassroomNameAr": "Enter classroom name in Arabic",
+    "enterClassroomNameEn": "Enter classroom name in English",
     "validation": {
       "academicSystemRequired": "Academic system is required",
       "educationalStageRequired": "Educational stage is required",

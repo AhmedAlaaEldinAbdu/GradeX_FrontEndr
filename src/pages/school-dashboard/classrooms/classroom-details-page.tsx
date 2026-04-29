@@ -15,6 +15,10 @@ import FilesTealIcon from '@gradex/assets/icons/FilesTeal.svg';
 import BookYellowIcon from '@gradex/assets/icons/BookYellow.svg';
 import ClassroomDetailsContent from './components/ClassroomDetailsContent';
 
+type ClassroomWithTeacherName = {
+  teacherName?: string | null;
+};
+
 export default function ClassroomDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
@@ -43,6 +47,8 @@ export default function ClassroomDetailsPage() {
 
   const gradeDetails = classrooms[0];
   const classroomTitle = gradeDetails?.gradeName;
+  const responsibleTeacherName = (gradeDetails as ClassroomWithTeacherName | undefined)
+    ?.teacherName;
   const totalStudents = classrooms.reduce(
     (total, classroom) => total + (classroom.studentNumber || 0),
     0
@@ -102,9 +108,13 @@ export default function ClassroomDetailsPage() {
           ]}
         />
         <div className="flex flex-col items-start gap-6">
-          <div className="text-base font-normal text-[#646969]">
-            {t('classrooms.details.responsibleTeacher')}
-          </div>
+          {responsibleTeacherName ? (
+            <div className="text-base font-normal text-[#646969]">
+              {t('classrooms.details.responsibleTeacher')}: {responsibleTeacherName}
+            </div>
+          ) : (
+            <div className="p-4"></div>
+          )}
 
           <div className="flex w-full flex-wrap items-center justify-between gap-4">
             {classroomSummaryItems.map((item) => (

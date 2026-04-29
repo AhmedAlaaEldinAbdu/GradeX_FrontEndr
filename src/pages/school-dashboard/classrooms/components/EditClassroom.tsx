@@ -69,12 +69,12 @@ export default function EditClassroom() {
   });
 
   useEffect(() => {
-    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000 }));
+    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
     dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
     if (id) {
       dispatch(fetchClassroomById(id));
     }
-  }, [id, dispatch]);
+  }, [id, dispatch, schoolBranchId]);
 
   useEffect(() => {
     if (currentClassroom) {
@@ -246,7 +246,7 @@ export default function EditClassroom() {
                         ? t('common.loading')
                         : t('common.selectAnOption')
                     }
-                    disabled={isLoadingEducationalStages}
+                    disabled={true}
                     error={!!errors.educationalStage}
                   />
                 )}
@@ -258,9 +258,9 @@ export default function EditClassroom() {
             <div className="rounded-lg border border-gray-200 p-4">
               <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                  {/* Grade Name Arabic */}
+                  {/* Classroom Name Arabic */}
                   <FormField
-                    label={t('grades.gradeNameAr')}
+                    label={t('classrooms.classroomNameAr')}
                     required
                     error={errors.name?.message}
                     htmlFor="name"
@@ -272,7 +272,7 @@ export default function EditClassroom() {
                         <Input
                           {...field}
                           type="text"
-                          placeholder={t('grades.enterGradeNameAr')}
+                          placeholder={t('classrooms.enterClassroomNameAr')}
                           className="w-full"
                           id="name"
                         />
@@ -280,9 +280,9 @@ export default function EditClassroom() {
                     />
                   </FormField>
 
-                  {/* Grade Name English */}
+                  {/* Classroom Name English */}
                   <FormField
-                    label={t('grades.gradeNameEn')}
+                    label={t('classrooms.classroomNameEn')}
                     required
                     error={errors.nameEn?.message}
                     htmlFor="nameEn"
@@ -294,7 +294,7 @@ export default function EditClassroom() {
                         <Input
                           {...field}
                           type="text"
-                          placeholder={t('grades.enterGradeNameEn')}
+                          placeholder={t('classrooms.enterClassroomNameEn')}
                           className="w-full"
                           id="nameEn"
                         />

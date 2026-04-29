@@ -266,9 +266,9 @@ export default function AddClassroom() {
                     <div className="flex flex-col-reverse items-end gap-1 md:flex-row md:items-start">
                       <div className="flex flex-grow flex-col gap-4">
                         <div className="grid flex-grow grid-cols-1 gap-4 lg:grid-cols-2">
-                          {/* Grade Name Arabic */}
+                          {/* Classroom Name Arabic */}
                           <FormField
-                            label={t('grades.gradeNameAr')}
+                            label={t('classrooms.classroomNameAr')}
                             required
                             error={errors.classrooms?.[index]?.name?.message}
                             htmlFor={`classrooms.${index}.name`}
@@ -280,7 +280,7 @@ export default function AddClassroom() {
                                 <Input
                                   {...field}
                                   type="text"
-                                  placeholder={t('grades.enterGradeNameAr')}
+                                  placeholder={t('classrooms.enterClassroomNameAr')}
                                   className="w-full"
                                   id={`classrooms.${index}.name`}
                                 />
@@ -288,9 +288,9 @@ export default function AddClassroom() {
                             />
                           </FormField>
 
-                          {/* Grade Name English */}
+                          {/* Classroom Name English */}
                           <FormField
-                            label={t('grades.gradeNameEn')}
+                            label={t('classrooms.classroomNameEn')}
                             required
                             error={errors.classrooms?.[index]?.nameEn?.message}
                             htmlFor={`classrooms.${index}.nameEn`}
@@ -302,7 +302,7 @@ export default function AddClassroom() {
                                 <Input
                                   {...field}
                                   type="text"
-                                  placeholder={t('grades.enterGradeNameEn')}
+                                  placeholder={t('classrooms.enterClassroomNameEn')}
                                   className="w-full"
                                   id={`classrooms.${index}.nameEn`}
                                 />
