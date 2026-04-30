@@ -990,7 +990,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       <aside
         dir={isRTL ? 'rtl' : 'ltr'}
         className={cn(
-          'fixed inset-y-0 z-40 flex h-[100dvh] flex-col gap-[12px] overflow-hidden bg-[#0f1f17] py-[16px] text-white shadow-[0_30px_80px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.03)]',
+          'fixed inset-y-0 z-40 flex h-[100dvh] flex-col gap-[12px] overflow-hidden bg-[#0f1f17] py-[16px] text-white',
           isRTL ? 'right-0' : 'left-0',
           SIDEBAR_FONT,
           sidebarWidthClass
@@ -1078,7 +1078,11 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
               return (
                 <div key={`section-${idx}`} className={idx > 0 ? 'mt-[12px]' : ''}>
                   {showCollapsedRule && <div className="mx-[6px] my-[8px] h-px bg-white/10" />}
-                  {!isCollapsed && showRule && <div className="h-px w-full bg-white/10" />}
+                  {!isCollapsed && showRule && (
+                    <div className={cn('flex w-full', menuItemsAlignClass)}>
+                      <div className="h-px w-[199px] bg-white/10" />
+                    </div>
+                  )}
                   {!isCollapsed && section.titleKey && (
                     <div
                       className={cn(
