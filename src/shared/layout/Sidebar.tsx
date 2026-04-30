@@ -36,23 +36,17 @@ import UserIcon from '@gradex/assets/icons/User.svg';
 import ImageIcon from '@gradex/assets/icons/Image.svg';
 import AnalyticsIcon from '@gradex/assets/icons/Analytics.svg';
 import SideArrow from '@/assets/icons/SideArrow.svg';
-
-/* === Design tokens (match standalone HTML) ============================ */
-const C = {
-  bg: '#0F1F17',
-  ink: '#FFFFFF',
-  inkDim: '#D6DDD8',
-  inkMute: '#8FA89A',
-  line: 'rgba(255,255,255,0.15)',
-  rule: 'rgba(255,255,255,0.10)',
-  lms: '#00BC7D',
-  subActive: '#073924',
-  countText: '#00512E',
-  activeBorder: 'rgba(143, 168, 154, 0.35)',
-  activeGradient: 'linear-gradient(180deg, #0A4A2E 0%, #073924 100%)',
-  blobGradient:
-    'radial-gradient(50% 50% at 50% 50%, rgba(134, 249, 142, 0.15) 0%, rgba(134, 249, 142, 0) 100%)',
-} as const;
+import SidebarTopVector1 from '@/assets/sidebar-pattern/top-vector-1.svg';
+import SidebarTopVector2 from '@/assets/sidebar-pattern/top-vector-2.svg';
+import SidebarTopVector3 from '@/assets/sidebar-pattern/top-vector-3.svg';
+import SidebarTopVector4 from '@/assets/sidebar-pattern/top-vector-4.svg';
+import SidebarTopVector5 from '@/assets/sidebar-pattern/top-vector-5.svg';
+import SidebarBottomVector1 from '@/assets/sidebar-pattern/bottom-vector-1.svg';
+import SidebarBottomVector2 from '@/assets/sidebar-pattern/bottom-vector-2.svg';
+import SidebarBottomVector3 from '@/assets/sidebar-pattern/bottom-vector-3.svg';
+import SidebarBottomVector4 from '@/assets/sidebar-pattern/bottom-vector-4.svg';
+import SidebarBottomVector5 from '@/assets/sidebar-pattern/bottom-vector-5.svg';
+import SidebarEllipseGlow from '@/assets/sidebar-pattern/ellipse-glow.svg';
 
 const ICON_FILTER_WHITE: React.CSSProperties = {
   filter: 'brightness(0) saturate(100%) invert(1)',
@@ -61,7 +55,64 @@ const ICON_FILTER_WHITE: React.CSSProperties = {
 const ICON_FILTER_MUTE: React.CSSProperties = {
   filter:
     'brightness(0) saturate(100%) invert(67%) sepia(11%) saturate(414%) hue-rotate(94deg) brightness(94%) contrast(89%)',
+  opacity: 0.8,
 };
+const MUTED_OPACITY: React.CSSProperties = { opacity: 0.8 };
+
+const cn = (...classes: Array<string | false | null | undefined>) =>
+  classes.filter(Boolean).join(' ');
+
+const SIDEBAR_FONT = "font-['Tajawal',sans-serif]";
+const MUTED_TEXT = 'text-[#8FA89A] opacity-80';
+const ACTIVE_ROW_BG_RTL =
+  'bg-[linear-gradient(90deg,rgba(35,114,71,0.53)_0%,rgba(18,52,34,0.85)_92.788%)]';
+const ACTIVE_ROW_BG_LTR =
+  'bg-[linear-gradient(270deg,rgba(35,114,71,0.53)_0%,rgba(18,52,34,0.85)_92.788%)]';
+const SIDEBAR_TOP_PATTERN_LAYERS = [
+  {
+    src: SidebarTopVector1,
+    className: 'absolute inset-[-1.1%_-0.08%_31.9%_14.18%] mix-blend-color-dodge',
+  },
+  {
+    src: SidebarTopVector2,
+    className: 'absolute inset-[-1.1%_6.02%_45.21%_0] mix-blend-color-dodge',
+  },
+  {
+    src: SidebarTopVector3,
+    className: 'absolute inset-[-1.91%_-0.45%_51.28%_22.73%] mix-blend-screen',
+  },
+  {
+    src: SidebarTopVector4,
+    className: 'absolute inset-[-1.1%_-0.08%_46.15%_65.27%] mix-blend-color-dodge',
+  },
+  {
+    src: SidebarTopVector5,
+    className: 'absolute inset-[-1.1%_-0.08%_0_10.72%] mix-blend-color-dodge',
+  },
+] as const;
+
+const SIDEBAR_BOTTOM_PATTERN_LAYERS = [
+  {
+    src: SidebarBottomVector1,
+    className: 'absolute inset-[-0.65%_-206.69%_-4.4%_-133.19%] mix-blend-color-dodge',
+  },
+  {
+    src: SidebarBottomVector2,
+    className: 'absolute inset-[-0.64%_-175.44%_15.8%_-205.83%] mix-blend-color-dodge',
+  },
+  {
+    src: SidebarBottomVector3,
+    className: 'absolute inset-[-1.88%_-208.59%_25.02%_-89.44%] mix-blend-screen',
+  },
+  {
+    src: SidebarBottomVector4,
+    className: 'absolute inset-[1.24%_-206.71%_15.35%_128.41%] mix-blend-color-dodge',
+  },
+  {
+    src: SidebarBottomVector5,
+    className: 'absolute inset-[-0.64%_-206.7%_-52.82%_-150.93%] mix-blend-color-dodge',
+  },
+] as const;
 
 interface SidebarProps {
   dashboardType: UserRoleType;
@@ -89,7 +140,93 @@ interface MenuSection {
 }
 
 const renderIcon = (src: string, alt: string) => (
-  <CustomImage src={src} className="h-[17px] w-[17px]" alt={alt} />
+  <CustomImage src={src} className="h-4 w-4" alt={alt} />
+);
+
+const SidebarPatternLayer: React.FC<{ src: string; className: string }> = ({ src, className }) => (
+  <div className={className}>
+    <img alt="" src={src} className="absolute inset-0 block h-full w-full max-w-none" />
+  </div>
+);
+
+const SidebarPatternBackground: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
+  <>
+    <div
+      aria-hidden
+      className={cn(
+        'pointer-events-none absolute top-[-10px] z-0 h-[157px] w-[222px] overflow-hidden opacity-30',
+        isRTL ? 'right-[-42px]' : 'left-[-42px] scale-x-[-1]'
+      )}
+    >
+      {SIDEBAR_TOP_PATTERN_LAYERS.map((layer) => (
+        <SidebarPatternLayer key={layer.src} src={layer.src} className={layer.className} />
+      ))}
+    </div>
+
+    <div
+      aria-hidden
+      className={cn(
+        'pointer-events-none absolute top-[778px] z-0 flex h-[532px] w-[315px] items-center justify-center',
+        isRTL ? 'left-[-0.5px]' : 'right-[-0.5px] scale-x-[-1]'
+      )}
+    >
+      <div className="rotate-180">
+        <div className="relative h-[532px] w-[315px] overflow-hidden opacity-30">
+          {SIDEBAR_BOTTOM_PATTERN_LAYERS.map((layer) => (
+            <SidebarPatternLayer key={layer.src} src={layer.src} className={layer.className} />
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <img
+      alt=""
+      src={SidebarEllipseGlow}
+      className={cn(
+        'pointer-events-none absolute top-[-199px] z-[1] h-[400px] w-[401px] max-w-none',
+        isRTL ? 'left-[-164px]' : 'right-[-164px]'
+      )}
+    />
+    <img
+      alt=""
+      src={SidebarEllipseGlow}
+      className={cn(
+        'pointer-events-none absolute top-[794px] z-[1] h-[400px] w-[401px] max-w-none',
+        isRTL ? 'right-[-104px]' : 'left-[-104px]'
+      )}
+    />
+  </>
+);
+
+const SidebarF11BottomCover: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
+  <div
+    aria-hidden
+    className="sidebar-f11-bottom-cover pointer-events-none absolute inset-x-0 bottom-0 z-[5] overflow-hidden bg-[#0f1f17]"
+  >
+    <div
+      className={cn(
+        'absolute top-[-142px] z-0 flex h-[532px] w-[315px] items-center justify-center',
+        isRTL ? 'left-[-0.5px]' : 'right-[-0.5px] scale-x-[-1]'
+      )}
+    >
+      <div className="rotate-180">
+        <div className="relative h-[532px] w-[315px] overflow-hidden opacity-30">
+          {SIDEBAR_BOTTOM_PATTERN_LAYERS.map((layer) => (
+            <SidebarPatternLayer key={layer.src} src={layer.src} className={layer.className} />
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <img
+      alt=""
+      src={SidebarEllipseGlow}
+      className={cn(
+        'pointer-events-none absolute top-[-126px] z-[1] h-[400px] w-[401px] max-w-none',
+        isRTL ? 'right-[-104px]' : 'left-[-104px]'
+      )}
+    />
+  </div>
 );
 
 /**
@@ -315,54 +452,53 @@ const Chevron: React.FC<{ expanded: boolean; isRTL: boolean; active: boolean }> 
   isRTL,
   active,
 }) => {
-  const rotation = isRTL
+  const rotationClass = isRTL
     ? expanded
-      ? 'rotate(-90deg)'
-      : 'rotate(0deg)'
+      ? '-rotate-90'
+      : 'rotate-0'
     : expanded
-      ? 'rotate(90deg)'
-      : 'rotate(180deg)';
+      ? 'rotate-90'
+      : 'rotate-180';
 
   return (
     <img
       src={SideArrow}
       alt=""
       aria-hidden
-      style={{
-        width: 5,
-        height: 9,
-        transition: 'transform .2s ease',
-        transform: rotation,
-        ...(active ? ICON_FILTER_WHITE : null),
-      }}
+      className={cn(
+        'h-[9px] w-[5px] shrink-0 object-contain transition-transform duration-200',
+        rotationClass
+      )}
+      style={active ? ICON_FILTER_WHITE : MUTED_OPACITY}
     />
   );
 };
 
 const BadgeView: React.FC<{ badge: MenuBadge }> = ({ badge }) => {
   if (badge.type === 'tag') {
+    // Figma LMS chip: padding 2px 8px, bg #00BC7D, radius 4,
+    // text Tajawal 700 / 10px / line-height 15px / white.
     return (
-      <span
-        className="rounded-[4px] px-1.5 py-[3px] text-[9px] font-bold leading-none tracking-wider text-white"
-        style={{ background: C.lms }}
-      >
+      <span className="inline-flex h-[19px] w-[34.362px] flex-shrink-0 items-center justify-center rounded-[4px] bg-[#00bc7d] px-[8px] py-[2px] text-[10px] font-bold leading-[15px] text-white">
         {badge.value}
       </span>
     );
   }
+  // Count badge — Figma: 16×16 white circle, dark green text 12 / 700.
   return (
-    <span
-      className="flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold leading-none"
-      style={{ background: '#FFFFFF', color: C.countText }}
-    >
+    <span className="inline-flex h-[16px] w-[16px] flex-shrink-0 items-center justify-center rounded-full bg-white text-center text-[12px] font-bold leading-none text-[#00512e]">
       {badge.value}
     </span>
   );
 };
 
 const BrandMark: React.FC = () => (
-  <div className="flex h-[76px] w-[76px] flex-shrink-0 items-center justify-center">
-    <CustomImage src={AlNukhbaLogo} alt="School" className="h-[76px] w-[76px]" />
+  <div className="relative h-[40px] w-[40px] flex-shrink-0 overflow-hidden rounded-[12px] shadow-[0_1px_12px_1px_rgba(255,245,245,0.06)]">
+    <CustomImage
+      src={AlNukhbaLogo}
+      alt="School"
+      className="absolute left-[-13px] top-[-12px] h-[66px] w-[61px] max-w-none"
+    />
   </div>
 );
 
@@ -479,28 +615,22 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
           <div
             ref={flyoutRef}
             role="menu"
+            dir={isRTL ? 'rtl' : 'ltr'}
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
+            className="fixed z-[1000] min-w-[220px] rounded-[12px] bg-[#0f1f17] p-[8px] shadow-[0_12px_36px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
             style={{
-              position: 'fixed',
               top: coords.top,
               left: coords.left,
               right: coords.right,
-              minWidth: 220,
-              padding: 8,
-              borderRadius: 12,
-              background: '#0F1F17',
-              boxShadow: '0 12px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06)',
-              zIndex: 1000,
             }}
           >
             <div
-              className={`mb-1 px-3 pb-2 pt-1 text-[12px] font-semibold text-white ${textAlignClass}`}
-              style={{ borderBottom: `1px solid rgba(255,255,255,0.10)` }}
+              className={`mb-1 border-b border-white/10 px-3 pb-2 pt-1 text-[12px] font-semibold text-white ${textAlignClass}`}
             >
               {t(`sidebar.${item.key}`)}
             </div>
-            <div className="mt-1 flex flex-col" style={{ gap: 1 }}>
+            <div className="mt-[4px] flex flex-col gap-[4px]">
               {item.subItems!.map((sub) => {
                 const isSubActive =
                   currentPath === sub.path || currentPath.startsWith(sub.path + '/');
@@ -509,28 +639,27 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
                     key={sub.path}
                     to={sub.path}
                     onClick={onClose}
-                    className={`flex items-center transition-colors ${
-                      isSubActive ? '' : 'hover:bg-white/[0.04]'
-                    }`}
-                    style={{
-                      gap: 10,
-                      padding: '8px 12px',
-                      fontSize: 13,
-                      borderRadius: 8,
-                      color: isSubActive ? '#ffffff' : '#D6DDD8',
-                      fontWeight: isSubActive ? 700 : 400,
-                      background: isSubActive ? '#073924' : 'transparent',
-                    }}
+                    className={cn(
+                      'box-border flex min-h-[28px] items-center gap-[8px] rounded-[8px] px-[16px] py-[1px] text-[11px] font-medium transition-colors',
+                      'flex-row',
+                      isSubActive
+                        ? 'bg-[rgba(0,224,127,0.08)] text-white'
+                        : 'text-[#8FA89A] hover:bg-white/[0.04]'
+                    )}
                   >
                     <span
-                      className="flex-shrink-0 rounded-full"
-                      style={{
-                        width: 5,
-                        height: 5,
-                        background: isSubActive ? '#ffffff' : '#8FA89A',
-                      }}
+                      className={cn(
+                        'h-[5px] w-[5px] flex-shrink-0 rounded-full',
+                        isSubActive ? 'bg-white' : 'bg-[#8FA89A] opacity-80'
+                      )}
                     />
-                    <span className={`flex-1 truncate ${textAlignClass}`}>
+                    <span
+                      className={cn(
+                        'flex-1 truncate',
+                        textAlignClass,
+                        !isSubActive && 'opacity-80'
+                      )}
+                    >
                       {t(`sidebar.${sub.key}`)}
                     </span>
                   </NavLink>
@@ -581,9 +710,10 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         setScroll({ visible: false, thumbTop: 0, thumbHeight: 0 });
         return;
       }
-      const trackHeight = clientHeight;
+      const trackInset = 14;
+      const trackHeight = Math.max(0, clientHeight - trackInset * 2);
       const thumbHeight = Math.max(28, (clientHeight / scrollHeight) * trackHeight);
-      const thumbTop = (scrollTop / overflow) * (trackHeight - thumbHeight);
+      const thumbTop = trackInset + (scrollTop / overflow) * (trackHeight - thumbHeight);
       setScroll({ visible: true, thumbTop, thumbHeight });
     };
 
@@ -668,78 +798,54 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   };
 
   const textAlignClass = isRTL ? 'text-right' : 'text-left';
-
-  // Shared geometry for any active inset card (parent pill OR sub-item fill).
-  // Using explicit width:calc + box-sizing guarantees parent and sub render
-  // at the EXACT same horizontal extent, regardless of borders/padding diffs.
-  const PILL_MARGIN_START = 8;
-  const PILL_MARGIN_END = 14;
-  const PILL_WIDTH = `calc(100% - ${PILL_MARGIN_START + PILL_MARGIN_END}px)`;
-
-  const activeWrapperStyle: React.CSSProperties = {
-    display: 'block',
-    boxSizing: 'border-box',
-    width: PILL_WIDTH,
-    background: C.activeGradient,
-    color: '#ffffff',
-    // Only the start-edge accent (right side in RTL). No outline border on
-    // the other three sides — the pill reads from the gradient + shadow alone.
-    borderInlineStart: '2px solid #ffffff',
-    borderRadius: 10,
-    boxShadow: '0 4px 14px rgba(0, 40, 22, 0.4)',
-    marginInlineStart: PILL_MARGIN_START,
-    marginInlineEnd: PILL_MARGIN_END,
-    padding: '11px 16px',
-  };
-
-  const inactiveWrapperStyle: React.CSSProperties = {
-    display: 'block',
-    boxSizing: 'border-box',
-    width: '100%',
-    color: C.inkDim,
-    paddingInlineStart: 28,
-    paddingInlineEnd: 16,
-    paddingTop: 9,
-    paddingBottom: 9,
-  };
+  const rowDirectionClass = 'flex-row';
+  const activeBorderClass = isRTL ? 'border-r' : 'border-l';
+  const activeBgClass = isRTL ? ACTIVE_ROW_BG_RTL : ACTIVE_ROW_BG_LTR;
+  const menuItemsAlignClass = isRTL ? 'items-start' : 'items-end';
+  const getMainItemClass = (active: boolean) =>
+    cn(
+      'relative box-border flex h-[32px] w-[199px] shrink-0 items-center justify-between rounded-[8px] border-0 px-[12px] py-[4px] text-start text-[12px] font-medium outline-none transition-colors',
+      rowDirectionClass,
+      active
+        ? `${activeBorderClass} border-solid border-white ${activeBgClass} text-white`
+        : 'bg-transparent text-[#8FA89A] hover:bg-white/[0.03]'
+    );
 
   const renderRow = (
     item: MenuItem,
     opts: { active: boolean; hasSubItems: boolean; expanded: boolean }
   ) => {
     const { active, hasSubItems, expanded } = opts;
+    const hasTrailingGroup = !!item.badge || hasSubItems;
     return (
       <div
-        className="grid select-none items-center"
-        style={{
-          gridTemplateColumns: '22px 1fr auto 14px',
-          columnGap: 10,
-          fontSize: 14,
-          fontWeight: active ? 500 : 400,
-          width: '100%',
-        }}
+        className={cn(
+          'flex w-full select-none items-center justify-between gap-[16px] text-[12px] font-medium',
+          rowDirectionClass
+        )}
       >
-        <span
-          className="grid h-[22px] w-[22px] place-items-center"
-          style={active ? ICON_FILTER_WHITE : ICON_FILTER_MUTE}
-        >
-          {item.icon}
-        </span>
-        <span
-          className={`truncate ${textAlignClass}`}
-          style={{ color: active ? '#ffffff' : C.inkDim, lineHeight: 1.25 }}
-        >
-          {t(`sidebar.${item.key}`)}
-        </span>
-        <span className="flex items-center justify-center">
-          {item.badge && <BadgeView badge={item.badge} />}
-        </span>
-        <span
-          className="grid h-3.5 w-3.5 place-items-center"
-          style={{ color: active ? '#ffffff' : C.inkMute }}
-        >
-          {hasSubItems && <Chevron expanded={expanded} isRTL={isRTL} active={active} />}
-        </span>
+        <div className={cn('flex min-w-0 items-center gap-[8px]', rowDirectionClass)}>
+          <span
+            className="grid h-4 w-4 flex-shrink-0 place-items-center"
+            style={active ? ICON_FILTER_WHITE : ICON_FILTER_MUTE}
+          >
+            {item.icon}
+          </span>
+          <span className={cn('truncate', textAlignClass, active ? 'text-white' : MUTED_TEXT)}>
+            {t(`sidebar.${item.key}`)}
+          </span>
+        </div>
+
+        {hasTrailingGroup && (
+          <div className="flex flex-shrink-0 items-center gap-[1px]">
+            {item.badge && <BadgeView badge={item.badge} />}
+            {hasSubItems && (
+              <span className="grid h-[14px] w-[14px] place-items-center">
+                <Chevron expanded={expanded} isRTL={isRTL} active={active} />
+              </span>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -816,16 +922,13 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           <button
             type="button"
             onClick={() => toggleExpand(item.key, firstPath)}
-            className={`cursor-pointer text-start transition-colors ${
-              isActive ? '' : 'hover:bg-white/[0.03]'
-            }`}
-            style={isActive ? activeWrapperStyle : inactiveWrapperStyle}
+            className={cn('cursor-pointer', getMainItemClass(isActive))}
           >
             {renderRow(item, { active: isActive, hasSubItems: true, expanded: isExpanded })}
           </button>
 
           {isExpanded && (
-            <div className="mt-px overflow-hidden">
+            <div className="mt-[4px] flex flex-col gap-[4px] overflow-hidden">
               {item.subItems!.map((sub) => {
                 const isSubActive =
                   location.pathname === sub.path || location.pathname.startsWith(sub.path + '/');
@@ -833,42 +936,26 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                   <NavLink
                     key={sub.path}
                     to={sub.path}
-                    className={`flex cursor-pointer select-none items-center transition-colors ${
-                      isSubActive ? '' : 'hover:bg-white/[0.02]'
-                    }`}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      boxSizing: 'border-box',
-                      width: PILL_WIDTH,
-                      gap: 10,
-                      paddingTop: 9,
-                      paddingBottom: 9,
-                      paddingInlineStart: 16,
-                      paddingInlineEnd: 16,
-                      marginInlineStart: PILL_MARGIN_START,
-                      marginInlineEnd: PILL_MARGIN_END,
-                      marginTop: 2,
-                      marginBottom: 2,
-                      fontSize: 13,
-                      borderRadius: 10,
-                      background: isSubActive ? C.subActive : 'transparent',
-                    }}
+                    className={cn(
+                      'box-border flex h-[28px] w-[199px] cursor-pointer select-none items-center gap-[8px] rounded-[8px] px-[16px] py-[1px] text-[11px] font-medium transition-colors',
+                      rowDirectionClass,
+                      isSubActive
+                        ? 'bg-[rgba(0,224,127,0.08)] text-white'
+                        : 'text-[#8FA89A] hover:bg-white/[0.02]'
+                    )}
                   >
                     <span
-                      className="flex-shrink-0 rounded-full"
-                      style={{
-                        width: 5,
-                        height: 5,
-                        background: isSubActive ? '#ffffff' : C.inkMute,
-                      }}
+                      className={cn(
+                        'h-[5px] w-[5px] flex-shrink-0 rounded-full',
+                        isSubActive ? 'bg-white' : 'bg-[#8FA89A] opacity-80'
+                      )}
                     />
                     <span
-                      className={`flex-1 truncate ${textAlignClass}`}
-                      style={{
-                        color: isSubActive ? '#ffffff' : C.inkDim,
-                        fontWeight: isSubActive ? 700 : 400,
-                      }}
+                      className={cn(
+                        'flex-1 truncate',
+                        textAlignClass,
+                        !isSubActive && 'opacity-80'
+                      )}
                     >
                       {t(`sidebar.${sub.key}`)}
                     </span>
@@ -886,8 +973,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         key={item.key}
         to={item.path!}
         onClick={() => setExpandedItems([])}
-        className={({ isActive }) => `transition-colors ${isActive ? '' : 'hover:bg-white/[0.03]'}`}
-        style={({ isActive }) => (isActive ? activeWrapperStyle : inactiveWrapperStyle)}
+        className={({ isActive }) => getMainItemClass(isActive)}
       >
         {({ isActive }) =>
           renderRow(item, { active: isActive, hasSubItems: false, expanded: false })
@@ -897,234 +983,143 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   };
 
   const isSchoolAdmin = dashboardType === UserRole.SCHOOL_ADMIN;
+  const sidebarWidthClass = isCollapsed ? 'w-[64px]' : 'w-[230px]';
 
   return (
-    <aside
-      className={`relative flex flex-shrink-0 flex-col overflow-hidden text-white ${
-        isCollapsed ? 'w-[64px]' : 'w-[clamp(240px,17vw,300px)]'
-      }`}
-      style={{
-        background: C.bg,
-        boxShadow: '0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03)',
-      }}
-      aria-label="Main navigation"
-    >
-      <span
-        aria-hidden
-        className="pointer-events-none absolute"
-        style={{
-          width: 280,
-          height: 200,
-          right: -60,
-          top: -40,
-          zIndex: 0,
-          background:
-            'radial-gradient(ellipse 60% 70% at 70% 30%, rgba(103, 203, 160, 0.18) 0%, rgba(83, 159, 126, 0.10) 30%, rgba(15, 31, 23, 0) 70%)',
-        }}
-      />
+    <>
+      <aside
+        dir={isRTL ? 'rtl' : 'ltr'}
+        className={cn(
+          'fixed inset-y-0 z-40 flex h-[100dvh] flex-col gap-[12px] overflow-hidden bg-[#0f1f17] py-[16px] text-white shadow-[0_30px_80px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.03)]',
+          isRTL ? 'right-0' : 'left-0',
+          SIDEBAR_FONT,
+          sidebarWidthClass
+        )}
+        aria-label="Main navigation"
+      >
+        <SidebarPatternBackground isRTL={isRTL} />
 
-      <span
-        aria-hidden
-        className="pointer-events-none absolute"
-        style={{
-          width: 280,
-          height: 200,
-          left: -60,
-          bottom: -40,
-          zIndex: 0,
-          background:
-            'radial-gradient(ellipse 60% 70% at 30% 70%, rgba(103, 203, 160, 0.18) 0%, rgba(83, 159, 126, 0.10) 30%, rgba(15, 31, 23, 0) 70%)',
-        }}
-      />
-
-      <span
-        aria-hidden
-        className="pointer-events-none absolute"
-        style={{
-          width: 401,
-          height: 400,
-          top: -199,
-          left: -164,
-          zIndex: 1,
-          background: C.blobGradient,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute"
-        style={{
-          width: 401,
-          height: 400,
-          bottom: -228,
-          right: -104,
-          zIndex: 1,
-          background: C.blobGradient,
-        }}
-      />
-
-      <div className="relative flex-shrink-0" style={{ zIndex: 3 }}>
-        {isCollapsed ? (
-          // Collapsed: just the logo centered (the school crest reads on its own).
-          <div className="flex items-center justify-center px-2 pb-3 pt-3">
-            {isSchoolAdmin ? (
+        <div className="relative z-[4] flex h-[57px] w-full flex-shrink-0 flex-col items-end justify-center gap-[12px] px-[8px]">
+          {isCollapsed ? (
+            // Collapsed: center the logo only.
+            <div className="flex items-center justify-center self-center px-2">
+              {isSchoolAdmin ? (
+                <BrandMark />
+              ) : (
+                <CustomImage
+                  src={GradeXLogo}
+                  alt="GradeX"
+                  className="h-9 w-auto"
+                  style={ICON_FILTER_WHITE}
+                />
+              )}
+            </div>
+          ) : isSchoolAdmin ? (
+            <div
+              className={cn(
+                'flex h-[45px] w-[177px] shrink-0 items-center justify-center gap-[12px] self-center',
+                rowDirectionClass
+              )}
+            >
               <BrandMark />
-            ) : (
+              <div
+                className={cn(
+                  'flex h-[45px] w-[125px] min-w-0 flex-1 flex-col justify-center p-0 text-center',
+                  isRTL ? 'items-end' : 'items-start'
+                )}
+              >
+                {isLoadingSchoolName && !schoolName ? (
+                  <>
+                    <div className="h-[18px] w-[125px] animate-pulse rounded-md bg-white/10" />
+                    <div className="mt-2 h-[12px] w-[90px] animate-pulse rounded-md bg-white/[0.06]" />
+                  </>
+                ) : (
+                  <>
+                    <div className="flex h-[24px] w-[126px] items-center truncate whitespace-nowrap text-center text-[14px] font-bold leading-[1.7251] text-white">
+                      {schoolName}
+                    </div>
+                    {t('sidebar.schoolSubtitle', { defaultValue: '' }) && (
+                      <div className="flex h-[21px] w-[125px] items-center truncate text-center text-[12px] font-medium leading-[1.7251] text-[#a2bbad]">
+                        {t('sidebar.schoolSubtitle')}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center self-center px-[14px]">
               <CustomImage
                 src={GradeXLogo}
                 alt="GradeX"
-                className="h-9 w-auto"
+                className="h-10 w-auto"
                 style={ICON_FILTER_WHITE}
               />
-            )}
-          </div>
-        ) : isSchoolAdmin ? (
-          <div className="flex items-center px-4 pb-4 pt-4">
-            <BrandMark />
-            <div className="flex min-w-0 flex-col items-center">
-              {isLoadingSchoolName && !schoolName ? (
-                <>
-                  <div
-                    className="animate-pulse rounded-md"
-                    style={{
-                      width: 140,
-                      height: 18,
-                      background: 'rgba(255,255,255,0.10)',
-                    }}
-                  />
-                  <div
-                    className="mt-2 animate-pulse rounded-md"
-                    style={{
-                      width: 90,
-                      height: 12,
-                      background: 'rgba(255,255,255,0.06)',
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  <div
-                    className={`text-[18px] font-bold text-white ${
-                      isRTL ? 'text-right' : 'text-left'
-                    }`}
-                    style={{
-                      fontFamily: 'Tajawal, "IBM Plex Sans Arabic", system-ui, sans-serif',
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    {schoolName}
-                  </div>
-                  {t('sidebar.schoolSubtitle', { defaultValue: '' }) && (
+            </div>
+          )}
+
+          <div
+            className={cn('h-0 border-t border-white/[0.15]', isCollapsed ? 'w-full' : 'w-[214px]')}
+          />
+        </div>
+
+        {/* Scroll region wrapper for the custom nav-only scrollbar. */}
+        <div className="relative z-[2] min-h-0 flex-1">
+          <nav
+            ref={navRef}
+            className="sidebar-scroll absolute inset-0 overflow-y-auto overflow-x-hidden px-[8px]"
+            aria-label="primary"
+          >
+            {sections.map((section, idx) => {
+              const showRule = !!section.titleKey && idx > firstTitledIdx;
+              // In collapsed mode, titled sections use only a divider.
+              const showCollapsedRule = isCollapsed && !!section.titleKey && idx > 0;
+
+              return (
+                <div key={`section-${idx}`} className={idx > 0 ? 'mt-[12px]' : ''}>
+                  {showCollapsedRule && <div className="mx-[6px] my-[8px] h-px bg-white/10" />}
+                  {!isCollapsed && showRule && <div className="h-px w-full bg-white/10" />}
+                  {!isCollapsed && section.titleKey && (
                     <div
-                      className="mt-1 text-center text-[13px] font-normal"
-                      style={{
-                        fontFamily: 'Tajawal, "IBM Plex Sans Arabic", system-ui, sans-serif',
-                        lineHeight: 1.4,
-                        color: C.inkMute,
-                      }}
+                      className={cn(
+                        'mb-[-2px] px-[8px] text-[10px] font-medium leading-[32px] text-[#8FA89A] opacity-80',
+                        textAlignClass
+                      )}
                     >
-                      {t('sidebar.schoolSubtitle')}
+                      {t(`sidebar.${section.titleKey}`)}
                     </div>
                   )}
-                </>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center px-[14px] pb-3 pt-[14px]">
-            <CustomImage
-              src={GradeXLogo}
-              alt="GradeX"
-              className="h-10 w-auto"
-              style={ICON_FILTER_WHITE}
-            />
-          </div>
-        )}
-
-        {/* Top rule — matches the inset and color of the inter-section
-            dividers (`margin: 0 22px`, `background: C.rule`). */}
-        <div style={{ height: 1, background: C.rule, margin: '0 22px' }} />
-      </div>
-
-      {/* Scroll region wrapper — positioning context for the custom scrollbar
-          thumb so the thumb only spans the nav area, not the brand header. */}
-      <div className="relative min-h-0 flex-1" style={{ zIndex: 2 }}>
-        <nav
-          ref={navRef}
-          className="sidebar-scroll absolute inset-0 overflow-y-auto overflow-x-hidden"
-          style={{ padding: '12px 0 16px' }}
-          aria-label="primary"
-        >
-          {sections.map((section, idx) => {
-            const showRule = !!section.titleKey && idx > firstTitledIdx;
-            // In collapsed mode, every titled section just gets a thin divider
-            // line above it — no header text.
-            const showCollapsedRule = isCollapsed && !!section.titleKey && idx > 0;
-
-            return (
-              <div key={`section-${idx}`} className={idx > 0 ? 'mt-2' : ''}>
-                {showCollapsedRule && (
-                  <div
-                    style={{
-                      height: 1,
-                      background: C.rule,
-                      margin: '8px 14px',
-                    }}
-                  />
-                )}
-                {!isCollapsed && showRule && (
-                  <div
-                    style={{
-                      height: 1,
-                      background: C.rule,
-                      margin: '6px 22px 0',
-                    }}
-                  />
-                )}
-                {!isCollapsed && section.titleKey && (
-                  <div
-                    className={`text-[11px] font-normal ${textAlignClass}`}
-                    style={{
-                      color: C.inkMute,
-                      padding: '12px 28px 8px',
-                    }}
-                  >
-                    {t(`sidebar.${section.titleKey}`)}
+                  <div className={cn('flex flex-col gap-[8px]', menuItemsAlignClass)}>
+                    {section.items.map(renderMenuItem)}
                   </div>
-                )}
-                <div className="flex flex-col" style={{ gap: 1 }}>
-                  {section.items.map(renderMenuItem)}
                 </div>
-              </div>
-            );
-          })}
-        </nav>
+              );
+            })}
+          </nav>
 
-        {scroll.visible && (
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0"
-            style={{
-              insetInlineEnd: 4,
-              width: 4,
-              zIndex: 4,
-            }}
-          >
+          {scroll.visible && (
             <div
-              style={{
-                position: 'absolute',
-                top: scroll.thumbTop,
-                insetInlineEnd: 0,
-                width: 4,
-                height: scroll.thumbHeight,
-                background: '#e6ece8',
-                borderRadius: 999,
-                transition: 'background 0.2s ease',
-              }}
-            />
-          </div>
-        )}
-      </div>
-    </aside>
+              aria-hidden
+              className={cn(
+                'pointer-events-none absolute inset-y-0 z-[4] w-[3px]',
+                isRTL ? 'left-[2px]' : 'right-[2px]'
+              )}
+            >
+              <div className="absolute inset-y-[14px] left-0 w-[3px] rounded-[8px] bg-[rgba(0,81,46,0.4)]" />
+              <div
+                className="absolute left-0 w-[3px] rounded-[8px] bg-[#8FA89A] transition-colors"
+                style={{
+                  top: scroll.thumbTop,
+                  height: scroll.thumbHeight,
+                }}
+              />
+            </div>
+          )}
+        </div>
+        <SidebarF11BottomCover isRTL={isRTL} />
+      </aside>
+      <div aria-hidden className={cn('h-[100dvh] flex-shrink-0', sidebarWidthClass)} />
+    </>
   );
 };
 
