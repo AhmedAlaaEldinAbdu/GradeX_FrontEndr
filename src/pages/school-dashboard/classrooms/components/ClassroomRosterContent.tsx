@@ -10,6 +10,7 @@ import { fetchClassroomById } from '@/redux/features/classrooms/classroomsSlice'
 import { fetchStudentsByClassroomId } from '@/redux/features/students/studentsSlice';
 import StudentsTab, { type StudentRow } from './StudentsTab';
 import TeacherTab from './TeacherTab';
+import { getProgressTextColorClassName } from '@/shared/components/ProgressSummaryCard';
 
 type ClassroomRosterContentProps = {
   currentLang: 'ar' | 'en';
@@ -196,7 +197,11 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
                 <div className="text-center text-sm font-normal text-[#646969]">
                   {t('classrooms.details.attendanceRate')}
                 </div>
-                <div className="mt-4 text-start text-base font-medium text-[#F8951B]">
+                <div
+                  className={`mt-4 text-start text-base font-medium ${getProgressTextColorClassName(
+                    attendanceRate
+                  )}`}
+                >
                   {attendanceRate}%
                 </div>
               </div>
@@ -204,7 +209,11 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
                 <div className="text-center text-sm font-normal text-[#646969]">
                   {t('classrooms.details.occupancyRate')}
                 </div>
-                <div className="mt-4 text-start text-base font-medium text-[#1A9F58]">
+                <div
+                  className={`mt-4 text-start text-base font-medium ${getProgressTextColorClassName(
+                    occupancyRate
+                  )}`}
+                >
                   {occupancyRate}%
                 </div>
               </div>

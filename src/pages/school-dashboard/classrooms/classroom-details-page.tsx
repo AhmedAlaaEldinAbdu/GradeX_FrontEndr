@@ -14,6 +14,10 @@ import TeachersNewBlueIcon from '@gradex/assets/icons/TeachersNewBlue.svg';
 import FilesTealIcon from '@gradex/assets/icons/FilesTeal.svg';
 import BookYellowIcon from '@gradex/assets/icons/BookYellow.svg';
 import ClassroomDetailsContent from './components/ClassroomDetailsContent';
+import {
+  getProgressColorClassName,
+  getProgressTextColorClassName,
+} from '@/shared/components/ProgressSummaryCard';
 
 type ClassroomWithTeacherName = {
   teacherName?: string | null;
@@ -133,10 +137,14 @@ export default function ClassroomDetailsPage() {
           </div>
 
           <div className="flex w-full items-center gap-3">
-            <span className="text-base font-medium text-green-600">{classroomProgress}%</span>
+            <span
+              className={`text-base font-medium ${getProgressTextColorClassName(classroomProgress)}`}
+            >
+              {classroomProgress}%
+            </span>
             <div className="h-3 flex-1 rounded-full bg-[#EEEEEE]">
               <div
-                className="h-full rounded-full bg-green-500"
+                className={`h-full rounded-full ${getProgressColorClassName(classroomProgress)}`}
                 style={{ width: `${classroomProgress}%` }}
               />
             </div>

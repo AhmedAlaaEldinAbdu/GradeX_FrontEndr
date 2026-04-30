@@ -31,16 +31,28 @@ const clampProgress = (value?: number) => {
   return Math.max(0, Math.min(100, value));
 };
 
-const getProgressColorClassName = (progress: number) => {
-  if (progress >= 80) {
+export const getProgressColorClassName = (progress: number) => {
+  if (progress > 60) {
     return 'bg-red-500';
   }
 
-  if (progress >= 50) {
+  if (progress > 30) {
     return 'bg-yellow-400';
   }
 
   return 'bg-green-500';
+};
+
+export const getProgressTextColorClassName = (progress: number) => {
+  if (progress > 60) {
+    return 'text-red-600';
+  }
+
+  if (progress > 30) {
+    return 'text-yellow-600';
+  }
+
+  return 'text-green-600';
 };
 
 export default function ProgressSummaryCard({
@@ -49,7 +61,7 @@ export default function ProgressSummaryCard({
   imageSrc,
   imageAlt,
   progress,
-  progressColorClassName = 'bg-green-500',
+  progressColorClassName,
   onClick,
   actions = [],
   className = '',
