@@ -22,7 +22,7 @@ import SettingsIcon from '@gradex/assets/icons/Settings.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
 import AlNukhbaLogo from '@/assets/identity/AlNukhbaLogo.svg';
-import GradeXLogo from '@gradex/assets/identity/GradeX.svg';
+import ElmLogo from '@/assets/identity/MainLogo.webp';
 import DataSourcesIcon from '@gradex/assets/icons/DataSources.svg';
 import DatePickerIcon from '@gradex/assets/icons/DatePicker.svg';
 import DocumentEditIcon from '@gradex/assets/icons/DocumentEdit.svg';
@@ -1007,10 +1007,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                 <BrandMark />
               ) : (
                 <CustomImage
-                  src={GradeXLogo}
-                  alt="GradeX"
-                  className="h-9 w-auto"
-                  style={ICON_FILTER_WHITE}
+                  src={ElmLogo}
+                  alt="elm"
+                  className="h-10 w-10 rounded-full object-contain"
                 />
               )}
             </div>
@@ -1050,10 +1049,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           ) : (
             <div className="flex items-center justify-center self-center px-[14px]">
               <CustomImage
-                src={GradeXLogo}
-                alt="GradeX"
-                className="h-10 w-auto"
-                style={ICON_FILTER_WHITE}
+                src={ElmLogo}
+                alt="elm"
+                className="h-12 w-12 rounded-full object-contain"
               />
             </div>
           )}
