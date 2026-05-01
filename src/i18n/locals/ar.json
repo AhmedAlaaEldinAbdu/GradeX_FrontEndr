@@ -864,7 +864,13 @@
     "selectCheckOutTime": "أختر موعد الإنصراف",
     "scheduleUpdatedSuccess": "تم تحديث موعد الحضور والانصراف بنجاح",
     "scheduleUpdatedError": "حدث خطأ أثناء تحديث موعد الحضور والانصراف",
-    "earlyLeave": "خارج مبكر"
+    "earlyLeave": "خارج مبكر",
+    "statistics": {
+      "totalAttendance": "إجمالي الحضور",
+      "totalAbsences": "إجمالي الغياب",
+      "totalTardiness": "إجمالي التأخير",
+      "attendancePercentage": "نسبة الحضور"
+    }
   },
   "studentForm": {
     "firstName": "الاسم الأول",

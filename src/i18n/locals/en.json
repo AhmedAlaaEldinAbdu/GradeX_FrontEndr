@@ -864,7 +864,13 @@
     "selectCheckOutTime": "Select check-out time",
     "scheduleUpdatedSuccess": "Attendance schedule updated successfully",
     "scheduleUpdatedError": "Failed to update attendance schedule",
-    "earlyLeave": "Early Leave"
+    "earlyLeave": "Early Leave",
+    "statistics": {
+      "totalAttendance": "Total Attendance",
+      "totalAbsences": "Total Absences",
+      "totalTardiness": "Total Tardiness",
+      "attendancePercentage": "Attendance Percentage"
+    }
   },
   "studentForm": {
     "firstName": "First Name",
