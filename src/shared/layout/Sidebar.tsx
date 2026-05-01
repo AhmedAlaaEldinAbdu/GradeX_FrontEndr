@@ -201,7 +201,7 @@ const SidebarPatternBackground: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
 const SidebarF11BottomCover: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
   <div
     aria-hidden
-    className="sidebar-f11-bottom-cover pointer-events-none absolute inset-x-0 bottom-0 z-[5] overflow-hidden bg-[#0f1f17]"
+    className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] overflow-hidden bg-[#0f1f17]"
   >
     <div
       className={cn(
