@@ -166,12 +166,12 @@ const SidebarPatternBackground: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
     <div
       aria-hidden
       className={cn(
-        'pointer-events-none absolute top-[778px] z-0 flex h-[532px] w-[315px] items-center justify-center',
+        'pointer-events-none absolute top-[698px] z-0 flex h-[532px] w-[315px] items-center justify-center',
         isRTL ? 'left-[-0.5px]' : 'right-[-0.5px] scale-x-[-1]'
       )}
     >
       <div className="rotate-180">
-        <div className="relative h-[532px] w-[315px] overflow-hidden opacity-30">
+        <div className="relative h-[532px] w-[315px] overflow-hidden opacity-10">
           {SIDEBAR_BOTTOM_PATTERN_LAYERS.map((layer) => (
             <SidebarPatternLayer key={layer.src} src={layer.src} className={layer.className} />
           ))}
@@ -210,7 +210,7 @@ const SidebarF11BottomCover: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
       )}
     >
       <div className="rotate-180">
-        <div className="relative h-[532px] w-[315px] overflow-hidden opacity-30">
+        <div className="relative h-[532px] w-[315px] overflow-hidden opacity-10">
           {SIDEBAR_BOTTOM_PATTERN_LAYERS.map((layer) => (
             <SidebarPatternLayer key={layer.src} src={layer.src} className={layer.className} />
           ))}
@@ -222,7 +222,7 @@ const SidebarF11BottomCover: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
       alt=""
       src={SidebarEllipseGlow}
       className={cn(
-        'pointer-events-none absolute top-[-126px] z-[1] h-[400px] w-[401px] max-w-none',
+        'pointer-events-none absolute top-[-126px] z-[1] h-[400px] w-[401px] max-w-none opacity-30',
         isRTL ? 'right-[-104px]' : 'left-[-104px]'
       )}
     />
@@ -1062,7 +1062,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         </div>
 
         {/* Scroll region wrapper for the custom nav-only scrollbar. */}
-        <div className="relative z-[2] min-h-0 flex-1">
+        <div className="relative z-[2] min-h-0 flex-1" style={{ maxHeight: '650px' }}>
           <nav
             ref={navRef}
             className="sidebar-scroll absolute inset-0 overflow-y-auto overflow-x-hidden px-[8px]"
