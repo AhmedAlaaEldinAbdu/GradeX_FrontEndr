@@ -7,9 +7,9 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
 import AttendanceConfirmPopup from '@/pages/school-dashboard/attendance/popups/AttendanceConfirmPopup';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import CheckIcon from '@gradex/assets/icons/Check.svg';
+import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import HistoryIcon from '@gradex/assets/icons/History.svg';
-import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
 import IconButton from '@/shared/components/IconButton';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -421,41 +421,34 @@ export default function AttendanceManagement() {
       header: 'attendance.actions',
       accessor: (row) => {
         const hasStatus = row.status !== null && row.status !== -1 && row.status !== 0;
+        const studentName = row.teacherFullName || '-';
+        const studentKey = getStudentKey(row);
 
         if (hasStatus) {
-          const statusConfig: Record<number, { text: string; className: string }> = {
-            [StudentAttendanceStatus.Present]: {
-              text: t('attendance.present'),
-              className: 'bg-green-100 text-green-800',
-            },
-            [StudentAttendanceStatus.Absent]: {
-              text: t('attendance.absent'),
-              className: 'bg-red-100 text-red-800',
-            },
-            [StudentAttendanceStatus.Late]: {
-              text: t('attendance.late'),
-              className: 'bg-yellow-100 text-yellow-800',
-            },
-            [StudentAttendanceStatus.EarlyLeave]: {
-              text: t('attendance.earlyLeave'),
-              className: 'bg-orange-100 text-orange-800',
-            },
+          const typeFromStatus: Record<number, 'present' | 'absent' | 'late'> = {
+            [StudentAttendanceStatus.Present]: 'present',
+            [StudentAttendanceStatus.Absent]: 'absent',
+            [StudentAttendanceStatus.Late]: 'late',
+            [StudentAttendanceStatus.EarlyLeave]: 'present',
           };
-          const config = statusConfig[row.status] || {
-            text: t('attendance.notAvailable'),
-            className: 'bg-gray-100 text-gray-800',
-          };
+          const editType = typeFromStatus[row.status] ?? 'present';
           return (
-            <span
-              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${config.className}`}
-            >
-              {config.text}
-            </span>
+            <div className="flex items-center justify-center">
+              <IconButton
+                status="edit"
+                ariaLabel={t('actions.edit')}
+                title={t('actions.edit')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleIndividualAction(studentKey, studentName, editType);
+                }}
+                className="h-8 w-8 p-0 shadow-none"
+                imgClassName="h-4 w-4"
+              />
+            </div>
           );
         }
 
-        const studentName = row.teacherFullName || '-';
-        const studentKey = getStudentKey(row);
         return (
           <div className="flex items-center justify-center gap-2">
             <button
@@ -463,7 +456,7 @@ export default function AttendanceManagement() {
               onClick={() => handleIndividualAction(studentKey, studentName, 'present')}
               title={t('attendance.present')}
             >
-              <CustomImage src={CheckIcon} alt="check" className="h-4 w-4" />
+              <CustomImage src={CheckMarkIcon} alt="check" className="h-4 w-4" />
             </button>
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 transition-colors hover:bg-yellow-200"
@@ -477,7 +470,7 @@ export default function AttendanceManagement() {
               onClick={() => handleIndividualAction(studentKey, studentName, 'absent')}
               title={t('attendance.absent')}
             >
-              <CustomImage src={XMarkDangerIcon} alt="delete" className="h-4 w-4" />
+              <CustomImage src={XmarkCircleRedIcon} alt="delete" className="h-4 w-4" />
             </button>
           </div>
         );
@@ -582,7 +575,7 @@ export default function AttendanceManagement() {
           onClick={() => handleBulkActionClick('present')}
           className="flex items-center gap-1.5 rounded-full border border-green-500 bg-white px-3 py-1.5 text-sm text-green-600 transition-colors hover:bg-green-50"
         >
-          <CustomImage src={CheckIcon} className="h-4 w-4" alt="present" />
+          <CustomImage src={CheckMarkIcon} className="h-4 w-4" alt="present" />
           <span>{t('attendance.markAllPresent')}</span>
         </button>
         <button
@@ -596,7 +589,7 @@ export default function AttendanceManagement() {
           onClick={() => handleBulkActionClick('absent')}
           className="flex items-center gap-1.5 rounded-full border border-red-500 bg-white px-3 py-1.5 text-sm text-red-600 transition-colors hover:bg-red-50"
         >
-          <CustomImage src={XMarkDangerIcon} className="h-4 w-4" alt="absent" />
+          <CustomImage src={XmarkCircleRedIcon} className="h-4 w-4" alt="absent" />
           <span>{t('attendance.markAllAbsent')}</span>
         </button>
       </div>
