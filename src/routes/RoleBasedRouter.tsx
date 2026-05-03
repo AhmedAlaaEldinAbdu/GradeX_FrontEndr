@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import {
   selectDashboardType,
   selectIsAuthenticated,
@@ -15,6 +15,7 @@ import {
   ForgotPasswordPage,
   ResetPasswordPage,
   PasswordResetSuccessPage,
+  AuthCallbackPage,
 } from '@gradex/pages/auth';
 import AddSchoolPage from '@/pages/super-admin-dashboard/schools/add-school-page';
 import MainContainer from '@/shared/layout/Container';
@@ -26,6 +27,13 @@ import MainContainer from '@/shared/layout/Container';
 const RoleBasedRouter: React.FC = () => {
   const dashboardType = useSelector(selectDashboardType);
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const location = useLocation();
+
+  // SSO callback must be reachable from any auth state — the page itself
+  // decrypts the access_token, persists the session, and then navigates away.
+  if (location.pathname === '/auth/callback') {
+    return <AuthCallbackPage />;
+  }
 
   const isSuperAdminRole = (role: unknown): boolean => {
     const normalized = String(role ?? '')
