@@ -8,6 +8,7 @@ import {
   generateMockRefreshToken,
   decodeJwtToken,
 } from '@gradex/lib/auth/token-manager';
+import { decryptAccessToken } from '@gradex/lib/auth/token-crypto';
 import { authApiService } from '@/services/api/auth/auth.service';
 import { getErrorMessage } from '@/lib/http';
 import type { LoginRequest } from '@/services/api/types/auth.types';
@@ -126,6 +127,95 @@ export const login = createAsyncThunk(
 );
 
 /**
+ * Async thunk for completing login from an SSO callback.
+ */
+export const loginWithCallbackToken = createAsyncThunk(
+  'auth/loginWithCallbackToken',
+  async (
+    args: {
+      encryptedToken: string;
+      schoolBrancheId?: string | null;
+      rememberMe?: boolean;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const decrypted = await decryptAccessToken(args.encryptedToken);
+
+      // Detect optional JSON envelope. Fall back to treating plaintext as a JWT.
+      let jwt = decrypted;
+      let envelopeBranchId: string | null = null;
+      const trimmed = decrypted.trim();
+      if (trimmed.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (parsed && typeof parsed === 'object') {
+            if (typeof parsed.token === 'string') jwt = parsed.token;
+            const wrappedBranch = parsed.schoolBrancheId ?? parsed.schoolBranchId;
+            if (typeof wrappedBranch === 'string' && wrappedBranch.length > 0) {
+              envelopeBranchId = wrappedBranch;
+            }
+          }
+        } catch {
+          // Not JSON — keep `jwt` as the raw decrypted string.
+        }
+      }
+
+      const userData = decodeJwtToken(jwt);
+      if (!userData) {
+        throw new Error('Failed to decode user data from token');
+      }
+
+      // Same priority logic as the login response flow: callback param
+      // > envelope > JWT claim. Empty string is treated as "absent".
+      const explicitBranchId =
+        args.schoolBrancheId && args.schoolBrancheId.length > 0 ? args.schoolBrancheId : null;
+      const jwtClaimBranchId = userData.schoolBrancheId ?? userData.schoolBranchId ?? null;
+      const branchId: string | null = explicitBranchId ?? envelopeBranchId ?? jwtClaimBranchId;
+
+      const derivedRole: UserRoleType = branchId ? UserRole.SCHOOL_ADMIN : UserRole.SUPER_ADMIN;
+
+      userData.role = derivedRole;
+      // Persist under both spellings for backward compatibility (matches login).
+      userData.schoolBrancheId = branchId;
+      userData.schoolBranchId = branchId;
+
+      const rememberMe = args.rememberMe ?? true;
+      tokenManager.setToken(jwt, rememberMe);
+      tokenManager.setUserData(userData, rememberMe);
+      tokenManager.setRefreshToken(generateMockRefreshToken(), rememberMe);
+
+      logger.success('Callback login successful - Token stored', {
+        rememberMe,
+        branchIdSource: explicitBranchId
+          ? 'url-param'
+          : envelopeBranchId
+            ? 'envelope'
+            : jwtClaimBranchId
+              ? 'jwt-claim'
+              : 'none',
+        tokenPreview: jwt.substring(0, 30) + '...',
+        storage: rememberMe ? 'localStorage' : 'sessionStorage',
+      });
+
+      return {
+        user: {
+          id: Number(userData.id) || 0,
+          name: userData.name,
+          email: userData.email,
+          role: derivedRole,
+          isAuthenticated: true,
+          schoolBrancheId: branchId,
+        },
+        token: jwt,
+      };
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+/**
  * Async thunk for user logout
  */
 export const logout = createAsyncThunk('auth/logout', async () => {
@@ -232,6 +322,35 @@ const authSlice = createSlice({
         state.isInitialized = true; // Mark as initialized even on failure
         state.error = action.error.message || 'Login failed';
         logger.error('Login rejected', action.error.message);
+      });
+
+    // Callback Login (SSO)
+    builder
+      .addCase(loginWithCallbackToken.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        logger.debug('Callback login pending...');
+      })
+      .addCase(loginWithCallbackToken.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.error = null;
+        logger.success('Callback login fulfilled - Redux state updated', {
+          isAuthenticated: state.isAuthenticated,
+          user: state.user,
+        });
+      })
+      .addCase(loginWithCallbackToken.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.error = (action.payload as string) || action.error.message || 'Callback login failed';
+        logger.error('Callback login rejected', state.error);
       });
 
     // Logout
