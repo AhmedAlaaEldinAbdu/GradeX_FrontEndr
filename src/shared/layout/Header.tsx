@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { FaKey, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { clearUser } from '@gradex/redux/features/auth/authSlice';
 import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import profileImage from '@gradex/assets/images/profile.png';
@@ -14,6 +14,7 @@ import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import RoleSwitcher from '@/shared/components/RoleSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
 import CustomImage from '@/shared/components/CustomImage';
+import ChangePasswordModal from '@/shared/components/ChangePasswordModal';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -22,10 +23,16 @@ const Header: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const handleLogout = () => {
     dispatch(clearUser());
     navigate('/login');
+  };
+
+  const openChangePassword = () => {
+    setShowDropdown(false);
+    setShowChangePassword(true);
   };
 
   return (
@@ -86,6 +93,14 @@ const Header: React.FC = () => {
                   </button>
                   <hr className="my-1 border-gray-200" />
                   <button
+                    onClick={openChangePassword}
+                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-gray-500 transition-colors hover:bg-gray-100"
+                  >
+                    <FaKey className="text-gray-500" />
+                    <span>{t('header.changePassword')}</span>
+                  </button>
+                  <hr className="my-1 border-gray-200" />
+                  <button
                     onClick={() => {
                       setShowDropdown(false);
                       handleLogout();
@@ -121,6 +136,11 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <ChangePasswordModal
+        isOpen={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
     </header>
   );
 };
