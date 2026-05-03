@@ -64,6 +64,7 @@ const cn = (...classes: Array<string | false | null | undefined>) =>
 
 const SIDEBAR_FONT = "font-['Tajawal',sans-serif]";
 const MUTED_TEXT = 'text-[#8FA89A] opacity-80';
+const SIDEBAR_COLLAPSE_STORAGE_KEY = 'gradex.sidebar.collapsed';
 const ACTIVE_ROW_BG_RTL =
   'bg-[linear-gradient(90deg,rgba(35,114,71,0.53)_0%,rgba(18,52,34,0.85)_92.788%)]';
 const ACTIVE_ROW_BG_LTR =
@@ -592,7 +593,7 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
   }, [isOpen, onClose]);
 
   return (
-    <div ref={wrapperRef} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+    <div ref={wrapperRef} className="w-full" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
       <button
         type="button"
         title={t(`sidebar.${item.key}`)}
@@ -684,13 +685,32 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [schoolName, setSchoolName] = useState<string>('');
   const [isLoadingSchoolName, setIsLoadingSchoolName] = useState<boolean>(false);
-  // Collapse the sidebar to icon-only mode on small screens (< lg).
+  const [hasUserOverride, setHasUserOverride] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(SIDEBAR_COLLAPSE_STORAGE_KEY) !== null;
+  });
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
+    const stored = window.localStorage.getItem(SIDEBAR_COLLAPSE_STORAGE_KEY);
+    if (stored === '1') return true;
+    if (stored === '0') return false;
     return window.matchMedia('(max-width: 1023px)').matches;
   });
   // Which parent's flyout panel is currently open (collapsed mode only).
   const [flyoutKey, setFlyoutKey] = useState<string | null>(null);
+
+  const handleToggleCollapsed = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(SIDEBAR_COLLAPSE_STORAGE_KEY, next ? '1' : '0');
+      } catch {
+        /* localStorage unavailable — silently ignore */
+      }
+      return next;
+    });
+    setHasUserOverride(true);
+  };
 
   const navRef = useRef<HTMLElement | null>(null);
   const [scroll, setScroll] = useState<{
@@ -731,11 +751,14 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 1023px)');
-    const update = (e: MediaQueryListEvent | MediaQueryList) => setIsCollapsed(e.matches);
+    const update = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (hasUserOverride) return;
+      setIsCollapsed(e.matches);
+    };
     update(mq);
     mq.addEventListener('change', update);
     return () => mq.removeEventListener('change', update);
-  }, []);
+  }, [hasUserOverride]);
 
   // Close any open flyout when route changes or when the sidebar uncollapses.
   useEffect(() => {
@@ -874,7 +897,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           key={item.key}
           to={item.path!}
           title={t(`sidebar.${item.key}`)}
-          className={`flex items-center justify-center py-3 transition-colors ${
+          className={`flex w-full items-center justify-center py-3 transition-colors ${
             isActive ? '' : 'hover:bg-white/[0.03]'
           }`}
         >
@@ -991,6 +1014,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         dir={isRTL ? 'rtl' : 'ltr'}
         className={cn(
           'fixed inset-y-0 z-40 flex h-[100dvh] flex-col gap-[12px] overflow-hidden bg-[#0f1f17] py-[16px] text-white',
+          'transition-[width] duration-300 ease-out',
           isRTL ? 'right-0' : 'left-0',
           SIDEBAR_FONT,
           sidebarWidthClass
@@ -1075,7 +1099,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
               return (
                 <div key={`section-${idx}`} className={idx > 0 ? 'mt-[12px]' : ''}>
-                  {showCollapsedRule && <div className="mx-[6px] my-[8px] h-px bg-white/10" />}
+                  {showCollapsedRule && (
+                    <div className="mx-auto my-[8px] h-px w-[32px] bg-white/10" />
+                  )}
                   {!isCollapsed && showRule && (
                     <div className={cn('flex w-full', menuItemsAlignClass)}>
                       <div className="h-px w-[199px] bg-white/10" />
@@ -1091,7 +1117,12 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                       {t(`sidebar.${section.titleKey}`)}
                     </div>
                   )}
-                  <div className={cn('flex flex-col gap-[8px]', menuItemsAlignClass)}>
+                  <div
+                    className={cn(
+                      'flex flex-col gap-[8px]',
+                      isCollapsed ? 'items-stretch' : menuItemsAlignClass
+                    )}
+                  >
                     {section.items.map(renderMenuItem)}
                   </div>
                 </div>
@@ -1120,7 +1151,58 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         </div>
         <SidebarF11BottomCover isRTL={isRTL} />
       </aside>
-      <div aria-hidden className={cn('h-[100dvh] flex-shrink-0', sidebarWidthClass)} />
+
+      <button
+        type="button"
+        onClick={handleToggleCollapsed}
+        aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+        aria-expanded={!isCollapsed}
+        title={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+        className={cn(
+          'group fixed top-[60px] z-50 grid h-[26px] w-[26px] place-items-center rounded-full',
+          'border border-white/[0.18] bg-[#0f1f17] text-white',
+          'shadow-[0_8px_22px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)]',
+          'transition-[left,right,background-color,border-color,box-shadow,transform] duration-300 ease-out',
+          'hover:border-[rgba(0,224,127,0.55)] hover:bg-[#163024]',
+          'hover:shadow-[0_8px_24px_rgba(0,188,125,0.28),inset_0_1px_0_rgba(255,255,255,0.08)]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00bc7d]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1f17]',
+          'active:scale-[0.94]'
+        )}
+        style={{
+          [isRTL ? 'right' : 'left']: isCollapsed ? '51px' : '217px',
+        }}
+      >
+        {/* Soft emerald halo on hover */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-[-4px] rounded-full bg-[radial-gradient(circle_at_center,rgba(0,224,127,0.22),transparent_70%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        />
+        <img
+          src={SideArrow}
+          alt=""
+          aria-hidden
+          className={cn(
+            'relative h-[10px] w-[6px] object-contain transition-transform duration-300 ease-out',
+            // SideArrow points LEFT natively. Arrow points in the direction the sidebar will move.
+            isRTL
+              ? isCollapsed
+                ? 'rotate-0'
+                : 'rotate-180'
+              : isCollapsed
+                ? 'rotate-180'
+                : 'rotate-0'
+          )}
+          style={ICON_FILTER_WHITE}
+        />
+      </button>
+
+      <div
+        aria-hidden
+        className={cn(
+          'h-[100dvh] flex-shrink-0 transition-[width] duration-300 ease-out',
+          sidebarWidthClass
+        )}
+      />
     </>
   );
 };
