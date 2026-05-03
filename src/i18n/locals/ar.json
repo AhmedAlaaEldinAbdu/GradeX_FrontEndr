@@ -22,7 +22,7 @@
     "preparations": "التحضيرات",
     "weeklyCalendar": "التقويم الاسبوعي",
     "monthlyCalendar": "التقويم الشهري",
-    "academicCalendar": "التقويم الأكاديمي",
+    "academicCalendar": "التقويم السنوي",
     "userManagement": "إدارة المستخدمين",
     "users": "المستخدمين",
     "studentManagement": "إدارة الطلاب",
@@ -86,7 +86,24 @@
   "header": {
     "search": "ابحث بسهولة عما تريد",
     "logout": "تسجيل خروج",
-    "profile": "الملف الشخصي"
+    "profile": "الملف الشخصي",
+    "changePassword": "تغيير كلمة المرور"
+  },
+  "changePassword": {
+    "title": "تغيير كلمة المرور",
+    "subtitle": "أدخل كلمة المرور الحالية ثم اختر كلمة مرور جديدة آمنة",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور الجديدة",
+    "currentPasswordPlaceholder": "أدخل كلمة المرور الحالية",
+    "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور الجديدة",
+    "save": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "currentPasswordRequired": "كلمة المرور الحالية مطلوبة",
+    "successMessage": "تم تغيير كلمة المرور بنجاح",
+    "errorMessage": "حدث خطأ أثناء تغيير كلمة المرور",
+    "incorrectCurrentPassword": "كلمة المرور الحالية غير صحيحة"
   },
   "common": {
     "add": "إضافة",

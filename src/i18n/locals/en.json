@@ -86,7 +86,24 @@
   "header": {
     "search": "Search easily for what you want",
     "logout": "Logout",
-    "profile": "Profile"
+    "profile": "Profile",
+    "changePassword": "Change Password"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "subtitle": "Enter your current password, then choose a new secure password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "currentPasswordPlaceholder": "Enter your current password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmPasswordPlaceholder": "Re-enter your new password",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "currentPasswordRequired": "Current password is required",
+    "successMessage": "Password changed successfully",
+    "errorMessage": "Something went wrong while changing the password",
+    "incorrectCurrentPassword": "Current password is incorrect"
   },
   "common": {
     "add": "Add",
