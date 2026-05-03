@@ -15,6 +15,8 @@ import type {
   ForgotPasswordResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
   VerifyOtpRequest,
   VerifyOtpResponse,
   RefreshTokenRequest,
@@ -99,6 +101,20 @@ export async function resetPassword(data: ResetPasswordRequest): Promise<ResetPa
   return response.data;
 }
 
+/**
+ * Change password for the currently authenticated user.
+ */
+export async function changePassword(
+  data: ChangePasswordRequest
+): Promise<ChangePasswordResponse> {
+  const response: AxiosResponse<ChangePasswordResponse> = await axiosClient.post(
+    AuthEndpoints.changePassword,
+    data
+  );
+
+  return response.data;
+}
+
 // ============================================================================
 // OTP Verification
 // ============================================================================
@@ -138,6 +154,7 @@ export const authApiService = {
   refreshToken,
   forgotPassword,
   resetPassword,
+  changePassword,
   verifyOtp,
   verifyEmail,
 };

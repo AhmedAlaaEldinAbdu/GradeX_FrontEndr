@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import FocusPoint from '@gradex/assets/icons/FocusPoint.svg';
 import WavePattern from '@gradex/assets/illustrations/WavePattern.svg';
 import PencilCup from '@gradex/assets/illustrations/PencilCup.svg';
-import MainLogo from '@gradex/assets/identity/MainLogo.png';
+import AlNukhbaLogo from '@/assets/identity/AlNukhbaLogo.svg';
 import RyalIcon from '@gradex/assets/icons/Ryal.svg';
 import EmailIcon from '@gradex/assets/icons/Email.svg';
 import { FiGlobe, FiSmartphone } from 'react-icons/fi';
@@ -34,6 +34,8 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
       (isAr ? invoice?.paymentMethodNameAr : invoice?.paymentMethodNameEn) ??
       dash;
     const schoolInfo: SchoolInfo | null | undefined = invoice?.schoolInfo;
+
+    const taxNumber = schoolInfo?.taxNumber ?? invoice?.taxNumber ?? dash;
 
     const schoolAddress =
       [schoolInfo?.street, schoolInfo?.neighborhood, schoolInfo?.city, schoolInfo?.region]
@@ -106,10 +108,8 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
             {/* Center Logo */}
             <div
               style={{
-                width: '110px',
-                height: '110px',
-                backgroundColor: '#1E5841',
-                borderRadius: '50%',
+                width: '120px',
+                height: '120px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -117,9 +117,9 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
               }}
             >
               <img
-                src={MainLogo}
+                src={AlNukhbaLogo}
                 alt="Logo"
-                style={{ width: '70px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+                style={{ width: '120px', height: '120px', objectFit: 'contain' }}
               />
             </div>
 
@@ -137,7 +137,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
               <img src={FocusPoint} alt="Focus" style={{ width: '22px', height: '22px' }} />
               <p style={{ marginBottom: '20px' }}>
                 <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#444' }}>
-                  {invoice?.taxNumber ?? dash}
+                  {taxNumber}
                 </span>
                 <span
                   style={{
@@ -766,7 +766,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
               </div>
             </div>
 
-            {/* ELM Logo Circle */}
+            {/* School Logo */}
             <div
               style={{
                 position: 'absolute',
@@ -775,18 +775,15 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                 transform: 'translateY(-50%)',
                 width: '90px',
                 height: '90px',
-                backgroundColor: '#115C38',
-                borderRadius: '50%',
-                border: '6px solid #FCFCFC',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               <img
-                src={MainLogo}
+                src={AlNukhbaLogo}
                 alt="Logo"
-                style={{ width: '56px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+                style={{ width: '90px', height: '90px', objectFit: 'contain' }}
               />
             </div>
           </div>

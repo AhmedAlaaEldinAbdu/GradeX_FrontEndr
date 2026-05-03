@@ -20,6 +20,7 @@ export interface SchoolInfo {
   street?: string | null;
   buildingNumber?: string | null;
   zipCode?: string | null;
+  taxNumber?: string | null;
 }
 
 export interface InvoiceItemFetchDto {
