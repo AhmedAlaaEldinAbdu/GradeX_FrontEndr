@@ -91,6 +91,20 @@ export interface ResetPasswordResponse {
 }
 
 // ============================================================================
+// Change Password Types (authenticated user changes own password)
+// ============================================================================
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+}
+
+// ============================================================================
 // Verify OTP Types
 // ============================================================================
 
