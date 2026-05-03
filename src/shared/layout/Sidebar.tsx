@@ -1160,11 +1160,11 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         title={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
         className={cn(
           'group fixed top-[60px] z-50 grid h-[26px] w-[26px] place-items-center rounded-full',
-          'border border-white/[0.18] bg-[#0f1f17] text-white',
-          'shadow-[0_8px_22px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.08)]',
+          'border border-white/[0.08] bg-[#16302a] text-white',
+          'shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]',
           'transition-[left,right,background-color,border-color,box-shadow,transform] duration-300 ease-out',
-          'hover:border-[rgba(0,224,127,0.55)] hover:bg-[#163024]',
-          'hover:shadow-[0_8px_24px_rgba(0,188,125,0.28),inset_0_1px_0_rgba(255,255,255,0.08)]',
+          'hover:border-[rgba(0,224,127,0.45)] hover:bg-[#1b3a31]',
+          'hover:shadow-[0_0_0_1px_rgba(0,188,125,0.18),inset_0_1px_0_rgba(255,255,255,0.08)]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00bc7d]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1f17]',
           'active:scale-[0.94]'
         )}
