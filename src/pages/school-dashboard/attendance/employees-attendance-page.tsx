@@ -172,6 +172,7 @@ export default function EmployeesAttendancePage() {
     <div>
       <PageHeader
         title="attendance.employeesTitle"
+        hasHeaderControls={true}
         actions={[
           {
             label: 'attendance.addAttendanceSchedule',
