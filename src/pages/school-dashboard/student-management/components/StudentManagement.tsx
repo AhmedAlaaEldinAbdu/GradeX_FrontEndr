@@ -16,7 +16,9 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
+import Input from '@/shared/components/Input';
 import { getCurrentSchoolBranchId } from '@/lib/auth';
+
 
 export default function StudentManagement() {
   const { t, i18n } = useTranslation();
@@ -28,6 +30,8 @@ export default function StudentManagement() {
   const [selectedGradeId, setSelectedGradeId] = useState('');
   const [selectedClassroomId, setSelectedClassroomId] = useState('');
   const [selectedSchoolBranchId, setSelectedSchoolBranchId] = useState('');
+  const [selectedCreatedById, setSelectedCreatedById] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
@@ -105,6 +109,8 @@ export default function StudentManagement() {
     setSelectedGradeId('');
     setSelectedClassroomId('');
     setSelectedSchoolBranchId('');
+    setSelectedCreatedById('');
+    setSelectedDate('');
   };
 
   const handleDeleteClick = (id: string) => {
@@ -131,7 +137,12 @@ export default function StudentManagement() {
   };
 
   const hasActiveFilters =
-    searchTerm || selectedGradeId || selectedClassroomId || selectedSchoolBranchId;
+    searchTerm ||
+    selectedGradeId ||
+    selectedClassroomId ||
+    selectedSchoolBranchId ||
+    selectedCreatedById ||
+    selectedDate;
   const shouldShowEmptyState = !isLoading && students.length === 0 && !hasActiveFilters;
   const shouldShowContent = isLoading || students.length > 0 || hasActiveFilters;
 
@@ -255,6 +266,41 @@ export default function StudentManagement() {
           placeholder={isLoadingClassrooms ? t('common.loading') : t('studentManagement.classes')}
           disabled={isLoadingClassrooms}
           maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'created-by-filter',
+      placeholder: '',
+      value: selectedCreatedById,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={selectedCreatedById}
+          onChange={(value) =>
+            setSelectedCreatedById(Array.isArray(value) ? (value[0] ?? '') : value)
+          }
+          options={[]}
+          placeholder={t('studentManagement.createdBy')}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'date-filter',
+      placeholder: '',
+      value: selectedDate,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <Input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          placeholder={t('studentManagement.date')}
         />
       ),
     },

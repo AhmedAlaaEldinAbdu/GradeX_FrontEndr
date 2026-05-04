@@ -12,6 +12,8 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
+import Input from '@/shared/components/Input';
+import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
@@ -290,14 +292,14 @@ export default function RegistrationAnnouncement() {
         setSearchTerm(value as string);
         setPagination((prev) => ({ ...prev, page: 1 }));
       },
-      width: '35%',
+      width: '30%',
     },
     {
       type: 'custom',
       name: 'registration-announcement-status',
       value: selectedStatus,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedStatus}
@@ -318,22 +320,17 @@ export default function RegistrationAnnouncement() {
       name: 'start-date-filter',
       value: startDate,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
-        <div className="relative">
-          <input
-            type="text"
-            placeholder={t('registrationAnnouncement.startDate')}
-            onFocus={(e) => (e.target.type = 'date')}
-            onBlur={(e) => (e.target.type = 'text')}
-            value={startDate}
-            onChange={(e) => {
-              setStartDate(e.target.value);
-              setPagination((prev) => ({ ...prev, page: 1 }));
-            }}
-            className="h-[40px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
+        <Input
+          type="date"
+          placeholder={t('registrationAnnouncement.startDate')}
+          value={startDate}
+          onChange={(e) => {
+            setStartDate(e.target.value);
+            setPagination((prev) => ({ ...prev, page: 1 }));
+          }}
+        />
       ),
     },
     {
@@ -341,22 +338,17 @@ export default function RegistrationAnnouncement() {
       name: 'end-date-filter',
       value: endDate,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
-        <div className="relative">
-          <input
-            type="text"
-            placeholder={t('registrationAnnouncement.endDate')}
-            onFocus={(e) => (e.target.type = 'date')}
-            onBlur={(e) => (e.target.type = 'text')}
-            value={endDate}
-            onChange={(e) => {
-              setEndDate(e.target.value);
-              setPagination((prev) => ({ ...prev, page: 1 }));
-            }}
-            className="h-[40px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
+        <Input
+          type="date"
+          placeholder={t('registrationAnnouncement.endDate')}
+          value={endDate}
+          onChange={(e) => {
+            setEndDate(e.target.value);
+            setPagination((prev) => ({ ...prev, page: 1 }));
+          }}
+        />
       ),
     },
   ];
