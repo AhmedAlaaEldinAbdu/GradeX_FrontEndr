@@ -220,12 +220,12 @@ function Table<T>({ columns, data, keyExtractor, floatingActions = false }: Tabl
                     return (
                       <td
                         key={colIndex}
-                        className={`px-4 py-4 text-center text-base font-normal text-gray-500 ${
+                        className={`px-4 py-4 text-center text-sm font-normal text-[#646969] ${
                           column.className || ''
                         } ${stickyClass}`}
                         style={stickyStyle}
                       >
-                        <div className="flex items-center justify-center text-base font-normal text-gray-500">
+                        <div className="flex items-center justify-center text-sm font-normal text-[#646969]">
                           {typeof column.accessor === 'function'
                             ? column.accessor(row, rowIndex)
                             : String(row[column.accessor])}
