@@ -7,7 +7,7 @@ import CustomImage from '@/shared/components/CustomImage';
 export interface Action {
   id: string;
   label: string;
-  icon: string;
+  icon?: string;
   color?: string;
   onClick: () => void;
   hidden?: boolean;
@@ -170,7 +170,9 @@ export default function ActionsDropdown({
                 }`}
                 type="button"
               >
-                <CustomImage src={action.icon} alt={`${action.label} icon`} className="h-5 w-5" />
+                {action.icon ? (
+                  <CustomImage src={action.icon} alt={`${action.label} icon`} className="h-5 w-5" />
+                ) : null}
                 <span className="text-sm">{action.label}</span>
               </button>
             ))}
