@@ -9,7 +9,7 @@ import InterviewDetailsPopup from '../popups/InterviewDetailsPopup';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
-import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
+import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import SearchInput from '@/shared/components/SearchInput';
@@ -389,7 +389,7 @@ export default function Interviews() {
     },
     {
       label: t('interviews.editInterview'),
-      icon: EditFillIcon,
+      icon: EditFilledIcon,
       onClick: (_date, event) => {
         if (event) {
           const interview = calendarInterviews.find((i) => i.id === event.id);

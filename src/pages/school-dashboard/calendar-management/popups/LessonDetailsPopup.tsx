@@ -102,7 +102,7 @@ export default function LessonDetailsPopup({ isOpen, onClose, lesson }: LessonDe
             <p className="text-red-500">{error}</p>
           </div>
         ) : lessonDetails ? (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Date Header - Centered */}
             <div className="mb-6 text-center">
               <h2 className="text-xl font-bold text-gray-800">
@@ -110,100 +110,113 @@ export default function LessonDetailsPopup({ isOpen, onClose, lesson }: LessonDe
               </h2>
             </div>
 
-            {/* Row 1: Start Time & End Time - right aligned, grouped */}
-            <div className="flex items-center justify-start gap-16">
+            {/* Row 1: Start Time & End Time */}
+            <div className="grid grid-cols-2 items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{t('weeklyCalendar.startTime')}:</span>
-                <span className="font-medium text-gray-800">
+                <span className="text-base text-gray-500">{t('weeklyCalendar.startTime')}:</span>
+                <span className="text-base font-medium text-gray-800">
                   {formatTimeDisplay(lessonDetails.startTime, currentLang)}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{t('weeklyCalendar.endTime')}:</span>
-                <span className="font-medium text-gray-800">
+                <span className="text-base text-gray-500">{t('weeklyCalendar.endTime')}:</span>
+                <span className="text-base font-medium text-gray-800">
                   {formatTimeDisplay(lessonDetails.endTime, currentLang)}
                 </span>
               </div>
             </div>
 
-            {/* Row 2: Subject Name & Teacher Name - right aligned, grouped */}
-            <div className="flex items-center justify-start gap-12">
+            {/* Row 2: Subject Name & Teacher Name */}
+            <div className="grid grid-cols-2 items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{t('weeklyCalendar.subjectName')}:</span>
-                <span className="font-medium text-gray-800">{subjectName}</span>
+                <span className="text-base text-gray-500">{t('weeklyCalendar.subjectName')}:</span>
+                <span className="text-base font-medium text-gray-800">{subjectName}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{t('weeklyCalendar.teacherName')}:</span>
-                <span className="font-medium text-gray-800">{lessonDetails.teacherName}</span>
-              </div>
-            </div>
-
-            {/* Row 3: Book Name - right aligned */}
-            <div className="flex items-center justify-start gap-2">
-              <span className="text-sm text-gray-500">{t('weeklyCalendar.bookName')}:</span>
-              <span className="font-medium text-gray-800">{lessonDetails.bookName}</span>
-            </div>
-
-            {/* Row 4: Classwork - title on right, pages flowing left */}
-            <div className="flex items-center justify-start gap-6">
-              <span className="font-medium text-gray-800">{t('weeklyCalendar.classwork')}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{t('weeklyCalendar.fromPage')}:</span>
-                <span className="font-medium text-gray-800">{lessonDetails.classworkFromPage}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{t('weeklyCalendar.toPage')}:</span>
-                <span className="font-medium text-gray-800">{lessonDetails.classworkToPage}</span>
+                <span className="text-base text-gray-500">{t('weeklyCalendar.teacherName')}:</span>
+                <span className="text-base font-medium text-gray-800">
+                  {lessonDetails.teacherName}
+                </span>
               </div>
             </div>
 
-            {/* Row 5: Homework - title on right, pages flowing left */}
-            <div className="flex items-center justify-start gap-6">
-              <span className="font-medium text-gray-800">{t('weeklyCalendar.homework')}</span>
+            {/* Row 3: Book Name */}
+            <div className="flex items-center gap-2">
+              <span className="text-base text-gray-500">{t('weeklyCalendar.bookName')}:</span>
+              <span className="text-base font-medium text-gray-800">{lessonDetails.bookName}</span>
+            </div>
+
+            {/* Row 4: Classwork */}
+            <div className="grid grid-cols-3 items-center gap-4">
+              <span className="text-base font-medium text-gray-800">
+                {t('weeklyCalendar.classwork')}
+              </span>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{t('weeklyCalendar.fromPage')}:</span>
-                <span className="font-medium text-gray-800">{lessonDetails.homeworkFromPage}</span>
+                <span className="text-base text-gray-500">{t('weeklyCalendar.fromPage')}:</span>
+                <span className="text-base font-medium text-gray-800">
+                  {lessonDetails.classworkFromPage}
+                </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{t('weeklyCalendar.toPage')}:</span>
-                <span className="font-medium text-gray-800">{lessonDetails.homeworkToPage}</span>
+                <span className="text-base text-gray-500">{t('weeklyCalendar.toPage')}:</span>
+                <span className="text-base font-medium text-gray-800">
+                  {lessonDetails.classworkToPage}
+                </span>
               </div>
             </div>
 
-            {/* Row 6: Selected Students - right aligned with first student image and name */}
-            <div className="flex items-center justify-start gap-2">
-              <span className="text-sm text-gray-500">{t('weeklyCalendar.assigned')}:</span>
+            {/* Row 5: Homework */}
+            <div className="grid grid-cols-3 items-center gap-4">
+              <span className="text-base font-medium text-gray-800">
+                {t('weeklyCalendar.homework')}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-base text-gray-500">{t('weeklyCalendar.fromPage')}:</span>
+                <span className="text-base font-medium text-gray-800">
+                  {lessonDetails.homeworkFromPage}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-base text-gray-500">{t('weeklyCalendar.toPage')}:</span>
+                <span className="text-base font-medium text-gray-800">
+                  {lessonDetails.homeworkToPage}
+                </span>
+              </div>
+            </div>
+
+            {/* Row 6: Selected Students */}
+            <div className="flex items-center gap-2">
+              <span className="text-base text-gray-500">{t('weeklyCalendar.assigned')}:</span>
+              {remainingStudents > 0 && (
+                <span className="text-base font-bold text-emerald-600">+{remainingStudents}</span>
+              )}
+              <span className="text-base text-gray-800">
+                {firstStudentName || t('weeklyCalendar.allStudents')}
+              </span>
               <img
                 src={firstStudentImage || DefaultAvatar}
                 alt={firstStudentName || 'Student'}
-                className="h-8 w-8 rounded-full object-cover"
+                className="h-9 w-9 rounded-lg object-cover"
                 onError={(e) => {
-                  // Fallback to default avatar if image fails to load
                   (e.target as HTMLImageElement).src = DefaultAvatar;
                 }}
               />
-              <span className="text-sm text-gray-600">
-                {firstStudentName || t('weeklyCalendar.allStudents')}
-              </span>
-              {remainingStudents > 0 && (
-                <span className="text-sm text-primary-600">+{remainingStudents}</span>
-              )}
             </div>
 
-            {/* Row 7: Educational Stages - right aligned */}
-            <div className="flex items-center justify-start gap-2">
-              <span className="text-sm text-gray-500">
+            {/* Row 7: Educational Stages */}
+            <div className="flex items-center gap-2">
+              <span className="text-base text-gray-500">
                 {t('weeklyCalendar.educationalStages')}:
               </span>
-              <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
+              <span className="rounded-md bg-emerald-50 px-3 py-1 text-base font-medium text-emerald-700">
                 {gradeName}
               </span>
             </div>
 
-            {/* Row 8: Classroom - right aligned */}
-            <div className="flex items-center justify-start gap-2">
-              <span className="text-sm text-gray-500">{t('weeklyCalendar.classrooms')}:</span>
-              <span className="rounded-full border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700">
+            {/* Row 8: Classroom */}
+            <div className="flex items-center gap-2">
+              <span className="text-base text-gray-500">{t('weeklyCalendar.classrooms')}:</span>
+              <span className="rounded-md bg-emerald-50 px-3 py-1 text-base font-medium text-emerald-700">
                 {classroomName}
               </span>
             </div>

@@ -21,7 +21,7 @@ import AddEditMonthlyEventPopup from '../popups/AddEditMonthlyEventPopup';
 import MonthlyEventDetailsPopup from '../popups/MonthlyEventDetailsPopup';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
-import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
+import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
@@ -482,7 +482,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       },
       {
         label: t('monthlyCalendar.actions.editEvent'),
-        icon: EditFillIcon,
+        icon: EditFilledIcon,
         onClick: (_date, calendarEvent) => {
           const event = resolveEvent(calendarEvent);
           if (event && !hasMultipleEventsOnDay(event.day)) {

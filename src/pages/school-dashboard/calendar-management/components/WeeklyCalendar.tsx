@@ -36,7 +36,7 @@ import type {
   AcademicCalendarTimedSchedule,
 } from '@/services/api/types/academic-calendar.types';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
-import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
+import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -1039,7 +1039,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     },
     {
       label: t('weeklyCalendar.editLesson'),
-      icon: EditFillIcon,
+      icon: EditFilledIcon,
       onClick: handleEditLesson,
       color: 'success',
     },
