@@ -192,7 +192,7 @@ export default function AcademicCalendarList() {
       name: 'academic-calendar-start',
       value: startDate,
       onChange: () => {},
-      width: '30%',
+      width: '20%',
       customComponent: (
         <Input
           type="date"
@@ -210,7 +210,7 @@ export default function AcademicCalendarList() {
       name: 'academic-calendar-end',
       value: endDate,
       onChange: () => {},
-      width: '30%',
+      width: '20%',
       customComponent: (
         <Input
           type="date"

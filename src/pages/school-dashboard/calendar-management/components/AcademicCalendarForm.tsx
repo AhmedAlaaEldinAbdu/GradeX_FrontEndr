@@ -84,10 +84,10 @@ function ScheduleSection({
   showHeader?: boolean;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {showHeader ? (
         <div className="flex items-center justify-between">
-          {title ? <h3 className="text-lg font-semibold text-gray-800">{title}</h3> : <div />}
+          {title ? <h3 className="text-base font-medium text-gray-900">{title}</h3> : <div />}
           <button type="button" onClick={onAdd}>
             <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
           </button>
@@ -95,7 +95,7 @@ function ScheduleSection({
       ) : null}
 
       {items.map((item) => (
-        <Card key={item.id} className="rounded-2xl" padding="md">
+        <div className="rounded-2xl border border-black-100 p-4">
           <div className="flex gap-1">
             <div className="flex-grow">
               <div className="mb-4 grid grid-cols-1 gap-4">
@@ -140,7 +140,7 @@ function ScheduleSection({
               </div>
             )}
           </div>
-        </Card>
+        </div>
       ))}
     </div>
   );
@@ -340,7 +340,7 @@ export default function AcademicCalendarForm({
           </div>
         </div>
 
-        <Card>
+        <div className="rounded-2xl border border-black-100 p-4">
           <ScheduleSection
             title={t('academicCalendar.form.schoolDaySchedulesTitle')}
             items={values.schoolDaySchedules}
@@ -353,12 +353,12 @@ export default function AcademicCalendarForm({
             startLabel={t('academicCalendar.form.schoolDayStartLabel')}
             endLabel={t('academicCalendar.form.schoolDayEndLabel')}
           />
-        </Card>
+        </div>
 
-        <Card className="rounded-2xl" padding="lg">
-          <div className="space-y-4">
+        <div className="rounded-2xl border border-black-100 p-4">
+          <div className="space-y-5">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-base font-medium text-gray-900">
                 {t('academicCalendar.form.breakBetweenClassesTitle')}
               </h3>
               {values.breakBetweenClassesMode === 'custom' ? (
@@ -380,7 +380,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ breakBetweenClassesMode: 'year' })}
                       value={'year'}
                     />
-                    <span className="text-base text-black-800">
+                    <span className="text-sm font-normal text-[#3A3A3A]">
                       {t('academicCalendar.form.yearMode')}
                     </span>
                   </label>
@@ -391,7 +391,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ breakBetweenClassesMode: 'custom' })}
                       value={'custom'}
                     />
-                    <span className="text-base text-black-800">
+                    <span className="text-sm font-normal text-[#3A3A3A]">
                       {t('academicCalendar.form.customMode')}
                     </span>
                   </label>
@@ -449,12 +449,12 @@ export default function AcademicCalendarForm({
               </div>
             )}
           </div>
-        </Card>
+        </div>
 
-        <Card className="rounded-2xl" padding="lg">
-          <div className="space-y-4">
+        <div className="rounded-2xl border border-black-100 p-4">
+          <div className="space-y-5">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-base font-medium text-gray-900">
                 {t('academicCalendar.form.morningLineTitle')}
               </h3>
               {values.morningLineMode === 'custom' && (
@@ -474,7 +474,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ morningLineMode: 'year' })}
                       value={'year'}
                     />
-                    <span className="text-base text-black-800">
+                    <span className="text-sm font-normal text-[#3A3A3A]">
                       {t('academicCalendar.form.yearMode')}
                     </span>
                   </label>
@@ -485,7 +485,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ morningLineMode: 'custom' })}
                       value={'custom'}
                     />
-                    <span className="text-base text-black-800">
+                    <span className="text-sm font-normal text-[#3A3A3A]">
                       {t('academicCalendar.form.customMode')}
                     </span>
                   </label>
@@ -533,12 +533,12 @@ export default function AcademicCalendarForm({
               </div>
             )}
           </div>
-        </Card>
+        </div>
 
-        <Card className="rounded-2xl" padding="lg">
-          <div className="space-y-4">
+        <div className="rounded-2xl border border-black-100 p-4">
+          <div className="space-y-5">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-base font-medium text-gray-900">
                 {t('academicCalendar.form.breakfastTitle')}
               </h3>
               {values.breakfastMode === 'custom' && (
@@ -558,7 +558,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ breakfastMode: 'year' })}
                       value={'year'}
                     />
-                    <span className="text-base text-black-800">
+                    <span className="text-sm font-normal text-[#3A3A3A]">
                       {t('academicCalendar.form.yearMode')}
                     </span>
                   </label>
@@ -569,7 +569,7 @@ export default function AcademicCalendarForm({
                       onChange={() => patch({ breakfastMode: 'custom' })}
                       value={'custom'}
                     />
-                    <span className="text-base text-black-800">
+                    <span className="text-sm font-normal text-[#3A3A3A]">
                       {t('academicCalendar.form.customMode')}
                     </span>
                   </label>
@@ -617,7 +617,7 @@ export default function AcademicCalendarForm({
               </div>
             )}
           </div>
-        </Card>
+        </div>
 
         <div className="flex flex-row-reverse gap-3 pt-4">
           <Button onClick={handleSubmit} variant="primary" disabled={isSubmitting}>
