@@ -657,7 +657,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                   justifyContent: 'space-between',
                   width: '100%',
                   direction: 'ltr',
-                  [isAr ? 'paddingLeft' : 'paddingRight']: '80px',
+                  [isAr ? 'paddingLeft' : 'paddingRight']: '60px',
                   [isAr ? 'paddingRight' : 'paddingLeft']: '20px',
                   color: '#FFF',
                   fontSize: '13px',
