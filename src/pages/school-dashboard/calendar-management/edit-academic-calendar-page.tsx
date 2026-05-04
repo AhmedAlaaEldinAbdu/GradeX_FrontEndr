@@ -229,7 +229,7 @@ export default function EditAcademicCalendarPage() {
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.calendarManagement') },
-    { label: t('sidebar.academicCalendar'), path: '/calendar/academic' },
+    { label: t('sidebar.annualCalendar'), path: '/calendar/academic' },
     { label: t('academicCalendar.editTitle') },
   ];
 

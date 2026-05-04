@@ -313,7 +313,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
         subItems: [
           { key: 'weeklyCalendar', path: '/calendar/weekly' },
           { key: 'monthlyCalendar', path: '/calendar/monthly' },
-          { key: 'academicCalendar', path: '/calendar/academic' },
+          { key: 'annualCalendar', path: '/calendar/academic' },
         ],
       },
       {
