@@ -3,9 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import UpLeftArrow from '@gradex/assets/icons/UpLeftArrow.svg';
+import ArrowLeftSmIcon from '@gradex/assets/icons/ArrowLeftSm.svg';
+import ArrowRightSmIcon from '@gradex/assets/icons/ArrowRightSm.svg';
+import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
+import ArrowUpGreenIcon from '@gradex/assets/icons/ArrownUpGreen.svg';
+import ArrowDownGreenIcon from '@gradex/assets/icons/ArrownDownGreen.svg';
 import CustomImage from './CustomImage';
 import { ARABIC_DAY_NAMES, ENGLISH_DAY_NAMES, formatTimeDisplay } from '@/lib/utils/date-utils';
-import MenuICon from '@gradex/assets/icons/Menu.svg';
+import MenuGreenIcon from '@gradex/assets/icons/MenuGreen.svg';
 
 // Types
 export interface ScheduleLesson {
@@ -394,10 +399,10 @@ export default function WeeklyScheduleCalendar({
 
   // Lesson Card matching the design exactly
   const LessonCard = ({ lesson }: { lesson: ScheduleLesson }) => (
-    <div className="h-full rounded-lg border border-gray-200 bg-white p-2 transition-shadow hover:shadow-md">
+    <div className="h-full rounded-lg border border-[#DDE0E0] bg-white p-2 transition-shadow hover:shadow-md">
       {/* Header: Subject + Dots */}
       <div className="flex items-start justify-between gap-1">
-        <span className="text-xs font-bold text-gray-800">{lesson.subject}</span>
+        <span className="text-xs font-normal text-black-900">{lesson.subject}</span>
         <button
           className="flex-shrink-0 text-gray-400 hover:text-gray-600"
           onClick={(e) => {
@@ -413,9 +418,9 @@ export default function WeeklyScheduleCalendar({
         </button>
       </div>
       {/* Teacher Name */}
-      <p className="mt-1 text-start text-[10px] text-gray-500">{lesson.teacherName}</p>
+      <p className="mt-1 text-start text-[8px] text-[#646969]">{lesson.teacherName}</p>
       {/* Time Range */}
-      <p className="mt-0.5 text-start text-[10px] text-gray-400">
+      <p className="mt-0.5 text-start text-[8px] text-[#646969]">
         {formatTimeDisplay(lesson.startTime, currentLang)} -{' '}
         {formatTimeDisplay(lesson.endTime, currentLang)}
       </p>
@@ -424,9 +429,11 @@ export default function WeeklyScheduleCalendar({
         {lesson.duration <= 60 ? (
           /* Stacked layout for short lessons */
           <div className="flex flex-col text-start">
-            <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
-            <span className="text-[9px] text-gray-600">
-              <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
+            <span className="text-gray-[#646969] text-[8px] font-normal">
+              {t('weeklyCalendar.lessonDuration')}
+            </span>
+            <span className="text-gray-[#646969] text-[8px] font-normal">
+              <span className="me-0.5 inline-block rounded-sm border-[0.5px] border-[#A9A7A7] p-0.5 text-[8px]">
                 {lesson.duration}
               </span>
               {t('weeklyCalendar.minutes')}
@@ -435,9 +442,11 @@ export default function WeeklyScheduleCalendar({
         ) : (
           /* Inline layout for longer lessons */
           <div className="flex items-center gap-1 text-start">
-            <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
-            <span className="text-[9px] text-gray-600">
-              <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
+            <span className="text-[8px] font-normal text-[#646969]">
+              {t('weeklyCalendar.lessonDuration')}
+            </span>
+            <span className="text-[8px] font-normal text-[#646969]">
+              <span className="me-0.5 inline-block rounded-sm border-[0.5px] border-[#A9A7A7] p-0.5 text-[8px]">
                 {lesson.duration}
               </span>
               {t('weeklyCalendar.minutes')}
@@ -489,7 +498,7 @@ export default function WeeklyScheduleCalendar({
                   className={`flex h-2.5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-t border border-b-0 transition-colors ${
                     isIncreaseDisabled
                       ? 'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300'
-                      : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
+                      : 'border-[#DDE0E0] text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
                   }`}
                   title={
                     isIncreaseDisabled
@@ -497,15 +506,7 @@ export default function WeeklyScheduleCalendar({
                       : t('weeklyCalendar.increaseDuration')
                   }
                 >
-                  <svg
-                    className="h-2 w-2"
-                    viewBox="0 0 24 12"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M7 10l5-5 5 5" />
-                  </svg>
+                  <CustomImage src={ArrowUpGreenIcon} alt="increase" className="h-2 w-2" />
                 </button>
               );
             })()}
@@ -527,20 +528,11 @@ export default function WeeklyScheduleCalendar({
                   className={`flex h-2.5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-b border border-t-0 transition-colors ${
                     isDecreaseDisabled
                       ? 'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300'
-                      : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
+                      : 'border-[#DDE0E0] text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
                   }`}
                   title={t('weeklyCalendar.decreaseDuration')}
                 >
-                  <svg
-                    className="h-2 w-2"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M7 14l5 5 5-5" transform="translate(0, -6)" />
-                    <path d="M7 6l5 5 5-5" />
-                  </svg>
+                  <CustomImage src={ArrowDownGreenIcon} alt="decrease" className="h-2 w-2" />
                 </button>
               );
             })()}
@@ -573,7 +565,7 @@ export default function WeeklyScheduleCalendar({
         <div className="fixed inset-0 z-40" onClick={handleContextMenuClose} />
         {/* Menu */}
         <div
-          className="fixed z-50 min-w-[160px] rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
+          className="fixed z-50 min-w-[160px] rounded-xl border border-[#DDE0E0] bg-white py-2 shadow-lg"
           style={{ top: contextMenu.position.y, left: contextMenu.position.x }}
         >
           {lessonContextActions.map((action, index) => (
@@ -665,32 +657,26 @@ export default function WeeklyScheduleCalendar({
       <div className="flex items-center justify-center gap-4 py-3">
         <button
           onClick={handlePrevWeek}
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-black-50 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
           aria-label="Previous week"
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d={isRTL ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7'}
-            />
-          </svg>
+          <CustomImage
+            src={isRTL ? ArrowRightSmIcon : ArrowLeftSmIcon}
+            alt="Previous week"
+            className="h-5 w-5"
+          />
         </button>
-        <span className="text-xs font-semibold text-gray-700">{dateRangeLabel}</span>
+        <span className="text-xl font-bold text-[#000000]">{dateRangeLabel}</span>
         <button
           onClick={handleNextWeek}
           className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
           aria-label="Next week"
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d={isRTL ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'}
-            />
-          </svg>
+          <CustomImage
+            src={isRTL ? ArrowLeftSmIcon : ArrowRightSmIcon}
+            alt="Next week"
+            className="h-5 w-5"
+          />
         </button>
       </div>
 
@@ -705,15 +691,17 @@ export default function WeeklyScheduleCalendar({
             {localizedPeriodHeaders.map((period, idx) => {
               // Check if this column is a special column
               const specialCol = specialColumns.find((sc) => sc.columnIndex === idx);
-              const labelClass = specialCol ? 'text-gray-800 font-bold' : 'text-gray-800';
+              const labelClass = specialCol ? 'font-normal text-[#3A3A3A]' : 'text-[#3A3A3A]';
 
               return (
                 <div
                   key={idx}
-                  className={`flex flex-col items-center justify-center rounded-lg border py-2`}
+                  className={`flex flex-col items-center justify-center gap-2 rounded-lg border border-[#DDE0E0] py-2`}
                 >
-                  <span className={`text-sm font-bold ${labelClass}`}>{period.label}</span>
-                  <span className="mt-0.5 text-[9px] text-gray-400">{period.time}</span>
+                  <span className={`text-[10px] ${labelClass}`}>{period.label}</span>
+                  <span className="mt-0.5 text-[8px] font-normal text-[#646969]">
+                    {period.time}
+                  </span>
                 </div>
               );
             })}
@@ -742,17 +730,19 @@ export default function WeeklyScheduleCalendar({
                 {/* Day label on the right */}
                 {isCurrentDay ? (
                   // Current day - green badge with menu icon and border
-                  <div className="z-10 flex flex-col items-center justify-center rounded-lg border border-emerald-500 bg-white py-2">
-                    <div className="flex items-center gap-1 rounded-lg px-2 py-1 text-emerald-500">
+                  <div className="z-10 flex flex-col items-center justify-center rounded-lg border border-green-500 bg-white py-2">
+                    <div className="flex items-center gap-1 rounded-xl px-2 py-1 text-green-500">
                       {/* <MenuIcon /> */}
-                      <img src={MenuICon} alt="menu" className="h-3 w-3" />
+                      <CustomImage src={MenuGreenIcon} alt="menu" className="h-5 w-5" />
                       <span className="text-[10px] font-bold">{getRowLabel(dayIndex)}</span>
                     </div>
                   </div>
                 ) : (
                   // Other days - just plain text
                   <div className="z-10 flex items-center justify-center py-2">
-                    <span className="text-[10px] text-gray-500">{getRowLabel(dayIndex)}</span>
+                    <span className="text-[10px] font-normal text-[#646969]">
+                      {getRowLabel(dayIndex)}
+                    </span>
                   </div>
                 )}
                 {/* Period cells (9 columns) */}
@@ -867,7 +857,7 @@ export default function WeeklyScheduleCalendar({
                   }
 
                   // Get background and border class for regular cells
-                  const cellBgClass = 'bg-transparent border border-gray-200';
+                  const cellBgClass = 'bg-transparent border border-[#DDE0E0]';
 
                   // If part of an event but not starting here, show empty cell with bg
                   if (eventAtCell && !isEventStart) {
@@ -932,29 +922,21 @@ export default function WeeklyScheduleCalendar({
                           {/* Empty Gap Slot */}
                           <div
                             style={{ width: `${offsetPercent * 100}%` }}
-                            className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors"
+                            className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
                           >
                             {onEmptyCellClick && (
                               <button
                                 onClick={() =>
                                   onEmptyCellClick(dayIndex, periodIndex, gapStartTime, gapEndTime)
                                 }
-                                className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                                className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
                               >
-                                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
-                                  <svg
-                                    className="h-3.5 w-3.5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M12 4v16m8-8H4"
-                                    />
-                                  </svg>
+                                <div className="flex h-7 w-7 items-center justify-center">
+                                  <CustomImage
+                                    src={GreenPlusCircleIcon}
+                                    alt="add"
+                                    className="h-6 w-6"
+                                  />
                                 </div>
                               </button>
                             )}
@@ -1006,29 +988,21 @@ export default function WeeklyScheduleCalendar({
                         />
                         <div
                           style={{ width: `calc(${remainingPart * 100}% - 8px)` }}
-                          className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors"
+                          className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
                         >
                           {onEmptyCellClick && (
                             <button
                               onClick={() =>
                                 onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
                               }
-                              className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                              className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
                             >
-                              <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
-                                <svg
-                                  className="h-3.5 w-3.5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4v16m8-8H4"
-                                  />
-                                </svg>
+                              <div className="flex h-7 w-7 items-center justify-center">
+                                <CustomImage
+                                  src={GreenPlusCircleIcon}
+                                  alt="add"
+                                  className="h-6 w-6"
+                                />
                               </div>
                             </button>
                           )}
@@ -1043,7 +1017,7 @@ export default function WeeklyScheduleCalendar({
                   return (
                     <div
                       key={periodIndex}
-                      className={`group relative min-h-[100px] overflow-visible rounded-lg ${cellBgClass}`}
+                      className={`group relative min-h-[100px] overflow-visible rounded-lg hover:border-green-500 ${cellBgClass}`}
                     >
                       {/* Event block (can span horizontally and vertically) */}
                       {eventAtCell && isEventStart && (
@@ -1059,22 +1033,10 @@ export default function WeeklyScheduleCalendar({
                           onClick={() =>
                             onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
                           }
-                          className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                          className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
                         >
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
-                            <svg
-                              className="h-3.5 w-3.5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4v16m8-8H4"
-                              />
-                            </svg>
+                          <div className="flex h-7 w-7 items-center justify-center">
+                            <CustomImage src={GreenPlusCircleIcon} alt="add" className="h-6 w-6" />
                           </div>
                         </button>
                       )}
