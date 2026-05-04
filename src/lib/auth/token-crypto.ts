@@ -5,6 +5,12 @@ import { logger } from '@/lib/utils/logger';
 const AUTH_TOKEN_SECRET_KEY = import.meta.env.VITE_AUTH_TOKEN_SECRET_KEY as string | undefined;
 
 export const decryptAccessToken = async (encryptedToken: string): Promise<string> => {
+  console.log('***************');
+  console.log('***************');
+  console.log('***************');
+  console.log(AUTH_TOKEN_SECRET_KEY);
+  console.log('***************');
+  console.log('***************');
   if (!AUTH_TOKEN_SECRET_KEY) {
     throw new Error(
       'Auth token secret key is not configured. Set VITE_AUTH_TOKEN_SECRET_KEY in your environment.'
