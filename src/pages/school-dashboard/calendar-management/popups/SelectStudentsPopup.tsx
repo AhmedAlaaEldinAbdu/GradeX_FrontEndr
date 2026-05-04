@@ -1,8 +1,9 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
-import Input from '@/shared/components/Input';
+import SearchInput from '@/shared/components/SearchInput';
 import Button from '@/shared/components/Button';
+import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import CustomImage from '@/shared/components/CustomImage';
 import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
@@ -124,30 +125,12 @@ export default function SelectStudentsPopup({
     >
       <div className="flex flex-col gap-4">
         {/* Search Input */}
-        <div className="relative">
-          <Input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t('addLesson.searchStudentsPlaceholder')}
-            className="w-full"
-            icon={
-              <svg
-                className="h-5 w-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            }
-          />
-        </div>
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder={t('addLesson.searchStudentsPlaceholder')}
+          debounce={0}
+        />
 
         {/* Students List */}
         <div className="max-h-80 overflow-y-auto">
@@ -162,18 +145,20 @@ export default function SelectStudentsPopup({
                 return (
                   <div
                     key={student.id}
-                    className="relative flex cursor-pointer items-center gap-3 border-b border-gray-100 py-3 transition-colors hover:bg-gray-50"
+                    className="flex cursor-pointer items-center gap-3 px-2 py-3 transition-colors hover:bg-gray-50"
                     onClick={() => handleStudentToggle(student.id)}
                   >
-                    {/* Selection Indicator */}
-                    <div
-                      className={`absolute start-0 top-1/2 h-10 w-1 -translate-y-1/2 rounded-full transition-colors ${
-                        isSelected ? 'bg-emerald-500' : 'bg-transparent'
-                      }`}
-                    />
-
-                    {/* Student Avatar */}
-                    <div className="ms-3 flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-100">
+                    {/* Custom Checkbox */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <CustomCheckbox
+                        label=""
+                        checked={isSelected}
+                        onChange={() => handleStudentToggle(student.id)}
+                        className="!gap-0 !py-0"
+                      />
+                    </div>
+                    {/* Student Avatar (rounded square) */}
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
                       <CustomImage
                         src={student.avatar || DefaultAvatar}
                         alt={student.name}
@@ -182,15 +167,7 @@ export default function SelectStudentsPopup({
                     </div>
 
                     {/* Student Name */}
-                    <span className="flex-1 text-sm text-gray-700">{student.name}</span>
-
-                    {/* Hidden Checkbox for accessibility */}
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleStudentToggle(student.id)}
-                      className="sr-only"
-                    />
+                    <span className="text-xl font-normal text-[#3A3A3A]">{student.name}</span>
                   </div>
                 );
               })}
@@ -199,12 +176,12 @@ export default function SelectStudentsPopup({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-4">
+        <div className="flex items-center justify-end gap-3 pt-2">
           <Button type="button" variant="outline" onClick={handleClose}>
             {t('common.cancel')}
           </Button>
           <Button type="button" variant="primary" onClick={handleConfirm}>
-            {t('common.confirm')}
+            {t('lesson.selectButton')}
           </Button>
         </div>
       </div>

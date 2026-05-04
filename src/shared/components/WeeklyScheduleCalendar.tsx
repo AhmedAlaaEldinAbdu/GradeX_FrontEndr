@@ -380,7 +380,7 @@ export default function WeeklyScheduleCalendar({
               actions={dropdownActions}
               triggerClassName="flex h-4 w-4 flex-shrink-0 items-center justify-center"
               iconClassName="h-4 w-4"
-              dropdownClassName="absolute z-10 mt-2 min-w-[160px] rounded-xl border border-[#DDE0E0] bg-white py-2 shadow-lg"
+              dropdownClassName="absolute z-10 mt-2 min-w-[160px] rounded-lg border border-[#DDE0E0] bg-white py-2 shadow-lg"
             />
           ) : (
             <button
@@ -536,7 +536,7 @@ export default function WeeklyScheduleCalendar({
       const widthPx = colSpan === 1 ? '100%' : `calc(${colSpan * 100}% + ${(colSpan - 1) * 8}px)`;
       return (
         <div
-          className={`absolute inset-1 z-20 flex flex-col items-center justify-center rounded-xl ${getEventBgClasses(event.color)}`}
+          className={`absolute inset-1 z-20 flex flex-col items-center justify-center rounded-lg ${getEventBgClasses(event.color)}`}
           style={{
             width: colSpan > 1 ? widthPx : undefined,
             backgroundColor:
@@ -729,9 +729,9 @@ export default function WeeklyScheduleCalendar({
                     const marginClass = isFirstRow ? '' : '-mt-2';
                     const paddingClass = isFirstRow ? '' : 'pt-2';
                     const roundedClass = isFirstRow
-                      ? 'rounded-t-xl'
+                      ? 'rounded-t-lg'
                       : isLastRow
-                        ? 'rounded-b-xl'
+                        ? 'rounded-b-lg'
                         : '';
 
                     return (
@@ -761,7 +761,7 @@ export default function WeeklyScheduleCalendar({
                       return (
                         <div
                           key={periodIndex}
-                          className={`z-10 flex min-h-[100px] items-center gap-2 rounded-s-xl ps-3 ${getEventBgClasses(fullRowEvent.color)}`}
+                          className={`z-10 flex min-h-[100px] items-center gap-2 rounded-s-lg ps-3 ${getEventBgClasses(fullRowEvent.color)}`}
                         >
                           <span className="text-sm font-bold">{fullRowEvent.title}</span>
                           {fullRowEvent.hasArrow && (
@@ -775,7 +775,7 @@ export default function WeeklyScheduleCalendar({
                       return (
                         <div
                           key={periodIndex}
-                          className={`z-10 min-h-[100px] rounded-e-xl ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
+                          className={`z-10 min-h-[100px] rounded-e-lg ${marginClass} ${getEventBgClasses(fullRowEvent.color)}`}
                         />
                       );
                     }
@@ -796,7 +796,7 @@ export default function WeeklyScheduleCalendar({
                     return (
                       <div
                         key={periodIndex}
-                        className={`min-h-[100px] rounded-xl ${cellBgClass}`}
+                        className={`min-h-[100px] rounded-lg ${cellBgClass}`}
                       />
                     );
                   }
@@ -854,7 +854,7 @@ export default function WeeklyScheduleCalendar({
                           {/* Empty Gap Slot */}
                           <div
                             style={{ width: `${offsetPercent * 100}%` }}
-                            className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
+                            className="group relative flex-shrink-0 cursor-pointer rounded-lg border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
                           >
                             {onEmptyCellClick && (
                               <button
@@ -920,7 +920,7 @@ export default function WeeklyScheduleCalendar({
                         />
                         <div
                           style={{ width: `calc(${remainingPart * 100}% - 8px)` }}
-                          className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
+                          className="group relative flex-shrink-0 cursor-pointer rounded-lg border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
                         >
                           {onEmptyCellClick && (
                             <button

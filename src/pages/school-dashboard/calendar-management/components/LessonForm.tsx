@@ -6,6 +6,7 @@ import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
+import TextArea from '@/shared/components/TextArea';
 import Button from '@/shared/components/Button';
 import FileUpload from '@/shared/components/FileUpload';
 import PopupMessage from '@/shared/popups/PopupMessage';
@@ -13,6 +14,7 @@ import SelectStudentsPopup, { type Student } from '../popups/SelectStudentsPopup
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
+import ClockIcon from '@gradex/assets/icons/Clock.svg';
 import CustomImage from '@/shared/components/CustomImage';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -30,7 +32,10 @@ import type { Book } from '@/types/books';
 import type { CreateLessonRequest, Lesson } from '@/services/api/types/lessons.types';
 import { useLessonValidations } from '@/validations/lessons-validations';
 
+export type LessonType = 'in-person' | 'remote';
+
 export interface LessonFormData {
+  lessonType: LessonType | '';
   materialId: string;
   teacherId: string;
   gradeId: string;
@@ -69,6 +74,7 @@ interface LessonFormProps {
 function mapLessonToFormData(lesson: Lesson): LessonData {
   return {
     id: lesson.id,
+    lessonType: 'in-person',
     materialId: lesson.materialId,
     teacherId: lesson.teacherId,
     gradeId: lesson.gradeId,
@@ -166,6 +172,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<LessonFormData>({
     defaultValues: {
+      lessonType: normalizedInitialData?.lessonType || '',
       materialId: normalizedInitialData?.materialId || '',
       teacherId: normalizedInitialData?.teacherId || '',
       gradeId: normalizedInitialData?.gradeId || '',
@@ -286,6 +293,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   useEffect(() => {
     if (normalizedInitialData) {
       reset({
+        lessonType: normalizedInitialData.lessonType || '',
         materialId: normalizedInitialData.materialId,
         teacherId: normalizedInitialData.teacherId,
         gradeId: normalizedInitialData.gradeId,
@@ -425,69 +433,158 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
             render={({ field }) => <input {...field} type="hidden" />}
           />
 
-          {mode === 'edit' ? (
-            <div className="mb-6 rounded-xl border border-gray-200 p-4">
-              <h3 className="mb-4 text-start text-sm font-semibold text-gray-700">
-                {t('lesson.scheduleInfo')}
-              </h3>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* Start Time */}
-                <FormField
-                  label={t('lesson.startTime')}
-                  required
-                  error={errors.startTime?.message}
-                  htmlFor="startTime"
-                >
-                  <Controller
-                    name="startTime"
-                    control={control}
-                    rules={{
-                      required: t('common.required'),
-                      validate: validateStartTime,
-                    }}
-                    render={({ field }) => <Input {...field} type="time" id="startTime" />}
-                  />
-                </FormField>
-
-                {/* End Time */}
-                <FormField
-                  label={t('lesson.endTime')}
-                  required
-                  error={errors.endTime?.message}
-                  htmlFor="endTime"
-                >
-                  <Controller
-                    name="endTime"
-                    control={control}
-                    rules={{
-                      required: t('common.required'),
-                      validate: (value) => validateEndTime(value, watch('startTime')),
-                    }}
-                    render={({ field }) => <Input {...field} type="time" id="endTime" />}
-                  />
-                </FormField>
-              </div>
+          {/* Main Info Section */}
+          <div className="mb-6">
+            {/* Lesson Type */}
+            <div className="mb-4">
+              <FormField
+                label={t('lesson.lessonType')}
+                required
+                error={errors.lessonType?.message}
+                htmlFor="lessonType"
+              >
+                <Controller
+                  name="lessonType"
+                  control={control}
+                  rules={{ required: t('lesson.validation.lessonTypeRequired') }}
+                  render={({ field }) => (
+                    <div className="flex items-center gap-6 pt-1">
+                      <label className="flex cursor-pointer items-center gap-2">
+                        <input
+                          type="radio"
+                          name={field.name}
+                          value="in-person"
+                          checked={field.value === 'in-person'}
+                          onChange={() => field.onChange('in-person')}
+                          onBlur={field.onBlur}
+                          className="h-4 w-4"
+                        />
+                        <span className="text-base text-black-800">{t('lesson.inPerson')}</span>
+                      </label>
+                      <label className="flex cursor-pointer items-center gap-2">
+                        <input
+                          type="radio"
+                          name={field.name}
+                          value="remote"
+                          checked={field.value === 'remote'}
+                          onChange={() => field.onChange('remote')}
+                          onBlur={field.onBlur}
+                          className="h-4 w-4"
+                        />
+                        <span className="text-base text-black-800">{t('lesson.remote')}</span>
+                      </label>
+                    </div>
+                  )}
+                />
+              </FormField>
             </div>
-          ) : (
-            <>
-              {/* Hidden time fields for Add mode (values from URL) */}
-              <Controller
-                name="startTime"
-                control={control}
-                render={({ field }) => <input {...field} type="hidden" />}
-              />
-              <Controller
-                name="endTime"
-                control={control}
-                render={({ field }) => <input {...field} type="hidden" />}
-              />
-            </>
-          )}
 
-          {/* Grade & Classroom Section */}
-          <div className="mb-6 rounded-xl border border-gray-200 p-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {/* Grade */}
+            {/* Time fields */}
+            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                label={t('lesson.startTime')}
+                required
+                error={errors.startTime?.message}
+                htmlFor="startTime"
+              >
+                <Controller
+                  name="startTime"
+                  control={control}
+                  rules={{
+                    required: t('common.required'),
+                    validate: validateStartTime,
+                  }}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="time"
+                      id="startTime"
+                      icon={<CustomImage src={ClockIcon} className="h-5 w-5" />}
+                    />
+                  )}
+                />
+              </FormField>
+
+              <FormField
+                label={t('lesson.endTime')}
+                required
+                error={errors.endTime?.message}
+                htmlFor="endTime"
+              >
+                <Controller
+                  name="endTime"
+                  control={control}
+                  rules={{
+                    required: t('common.required'),
+                    validate: (value) => validateEndTime(value, watch('startTime')),
+                  }}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="time"
+                      id="endTime"
+                      icon={<CustomImage src={ClockIcon} className="h-5 w-5" />}
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+
+            {/* Subject & Teacher */}
+            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                label={t('lesson.subjectName')}
+                required
+                error={errors.materialId?.message}
+                htmlFor="materialId"
+              >
+                <Controller
+                  name="materialId"
+                  control={control}
+                  rules={{ required: t('lesson.validation.subjectRequired') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={materialOptions}
+                      placeholder={
+                        isLoadingMaterials
+                          ? t('lesson.loadingMaterials')
+                          : t('lesson.selectSubject')
+                      }
+                      disabled={isLoadingMaterials}
+                    />
+                  )}
+                />
+              </FormField>
+
+              <FormField
+                label={t('lesson.teacherName')}
+                required
+                error={errors.teacherId?.message}
+                htmlFor="teacherId"
+              >
+                <Controller
+                  name="teacherId"
+                  control={control}
+                  rules={{ required: t('lesson.validation.teacherRequired') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={teacherOptions}
+                      placeholder={
+                        isLoadingTeachers ? t('lesson.loadingTeachers') : t('lesson.selectTeacher')
+                      }
+                      disabled={isLoadingTeachers}
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+
+            {/* Educational Stage & Grade/Classroom */}
+            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 label={t('lesson.grade')}
                 required
@@ -512,7 +609,6 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                 />
               </FormField>
 
-              {/* Classroom */}
               <FormField
                 label={t('lesson.classroom')}
                 required
@@ -543,80 +639,17 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                 />
               </FormField>
             </div>
-          </div>
 
-          {/* Subject Name & Teacher Name */}
-          <div className="mb-6 rounded-xl border border-gray-200 p-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {/* Subject Name */}
-              <FormField
-                label={t('lesson.subjectName')}
-                required
-                error={errors.materialId?.message}
-                htmlFor="materialId"
-              >
-                <Controller
-                  name="materialId"
-                  control={control}
-                  rules={{ required: t('lesson.validation.subjectRequired') }}
-                  render={({ field }) => (
-                    <CustomSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={materialOptions}
-                      placeholder={
-                        isLoadingMaterials
-                          ? t('lesson.loadingMaterials')
-                          : t('lesson.selectSubject')
-                      }
-                      disabled={isLoadingMaterials}
-                    />
-                  )}
-                />
-              </FormField>
-
-              {/* Teacher Name */}
-              <FormField
-                label={t('lesson.teacherName')}
-                required
-                error={errors.teacherId?.message}
-                htmlFor="teacherId"
-              >
-                <Controller
-                  name="teacherId"
-                  control={control}
-                  rules={{ required: t('lesson.validation.teacherRequired') }}
-                  render={({ field }) => (
-                    <CustomSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={teacherOptions}
-                      placeholder={
-                        isLoadingTeachers ? t('lesson.loadingTeachers') : t('lesson.selectTeacher')
-                      }
-                      disabled={isLoadingTeachers}
-                    />
-                  )}
-                />
-              </FormField>
-            </div>
-          </div>
-
-          {/* Book Section */}
-          <div className="mb-6 rounded-xl border border-gray-200 p-4">
-            <h3 className="mb-4 text-start text-sm font-semibold text-gray-700">
-              {t('lesson.book')}
-            </h3>
+            {/* Book Name */}
             <FormField
               label={t('lesson.bookName')}
-              required
+              optional
               error={errors.bookId?.message}
               htmlFor="bookId"
             >
               <Controller
                 name="bookId"
                 control={control}
-                rules={{ required: t('lesson.validation.bookNameRequired') }}
                 render={({ field }) => (
                   <CustomSelect
                     value={field.value}
@@ -639,8 +672,8 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
           </div>
 
           {/* Classwork Section */}
-          <div className="mb-6 rounded-xl border border-gray-200 p-4">
-            <h3 className="mb-4 text-start text-sm font-semibold text-gray-700">
+          <div className="mb-6 rounded-2xl border border-gray-200 p-4">
+            <h3 className="mb-4 text-start text-lg font-bold text-[#3A3A3A]">
               {t('lesson.classwork')}
             </h3>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -681,8 +714,8 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
           </div>
 
           {/* Homework Section */}
-          <div className="mb-6 rounded-xl border border-gray-200 p-4">
-            <h3 className="mb-4 text-start text-sm font-semibold text-gray-700">
+          <div className="mb-6 rounded-2xl border border-gray-200 p-4">
+            <h3 className="mb-4 text-start text-lg font-bold text-[#3A3A3A]">
               {t('lesson.homework')}
             </h3>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -720,7 +753,9 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                 />
               </FormField>
             </div>
+          </div>
 
+          <div className="mb-6">
             {/* Descriptions */}
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               {/* Description Arabic */}
@@ -729,9 +764,8 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                   name="descriptionAr"
                   control={control}
                   render={({ field }) => (
-                    <Input
+                    <TextArea
                       {...field}
-                      type="text"
                       placeholder={t('lesson.enterDescription')}
                       id="descriptionAr"
                     />
@@ -745,9 +779,8 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                   name="descriptionEn"
                   control={control}
                   render={({ field }) => (
-                    <Input
+                    <TextArea
                       {...field}
-                      type="text"
                       placeholder={t('lesson.enterDescription')}
                       id="descriptionEn"
                     />
@@ -755,110 +788,114 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                 />
               </FormField>
             </div>
-          </div>
 
-          {/* Send To Section */}
-          <div className="mb-6">
-            <FormField label={t('lesson.sendTo')} required htmlFor="sendTo">
-              <div className="flex items-center gap-6">
-                <label className="flex cursor-pointer items-center gap-2">
-                  <input
-                    type="radio"
-                    name="sendTo"
-                    value="all"
-                    checked={sendTo === 'all'}
-                    onChange={() => {
-                      setSendTo('all');
-                      setSelectedStudents([]);
-                    }}
-                    className="h-4 w-4 accent-emerald-600"
-                  />
-                  <span className="text-base text-black-800">{t('lesson.all')}</span>
-                </label>
-                <label className="flex cursor-pointer items-center gap-2">
-                  <input
-                    type="radio"
-                    name="sendTo"
-                    value="specific"
-                    checked={sendTo === 'specific'}
-                    onChange={() => {
-                      setSendTo('specific');
-                      setIsSelectStudentsPopupOpen(true);
-                    }}
-                    className="h-4 w-4 accent-emerald-600"
-                  />
-                  <span className="text-base text-black-800">{t('lesson.specificStudents')}</span>
-                </label>
-              </div>
-            </FormField>
-
-            {/* Selected students indicator */}
-            {sendTo === 'specific' && selectedStudents.length > 0 && (
-              <div
-                className="mt-3 flex cursor-pointer items-center gap-2"
-                onClick={() => setIsSelectStudentsPopupOpen(true)}
-              >
-                {/* Stacked Avatars */}
-                <div className="flex -space-x-2 rtl:space-x-reverse">
-                  {selectedStudents.slice(0, 3).map((student, index) => (
-                    <div
-                      key={student.id}
-                      className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-gray-100"
-                      style={{ zIndex: 3 - index }}
-                    >
-                      <CustomImage
-                        src={student.avatar || DefaultAvatar}
-                        alt={student.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ))}
-                  {selectedStudents.length > 3 && (
-                    <div
-                      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-200"
-                      style={{ zIndex: 0 }}
-                    >
-                      <span className="text-xs text-gray-600">+{selectedStudents.length - 3}</span>
-                    </div>
-                  )}
+            {/* Send To */}
+            <div className="mt-4">
+              <FormField label={t('lesson.sendTo')} required htmlFor="sendTo">
+                <div className="flex items-center gap-6">
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="sendTo"
+                      value="all"
+                      checked={sendTo === 'all'}
+                      onChange={() => {
+                        setSendTo('all');
+                        setSelectedStudents([]);
+                      }}
+                      className="h-4 w-4"
+                    />
+                    <span className="text-base text-black-800">{t('lesson.all')}</span>
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="sendTo"
+                      value="specific"
+                      checked={sendTo === 'specific'}
+                      onChange={() => {
+                        setSendTo('specific');
+                        setIsSelectStudentsPopupOpen(true);
+                      }}
+                      className="h-4 w-4"
+                    />
+                    <span className="text-base text-black-800">{t('lesson.specificStudents')}</span>
+                  </label>
                 </div>
-                {/* First student name or count */}
-                <span className="text-sm text-gray-600">
-                  {selectedStudents.length === 1
-                    ? selectedStudents[0].name
-                    : t('lesson.studentsSelected', { count: selectedStudents.length })}
-                </span>
-              </div>
-            )}
+              </FormField>
 
-            {/* Button to open popup when specific is selected but no students yet */}
-            {sendTo === 'specific' && selectedStudents.length === 0 && (
-              <div className="flex">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-3"
+              {/* Selected students indicator */}
+              {sendTo === 'specific' && selectedStudents.length > 0 && (
+                <div
+                  className="mt-3 flex cursor-pointer items-center gap-2"
                   onClick={() => setIsSelectStudentsPopupOpen(true)}
                 >
-                  {t('lesson.selectStudentsButton')}
-                </Button>
-              </div>
-            )}
-          </div>
+                  <div className="flex -space-x-2 rtl:space-x-reverse">
+                    {selectedStudents.slice(0, 1).map((student, index) => (
+                      <div
+                        key={student.id}
+                        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border-2 border-white bg-gray-100"
+                        // style={{ zIndex: 3 - index }}
+                      >
+                        <CustomImage
+                          src={student.avatar || DefaultAvatar}
+                          alt={student.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ))}
+                    {selectedStudents.length > 3 && (
+                      <div
+                        className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-white bg-gray-200"
+                        style={{ zIndex: 0 }}
+                      >
+                        <span className="text-xs text-gray-600">
+                          +{selectedStudents.length - 3}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-600">
+                    {selectedStudents.length === 1 ? (
+                      selectedStudents[0].name
+                    ) : (
+                      <span>
+                        {selectedStudents[0].name}{' '}
+                        <span className="text-green-500">+{selectedStudents.length - 1}</span>
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
 
-          {/* Attachments Section */}
-          <div className="mb-6">
-            <FileUpload
-              label={t('lesson.attachments')}
-              accept="image/png,image/jpg,image/jpeg,image/gif,image/svg+xml,application/pdf"
-              onChange={handleFileChange}
-              onDelete={handleFileDelete}
-              fileNames={allAttachmentNames}
-              uploadText={t('lesson.clickToUpload')}
-              formatHints={['GIF', 'SVG', 'JPG', 'PNG', 'PDF']}
-              optional={true}
-              multiple={true}
-            />
+              {sendTo === 'specific' && selectedStudents.length === 0 && (
+                <div className="flex">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-3"
+                    onClick={() => setIsSelectStudentsPopupOpen(true)}
+                  >
+                    {t('lesson.selectStudentsButton')}
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Attachments */}
+            <div className="mt-4">
+              <FileUpload
+                label={t('lesson.attachments')}
+                accept="image/png,image/jpg,image/jpeg,image/gif,image/svg+xml,application/pdf"
+                onChange={handleFileChange}
+                onDelete={handleFileDelete}
+                fileNames={allAttachmentNames}
+                uploadText={t('lesson.clickToUpload')}
+                formatHints={['GIF', 'SVG', 'JPG', 'PNG', 'PDF']}
+                optional={true}
+                multiple={true}
+              />
+            </div>
           </div>
 
           {/* Action Buttons */}
