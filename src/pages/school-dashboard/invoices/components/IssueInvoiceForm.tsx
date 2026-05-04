@@ -60,8 +60,8 @@ const createClassificationRow = (): ClassificationRow => ({
   id: createId(),
   nameAr: '',
   nameEn: null,
-  amount: '',
-  discount: '',
+  amount: '0',
+  discount: '0',
 });
 
 const currencyIcon = <CustomImage src={RyalIcon} alt="Currency" className="h-4 w-4 opacity-60" />;
@@ -125,7 +125,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       customerId: '',
       invoiceDate: new Date().toISOString().split('T')[0],
       paymentMethodId: '',
-      taxPercentage: null,
+      taxPercentage: 0,
       paymentType: String(InvoicePaymentType.Cash),
       installmentId: null,
     },
@@ -140,8 +140,8 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
-  const [extraDiscountInput, setExtraDiscountInput] = useState('');
-  const [taxPercentageInput, setTaxPercentageInput] = useState('');
+  const [extraDiscountInput, setExtraDiscountInput] = useState('0');
+  const [taxPercentageInput, setTaxPercentageInput] = useState('0');
   const [classificationRows, setClassificationRows] = useState<ClassificationRow[]>([
     createClassificationRow(),
   ]);
@@ -246,7 +246,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           nameAr: item.nameAr,
           nameEn: item.nameEn,
           amount: String(item.amount),
-          discount: '',
+          discount: '0',
         }))
       );
     }
@@ -279,6 +279,14 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
     setGeneralError('');
     setClassificationRows((prev) =>
       prev.map((row) => (row.id === rowId ? { ...row, [field]: value } : row))
+    );
+  };
+
+  const handleNumericRowBlur = (rowId: string, field: 'amount' | 'discount') => {
+    setClassificationRows((prev) =>
+      prev.map((row) =>
+        row.id === rowId && row[field].trim() === '' ? { ...row, [field]: '0' } : row
+      )
     );
   };
 
@@ -326,6 +334,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             icon={currencyIcon}
             value={row.discount}
             onChange={(e) => handleRowChange(row.id, 'discount', e.target.value)}
+            onBlur={() => handleNumericRowBlur(row.id, 'discount')}
             placeholder={t('invoices.chooseDiscount')}
             className="!bg-white"
           />
@@ -344,6 +353,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             icon={currencyIcon}
             value={row.amount}
             onChange={(e) => handleRowChange(row.id, 'amount', e.target.value)}
+            onBlur={() => handleNumericRowBlur(row.id, 'amount')}
             placeholder={t('invoices.enterAmount')}
             className="!bg-white"
           />
@@ -397,7 +407,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
           schoolBranchId,
           invoiceNumber: invoiceNumber.trim(),
           invoiceDate: new Date(data.invoiceDate).toISOString(),
-          totalAmount,
+          totalAmount: subtotal,
           totalDiscount: discountTotal,
           netAmount,
           taxPercentage: data.taxPercentage ?? 0,
@@ -612,7 +622,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
           <FormField label={t('invoices.amount')}>
             <Input
-              value={String(calculatedAmount || '')}
+              value={String(calculatedAmount || 0)}
               readOnly
               icon={currencyIcon}
               className="cursor-default !bg-gray-50 !text-gray-500"
@@ -630,6 +640,9 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
                 const val = e.target.value;
                 if (Number(val) > 100) return;
                 setExtraDiscountInput(val);
+              }}
+              onBlur={() => {
+                if (extraDiscountInput.trim() === '') setExtraDiscountInput('0');
               }}
               placeholder="0 – 100"
             />
@@ -649,7 +662,13 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
                     setTaxPercentageInput(val);
                     field.onChange(val === '' ? null : Number(val));
                   }}
-                  onBlur={field.onBlur}
+                  onBlur={() => {
+                    if (taxPercentageInput.trim() === '') {
+                      setTaxPercentageInput('0');
+                      field.onChange(0);
+                    }
+                    field.onBlur();
+                  }}
                   placeholder={t('invoices.enterTax')}
                   icon={
                     <CustomImage src={PercentIcon} alt="Percent" className="h-4 w-4 opacity-60" />
@@ -662,7 +681,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
           <FormField label={t('invoices.totalAmount')}>
             <Input
-              value={String(totalAmount || '')}
+              value={String(totalAmount || 0)}
               readOnly
               icon={currencyIcon}
               className="cursor-default !bg-gray-50 !text-gray-500"

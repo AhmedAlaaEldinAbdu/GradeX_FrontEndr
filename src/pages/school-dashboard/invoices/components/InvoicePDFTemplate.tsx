@@ -5,8 +5,7 @@ import WavePattern from '@gradex/assets/illustrations/WavePattern.svg';
 import PencilCup from '@gradex/assets/illustrations/PencilCup.svg';
 import AlNukhbaLogo from '@/assets/identity/AlNukhbaLogo.svg';
 import RyalIcon from '@gradex/assets/icons/Ryal.svg';
-import EmailIcon from '@gradex/assets/icons/Email.svg';
-import { FiGlobe, FiSmartphone } from 'react-icons/fi';
+import { FiGlobe, FiSmartphone, FiMail } from 'react-icons/fi';
 import { BsTelephoneFill } from 'react-icons/bs';
 
 import type { InvoiceDto, InvoiceItemDto, SchoolInfo } from '@/services/api/types/invoice.types';
@@ -658,7 +657,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                   justifyContent: 'space-between',
                   width: '100%',
                   direction: 'ltr',
-                  [isAr ? 'paddingLeft' : 'paddingRight']: '50px',
+                  [isAr ? 'paddingLeft' : 'paddingRight']: '60px',
                   [isAr ? 'paddingRight' : 'paddingLeft']: '20px',
                   color: '#FFF',
                   fontSize: '13px',
@@ -667,14 +666,13 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                 <table style={{ borderCollapse: 'collapse', borderSpacing: 0 }}>
                   <tbody>
                     <tr>
-                      <td style={{ verticalAlign: 'middle', padding: 0 }}>
-                        <img
-                          src={EmailIcon}
-                          alt="email"
+                      <td style={{ verticalAlign: 'middle', padding: 0, paddingRight: '3px' }}>
+                        <FiMail
                           style={{
                             width: '13px',
+                            height: '13px',
                             display: 'block',
-                            filter: 'brightness(0) invert(1)',
+                            color: '#FFF',
                             marginTop: '0px',
                           }}
                         />
@@ -691,7 +689,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                 <table style={{ borderCollapse: 'collapse', borderSpacing: 0 }}>
                   <tbody>
                     <tr>
-                      <td style={{ verticalAlign: 'middle', padding: 0 }}>
+                      <td style={{ verticalAlign: 'middle', padding: 0, paddingRight: '3px' }}>
                         <FiGlobe
                           style={{
                             width: '13px',
@@ -719,7 +717,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                           {schoolInfo?.phoneNumber ?? '0500029999'}
                         </span>
                       </td>
-                      <td style={{ verticalAlign: 'middle', padding: 0 }}>
+                      <td style={{ verticalAlign: 'middle', padding: 0, paddingLeft: '3px' }}>
                         <FiSmartphone
                           style={{
                             width: '13px',
@@ -749,7 +747,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                           {schoolInfo?.landlineNumber ?? '0112223333'}
                         </span>
                       </td>
-                      <td style={{ verticalAlign: 'middle', padding: 0 }}>
+                      <td style={{ verticalAlign: 'middle', padding: 0, paddingLeft: '3px' }}>
                         <BsTelephoneFill
                           style={{
                             width: '12px',
@@ -773,11 +771,14 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
                 [isAr ? 'left' : 'right']: '-20px',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                width: '90px',
-                height: '90px',
+                width: '100px',
+                height: '100px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                backgroundColor: '#FFF',
+                borderRadius: '50%',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
               }}
             >
               <img

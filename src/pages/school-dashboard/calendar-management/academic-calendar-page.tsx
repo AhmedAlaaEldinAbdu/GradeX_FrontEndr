@@ -18,7 +18,7 @@ export default function AcademicCalendarPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       <PageHeader
-        title="academicCalendar.title"
+        title="academicCalendar.annualCalendar"
         actions={[
           {
             label: 'academicCalendar.addCalendarButton',
