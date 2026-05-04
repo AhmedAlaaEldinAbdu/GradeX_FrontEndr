@@ -31,9 +31,6 @@ export const decryptAccessToken = async (encryptedToken: string): Promise<string
       return plaintext;
     }
   } catch (error) {
-    console.log('***************');
-    console.log(error);
-    console.log('***************');
     logger.error('Failed to decrypt access token', error);
     throw new Error('Failed to decrypt access token.');
   }

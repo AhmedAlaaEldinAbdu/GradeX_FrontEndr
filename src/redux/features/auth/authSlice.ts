@@ -43,12 +43,14 @@ export const restoreSession = createAsyncThunk('auth/restoreSession', async () =
 
   // Convert StoredUserData to User type
   const user: User = {
-    id: Number(userData.id) || 0,
+    id: userData.id,
     name: userData.name,
     email: userData.email,
     role: userData.role as UserRoleType,
     avatar: userData.avatar,
     isAuthenticated: true,
+    permissions: userData.permissions ?? [],
+    schoolBrancheId: userData.schoolBrancheId ?? userData.schoolBranchId ?? null,
   };
 
   logger.success('Session restored successfully', user);
@@ -79,18 +81,15 @@ export const login = createAsyncThunk(
         throw new Error('Failed to decode user data from token');
       }
 
-      // Persist school branch id coming from login response (not always present in JWT)
+      const jwtClaimBranchId = userData.schoolBrancheId ?? userData.schoolBranchId ?? null;
       const branchIdFromResponse = response.schoolBrancheId ?? null;
-      if (branchIdFromResponse) {
-        (userData as any).schoolBrancheId = branchIdFromResponse;
-        // Backward compatibility: lots of screens still read `schoolBranchId`
-        (userData as any).schoolBranchId = branchIdFromResponse;
-      }
+      const branchId: string | null = jwtClaimBranchId ?? branchIdFromResponse;
+
+      userData.schoolBrancheId = branchId;
+      userData.schoolBranchId = branchId;
 
       // Derive role from schoolBrancheId: null = SuperAdmin, non-null = SchoolAdmin
-      const derivedRole: UserRoleType = branchIdFromResponse
-        ? UserRole.SCHOOL_ADMIN
-        : UserRole.SUPER_ADMIN;
+      const derivedRole: UserRoleType = branchId ? UserRole.SCHOOL_ADMIN : UserRole.SUPER_ADMIN;
 
       userData.role = derivedRole;
 
@@ -105,18 +104,20 @@ export const login = createAsyncThunk(
 
       logger.success('Login successful - Token stored', {
         rememberMe,
+        branchIdSource: jwtClaimBranchId ? 'jwt-claim' : branchIdFromResponse ? 'response' : 'none',
         tokenPreview: response.token.substring(0, 30) + '...',
         storage: rememberMe ? 'localStorage' : 'sessionStorage',
       });
 
       return {
         user: {
-          id: Number(userData.id) || 0,
+          id: userData.id,
           name: userData.name,
           email: userData.email,
           role: derivedRole,
           isAuthenticated: true,
-          schoolBrancheId: branchIdFromResponse,
+          permissions: userData.permissions ?? [],
+          schoolBrancheId: branchId,
         },
         token: response.token,
       };
@@ -140,43 +141,21 @@ export const loginWithCallbackToken = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const decrypted = await decryptAccessToken(args.encryptedToken);
-
-      // Detect optional JSON envelope. Fall back to treating plaintext as a JWT.
-      let jwt = decrypted;
-      let envelopeBranchId: string | null = null;
-      const trimmed = decrypted.trim();
-      if (trimmed.startsWith('{')) {
-        try {
-          const parsed = JSON.parse(trimmed);
-          if (parsed && typeof parsed === 'object') {
-            if (typeof parsed.token === 'string') jwt = parsed.token;
-            const wrappedBranch = parsed.schoolBrancheId ?? parsed.schoolBranchId;
-            if (typeof wrappedBranch === 'string' && wrappedBranch.length > 0) {
-              envelopeBranchId = wrappedBranch;
-            }
-          }
-        } catch {
-          // Not JSON — keep `jwt` as the raw decrypted string.
-        }
-      }
+      const jwt = await decryptAccessToken(args.encryptedToken);
 
       const userData = decodeJwtToken(jwt);
       if (!userData) {
         throw new Error('Failed to decode user data from token');
       }
 
-      // Same priority logic as the login response flow: callback param
-      // > envelope > JWT claim. Empty string is treated as "absent".
+      const jwtClaimBranchId = userData.schoolBrancheId ?? userData.schoolBranchId ?? null;
       const explicitBranchId =
         args.schoolBrancheId && args.schoolBrancheId.length > 0 ? args.schoolBrancheId : null;
-      const jwtClaimBranchId = userData.schoolBrancheId ?? userData.schoolBranchId ?? null;
-      const branchId: string | null = explicitBranchId ?? envelopeBranchId ?? jwtClaimBranchId;
+      const branchId: string | null = jwtClaimBranchId ?? explicitBranchId;
 
       const derivedRole: UserRoleType = branchId ? UserRole.SCHOOL_ADMIN : UserRole.SUPER_ADMIN;
 
       userData.role = derivedRole;
-      // Persist under both spellings for backward compatibility (matches login).
       userData.schoolBrancheId = branchId;
       userData.schoolBranchId = branchId;
 
@@ -187,24 +166,19 @@ export const loginWithCallbackToken = createAsyncThunk(
 
       logger.success('Callback login successful - Token stored', {
         rememberMe,
-        branchIdSource: explicitBranchId
-          ? 'url-param'
-          : envelopeBranchId
-            ? 'envelope'
-            : jwtClaimBranchId
-              ? 'jwt-claim'
-              : 'none',
+        branchIdSource: jwtClaimBranchId ? 'jwt-claim' : explicitBranchId ? 'url-param' : 'none',
         tokenPreview: jwt.substring(0, 30) + '...',
         storage: rememberMe ? 'localStorage' : 'sessionStorage',
       });
 
       return {
         user: {
-          id: Number(userData.id) || 0,
+          id: userData.id,
           name: userData.name,
           email: userData.email,
           role: derivedRole,
           isAuthenticated: true,
+          permissions: userData.permissions ?? [],
           schoolBrancheId: branchId,
         },
         token: jwt,

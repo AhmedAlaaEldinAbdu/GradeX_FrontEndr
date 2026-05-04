@@ -17,6 +17,7 @@ export interface StoredUserData {
   role: string;
   avatar?: string;
   isAuthenticated: boolean;
+  permissions?: string[];
   // Backend uses `schoolBrancheId` (typo). Keep both for compatibility.
   schoolBrancheId?: string | null;
   schoolBranchId?: string | null;
@@ -91,8 +92,12 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       return 'school-admin';
     };
 
-    // Extract user data from JWT claims with mock fallbacks
-    const userId = payload.sub || `user-${Date.now()}`;
+    // Extract user data from JWT claims with mock fallbacks.
+    // Backend issues tokens with Microsoft / WS-* claim URIs.
+    const userId =
+      payload.sub ||
+      payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ||
+      `user-${Date.now()}`;
     const userName =
       payload.FullName ||
       payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
@@ -103,6 +108,13 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       payload.email ||
       'user@gradex.com';
     const userRole = normalizeRole(rawRole);
+
+    const rawPermissions = payload.Permission ?? payload.permissions ?? payload.permission;
+    const permissions: string[] = Array.isArray(rawPermissions)
+      ? rawPermissions.map((p: unknown) => String(p))
+      : typeof rawPermissions === 'string' && rawPermissions.length > 0
+        ? [rawPermissions]
+        : [];
 
     const branchId =
       payload.schoolBrancheId ||
@@ -117,6 +129,7 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       email: userEmail,
       role: userRole,
       isAuthenticated: true,
+      permissions,
       schoolBrancheId: branchId,
       schoolBranchId: branchId,
     };
