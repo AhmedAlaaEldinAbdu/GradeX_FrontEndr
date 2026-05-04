@@ -309,8 +309,8 @@ const transformLessonsForWeek = (
   return scheduleLessons;
 };
 
-// Event color options (rotate through them for variety)
-const EVENT_COLORS: ScheduleEvent['color'][] = ['green', 'orange', 'blue', 'teal', 'yellow'];
+// Event color options are limited to the supported shared badge palette.
+const EVENT_COLORS: ScheduleEvent['color'][] = ['green', 'yellow', 'default'];
 
 const getEventColor = (index: number): ScheduleEvent['color'] => {
   return EVENT_COLORS[index % EVENT_COLORS.length];
@@ -403,22 +403,22 @@ const transformEventsForWeek = (
  */
 const SPECIAL_COLUMN_COLORS = {
   breakfast: {
-    bgColor: 'bg-amber-100',
-    textColor: 'text-amber-700',
-    headerBgColor: 'bg-amber-50',
-    headerBorderColor: 'border-amber-200',
+    bgColor: 'bg-yellow-100',
+    textColor: 'text-yellow-400',
+    headerBgColor: 'bg-yellow-50',
+    headerBorderColor: 'border-yellow-400',
   },
   break: {
-    bgColor: 'bg-sky-100',
-    textColor: 'text-sky-700',
-    headerBgColor: 'bg-sky-50',
-    headerBorderColor: 'border-sky-200',
+    bgColor: 'bg-gray-100',
+    textColor: 'text-gray-700',
+    headerBgColor: 'bg-gray-50',
+    headerBorderColor: 'border-gray-200',
   },
   assembly: {
-    bgColor: 'bg-emerald-100',
-    textColor: 'text-emerald-700',
-    headerBgColor: 'bg-emerald-50',
-    headerBorderColor: 'border-emerald-200',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-500',
+    headerBgColor: 'bg-green-100',
+    headerBorderColor: 'border-green-500',
   },
 } as const;
 
