@@ -42,6 +42,7 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useLanguage } from '@/hooks/useLanguage';
 import { addMinutesToTime } from '@/lib/utils/date-utils';
 import { tokenManager } from '@/lib/auth/token-manager';
+import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
 
 // Period time slots for mapping API times to periodIndex
 // Each slot has start and end times in 24h format (HH:mm)
@@ -308,8 +309,8 @@ const transformLessonsForWeek = (
   return scheduleLessons;
 };
 
-// Event color options (rotate through them for variety)
-const EVENT_COLORS: ScheduleEvent['color'][] = ['green', 'orange', 'blue', 'teal', 'yellow'];
+// Event color options are limited to the supported shared badge palette.
+const EVENT_COLORS: ScheduleEvent['color'][] = ['green', 'yellow', 'default'];
 
 const getEventColor = (index: number): ScheduleEvent['color'] => {
   return EVENT_COLORS[index % EVENT_COLORS.length];
@@ -402,22 +403,22 @@ const transformEventsForWeek = (
  */
 const SPECIAL_COLUMN_COLORS = {
   breakfast: {
-    bgColor: 'bg-amber-100',
-    textColor: 'text-amber-700',
-    headerBgColor: 'bg-amber-50',
-    headerBorderColor: 'border-amber-200',
+    bgColor: 'bg-yellow-100',
+    textColor: 'text-yellow-400',
+    headerBgColor: 'bg-yellow-50',
+    headerBorderColor: 'border-yellow-400',
   },
   break: {
-    bgColor: 'bg-sky-100',
-    textColor: 'text-sky-700',
-    headerBgColor: 'bg-sky-50',
-    headerBorderColor: 'border-sky-200',
+    bgColor: 'bg-gray-100',
+    textColor: 'text-gray-700',
+    headerBgColor: 'bg-gray-50',
+    headerBorderColor: 'border-gray-200',
   },
   assembly: {
-    bgColor: 'bg-emerald-100',
-    textColor: 'text-emerald-700',
-    headerBgColor: 'bg-emerald-50',
-    headerBorderColor: 'border-emerald-200',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-500',
+    headerBgColor: 'bg-green-100',
+    headerBorderColor: 'border-green-500',
   },
 } as const;
 
@@ -1057,7 +1058,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         {/* Filters Row - Inside calendar frame, above the calendar */}
         <div className="flex flex-wrap items-center gap-3 p-4">
           {/* Group 1: Education System */}
-          <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+          <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
             <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
               {t('weeklyCalendar.filters.educationSystem') || 'اختر النظام التعليم'}
             </span>
@@ -1088,12 +1089,12 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
               disabled={isLoadingAcademicSystems}
               variant="ghost"
               showSearch={false}
-              className="min-w-[100px]"
+              className="w-full"
             />
           </div>
 
           {/* Group 2: Stage Selection */}
-          <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+          <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
             <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
               {t('weeklyCalendar.filters.selectStage') || 'اختر المرحلة'}
             </span>
@@ -1112,12 +1113,12 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
               disabled={isLoadingStages}
               variant="ghost"
               showSearch={false}
-              className="min-w-[140px]"
+              className="w-full"
             />
           </div>
 
           {/* Group 3: Classroom Selection */}
-          <div className="relative inline-flex items-center rounded-xl border border-gray-200 bg-white">
+          <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
             <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
               {t('weeklyCalendar.filters.classroom') || 'الصف الدراسي'}
             </span>
@@ -1136,12 +1137,12 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
               disabled={!educationSystem || isLoadingClassrooms}
               variant="ghost"
               showSearch={false}
-              className="min-w-[100px]"
+              className="w-full"
             />
           </div>
 
           {/* Spacer to push clear button to the end */}
-          <div className="flex-1" />
+          <div className="" />
 
           {/* Clear Filters Button - Only show when at least one filter has a value */}
           {(educationSystem || stage || grade) && (
@@ -1152,32 +1153,11 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
                 setStage('');
                 setGrade('');
               }}
-              className="flex h-[40px] w-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-800 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
               title={t('actions.clearFilter')}
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  d="M18 6L6 18"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M6 6L18 18"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />
+              <span>{t('actions.clearFilter')}</span>
             </button>
           )}
         </div>

@@ -3,9 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import UpLeftArrow from '@gradex/assets/icons/UpLeftArrow.svg';
+import ArrowLeftSmIcon from '@gradex/assets/icons/ArrowLeftSm.svg';
+import ArrowRightSmIcon from '@gradex/assets/icons/ArrowRightSm.svg';
+import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
+import ArrowUpGreenIcon from '@gradex/assets/icons/ArrownUpGreen.svg';
+import ArrowDownGreenIcon from '@gradex/assets/icons/ArrownDownGreen.svg';
+import ActionsDropdown, { type Action as DropdownAction } from './ActionsDropdown';
 import CustomImage from './CustomImage';
 import { ARABIC_DAY_NAMES, ENGLISH_DAY_NAMES, formatTimeDisplay } from '@/lib/utils/date-utils';
-import MenuICon from '@gradex/assets/icons/Menu.svg';
+import MenuGreenIcon from '@gradex/assets/icons/MenuGreen.svg';
+import DotsIcon from '@gradex/assets/icons/Dots.svg';
 
 // Types
 export interface ScheduleLesson {
@@ -30,7 +37,7 @@ export interface ScheduleEvent {
   endDayIndex?: number; // End row for vertical span (if different from dayIndex)
   startPeriod: number; // Start column
   endPeriod: number; // End column (for horizontal span)
-  color?: 'green' | 'orange' | 'blue' | 'teal' | 'yellow';
+  color?: 'green' | 'yellow' | 'default';
   hasArrow?: boolean;
 }
 
@@ -102,10 +109,10 @@ const DEFAULT_SPECIAL_COLUMNS: SpecialColumn[] = [
     columnIndex: 3,
     label: 'الفطار',
     type: 'breakfast',
-    bgColor: 'bg-amber-100',
-    textColor: 'text-amber-700',
-    headerBgColor: 'bg-amber-50',
-    headerBorderColor: 'border-amber-200',
+    bgColor: 'bg-yellow-100',
+    textColor: 'text-yellow-400',
+    headerBgColor: 'bg-yellow-100',
+    headerBorderColor: 'border-yellow-400',
     startDayIndex: 1,
     endDayIndex: 5,
   },
@@ -113,10 +120,10 @@ const DEFAULT_SPECIAL_COLUMNS: SpecialColumn[] = [
     columnIndex: 5,
     label: 'الحديقة',
     type: 'garden',
-    bgColor: 'bg-emerald-100',
-    textColor: 'text-emerald-700',
-    headerBgColor: 'bg-emerald-50',
-    headerBorderColor: 'border-emerald-200',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-500',
+    headerBgColor: 'bg-green-100',
+    headerBorderColor: 'border-green-500',
     startDayIndex: 1,
     endDayIndex: 5,
   },
@@ -141,12 +148,6 @@ export default function WeeklyScheduleCalendar({
   const [internalWeek, setInternalWeek] = useState(() => controlledWeekStart ?? new Date());
 
   const currentWeek = controlledWeekStart ?? internalWeek;
-
-  const [contextMenu, setContextMenu] = useState<{
-    isOpen: boolean;
-    lesson: ScheduleLesson | null;
-    position: { x: number; y: number };
-  }>({ isOpen: false, lesson: null, position: { x: 0, y: 0 } });
 
   const weekStart = useMemo(() => {
     return startOfWeek(currentWeek, { weekStartsOn: 6 }); // Saturday start
@@ -232,30 +233,6 @@ export default function WeeklyScheduleCalendar({
     }
 
     onWeekChange?.(newWeekStart);
-  };
-
-  // Handle context menu open
-  const handleContextMenuOpen = (lesson: ScheduleLesson, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    setContextMenu({
-      isOpen: true,
-      lesson,
-      position: { x: rect.left, y: rect.bottom + 4 },
-    });
-  };
-
-  // Handle context menu close
-  const handleContextMenuClose = () => {
-    setContextMenu({ isOpen: false, lesson: null, position: { x: 0, y: 0 } });
-  };
-
-  // Handle context action click
-  const handleContextActionClick = (action: LessonContextAction) => {
-    if (contextMenu.lesson) {
-      action.onClick(contextMenu.lesson);
-    }
-    handleContextMenuClose();
   };
 
   // Get lessons for a specific cell (dayIndex = row, periodIndex = column)
@@ -365,229 +342,182 @@ export default function WeeklyScheduleCalendar({
     };
   };
 
-  // Three dots menu icon (vertical)
-  const DotsIcon = () => (
-    <svg className="h-3 w-3" viewBox="0 0 16 16" fill="currentColor">
-      <circle cx="8" cy="3" r="1.5" />
-      <circle cx="8" cy="8" r="1.5" />
-      <circle cx="8" cy="13" r="1.5" />
-    </svg>
-  );
-
-  // Get background color classes for events - using solid backgrounds
-  const getEventBgClasses = (color?: string) => {
+  const getEventBgClasses = (color?: 'green' | 'yellow' | 'default') => {
     switch (color) {
       case 'green':
-        return 'bg-emerald-100/100 text-emerald-700';
-      case 'orange':
-        return 'bg-amber-100/100 text-amber-700';
-      case 'blue':
-        return 'bg-sky-100/100 text-sky-700';
-      case 'teal':
-        return 'bg-teal-100/100 text-teal-700';
+        return 'bg-green-100 text-green-500';
       case 'yellow':
-        return 'bg-yellow-100/100 text-yellow-700';
+        return 'bg-yellow-100 text-yellow-400';
       default:
-        return 'bg-gray-100/100 text-gray-700';
+        return 'bg-gray-100 text-gray-700';
     }
   };
 
   // Lesson Card matching the design exactly
-  const LessonCard = ({ lesson }: { lesson: ScheduleLesson }) => (
-    <div className="h-full rounded-lg border border-gray-200 bg-white p-2 transition-shadow hover:shadow-md">
-      {/* Header: Subject + Dots */}
-      <div className="flex items-start justify-between gap-1">
-        <span className="text-xs font-bold text-gray-800">{lesson.subject}</span>
-        <button
-          className="flex-shrink-0 text-gray-400 hover:text-gray-600"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (lessonContextActions.length > 0) {
-              handleContextMenuOpen(lesson, e);
-            } else {
-              onDotsClick?.(lesson, e);
-            }
-          }}
-        >
-          <DotsIcon />
-        </button>
-      </div>
-      {/* Teacher Name */}
-      <p className="mt-1 text-start text-[10px] text-gray-500">{lesson.teacherName}</p>
-      {/* Time Range */}
-      <p className="mt-0.5 text-start text-[10px] text-gray-400">
-        {formatTimeDisplay(lesson.startTime, currentLang)} -{' '}
-        {formatTimeDisplay(lesson.endTime, currentLang)}
-      </p>
-      {/* Duration Badge - stacked if <=60min, inline if >60min */}
-      <div className="mt-2 flex items-start justify-between gap-1">
-        {lesson.duration <= 60 ? (
-          /* Stacked layout for short lessons */
-          <div className="flex flex-col text-start">
-            <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
-            <span className="text-[9px] text-gray-600">
-              <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
-                {lesson.duration}
-              </span>
-              {t('weeklyCalendar.minutes')}
-            </span>
-          </div>
-        ) : (
-          /* Inline layout for longer lessons */
-          <div className="flex items-center gap-1 text-start">
-            <span className="text-[9px] text-gray-400">{t('weeklyCalendar.lessonDuration')}</span>
-            <span className="text-[9px] text-gray-600">
-              <span className="me-0.5 inline-block rounded border border-gray-200 px-0.5 py-0.5 text-[9px]">
-                {lesson.duration}
-              </span>
-              {t('weeklyCalendar.minutes')}
-            </span>
-          </div>
-        )}
-        {extendingLessonId === lesson.id ? (
-          <div className="flex h-5 w-5 items-center justify-center rounded border border-emerald-300 bg-emerald-50 text-emerald-600">
-            <svg
-              className="h-3 w-3 animate-spin"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-0.5">
-            {/* Up Arrow (Increase Duration) */}
-            {(() => {
-              // Calculate limits for Increase
-              const [endH, endM] = lesson.endTime.split(':').map(Number);
-              const currentEndMinutes = endH * 60 + endM;
-              const MAX_TIME_MINUTES = 15 * 60 + 15; // 15:15 (3:15 PM)
-              const isIncreaseDisabled = currentEndMinutes >= MAX_TIME_MINUTES;
-
-              return (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!isIncreaseDisabled) {
-                      onChangeDuration?.(lesson, 5);
-                    }
-                  }}
-                  disabled={isIncreaseDisabled}
-                  className={`flex h-2.5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-t border border-b-0 transition-colors ${
-                    isIncreaseDisabled
-                      ? 'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300'
-                      : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
-                  }`}
-                  title={
-                    isIncreaseDisabled
-                      ? t('weeklyCalendar.cannotExceedTimeLimit')
-                      : t('weeklyCalendar.increaseDuration')
-                  }
-                >
-                  <svg
-                    className="h-2 w-2"
-                    viewBox="0 0 24 12"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M7 10l5-5 5 5" />
-                  </svg>
-                </button>
-              );
-            })()}
-
-            {/* Down Arrow (Decrease Duration) */}
-            {(() => {
-              // Calculate limits for Decrease
-              const isDecreaseDisabled = lesson.duration <= 5;
-
-              return (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!isDecreaseDisabled) {
-                      onChangeDuration?.(lesson, -5);
-                    }
-                  }}
-                  disabled={isDecreaseDisabled}
-                  className={`flex h-2.5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-b border border-t-0 transition-colors ${
-                    isDecreaseDisabled
-                      ? 'cursor-not-allowed border-gray-100 bg-gray-50 text-gray-300'
-                      : 'border-gray-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50'
-                  }`}
-                  title={t('weeklyCalendar.decreaseDuration')}
-                >
-                  <svg
-                    className="h-2 w-2"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M7 14l5 5 5-5" transform="translate(0, -6)" />
-                    <path d="M7 6l5 5 5-5" />
-                  </svg>
-                </button>
-              );
-            })()}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  // Context Menu Component
-  const ContextMenu = () => {
-    if (!contextMenu.isOpen || !contextMenu.lesson) return null;
-
-    const getActionColorClass = (color?: string) => {
-      switch (color) {
-        case 'primary':
-          return 'text-blue-600 hover:bg-blue-50';
-        case 'success':
-          return 'text-emerald-600 hover:bg-emerald-50';
-        case 'danger':
-          return 'text-red-600 hover:bg-red-50';
-        default:
-          return 'text-gray-700 hover:bg-gray-50';
-      }
-    };
+  const LessonCard = ({ lesson }: { lesson: ScheduleLesson }) => {
+    const dropdownActions: DropdownAction[] = lessonContextActions.map((action) => ({
+      id: `${lesson.id}-${action.label}`,
+      label: action.label,
+      icon: action.icon,
+      color:
+        action.color === 'primary'
+          ? 'text-blue-600 hover:bg-blue-50'
+          : action.color === 'success'
+            ? 'text-green-500 hover:bg-green-50'
+            : action.color === 'danger'
+              ? 'text-red-500 hover:bg-red-50'
+              : 'text-gray-500 hover:bg-gray-50',
+      onClick: () => action.onClick(lesson),
+    }));
 
     return (
-      <>
-        {/* Backdrop to close menu */}
-        <div className="fixed inset-0 z-40" onClick={handleContextMenuClose} />
-        {/* Menu */}
-        <div
-          className="fixed z-50 min-w-[160px] rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
-          style={{ top: contextMenu.position.y, left: contextMenu.position.x }}
-        >
-          {lessonContextActions.map((action, index) => (
+      <div className="h-full rounded-lg border border-[#DDE0E0] bg-white p-2 transition-shadow hover:shadow-md">
+        {/* Header: Subject + Dots */}
+        <div className="flex items-start justify-between gap-1">
+          <span className="text-xs font-normal text-black-900">{lesson.subject}</span>
+          {dropdownActions.length > 0 ? (
+            <ActionsDropdown
+              actions={dropdownActions}
+              triggerClassName="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+              iconClassName="h-4 w-4"
+              dropdownClassName="absolute z-10 mt-2 min-w-[160px] rounded-xl border border-[#DDE0E0] bg-white py-2 shadow-lg"
+            />
+          ) : (
             <button
-              key={index}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${getActionColorClass(action.color)}`}
-              onClick={() => handleContextActionClick(action)}
+              className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDotsClick?.(lesson, e);
+              }}
+              type="button"
             >
-              {action.icon && <img src={action.icon} alt="" className="h-5 w-5" />}
-              <span>{action.label}</span>
+              <CustomImage src={DotsIcon} alt="Options" className="h-4 w-4" />
             </button>
-          ))}
+          )}
         </div>
-      </>
+        {/* Teacher Name */}
+        <p className="mt-1 text-start text-[8px] text-[#646969]">{lesson.teacherName}</p>
+        {/* Time Range */}
+        <p className="mt-0.5 text-start text-[8px] text-[#646969]">
+          {formatTimeDisplay(lesson.startTime, currentLang)} -{' '}
+          {formatTimeDisplay(lesson.endTime, currentLang)}
+        </p>
+        {/* Duration Badge - stacked if <=60min, inline if >60min */}
+        <div className="mt-2 flex items-start justify-between gap-1">
+          {lesson.duration <= 60 ? (
+            /* Stacked layout for short lessons */
+            <div className="flex flex-col text-start">
+              <span className="text-gray-[#646969] text-[8px] font-normal">
+                {t('weeklyCalendar.lessonDuration')}
+              </span>
+              <span className="text-gray-[#646969] text-[8px] font-normal">
+                <span className="me-0.5 inline-block rounded-sm border-[0.5px] border-[#A9A7A7] p-0.5 text-[8px]">
+                  {lesson.duration}
+                </span>
+                {t('weeklyCalendar.minutes')}
+              </span>
+            </div>
+          ) : (
+            /* Inline layout for longer lessons */
+            <div className="flex items-center gap-1 text-start">
+              <span className="text-[8px] font-normal text-[#646969]">
+                {t('weeklyCalendar.lessonDuration')}
+              </span>
+              <span className="text-[8px] font-normal text-[#646969]">
+                <span className="me-0.5 inline-block rounded-sm border-[0.5px] border-[#A9A7A7] p-0.5 text-[8px]">
+                  {lesson.duration}
+                </span>
+                {t('weeklyCalendar.minutes')}
+              </span>
+            </div>
+          )}
+          {extendingLessonId === lesson.id ? (
+            <div className="flex h-5 w-5 items-center justify-center rounded border border-green-500 bg-green-50 text-green-500">
+              <svg
+                className="h-3 w-3 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              {/* Up Arrow (Increase Duration) */}
+              {(() => {
+                // Calculate limits for Increase
+                const [endH, endM] = lesson.endTime.split(':').map(Number);
+                const currentEndMinutes = endH * 60 + endM;
+                const MAX_TIME_MINUTES = 15 * 60 + 15; // 15:15 (3:15 PM)
+                const isIncreaseDisabled = currentEndMinutes >= MAX_TIME_MINUTES;
+
+                return (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isIncreaseDisabled) {
+                        onChangeDuration?.(lesson, 5);
+                      }
+                    }}
+                    disabled={isIncreaseDisabled}
+                    className={`flex h-3 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-t-sm border border-b-0 transition-colors ${
+                      isIncreaseDisabled
+                        ? 'cursor-not-allowed border-green-500 bg-gray-50 text-gray-300'
+                        : 'border-green-500 text-green-500 hover:bg-green-50'
+                    }`}
+                    title={
+                      isIncreaseDisabled
+                        ? t('weeklyCalendar.cannotExceedTimeLimit')
+                        : t('weeklyCalendar.increaseDuration')
+                    }
+                  >
+                    <CustomImage src={ArrowUpGreenIcon} alt="increase" className="h-2 w-2" />
+                  </button>
+                );
+              })()}
+
+              {/* Down Arrow (Decrease Duration) */}
+              {(() => {
+                // Calculate limits for Decrease
+                const isDecreaseDisabled = lesson.duration <= 5;
+
+                return (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isDecreaseDisabled) {
+                        onChangeDuration?.(lesson, -5);
+                      }
+                    }}
+                    disabled={isDecreaseDisabled}
+                    className={`flex h-3 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-b-sm border border-t-0 transition-colors ${
+                      isDecreaseDisabled
+                        ? 'cursor-not-allowed border-green-500 bg-gray-50 text-gray-300'
+                        : 'border-green-500 text-green-500 hover:bg-green-50'
+                    }`}
+                    title={t('weeklyCalendar.decreaseDuration')}
+                  >
+                    <CustomImage src={ArrowDownGreenIcon} alt="decrease" className="h-2 w-2" />
+                  </button>
+                );
+              })()}
+            </div>
+          )}
+        </div>
+      </div>
     );
   };
 
@@ -610,17 +540,11 @@ export default function WeeklyScheduleCalendar({
           style={{
             width: colSpan > 1 ? widthPx : undefined,
             backgroundColor:
-              event.color === 'blue'
-                ? '#e0f2fe'
-                : event.color === 'orange'
-                  ? '#fef3c7'
-                  : event.color === 'green'
-                    ? '#d1fae5'
-                    : event.color === 'teal'
-                      ? '#ccfbf1'
-                      : event.color === 'yellow'
-                        ? '#fef9c3'
-                        : '#f3f4f6',
+              event.color === 'yellow'
+                ? '#fef3c7'
+                : event.color === 'green'
+                  ? '#d1fae5'
+                  : '#f3f4f6',
           }}
         >
           <div className="flex flex-row-reverse">
@@ -665,32 +589,26 @@ export default function WeeklyScheduleCalendar({
       <div className="flex items-center justify-center gap-4 py-3">
         <button
           onClick={handlePrevWeek}
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-black-50 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
           aria-label="Previous week"
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d={isRTL ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7'}
-            />
-          </svg>
+          <CustomImage
+            src={isRTL ? ArrowRightSmIcon : ArrowLeftSmIcon}
+            alt="Previous week"
+            className="h-5 w-5"
+          />
         </button>
-        <span className="text-xs font-semibold text-gray-700">{dateRangeLabel}</span>
+        <span className="text-xl font-bold text-[#000000]">{dateRangeLabel}</span>
         <button
           onClick={handleNextWeek}
           className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
           aria-label="Next week"
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d={isRTL ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'}
-            />
-          </svg>
+          <CustomImage
+            src={isRTL ? ArrowLeftSmIcon : ArrowRightSmIcon}
+            alt="Next week"
+            className="h-5 w-5"
+          />
         </button>
       </div>
 
@@ -705,15 +623,17 @@ export default function WeeklyScheduleCalendar({
             {localizedPeriodHeaders.map((period, idx) => {
               // Check if this column is a special column
               const specialCol = specialColumns.find((sc) => sc.columnIndex === idx);
-              const labelClass = specialCol ? 'text-gray-800 font-bold' : 'text-gray-800';
+              const labelClass = specialCol ? 'font-normal text-[#3A3A3A]' : 'text-[#3A3A3A]';
 
               return (
                 <div
                   key={idx}
-                  className={`flex flex-col items-center justify-center rounded-lg border py-2`}
+                  className={`flex flex-col items-center justify-center gap-2 rounded-lg border border-[#DDE0E0] py-2`}
                 >
-                  <span className={`text-sm font-bold ${labelClass}`}>{period.label}</span>
-                  <span className="mt-0.5 text-[9px] text-gray-400">{period.time}</span>
+                  <span className={`text-[10px] ${labelClass}`}>{period.label}</span>
+                  <span className="mt-0.5 text-[8px] font-normal text-[#646969]">
+                    {period.time}
+                  </span>
                 </div>
               );
             })}
@@ -742,17 +662,19 @@ export default function WeeklyScheduleCalendar({
                 {/* Day label on the right */}
                 {isCurrentDay ? (
                   // Current day - green badge with menu icon and border
-                  <div className="z-10 flex flex-col items-center justify-center rounded-lg border border-emerald-500 bg-white py-2">
-                    <div className="flex items-center gap-1 rounded-lg px-2 py-1 text-emerald-500">
+                  <div className="z-10 flex flex-col items-center justify-center rounded-lg border border-green-500 bg-white py-2">
+                    <div className="flex items-center gap-1 rounded-xl px-2 py-1 text-green-500">
                       {/* <MenuIcon /> */}
-                      <img src={MenuICon} alt="menu" className="h-3 w-3" />
+                      <CustomImage src={MenuGreenIcon} alt="menu" className="h-5 w-5" />
                       <span className="text-[10px] font-bold">{getRowLabel(dayIndex)}</span>
                     </div>
                   </div>
                 ) : (
                   // Other days - just plain text
                   <div className="z-10 flex items-center justify-center py-2">
-                    <span className="text-[10px] text-gray-500">{getRowLabel(dayIndex)}</span>
+                    <span className="text-[10px] font-normal text-[#646969]">
+                      {getRowLabel(dayIndex)}
+                    </span>
                   </div>
                 )}
                 {/* Period cells (9 columns) */}
@@ -820,7 +742,7 @@ export default function WeeklyScheduleCalendar({
                       >
                         {isMiddleRow && (
                           <span
-                            className={`text-sm font-bold ${specialCol.textColor || 'text-gray-700'}`}
+                            className={`text-xs font-bold ${specialCol.textColor || 'text-gray-700'}`}
                           >
                             {specialCol.label}
                           </span>
@@ -867,7 +789,7 @@ export default function WeeklyScheduleCalendar({
                   }
 
                   // Get background and border class for regular cells
-                  const cellBgClass = 'bg-transparent border border-gray-200';
+                  const cellBgClass = 'bg-transparent border border-[#DDE0E0]';
 
                   // If part of an event but not starting here, show empty cell with bg
                   if (eventAtCell && !isEventStart) {
@@ -932,29 +854,21 @@ export default function WeeklyScheduleCalendar({
                           {/* Empty Gap Slot */}
                           <div
                             style={{ width: `${offsetPercent * 100}%` }}
-                            className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors"
+                            className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
                           >
                             {onEmptyCellClick && (
                               <button
                                 onClick={() =>
                                   onEmptyCellClick(dayIndex, periodIndex, gapStartTime, gapEndTime)
                                 }
-                                className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                                className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
                               >
-                                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
-                                  <svg
-                                    className="h-3.5 w-3.5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M12 4v16m8-8H4"
-                                    />
-                                  </svg>
+                                <div className="flex h-7 w-7 items-center justify-center">
+                                  <CustomImage
+                                    src={GreenPlusCircleIcon}
+                                    alt="add"
+                                    className="h-6 w-6"
+                                  />
                                 </div>
                               </button>
                             )}
@@ -1006,29 +920,21 @@ export default function WeeklyScheduleCalendar({
                         />
                         <div
                           style={{ width: `calc(${remainingPart * 100}% - 8px)` }}
-                          className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-gray-200 bg-transparent transition-colors"
+                          className="group relative flex-shrink-0 cursor-pointer rounded-xl border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
                         >
                           {onEmptyCellClick && (
                             <button
                               onClick={() =>
                                 onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
                               }
-                              className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                              className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
                             >
-                              <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
-                                <svg
-                                  className="h-3.5 w-3.5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4v16m8-8H4"
-                                  />
-                                </svg>
+                              <div className="flex h-7 w-7 items-center justify-center">
+                                <CustomImage
+                                  src={GreenPlusCircleIcon}
+                                  alt="add"
+                                  className="h-6 w-6"
+                                />
                               </div>
                             </button>
                           )}
@@ -1043,7 +949,7 @@ export default function WeeklyScheduleCalendar({
                   return (
                     <div
                       key={periodIndex}
-                      className={`group relative min-h-[100px] overflow-visible rounded-lg ${cellBgClass}`}
+                      className={`group relative min-h-[100px] overflow-visible rounded-lg hover:border-green-500 ${cellBgClass}`}
                     >
                       {/* Event block (can span horizontally and vertically) */}
                       {eventAtCell && isEventStart && (
@@ -1059,22 +965,10 @@ export default function WeeklyScheduleCalendar({
                           onClick={() =>
                             onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
                           }
-                          className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
+                          className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
                         >
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-400 transition-all hover:border-emerald-500 hover:text-emerald-500">
-                            <svg
-                              className="h-3.5 w-3.5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4v16m8-8H4"
-                              />
-                            </svg>
+                          <div className="flex h-7 w-7 items-center justify-center">
+                            <CustomImage src={GreenPlusCircleIcon} alt="add" className="h-6 w-6" />
                           </div>
                         </button>
                       )}
@@ -1086,9 +980,6 @@ export default function WeeklyScheduleCalendar({
           })}
         </div>
       </div>
-
-      {/* Context Menu */}
-      <ContextMenu />
     </div>
   );
 }
