@@ -10,7 +10,7 @@ import StudentInterviewDetailsPopup from '../popups/StudentInterviewDetailsPopup
 import DeletePopup from '@/shared/popups/DeletePopup';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
-import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
+import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
@@ -427,7 +427,7 @@ export default function StudentInterviewsCalendar() {
     },
     {
       label: t('interviews.editInterview'),
-      icon: EditFillIcon,
+      icon: EditFilledIcon,
       onClick: (_date, event) => {
         if (event) {
           const fullEvent = calendarStudentInterviews.find((e) => e.id === event.id);
