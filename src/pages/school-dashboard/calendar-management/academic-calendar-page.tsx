@@ -6,7 +6,7 @@ export default function AcademicCalendarPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="academicCalendar.title"
+        title="academicCalendar.annualCalendar"
         actions={[
           {
             label: 'academicCalendar.addCalendarButton',

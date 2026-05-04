@@ -2013,6 +2013,7 @@
   },
   "academicCalendar": {
     "title": "التقويم الأكاديمي",
+    "annualCalendar": "التقويم السنوي",
     "addTitle": "إضافة تقويم",
     "editTitle": "تعديل تقويم",
     "addCalendarButton": "إضافة تقويم",

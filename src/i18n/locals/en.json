@@ -2008,6 +2008,7 @@
   },
   "academicCalendar": {
     "title": "Academic Calendar",
+    "annualCalendar": "Annual calendar",
     "addTitle": "Add Calendar",
     "editTitle": "Edit Calendar",
     "addCalendarButton": "Add Calendar",
