@@ -5,6 +5,8 @@ import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
+import CustomCheckbox from '@/shared/components/CustomCheckbox';
+import Input from '@/shared/components/Input';
 import AttendanceConfirmPopup from '@/pages/school-dashboard/attendance/popups/AttendanceConfirmPopup';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
@@ -272,35 +274,27 @@ export default function AttendanceManagement() {
     {
       header: '',
       headerComponent: (
-        <input
-          type="checkbox"
+        <CustomCheckbox
+          label=""
           checked={allCurrentPageSelected}
-          ref={(el) => {
-            if (el) {
-              el.indeterminate = someCurrentPageSelected;
-            }
-          }}
-          onChange={(e) => handleSelectAll(e.target.checked)}
+          indeterminate={someCurrentPageSelected}
+          onChange={(checked) => handleSelectAll(checked)}
           disabled={allStudentsDisabled}
-          className={`h-4 w-4 appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1 ${
-            allStudentsDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-          }`}
+          className="!gap-0 !py-0"
         />
       ),
       accessor: (row) => {
         const hasStatus = row.status !== null && row.status !== -1 && row.status !== 0;
         const studentKey = getStudentKey(row);
         return (
-          <input
-            type="checkbox"
-            id={`checkbox-${studentKey}`}
+          <CustomCheckbox
+            label=""
             name={`checkbox-${studentKey}`}
             checked={selectedAttendanceIds.includes(studentKey)}
-            onChange={(e) => handleSelectStudent(studentKey, e.target.checked)}
+            onChange={(checked) => handleSelectStudent(studentKey, checked)}
             disabled={hasStatus}
-            className={`h-4 w-4 appearance-none rounded border border-gray-300 bg-white checked:border-[#1FAD6C] checked:bg-[#1FAD6C] checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik05IDE2LjE3TDQuODMgMTJsLTEuNDIgMS40MUw5IDE5IDIxIDdsLTEuNDEtMS40MUw5IDE2LjE3eiIvPjwvc3ZnPg==')] checked:bg-center checked:bg-no-repeat focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-1 ${
-              hasStatus ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-            }`}
+            className="!gap-0 !py-0"
+            inputProps={{ id: `checkbox-${studentKey}` }}
           />
         );
       },
@@ -310,11 +304,16 @@ export default function AttendanceManagement() {
     {
       header: 'attendance.studentName',
       accessor: (row) => (
-        <div className="flex items-center gap-2">
-          <div className="h-10 w-10 overflow-hidden rounded-full">
-            <CustomImage src={ProfileImage} alt="profile" className="h-full w-full object-cover" />
-          </div>
-          {row.teacherFullName || '-'}
+        <div className="flex items-center gap-3">
+          <CustomImage
+            src={ProfileImage}
+            alt="profile"
+            className="h-10 w-10 flex-shrink-0 rounded-lg object-cover"
+          />
+
+          <span className="flex-1 text-sm font-normal text-[#646969]">
+            {row.teacherFullName || '-'}
+          </span>
           <IconButton
             variant="blue"
             ariaLabel={t('common.view')}
@@ -324,9 +323,9 @@ export default function AttendanceManagement() {
                 state: { from: 'attendance' },
               });
             }}
-            className="h-8 w-8"
+            className="h-10 w-10"
           >
-            <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-4 w-4" />
+            <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-6 w-6" />
           </IconButton>
         </div>
       ),
@@ -487,7 +486,7 @@ export default function AttendanceManagement() {
       placeholder: t('attendance.searchStudent'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
-      width: '40%',
+      width: '30%',
     },
     {
       type: 'custom',
@@ -495,7 +494,7 @@ export default function AttendanceManagement() {
       placeholder: '',
       value: selectedStageId,
       onChange: () => {},
-      width: '30%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedStageId}
@@ -519,7 +518,7 @@ export default function AttendanceManagement() {
       placeholder: '',
       value: selectedClassroomId,
       onChange: () => {},
-      width: '30%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedClassroomId}
@@ -545,17 +544,14 @@ export default function AttendanceManagement() {
       placeholder: '',
       value: selectedDate,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
-        <div className="relative w-full">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-[#1FAD6C] focus:ring-1 focus:ring-[#1FAD6C]"
-            placeholder={t('attendance.date')}
-          />
-        </div>
+        <Input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          placeholder={t('attendance.date')}
+        />
       ),
     },
   ];
