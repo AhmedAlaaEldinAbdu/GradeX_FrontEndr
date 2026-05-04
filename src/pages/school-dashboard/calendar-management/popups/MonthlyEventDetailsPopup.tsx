@@ -18,6 +18,7 @@ import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useToast } from '@/shared/context/ToastContext';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 interface MonthlyEventDetailsPopupProps {
   isOpen: boolean;
@@ -76,7 +77,7 @@ export default function MonthlyEventDetailsPopup({
 
     dispatch(
       fetchMonthlyCalendarEvents({
-        filters: { date: day },
+        filters: { date: day, schoolBranchId: getCurrentSchoolBranchId() },
         target: 'popup',
       })
     )
@@ -136,7 +137,7 @@ export default function MonthlyEventDetailsPopup({
       if (day) {
         const res = await dispatch(
           fetchMonthlyCalendarEvents({
-            filters: { date: day },
+            filters: { date: day, schoolBranchId: getCurrentSchoolBranchId() },
             target: 'popup',
           })
         ).unwrap();
@@ -247,7 +248,7 @@ export default function MonthlyEventDetailsPopup({
                       {localizedEventName}
                     </h3>
                     {normalizedPopupEvents.length > 1 && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 pb-3">
                         <IconButton
                           status="edit"
                           variant="success"
@@ -269,50 +270,60 @@ export default function MonthlyEventDetailsPopup({
                   </div>
 
                   <div className="mt-4 space-y-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-700">
+                    <div className="flex items-center gap-2 pb-3">
+                      <span className="text-base font-normal text-[#3A3A3A]">
                         {t('monthlyCalendar.details.eventNameAr')}:
                       </span>
-                      <span className="text-gray-700 md:text-center">{item.nameAr || '-'}</span>
+                      <span className="text-sm font-normal text-[#646969] md:text-center">
+                        {item.nameAr || '-'}
+                      </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-700">
+                    <div className="flex items-center gap-2 pb-3">
+                      <span className="text-base font-normal text-[#3A3A3A]">
                         {t('monthlyCalendar.details.eventNameEn')}:
                       </span>
-                      <span className="text-gray-700 md:text-center">{item.nameEn || '-'}</span>
+                      <span className="text-sm font-normal text-[#646969] md:text-center">
+                        {item.nameEn || '-'}
+                      </span>
                     </div>
 
                     {!isFullDayEvent && (
                       <div className="flex flex-col gap-2 md:flex-row">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-700">
+                          <div className="flex items-center gap-2 pb-3">
+                            <span className="text-base font-normal text-[#3A3A3A]">
                               {t('monthlyCalendar.details.startTime')}:
                             </span>
-                            <span className="text-gray-700">{item.startTime ?? '--:--'}</span>
+                            <span className="text-sm font-normal text-[#646969]">
+                              {item.startTime ?? '--:--'}
+                            </span>
                           </div>
                         </div>
                         <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-700">
+                          <div className="flex items-center gap-2 pb-3">
+                            <span className="text-base font-normal text-[#3A3A3A]">
                               {t('monthlyCalendar.details.endTime')}:
                             </span>
-                            <span className="text-gray-700">{item.endTime ?? '--:--'}</span>
+                            <span className="text-sm font-normal text-[#646969]">
+                              {item.endTime ?? '--:--'}
+                            </span>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-700">
+                    <div className="flex items-center gap-2 pb-3">
+                      <span className="text-base font-normal text-[#3A3A3A]">
                         {t('monthlyCalendar.form.duration')}:
                       </span>
-                      <span className="text-gray-700 md:text-center">{durationLabel}</span>
+                      <span className="text-sm font-normal text-[#646969] md:text-center">
+                        {durationLabel}
+                      </span>
                     </div>
 
-                    <div className="flex gap-2">
-                      <span className="flex-shrink-0 font-semibold text-gray-700">
+                    <div className="flex gap-2 pb-3">
+                      <span className="flex-shrink-0 text-base font-normal text-[#3A3A3A]">
                         {t('monthlyCalendar.details.stages')}:
                       </span>
                       <div className="flex flex-wrap gap-2">
@@ -320,19 +331,19 @@ export default function MonthlyEventDetailsPopup({
                           stageLabels.map((stage) => (
                             <span
                               key={stage}
-                              className="text-base rounded-md bg-emerald-50 px-3 py-1 font-semibold text-emerald-700"
+                              className="rounded-lg bg-[#DFF8ED] px-3 py-1 text-sm font-normal text-[#3A3A3A]"
                             >
                               {stage}
                             </span>
                           ))
                         ) : (
-                          <span className="text-sm text-gray-500">-</span>
+                          <span className="text-sm text-[#3A3A3A]">-</span>
                         )}
                       </div>
                     </div>
 
                     <div className="flex gap-2">
-                      <span className="flex-shrink-0 font-semibold text-gray-700">
+                      <span className="flex-shrink-0 text-base font-normal text-[#3A3A3A]">
                         {t('monthlyCalendar.details.classrooms')}:
                       </span>
                       <div className="flex flex-wrap gap-2">
@@ -340,13 +351,13 @@ export default function MonthlyEventDetailsPopup({
                           classroomLabels.map((classroom) => (
                             <span
                               key={classroom}
-                              className="text-base rounded-md bg-emerald-50 px-3 py-1 font-semibold text-emerald-700"
+                              className="rounded-lg bg-[#DFF8ED] px-3 py-1 text-sm font-normal text-[#3A3A3A]"
                             >
                               {classroom}
                             </span>
                           ))
                         ) : (
-                          <span className="text-sm text-gray-500">-</span>
+                          <span className="text-sm text-[#3A3A3A]">-</span>
                         )}
                       </div>
                     </div>
