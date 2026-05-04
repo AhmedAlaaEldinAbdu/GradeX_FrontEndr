@@ -13,6 +13,7 @@ import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
+import { getAnnouncementStatusBadgeColor } from '@/shared/components/SharedBadges';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
@@ -226,20 +227,11 @@ export default function RegistrationAnnouncement() {
       header: 'registrationAnnouncement.status',
       accessor: (row) => {
         const status = getStatus(row);
-        switch (status) {
-          case 'valid':
-            return (
-              <span className="inline-flex min-w-[110px] justify-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                {t('registrationAnnouncement.valid')}
-              </span>
-            );
-          default:
-            return (
-              <span className="inline-flex min-w-[110px] justify-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
-                {t('registrationAnnouncement.expired')}
-              </span>
-            );
-        }
+        return (
+          <span className={getAnnouncementStatusBadgeColor(status)}>
+            {t(`registrationAnnouncement.${status}`)}
+          </span>
+        );
       },
       headerClassName: 'min-w-[150px]',
       className: 'text-center',

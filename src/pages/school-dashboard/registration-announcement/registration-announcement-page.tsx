@@ -3,12 +3,22 @@ import RegistrationAnnouncement from './components/RegistrationAnnouncement';
 import { useTranslation } from 'react-i18next';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import PageHeader from '@/shared/components/PageHeader';
+import Breadcrumb from '@/shared/layout/Breadcrumb';
 
 const RegistrationAnnouncementPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
     <div>
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: t('sidebar.studentAffairs') },
+          { label: t('sidebar.studentManagement') },
+          { label: t('registrationAnnouncement.title') },
+        ]}
+      />
+
       {/* Page Header */}
       <PageHeader
         title={'registrationAnnouncement.title'}
@@ -20,6 +30,7 @@ const RegistrationAnnouncementPage: React.FC = () => {
             to: '/registration-announcement/add-registration-announcement',
           },
         ]}
+        hasHeaderControls={true}
       />
 
       {/* Main Content */}

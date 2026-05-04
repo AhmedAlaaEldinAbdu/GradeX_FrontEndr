@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { type RegistrationAnnouncementProps } from '@/validations/registration-announcement-validations';
 import { registrationAnnouncementApi } from '@/services/api/registration-announcement/registration-announcement.service';
 import Loading from '@/shared/components/Loading';
+import PageHeader from '@/shared/components/PageHeader';
 
 const EditRegistrationAnnouncementPage: React.FC = () => {
   const { t } = useTranslation();
@@ -95,17 +96,15 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
       {/* Breadcrumb */}
       <Breadcrumb
         items={[
+          { label: t('sidebar.studentAffairs') },
+          { label: t('sidebar.studentManagement') },
           { label: t('registrationAnnouncement.title'), path: '/registration-announcement' },
           { label: t('registrationAnnouncement.editPageTitle') },
         ]}
       />
 
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-start text-2xl font-bold text-gray-800">
-          {t('registrationAnnouncement.editPageTitle')}
-        </h1>
-      </div>
+      <PageHeader title={'registrationAnnouncement.editPageTitle'} />
 
       {/* Main Content */}
       <RegistrationAnnouncementForm initialValues={initialValues} isEditMode registrationId={id} />

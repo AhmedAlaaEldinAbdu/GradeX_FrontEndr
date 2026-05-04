@@ -159,7 +159,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
     navigate('/registration-announcement');
   };
 
-  const currentDateTime = new Date().toISOString().slice(0, 16);
+  const currentDate = new Date().toISOString().slice(0, 10);
 
   return (
     <Card className="p-6">
@@ -207,9 +207,9 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
               render={({ field }) => (
                 <Input
                   {...field}
-                  type="datetime-local"
+                  type="date"
                   placeholder={t('registrationAnnouncement.chooseStartDate')}
-                  min={currentDateTime}
+                  min={currentDate}
                   max={endDate || undefined}
                   error={errors.startDate?.message ? ' ' : undefined}
                   className={errors.startDate?.message ? 'border-red-500' : ''}
@@ -230,9 +230,9 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
               render={({ field }) => (
                 <Input
                   {...field}
-                  type="datetime-local"
+                  type="date"
                   placeholder={t('registrationAnnouncement.chooseEndDate')}
-                  min={startDate || currentDateTime}
+                  min={startDate || currentDate}
                   error={errors.endDate?.message ? ' ' : undefined}
                   className={errors.endDate?.message ? 'border-red-500' : ''}
                 />
