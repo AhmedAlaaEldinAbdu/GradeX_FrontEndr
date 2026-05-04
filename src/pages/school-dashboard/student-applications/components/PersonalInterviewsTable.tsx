@@ -388,14 +388,14 @@ const PersonalInterviewsTable: React.FC = () => {
       placeholder: t('studentApplications.searchPlaceholder'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
-      width: '25%',
+      width: '30%',
     },
     {
       type: 'custom',
       name: 'grade-filter',
       value: selectedGradeId,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedGradeId}

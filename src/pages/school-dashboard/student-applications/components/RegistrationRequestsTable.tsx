@@ -495,14 +495,14 @@ const RegistrationRequestsTable: React.FC = () => {
       placeholder: t('studentApplications.searchPlaceholder'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
-      width: '25%',
+      width: '30%',
     },
     {
       type: 'custom',
       name: 'stage-filter',
       value: selectedStageId,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedStageId}
@@ -522,7 +522,7 @@ const RegistrationRequestsTable: React.FC = () => {
       name: 'status-filter',
       value: selectedStatus,
       onChange: () => {},
-      width: '25%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedStatus}
