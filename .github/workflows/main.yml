@@ -3,38 +3,50 @@ name: Deploy React App to SmarterASP
 on:
   push:
     branches:
-      - main   # change if you use master
+      - main # change if you use master
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Checkout source code
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      # 1️⃣ Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # 2️⃣ Setup Node.js
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
-    # 3️⃣ Install dependencies
-    - name: Install dependencies
-      run: npm install
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-    # 4️⃣ Build React app
-    - name: Build React app
-      run: npm run build
+      # 4️⃣ Verify required secrets are present (fail fast before build)
+      - name: Verify required secrets
+        env:
+          VITE_AUTH_TOKEN_SECRET_KEY: ${{ secrets.VITE_AUTH_TOKEN_SECRET_KEY }}
+        run: |
+          if [ -z "$VITE_AUTH_TOKEN_SECRET_KEY" ]; then
+            echo "::error::VITE_AUTH_TOKEN_SECRET_KEY is not set. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
 
-    # 5️⃣ Deploy build folder to SmarterASP via FTP
-    - name: Deploy to SmarterASP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: dist/
-        server-dir: ${{ secrets.FTP_PATH }}/
-        dangerous-clean-slate: true
+      # 5️⃣ Build React app (Vite inlines VITE_* vars at build time)
+      - name: Build React app
+        env:
+          VITE_AUTH_TOKEN_SECRET_KEY: ${{ secrets.VITE_AUTH_TOKEN_SECRET_KEY }}
+        run: npm run build
+
+      # 6️⃣ Deploy build folder to SmarterASP via FTP
+      - name: Deploy to SmarterASP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/
+          server-dir: ${{ secrets.FTP_PATH }}/
+          dangerous-clean-slate: true

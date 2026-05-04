@@ -1160,7 +1160,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         title={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
         className={cn(
           'group fixed top-[60px] z-50 grid h-[26px] w-[26px] place-items-center rounded-full',
-          'border border-white/[0.08] bg-[#16302a] text-white',
+          'border border-white/[0.08] bg-[#182f20] text-white',
           'shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]',
           'transition-[left,right,background-color,border-color,box-shadow,transform] duration-300 ease-out',
           'hover:border-[rgba(0,224,127,0.45)] hover:bg-[#1b3a31]',

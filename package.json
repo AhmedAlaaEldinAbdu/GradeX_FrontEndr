@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^2.9.0",
     "@types/google-libphonenumber": "^7.4.30",
     "axios": "^1.12.2",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "google-libphonenumber": "^3.2.44",
     "html2canvas": "^1.4.1",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-big-calendar": "^1.16.3",
