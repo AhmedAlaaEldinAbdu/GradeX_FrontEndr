@@ -34,6 +34,17 @@ export const getTaskCorrectionBadgeColor = (status: 'corrected' | 'notCorrected'
   }
 };
 
+export const getAnnouncementStatusBadgeColor = (status: 'valid' | 'expired') => {
+  switch (status) {
+    case 'valid':
+      return 'bg-lightGreen-100 text-lightGreen-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'expired':
+      return 'bg-red-100 text-red-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    default:
+      return 'bg-gray-100 text-gray-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+  }
+};
+
 export const getTaskTypeBadgeColor = (taskType: number) => {
   switch (taskType) {
     case 1:
