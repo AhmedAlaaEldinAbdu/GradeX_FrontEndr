@@ -185,7 +185,7 @@ export default function AcademicCalendarList() {
         setSearchTerm(value as string);
         setPage(1);
       },
-      width: '40%',
+      width: '35%',
     },
     {
       type: 'custom',
