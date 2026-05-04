@@ -38,6 +38,12 @@ const LoginPage: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginProps) => {
+    console.log('***************');
+    console.log('***************');
+    console.log('***************');
+    console.log(import.meta.env.VITE_AUTH_TOKEN_SECRET_KEY as string | undefined);
+    console.log('***************');
+    console.log('***************');
     try {
       setLoginError(null);
 
@@ -283,7 +289,7 @@ const LoginPage: React.FC = () => {
             <h2 className="mb-4 text-3xl font-bold text-green-500">
               {t('login.manageSchoolTitle')}
             </h2>
-            <p className="text-green-500 text-lg">{t('login.manageSchoolSubtitle')}</p>
+            <p className="text-lg text-green-500">{t('login.manageSchoolSubtitle')}</p>
           </div>
         </div>
       </div>
