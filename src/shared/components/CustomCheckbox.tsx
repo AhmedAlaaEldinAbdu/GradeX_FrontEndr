@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface CustomCheckboxProps {
   checked: boolean;
@@ -14,6 +14,7 @@ interface CustomCheckboxProps {
   label: string;
   name?: string;
   disabled?: boolean;
+  indeterminate?: boolean;
   className?: string;
   inputClassName?: string;
   textClassName?: string;
@@ -26,11 +27,20 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
   label,
   name,
   disabled = false,
+  indeterminate = false,
   className,
   inputClassName,
   textClassName = 'text-sm text-black-800',
   inputProps,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.indeterminate = indeterminate;
+    }
+  }, [indeterminate]);
+
   return (
     <label
       className={`flex items-center gap-2 py-1 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${className ?? ''}`}
@@ -38,6 +48,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
       <div className="relative flex">
         <input
           {...inputProps}
+          ref={inputRef}
           type="checkbox"
           name={name}
           checked={checked}
