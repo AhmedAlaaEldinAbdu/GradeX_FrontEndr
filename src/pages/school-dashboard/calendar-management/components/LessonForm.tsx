@@ -831,7 +831,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                   onClick={() => setIsSelectStudentsPopupOpen(true)}
                 >
                   <div className="flex -space-x-2 rtl:space-x-reverse">
-                    {selectedStudents.slice(0, 1).map((student, index) => (
+                    {selectedStudents.slice(0, 1).map((student) => (
                       <div
                         key={student.id}
                         className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg border-2 border-white bg-gray-100"

@@ -14,7 +14,6 @@ import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/com
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
 import { getAnnouncementStatusBadgeColor } from '@/shared/components/SharedBadges';
-import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
