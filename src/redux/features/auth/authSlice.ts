@@ -142,6 +142,10 @@ export const loginWithCallbackToken = createAsyncThunk(
     try {
       const decrypted = await decryptAccessToken(args.encryptedToken);
 
+      console.log('****** decrypted *********');
+      console.log(decrypted);
+      console.log('***************');
+
       // Detect optional JSON envelope. Fall back to treating plaintext as a JWT.
       let jwt = decrypted;
       let envelopeBranchId: string | null = null;
@@ -162,6 +166,9 @@ export const loginWithCallbackToken = createAsyncThunk(
       }
 
       const userData = decodeJwtToken(jwt);
+      console.log('****** userData *********');
+      console.log(userData);
+      console.log('***************');
       if (!userData) {
         throw new Error('Failed to decode user data from token');
       }

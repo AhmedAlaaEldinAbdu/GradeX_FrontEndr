@@ -38,12 +38,6 @@ const LoginPage: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginProps) => {
-    console.log('***************');
-    console.log('***************');
-    console.log('***************');
-    console.log(import.meta.env.VITE_AUTH_TOKEN_SECRET_KEY as string | undefined);
-    console.log('***************');
-    console.log('***************');
     try {
       setLoginError(null);
 
