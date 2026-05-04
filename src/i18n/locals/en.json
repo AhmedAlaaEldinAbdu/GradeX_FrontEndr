@@ -851,7 +851,7 @@
     "present": "Present",
     "absent": "Absent",
     "late": "Late",
-    "searchStudent": "Search by student name or ID",
+    "searchStudent": "Search by student name or Date",
     "searchEmployee": "Search by employee name",
     "noStudents": "No results found",
     "noEmployees": "No results found",

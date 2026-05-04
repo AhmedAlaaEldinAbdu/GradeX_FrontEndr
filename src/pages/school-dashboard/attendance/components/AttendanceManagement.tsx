@@ -9,7 +9,7 @@ import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import Input from '@/shared/components/Input';
 import AttendanceConfirmPopup from '@/pages/school-dashboard/attendance/popups/AttendanceConfirmPopup';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
+import CheckGreenIcon from '@gradex/assets/icons/CheckGreen.svg';
 import HistoryIcon from '@gradex/assets/icons/History.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
@@ -332,31 +332,6 @@ export default function AttendanceManagement() {
       headerClassName: 'min-w-[230px]',
     },
     {
-      header: 'attendance.educationalStage',
-      accessor: (row) => {
-        const classroom = classrooms.find((c) => c.id === row.classroomId);
-        return <span>{classroom?.gradeName || '-'}</span>;
-      },
-      headerClassName: 'min-w-[170px]',
-      className: 'text-center',
-    },
-    {
-      header: 'attendance.classroom',
-      accessor: (row) => <span>{isArabic ? row.classroomNameAr : row.classroomNameEn || '-'}</span>,
-      headerClassName: 'min-w-[170px]',
-      className: 'text-center',
-    },
-    {
-      header: 'attendance.date',
-      accessor: (row) => (
-        <span>
-          {row.date ? new Date(row.date).toLocaleDateString(isArabic ? 'ar' : 'en') : '-'}
-        </span>
-      ),
-      headerClassName: 'min-w-[150px]',
-      className: 'text-center',
-    },
-    {
       header: 'attendance.attendanceTime',
       accessor: (row) => {
         if (row.status === 2) {
@@ -400,6 +375,31 @@ export default function AttendanceManagement() {
         </span>
       ),
       headerClassName: 'min-w-[130px]',
+      className: 'text-center',
+    },
+    {
+      header: 'attendance.date',
+      accessor: (row) => (
+        <span>
+          {row.date ? new Date(row.date).toLocaleDateString(isArabic ? 'ar' : 'en') : '-'}
+        </span>
+      ),
+      headerClassName: 'min-w-[150px]',
+      className: 'text-center',
+    },
+    {
+      header: 'attendance.educationalStage',
+      accessor: (row) => {
+        const classroom = classrooms.find((c) => c.id === row.classroomId);
+        return <span>{classroom?.gradeName || '-'}</span>;
+      },
+      headerClassName: 'min-w-[170px]',
+      className: 'text-center',
+    },
+    {
+      header: 'attendance.classroom',
+      accessor: (row) => <span>{isArabic ? row.classroomNameAr : row.classroomNameEn || '-'}</span>,
+      headerClassName: 'min-w-[170px]',
       className: 'text-center',
     },
     {
@@ -451,25 +451,25 @@ export default function AttendanceManagement() {
         return (
           <div className="flex items-center justify-center gap-2">
             <button
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-300"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#30B97E1A] transition-colors hover:bg-green-200"
               onClick={() => handleIndividualAction(studentKey, studentName, 'present')}
               title={t('attendance.present')}
             >
-              <CustomImage src={CheckMarkIcon} alt="check" className="h-4 w-4" />
+              <CustomImage src={CheckGreenIcon} alt="check" className="h-5 w-5" />
             </button>
             <button
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 transition-colors hover:bg-yellow-200"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FEF8E6] transition-colors hover:bg-yellow-200"
               onClick={() => handleIndividualAction(studentKey, studentName, 'late')}
               title={t('attendance.late')}
             >
-              <CustomImage src={HistoryIcon} alt="history" className="h-4 w-4" />
+              <CustomImage src={HistoryIcon} alt="history" className="h-5 w-5" />
             </button>
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 transition-colors hover:bg-red-200"
               onClick={() => handleIndividualAction(studentKey, studentName, 'absent')}
               title={t('attendance.absent')}
             >
-              <CustomImage src={XmarkCircleRedIcon} alt="delete" className="h-4 w-4" />
+              <CustomImage src={XmarkCircleRedIcon} alt="delete" className="h-5 w-5" />
             </button>
           </div>
         );
@@ -569,21 +569,21 @@ export default function AttendanceManagement() {
       <div className="flex items-center justify-end gap-2">
         <button
           onClick={() => handleBulkActionClick('present')}
-          className="flex items-center gap-1.5 rounded-full border border-green-500 bg-white px-3 py-1.5 text-sm text-green-600 transition-colors hover:bg-green-50"
+          className="flex items-center justify-center gap-1.5 rounded-2xl border border-green-500 bg-white px-4 py-2 text-base font-medium text-green-500 transition-colors hover:bg-green-50"
         >
-          <CustomImage src={CheckMarkIcon} className="h-4 w-4" alt="present" />
+          <CustomImage src={CheckGreenIcon} className="h-4 w-4" alt="present" />
           <span>{t('attendance.markAllPresent')}</span>
         </button>
         <button
           onClick={() => handleBulkActionClick('late')}
-          className="flex items-center gap-1.5 rounded-full border border-yellow-500 bg-white px-3 py-1.5 text-sm text-yellow-600 transition-colors hover:bg-yellow-50"
+          className="flex items-center justify-center gap-1.5 rounded-2xl border border-[#FAB915] bg-white px-4 py-2 text-base font-medium text-[#C89004] transition-colors hover:bg-yellow-50"
         >
           <CustomImage src={HistoryIcon} className="h-4 w-4" alt="late" />
           <span>{t('attendance.markAllLate')}</span>
         </button>
         <button
           onClick={() => handleBulkActionClick('absent')}
-          className="flex items-center gap-1.5 rounded-full border border-red-500 bg-white px-3 py-1.5 text-sm text-red-600 transition-colors hover:bg-red-50"
+          className="flex items-center justify-center gap-1.5 rounded-2xl border border-[#B80817] bg-white px-4 py-2 text-base font-medium text-[#B80817] transition-colors hover:bg-red-50"
         >
           <CustomImage src={XmarkCircleRedIcon} className="h-4 w-4" alt="absent" />
           <span>{t('attendance.markAllAbsent')}</span>
