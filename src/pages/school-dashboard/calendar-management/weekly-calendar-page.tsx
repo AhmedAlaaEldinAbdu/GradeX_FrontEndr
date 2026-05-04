@@ -1,8 +1,11 @@
 import { useRef, useState } from 'react';
 import WeeklyCalendar, { type WeeklyCalendarHandle } from './components/WeeklyCalendar';
 import PageHeader from '@/shared/components/PageHeader';
+import { useTranslation } from 'react-i18next';
+import Breadcrumb from '@/shared/layout/Breadcrumb';
 
 export default function WeeklyCalendarPage() {
+  const { t } = useTranslation();
   const calendarRef = useRef<WeeklyCalendarHandle>(null);
   const [isRecovering, setIsRecovering] = useState(false);
 
@@ -15,8 +18,16 @@ export default function WeeklyCalendarPage() {
     }
   };
 
+  const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
+    { label: t('sidebar.calendarManagement') },
+    { label: t('sidebar.weeklyCalendar') },
+  ];
+
   return (
     <div className="space-y-6">
+      <Breadcrumb items={breadcrumbItems} />
+
       <PageHeader
         title="weeklyCalendar.title"
         actions={[
