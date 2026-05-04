@@ -14,6 +14,7 @@ import {
   fetchStudentInterviews,
 } from '@/redux/features/student-interviews/studentInterviewsSlice';
 import type { StudentInterview } from '@/services/api/types/student-interviews.types';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 interface StudentInterviewDetailsPopupProps {
   isOpen: boolean;
@@ -68,7 +69,7 @@ export default function StudentInterviewDetailsPopup({
 
     dispatch(
       fetchStudentInterviews({
-        filters: { date: dateFilter },
+        filters: { date: dateFilter, schoolBranchId: getCurrentSchoolBranchId() },
         target: 'popup',
       })
     ).catch(() => {
@@ -119,7 +120,7 @@ export default function StudentInterviewDetailsPopup({
       if (dateFilter) {
         dispatch(
           fetchStudentInterviews({
-            filters: { date: dateFilter },
+            filters: { date: dateFilter, schoolBranchId: getCurrentSchoolBranchId() },
             target: 'popup',
           })
         );
