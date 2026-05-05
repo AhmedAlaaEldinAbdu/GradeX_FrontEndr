@@ -133,7 +133,6 @@ export default function PerformanceTab(_props: PerformanceTabProps) {
       header: t('performance.teacherName'),
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
-          <ViewIconButton onClick={() => handleViewTeacher(row)} label={t('common.view')} />
           <CustomImage
             src={row.teacherAvatar || DefaultAvatar}
             fallbackSrc={DefaultAvatar}
@@ -143,7 +142,7 @@ export default function PerformanceTab(_props: PerformanceTabProps) {
           <span className="text-sm text-[#646969]">
             {currentLang === 'ar' ? row.teacherName : row.teacherNameEn}
           </span>
-        </div>
+          <ViewIconButton onClick={() => handleViewTeacher(row)} label={t('common.view')} />        </div>
       ),
       headerClassName: 'min-w-[220px]',
     },
@@ -151,7 +150,6 @@ export default function PerformanceTab(_props: PerformanceTabProps) {
       header: t('performance.notes'),
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
-          <ViewIconButton onClick={() => handleViewNotes(row)} label={t('common.view')} />
           <span className="text-sm text-[#646969]">
             {currentLang === 'ar' ? row.notes : row.notesEn}
           </span>
