@@ -11,6 +11,7 @@ import FormField from '@/shared/components/FormField';
 import FileUpload from '@/shared/components/FileUpload';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface AddFixedHolidayFormProps {
   control: UseFormReturn<AddFixedHolidayProps, any, AddFixedHolidayProps>;
@@ -41,6 +42,8 @@ const AddFixedHolidayForm = ({
     formState: { errors },
   } = control;
 
+  const scrollToFirstError = useScrollToFirstError<AddFixedHolidayProps>();
+
   const countryOptions = countries.map((country: Country) => ({
     value: country.id.toString(),
     label: i18n.language === 'ar' ? country.arabicName : country.englishName,
@@ -57,7 +60,7 @@ const AddFixedHolidayForm = ({
   ];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
       <Card>
         <div className="space-y-6">
           {/* Single Fixed Holiday */}

@@ -10,6 +10,7 @@ import Button from '@/shared/components/Button';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import { useToast } from '@/shared/context/ToastContext';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { authApiService } from '@/services/api/auth/auth.service';
 import { ChangeMyPasswordSchema, type ChangeMyPasswordProps } from '@/validations/auth-validations';
 import { logger } from '@/lib/utils/logger';
@@ -69,6 +70,8 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
     reValidateMode: 'onChange',
   });
 
+  const scrollToFirstError = useScrollToFirstError<ChangeMyPasswordProps>();
+
   useEffect(() => {
     if (!isOpen) {
       reset();
@@ -106,7 +109,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
     <Modal isOpen={isOpen} onClose={onClose} title={t('changePassword.title')} size="sm">
       <p className="mb-6 text-center text-sm text-gray-500">{t('changePassword.subtitle')}</p>
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4 text-start">
+      <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate className="space-y-4 text-start">
         {fields.map((field) => {
           const error = errors[field.key]?.message;
           const isVisible = visible[field.key];

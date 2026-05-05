@@ -22,6 +22,7 @@ import {
 } from '@/validations/preparations-validations';
 
 import { useFormDraft } from '@/hooks/useFormDraft';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { tokenManager } from '@/lib/auth/token-manager';
 import Card from '@/shared/components/Card';
 import Input from '@/shared/components/Input';
@@ -81,6 +82,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const [content, setContent] = useState('');
   const fileUploadRef = useRef<FileUploadRef>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const scrollToFirstError = useScrollToFirstError();
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
@@ -216,6 +218,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           translatedErrors[key] = t(msg as string);
         }
         setErrors(translatedErrors);
+        scrollToFirstError(translatedErrors);
         return;
       }
 
@@ -290,7 +293,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       <Card className="rounded-xl bg-white p-6 shadow-sm">
         <form className="space-y-8">
           <div className="space-y-6">
-            <div className="w-full">
+            <div className="w-full" data-form-field="preparationNumber">
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.preparationNumber')} <span className="text-red-500">*</span>
               </label>
@@ -308,7 +311,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               />
             </div>
 
-            <div className="w-full">
+            <div className="w-full" data-form-field="date">
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.date')} <span className="text-red-500">*</span>
               </label>
@@ -326,7 +329,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
+              <div data-form-field="educationalStage">
                 <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                   {t('preparations.form.educationalStage')} <span className="text-red-500">*</span>
                 </label>
@@ -359,7 +362,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                 </div>
               </div>
 
-              <div>
+              <div data-form-field="grades">
                 <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                   {t('preparations.form.grades')} <span className="text-red-500">*</span>
                 </label>
@@ -392,7 +395,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               </div>
             </div>
 
-            <div className="w-full">
+            <div className="w-full" data-form-field="subject">
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.subject')} <span className="text-red-500">*</span>
               </label>
@@ -420,7 +423,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               </div>
             </div>
 
-            <div className="w-full">
+            <div className="w-full" data-form-field="topic">
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.topic')} <span className="text-red-500">*</span>
               </label>
@@ -484,7 +487,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
             </div>
 
             {/* Content Textarea */}
-            <div>
+            <div data-form-field="content">
               <label className="mb-2 block text-start text-sm font-medium text-gray-700">
                 {t('preparations.form.content')} <span className="text-red-500">*</span>
               </label>

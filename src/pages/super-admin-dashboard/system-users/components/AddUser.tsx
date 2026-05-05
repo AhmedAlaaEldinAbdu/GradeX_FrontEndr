@@ -32,6 +32,7 @@ import {
   selectIsLoading as selectIsLoadingSchools,
 } from '@gradex/redux/features/schools';
 import { useUserForm, type UserFormData } from '../hooks/useUserForm';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import i18n from '@/i18n';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { extractErrorMessage } from '@/lib/utils';
@@ -89,6 +90,8 @@ export default function AddUser() {
     formState: { errors },
     trigger,
   } = form;
+
+  const scrollToFirstError = useScrollToFirstError<UserFormData>();
 
   useEffect(() => {
     const errorMessage = extractErrorMessage(validationErrorsFromRedux) || errorFromRedux;
@@ -174,7 +177,7 @@ export default function AddUser() {
     }
 
     // Use react-hook-form's handleSubmit
-    form.handleSubmit(onFormSubmit)(e);
+    form.handleSubmit(onFormSubmit, scrollToFirstError)(e);
   };
 
   return (

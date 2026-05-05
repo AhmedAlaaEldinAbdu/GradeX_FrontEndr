@@ -14,6 +14,7 @@ import {
   type MonthlyEventFormValues,
 } from '@/validations/monthly-calendar-validations';
 import type { Classroom } from '@/services/api/types/classrooms.types';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface AddEditMonthlyEventPopupProps {
   isOpen: boolean;
@@ -67,6 +68,8 @@ export default function AddEditMonthlyEventPopup({
       endTime: '',
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<MonthlyEventFormValues>();
 
   const isFullDay = watch('isFullDay');
   const watchedGrades = watch('grades');
@@ -156,7 +159,7 @@ export default function AddEditMonthlyEventPopup({
       }
       size="lg"
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
         <div className="grid grid-cols-1 gap-4">
           <FormField
             label={t('monthlyCalendar.form.nameAr')}

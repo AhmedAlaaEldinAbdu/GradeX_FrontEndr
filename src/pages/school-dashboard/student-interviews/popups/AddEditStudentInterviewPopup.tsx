@@ -18,6 +18,7 @@ import { fetchStudents } from '@/redux/features/students/studentsSlice';
 import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 import { getStudentFullName } from '@/services/api/types/students.types';
 import { tokenManager } from '@gradex/lib/auth/token-manager';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface AddEditStudentInterviewPopupProps {
   isOpen: boolean;
@@ -74,6 +75,8 @@ export default function AddEditStudentInterviewPopup({
       endTime: '',
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<StudentInterviewApiProps>();
 
   const getStoredSchoolBranchId = (): string => {
     try {
@@ -193,7 +196,7 @@ export default function AddEditStudentInterviewPopup({
       onClose={closeAndReset}
       title={mode === 'edit' ? t('interviews.editInterview') : t('interviews.addInterview')}
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
         {formattedSelectedDate && (
           <div className="rounded-lg bg-gray-50 p-4 text-center text-base text-gray-500">
             <span className="text-base font-medium text-black-800">

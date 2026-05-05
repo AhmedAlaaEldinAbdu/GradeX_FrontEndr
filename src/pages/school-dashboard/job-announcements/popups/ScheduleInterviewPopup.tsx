@@ -18,6 +18,7 @@ import {
 } from '@/redux/features/job-advertisments/jobAdvertismentsSlice';
 import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 import { InterviewType } from '@/services/api/types/interviews.types';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface ScheduleInterviewPopupProps {
   open: boolean;
@@ -80,6 +81,8 @@ export default function ScheduleInterviewPopup({
     resolver: yupResolver(InterviewFormSchema),
     defaultValues: INTERVIEW_FORM_DEFAULTS,
   });
+
+  const scrollToFirstError = useScrollToFirstError<InterviewFormProps>();
 
   const selectedBranchId = watch('schoolBranchesId');
   const selectedJobAdValue = watch('jobAdvertisementId');
@@ -251,7 +254,7 @@ export default function ScheduleInterviewPopup({
       title={t('jobAnnouncement.applicantsPage.scheduleInterview')}
       closeOnOverlayClick={!isLoading}
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
         <div className="space-y-5">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField

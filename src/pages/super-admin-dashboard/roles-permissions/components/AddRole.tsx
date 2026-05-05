@@ -18,6 +18,7 @@ import Loading from '@gradex/shared/components/Loading';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { useRoleForm, type RoleFormData } from '../hooks/useRoleForm';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import FormField from '@gradex/shared/components/FormField';
 import Input from '@gradex/shared/components/Input';
 import TextArea from '@gradex/shared/components/TextArea';
@@ -46,6 +47,8 @@ export default function AddRole() {
     setValue,
     trigger,
   } = form;
+
+  const scrollToFirstError = useScrollToFirstError<RoleFormData>();
 
   // Watch form values
   const selectedPermissions = watch('permissions') || [];
@@ -178,7 +181,7 @@ export default function AddRole() {
       return;
     }
 
-    form.handleSubmit(onFormSubmit)(e);
+    form.handleSubmit(onFormSubmit, scrollToFirstError)(e);
   };
 
   if (isLoadingPermissions) {

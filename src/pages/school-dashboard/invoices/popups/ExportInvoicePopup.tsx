@@ -9,6 +9,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import DownloadBlueIcon from '@gradex/assets/icons/DowloadBlue.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface ExportInvoiceFormData {
   invoiceName: string;
@@ -43,6 +44,8 @@ export default function ExportInvoicePopup({
   } = useForm<ExportInvoiceFormData>({
     defaultValues: { invoiceName: '' },
   });
+
+  const scrollToFirstError = useScrollToFirstError<ExportInvoiceFormData>();
 
   const handleClose = useCallback(() => {
     if (isExporting) return;
@@ -138,7 +141,7 @@ export default function ExportInvoicePopup({
               {t('invoices.exportInvoice')}
             </h2>
 
-            <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-4">
               <FormField
                 label={t('invoices.invoiceName')}
                 required

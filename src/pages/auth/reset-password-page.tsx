@@ -9,6 +9,7 @@ import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import GradeXLogo from '@/assets/identity/GradeX.svg';
 import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CustomImage from '@/shared/components/CustomImage';
 
 const ResetPasswordPage: React.FC = () => {
@@ -31,6 +32,8 @@ const ResetPasswordPage: React.FC = () => {
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   });
+
+  const scrollToFirstError = useScrollToFirstError<ChangePasswordProps>();
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -95,7 +98,11 @@ const ResetPasswordPage: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6 text-start">
+            <form
+              onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+              noValidate
+              className="space-y-6 text-start"
+            >
               {/* New Password Field */}
               <div>
                 <label
@@ -337,7 +344,11 @@ const ResetPasswordPage: React.FC = () => {
             {/* Illustration - Password Reset */}
             <div className="mb-8">
               <div className="mb-8">
-                <CustomImage src={ResetPassword} alt="Reset Password Illustration" className="w-full" />
+                <CustomImage
+                  src={ResetPassword}
+                  alt="Reset Password Illustration"
+                  className="w-full"
+                />
               </div>
             </div>
 

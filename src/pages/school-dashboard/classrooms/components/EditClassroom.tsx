@@ -19,6 +19,7 @@ import Button from '@/shared/components/Button';
 import FileUpload from '@/shared/components/FileUpload';
 import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import { EditClassroomSchema, type EditClassroomProps } from '@/validations/classrooms-validations';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function EditClassroom() {
   const { t, i18n } = useTranslation();
@@ -67,6 +68,8 @@ export default function EditClassroom() {
       maxStudents: 0,
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<EditClassroomProps>();
 
   useEffect(() => {
     dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
@@ -178,7 +181,7 @@ export default function EditClassroom() {
   return (
     <Card>
       <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
           {/* Academic System and Educational Stage Selectors */}
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Academic System */}

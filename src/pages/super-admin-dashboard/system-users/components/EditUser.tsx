@@ -34,7 +34,8 @@ import {
   selectIsLoading as selectIsLoadingSchools,
 } from '@gradex/redux/features/schools';
 import type { ValidationErrorResponse } from '@/services/api/config';
-import { useUserForm } from '../hooks/useUserForm';
+import { useUserForm, type UserFormData } from '../hooks/useUserForm';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import i18n from '@/i18n';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { formatPhoneForInput, normalizePhoneForApi } from '@/lib/utils/phone-utils';
@@ -94,6 +95,8 @@ export default function EditUser() {
     reset,
     trigger,
   } = form;
+
+  const scrollToFirstError = useScrollToFirstError<UserFormData>();
 
   useEffect(() => {
     if (validationErrorsFromRedux) {
@@ -194,6 +197,7 @@ export default function EditUser() {
     const isValid = await form.trigger();
 
     if (!isValid) {
+      scrollToFirstError(form.formState.errors);
       return;
     }
 

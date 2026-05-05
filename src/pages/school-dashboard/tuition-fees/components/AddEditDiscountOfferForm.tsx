@@ -10,6 +10,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import PercentIcon from '@/assets/icons/Percent.svg';
 // import GreenPlusIcon from '@/assets/icons/GreenPlus.svg';
 import { validateDiscountOffers } from '@/validations/discounts-offers-validations';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import {
   OfferApplyOn,
   OfferField,
@@ -145,6 +146,7 @@ export default function AddEditDiscountOfferForm({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const scrollToFirstError = useScrollToFirstError();
 
   useEffect(() => {
     if (!initialOffers) return;
@@ -186,7 +188,9 @@ export default function AddEditDiscountOfferForm({
     const result = await validateDiscountOffers([normalizedForValidation], false);
 
     if (!result.isValid) {
-      setErrors(result.errorsByIndex[0] ?? {});
+      const fieldErrors = result.errorsByIndex[0] ?? {};
+      setErrors(fieldErrors);
+      scrollToFirstError(fieldErrors);
       return;
     }
 
@@ -259,6 +263,7 @@ export default function AddEditDiscountOfferForm({
                       label={t('fees.discounts.form.nameArLabel')}
                       required
                       error={errors.nameAr}
+                      name="nameAr"
                     >
                       <Input
                         value={offer.nameAr}
@@ -271,6 +276,7 @@ export default function AddEditDiscountOfferForm({
                       label={t('fees.discounts.form.nameEnLabel')}
                       required
                       error={errors.nameEn}
+                      name="nameEn"
                     >
                       <Input
                         value={offer.nameEn}
@@ -312,6 +318,7 @@ export default function AddEditDiscountOfferForm({
                       label={t('fees.discounts.form.discountValueLabel')}
                       required
                       error={errors.discountValue}
+                      name="discountValue"
                     >
                       <Input
                         type="number"
@@ -339,6 +346,7 @@ export default function AddEditDiscountOfferForm({
                       label={t('fees.discounts.form.startDateLabel')}
                       required
                       error={errors.startDate}
+                      name="startDate"
                     >
                       <Input
                         type="date"
@@ -352,6 +360,7 @@ export default function AddEditDiscountOfferForm({
                       label={t('fees.discounts.form.endDateLabel')}
                       required
                       error={errors.endDate}
+                      name="endDate"
                     >
                       <Input
                         type="date"

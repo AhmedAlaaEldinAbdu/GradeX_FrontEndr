@@ -25,6 +25,7 @@ import { fetchBooks } from '@/redux/features/books/booksSlice';
 import { fetchClassrooms as fetchClassroomsThunk } from '@/redux/features/classrooms/classroomsSlice';
 import { createLesson, updateLessonWithAttachments } from '@/redux/features/lessons/lessonsSlice';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { tokenManager } from '@/lib/auth/token-manager';
 
 // Types
@@ -112,6 +113,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const { validateStartTime, validateEndTime } = useLessonValidations();
+  const scrollToFirstError = useScrollToFirstError<LessonFormData>();
   const userData = tokenManager.getUserData();
   const schoolBranchId = userData?.schoolBrancheId ?? userData?.schoolBranchId ?? undefined;
 
@@ -425,7 +427,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   return (
     <>
       <Card>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
           {/* Hidden date field */}
           <Controller
             name="date"

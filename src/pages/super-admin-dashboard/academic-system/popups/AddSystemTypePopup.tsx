@@ -14,6 +14,7 @@ import {
   AcademicSubsystemSchema,
   type AcademicSubsystemForm,
 } from '@/validations/academic-subsystem-validations';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface AddSystemTypePopupProps {
   open: boolean;
@@ -43,6 +44,8 @@ export default function AddSystemTypePopup({ open, onConfirm, onCancel }: AddSys
     resolver: yupResolver(AcademicSubsystemSchema),
     defaultValues: { nameAr: '', nameEn: '' },
   });
+
+  const scrollToFirstError = useScrollToFirstError<AcademicSubsystemForm>();
 
   useEffect(() => {
     if (open) {
@@ -92,7 +95,7 @@ export default function AddSystemTypePopup({ open, onConfirm, onCancel }: AddSys
           type: 'error',
         });
       });
-  });
+  }, scrollToFirstError);
 
   if (!open) return null;
 

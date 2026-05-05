@@ -13,6 +13,7 @@ import {
   ScheduleAppointmentFormSchema,
   type ScheduleAppointmentFormProps,
 } from '@/validations/student-applications-validations';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface ScheduleStudentAppointmentPopupProps {
   isOpen: boolean;
@@ -46,6 +47,8 @@ export default function ScheduleStudentAppointmentPopup({
     defaultValues: APPOINTMENT_FORM_DEFAULTS,
   });
 
+  const scrollToFirstError = useScrollToFirstError<ScheduleAppointmentFormProps>();
+
   useEffect(() => {
     if (isOpen) {
       reset(APPOINTMENT_FORM_DEFAULTS);
@@ -70,7 +73,7 @@ export default function ScheduleStudentAppointmentPopup({
       closeOnOverlayClick={!isLoading && !isSubmitting}
       size="sm"
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
         {/* {studentName && (
           <div className="rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-600">
             <span className="font-medium text-gray-900">{t('studentManagement.studentName')}:</span>{' '}

@@ -16,6 +16,7 @@ import { fetchBookById, updateBook } from '@/redux/features/books/booksSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { EditBookSchema, type EditBookProps } from '@/validations/books-validations';
 import FileUpload, { type FileUploadRef } from '@/shared/components/FileUpload';
 import Loading from '@/shared/components/Loading';
@@ -81,6 +82,8 @@ export default function EditBook() {
       price: 0,
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<EditBookProps>();
 
   const watchedPackageType = watch('packageType');
   const watchedPriceView = watch('priceView');
@@ -173,7 +176,7 @@ export default function EditBook() {
   return (
     <Card>
       <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
           {/* Educational Stage and Subject */}
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Educational Stage */}
