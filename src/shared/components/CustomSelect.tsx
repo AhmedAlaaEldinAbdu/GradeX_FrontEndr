@@ -184,7 +184,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             )}
           </div>
           <div
-            className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? 'left-auto right-6' : 'left-auto right-6'}`}
+            className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? 'left-6 right-auto' : 'left-auto right-6'}`}
           >
             <CustomImage
               src={ArrowDownSmIcon}
