@@ -177,7 +177,6 @@
   appearance: none !important;
 }
 
-
 .bg-black\/60 {
   background-color: rgb(0 0 0 / 0.6);
 }
@@ -249,21 +248,4 @@ input[type='radio']:checked::after {
 
 :focus-visible {
   outline: 2px solid #00512e;
-}
-
-/* ========================================= */
-/* ========================================= */
-/* ========================================= */
-/* ========================================= */
-
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
-
-:root {
-  --white: #ffffff;
-  --main-color: #00512e;
-  --side-bar-colors-tab-color: #8fa89a;
-}
-
-* {
-  box-sizing: border-box;
 }
