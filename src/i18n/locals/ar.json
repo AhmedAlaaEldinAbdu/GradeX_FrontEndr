@@ -880,6 +880,7 @@
     "confirmAllPresent": "تأكيد حضور الجميع؟",
     "confirmAllAbsent": "تأكيد غياب الجميع ؟",
     "confirmLateTitle": "هل تريد تأكيد التأخير ؟",
+    "confirmAllLateTitle": "هل تريد تأكيد تأخير الجميع ؟",
     "time": "الوقت",
     "selectTime": "حدد الوقت",
     "checkInTimeLabel": "موعد الحضور",

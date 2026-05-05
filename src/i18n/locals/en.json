@@ -880,6 +880,7 @@
     "confirmAllPresent": "Confirm all present?",
     "confirmAllAbsent": "Confirm all absent?",
     "confirmLateTitle": "Do you want to confirm late arrival?",
+    "confirmAllLateTitle": "Do you want to confirm late arrival for everyone?",
     "time": "Time",
     "selectTime": "Select time",
     "checkInTimeLabel": "Check-in Time",

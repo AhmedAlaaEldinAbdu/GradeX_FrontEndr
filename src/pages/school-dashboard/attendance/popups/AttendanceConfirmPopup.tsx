@@ -1,5 +1,11 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Modal from '@/shared/popups/Modal';
+import Button from '@/shared/components/Button';
+import Input from '@/shared/components/Input';
+import CustomImage from '@/shared/components/CustomImage';
+import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
+import ClockIcon from '@gradex/assets/icons/Clock.svg';
 
 interface AttendanceConfirmPopupProps {
   open: boolean;
@@ -23,35 +29,13 @@ export default function AttendanceConfirmPopup({
   isProcessing,
 }: AttendanceConfirmPopupProps) {
   const { t } = useTranslation();
-  const popupRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
   const [lateTime, setLateTime] = useState('');
-
-  const handleClose = useCallback(() => {
-    setIsVisible(false);
-    setTimeout(onCancel, 200);
-  }, [onCancel]);
 
   useEffect(() => {
     if (open) {
-      setTimeout(() => setIsVisible(true), 10);
       setLateTime('');
-    } else {
-      setIsVisible(false);
     }
   }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        handleClose();
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [open, handleClose]);
 
   const handleConfirm = () => {
     if (type === 'late') {
@@ -63,7 +47,9 @@ export default function AttendanceConfirmPopup({
 
   const getMessage = () => {
     if (type === 'late') {
-      return t('attendance.confirmLateTitle');
+      return isBulk
+        ? t('attendance.confirmAllLateTitle')
+        : t('attendance.confirmLateTitle');
     }
 
     if (isBulk) {
@@ -83,63 +69,53 @@ export default function AttendanceConfirmPopup({
       : t('attendance.confirmAbsent', { name: personName });
   };
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
-      <div
-        ref={popupRef}
-        className={`relative w-[420px] transform rounded-2xl bg-white p-6 py-7 text-center shadow-lg transition-all duration-300 ease-out ${
-          isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
+    <Modal isOpen={open} onClose={onCancel} size="sm" showHeader={false}>
+      <button
+        onClick={onCancel}
+        className="absolute end-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+        aria-label={t('common.cancel')}
       >
-        <button
-          onClick={handleClose}
-          className="absolute start-3 top-2 text-xl text-gray-400 hover:text-gray-600"
+        <CustomImage src={XmarkCircleGrayIcon} alt="Close" className="h-5 w-5" />
+      </button>
+
+      <div className="flex flex-col">
+        <p
+          className={`my-6 ${type === 'late' ? 'py-3' : 'py-6'} text-center text-sm font-medium text-[#0E1F1F] md:text-base`}
         >
-          ✕
-        </button>
+          {getMessage()}
+        </p>
 
-        <div className="my-6 flex flex-col items-center gap-4 py-3">
-          <p className="w-[100%] font-medium text-gray-800 md:text-xl lg:w-[85%] lg:text-2xl">
-            {getMessage()}
-          </p>
+        {type === 'late' && (
+          <div className="mb-6">
+            <label className="mb-2 block text-start text-sm font-medium text-[#0E1F1F]">
+              {t('attendance.time')} <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="time"
+              value={lateTime}
+              onChange={(e) => setLateTime(e.target.value)}
+              placeholder={t('attendance.selectTime')}
+              icon={<img src={ClockIcon} alt="" className="h-5 w-5" />}
+            />
+          </div>
+        )}
 
-          {/* Time input for late action */}
-          {type === 'late' && (
-            <div className="w-full px-4">
-              <label className="mb-2 block text-start text-sm text-gray-600">
-                {t('attendance.time')} <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="time"
-                  value={lateTime}
-                  onChange={(e) => setLateTime(e.target.value)}
-                  placeholder={t('attendance.selectTime')}
-                  className="h-12 w-full rounded-lg border border-gray-300 px-4 text-end text-gray-700 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex justify-center gap-3">
-          <button
-            onClick={handleClose}
-            className="flex-grow rounded-xl border border-green-700 px-5 py-3 text-green-700 transition-colors duration-200 hover:bg-green-50"
-          >
+        <div className="flex w-full gap-3">
+          <Button variant="outline" fullWidth onClick={onCancel} disabled={isProcessing}>
             {t('common.cancel')}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="success"
+            fullWidth
             onClick={handleConfirm}
             disabled={isProcessing || (type === 'late' && !lateTime)}
-            className="flex-grow rounded-xl bg-green-700 px-5 py-3 text-white transition-colors duration-200 hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+            loading={isProcessing}
           >
             {isProcessing ? t('common.processing') : t('common.confirm')}
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
