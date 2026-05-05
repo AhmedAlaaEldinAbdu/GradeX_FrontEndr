@@ -36,9 +36,11 @@ const EmptyState: React.FC<EmptyStateProps> = ({
           icon
         )}
       </div>
-      <h3 className="mb-2 text-xl font-semibold text-gray-800">{title}</h3>
+      <h3 className={`mb-2 text-xl font-semibold text-gray-800 ${title ? '' : 'hidden'}`}>
+        {title}
+      </h3>
       <p
-        className={`max-w-md text-center text-lg font-normal text-black-700 ${onAction ? 'mb-6' : ''}`}
+        className={`max-w-md text-center text-base font-normal text-[#3A3A3A] ${description ? '' : 'hidden'} ${onAction ? 'mb-6' : ''}`}
       >
         {description}
       </p>
