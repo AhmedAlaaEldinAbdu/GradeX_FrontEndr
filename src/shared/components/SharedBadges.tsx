@@ -45,6 +45,19 @@ export const getAnnouncementStatusBadgeColor = (status: 'valid' | 'expired') => 
   }
 };
 
+export const getAttendanceStatusBadgeColor = (status: 'present' | 'absent' | 'late') => {
+  switch (status) {
+    case 'present':
+      return 'bg-lightGreen-100 text-lightGreen-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'absent':
+      return 'bg-red-100 text-red-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'late':
+      return 'bg-orange-100 text-orange-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    default:
+      return 'bg-gray-100 text-gray-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+  }
+};
+
 export const getTaskTypeBadgeColor = (taskType: number) => {
   switch (taskType) {
     case 1:
