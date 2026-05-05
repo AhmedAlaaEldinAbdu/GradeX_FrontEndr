@@ -22,6 +22,7 @@ import type { CreateEducationalStageRequest } from '@/services/api/types/educati
 import CustomSelect from '@/shared/components/CustomSelect';
 import { Button } from '@/shared/components/components';
 import CustomImage from '@/shared/components/CustomImage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function AddEducationalStages() {
   const { t, i18n } = useTranslation();
@@ -54,6 +55,8 @@ export default function AddEducationalStages() {
       educationalStages: [{ nameAr: '', nameEn: '', academicSystem: '' }],
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<EducationalStagesProps>();
 
   const onSubmit = (data: EducationalStagesProps) => {
     const payload: CreateEducationalStageRequest[] = data?.educationalStages?.map((educational) => {
@@ -108,7 +111,7 @@ export default function AddEducationalStages() {
             </button>
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
           {numOfStages.map((_, index) => (
             <div
               key={`add-stage-${index + 1}`}

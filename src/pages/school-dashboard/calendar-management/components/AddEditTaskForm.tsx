@@ -27,6 +27,7 @@ import {
 } from '@/redux/features/school-tasks/schoolTasksSlice';
 import { tokenManager } from '@/lib/auth/token-manager';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { AddSchoolTaskSchema, EditSchoolTaskSchema } from '@/validations/school-tasks-validations';
 import { SchoolTaskType, type SchoolTask } from '@/types/schoolTasks';
 import TaskStudentsPopup, { type TaskStudentOption } from '../popups/TaskStudentsPopup';
@@ -149,6 +150,8 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
     mode: 'onBlur',
     defaultValues: DEFAULT_VALUES(schoolBranchId),
   });
+
+  const scrollToFirstError = useScrollToFirstError<TaskFormValues>();
 
   const watchedClassroomId = watch('classroomId');
   const watchedGradeId = watch('gradeId');
@@ -360,7 +363,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
   return (
     <div>
       <Card>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} className="space-y-8">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <FormField
               label={t('tasksManagement.form.educationalStage')}

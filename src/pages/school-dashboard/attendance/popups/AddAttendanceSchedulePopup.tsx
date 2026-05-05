@@ -6,6 +6,7 @@ import FormField from '@/shared/components/FormField';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface AttendanceScheduleFormData {
   workingHoursFrom: string;
@@ -40,6 +41,8 @@ export default function AddAttendanceSchedulePopup({
       workingHoursTo: '',
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<AttendanceScheduleFormData>();
 
   const handleClose = useCallback(() => {
     if (isLoading) return;
@@ -98,7 +101,7 @@ export default function AddAttendanceSchedulePopup({
           {t('attendance.addAttendanceSchedule')}
         </h2>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-4">
           {/* Working Hours From (Check-In Time) */}
           <FormField
             label={t('attendance.checkInTimeLabel')}

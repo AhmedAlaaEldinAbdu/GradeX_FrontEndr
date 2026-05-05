@@ -23,6 +23,7 @@ import { EditSubjectSchema, type EditSubjectProps } from '@/validations/subjects
 import { MATERIAL_LEVELS } from '@/constants';
 import Loading from '@/shared/components/Loading';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function EditSubject() {
   const { t, i18n } = useTranslation();
@@ -84,6 +85,8 @@ export default function EditSubject() {
       gradeIds: [],
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<EditSubjectProps>();
 
   const watchedName = watch('name');
   const watchedNameEn = watch('nameEn');
@@ -194,7 +197,7 @@ export default function EditSubject() {
   return (
     <Card>
       <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
           {/* Subject Name Fields */}
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Subject Name Arabic */}

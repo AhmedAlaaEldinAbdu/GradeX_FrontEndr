@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchSchools } from '@/redux/features/schools/schoolsSlice';
 import { fetchJobAdvertisments } from '@/redux/features/job-advertisments/jobAdvertismentsSlice';
 import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface AddEditInterviewPopupProps {
   isOpen: boolean;
@@ -67,6 +68,8 @@ export default function AddEditInterviewPopup({
       interViewType: 1,
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<InterviewFormProps>();
 
   const selectedSchoolBranchId = watch('schoolBranchesId');
 
@@ -171,7 +174,7 @@ export default function AddEditInterviewPopup({
       onClose={closeAndReset}
       title={mode === 'edit' ? t('interviews.editInterview') : t('interviews.addInterview')}
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
         {formattedSelectedDate && (
           <div className="rounded-lg bg-gray-50 p-4 text-center text-base text-gray-500">
             <span className="text-base font-medium text-black-800">

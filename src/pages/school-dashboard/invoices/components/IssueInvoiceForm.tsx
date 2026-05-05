@@ -36,6 +36,7 @@ import {
   IssueInvoiceSchema,
   type IssueInvoiceFormValues,
 } from '@/validations/invoices-validations';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import StyledCalendarIcon from '@/assets/icons/StyledCalendar.svg';
@@ -130,6 +131,8 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
       installmentId: null,
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<IssueInvoiceFormValues>();
 
   const selectedCustomerId = watch('customerId');
   const paymentType = watch('paymentType') ?? String(InvoicePaymentType.Cash);
@@ -697,7 +700,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
         </Button>
         <Button
           variant="success"
-          onClick={handleSubmit(onSubmit)}
+          onClick={handleSubmit(onSubmit, scrollToFirstError)}
           disabled={isCreating}
           className={`bg-[#005B48] px-8 ${isCreating ? 'opacity-50' : ''}`}
         >

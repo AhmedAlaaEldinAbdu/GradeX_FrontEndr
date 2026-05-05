@@ -9,6 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CustomImage from '@/shared/components/CustomImage';
 
 const ForgotPasswordPage: React.FC = () => {
@@ -27,6 +28,8 @@ const ForgotPasswordPage: React.FC = () => {
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   });
+
+  const scrollToFirstError = useScrollToFirstError<EmaileProps>();
 
   const onSubmit = async (data: EmaileProps) => {
     setIsLoading(true);
@@ -87,7 +90,10 @@ const ForgotPasswordPage: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 text-start">
+            <form
+              onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+              className="space-y-6 text-start"
+            >
               {/* Email Field */}
               <div>
                 <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
@@ -183,7 +189,11 @@ const ForgotPasswordPage: React.FC = () => {
             {/* Illustration - Lock/Key */}
             <div className="mb-8">
               <div className="mb-8">
-                <CustomImage src={ComputerLoginBanner} alt="Login Illustration" className="w-full" />
+                <CustomImage
+                  src={ComputerLoginBanner}
+                  alt="Login Illustration"
+                  className="w-full"
+                />
               </div>
             </div>
 

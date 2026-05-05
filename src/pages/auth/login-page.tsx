@@ -14,6 +14,7 @@ import { LoginSchema, type LoginProps } from '@/validations/auth-validations';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { logger } from '@/lib/utils/logger';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CustomImage from '@/shared/components/CustomImage';
 
 const LoginPage: React.FC = () => {
@@ -36,6 +37,8 @@ const LoginPage: React.FC = () => {
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   });
+
+  const scrollToFirstError = useScrollToFirstError<LoginProps>();
 
   const onSubmit = async (data: LoginProps) => {
     try {
@@ -93,7 +96,11 @@ const LoginPage: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="space-y-6">
+            <form
+              onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+              noValidate={true}
+              className="space-y-6"
+            >
               {/* Email Field */}
               <div>
                 <label className="mb-2 block text-start text-base font-medium text-gray-800">

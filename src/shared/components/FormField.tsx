@@ -9,6 +9,7 @@ interface FormFieldProps {
   error?: string;
   children: React.ReactNode;
   htmlFor?: string;
+  name?: string;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -18,11 +19,12 @@ const FormField: React.FC<FormFieldProps> = ({
   error,
   children,
   htmlFor,
+  name,
 }) => {
   const { t } = useTranslation();
 
   return (
-    <div>
+    <div data-form-field={name ?? htmlFor}>
       <label
         className={`mb-2 block text-start text-base font-normal text-black-800 ${required && 'required'}`}
         htmlFor={htmlFor}

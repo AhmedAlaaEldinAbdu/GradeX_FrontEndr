@@ -20,6 +20,7 @@ import { createClassroom } from '@/redux/features/classrooms/classroomsSlice';
 import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import CustomImage from '@/shared/components/CustomImage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function AddClassroom() {
   const { t, i18n } = useTranslation();
@@ -74,6 +75,8 @@ export default function AddClassroom() {
       ],
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<ClassroomsProps>();
 
   useEffect(() => {
     if (!gradeIdFromQuery) {
@@ -181,7 +184,7 @@ export default function AddClassroom() {
   return (
     <Card>
       <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
           {/* Academic System and Educational Stage Selectors */}
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Academic System */}

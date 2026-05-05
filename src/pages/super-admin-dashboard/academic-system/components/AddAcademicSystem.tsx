@@ -26,6 +26,7 @@ import { selectIsCreatingAcademicSystem } from '@/redux/features/academic-system
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function AddAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -76,6 +77,8 @@ export default function AddAcademicSystem() {
     },
   });
 
+  const scrollToFirstError = useScrollToFirstError<AcademicSystemProps>();
+
   const onSubmit = (data: AcademicSystemProps) => {
     const payload: CreateAcademicSystem[] = data?.academicSystems?.map((system) => ({
       nameAr: system.nameAr,
@@ -125,7 +128,7 @@ export default function AddAcademicSystem() {
             </button>
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
           {numOfAcademic.map((_, index) => (
             <div
               key={`add-academic-${index + 1}`}

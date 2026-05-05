@@ -9,7 +9,8 @@ import FormField from '@gradex/shared/components/FormField';
 import Input from '@gradex/shared/components/Input';
 import TextArea from '@gradex/shared/components/TextArea';
 import { Controller, FormProvider } from 'react-hook-form';
-import { useRoleForm } from '../hooks/useRoleForm';
+import { useRoleForm, type RoleFormData } from '../hooks/useRoleForm';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import {
   fetchRoleById,
   updateRole,
@@ -57,6 +58,8 @@ export default function EditRole() {
     setValue,
     trigger,
   } = form;
+
+  const scrollToFirstError = useScrollToFirstError<RoleFormData>();
 
   const selectedPermissions = watch('permissions') || [];
 
@@ -216,7 +219,7 @@ export default function EditRole() {
       return;
     }
 
-    form.handleSubmit(onFormSubmit)(e);
+    form.handleSubmit(onFormSubmit, scrollToFirstError)(e);
   };
 
   if (isLoading || isLoadingPermissions) {

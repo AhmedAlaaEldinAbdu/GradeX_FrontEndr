@@ -19,6 +19,7 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { FlattenedBook } from '@/types/books';
 import { AddBookSchema, type AddBookProps } from '@/validations/books-validations';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import FileUpload from '@/shared/components/FileUpload';
 import DataTable, { type DataTableColumn } from '@/shared/components/DataTable';
 import CustomImage from '@/shared/components/CustomImage';
@@ -97,6 +98,8 @@ export default function AddBook() {
       price: 0,
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<AddBookProps>();
 
   const watchedRestoreCurriculum = watch('restorePreviousCurriculum');
   const watchedPackageType = watch('packageType');
@@ -346,7 +349,7 @@ export default function AddBook() {
   return (
     <Card>
       <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
           {/* Restore Previous Curriculum */}
           <div className="mb-6">
             <FormField

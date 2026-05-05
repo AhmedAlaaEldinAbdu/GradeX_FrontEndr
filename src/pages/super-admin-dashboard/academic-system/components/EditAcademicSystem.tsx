@@ -27,6 +27,7 @@ import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { Button, Loading } from '@/shared/components/components';
 import CustomImage from '@/shared/components/CustomImage';
 import { selectIsUpdatingAcademicSystem } from '@/redux/features/academic-system';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function EditAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -77,6 +78,8 @@ export default function EditAcademicSystem() {
       countryIds: [],
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<EditAcademicSystemProps>();
 
   useEffect(() => {
     dispatch(fetchCountries());
@@ -152,7 +155,7 @@ export default function EditAcademicSystem() {
             <Loading />
           </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
+          <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
             <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
               <div className="flex">
                 <div className="flex flex-grow flex-col gap-5 md:flex-row">

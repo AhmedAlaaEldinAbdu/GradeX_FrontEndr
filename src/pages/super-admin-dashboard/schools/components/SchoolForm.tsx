@@ -12,6 +12,7 @@ import AddressStep from './AddressStep';
 import ContactInfoStep from './ContactInfoStep';
 import FacilitiesStep from './FacilitiesStep';
 import { useSchoolForm } from '../hooks/useSchoolForm';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import type { SchoolFormData } from '../types/school.types';
 import {
   transformSchoolFormBackend,
@@ -166,6 +167,8 @@ const SchoolForm = ({
     validateFiles,
     getFileNames,
   } = useSchoolForm(initialData);
+
+  const scrollToFirstError = useScrollToFirstError<SchoolFormData>();
 
   const steps = [
     {
@@ -348,7 +351,7 @@ const SchoolForm = ({
       console.error('Form validation failed');
       return;
     }
-    form.handleSubmit(onFormSubmit)(e);
+    form.handleSubmit(onFormSubmit, scrollToFirstError)(e);
   };
 
   const handleCloseSuccessPopup = () => {

@@ -34,6 +34,7 @@ import {
 } from '@/types/taskCorrections';
 import type { TaskStudentAttachment } from '@/types/taskStudents';
 import Loading from '@/shared/components/Loading';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 type TaskCorrectionFormMode = 'create' | 'edit';
 
@@ -134,6 +135,8 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
     mode: 'onBlur',
     defaultValues: DEFAULT_VALUES,
   });
+
+  const scrollToFirstError = useScrollToFirstError<TaskCorrectionFormValues>();
 
   const watchedCorrectionType = watch('correctionType');
   const watchedAttachments = watch('attachment');
@@ -395,7 +398,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
             )}
           </h2>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} className="space-y-6">
             <FormField
               label={t('tasksManagement.correctionFormPage.fields.correctionBasedOn')}
               required

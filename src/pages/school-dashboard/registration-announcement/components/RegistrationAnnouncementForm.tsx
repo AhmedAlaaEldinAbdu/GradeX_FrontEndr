@@ -19,6 +19,7 @@ import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface RegistrationAnnouncementFormProps {
   initialValues?: Partial<RegistrationAnnouncementProps>;
@@ -99,6 +100,8 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
     },
   });
 
+  const scrollToFirstError = useScrollToFirstError<RegistrationAnnouncementProps>();
+
   useEffect(() => {
     reset({
       gradeIds: normalizeGradeIds(initialValues?.gradeIds),
@@ -163,7 +166,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
 
   return (
     <Card className="p-6">
-      <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} noValidate className="space-y-6">
         {/* Grades (Multi Select) */}
         <FormField
           label={t('registrationAnnouncement.gradesLabel', 'Grades')} // You might want to add translations or just use existing

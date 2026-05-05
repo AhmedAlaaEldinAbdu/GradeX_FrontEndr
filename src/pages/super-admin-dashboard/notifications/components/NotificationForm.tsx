@@ -12,6 +12,7 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import type { MultiSelectOption } from '@gradex/shared/components/MultiSelectTagInput';
 import { NotificationSchema } from '@gradex/validations/notifications-validations';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 interface NotificationFormProps {
   mode: 'add' | 'edit';
@@ -50,6 +51,8 @@ export default function NotificationForm({ mode, initialData }: NotificationForm
       attachmentFile: initialData?.attachmentFile || '',
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError();
 
   const sentTo = watch('sentTo');
   const attachmentFile = watch('attachmentFile');
@@ -110,7 +113,7 @@ export default function NotificationForm({ mode, initialData }: NotificationForm
   return (
     <>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
         className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
       >
         <div className="mb-6 flex flex-col gap-6">

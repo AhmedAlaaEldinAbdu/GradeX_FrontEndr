@@ -50,6 +50,7 @@ import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import { PopupMessage } from '@/shared/popups/popups';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 const TEACHER_GENDER_OPTIONS = [
   { value: 'MALE', labelKey: 'jobAnnouncement.form.genderMale' },
@@ -256,6 +257,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     resolver: yupResolver(AddJobAnnouncementSchema) as any,
     defaultValues: DEFAULT_VALUES,
   });
+
+  const scrollToFirstError = useScrollToFirstError<AddJobAnnouncementFormValues>();
 
   const {
     fields: languageFields,
@@ -774,7 +777,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
   return (
     <Card>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} className="space-y-8">
         <section className="space-y-6">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <FormField label={t('jobAnnouncement.form.jobCategory')} required htmlFor="jobCategory">

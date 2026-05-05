@@ -19,6 +19,7 @@ import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { AddSubjectSchema, type AddSubjectProps } from '@/validations/subjects-validations';
 import { MATERIAL_LEVELS } from '@/constants';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function AddSubject() {
   const { t, i18n } = useTranslation();
@@ -52,6 +53,8 @@ export default function AddSubject() {
       subjects: [{ name: '', nameEn: '' }],
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<AddSubjectProps>();
 
   const { fields, remove } = useFieldArray({
     control,
@@ -134,7 +137,7 @@ export default function AddSubject() {
   return (
     <Card>
       <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
           {/* Subject Name Fields */}
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             {fields.map((field, index) => (

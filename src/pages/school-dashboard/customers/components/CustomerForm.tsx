@@ -20,6 +20,7 @@ import { searchStudentsByName } from '@/redux/features/students/studentsSlice';
 import type { StudentDto } from '@/services/api/types/students.types';
 import { useToast } from '@/shared/context/ToastContext';
 import { customerSchema, type CustomerFormValues } from '@/validations/customers-validations';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
@@ -113,6 +114,8 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       regionId: '',
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<CustomerFormValues>();
 
   const watchedLkCountryId = watch('lkCountryId');
 
@@ -562,7 +565,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         </Button>
         <Button
           variant="success"
-          onClick={handleSubmit(onSubmit)}
+          onClick={handleSubmit(onSubmit, scrollToFirstError)}
           disabled={isCreating || isUpdating}
         >
           {isCreating || isUpdating

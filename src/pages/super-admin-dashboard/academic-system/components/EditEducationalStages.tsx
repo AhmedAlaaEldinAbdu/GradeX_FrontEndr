@@ -22,6 +22,7 @@ import { getAcademicSubSystems } from '@/redux/features/academic-subsystem/acade
 import type { UpdateEducationalStageRequest } from '@/services/api/types/educational-stages.types';
 import CustomSelect from '@/shared/components/CustomSelect';
 import { Button } from '@/shared/components/components';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function EditEducationalStages() {
   const { t, i18n } = useTranslation();
@@ -55,6 +56,8 @@ export default function EditEducationalStages() {
       academicSystem: '',
     },
   });
+
+  const scrollToFirstError = useScrollToFirstError<EditEducationalStagesProps>();
 
   const isEditing = useAppSelector((state) => state.educationalStages.isUpdating);
 
@@ -125,7 +128,7 @@ export default function EditEducationalStages() {
             {t('academicSystem.educationalStage')}
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate={true} className="flex flex-col gap-8">
+        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
           <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
             <div className="flex">
               <div className="flex flex-grow flex-col gap-5 md:flex-row">

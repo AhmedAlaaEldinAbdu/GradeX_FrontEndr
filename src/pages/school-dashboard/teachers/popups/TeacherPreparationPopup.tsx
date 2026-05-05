@@ -8,6 +8,7 @@ import Button from '@/shared/components/Button';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
 import CustomImage from '@/shared/components/CustomImage';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export interface TeacherPreparationFormValues {
   date: string;
@@ -44,6 +45,8 @@ export default function TeacherPreparationPopup({
     defaultValues: createFormDefaults(),
   });
 
+  const scrollToFirstError = useScrollToFirstError<TeacherPreparationFormValues>();
+
   useEffect(() => {
     if (isOpen) {
       reset(createFormDefaults());
@@ -70,7 +73,7 @@ export default function TeacherPreparationPopup({
       title={t('teachers.details.teacherPreparation')}
       size="sm"
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
         <div className="space-y-5">
           {/* Date Field */}
           <FormField
