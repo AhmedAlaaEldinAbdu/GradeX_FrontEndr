@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import CustomImage from '../components/CustomImage';
+import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
 
 interface PopupMessageProps {
   open: boolean;
@@ -86,31 +87,24 @@ export default function PopupMessage({
   const resolvedMessage = isMessageRaw ? message : t(message);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
+    <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
       <div
         ref={popupRef}
-        className={`relative w-[420px] transform rounded-2xl bg-white p-6 py-7 text-center shadow-lg transition-all duration-300 ease-out ${
+        className={`relative w-[420px] transform rounded-3xl bg-white p-6 py-7 text-center shadow-lg transition-all duration-300 ease-out ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
       >
         <button
           onClick={handleClose}
-          className="absolute start-3 top-2 text-xl text-gray-400 hover:text-gray-600"
+          className="absolute end-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+          aria-label="Close"
         >
-          ✕
+          <CustomImage src={XmarkCircleGrayIcon} alt="Close" className="h-6 w-6" />
         </button>
 
-        <div className="my-6 flex flex-col items-center gap-7 py-3">
-          {iconSrc && (
-            <CustomImage
-              src={iconSrc}
-              alt="Popup Icon"
-              className="h-[120px] w-[120px] lg:h-[150px] lg:w-[150px]"
-            />
-          )}
-          <p className="w-[100%] font-medium text-gray-800 md:text-lg lg:w-[75%] lg:text-xl">
-            {resolvedMessage}
-          </p>
+        <div className="my-6 flex flex-col items-center gap-7 py-6">
+          {iconSrc && <CustomImage src={iconSrc} alt="Popup Icon" className="h-[80px] w-[80px]" />}
+          <p className="w-[100%] text-sm font-medium text-[#0E1F1F]">{resolvedMessage}</p>
         </div>
 
         {!autoClose && (
