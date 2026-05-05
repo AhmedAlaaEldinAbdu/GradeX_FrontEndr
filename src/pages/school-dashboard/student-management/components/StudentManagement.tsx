@@ -8,11 +8,13 @@ import IconButton from '@/shared/components/IconButton';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
+import ReassignStudentPopup from '../popups/ReassignStudentPopup';
 import { useToast } from '@/shared/context/ToastContext';
 import { getStudentFullName } from '@/services/api/types/students.types';
 import type { StudentDto } from '@/services/api/types/students.types';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudents, deleteStudent } from '@/redux/features/students/studentsSlice';
+import { studentsApiService } from '@/services/api/students/students.service';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
@@ -39,6 +41,9 @@ export default function StudentManagement() {
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
+  const [showReassignPopup, setShowReassignPopup] = useState(false);
+  const [reassignStudent, setReassignStudent] = useState<StudentDto | null>(null);
+  const [isReassigning, setIsReassigning] = useState(false);
   const schoolBranchId = getCurrentSchoolBranchId();
 
   const students = useAppSelector((state) => state.students.students);
@@ -120,6 +125,48 @@ export default function StudentManagement() {
   const handleDeleteClick = (id: string) => {
     setSelectedStudentId(id);
     setShowDeletePopup(true);
+  };
+
+  const handleReassignClick = (student: StudentDto) => {
+    setReassignStudent(student);
+    setShowReassignPopup(true);
+  };
+
+  const handleReassignClose = () => {
+    setShowReassignPopup(false);
+    setReassignStudent(null);
+  };
+
+  const handleReassignConfirm = async (classroomId: string) => {
+    if (!reassignStudent) return;
+    setIsReassigning(true);
+    try {
+      await studentsApiService.assignStudentToClassroom(reassignStudent.id, classroomId);
+      showToast({
+        message: 'studentManagement.studentReassignedSuccessfully',
+        type: 'success',
+      });
+      handleReassignClose();
+      dispatch(
+        fetchStudents({
+          page: pagination.pageIndex,
+          limit: pagination.pageSize,
+          filters: {
+            search: searchTerm || undefined,
+            gradeId: selectedGradeId || undefined,
+            classroomId: selectedClassroomId || undefined,
+            schoolBranchId: getCurrentSchoolBranchId() || undefined,
+          },
+        })
+      );
+    } catch (error) {
+      showToast({
+        message: 'common.errorOccurred',
+        type: 'error',
+      });
+    } finally {
+      setIsReassigning(false);
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -216,7 +263,12 @@ export default function StudentManagement() {
       header: 'common.actions',
       accessor: (row) => (
         <div className="flex items-center gap-2">
-          <IconButton status="edit" variant="success" ariaLabel="Edit" />
+          <IconButton
+            status="edit"
+            variant="success"
+            ariaLabel={t('common.edit')}
+            onClick={() => handleReassignClick(row)}
+          />
           <IconButton
             status="delete"
             variant="danger"
@@ -373,6 +425,13 @@ export default function StudentManagement() {
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
             isProcessing={isDeleting}
+          />
+
+          <ReassignStudentPopup
+            isOpen={showReassignPopup}
+            onClose={handleReassignClose}
+            onConfirm={handleReassignConfirm}
+            isProcessing={isReassigning}
           />
         </div>
       ) : null}

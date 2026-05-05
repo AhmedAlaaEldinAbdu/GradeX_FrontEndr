@@ -642,7 +642,11 @@
     "exportExcel": "Excel تصدير",
     "print": "طباعة",
     "confirmDeleteStudent": "هل أنت متأكد من حذف الطالب؟",
-    "studentDeletedSuccessfully": "تم حذف الطالب بنجاح"
+    "studentDeletedSuccessfully": "تم حذف الطالب بنجاح",
+    "reAssignStudent": "إعادة تسكين الطالب",
+    "classroom": "الصف الدراسي",
+    "selectClassroom": "اختر الصف الدراسي",
+    "studentReassignedSuccessfully": "تم إعادة تسكين الطالب بنجاح"
   },
   "registrationAnnouncement": {
     "title": "إعلان التسجيل",

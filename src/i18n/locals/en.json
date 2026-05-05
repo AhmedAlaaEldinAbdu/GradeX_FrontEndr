@@ -642,7 +642,11 @@
     "exportExcel": "Export Excel",
     "print": "Print",
     "confirmDeleteStudent": "Are you sure you want to delete this student?",
-    "studentDeletedSuccessfully": "Student deleted successfully"
+    "studentDeletedSuccessfully": "Student deleted successfully",
+    "reAssignStudent": "Re-assign Student",
+    "classroom": "Class",
+    "selectClassroom": "Select class",
+    "studentReassignedSuccessfully": "Student re-assigned successfully"
   },
   "registrationAnnouncement": {
     "title": "Registration Announcement",
