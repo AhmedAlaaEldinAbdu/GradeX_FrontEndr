@@ -224,7 +224,7 @@ export default function StudentManagement() {
             ariaLabel={t('common.view')}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`#`);
+              navigate(`/students/${row.id}`, { state: { from: 'studentsRecord' } });
             }}
             className="h-10 w-10"
           >
