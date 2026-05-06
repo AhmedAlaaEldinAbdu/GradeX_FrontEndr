@@ -1,25 +1,33 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import DataTable, { type DataTableColumn } from '@/shared/components/DataTable';
-import Badge from '@/shared/components/Badge';
+import Card from '@/shared/components/Card';
+import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
+import CustomSelect from '@/shared/components/CustomSelect';
+import Input from '@/shared/components/Input';
+import CustomImage from '@/shared/components/CustomImage';
+import { getExamStatusBadgeColor } from '@/shared/components/SharedBadges';
+import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+import ArrowLeftIcon from '@gradex/assets/icons/ArrowLeft.svg';
+import ArrowRightIcon from '@gradex/assets/icons/ArrowRight.svg';
 
 interface HomeworkTabProps {
   studentId: string;
 }
+
+type HomeworkStatus = 'excellent' | 'veryGood' | 'good' | 'weak';
 
 interface HomeworkRecord {
   id: string;
   subjectName: string;
   subjectNameEn: string;
   hasHomework: boolean;
-  status: 'excellent' | 'veryGood' | 'good' | 'struggling' | 'weak';
+  status: HomeworkStatus;
   date: string;
   finalResult: string;
   notes: string;
   notesEn: string;
 }
 
-// Mock data matching the design
 const mockHomeworkRecords: HomeworkRecord[] = [
   {
     id: '1',
@@ -29,8 +37,8 @@ const mockHomeworkRecords: HomeworkRecord[] = [
     status: 'excellent',
     date: '1-1-2020',
     finalResult: '29/30',
-    notes: 'لا ي',
-    notesEn: 'N/A',
+    notes: 'لا يوجد',
+    notesEn: 'None',
   },
   {
     id: '2',
@@ -40,8 +48,8 @@ const mockHomeworkRecords: HomeworkRecord[] = [
     status: 'good',
     date: '1-1-2021',
     finalResult: '20/30',
-    notes: 'لا ي',
-    notesEn: 'N/A',
+    notes: 'لا يوجد',
+    notesEn: 'None',
   },
   {
     id: '3',
@@ -51,8 +59,8 @@ const mockHomeworkRecords: HomeworkRecord[] = [
     status: 'weak',
     date: '1-1-2021',
     finalResult: '5/30',
-    notes: 'لا ي',
-    notesEn: 'N/A',
+    notes: 'لا يوجد',
+    notesEn: 'None',
   },
   {
     id: '4',
@@ -62,76 +70,52 @@ const mockHomeworkRecords: HomeworkRecord[] = [
     status: 'veryGood',
     date: '1-1-2021',
     finalResult: '25/30',
-    notes: 'لا ي',
-    notesEn: 'N/A',
+    notes: 'لا يوجد',
+    notesEn: 'None',
   },
 ];
 
-export default function HomeworkTab({ studentId }: HomeworkTabProps) {
+export default function HomeworkTab(_props: HomeworkTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
 
+  const [viewMode, setViewMode] = useState<'byDay' | 'all'>('byDay');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  console.log('Student ID:', studentId);
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'excellent':
-        return <Badge variant="success">{t('performance.excellent')}</Badge>;
-      case 'veryGood':
-        return (
-          <span className="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-sm font-medium text-teal-800">
-            {t('performance.veryGood')}
-          </span>
-        );
-      case 'good':
-        return <Badge variant="warning">{t('performance.good')}</Badge>;
-      case 'struggling':
-        return (
-          <span className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-800">
-            {t('performance.struggling')}
-          </span>
-        );
-      case 'weak':
-        return <Badge variant="danger">{t('performance.weak')}</Badge>;
-      default:
-        return null;
-    }
-  };
-
-  const statusOptions = [
-    { value: 'excellent', label: t('performance.excellent') },
-    { value: 'veryGood', label: t('performance.veryGood') },
-    { value: 'good', label: t('performance.good') },
-    { value: 'struggling', label: t('performance.struggling') },
-    { value: 'weak', label: t('performance.weak') },
-  ];
-
-  // Filter records
   const filteredRecords = mockHomeworkRecords.filter((record) => {
     const subjectName = currentLang === 'ar' ? record.subjectName : record.subjectNameEn;
     const matchesSearch =
       !searchQuery || subjectName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = !selectedStatus || record.status === selectedStatus;
-    const matchesDate = !selectedDate || record.date.includes(selectedDate);
+    const matchesDate = viewMode === 'byDay' || !selectedDate || record.date.includes(selectedDate);
     return matchesSearch && matchesStatus && matchesDate;
   });
 
-  const columns: DataTableColumn<HomeworkRecord>[] = [
+  const getStatusLabel = (status: HomeworkStatus) => {
+    const map: Record<HomeworkStatus, string> = {
+      excellent: t('performance.excellent'),
+      veryGood: t('performance.veryGood'),
+      good: t('performance.good'),
+      weak: t('performance.weak'),
+    };
+    return map[status];
+  };
+
+  const baseColumns: DataTableColumn<HomeworkRecord>[] = [
     {
       header: '#',
-      accessor: (_, index) => <span>{(index ?? 0) + 1}</span>,
-      headerClassName: 'min-w-[50px]',
+      accessor: (_row, index) => (currentPage - 1) * pageSize + (index ?? 0) + 1,
+      headerClassName: 'w-12',
       className: 'text-center',
     },
     {
       header: t('homework.subjectName'),
       accessor: (row) => <span>{currentLang === 'ar' ? row.subjectName : row.subjectNameEn}</span>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
     {
@@ -139,137 +123,181 @@ export default function HomeworkTab({ studentId }: HomeworkTabProps) {
       accessor: (row) =>
         row.hasHomework ? (
           <div className="flex items-center justify-center">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-red-100">
-              <span className="text-xs font-semibold text-red-600">PDF</span>
-            </div>
+            <CustomImage src={PdfIcon} alt="PDF" className="h-9 w-8" />
           </div>
         ) : (
           <span className="text-gray-400">-</span>
         ),
-      headerClassName: 'min-w-[80px]',
+      headerClassName: 'min-w-[100px]',
       className: 'text-center',
     },
     {
       header: t('homework.status'),
-      accessor: (row) => getStatusBadge(row.status),
-      headerClassName: 'min-w-[100px]',
+      accessor: (row) => (
+        <span className={getExamStatusBadgeColor(row.status)}>{getStatusLabel(row.status)}</span>
+      ),
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
-    {
-      header: t('homework.date'),
-      accessor: (row) => <span>{row.date}</span>,
-      headerClassName: 'min-w-[100px]',
-      className: 'text-center',
-    },
+  ];
+
+  const dateColumn: DataTableColumn<HomeworkRecord> = {
+    header: t('homework.date'),
+    accessor: (row) => <span>{row.date}</span>,
+    headerClassName: 'min-w-[120px]',
+    className: 'text-center',
+  };
+
+  const tailColumns: DataTableColumn<HomeworkRecord>[] = [
     {
       header: t('homework.finalResult'),
-      accessor: (row) => <span className="font-semibold">{row.finalResult}</span>,
-      headerClassName: 'min-w-[100px]',
+      accessor: (row) => <span className="text-sm text-[#646969]">{row.finalResult}</span>,
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: t('homework.notes'),
       accessor: (row) => (
-        <span className="text-gray-600">{currentLang === 'ar' ? row.notes : row.notesEn}</span>
+        <span className="text-sm text-[#646969]">
+          {currentLang === 'ar' ? row.notes : row.notesEn}
+        </span>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
   ];
 
-  const pageSize = 10;
+  const columns =
+    viewMode === 'all'
+      ? [...baseColumns, dateColumn, ...tailColumns]
+      : [...baseColumns, ...tailColumns];
+
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'custom',
+      name: 'search',
+      placeholder: '',
+      value: searchQuery,
+      onChange: () => {},
+      width: '40%',
+      customComponent: (
+        <Input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t('homework.searchSubject')}
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'status-filter',
+      placeholder: '',
+      value: selectedStatus,
+      onChange: () => {},
+      width: '15%',
+      customComponent: (
+        <CustomSelect
+          value={selectedStatus}
+          onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={[
+            { value: 'excellent', label: t('performance.excellent') },
+            { value: 'veryGood', label: t('performance.veryGood') },
+            { value: 'good', label: t('performance.good') },
+            { value: 'weak', label: t('performance.weak') },
+          ]}
+          placeholder={t('homework.status')}
+          maxHeight="200px"
+        />
+      ),
+    },
+    ...(viewMode === 'all'
+      ? ([
+          {
+            type: 'custom',
+            name: 'date-filter',
+            placeholder: '',
+            value: selectedDate,
+            onChange: () => {},
+            width: '15%',
+            customComponent: (
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                placeholder={t('homework.date')}
+              />
+            ),
+          },
+        ] satisfies FilterConfig[])
+      : []),
+  ];
+
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setSelectedStatus('');
+    setSelectedDate('');
+    setCurrentPage(1);
+  };
+
+  const toggleViewMode = () => {
+    setViewMode((prev) => (prev === 'byDay' ? 'all' : 'byDay'));
+    setCurrentPage(1);
+  };
 
   return (
-    <div className="rounded-xl bg-white p-6">
-      <div className="relative mb-4 flex items-center justify-end py-2">
-        <button className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
-          {t('homework.showByDay')}
+    <Card>
+      <div className={`mb-4 flex items-center ${viewMode === 'byDay' ? 'justify-between' : 'justify-end'}`}>
+        {viewMode === 'byDay' && (
+          <div className="flex w-full items-center justify-center gap-3 text-sm text-[#0E1F1F]">
+            <button
+              type="button"
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-[#EDEDED] hover:bg-gray-50"
+              aria-label="previous"
+            >
+              <CustomImage src={ArrowRightIcon} alt="" className="h-3 w-3" />
+            </button>
+            <span>8 {t('performance.august')} 2025</span>
+            <button
+              type="button"
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-[#EDEDED] hover:bg-gray-50"
+              aria-label="next"
+            >
+              <CustomImage src={ArrowLeftIcon} alt="" className="h-3 w-3" />
+            </button>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={toggleViewMode}
+          className="flex-shrink-0 text-sm font-medium text-green-500 hover:text-green-700"
+        >
+          {viewMode === 'byDay' ? t('common.showAll') : t('homework.showByDay')}
         </button>
       </div>
 
-      <div className="mb-4 flex items-center justify-start gap-3">
-        {/* Search input */}
-        <div className="relative">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t('homework.searchSubject')}
-            className="h-10 w-64 rounded-lg border border-gray-200 pe-4 ps-10 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <svg
-            className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
-
-        {/* Status dropdown */}
-        <select
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-          className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-600 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-        >
-          <option value="">{t('homework.status')}</option>
-          {statusOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        {/* Date filter */}
-        <div className="relative">
-          <input
-            type="text"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            placeholder={t('homework.date')}
-            className="h-10 w-32 rounded-lg border border-gray-200 pe-10 ps-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <svg
-            className="absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-        </div>
-      </div>
-
-      {/* Data Table */}
-      <div className="rounded-lg border border-gray-200">
-        <DataTable
-          data={filteredRecords}
-          columns={columns}
-          keyExtractor={(row) => row.id}
-          showFilters={false}
-          pagination={{
-            page: currentPage,
-            limit: pageSize,
-            total: filteredRecords.length,
-            totalPages: Math.ceil(filteredRecords.length / pageSize),
-          }}
-          onPageChange={setCurrentPage}
-          isLoading={false}
-          emptyMessage={t('homework.noRecords')}
-          t={t}
-        />
-      </div>
-    </div>
+      <DataTable
+        data={filteredRecords}
+        columns={columns}
+        keyExtractor={(row) => row.id}
+        pagination={
+          viewMode === 'all'
+            ? {
+                page: currentPage,
+                limit: pageSize,
+                total: filteredRecords.length,
+                totalPages: Math.max(1, Math.ceil(filteredRecords.length / pageSize)),
+              }
+            : undefined
+        }
+        onPageChange={viewMode === 'all' ? setCurrentPage : undefined}
+        filters={filterConfigs}
+        showFilters={true}
+        onResetFilters={handleResetFilters}
+        isLoading={false}
+        emptyMessage={t('homework.noRecords')}
+        t={t}
+      />
+    </Card>
   );
 }
