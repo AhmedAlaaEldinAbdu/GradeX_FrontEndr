@@ -628,6 +628,7 @@
   "studentManagement": {
     "title": "إدارة الطلاب",
     "students": "الطلاب",
+    "studentsRecord": "سجل الطلاب",
     "addStudentButton": "إضافة طالب",
     "noStudentsMessage": "لم يتم إضافة أي طالب حتى الآن. يمكنك البدء بإضافة الطلاب لتنظيم الإدارة بشكل أفضل.",
     "searchByStudentName": "ابحث عن اسم الطالب",

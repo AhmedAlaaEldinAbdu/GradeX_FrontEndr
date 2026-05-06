@@ -628,6 +628,7 @@
   "studentManagement": {
     "title": "Student Management",
     "students": "Students",
+    "studentsRecord": "Students Record",
     "addStudentButton": "Add Student",
     "noStudentsMessage": "No students have been added yet. You can start by adding students to organize and manage more effectively.",
     "searchByStudentName": "Search by student name",
