@@ -121,11 +121,7 @@ export default function StudentDetailsPage() {
         items={tabItems}
         defaultValue="personal-data"
         searchParamKey="tab"
-        className="w-full"
-        listClassName="flex gap-1 border-b border-gray-200"
-        tabClassName="px-4 py-2 text-sm font-medium transition-colors duration-200 text-gray-500 hover:text-primary-600 focus:outline-none whitespace-nowrap"
-        activeTabClassName="border-b-2 border-primary-600 text-primary-600"
-        panelClassName="mt-6"
+        listClassName="mb-6 flex w-full items-center gap-8"
       />
     </div>
   );
