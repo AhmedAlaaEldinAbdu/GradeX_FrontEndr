@@ -121,7 +121,7 @@ export default function StudentDetailsPage() {
         items={tabItems}
         defaultValue="personal-data"
         searchParamKey="tab"
-        listClassName="mb-6 flex w-full items-center gap-8"
+        listClassName="mb-6 flex w-full items-center gap-6"
       />
     </div>
   );
