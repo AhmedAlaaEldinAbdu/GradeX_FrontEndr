@@ -695,6 +695,12 @@
   "studentApplications": {
     "title": "Student Applications",
     "interviewsTitle": "Personal Interviews",
+    "applicationsTitle": "Applications",
+    "applicationsCount": "Applications",
+    "acceptedCount": "Accepted",
+    "notPassedCount": "Not Passed",
+    "underEditCount": "Under Edit",
+    "interviewsCount": "Personal Interviews",
     "educationalStage": "Educational Stage",
     "previousSchool": "Previous School Name",
     "grade": "Class/Grade",

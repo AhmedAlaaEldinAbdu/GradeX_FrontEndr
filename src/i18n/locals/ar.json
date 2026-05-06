@@ -695,6 +695,12 @@
   "studentApplications": {
     "title": "طلبات التقديم",
     "interviewsTitle": "المقابلات الشخصية",
+    "applicationsTitle": "الطلبات",
+    "applicationsCount": "طلبات التقديم",
+    "acceptedCount": "المقبولة",
+    "notPassedCount": "لم تجتاز",
+    "underEditCount": "قيد التعديل",
+    "interviewsCount": "مقابلات الشخصية",
     "educationalStage": "المرحلة التعليمية",
     "previousSchool": "اسم المدرسة السابق",
     "grade": "الصف الدراسية",
