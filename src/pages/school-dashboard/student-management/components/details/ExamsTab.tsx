@@ -5,6 +5,7 @@ import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/com
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
 import CustomImage from '@/shared/components/CustomImage';
+import MetricCard from '@/shared/components/MetricCard';
 import { getExamStatusBadgeColor } from '@/shared/components/SharedBadges';
 import StudentBookBlueIcon from '@gradex/assets/icons/StudentBookBlue.svg';
 import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
@@ -245,23 +246,23 @@ export default function ExamsTab(_props: ExamsTabProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <StatCard
-          icon={StudentBookBlueIcon}
-          iconBg="bg-[#E7F2FB]"
-          label={t('exams.studentGrade')}
+        <MetricCard
+          title={t('exams.studentGrade')}
           value="تقدير A"
+          icon={<CustomImage src={StudentBookBlueIcon} alt="" className="h-5 w-5" />}
+          iconClassName="bg-[#E7F2FB]"
         />
-        <StatCard
-          icon={CheckCircleIcon}
-          iconBg="bg-[#E8F4EE]"
-          label={t('exams.studentLevel')}
+        <MetricCard
+          title={t('exams.studentLevel')}
           value={t('exams.firstInClass')}
+          icon={<CustomImage src={CheckCircleIcon} alt="" className="h-5 w-5" />}
+          iconClassName="bg-[#E8F4EE]"
         />
-        <StatCard
-          icon={HatYellowIcon}
-          iconBg="bg-[#FEF3E2]"
-          label={t('exams.averageSuccess')}
+        <MetricCard
+          title={t('exams.averageSuccess')}
           value="92%"
+          icon={<CustomImage src={HatYellowIcon} alt="" className="h-5 w-5" />}
+          iconClassName="bg-[#FEF3E2]"
         />
       </div>
 
@@ -351,30 +352,6 @@ export default function ExamsTab(_props: ExamsTabProps) {
           t={t}
         />
       </Card>
-    </div>
-  );
-}
-
-function StatCard({
-  icon,
-  iconBg,
-  label,
-  value,
-}: {
-  icon: string;
-  iconBg: string;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-white p-5">
-      <div className="flex flex-col gap-1 text-start">
-        <p className="text-sm text-[#646969]">{label}</p>
-        <p className="text-base font-medium text-[#0E1F1F]">{value}</p>
-      </div>
-      <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${iconBg}`}>
-        <CustomImage src={icon} alt="" className="h-5 w-5" />
-      </div>
     </div>
   );
 }

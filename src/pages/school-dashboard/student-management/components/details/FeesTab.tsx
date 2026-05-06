@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import Input from '@/shared/components/Input';
+import CustomImage from '@/shared/components/CustomImage';
+import RyalGreenIcon from '@gradex/assets/icons/RyalGreen.svg';
+import MonyIcon from '@gradex/assets/icons/Mony.svg';
 
 interface FeesTabProps {
   studentId: string;
@@ -121,8 +124,9 @@ export default function FeesTab(_props: FeesTabProps) {
           <h2 className="text-base font-medium text-[#0E1F1F]">{t('fees.totalExpenses')}</h2>
           <div className="flex items-center gap-3">
             <span className="text-sm text-[#9CA3AF] line-through">5,900</span>
-            <span className="text-base font-semibold text-[#1A9F58]">
-              5,500 <span className="text-sm font-normal">{t('fees.currency')}</span>
+            <span className="flex items-center gap-1 text-base font-semibold text-green-500">
+              5,500
+              <CustomImage src={RyalGreenIcon} alt={t('fees.currency')} className="h-4 w-4" />
             </span>
           </div>
         </div>
@@ -154,7 +158,12 @@ export default function FeesTab(_props: FeesTabProps) {
             </div>
             <div>
               <label className="mb-2 block text-sm text-[#646969]">{t('fees.amount')}</label>
-              <Input value="80" readOnly className="bg-[#F5F5F5]" />
+              <Input
+                value="80"
+                readOnly
+                className="bg-[#F5F5F5]"
+                icon={<img src={MonyIcon} alt="" className="h-5 w-5" />}
+              />
             </div>
           </div>
         </SectionCard>
