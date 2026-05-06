@@ -45,6 +45,34 @@ export const getAnnouncementStatusBadgeColor = (status: 'valid' | 'expired') => 
   }
 };
 
+export const getVaccinationStatusBadgeColor = (status: 'attended' | 'notAttended') => {
+  switch (status) {
+    case 'attended':
+      return 'bg-lightGreen-100 text-lightGreen-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'notAttended':
+      return 'bg-red-100 text-red-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    default:
+      return 'bg-gray-100 text-gray-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+  }
+};
+
+export const getExamStatusBadgeColor = (
+  status: 'excellent' | 'veryGood' | 'good' | 'weak'
+) => {
+  switch (status) {
+    case 'excellent':
+      return 'bg-lightGreen-100 text-lightGreen-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'veryGood':
+      return 'bg-blue-100 text-blue-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'good':
+      return 'bg-orange-100 text-orange-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'weak':
+      return 'bg-red-100 text-red-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    default:
+      return 'bg-gray-100 text-gray-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+  }
+};
+
 export const getAttendanceStatusBadgeColor = (status: 'present' | 'absent' | 'late') => {
   switch (status) {
     case 'present':
