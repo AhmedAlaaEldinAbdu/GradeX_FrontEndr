@@ -52,18 +52,27 @@ export default function StudentDetailsPage() {
   const student = mockStudentDetails;
 
   const isFromAttendance = location.state?.from === 'attendance';
+  const isFromStudentsRecord = location.state?.from === 'studentsRecord';
 
   const breadcrumbItems = isFromAttendance
     ? [
-        { label: t('sidebar.attendance') },
-        { label: t('attendance.students'), path: '/students/attendance' },
+        { label: t('sidebar.studentAffairs') },
+        { label: t('sidebar.studentManagement') },
+        { label: t('sidebar.attendance'), path: '/students/attendance' },
         { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
       ]
-    : [
-        { label: t('sidebar.studentManagement') },
-        { label: t('students.title'), path: '/students-record' },
-        { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
-      ];
+    : isFromStudentsRecord
+      ? [
+          { label: t('sidebar.studentAffairs') },
+          { label: t('sidebar.studentManagement') },
+          { label: t('studentManagement.studentsRecord'), path: '/students-record' },
+          { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+        ]
+      : [
+          { label: t('sidebar.studentManagement') },
+          { label: t('students.title'), path: '/students-record' },
+          { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+        ];
 
   const tabItems: TabItem[] = [
     {
