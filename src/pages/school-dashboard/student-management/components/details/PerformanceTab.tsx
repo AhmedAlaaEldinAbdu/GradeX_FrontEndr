@@ -10,6 +10,9 @@ import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import ArrowLeftIcon from '@gradex/assets/icons/ArrowLeft.svg';
 import ArrowRightIcon from '@gradex/assets/icons/ArrowRight.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
+import ReportDetailsPopup, {
+  type ReportDetails,
+} from '@/pages/school-dashboard/student-management/popups/ReportDetailsPopup';
 
 interface PerformanceTabProps {
   studentId: string;
@@ -82,6 +85,7 @@ export default function PerformanceTab(_props: PerformanceTabProps) {
   const [teacher, setTeacher] = useState('');
   const [status, setStatus] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeReport, setActiveReport] = useState<ReportDetails | null>(null);
   const pageSize = 10;
 
   const filteredReports = mockReports.filter((report) =>
@@ -92,8 +96,34 @@ export default function PerformanceTab(_props: PerformanceTabProps) {
           .includes(search.toLowerCase())
   );
 
-  const handleViewReport = (_report: PerformanceReport) => {
-    // open report details — wire to popup/page when API is ready
+  const handleViewReport = (report: PerformanceReport) => {
+    setActiveReport({
+      reportName: report.reportName,
+      reportNameEn: report.reportNameEn,
+      evaluations: [
+        {
+          kind: 'academic',
+          rating: 5,
+          status: 'excellent',
+          notes: 'لا يوجد',
+          notesEn: 'None',
+        },
+        {
+          kind: 'behavioral',
+          rating: 0,
+          status: 'unsatisfactory',
+          notes: 'لا يوجد',
+          notesEn: 'None',
+        },
+        {
+          kind: 'healthHygiene',
+          rating: 2,
+          status: 'good',
+          notes: 'لا يوجد',
+          notesEn: 'None',
+        },
+      ],
+    });
   };
 
   const handleViewTeacher = (_report: PerformanceReport) => {
@@ -288,6 +318,12 @@ export default function PerformanceTab(_props: PerformanceTabProps) {
           t={t}
         />
       </Card>
+
+      <ReportDetailsPopup
+        isOpen={!!activeReport}
+        onClose={() => setActiveReport(null)}
+        report={activeReport}
+      />
     </Card>
   );
 }

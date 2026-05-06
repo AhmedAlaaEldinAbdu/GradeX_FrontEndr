@@ -1544,9 +1544,15 @@
     "good": "جيد",
     "struggling": "متعثر",
     "weak": "ضعيف",
+    "unsatisfactory": "غير مرضي",
     "searchSubject": "ابحث عن اسم المادة",
     "noRecords": "لا توجد سجلات",
-    "august": "أغسطس"
+    "august": "أغسطس",
+    "reportDetailsTitle": "تفاصيل {{name}}",
+    "academicEvaluation": "تقيم أكاديمى",
+    "behavioralEvaluation": "تقيم سلوكى",
+    "healthHygieneEvaluation": "تقيم الصحة و النظافة",
+    "evaluation": "التقيم"
   },
   "exams": {
     "title": "الإختبارات",
@@ -1560,7 +1566,15 @@
     "monthlyExam": "الاختبار الشهري",
     "midtermExam": "اختبار منتصف الفصل الدراسي",
     "levelAssessment": "اختبار تقييم المستوى",
-    "finalExam": "اختبار نهاية العام"
+    "finalExam": "اختبار نهاية العام",
+    "studentGrade": "تقدير الطالب",
+    "studentLevel": "مستوى الطالب",
+    "firstInClass": "الأول على الصف",
+    "averageSuccess": "متوسط النجاح",
+    "subjectGradesAverage": "متوسط الدرجات المواد",
+    "vsLastMonth": "عن الشهر الماضي",
+    "performanceTitle": "الأداء",
+    "continuousImprovement": "تحسين مستمر - ممتاز"
   },
   "homework": {
     "title": "الواجبات المنزلية",
@@ -1577,6 +1591,9 @@
   "fees": {
     "title": "الرسوم",
     "totalExpenses": "الإجمالي المصروفات",
+    "paymentMethod": "طريقة الدفع",
+    "currency": "ريال",
+    "otherService": "أخري",
     "tuitionAmountLabel": "الرسوم الدراسية",
     "tuitionAmountPlaceholder": "اكتب الرسوم الدراسية للمرحلة",
     "installmentPlan": "خطة تقسيط",
@@ -1768,6 +1785,7 @@
     "bloodTypeValue": "فصيلة O+",
     "allergies": "حساسية من أدوية أو أطعمة",
     "allergiesValue": "الفول السوداني",
+    "none": "لا يوجد",
     "attachments": "المرفقات",
     "medicalReport": "التقرير الطبي"
   },

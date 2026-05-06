@@ -1544,9 +1544,15 @@
     "good": "Good",
     "struggling": "Struggling",
     "weak": "Weak",
+    "unsatisfactory": "Unsatisfactory",
     "searchSubject": "Search by subject name",
     "noRecords": "No records found",
-    "august": "August"
+    "august": "August",
+    "reportDetailsTitle": "{{name}} Details",
+    "academicEvaluation": "Academic Evaluation",
+    "behavioralEvaluation": "Behavioral Evaluation",
+    "healthHygieneEvaluation": "Health & Hygiene Evaluation",
+    "evaluation": "Evaluation"
   },
   "exams": {
     "title": "Exams",
@@ -1560,7 +1566,15 @@
     "monthlyExam": "Monthly Exam",
     "midtermExam": "Midterm Exam",
     "levelAssessment": "Level Assessment",
-    "finalExam": "Final Exam"
+    "finalExam": "Final Exam",
+    "studentGrade": "Student Grade",
+    "studentLevel": "Student Level",
+    "firstInClass": "First in Class",
+    "averageSuccess": "Average Success",
+    "subjectGradesAverage": "Average Subject Grades",
+    "vsLastMonth": "vs last month",
+    "performanceTitle": "Performance",
+    "continuousImprovement": "Continuous Improvement - Excellent Performance"
   },
   "homework": {
     "title": "Homework",
@@ -1579,6 +1593,7 @@
     "totalExpenses": "Total Expenses",
     "currency": "SAR",
     "paymentMethod": "Payment Method",
+    "otherService": "Other",
     "installmentPlan": "Installment Plan",
     "months": "months",
     "discount": "Discount",
@@ -1762,6 +1777,7 @@
     "bloodTypeValue": "O+",
     "allergies": "Drug or Food Allergies",
     "allergiesValue": "Peanuts",
+    "none": "None",
     "attachments": "Attachments",
     "medicalReport": "Medical Report"
   },
