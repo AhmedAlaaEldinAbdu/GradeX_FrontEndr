@@ -182,7 +182,7 @@ export default function EducationalStagesTab({
               <span className="text-start text-base font-normal leading-[19px] text-[#0E1F1F]">
                 {t('teachers.details.classrooms')}:
               </span>
-              <div className="flex flex-wrap items-start gap-x-2 gap-y-3">
+              <div className="flex flex-wrap items-start gap-x-2 gap-y-[26px]">
                 {grade.classrooms.length > 0 ? (
                   grade.classrooms.map((classroom, cIdx) => (
                     <span
@@ -200,11 +200,11 @@ export default function EducationalStagesTab({
 
             {/* Books section: each book in its own bordered card */}
             {allBooks.length > 0 && (
-              <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-stretch md:gap-8">
+              <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-start md:gap-8">
                 {allBooks.map(({ book }, idx) => (
                   <div
                     key={`${book.id}-${idx}`}
-                    className="flex flex-1 flex-col gap-4 rounded-xl border border-[#DDE0E0] p-3 text-start md:min-w-[280px]"
+                    className="flex flex-1 flex-col gap-4 rounded-xl border border-[#DDE0E0] p-3 text-start md:min-w-80"
                   >
                     <p className="text-base font-normal leading-[19px] text-[#0E1F1F]">
                       {t('teachers.details.bookName')}
