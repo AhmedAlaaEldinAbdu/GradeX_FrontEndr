@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import Loading from '@/shared/components/Loading';
@@ -18,7 +19,10 @@ import {
   fetchTeacherAssignment,
   clearTeacherAssignment,
 } from '@/redux/features/teachers/teachersSlice';
-import type { TeacherAssignmentGrade } from '@/types/teacherAssignment';
+import { teacherApiService } from '@/services/api/teachers/teachers.service';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import type { TeacherAssignmentGrade, TeacherAssignmentListItem } from '@/types/teacherAssignment';
+import { useToast } from '@/shared/context/ToastContext';
 
 interface EducationalStagesTabProps {
   teacherId: string;
@@ -32,8 +36,13 @@ export default function EducationalStagesTab({
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [assignmentList, setAssignmentList] = useState<TeacherAssignmentListItem[]>([]);
 
   const { teacherAssignment, isLoadingAssignment, assignmentError, teacherAttendanceSummary } =
     useAppSelector((state) => state.teachers);
@@ -46,6 +55,36 @@ export default function EducationalStagesTab({
       dispatch(clearTeacherAssignment());
     };
   }, [dispatch, teacherId, isActive]);
+
+  useEffect(() => {
+    if (!teacherId || !isActive || !schoolBranchId) return;
+    let cancelled = false;
+    teacherApiService
+      .getTeacherAssignmentList({
+        TeacherId: teacherId,
+        SchoolBranchesId: schoolBranchId,
+        PageSize: 100,
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setAssignmentList(data?.teacherAssignmentDto ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setAssignmentList([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [teacherId, isActive, schoolBranchId]);
+
+  const handleEditRow = (gradeId: string) => {
+    const match = assignmentList.find((a) => a.gradeId === gradeId);
+    if (!match) {
+      showToast({ message: t('common.errorOccurred'), type: 'error' });
+      return;
+    }
+    navigate(`/teaching-staff/teachers/${teacherId}/edit-placement/${match.id}`);
+  };
 
   const summary = {
     totalPresent: teacherAttendanceSummary?.totalPresent ?? 0,
@@ -99,9 +138,14 @@ export default function EducationalStagesTab({
     },
     {
       header: 'common.actions',
-      accessor: () => (
+      accessor: (row) => (
         <div className="flex justify-center">
-          <IconButton status="edit" variant="success" ariaLabel={t('common.edit')} />
+          <IconButton
+            status="edit"
+            variant="success"
+            ariaLabel={t('common.edit')}
+            onClick={() => handleEditRow(row.id)}
+          />
         </div>
       ),
       headerClassName: 'min-w-[80px] text-center',
