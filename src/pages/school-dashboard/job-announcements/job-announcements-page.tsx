@@ -72,6 +72,7 @@ export default function JobAnnouncementsPage() {
   const [statistics, setStatistics] = useState<JobAnnouncementStatistics>(initialStatistics);
 
   const breadcrumbItems = [
+    { label: t('sidebar.humanResources') },
     { label: t('sidebar.teachingStaff') },
     { label: t('sidebar.jobAnnouncements') },
   ];

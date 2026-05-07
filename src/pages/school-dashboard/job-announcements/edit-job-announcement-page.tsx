@@ -9,6 +9,7 @@ export default function EditJobAnnouncementPage() {
   const { id } = useParams<{ id: string }>();
 
   const breadcrumbItems = [
+    { label: t('sidebar.humanResources') },
     { label: t('sidebar.teachingStaff') },
     { label: t('sidebar.jobAnnouncements') },
     { label: t('jobAnnouncement.editAnnouncement') },

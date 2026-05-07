@@ -21,6 +21,7 @@ export default function TeachingStaffPage() {
 
   // Dynamic breadcrumb based on active tab
   const breadcrumbItems = [
+    { label: t('sidebar.humanResources') },
     { label: t('sidebar.teachingStaff') },
     { label: activeTab === 'teachers' ? t('sidebar.teachers') : t('sidebar.administrators') },
   ];

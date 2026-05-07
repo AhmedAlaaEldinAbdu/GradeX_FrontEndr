@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/shared/context/ToastContext';
+import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
@@ -168,8 +169,15 @@ export default function EmployeesAttendancePage() {
     }
   };
 
+  const breadcrumbItems = [
+    { label: t('sidebar.humanResources') },
+    { label: t('attendance.title') },
+  ];
+
   return (
     <div>
+      <Breadcrumb items={breadcrumbItems} />
+
       <PageHeader
         title="attendance.employeesTitle"
         hasHeaderControls={true}

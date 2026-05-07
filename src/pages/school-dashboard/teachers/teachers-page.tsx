@@ -6,7 +6,11 @@ import TeachersList from './components/TeachersList';
 export default function TeachersPage() {
   const { t } = useTranslation();
 
-  const breadcrumbItems = [{ label: t('sidebar.teachingStaff') }, { label: t('teachers.title') }];
+  const breadcrumbItems = [
+    { label: t('sidebar.humanResources') },
+    { label: t('sidebar.teachingStaff') },
+    { label: t('teachers.title') },
+  ];
 
   return (
     <div>

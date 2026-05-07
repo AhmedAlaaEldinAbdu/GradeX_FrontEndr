@@ -60,6 +60,7 @@ export default function TeacherDetailsPage() {
 
   const breadcrumbItems = isFromJobAnnouncements
     ? [
+        { label: t('sidebar.humanResources') },
         { label: t('sidebar.teachingStaff') },
         { label: t('teachers.jobAnnouncements'), path: '/job-announcements' },
         { label: teacherPersonalData?.fullName || t('common.loading') },

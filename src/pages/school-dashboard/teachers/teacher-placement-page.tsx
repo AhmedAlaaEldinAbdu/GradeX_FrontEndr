@@ -22,11 +22,13 @@ export default function TeacherPlacementPage() {
 
   const breadcrumbItems = isFromJobAnnouncements
     ? [
+        { label: t('sidebar.humanResources') },
         { label: t('sidebar.teachingStaff') },
         { label: t('teachers.jobAnnouncements'), path: '/job-announcements' },
         { label: t('teachers.placement.breadcrumb') },
       ]
     : [
+        { label: t('sidebar.humanResources') },
         { label: t('sidebar.teachingStaff') },
         { label: t('sidebar.teachers'), path: '/teachers' },
         { label: t('teachers.placement.breadcrumb') },

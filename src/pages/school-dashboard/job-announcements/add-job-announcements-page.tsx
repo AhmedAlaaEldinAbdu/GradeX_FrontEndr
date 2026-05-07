@@ -7,6 +7,7 @@ export default function AddJobAnnouncementsPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
+    { label: t('sidebar.humanResources') },
     { label: t('sidebar.teachingStaff') },
     { label: t('sidebar.jobAnnouncements'), path: '/job-announcements' },
     { label: t('jobAnnouncement.addAnnouncement') },
