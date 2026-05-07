@@ -289,6 +289,26 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
+        path="/teaching-staff/teachers/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <TeacherDetailsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees/attendance/teachers/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <TeacherDetailsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/teachers/:id/add-placement"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
