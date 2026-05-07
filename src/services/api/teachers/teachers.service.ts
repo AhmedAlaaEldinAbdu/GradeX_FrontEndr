@@ -13,6 +13,8 @@ import type {
   TeacherAssignmentItemResponse,
   CreateTeacherAssignmentRequest,
   CreateTeacherAssignmentResponse,
+  UpdateTeacherAssignmentRequest,
+  UpdateTeacherAssignmentResponse,
 } from '@/types/teacherAssignment';
 import type {
   TeacherPersonalDataResponse,
@@ -221,6 +223,32 @@ export async function createTeacherAssignment(
   };
 }
 
+/**
+ * Update teacher assignment (placement)
+ */
+export async function updateTeacherAssignment(
+  data: UpdateTeacherAssignmentRequest
+): Promise<{ success: boolean; message: string }> {
+  const { id, ...body } = data;
+  const response: AxiosResponse<UpdateTeacherAssignmentResponse> = await axiosClient.put(
+    TeacherAssignmentEndpoints.update,
+    body,
+    { params: { Id: id } }
+  );
+
+  if (!response?.data?.isSuccess) {
+    return {
+      success: false,
+      message: response?.data?.message || 'Failed to update teacher assignment',
+    };
+  }
+
+  return {
+    success: true,
+    message: response.data.message,
+  };
+}
+
 // ============================================================================
 // Export Service Object
 // ============================================================================
@@ -235,4 +263,5 @@ export const teacherApiService = {
   getTeacherAssignmentList,
   updateTeacherAttendance,
   createTeacherAssignment,
+  updateTeacherAssignment,
 };

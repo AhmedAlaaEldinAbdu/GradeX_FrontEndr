@@ -157,3 +157,24 @@ export interface CreateTeacherAssignmentResponse {
   message: string;
   validationErrors: string[] | null;
 }
+
+// ============================================================================
+// Update Teacher Assignment Request
+// ============================================================================
+
+export interface UpdateTeacherAssignmentRequest {
+  id: string;
+  schoolBranchesId: string;
+  teacherId: string;
+  gradeId: string;
+  materialId: string;
+  classroomIds: string[];
+  bookIds: string[];
+}
+
+export interface UpdateTeacherAssignmentResponse {
+  data: null;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
