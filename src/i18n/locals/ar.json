@@ -1337,6 +1337,8 @@
     },
     "placement": {
       "title": "تسكين المعلم",
+      "editTitle": "تعديل تسكين معلم",
+      "saveChanges": "حفظ التغييرات",
       "breadcrumb": "تسكين المعلم",
       "action": "التسكين",
       "subject": "اسم المادة",
@@ -1355,6 +1357,11 @@
         "bookName": "اسم الكتاب",
         "materialPrefix": "المادة",
         "secondBookName": "اسم الكتاب الثاني"
+      },
+      "validation": {
+        "subjectRequired": "اسم المادة مطلوب",
+        "gradeRequired": "المرحلة الدراسية مطلوبة",
+        "classroomsRequired": "يرجى اختيار صف دراسي واحد على الأقل"
       }
     }
   },

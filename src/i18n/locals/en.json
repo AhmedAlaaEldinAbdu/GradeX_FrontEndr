@@ -1337,6 +1337,8 @@
     },
     "placement": {
       "title": "Teacher Placement",
+      "editTitle": "Edit Teacher Placement",
+      "saveChanges": "Save Changes",
       "breadcrumb": "Teacher Placement",
       "action": "Placement",
       "subject": "Subject Name",
@@ -1355,6 +1357,11 @@
         "bookName": "Book Name",
         "materialPrefix": "Material",
         "secondBookName": "Second Book Name"
+      },
+      "validation": {
+        "subjectRequired": "Subject name is required",
+        "gradeRequired": "Educational stage is required",
+        "classroomsRequired": "Please select at least one classroom"
       }
     }
   },
