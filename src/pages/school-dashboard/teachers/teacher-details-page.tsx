@@ -95,7 +95,7 @@ export default function TeacherDetailsPage() {
 
         {/* Teacher Name Title */}
         <div className="mb-6">
-          <h1 className="text-start text-2xl font-bold text-gray-900">
+          <h1 className="text-lg font-medium text-black-900">
             {teacherPersonalData?.fullName || t('common.loading')}
           </h1>
         </div>
@@ -113,7 +113,7 @@ export default function TeacherDetailsPage() {
 
       {/* Teacher Name Title */}
       <div className="mb-6">
-        <h1 className="text-start text-2xl font-bold text-gray-900">
+        <h1 className="text-start text-lg font-medium text-black-900">
           {teacherPersonalData?.fullName || t('common.loading')}
         </h1>
       </div>
