@@ -1215,7 +1215,7 @@
     "nationality": "الجنسية",
     "country": "الدولة",
     "subjectName": "اسم المادة",
-    "educationalStages": "الصفوف الدراسية المسؤول عنها",
+    "educationalStages": "المراحل التعليمية المسؤول عنها",
     "classrooms": "الصفوف الدراسية المسؤول عنها",
     "searchTeacher": "ابحث عن اسم المعلم",
     "selectSubject": "اسم المادة",
@@ -1275,6 +1275,8 @@
       "present": "حضور",
       "absent": "غياب",
       "late": "تأخير",
+      "lateHour": "تأخير ساعة",
+      "leave": "أجازة",
       "notAvailable": "لا يوجد",
       "searchByDate": "ابحث عن التاريخ",
       "filterByStatus": "الحالة",
@@ -1286,7 +1288,11 @@
       "totalBooks": "عدد الكتب",
       "educationalStage": "المراحل التعليمية",
       "searchStageOrClassroom": "ابحث عن اسم المرحلة الدراسية أو الصف الدراسي",
-      "classrooms": "الصفوف الدراسية"
+      "classrooms": "الصفوف الدراسية",
+      "subject": "اسم المادة",
+      "bookName": "اسم الكتاب",
+      "bookFor": "اسم الكتاب لمادة",
+      "addClassroom": "اضافة صف"
     },
     "placement": {
       "title": "تسكين المعلم",

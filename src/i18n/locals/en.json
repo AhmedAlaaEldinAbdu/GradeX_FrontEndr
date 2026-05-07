@@ -1215,8 +1215,8 @@
     "nationality": "Nationality",
     "country": "Country",
     "subjectName": "Subject Name",
-    "educationalStages": "Responsible Grades",
-    "classrooms": "Classrooms",
+    "educationalStages": "Responsible Educational Stages",
+    "classrooms": "Responsible Classrooms",
     "searchTeacher": "Search for teacher name",
     "selectSubject": "Subject Name",
     "selectClassroom": "Classrooms",
@@ -1275,6 +1275,8 @@
       "present": "Present",
       "absent": "Absent",
       "late": "Late",
+      "lateHour": "Late by hour",
+      "leave": "Leave",
       "notAvailable": "N/A",
       "searchByDate": "Search by date",
       "filterByStatus": "Status",
@@ -1286,7 +1288,11 @@
       "totalBooks": "Total Books",
       "educationalStage": "Educational Stages",
       "searchStageOrClassroom": "Search for educational stage or classroom name",
-      "classrooms": "Classrooms"
+      "classrooms": "Classrooms",
+      "subject": "Subject Name",
+      "bookName": "Book Name",
+      "bookFor": "Book for",
+      "addClassroom": "Add Classroom"
     },
     "placement": {
       "title": "Teacher Placement",
