@@ -1,22 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
-import SearchInput from '@/shared/components/SearchInput';
 import CustomImage from '@/shared/components/CustomImage';
 import Loading from '@/shared/components/Loading';
+import IconButton from '@/shared/components/IconButton';
 import MetricCard from '@/shared/components/MetricCard';
+import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
-import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
+import CheckCircleOrangeIcon from '@gradex/assets/icons/CheckCircleOrange.svg';
+import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TimeSyncIcon from '@gradex/assets/icons/TimeSync.svg';
-import EducationIcon from '@gradex/assets/icons/Education.svg';
-import BookIcon from '@gradex/assets/icons/Book.svg';
+import TimeSyncBlueIcon from '@gradex/assets/icons/TimeSyncBlue.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherAssignment,
   clearTeacherAssignment,
 } from '@/redux/features/teachers/teachersSlice';
+import type { TeacherAssignmentGrade } from '@/types/teacherAssignment';
 
 interface EducationalStagesTabProps {
   teacherId: string;
@@ -33,22 +35,18 @@ export default function EducationalStagesTab({
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Redux state
   const { teacherAssignment, isLoadingAssignment, assignmentError, teacherAttendanceSummary } =
     useAppSelector((state) => state.teachers);
 
-  // Fetch data when tab becomes active
   useEffect(() => {
     if (teacherId && isActive) {
       dispatch(fetchTeacherAssignment(teacherId));
     }
-
     return () => {
       dispatch(clearTeacherAssignment());
     };
   }, [dispatch, teacherId, isActive]);
 
-  // Summary data: blend attendance + assignment counts (matches design)
   const summary = {
     totalPresent: teacherAttendanceSummary?.totalPresent ?? 0,
     totalLate: teacherAttendanceSummary?.totalLate ?? 0,
@@ -63,12 +61,64 @@ export default function EducationalStagesTab({
     const stageName = currentLang === 'ar' ? stage.name : stage.nameEN;
     const classroomNames = stage.classRooms.map((c) => (currentLang === 'ar' ? c.name : c.nameEN));
     const searchLower = searchTerm.toLowerCase();
-
     return (
       stageName.toLowerCase().includes(searchLower) ||
       classroomNames.some((name) => name.toLowerCase().includes(searchLower))
     );
   });
+
+  const columns: DataTableColumn<TeacherAssignmentGrade>[] = [
+    {
+      header: '#',
+      accessor: (_row, index) => (index !== undefined ? index + 1 : ''),
+      headerClassName: 'min-w-[60px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'teachers.details.educationalStage',
+      accessor: (row) => (currentLang === 'ar' ? row.name : row.nameEN),
+      headerClassName: 'min-w-[200px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'teachers.details.classrooms',
+      accessor: (row) => (
+        <div className="flex flex-wrap justify-end gap-2">
+          {row.classRooms.map((classroom) => (
+            <span
+              key={classroom.id}
+              className="inline-flex items-center gap-2 rounded-lg bg-[#DFF8ED] px-2 py-1.5 text-sm font-normal text-[#3A3A3A]"
+            >
+              <CustomImage src={EyeStyledIcon} alt="" className="h-4 w-4" />
+              {currentLang === 'ar' ? classroom.name : classroom.nameEN}
+            </span>
+          ))}
+        </div>
+      ),
+      headerClassName: 'min-w-[300px] text-center',
+    },
+    {
+      header: 'common.actions',
+      accessor: () => (
+        <div className="flex justify-center">
+          <IconButton status="edit" variant="success" ariaLabel={t('common.edit')} />
+        </div>
+      ),
+      headerClassName: 'min-w-[80px] text-center',
+      className: 'text-center',
+    },
+  ];
+
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'search',
+      name: 'searchStage',
+      placeholder: t('teachers.details.searchStageOrClassroom'),
+      value: searchTerm,
+      onChange: (value) => setSearchTerm(value as string),
+      width: '25%',
+    },
+  ];
 
   if (!isActive || isLoadingAssignment) {
     return (
@@ -100,7 +150,7 @@ export default function EducationalStagesTab({
               className="h-6 w-6"
             />
           }
-          iconClassName="bg-green-100 text-green-600"
+          iconClassName="bg-[rgba(26,159,88,0.16)]"
         />
         <MetricCard
           title={t('teachers.details.totalLate')}
@@ -112,19 +162,19 @@ export default function EducationalStagesTab({
               className="h-6 w-6"
             />
           }
-          iconClassName="bg-yellow-100 text-yellow-600"
+          iconClassName="bg-[rgba(246,203,59,0.16)]"
         />
         <MetricCard
           title={t('teachers.details.totalAbsent')}
           value={summary.totalAbsent}
           icon={
             <CustomImage
-              src={XmarkCircleIcon}
+              src={XmarkCircleRedIcon}
               alt={t('teachers.details.totalAbsent')}
               className="h-6 w-6"
             />
           }
-          iconClassName="bg-red-100 text-red-600"
+          iconClassName="bg-[rgba(221,4,23,0.16)]"
         />
       </div>
 
@@ -135,107 +185,52 @@ export default function EducationalStagesTab({
           value={summary.totalSubjects}
           icon={
             <CustomImage
-              src={EducationIcon}
+              src={CheckCircleOrangeIcon}
               alt={t('teachers.details.totalSubjects')}
               className="h-6 w-6"
             />
           }
-          iconClassName="bg-purple-100 text-purple-600"
+          iconClassName="bg-[rgba(226,122,18,0.16)]"
         />
         <MetricCard
           title={t('teachers.details.totalBooks')}
           value={summary.totalBooks}
           icon={
             <CustomImage
-              src={BookIcon}
+              src={TimeSyncBlueIcon}
               alt={t('teachers.details.totalBooks')}
               className="h-6 w-6"
             />
           }
-          iconClassName="bg-orange-100 text-orange-600"
+          iconClassName="bg-[rgba(29,151,212,0.16)]"
         />
       </div>
 
-      {/* Search and Table */}
-      <Card className="p-6">
-        {/* Search Input */}
-        <div className="mb-4 w-[40%]">
-          <SearchInput
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder={t('teachers.details.searchStageOrClassroom')}
-          />
+      {/* Table Card */}
+      <Card>
+        {/* Title bar — title on the start side (right in RTL), edit icon on the end side (left in RTL) */}
+        <div className="mb-6 flex items-center gap-3">
+          <span className="flex-1 text-right text-base font-medium leading-[19px] text-[#3A3A3A]">
+            {t('teachers.details.educationalStagesAndClassrooms')}
+          </span>
+          <button
+            type="button"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(48,185,126,0.1)] transition-colors hover:bg-[rgba(48,185,126,0.18)]"
+            aria-label={t('common.edit')}
+          >
+            <CustomImage src={EditIcon} alt="" className="h-6 w-6" />
+          </button>
         </div>
 
-        {/* Educational Stages Table */}
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-green-50">
-                <th className="w-16 border border-gray-200 px-6 py-3 text-center text-sm font-medium text-gray-700">
-                  #
-                </th>
-                <th className="border border-gray-200 px-6 py-3 text-center text-sm font-medium text-gray-700">
-                  {t('teachers.details.educationalStage')}
-                </th>
-                <th className="border border-gray-200 px-6 py-3 text-center text-sm font-medium text-gray-700">
-                  {t('teachers.details.classrooms')}
-                </th>
-                <th className="w-24 border border-gray-200 px-6 py-3 text-center text-sm font-medium text-gray-700">
-                  {t('common.actions')}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white">
-              {filteredStages.map((stage, index) => (
-                <tr key={stage.id} className="hover:bg-gray-50">
-                  <td className="border border-gray-200 px-6 py-4 text-center text-sm text-gray-600">
-                    {index + 1}
-                  </td>
-                  <td className="border border-gray-200 px-6 py-4 text-center text-sm font-medium text-gray-900">
-                    {currentLang === 'ar' ? stage.name : stage.nameEN}
-                  </td>
-                  <td className="border border-gray-200 px-6 py-4">
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {stage.classRooms.map((classroom) => (
-                        <span
-                          key={classroom.id}
-                          className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700"
-                        >
-                          <CustomImage
-                            src={EyeStyledIcon}
-                            alt="classroom"
-                            className="me-1.5 h-4 w-4"
-                          />
-                          {currentLang === 'ar' ? classroom.name : classroom.nameEN}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="border border-gray-200 px-6 py-4 text-center">
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center"
-                      title={t('common.edit')}
-                    >
-                      <CustomImage src={EditIcon} alt="edit" className="h-5 w-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filteredStages.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="border border-gray-200 px-6 py-8 text-center text-sm text-gray-500"
-                  >
-                    {t('common.noResults')}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          data={filteredStages}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          filters={filterConfigs}
+          showFilters={true}
+          emptyMessage={t('common.noResults')}
+          t={t}
+        />
       </Card>
     </div>
   );
