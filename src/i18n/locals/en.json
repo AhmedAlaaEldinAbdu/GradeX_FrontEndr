@@ -1301,6 +1301,7 @@
       "searchByDate": "Search by date",
       "filterByStatus": "Status",
       "noAttendanceRecords": "No attendance records",
+      "leaveRequestReminder": "The teacher submitted a leave request on {{date}}",
       "totalEducationalStages": "Total Educational Stages",
       "totalClassrooms": "Total Classrooms",
       "totalStudents": "Total Students",
