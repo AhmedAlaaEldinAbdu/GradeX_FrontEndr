@@ -74,22 +74,21 @@ export default function LeavesTab({ isActive = true }: LeavesTabProps) {
         <div className="my-4 h-px w-full bg-[#DDE0E0]" />
 
         <div className="flex items-start justify-between gap-2">
-          {/* Right (start in RTL): remaining */}
-          <div className="flex items-center gap-2">
-            <span className="text-base font-normal text-[#3A3A3A]">
-              {t('teachers.details.leavesTab.remaining')}:
-            </span>
-            <span className="text-base font-normal text-[#0E1F1F]">
-              {TOTAL_ANNUAL_LEAVES_MOCK.remaining}
-            </span>
-          </div>
-          {/* Left (end in RTL): used */}
           <div className="flex items-center gap-2">
             <span className="text-base font-normal text-[#3A3A3A]">
               {t('teachers.details.leavesTab.used')}:
             </span>
             <span className="text-base font-normal text-[#0E1F1F]">
               {TOTAL_ANNUAL_LEAVES_MOCK.used}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-base font-normal text-[#3A3A3A]">
+              {t('teachers.details.leavesTab.remaining')}:
+            </span>
+            <span className="text-base font-normal text-[#0E1F1F]">
+              {TOTAL_ANNUAL_LEAVES_MOCK.remaining}
             </span>
           </div>
         </div>
@@ -114,19 +113,18 @@ export default function LeavesTab({ isActive = true }: LeavesTabProps) {
             </div>
 
             <div className="mt-4 flex items-start justify-between gap-2">
-              {/* Right (start in RTL): remaining */}
-              <div className="flex items-center gap-2">
-                <span className="text-base font-normal text-[#3A3A3A]">
-                  {t('teachers.details.leavesTab.remaining')}:
-                </span>
-                <span className="text-base font-normal text-[#0E1F1F]">{leave.remaining}</span>
-              </div>
-              {/* Left (end in RTL): used */}
               <div className="flex items-center gap-2">
                 <span className="text-base font-normal text-[#3A3A3A]">
                   {t('teachers.details.leavesTab.used')}:
                 </span>
                 <span className="text-base font-normal text-[#0E1F1F]">{leave.used}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-base font-normal text-[#3A3A3A]">
+                  {t('teachers.details.leavesTab.remaining')}:
+                </span>
+                <span className="text-base font-normal text-[#0E1F1F]">{leave.remaining}</span>
               </div>
             </div>
           </div>
