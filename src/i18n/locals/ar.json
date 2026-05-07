@@ -1327,6 +1327,12 @@
         "childCareLeave": "إجازة رعاية طفل",
         "familyCareLeave": "إجازة رعاية أسرة"
       },
+      "leaveDetails": {
+        "totalOf": "اجمالي {{type}}",
+        "to": "إلي",
+        "leaveReason": "سبب الاجازة",
+        "download": "تحميل"
+      },
       "ordinals": {
         "1": "الأولى",
         "2": "الثانية",

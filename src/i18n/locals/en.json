@@ -1327,6 +1327,12 @@
         "childCareLeave": "Child Care Leave",
         "familyCareLeave": "Family Care Leave"
       },
+      "leaveDetails": {
+        "totalOf": "Total {{type}}",
+        "to": "to",
+        "leaveReason": "Leave reason",
+        "download": "Download"
+      },
       "ordinals": {
         "1": "First",
         "2": "Second",
