@@ -409,8 +409,8 @@ export default function JobAnnouncementsList() {
         <div className="flex justify-center">
           {row.workShedule !== undefined && row.workShedule !== null ? (
             <span
-              className={`rounded-full px-3 py-1 text-base font-medium ${
-                WORK_TYPE_BADGES[row.workShedule]?.bg || 'text-gray-500'
+              className={`rounded-full px-3 py-1 text-sm font-normal ${
+                WORK_TYPE_BADGES[row.workShedule]?.bg || 'text-[#646969]'
               }`}
             >
               {WORK_TYPE_BADGES[row.workShedule]
@@ -418,7 +418,7 @@ export default function JobAnnouncementsList() {
                 : row.workShedule}
             </span>
           ) : (
-            <span className="text-sm text-gray-500">--</span>
+            <span className="text-sm text-[#646969]">--</span>
           )}
         </div>
       ),
@@ -429,18 +429,6 @@ export default function JobAnnouncementsList() {
       header: 'jobAnnouncement.applicantsCount',
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2 text-base">
-          <IconButton
-            variant="blue"
-            ariaLabel={t('jobAnnouncement.viewApplicants')}
-            onClick={() => navigate(`/job-announcements/${row.id}/applicants`)}
-            className="h-8 w-8"
-          >
-            <CustomImage
-              src={EyeStyledIcon}
-              alt={t('jobAnnouncement.viewApplicants')}
-              className="h-4 w-4"
-            />
-          </IconButton>
           <span>
             {(() => {
               const value = (row as unknown as Record<string, unknown>).applicantsCount;
@@ -450,6 +438,18 @@ export default function JobAnnouncementsList() {
               return '--';
             })()}
           </span>
+          <IconButton
+            variant="blue"
+            ariaLabel={t('jobAnnouncement.viewApplicants')}
+            onClick={() => navigate(`/job-announcements/${row.id}/applicants`)}
+            className="h-10 w-10 shrink-0"
+          >
+            <CustomImage
+              src={EyeStyledIcon}
+              alt={t('jobAnnouncement.viewApplicants')}
+              className="h-6 w-6"
+            />
+          </IconButton>
         </div>
       ),
       headerClassName: 'min-w-[170px]',
@@ -588,15 +588,16 @@ export default function JobAnnouncementsList() {
       accessor: (row) => (
         <span>
           {(() => {
+            // Always render salary numbers in Western (Latin) digits, regardless of language.
             const hasMin = typeof row.minimumSalary === 'number';
             const hasMax = typeof row.maximumSalary === 'number';
             if (hasMin && hasMax) {
-              const min = row.minimumSalary.toLocaleString(numberLocale);
-              const max = row.maximumSalary && row.maximumSalary.toLocaleString(numberLocale);
+              const min = row.minimumSalary.toLocaleString('en-US');
+              const max = row.maximumSalary && row.maximumSalary.toLocaleString('en-US');
               return max ? `${min} - ${max}` : `${min}`;
             }
             if (typeof row.salary === 'number') {
-              return row.salary.toLocaleString(numberLocale);
+              return row.salary.toLocaleString('en-US');
             }
             return t('jobAnnouncement.toBeDeterminedLater');
           })()}
@@ -638,7 +639,7 @@ export default function JobAnnouncementsList() {
       placeholder: t('jobAnnouncement.searchJobGrade'),
       value: filtered?.name ? filtered?.name : searchTerm,
       onChange: (value) => setSearchTerm((value as string) ?? ''),
-      width: '30%',
+      width: '25%',
     },
     {
       type: 'custom',
@@ -646,7 +647,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedSubjectId,
       onChange: () => {},
-      width: '15%',
+      width: '12%',
       customComponent: (
         <CustomSelect
           value={selectedSubjectId}
@@ -669,7 +670,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedStageId,
       onChange: () => {},
-      width: '20%',
+      width: '12%',
       customComponent: (
         <CustomSelect
           value={selectedStageId}
@@ -693,7 +694,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedAnnouncementStatus,
       onChange: () => {},
-      width: '15%',
+      width: '12%',
       customComponent: (
         <CustomSelect
           value={selectedAnnouncementStatus}
@@ -736,7 +737,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedWorkType,
       onChange: () => {},
-      width: '15%',
+      width: '12%',
       customComponent: (
         <CustomSelect
           value={selectedWorkType}
