@@ -55,9 +55,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const showIconAtEnd = resolvedIcon && !isTimeInput && !isDateInput;
     const showDateIcon = isDateInput && resolvedIcon;
 
-    // Hide native time/date picker icon
+    // Hide native time/date picker icon whenever we render a custom one,
+    // so the input doesn't show two icons side by side.
     const timeInputClasses =
-      isTimeInput || (isDateInput && hidePicker) || (isPlaceholderDate && showDateIcon)
+      isTimeInput || (isDateInput && hidePicker) || showDateIcon
         ? '[&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden'
         : '';
 
