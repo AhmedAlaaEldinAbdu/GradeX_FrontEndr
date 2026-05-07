@@ -43,6 +43,21 @@ export default function TeacherDetailsPage() {
     }
   }, [dispatch, id]);
 
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'personal-data');
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+  const tabLabel =
+    activeTab === 'attendance'
+      ? t('teachers.details.attendance')
+      : activeTab === 'educational-stages'
+        ? t('teachers.details.educationalStagesAndClassrooms')
+        : activeTab === 'leaves'
+          ? t('teachers.details.leaves')
+          : t('teachers.details.personalData');
+
   const breadcrumbItems = isFromJobAnnouncements
     ? [
         { label: t('sidebar.teachingStaff') },
@@ -61,16 +76,12 @@ export default function TeacherDetailsPage() {
             { label: teacherPersonalData?.fullName || t('common.loading') },
           ]
         : [
+            { label: t('sidebar.humanResources') },
             { label: t('sidebar.teachingStaff') },
-            { label: t('teachers.title'), path: '/teaching-staff?tab=teachers' },
+            { label: t('sidebar.staff'), path: '/teaching-staff?tab=teachers' },
             { label: teacherPersonalData?.fullName || t('common.loading') },
+            { label: tabLabel },
           ];
-
-  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'personal-data');
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-  };
 
   const tabItems: TabItem[] = [
     {
