@@ -780,6 +780,36 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
       <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} className="space-y-12">
         <section className="space-y-8">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField
+              label={t('jobAnnouncement.form.jobNameAr')}
+              required
+              error={errors.name?.message as string | undefined}
+              htmlFor="jobNameAr"
+            >
+              <Input
+                id="jobNameAr"
+                {...register('name')}
+                placeholder={t('jobAnnouncement.form.enterJobNameAr')}
+              />
+            </FormField>
+
+            <FormField
+              label={t('jobAnnouncement.form.jobNameEn')}
+              required
+              error={errors.nameEn?.message as string | undefined}
+              htmlFor="jobNameEn"
+            >
+              <Input
+                id="jobNameEn"
+                {...register('nameEn')}
+                placeholder={t('jobAnnouncement.form.enterJobNameEn')}
+              />
+            </FormField>
+          </div>
+        </section>
+
+        <section className="space-y-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField label={t('jobAnnouncement.form.jobCategory')} required htmlFor="jobCategory">
               <div className="flex flex-wrap items-center gap-6 p-2">
                 <label className="flex cursor-pointer items-center gap-2">
@@ -927,35 +957,6 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           </div>
         </section>
 
-        <section className="space-y-8">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <FormField
-              label={t('jobAnnouncement.form.jobNameAr')}
-              required
-              error={errors.name?.message as string | undefined}
-              htmlFor="jobNameAr"
-            >
-              <Input
-                id="jobNameAr"
-                {...register('name')}
-                placeholder={t('jobAnnouncement.form.enterJobNameAr')}
-              />
-            </FormField>
-
-            <FormField
-              label={t('jobAnnouncement.form.jobNameEn')}
-              required
-              error={errors.nameEn?.message as string | undefined}
-              htmlFor="jobNameEn"
-            >
-              <Input
-                id="jobNameEn"
-                {...register('nameEn')}
-                placeholder={t('jobAnnouncement.form.enterJobNameEn')}
-              />
-            </FormField>
-          </div>
-        </section>
         <section className="space-y-8">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
