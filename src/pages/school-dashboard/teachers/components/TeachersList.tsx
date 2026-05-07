@@ -124,18 +124,21 @@ export default function TeachersList() {
     {
       header: 'teachers.teacherName',
       accessor: (row) => (
-        <div className="flex items-center gap-2">
-          <div className="">
-            <CustomImage
-              src={row.pictureProfilePath || ProfileImage}
-              alt={row.fullName}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = ProfileImage;
-              }}
-              className="h-8 w-8 rounded-md object-cover"
-            />
-          </div>
-          {row.fullName}
+        <div className="flex items-center justify-center gap-3">
+          <CustomImage
+            src={row.pictureProfilePath || ProfileImage}
+            alt={row.fullName}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = ProfileImage;
+            }}
+            className="h-10 w-10 shrink-0 rounded-lg object-cover"
+          />
+          <span
+            className="w-[150px] truncate text-start text-sm font-normal text-[#646969]"
+            title={row.fullName}
+          >
+            {row.fullName}
+          </span>
           <IconButton
             variant="blue"
             ariaLabel={t('jobAnnouncement.viewApplicants')}
@@ -143,17 +146,17 @@ export default function TeachersList() {
               e.stopPropagation();
               navigate(`/teachers/${row.id}`);
             }}
-            className="h-8 w-8"
+            className="h-10 w-10 shrink-0"
           >
             <CustomImage
               src={EyeStyledIcon}
               alt={t('jobAnnouncement.viewApplicants')}
-              className="h-4 w-4"
+              className="h-6 w-6"
             />
           </IconButton>
         </div>
       ),
-      headerClassName: 'min-w-[250px]',
+      headerClassName: 'min-w-[15rem]',
     },
     {
       header: 'teachers.mobile',
@@ -167,7 +170,7 @@ export default function TeachersList() {
 
         return <span dir="ltr">{`${countryCode} ${phone}`}</span>;
       },
-      headerClassName: 'min-w-[200px]',
+      headerClassName: 'min-w-[12rem]',
       className: 'text-center',
     },
     {
@@ -180,13 +183,13 @@ export default function TeachersList() {
         if (!row?.email && !tel) return <span className="text-gray-400">-</span>;
 
         return (
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-4">
             {tel && (
               <a
                 href={`tel:${tel}`}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-lightGreen-100 hover:bg-green-200"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#56CA971A] hover:bg-green-200"
               >
-                <CustomImage src={WhatsAppIcon} alt="Phone" className="h-6 w-6" />
+                <CustomImage src={WhatsAppIcon} alt="Phone" className="h-4 w-4" />
               </a>
             )}
             {row?.email && (
@@ -194,13 +197,13 @@ export default function TeachersList() {
                 href={`mailto:${row.email}`}
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-yellow-100 hover:bg-orange-200"
               >
-                <CustomImage src={EmailYellowIcon} alt="Email" className="h-6 w-6" />
+                <CustomImage src={EmailYellowIcon} alt="Email" className="h-4 w-4" />
               </a>
             )}
           </div>
         );
       },
-      headerClassName: 'min-w-[180px]',
+      headerClassName: 'min-w-[9rem]',
       className: 'text-center',
     },
     {
@@ -223,7 +226,7 @@ export default function TeachersList() {
           <span className="text-gray-400">-</span>
         );
       },
-      headerClassName: 'min-w-[180px]',
+      headerClassName: 'min-w-[7rem]',
     },
     {
       header: 'teachers.educationalStages',
@@ -233,12 +236,12 @@ export default function TeachersList() {
           .filter(Boolean);
 
         return stageNames.length > 0 ? (
-          <span className="text-base font-medium text-gray-800">{stageNames.join(' - ')}</span>
+          <span>{stageNames.join(' - ')}</span>
         ) : (
           <span className="text-gray-400">-</span>
         );
       },
-      headerClassName: 'min-w-[250px]',
+      headerClassName: 'min-w-[14rem] whitespace-nowrap',
     },
     {
       header: 'teachers.classrooms',
@@ -248,7 +251,7 @@ export default function TeachersList() {
             row.classrooms.map((classroom) => (
               <span
                 key={classroom.id}
-                className="inline-flex rounded-full bg-green-100 px-2 py-1 text-base font-medium text-green-500"
+                className="inline-flex rounded-full bg-green-100 px-2 py-1 text-green-500"
               >
                 {currentLang === 'ar' ? classroom.nameAr : classroom.nameEn || classroom.nameAr}
               </span>
@@ -258,7 +261,7 @@ export default function TeachersList() {
           )}
         </div>
       ),
-      headerClassName: 'min-w-[220px]',
+      headerClassName: 'min-w-[14rem] whitespace-nowrap',
     },
     {
       header: 'common.actions',
@@ -276,7 +279,7 @@ export default function TeachersList() {
           />
         </div>
       ),
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[7.5rem]',
       className: 'text-center',
     },
   ];
@@ -327,6 +330,26 @@ export default function TeachersList() {
     },
     {
       type: 'custom',
+      name: 'classroom-filter',
+      placeholder: '',
+      value: selectedClassroom,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={selectedClassroom}
+          onChange={(value) =>
+            setSelectedClassroom(Array.isArray(value) ? (value[0] ?? '') : value)
+          }
+          options={classroomOptions}
+          placeholder={isLoadingClassrooms ? t('common.loading') : t('teachers.selectClassroom')}
+          disabled={isLoadingClassrooms}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
       name: 'stage-filter',
       placeholder: '',
       value: selectedEducationalStage,
@@ -343,26 +366,6 @@ export default function TeachersList() {
             isLoadingSchoolStages ? t('common.loading') : t('teachers.selectEducationalStage')
           }
           disabled={isLoadingSchoolStages}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'classroom-filter',
-      placeholder: '',
-      value: selectedClassroom,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedClassroom}
-          onChange={(value) =>
-            setSelectedClassroom(Array.isArray(value) ? (value[0] ?? '') : value)
-          }
-          options={classroomOptions}
-          placeholder={isLoadingClassrooms ? t('common.loading') : t('teachers.selectClassroom')}
-          disabled={isLoadingClassrooms}
           maxHeight="200px"
         />
       ),
