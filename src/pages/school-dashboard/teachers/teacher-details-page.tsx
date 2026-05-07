@@ -94,12 +94,12 @@ export default function TeacherDetailsPage() {
       id: 'educational-stages',
       label: t('teachers.details.educationalStagesAndClassrooms'),
       content: isFromAttendance ? (
-        <EducationalStagesTab teacherId={id || ''} isActive={activeTab === 'educational-stages'} />
-      ) : (
         <EducationalStagesTabAttendance
           teacherId={id || ''}
           isActive={activeTab === 'educational-stages'}
         />
+      ) : (
+        <EducationalStagesTab teacherId={id || ''} isActive={activeTab === 'educational-stages'} />
       ),
     },
     ...(isFromAttendance
