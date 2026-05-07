@@ -87,9 +87,9 @@ export default function EducationalStagesTab({
           {row.classRooms.map((classroom) => (
             <span
               key={classroom.id}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#DFF8ED] px-2 py-1.5 text-sm font-normal text-[#3A3A3A]"
+              className="inline-flex h-[43px] flex-row-reverse items-center justify-center gap-2 rounded-lg bg-[#DFF8ED] px-2 py-1.5 text-lg font-normal leading-[172.51%] text-[#3A3A3A]"
             >
-              <CustomImage src={EyeStyledIcon} alt="" className="h-4 w-4" />
+              <CustomImage src={EyeStyledIcon} alt="" className="h-4 w-4 rounded" />
               {currentLang === 'ar' ? classroom.name : classroom.nameEN}
             </span>
           ))}
