@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
@@ -54,7 +54,10 @@ export default function AttendanceTab({
   const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { showToast } = useToast();
+  // Same source-detection rule used by the teacher details page.
+  const isFromAttendance = location.pathname.startsWith('/employees/attendance/teachers/');
 
   const [searchDate, setSearchDate] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -231,40 +234,46 @@ export default function AttendanceTab({
     {
       header: 'teachers.details.earlyDeparture',
       accessor: (row) => {
-        if (row.earlyLeaveTime) {
-          return (
-            <div className="flex flex-col items-center gap-1">
-              <div className="flex items-center gap-1">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-yellow-100">
-                  <span className="text-yellow-600">⚠</span>
-                </span>
-                <span>{formatTime(row.earlyLeaveTime, currentLang)}</span>
-              </div>
-              {row.earlyLeaveReason && (
-                <span className="text-xs text-gray-500">{row.earlyLeaveReason}</span>
-              )}
+        const hasEarlyLeave = !!row.earlyLeaveTime;
+        const valueNode = hasEarlyLeave ? (
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-1">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-yellow-100">
+                <span className="text-yellow-600">⚠</span>
+              </span>
+              <span>{formatTime(row.earlyLeaveTime, currentLang)}</span>
             </div>
-          );
-        }
-        return t('teachers.details.notAvailable');
+            {row.earlyLeaveReason && (
+              <span className="text-xs text-gray-500">{row.earlyLeaveReason}</span>
+            )}
+          </div>
+        ) : (
+          <span>{t('teachers.details.notAvailable')}</span>
+        );
+
+        // Eye visibility:
+        //   teaching-staff flow → always shown
+        //   attendance flow     → only when there's early-leave data
+        const showEye = isFromAttendance ? hasEarlyLeave : true;
+
+        return (
+          <div className="flex items-center justify-center gap-3">
+            {valueNode}
+            {showEye && (
+              <IconButton
+                variant="blue"
+                ariaLabel={t('common.view')}
+                onClick={() =>
+                  navigate(`/teaching-staff/teachers/${teacherId}/attendance/${row.id}`)
+                }
+              >
+                <CustomImage src={EyeStyledIcon} alt="" className="h-5 w-5" />
+              </IconButton>
+            )}
+          </div>
+        );
       },
-      headerClassName: 'min-w-[150px]',
-      className: 'text-center',
-    },
-    {
-      header: '',
-      accessor: (row) => (
-        <div className="flex justify-center">
-          <IconButton
-            variant="blue"
-            ariaLabel={t('common.view')}
-            onClick={() => navigate(`/teaching-staff/teachers/${teacherId}/attendance/${row.id}`)}
-          >
-            <CustomImage src={EyeStyledIcon} alt="" className="h-5 w-5" />
-          </IconButton>
-        </div>
-      ),
-      headerClassName: 'w-16',
+      headerClassName: 'min-w-[210px]',
       className: 'text-center',
     },
   ];
@@ -365,8 +374,12 @@ export default function AttendanceTab({
 
   return (
     <div className="space-y-6">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Summary Cards — 3 cards on the attendance flow, 4 on teaching-staff */}
+      <div
+        className={`grid grid-cols-1 gap-4 md:grid-cols-2 ${
+          isFromAttendance ? 'lg:grid-cols-3' : 'lg:grid-cols-4'
+        }`}
+      >
         <MetricCard
           title={t('teachers.details.totalPresent')}
           value={localSummary.totalPresent}
@@ -403,37 +416,41 @@ export default function AttendanceTab({
           }
           iconClassName="bg-red-100 text-red-600"
         />
-        <MetricCard
-          title={t('teachers.details.totalLeave')}
-          value={localSummary.totalLeave}
-          icon={
-            <CustomImage
-              src={VacationIcon}
-              alt={t('teachers.details.totalLeave')}
-              className="h-6 w-6"
-            />
-          }
-          iconClassName="bg-blue-100 text-blue-600"
-          valueAction={
-            <button
-              type="button"
-              onClick={() => navigate(`/teaching-staff/teachers/${teacherId}?tab=leaves`)}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[rgba(9,9,177,0.1)] transition-colors hover:bg-[rgba(9,9,177,0.18)]"
-              aria-label={t('common.view')}
-            >
-              <CustomImage src={EyeStyledDarkBlueIcon} alt="" className="h-5 w-5" />
-            </button>
-          }
-        />
+        {!isFromAttendance && (
+          <MetricCard
+            title={t('teachers.details.totalLeave')}
+            value={localSummary.totalLeave}
+            icon={
+              <CustomImage
+                src={VacationIcon}
+                alt={t('teachers.details.totalLeave')}
+                className="h-6 w-6"
+              />
+            }
+            iconClassName="bg-blue-100 text-blue-600"
+            valueAction={
+              <button
+                type="button"
+                onClick={() => navigate(`/teaching-staff/teachers/${teacherId}?tab=leaves`)}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[rgba(9,9,177,0.1)] transition-colors hover:bg-[rgba(9,9,177,0.18)]"
+                aria-label={t('common.view')}
+              >
+                <CustomImage src={EyeStyledDarkBlueIcon} alt="" className="h-5 w-5" />
+              </button>
+            }
+          />
+        )}
       </div>
 
-      {/* Pending leave-request reminder banner */}
-      <div className="flex hidden items-center justify-start gap-3 rounded-2xl border border-[#FFEBB1] bg-[#FFF8E3] px-4 py-3 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
-        <CustomImage src={NotificationIcon} alt="" className="h-6 w-6 shrink-0" />
-        <span className="text-base font-normal text-[#0E1F1F]">
-          {t('teachers.details.leaveRequestReminder', { date: '22/2/2025' })}
-        </span>
-      </div>
+      {/* Pending leave-request reminder banner — teaching-staff flow only */}
+      {!isFromAttendance && (
+        <div className="flex hidden items-center justify-start gap-3 rounded-2xl border border-[#FFEBB1] bg-[#FFF8E3] px-4 py-3 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
+          <CustomImage src={NotificationIcon} alt="" className="h-6 w-6 shrink-0" />
+          <span className="text-base font-normal text-[#0E1F1F]">
+            {t('teachers.details.leaveRequestReminder', { date: '22/2/2025' })}
+          </span>
+        </div>
+      )}
 
       {/* Attendance Table */}
       <Card>
