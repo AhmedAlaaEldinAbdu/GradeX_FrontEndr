@@ -4,11 +4,9 @@ import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
-import Button from '@/shared/components/Button';
 import Loading from '@/shared/components/Loading';
 import MetricCard from '@/shared/components/MetricCard';
 import { getAttendanceStatusBadgeColor } from '@/shared/components/SharedBadges';
-import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
 import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
 import TimeSyncIcon from '@gradex/assets/icons/TimeSync.svg';
@@ -31,6 +29,8 @@ import { formatTime, formatDateDisplay } from '@/shared/common/common';
 interface AttendanceTabProps {
   teacherId: string;
   isActive?: boolean;
+  showRecordAttendancePopup?: boolean;
+  setShowRecordAttendancePopup?: (open: boolean) => void;
 }
 
 const ATTENDANCE_STATUS_OPTIONS = [
@@ -39,7 +39,12 @@ const ATTENDANCE_STATUS_OPTIONS = [
   { value: String(AttendanceStatus.Late), labelKey: 'teachers.details.late' },
 ];
 
-export default function AttendanceTab({ teacherId, isActive = true }: AttendanceTabProps) {
+export default function AttendanceTab({
+  teacherId,
+  isActive = true,
+  showRecordAttendancePopup: showRecordAttendancePopupProp,
+  setShowRecordAttendancePopup: setShowRecordAttendancePopupProp,
+}: AttendanceTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
@@ -48,7 +53,10 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
   const [searchDate, setSearchDate] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [showRecordAttendancePopup, setShowRecordAttendancePopup] = useState(false);
+  const [showRecordAttendancePopupLocal, setShowRecordAttendancePopupLocal] = useState(false);
+  const showRecordAttendancePopup = showRecordAttendancePopupProp ?? showRecordAttendancePopupLocal;
+  const setShowRecordAttendancePopup =
+    setShowRecordAttendancePopupProp ?? setShowRecordAttendancePopupLocal;
   const pageSize = 10;
 
   // Refs for tracking initial load
@@ -278,10 +286,6 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
     dispatch(clearAttendanceFilters());
   };
 
-  const handleRecordAttendance = () => {
-    setShowRecordAttendancePopup(true);
-  };
-
   const handlePreparationSubmit = async (values: TeacherPreparationFormValues) => {
     try {
       await teacherAttendanceApiService.createAttendance({
@@ -339,18 +343,6 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
 
   return (
     <div className="space-y-6">
-      {/* Record Attendance Button */}
-      <div className="flex justify-end">
-        <Button
-          variant="primary"
-          imgSrc={PlusIcon}
-          onClick={handleRecordAttendance}
-          className="flex items-center gap-2"
-        >
-          <span>{t('teachers.details.recordAttendance')}</span>
-        </Button>
-      </div>
-
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
