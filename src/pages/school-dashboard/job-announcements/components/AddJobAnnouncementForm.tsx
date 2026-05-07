@@ -777,9 +777,9 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
 
   return (
     <Card>
-      <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} className="space-y-8">
-        <section className="space-y-6">
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} className="space-y-12">
+        <section className="space-y-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField label={t('jobAnnouncement.form.jobCategory')} required htmlFor="jobCategory">
               <div className="flex flex-wrap items-center gap-6 p-2">
                 <label className="flex cursor-pointer items-center gap-2">
@@ -866,7 +866,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.specialization')}
               required={isTeacherCategory}
@@ -927,8 +927,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           </div>
         </section>
 
-        <section className="space-y-5">
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <section className="space-y-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.jobNameAr')}
               required
@@ -956,8 +956,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             </FormField>
           </div>
         </section>
-        <section className="space-y-5">
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <section className="space-y-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.jobDescriptionAr')}
               required
@@ -1040,8 +1040,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           </div>
         </section>
 
-        <section className="space-y-6">
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <section className="space-y-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.applicationStartDate')}
               required
@@ -1061,7 +1061,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             </FormField>
           </div>
 
-          <div className="grid grid-cols-1 gap-5">
+          <div className="grid grid-cols-1 gap-8">
             <FormField
               label={t('jobAnnouncement.form.nationality')}
               required
@@ -1118,7 +1118,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.workStart')}
               required
@@ -1157,8 +1157,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           </div>
         </section>
 
-        <section className="space-y-6">
-          <div className="grid grid-cols-1 gap-5">
+        <section className="space-y-8">
+          <div className="grid grid-cols-1 gap-8">
             <FormField
               label={t('jobAnnouncement.form.subjectName')}
               required={isTeacherCategory}
@@ -1263,7 +1263,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             </FormField>
           </div>
           {salaryOption === SalaryOption.RANGE && (
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 label={t('jobAnnouncement.form.minimumSalary')}
                 required
@@ -1291,7 +1291,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.teacherGender')}
               required
@@ -1322,7 +1322,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             </FormField>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.yearsOfExperience')}
               required
@@ -1358,7 +1358,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             </FormField>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('jobAnnouncement.form.workingHoursFrom')}
               required
@@ -1379,8 +1379,8 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           </div>
         </section>
 
-        <section className="space-y-5">
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-1">
+        <section className="space-y-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-1">
             <FormField
               label={t('jobAnnouncement.form.technicalSkills')}
               error={errors.technicalSkillIds?.message as string | undefined}
@@ -1599,7 +1599,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
           </div>
         </section>
 
-        <section className="space-y-6">
+        <section className="space-y-8">
           <div>
             <div className="mb-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
               <div className="text-xl font-bold text-gray-700">
