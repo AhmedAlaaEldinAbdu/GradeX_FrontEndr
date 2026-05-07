@@ -4,8 +4,14 @@ import Card from '@/shared/components/Card';
 import SearchInput from '@/shared/components/SearchInput';
 import CustomImage from '@/shared/components/CustomImage';
 import Loading from '@/shared/components/Loading';
+import MetricCard from '@/shared/components/MetricCard';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
+import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
+import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
+import TimeSyncIcon from '@gradex/assets/icons/TimeSync.svg';
+import EducationIcon from '@gradex/assets/icons/Education.svg';
+import BookIcon from '@gradex/assets/icons/Book.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherAssignment,
@@ -84,128 +90,70 @@ export default function EducationalStagesTab({
     <div className="space-y-6">
       {/* Summary Cards - First Row (attendance) */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100">
-                <svg
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-              </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalPresent')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{summary.totalPresent}</p>
-          </div>
-        </Card>
-
-        <Card className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-yellow-100">
-                <svg
-                  className="h-6 w-6 text-yellow-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalLate')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{summary.totalLate}</p>
-          </div>
-        </Card>
-
-        <Card className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-100">
-                <svg
-                  className="h-6 w-6 text-red-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalAbsent')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{summary.totalAbsent}</p>
-          </div>
-        </Card>
+        <MetricCard
+          title={t('teachers.details.totalPresent')}
+          value={summary.totalPresent}
+          icon={
+            <CustomImage
+              src={CheckCircleIcon}
+              alt={t('teachers.details.totalPresent')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-green-100 text-green-600"
+        />
+        <MetricCard
+          title={t('teachers.details.totalLate')}
+          value={summary.totalLate}
+          icon={
+            <CustomImage
+              src={TimeSyncIcon}
+              alt={t('teachers.details.totalLate')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-yellow-100 text-yellow-600"
+        />
+        <MetricCard
+          title={t('teachers.details.totalAbsent')}
+          value={summary.totalAbsent}
+          icon={
+            <CustomImage
+              src={XmarkCircleIcon}
+              alt={t('teachers.details.totalAbsent')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-red-100 text-red-600"
+        />
       </div>
 
       {/* Summary Cards - Second Row (assignment) */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100">
-                <svg
-                  className="h-6 w-6 text-purple-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalSubjects')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{summary.totalSubjects}</p>
-          </div>
-        </Card>
-
-        <Card className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-100">
-                <svg
-                  className="h-6 w-6 text-orange-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-              </div>
-              <p className="text-sm text-gray-600">{t('teachers.details.totalBooks')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{summary.totalBooks}</p>
-          </div>
-        </Card>
+        <MetricCard
+          title={t('teachers.details.totalSubjects')}
+          value={summary.totalSubjects}
+          icon={
+            <CustomImage
+              src={EducationIcon}
+              alt={t('teachers.details.totalSubjects')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-purple-100 text-purple-600"
+        />
+        <MetricCard
+          title={t('teachers.details.totalBooks')}
+          value={summary.totalBooks}
+          icon={
+            <CustomImage
+              src={BookIcon}
+              alt={t('teachers.details.totalBooks')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-orange-100 text-orange-600"
+        />
       </div>
 
       {/* Search and Table */}
