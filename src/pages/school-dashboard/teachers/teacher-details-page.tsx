@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { useParams, useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
+import PageHeader from '@/shared/components/PageHeader';
+import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchTeacherPersonalData } from '@/redux/features/teachers';
 import PersonalDataTab from './components/PersonalDataTab';
@@ -19,7 +21,9 @@ export default function TeacherDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [showRecordAttendancePopup, setShowRecordAttendancePopup] = useState(false);
 
   // Check if coming from job-announcements
   const locationState = location.state as LocationState | null;
@@ -67,7 +71,14 @@ export default function TeacherDetailsPage() {
     {
       id: 'attendance',
       label: t('teachers.details.attendance'),
-      content: <AttendanceTab teacherId={id || ''} isActive={activeTab === 'attendance'} />,
+      content: (
+        <AttendanceTab
+          teacherId={id || ''}
+          isActive={activeTab === 'attendance'}
+          showRecordAttendancePopup={showRecordAttendancePopup}
+          setShowRecordAttendancePopup={setShowRecordAttendancePopup}
+        />
+      ),
     },
     {
       id: 'educational-stages',
@@ -78,7 +89,7 @@ export default function TeacherDetailsPage() {
     },
   ];
 
-  if (isLoadingPersonalData && !teacherPersonalData) {
+  if (isLoadingPersonalData || !teacherPersonalData) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Loading />
@@ -93,12 +104,8 @@ export default function TeacherDetailsPage() {
         {/* Breadcrumb */}
         <Breadcrumb items={breadcrumbItems} />
 
-        {/* Teacher Name Title */}
-        <div className="mb-6">
-          <h1 className="text-lg font-medium text-black-900">
-            {teacherPersonalData?.fullName || t('common.loading')}
-          </h1>
-        </div>
+        {/* Page Header */}
+        <PageHeader title={teacherPersonalData.fullName} />
 
         {/* PersonalDataTab content only - no tabs */}
         <PersonalDataTab teacherId={id || ''} isActive={true} />
@@ -106,17 +113,38 @@ export default function TeacherDetailsPage() {
     );
   }
 
+  const headerActions =
+    activeTab === 'educational-stages'
+      ? [
+          {
+            label: 'teachers.details.addClassroom',
+            onClick: () => navigate(`/teachers/${id}/add-placement`),
+            imgSrc: PlusIcon,
+            imgClassName: 'w-[24px] h-[24px]',
+          },
+        ]
+      : activeTab === 'attendance'
+        ? [
+            {
+              label: 'teachers.details.recordAttendance',
+              onClick: () => setShowRecordAttendancePopup(true),
+              imgSrc: PlusIcon,
+              imgClassName: 'w-[24px] h-[24px]',
+            },
+          ]
+        : [];
+
   return (
     <div>
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      {/* Teacher Name Title */}
-      <div className="mb-6">
-        <h1 className="text-start text-lg font-medium text-black-900">
-          {teacherPersonalData?.fullName || t('common.loading')}
-        </h1>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        title={teacherPersonalData.fullName}
+        actions={headerActions}
+        hasHeaderControls={true}
+      />
 
       {/* Tabs */}
       <Tabs
