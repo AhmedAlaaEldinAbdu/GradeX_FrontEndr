@@ -45,6 +45,29 @@ export const getAnnouncementStatusBadgeColor = (status: 'valid' | 'expired') => 
   }
 };
 
+export const getAttendanceStatusBadgeColor = (status: number | string) => {
+  const base = 'min-w-[90px] inline-flex items-center justify-center rounded-3xl px-4 py-1';
+  switch (status) {
+    case 1: // Present
+    case 'present':
+      return `${base} bg-lightGreen-100 text-lightGreen-500`;
+    case 2: // Absent
+    case 'absent':
+      return `${base} bg-red-100 text-red-500`;
+    case 3: // Late
+    case 'late':
+      return `${base} bg-orange-100 text-orange-500`;
+    case 4: // EarlyLeave
+    case 'earlyLeave':
+      return `${base} bg-orange-100 text-orange-500`;
+    case 5: // Leave (vacation)
+    case 'leave':
+      return `${base} bg-[#0A6FC21A] text-[#0A6FC2]`;
+    default:
+      return `${base} bg-gray-100 text-gray-500`;
+  }
+};
+
 export const getTaskTypeBadgeColor = (taskType: number) => {
   switch (taskType) {
     case 1:
