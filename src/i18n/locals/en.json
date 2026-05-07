@@ -1314,6 +1314,19 @@
       "bookFor": "Book for",
       "addClassroom": "Add Classroom",
       "teacherOf": "Teacher of",
+      "leaves": "Leaves",
+      "leavesTab": {
+        "totalAnnualLeaves": "Total Annual Leaves",
+        "daysUnit": "days",
+        "used": "Used",
+        "remaining": "Remaining",
+        "regularLeave": "Regular Leave",
+        "sickLeave": "Sick Leave",
+        "casualLeave": "Casual Leave",
+        "maternityLeave": "Maternity Leave",
+        "childCareLeave": "Child Care Leave",
+        "familyCareLeave": "Family Care Leave"
+      },
       "ordinals": {
         "1": "First",
         "2": "Second",

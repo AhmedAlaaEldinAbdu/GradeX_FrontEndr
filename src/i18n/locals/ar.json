@@ -1314,6 +1314,19 @@
       "bookFor": "اسم الكتاب لمادة",
       "addClassroom": "اضافة صف",
       "teacherOf": "مدرس",
+      "leaves": "الإجازات",
+      "leavesTab": {
+        "totalAnnualLeaves": "اجمالي الاجازات السنوية",
+        "daysUnit": "يوم",
+        "used": "المستخدم",
+        "remaining": "المتبقي",
+        "regularLeave": "إجازة اعتيادية",
+        "sickLeave": "إجازة مرضية",
+        "casualLeave": "إجازة عارضة",
+        "maternityLeave": "إجازة وضع",
+        "childCareLeave": "إجازة رعاية طفل",
+        "familyCareLeave": "إجازة رعاية أسرة"
+      },
       "ordinals": {
         "1": "الأولى",
         "2": "الثانية",
