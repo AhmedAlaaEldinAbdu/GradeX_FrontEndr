@@ -1312,7 +1312,15 @@
       "subject": "Subject Name",
       "bookName": "Book Name",
       "bookFor": "Book for",
-      "addClassroom": "Add Classroom"
+      "addClassroom": "Add Classroom",
+      "teacherOf": "Teacher of",
+      "ordinals": {
+        "1": "First",
+        "2": "Second",
+        "3": "Third",
+        "4": "Fourth",
+        "5": "Fifth"
+      }
     },
     "placement": {
       "title": "Teacher Placement",

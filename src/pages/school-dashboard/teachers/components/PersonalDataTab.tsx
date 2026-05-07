@@ -65,14 +65,10 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
       ? assignment.materialNameAR
       : assignment.materialNameEN || assignment.materialNameAR;
 
-  const getOrdinal = (num: number, lang: 'ar' | 'en') => {
-    if (lang === 'ar') {
-      const ordinals = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة'];
-      return ordinals[num - 1] || num.toString();
-    } else {
-      const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
-      return ordinals[num - 1] || num.toString();
-    }
+  const getOrdinal = (num: number) => {
+    const key = `teachers.details.ordinals.${num}`;
+    const translated = t(key);
+    return translated === key ? num.toString() : translated;
   };
 
   // Aggregate placement data
@@ -165,8 +161,32 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
     });
   });
 
+  const teacherTitle =
+    allSubjects.length > 0 ? `${t('teachers.details.teacherOf')} ${allSubjects[0]}` : '';
+
   return (
     <div className="space-y-6">
+      {/* Profile Banner */}
+      <div className="flex h-[7.875rem] items-center justify-start gap-6 rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
+        <div className="flex h-[5.875rem] w-[5.875rem] shrink-0 items-center overflow-hidden rounded-full border-2 border-[#E6E6E6] bg-white">
+          <CustomImage
+            src={teacherPersonalData.pictureProfilePath || DefaultAvatar}
+            alt={teacherPersonalData.fullName}
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div className="flex flex-col gap-1 text-right">
+          <span className="text-lg font-medium leading-[2.5625rem] text-[#0E1F1F]">
+            {teacherPersonalData.fullName}
+          </span>
+          {teacherTitle && (
+            <span className="text-sm font-normal leading-[1.0625rem] text-[#646969]">
+              {teacherTitle}
+            </span>
+          )}
+        </div>
+      </div>
+
       {/* Placement Info Card */}
       {assignmentsData.length > 0 && (
         <Card>
@@ -226,7 +246,7 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
                         <p className="text-sm font-medium text-gray-900">
                           {t('teachers.placement.details.bookName')}{' '}
                           {booksByMaterial.length > 1
-                            ? `${t('teachers.placement.details.materialPrefix')} ${getOrdinal(idx + 1, currentLang)}`
+                            ? `${t('teachers.placement.details.materialPrefix')} ${getOrdinal(idx + 1)}`
                             : ''}
                           :
                         </p>
@@ -254,20 +274,8 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
         </Card>
       )}
 
-      {/* Profile Picture and Attachments */}
+      {/* Attachments */}
       <Card>
-        {/* Profile Picture - Centered */}
-        <div className="mb-8 flex justify-center">
-          <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-gray-100 shadow-md">
-            <CustomImage
-              src={teacherPersonalData.pictureProfilePath || DefaultAvatar}
-              alt={teacherPersonalData.fullName}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
-
-        {/* Attachments Section */}
         <div>
           <h3 className="mb-4 text-start text-lg font-semibold text-gray-900">
             {t('teachers.details.attachments')}
