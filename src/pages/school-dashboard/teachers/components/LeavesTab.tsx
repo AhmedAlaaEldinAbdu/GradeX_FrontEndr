@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface LeavesTabProps {
   teacherId: string;
@@ -45,13 +46,14 @@ const HolidayIcon = () => (
   </svg>
 );
 
-export default function LeavesTab({ isActive = true }: LeavesTabProps) {
+export default function LeavesTab({ teacherId, isActive = true }: LeavesTabProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   if (!isActive) return null;
 
   return (
-    <div className="flex flex-col gap-6 pb-8" dir="rtl">
+    <div className="flex flex-col gap-6 pb-8">
       {/* Total Annual Leaves Card */}
       <div className="rounded-2xl border border-[#E6E6E6] bg-white p-4 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
         <div className="flex items-center justify-between gap-4">
@@ -97,9 +99,11 @@ export default function LeavesTab({ isActive = true }: LeavesTabProps) {
       {/* Leave Type Cards Grid */}
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
         {LEAVE_TYPES_MOCK.map((leave) => (
-          <div
+          <button
+            type="button"
             key={leave.key}
-            className="rounded-xl border border-[#E6E6E6] bg-white p-3 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]"
+            onClick={() => navigate(`/teaching-staff/teachers/${teacherId}/leaves/${leave.key}`)}
+            className="rounded-xl border border-[#E6E6E6] bg-white p-3 text-start shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0px_4px_16px_2px_rgba(0,0,0,0.08)]"
           >
             <div className="flex items-center justify-between gap-2">
               {/* Right (start in RTL): leave type name */}
@@ -127,7 +131,7 @@ export default function LeavesTab({ isActive = true }: LeavesTabProps) {
                 <span className="text-base font-normal text-[#0E1F1F]">{leave.remaining}</span>
               </div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>
