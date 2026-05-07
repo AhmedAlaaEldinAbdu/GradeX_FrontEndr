@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
+import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import Loading from '@/shared/components/Loading';
+import MetricCard from '@/shared/components/MetricCard';
+import { getAttendanceStatusBadgeColor } from '@/shared/components/SharedBadges';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
 import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
@@ -125,38 +128,44 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
     return true;
   });
 
-  const getStatusBadge = (status: number) => {
-    const statusConfig: Record<number, { label: string; className: string }> = {
-      [AttendanceStatus.Present]: {
-        label: t('teachers.details.present'),
-        className: 'bg-green-100 text-green-800',
-      },
-      [AttendanceStatus.Absent]: {
-        label: t('teachers.details.absent'),
-        className: 'bg-red-100 text-red-800',
-      },
-      [AttendanceStatus.Late]: {
-        label: t('teachers.details.late'),
-        className: 'bg-yellow-100 text-yellow-800',
-      },
-      [AttendanceStatus.EarlyLeave]: {
-        label: t('attendance.earlyLeave'),
-        className: 'bg-orange-100 text-orange-800',
-      },
-    };
-
-    const config = statusConfig[status] || {
-      label: t('teachers.details.notAvailable'),
-      className: 'bg-gray-100 text-gray-800',
-    };
-    return (
-      <span
-        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${config.className}`}
-      >
-        {config.label}
-      </span>
-    );
+  const getStatusKey = (status: number): 'present' | 'absent' | 'late' | 'leave' => {
+    switch (status) {
+      case AttendanceStatus.Present:
+        return 'present';
+      case AttendanceStatus.Absent:
+        return 'absent';
+      case AttendanceStatus.Late:
+      case AttendanceStatus.EarlyLeave:
+        return 'late';
+      case 5:
+        return 'leave';
+      default:
+        return 'present';
+    }
   };
+
+  const getStatusLabel = (status: number) => {
+    switch (status) {
+      case AttendanceStatus.Present:
+        return t('teachers.details.present');
+      case AttendanceStatus.Absent:
+        return t('teachers.details.absent');
+      case AttendanceStatus.Late:
+        return t('teachers.details.late');
+      case AttendanceStatus.EarlyLeave:
+        return t('attendance.earlyLeave');
+      case 5:
+        return t('teachers.details.leave');
+      default:
+        return t('teachers.details.notAvailable');
+    }
+  };
+
+  const getStatusBadge = (status: number) => (
+    <span className={getAttendanceStatusBadgeColor(getStatusKey(status))}>
+      {getStatusLabel(status)}
+    </span>
+  );
 
   const columns: DataTableColumn<TeacherAttendanceDetailRecord>[] = [
     {
@@ -179,7 +188,23 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
     },
     {
       header: 'teachers.details.checkInTime',
-      accessor: (row) => formatTime(row.checkInTime, currentLang),
+      accessor: (row) => {
+        if (row.status === AttendanceStatus.Absent) {
+          return (
+            <span className={getAttendanceStatusBadgeColor('absent')}>
+              {t('teachers.details.absent')}
+            </span>
+          );
+        }
+        if (row.status === AttendanceStatus.Late || row.status === AttendanceStatus.EarlyLeave) {
+          return (
+            <span className={getAttendanceStatusBadgeColor('late')}>
+              {t('teachers.details.lateHour')}
+            </span>
+          );
+        }
+        return formatTime(row.checkInTime, currentLang);
+      },
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
@@ -229,7 +254,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
       placeholder: '',
       value: selectedStatus,
       onChange: () => {},
-      width: '30%',
+      width: '12%',
       customComponent: (
         <CustomSelect
           value={selectedStatus}
@@ -240,6 +265,7 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
           }))}
           placeholder={t('teachers.details.filterByStatus')}
           maxHeight="200px"
+          showSearch={false}
         />
       ),
     },
@@ -327,64 +353,54 @@ export default function AttendanceTab({ teacherId, isActive = true }: Attendance
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100">
-                <img src={CheckCircleIcon} alt="present" className="h-6 w-6" />
-              </div>
-              <p className="text-xl text-gray-600">{t('teachers.details.totalPresent')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{localSummary.totalPresent}</p>
-          </div>
-        </div>
-
-        {/* Total Late */}
-        <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-yellow-100">
-                <img src={TimeSyncIcon} alt="late" className="h-6 w-6" />
-              </div>
-              <p className="text-xl text-gray-600">{t('teachers.details.totalLate')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{localSummary.totalLate}</p>
-          </div>
-        </div>
-
-        {/* Total Absent */}
-        <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-100">
-                <img
-                  src={XmarkCircleIcon}
-                  alt="absent"
-                  className="h-6 w-6"
-                  style={{
-                    filter:
-                      'brightness(0) saturate(100%) invert(29%) sepia(69%) saturate(2278%) hue-rotate(336deg) brightness(104%) contrast(93%)',
-                  }}
-                />
-              </div>
-              <p className="text-xl text-gray-600">{t('teachers.details.totalAbsent')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{localSummary.totalAbsent}</p>
-          </div>
-        </div>
-
-        {/* Total Leave */}
-        <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-md">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100">
-                <img src={VacationIcon} alt="leave" className="h-6 w-6" />
-              </div>
-              <p className="text-xl text-gray-600">{t('teachers.details.totalLeave')}</p>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-gray-900">{localSummary.totalLeave}</p>
-          </div>
-        </div>
+        <MetricCard
+          title={t('teachers.details.totalPresent')}
+          value={localSummary.totalPresent}
+          icon={
+            <CustomImage
+              src={CheckCircleIcon}
+              alt={t('teachers.details.totalPresent')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-green-100 text-green-600"
+        />
+        <MetricCard
+          title={t('teachers.details.totalLate')}
+          value={localSummary.totalLate}
+          icon={
+            <CustomImage
+              src={TimeSyncIcon}
+              alt={t('teachers.details.totalLate')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-yellow-100 text-yellow-600"
+        />
+        <MetricCard
+          title={t('teachers.details.totalAbsent')}
+          value={localSummary.totalAbsent}
+          icon={
+            <CustomImage
+              src={XmarkCircleIcon}
+              alt={t('teachers.details.totalAbsent')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-red-100 text-red-600"
+        />
+        <MetricCard
+          title={t('teachers.details.totalLeave')}
+          value={localSummary.totalLeave}
+          icon={
+            <CustomImage
+              src={VacationIcon}
+              alt={t('teachers.details.totalLeave')}
+              className="h-6 w-6"
+            />
+          }
+          iconClassName="bg-blue-100 text-blue-600"
+        />
       </div>
 
       {/* Attendance Table */}
