@@ -9,6 +9,7 @@ interface MetricCardProps {
   icon: React.ReactNode;
   className?: string;
   iconClassName?: string;
+  valueAction?: React.ReactNode;
 }
 
 export default function MetricCard({
@@ -18,6 +19,7 @@ export default function MetricCard({
   icon,
   className = '',
   iconClassName = 'bg-gray-50 text-gray-600',
+  valueAction,
 }: MetricCardProps) {
   return (
     <Card
@@ -30,9 +32,12 @@ export default function MetricCard({
       </div>
       <div className="flex flex-1 flex-col items-start gap-2">
         <div className="text-base font-normal text-[#3A3A3A]">{title}</div>
-        <div className="text-dark-900 text-base font-medium">
-          {value}
-          {percentage ? '%' : ''}
+        <div className="text-dark-900 flex items-center gap-3 text-base font-medium">
+          <span>
+            {value}
+            {percentage ? '%' : ''}
+          </span>
+          {valueAction}
         </div>
       </div>
     </Card>
