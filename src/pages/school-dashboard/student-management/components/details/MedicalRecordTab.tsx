@@ -1,11 +1,19 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import DataTable, { type DataTableColumn } from '@/shared/components/DataTable';
-import Badge from '@/shared/components/Badge';
+import Card from '@/shared/components/Card';
+import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
+import CustomSelect from '@/shared/components/CustomSelect';
+import Input from '@/shared/components/Input';
+import CustomImage from '@/shared/components/CustomImage';
+import { getVaccinationStatusBadgeColor } from '@/shared/components/SharedBadges';
+import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+import DownloadIcon from '@gradex/assets/icons/Download.svg';
 
 interface MedicalRecordTabProps {
   studentId: string;
 }
+
+type VaccinationStatus = 'attended' | 'notAttended';
 
 interface VaccinationRecord {
   id: string;
@@ -14,12 +22,11 @@ interface VaccinationRecord {
   className: string;
   classNameEn: string;
   vaccinationDate: string;
-  status: 'attended' | 'notAttended';
+  status: VaccinationStatus;
   notes: string;
   notesEn: string;
 }
 
-// Mock data matching the design
 const mockVaccinationRecords: VaccinationRecord[] = [
   {
     id: '1',
@@ -45,226 +52,243 @@ const mockVaccinationRecords: VaccinationRecord[] = [
   },
 ];
 
-export default function MedicalRecordTab({ studentId }: MedicalRecordTabProps) {
+const attachments = [
+  { id: '1', name: 'التقرير الطبي', nameEn: 'Medical Report', size: '520 KB' },
+];
+
+export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  console.log('Student ID:', studentId);
-
-  // Section Header Component
-  const SectionHeader = ({ title }: { title: string }) => (
-    <div className="mb-4 flex items-center gap-4">
-      <h3 className="whitespace-nowrap text-base font-semibold text-gray-900">{title}</h3>
-      <div className="h-px flex-1 bg-gray-200" />
-    </div>
-  );
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'attended':
-        return <Badge variant="success">{t('medicalRecord.attended')}</Badge>;
-      case 'notAttended':
-        return <Badge variant="danger">{t('medicalRecord.notAttended')}</Badge>;
-      default:
-        return null;
-    }
-  };
-
-  const statusOptions = [
-    { value: 'attended', label: t('medicalRecord.attended') },
-    { value: 'notAttended', label: t('medicalRecord.notAttended') },
-  ];
-
-  const classOptions = [
-    { value: 'first', label: currentLang === 'ar' ? 'الأول الإعدادي' : 'First Preparatory' },
-    { value: 'second', label: currentLang === 'ar' ? 'الثاني الإعدادي' : 'Second Preparatory' },
-  ];
-
-  // Filter records
   const filteredRecords = mockVaccinationRecords.filter((record) => {
     const vaccineName = currentLang === 'ar' ? record.vaccineName : record.vaccineNameEn;
     const matchesSearch =
       !searchQuery || vaccineName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = !selectedStatus || record.status === selectedStatus;
-    const matchesClass = !selectedClass;
+    const matchesClass =
+      !selectedClass ||
+      (currentLang === 'ar' ? record.className : record.classNameEn) === selectedClass;
     return matchesSearch && matchesStatus && matchesClass;
   });
+
+  const getStatusLabel = (status: VaccinationStatus) =>
+    status === 'attended' ? t('medicalRecord.attended') : t('medicalRecord.notAttended');
 
   const columns: DataTableColumn<VaccinationRecord>[] = [
     {
       header: '#',
-      accessor: (_, index) => <span>{(index ?? 0) + 1}</span>,
-      headerClassName: 'min-w-[50px]',
+      accessor: (_row, index) => (currentPage - 1) * pageSize + (index ?? 0) + 1,
+      headerClassName: 'w-12',
       className: 'text-center',
     },
     {
       header: t('medicalRecord.vaccineName'),
       accessor: (row) => <span>{currentLang === 'ar' ? row.vaccineName : row.vaccineNameEn}</span>,
-      headerClassName: 'min-w-[180px]',
+      headerClassName: 'min-w-[200px]',
       className: 'text-center',
     },
     {
       header: t('medicalRecord.className'),
       accessor: (row) => <span>{currentLang === 'ar' ? row.className : row.classNameEn}</span>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[160px]',
       className: 'text-center',
     },
     {
       header: t('medicalRecord.vaccinationDate'),
       accessor: (row) => <span>{row.vaccinationDate}</span>,
-      headerClassName: 'min-w-[120px]',
+      headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
     {
       header: t('medicalRecord.status'),
-      accessor: (row) => getStatusBadge(row.status),
-      headerClassName: 'min-w-[100px]',
+      accessor: (row) => (
+        <span className={getVaccinationStatusBadgeColor(row.status)}>
+          {getStatusLabel(row.status)}
+        </span>
+      ),
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: t('medicalRecord.notes'),
       accessor: (row) => (
-        <span className="text-gray-600">{currentLang === 'ar' ? row.notes : row.notesEn}</span>
+        <span className="text-sm text-[#646969]">
+          {currentLang === 'ar' ? row.notes : row.notesEn}
+        </span>
       ),
-      headerClassName: 'min-w-[100px]',
+      headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
   ];
 
+  const filterConfigs: FilterConfig[] = [
+    {
+      type: 'custom',
+      name: 'search',
+      placeholder: '',
+      value: searchQuery,
+      onChange: () => {},
+      width: '40%',
+      customComponent: (
+        <Input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t('medicalRecord.searchVaccine')}
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'class-filter',
+      placeholder: '',
+      value: selectedClass,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={selectedClass}
+          onChange={(value) => setSelectedClass(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={[
+            {
+              value: 'الأول الإعدادي',
+              label: currentLang === 'ar' ? 'الأول الإعدادي' : 'First Preparatory',
+            },
+            {
+              value: 'الثاني الإعدادي',
+              label: currentLang === 'ar' ? 'الثاني الإعدادي' : 'Second Preparatory',
+            },
+          ]}
+          placeholder={t('medicalRecord.className')}
+          maxHeight="200px"
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'status-filter',
+      placeholder: '',
+      value: selectedStatus,
+      onChange: () => {},
+      width: '15%',
+      customComponent: (
+        <CustomSelect
+          value={selectedStatus}
+          onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={[
+            { value: 'attended', label: t('medicalRecord.attended') },
+            { value: 'notAttended', label: t('medicalRecord.notAttended') },
+          ]}
+          placeholder={t('medicalRecord.status')}
+          maxHeight="200px"
+        />
+      ),
+    },
+  ];
+
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setSelectedClass('');
+    setSelectedStatus('');
+    setCurrentPage(1);
+  };
+
+  const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <div className="rounded-2xl border border-[#EDEDED] p-5">
+      <h3 className="mb-4 text-base font-medium text-[#0E1F1F]">{title}</h3>
+      {children}
+    </div>
+  );
+
+  const InlineRow = ({ label, value }: { label: string; value: string }) => (
+    <div className="flex items-center gap-2 text-sm">
+      <span className="font-medium text-[#0E1F1F]">{label}:</span>
+      <span className="text-[#646969]">{value}</span>
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-      {/* Health Status Section */}
-      <div className="rounded-xl bg-white p-6">
-        <SectionHeader title={t('medicalRecord.healthStatus')} />
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-700">{t('medicalRecord.disabilityType')}:</span>
-          <span className="text-gray-600">{t('medicalRecord.hearingImpairment')}</span>
-        </div>
-      </div>
+    <Card>
+      <div className="space-y-4">
+        <SectionCard title={t('medicalRecord.healthStatus')}>
+          <InlineRow
+            label={t('medicalRecord.disabilityType')}
+            value={t('medicalRecord.none')}
+          />
+        </SectionCard>
 
-      {/* Vaccination Record Section */}
-      <div className="rounded-xl bg-white p-6">
-        <SectionHeader title={t('medicalRecord.vaccinationRecord')} />
-
-        {/* Filter row */}
-        <div className="mb-4 flex items-center justify-start gap-3">
-          {/* Search input */}
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('medicalRecord.searchVaccine')}
-              className="h-10 w-64 rounded-lg border border-gray-200 pe-4 ps-10 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-            <svg
-              className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-
-          {/* Class dropdown */}
-          <select
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-            className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-600 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <option value="">{t('medicalRecord.className')}</option>
-            {classOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-
-          {/* Status dropdown */}
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-600 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <option value="">{t('medicalRecord.status')}</option>
-            {statusOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Data Table */}
-        <div className="rounded-lg border border-gray-200">
+        <SectionCard title={t('medicalRecord.vaccinationRecord')}>
           <DataTable
             data={filteredRecords}
             columns={columns}
             keyExtractor={(row) => row.id}
-            showFilters={false}
+            pagination={{
+              page: currentPage,
+              limit: pageSize,
+              total: filteredRecords.length,
+              totalPages: Math.max(1, Math.ceil(filteredRecords.length / pageSize)),
+            }}
+            onPageChange={setCurrentPage}
+            filters={filterConfigs}
+            showFilters={true}
+            onResetFilters={handleResetFilters}
             isLoading={false}
             emptyMessage={t('medicalRecord.noRecords')}
             t={t}
           />
-        </div>
-      </div>
+        </SectionCard>
 
-      {/* Medical Record Section */}
-      <div className="rounded-xl bg-white p-6">
-        <SectionHeader title={t('medicalRecord.medicalRecordTitle')} />
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-700">{t('medicalRecord.lastExamDate')}:</span>
-            <span className="text-gray-600">11/4/2022</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-700">{t('medicalRecord.bloodType')}:</span>
-            <span className="text-gray-600">{t('medicalRecord.bloodTypeValue')}</span>
-          </div>
-          <div className="flex items-center gap-2 md:col-span-2">
-            <span className="font-medium text-gray-700">{t('medicalRecord.allergies')}:</span>
-            <span className="text-gray-600">{t('medicalRecord.allergiesValue')}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Attachments Section */}
-      <div className="rounded-xl bg-white p-6">
-        <SectionHeader title={t('medicalRecord.attachments')} />
-        <div className="rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-100">
-                <span className="text-xs font-semibold text-red-600">PDF</span>
-              </div>
-              <div>
-                <p className="font-medium text-gray-700">{t('medicalRecord.medicalReport')}</p>
-                <p className="text-sm text-gray-500">520 KB</p>
-              </div>
+        <SectionCard title={t('medicalRecord.medicalRecordTitle')}>
+          <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
+            <InlineRow label={t('medicalRecord.lastExamDate')} value="11/4/2022" />
+            <InlineRow
+              label={t('medicalRecord.bloodType')}
+              value={t('medicalRecord.bloodTypeValue')}
+            />
+            <div className="md:col-span-2">
+              <InlineRow
+                label={t('medicalRecord.allergies')}
+                value={t('medicalRecord.none')}
+              />
             </div>
-            <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                />
-              </svg>
-            </button>
           </div>
-        </div>
+        </SectionCard>
+
+        <SectionCard title={t('medicalRecord.attachments')}>
+          <div className="flex flex-col gap-3">
+            {attachments.map((attachment) => (
+              <div
+                key={attachment.id}
+                className="flex items-center justify-between gap-4 rounded-xl border border-[#EDEDED] bg-white p-3"
+              >
+                <div className="flex items-center gap-3">
+                  <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-9 flex-shrink-0" />
+                  <div className="text-start">
+                    <p className="text-sm font-medium text-[#0E1F1F]">
+                      {currentLang === 'ar' ? attachment.name : attachment.nameEn}
+                    </p>
+                    <p className="text-xs font-normal text-[#646969]">{attachment.size}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#E7F2FB] transition-colors hover:bg-[#D5E9F7]"
+                  title={t('common.download')}
+                  aria-label={t('common.download')}
+                >
+                  <CustomImage src={DownloadIcon} alt="" className="h-5 w-5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
       </div>
-    </div>
+    </Card>
   );
 }

@@ -45,26 +45,59 @@ export const getAnnouncementStatusBadgeColor = (status: 'valid' | 'expired') => 
   }
 };
 
-export const getAttendanceStatusBadgeColor = (status: number | string) => {
-  const base = 'min-w-[90px] inline-flex items-center justify-center rounded-3xl px-4 py-1';
+export const getEvaluationStatusBadgeColor = (
+  status: 'excellent' | 'veryGood' | 'good' | 'unsatisfactory'
+) => {
   switch (status) {
-    case 1: // Present
-    case 'present':
-      return `${base} bg-lightGreen-100 text-lightGreen-500`;
-    case 2: // Absent
-    case 'absent':
-      return `${base} bg-red-100 text-red-500`;
-    case 3: // Late
-    case 'late':
-      return `${base} bg-orange-100 text-orange-500`;
-    case 4: // EarlyLeave
-    case 'earlyLeave':
-      return `${base} bg-orange-100 text-orange-500`;
-    case 5: // Leave (vacation)
-    case 'leave':
-      return `${base} bg-[#0A6FC21A] text-[#0A6FC2]`;
+    case 'excellent':
+      return 'bg-lightGreen-100 text-lightGreen-500 min-w-[70px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'veryGood':
+      return 'bg-blue-100 text-blue-500 min-w-[70px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'good':
+      return 'bg-orange-100 text-orange-500 min-w-[70px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'unsatisfactory':
+      return 'bg-red-100 text-red-500 min-w-[70px] flex items-center justify-center rounded-3xl px-4 py-1';
     default:
-      return `${base} bg-gray-100 text-gray-500`;
+      return 'bg-gray-100 text-gray-500 min-w-[70px] flex items-center justify-center rounded-3xl px-4 py-1';
+  }
+};
+
+export const getVaccinationStatusBadgeColor = (status: 'attended' | 'notAttended') => {
+  switch (status) {
+    case 'attended':
+      return 'bg-lightGreen-100 text-lightGreen-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'notAttended':
+      return 'bg-red-100 text-red-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    default:
+      return 'bg-gray-100 text-gray-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+  }
+};
+
+export const getExamStatusBadgeColor = (status: 'excellent' | 'veryGood' | 'good' | 'weak') => {
+  switch (status) {
+    case 'excellent':
+      return 'bg-lightGreen-100 text-lightGreen-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'veryGood':
+      return 'bg-blue-100 text-blue-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'good':
+      return 'bg-orange-100 text-orange-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'weak':
+      return 'bg-red-100 text-red-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    default:
+      return 'bg-gray-100 text-gray-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+  }
+};
+
+export const getAttendanceStatusBadgeColor = (status: 'present' | 'absent' | 'late') => {
+  switch (status) {
+    case 'present':
+      return 'bg-lightGreen-100 text-lightGreen-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'absent':
+      return 'bg-red-100 text-red-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    case 'late':
+      return 'bg-orange-100 text-orange-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
+    default:
+      return 'bg-gray-100 text-gray-500 min-w-[90px] flex items-center justify-center rounded-3xl px-4 py-1';
   }
 };
 

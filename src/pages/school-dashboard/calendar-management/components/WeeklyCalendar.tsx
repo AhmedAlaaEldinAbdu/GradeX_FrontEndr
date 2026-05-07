@@ -1059,7 +1059,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         <div className="flex flex-wrap items-center gap-3 p-4">
           {/* Group 1: Education System */}
           <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
               {t('weeklyCalendar.filters.educationSystem') || 'اختر النظام التعليم'}
             </span>
             <div className="h-full border-e border-gray-200" />
@@ -1095,7 +1095,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
           {/* Group 2: Stage Selection */}
           <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
               {t('weeklyCalendar.filters.selectStage') || 'اختر المرحلة'}
             </span>
             <div className="h-full border-e border-gray-200" />
@@ -1119,7 +1119,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
           {/* Group 3: Classroom Selection */}
           <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-gray-600">
+            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
               {t('weeklyCalendar.filters.classroom') || 'الصف الدراسي'}
             </span>
             <div className="h-full border-e border-gray-200" />

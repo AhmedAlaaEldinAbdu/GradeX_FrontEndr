@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
+import CustomImage from '@/shared/components/CustomImage';
 
 interface ModalProps {
   isOpen: boolean;
@@ -58,24 +59,22 @@ const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/60 bg-opacity-50 transition-opacity"
+        className="bg-black/60 absolute inset-0 bg-opacity-50 transition-opacity"
         onClick={handleOverlayClick}
       ></div>
 
       {/* Modal */}
       <div
-        className={`relative w-full rounded-lg bg-white shadow-xl ${sizeClasses[size]} mx-4 flex max-h-[90vh] flex-col`}
+        className={`relative w-full rounded-3xl bg-white shadow-xl ${sizeClasses[size]} mx-4 flex max-h-[90vh] flex-col`}
       >
         {/* Header */}
         {showHeader && (title || showCloseButton) && (
-          <div
-            className={`relative flex items-center border-b border-gray-200 p-6 ${headerClassName}`}
-          >
+          <div className={`relative flex items-center p-6 ${headerClassName}`}>
             {/* Title - Centered */}
             {title && (
               <div className="flex-1 text-center">
                 {typeof title === 'string' ? (
-                  <h2 className={`text-3xl font-medium text-black-900 ${titleClassName}`}>
+                  <h2 className={`text-lg font-medium text-[#0E1F1F] ${titleClassName}`}>
                     {title}
                   </h2>
                 ) : (
@@ -87,9 +86,10 @@ const Modal: React.FC<ModalProps> = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="absolute start-4 text-gray-400 transition-colors hover:text-gray-600"
+                className="absolute end-6 transition-opacity hover:opacity-80"
+                aria-label="Close"
               >
-                <FaTimes className="text-xl" />
+                <CustomImage src={XmarkCircleRedIcon} alt="Close" className="h-6 w-6" />
               </button>
             )}
           </div>

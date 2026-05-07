@@ -174,12 +174,18 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 <span className="text-black-900">{placeholder}</span>
               )
             ) : (
-              <span className={selectedOption ? 'text-black-900' : 'text-gray-500'}>
+              <span
+                className={
+                  selectedOption ? 'font-normal text-[#3A3A3A]' : 'font-light text-[#646969]'
+                }
+              >
                 {selectedOption ? selectedOption.label : placeholder}
               </span>
             )}
           </div>
-          <div className="absolute left-6 top-1/2 -translate-y-1/2">
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? 'left-6 right-auto' : 'left-auto right-6'}`}
+          >
             <CustomImage
               src={ArrowDownSmIcon}
               alt="A"

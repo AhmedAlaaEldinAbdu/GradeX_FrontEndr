@@ -628,6 +628,7 @@
   "studentManagement": {
     "title": "Student Management",
     "students": "Students",
+    "studentsRecord": "Students Record",
     "addStudentButton": "Add Student",
     "noStudentsMessage": "No students have been added yet. You can start by adding students to organize and manage more effectively.",
     "searchByStudentName": "Search by student name",
@@ -642,7 +643,11 @@
     "exportExcel": "Export Excel",
     "print": "Print",
     "confirmDeleteStudent": "Are you sure you want to delete this student?",
-    "studentDeletedSuccessfully": "Student deleted successfully"
+    "studentDeletedSuccessfully": "Student deleted successfully",
+    "reAssignStudent": "Re-assign Student",
+    "classroom": "Class",
+    "selectClassroom": "Select class",
+    "studentReassignedSuccessfully": "Student re-assigned successfully"
   },
   "registrationAnnouncement": {
     "title": "Registration Announcement",
@@ -690,6 +695,12 @@
   "studentApplications": {
     "title": "Student Applications",
     "interviewsTitle": "Personal Interviews",
+    "applicationsTitle": "Applications",
+    "applicationsCount": "Applications",
+    "acceptedCount": "Accepted",
+    "notPassedCount": "Not Passed",
+    "underEditCount": "Under Edit",
+    "interviewsCount": "Personal Interviews",
     "educationalStage": "Educational Stage",
     "previousSchool": "Previous School Name",
     "grade": "Class/Grade",
@@ -800,6 +811,7 @@
     "title": "Students",
     "details": {
       "personalData": "Personal Data",
+      "authorized": "Authorized",
       "attendance": "Attendance and Departure",
       "performance": "Performance",
       "exams": "Exams",
@@ -810,6 +822,8 @@
       "guardianData": "Guardian Data",
       "childData": "Child Data",
       "attachments": "Attachments",
+      "reAssign": "Re-assign",
+      "systemType": "System Type",
       "educationalSystem": "Educational System",
       "educationalStage": "Educational Stage",
       "className": "Class",
@@ -822,6 +836,11 @@
       "address": "Address",
       "schoolName": "Previous School Name",
       "birthDate": "Birth Date",
+      "doneBy": "Done By",
+      "earlyExitTitle": "Early Exit Reason",
+      "exitReason": "Exit Reason",
+      "exitTimeFromSchool": "Exit Time From School",
+      "delegate": "Authorized",
       "attendanceComingSoon": "Coming Soon - Attendance Records",
       "feesComingSoon": "Coming Soon - Fee Records",
       "homeworkComingSoon": "Coming Soon - Homework Records",
@@ -876,6 +895,7 @@
     "confirmAllPresent": "Confirm all present?",
     "confirmAllAbsent": "Confirm all absent?",
     "confirmLateTitle": "Do you want to confirm late arrival?",
+    "confirmAllLateTitle": "Do you want to confirm late arrival for everyone?",
     "time": "Time",
     "selectTime": "Select time",
     "checkInTimeLabel": "Check-in Time",
@@ -1527,6 +1547,7 @@
     "behaviorRecord": "Behavior Record",
     "healthRecord": "Health and Hygiene Record",
     "subjectName": "Subject Name",
+    "reportName": "Report Name",
     "status": "Status",
     "updateDate": "Update Date",
     "teacherName": "Teacher Name",
@@ -1536,9 +1557,15 @@
     "good": "Good",
     "struggling": "Struggling",
     "weak": "Weak",
+    "unsatisfactory": "Unsatisfactory",
     "searchSubject": "Search by subject name",
     "noRecords": "No records found",
-    "august": "August"
+    "august": "August",
+    "reportDetailsTitle": "{{name}} Details",
+    "academicEvaluation": "Academic Evaluation",
+    "behavioralEvaluation": "Behavioral Evaluation",
+    "healthHygieneEvaluation": "Health & Hygiene Evaluation",
+    "evaluation": "Evaluation"
   },
   "exams": {
     "title": "Exams",
@@ -1552,7 +1579,15 @@
     "monthlyExam": "Monthly Exam",
     "midtermExam": "Midterm Exam",
     "levelAssessment": "Level Assessment",
-    "finalExam": "Final Exam"
+    "finalExam": "Final Exam",
+    "studentGrade": "Student Grade",
+    "studentLevel": "Student Level",
+    "firstInClass": "First in Class",
+    "averageSuccess": "Average Success",
+    "subjectGradesAverage": "Average Subject Grades",
+    "vsLastMonth": "vs last month",
+    "performanceTitle": "Performance",
+    "continuousImprovement": "Continuous Improvement - Excellent Performance"
   },
   "homework": {
     "title": "Homework",
@@ -1571,6 +1606,7 @@
     "totalExpenses": "Total Expenses",
     "currency": "SAR",
     "paymentMethod": "Payment Method",
+    "otherService": "Other",
     "installmentPlan": "Installment Plan",
     "months": "months",
     "discount": "Discount",
@@ -1754,6 +1790,7 @@
     "bloodTypeValue": "O+",
     "allergies": "Drug or Food Allergies",
     "allergiesValue": "Peanuts",
+    "none": "None",
     "attachments": "Attachments",
     "medicalReport": "Medical Report"
   },

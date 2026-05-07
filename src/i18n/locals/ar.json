@@ -628,6 +628,7 @@
   "studentManagement": {
     "title": "إدارة الطلاب",
     "students": "الطلاب",
+    "studentsRecord": "سجل الطلاب",
     "addStudentButton": "إضافة طالب",
     "noStudentsMessage": "لم يتم إضافة أي طالب حتى الآن. يمكنك البدء بإضافة الطلاب لتنظيم الإدارة بشكل أفضل.",
     "searchByStudentName": "ابحث عن اسم الطالب",
@@ -642,7 +643,11 @@
     "exportExcel": "Excel تصدير",
     "print": "طباعة",
     "confirmDeleteStudent": "هل أنت متأكد من حذف الطالب؟",
-    "studentDeletedSuccessfully": "تم حذف الطالب بنجاح"
+    "studentDeletedSuccessfully": "تم حذف الطالب بنجاح",
+    "reAssignStudent": "إعادة تسكين الطالب",
+    "classroom": "الصف الدراسي",
+    "selectClassroom": "اختر الصف الدراسي",
+    "studentReassignedSuccessfully": "تم إعادة تسكين الطالب بنجاح"
   },
   "registrationAnnouncement": {
     "title": "إعلان التسجيل",
@@ -690,6 +695,12 @@
   "studentApplications": {
     "title": "طلبات التقديم",
     "interviewsTitle": "المقابلات الشخصية",
+    "applicationsTitle": "الطلبات",
+    "applicationsCount": "طلبات التقديم",
+    "acceptedCount": "المقبولة",
+    "notPassedCount": "لم تجتاز",
+    "underEditCount": "قيد التعديل",
+    "interviewsCount": "مقابلات الشخصية",
     "educationalStage": "المرحلة التعليمية",
     "previousSchool": "اسم المدرسة السابق",
     "grade": "الصف الدراسية",
@@ -800,6 +811,7 @@
     "title": "الطلاب",
     "details": {
       "personalData": "البيانات الشخصية",
+      "authorized": "المفوضين",
       "attendance": "الحضور و الإنصراف",
       "performance": "الأداء",
       "exams": "الإختبارات",
@@ -810,6 +822,8 @@
       "guardianData": "بيانات ولي الأمر",
       "childData": "بيانات الطفل",
       "attachments": "المرفقات",
+      "reAssign": "إعادة تسكين",
+      "systemType": "نوع النظام",
       "educationalSystem": "النظام التعليمي",
       "educationalStage": "المرحلة التعليمية",
       "className": "الصف الدراسي",
@@ -822,6 +836,11 @@
       "address": "العنوان",
       "schoolName": "اسم المدرسة السابقة",
       "birthDate": "تاريخ الميلاد",
+      "doneBy": "تم بواسطة",
+      "earlyExitTitle": "سبب الخروج المبكر",
+      "exitReason": "سبب الخروج",
+      "exitTimeFromSchool": "ساعة الخروج من المدرسة",
+      "delegate": "المفوضين",
       "attendanceComingSoon": "قريباً - سجلات الحضور",
       "feesComingSoon": "قريباً - سجلات الرسوم",
       "homeworkComingSoon": "قريباً - سجلات الواجبات",
@@ -876,6 +895,7 @@
     "confirmAllPresent": "تأكيد حضور الجميع؟",
     "confirmAllAbsent": "تأكيد غياب الجميع ؟",
     "confirmLateTitle": "هل تريد تأكيد التأخير ؟",
+    "confirmAllLateTitle": "هل تريد تأكيد تأخير الجميع ؟",
     "time": "الوقت",
     "selectTime": "حدد الوقت",
     "checkInTimeLabel": "موعد الحضور",
@@ -1527,6 +1547,7 @@
     "behaviorRecord": "سجل السلوكي",
     "healthRecord": "سجل الصحة و النظافة",
     "subjectName": "اسم المادة",
+    "reportName": "اسم التقرير",
     "status": "الحالة",
     "updateDate": "تاريخ التحديث",
     "teacherName": "اسم المعلم/ة",
@@ -1536,9 +1557,15 @@
     "good": "جيد",
     "struggling": "متعثر",
     "weak": "ضعيف",
+    "unsatisfactory": "غير مرضي",
     "searchSubject": "ابحث عن اسم المادة",
     "noRecords": "لا توجد سجلات",
-    "august": "أغسطس"
+    "august": "أغسطس",
+    "reportDetailsTitle": "تفاصيل {{name}}",
+    "academicEvaluation": "تقيم أكاديمى",
+    "behavioralEvaluation": "تقيم سلوكى",
+    "healthHygieneEvaluation": "تقيم الصحة و النظافة",
+    "evaluation": "التقيم"
   },
   "exams": {
     "title": "الإختبارات",
@@ -1552,7 +1579,15 @@
     "monthlyExam": "الاختبار الشهري",
     "midtermExam": "اختبار منتصف الفصل الدراسي",
     "levelAssessment": "اختبار تقييم المستوى",
-    "finalExam": "اختبار نهاية العام"
+    "finalExam": "اختبار نهاية العام",
+    "studentGrade": "تقدير الطالب",
+    "studentLevel": "مستوى الطالب",
+    "firstInClass": "الأول على الصف",
+    "averageSuccess": "متوسط النجاح",
+    "subjectGradesAverage": "متوسط الدرجات المواد",
+    "vsLastMonth": "عن الشهر الماضي",
+    "performanceTitle": "الأداء",
+    "continuousImprovement": "تحسين مستمر - ممتاز"
   },
   "homework": {
     "title": "الواجبات المنزلية",
@@ -1569,6 +1604,9 @@
   "fees": {
     "title": "الرسوم",
     "totalExpenses": "الإجمالي المصروفات",
+    "paymentMethod": "طريقة الدفع",
+    "currency": "ريال",
+    "otherService": "أخري",
     "tuitionAmountLabel": "الرسوم الدراسية",
     "tuitionAmountPlaceholder": "اكتب الرسوم الدراسية للمرحلة",
     "installmentPlan": "خطة تقسيط",
@@ -1760,6 +1798,7 @@
     "bloodTypeValue": "فصيلة O+",
     "allergies": "حساسية من أدوية أو أطعمة",
     "allergiesValue": "الفول السوداني",
+    "none": "لا يوجد",
     "attachments": "المرفقات",
     "medicalReport": "التقرير الطبي"
   },

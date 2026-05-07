@@ -16,13 +16,13 @@ const StudentManagementPage: React.FC = () => {
         items={[
           { label: t('sidebar.studentAffairs') },
           { label: t('sidebar.studentManagement') },
-          { label: t('studentManagement.students') },
+          { label: t('studentManagement.studentsRecord') },
         ]}
       />
 
       {/* Page Header */}
       <PageHeader
-        title={t('studentManagement.students')}
+        title={t('studentManagement.studentsRecord')}
         hasHeaderControls={true}
         statistics={{ value: totalStudents, label: 'grades.studentPlural' }}
       />

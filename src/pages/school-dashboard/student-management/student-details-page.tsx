@@ -3,12 +3,14 @@ import { useParams, useLocation } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import PersonalDataTab from '@/pages/school-dashboard/student-management/components/details/PersonalDataTab';
+import AuthorizedTab from '@/pages/school-dashboard/student-management/components/details/AuthorizedTab';
 import AttendanceTab from '@/pages/school-dashboard/student-management/components/details/AttendanceTab';
 import FeesTab from '@/pages/school-dashboard/student-management/components/details/FeesTab';
 import HomeworkTab from '@/pages/school-dashboard/student-management/components/details/HomeworkTab';
 import PerformanceTab from '@/pages/school-dashboard/student-management/components/details/PerformanceTab';
 import MedicalRecordTab from '@/pages/school-dashboard/student-management/components/details/MedicalRecordTab';
 import ExamsTab from '@/pages/school-dashboard/student-management/components/details/ExamsTab';
+import PageHeader from '@/shared/components/PageHeader';
 
 // Mock data for now
 const mockStudentDetails = {
@@ -16,6 +18,8 @@ const mockStudentDetails = {
   fullName: 'أحمد محمود حسن إبراهيم',
   fullNameEn: 'Ahmed Mahmoud Hassan Ibrahim',
   pictureProfilePath: null,
+  systemType: 'امريكي',
+  systemTypeEn: 'American',
   educationalSystem: 'عالمي',
   educationalSystemEn: 'International',
   className: '1/أ',
@@ -48,24 +52,38 @@ export default function StudentDetailsPage() {
   const student = mockStudentDetails;
 
   const isFromAttendance = location.state?.from === 'attendance';
+  const isFromStudentsRecord = location.state?.from === 'studentsRecord';
 
   const breadcrumbItems = isFromAttendance
     ? [
-        { label: t('sidebar.attendance') },
-        { label: t('attendance.students'), path: '/students/attendance' },
+        { label: t('sidebar.studentAffairs') },
+        { label: t('sidebar.studentManagement') },
+        { label: t('sidebar.attendance'), path: '/students/attendance' },
         { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
       ]
-    : [
-        { label: t('sidebar.studentManagement') },
-        { label: t('students.title'), path: '/students-record' },
-        { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
-      ];
+    : isFromStudentsRecord
+      ? [
+          { label: t('sidebar.studentAffairs') },
+          { label: t('sidebar.studentManagement') },
+          { label: t('studentManagement.studentsRecord'), path: '/students-record' },
+          { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+        ]
+      : [
+          { label: t('sidebar.studentManagement') },
+          { label: t('students.title'), path: '/students-record' },
+          { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+        ];
 
   const tabItems: TabItem[] = [
     {
       id: 'personal-data',
       label: t('students.details.personalData'),
       content: <PersonalDataTab student={student} />,
+    },
+    {
+      id: 'authorized',
+      label: t('students.details.authorized'),
+      content: <AuthorizedTab studentId={id || ''} />,
     },
     {
       id: 'attendance',
@@ -105,22 +123,14 @@ export default function StudentDetailsPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Student Name Title */}
-      <div className="mb-6">
-        <h1 className="text-start text-2xl font-bold text-gray-900">
-          {currentLang === 'ar' ? student.fullName : student.fullNameEn}
-        </h1>
-      </div>
+      <PageHeader title={currentLang === 'ar' ? student.fullName : student.fullNameEn} />
 
       {/* Tabs */}
       <Tabs
         items={tabItems}
         defaultValue="personal-data"
         searchParamKey="tab"
-        className="w-full"
-        listClassName="flex gap-1 border-b border-gray-200"
-        tabClassName="px-4 py-2 text-sm font-medium transition-colors duration-200 text-gray-500 hover:text-primary-600 focus:outline-none whitespace-nowrap"
-        activeTabClassName="border-b-2 border-primary-600 text-primary-600"
-        panelClassName="mt-6"
+        listClassName="mb-6 flex w-full items-center gap-6"
       />
     </div>
   );
