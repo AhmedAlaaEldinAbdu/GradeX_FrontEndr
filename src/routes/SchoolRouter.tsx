@@ -20,6 +20,7 @@ import AddBookPage from '@/pages/school-dashboard/books/add-book-page';
 import EditBookPage from '@/pages/school-dashboard/books/edit-book-page';
 import TeacherDetailsPage from '@/pages/school-dashboard/teachers/teacher-details-page';
 import TeacherPlacementPage from '@/pages/school-dashboard/teachers/teacher-placement-page';
+import TeacherEditPlacementPage from '@/pages/school-dashboard/teachers/teacher-edit-placement-page';
 import TeachingStaffPage from '@/pages/school-dashboard/teaching-staff/TeachingStaffPage';
 import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page';
 import AttendancePage from '@/pages/school-dashboard/attendance/attendance-page';
@@ -324,6 +325,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <TeacherPlacementPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teaching-staff/teachers/:id/edit-placement/:assignmentId"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <TeacherEditPlacementPage />
             </MainLayout>
           </ProtectedRoute>
         }
