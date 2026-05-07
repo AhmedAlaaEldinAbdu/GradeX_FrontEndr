@@ -10,6 +10,8 @@ import { fetchTeacherPersonalData } from '@/redux/features/teachers';
 import PersonalDataTab from './components/PersonalDataTab';
 import AttendanceTab from './components/AttendanceTab';
 import EducationalStagesTab from './components/EducationalStagesTab';
+import EducationalStagesTabAttendance from './components/EducationalStagesTabAttendance';
+import LeavesTab from './components/LeavesTab';
 import Loading from '@/shared/components/Loading';
 
 interface LocationState {
@@ -29,6 +31,8 @@ export default function TeacherDetailsPage() {
   const locationState = location.state as LocationState | null;
   const isFromJobAnnouncements = locationState?.comeFrom === 'job-announcements';
   const isFromCalendarTasks = locationState?.comeFrom === 'calendar-tasks';
+
+  const isFromAttendance = location.pathname.startsWith('/employees/attendance/teachers/');
 
   const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
   const isLoadingPersonalData = useAppSelector((state) => state.teachers.isLoadingPersonalData);
@@ -50,11 +54,17 @@ export default function TeacherDetailsPage() {
           { label: t('sidebar.tasks'), path: '/calendar/tasks' },
           { label: teacherPersonalData?.fullName || t('common.loading') },
         ]
-      : [
-          { label: t('sidebar.teachingStaff') },
-          { label: t('teachers.title'), path: '/teachers' },
-          { label: teacherPersonalData?.fullName || t('common.loading') },
-        ];
+      : isFromAttendance
+        ? [
+            { label: t('sidebar.humanResources') },
+            { label: t('attendance.title'), path: '/employees/attendance' },
+            { label: teacherPersonalData?.fullName || t('common.loading') },
+          ]
+        : [
+            { label: t('sidebar.teachingStaff') },
+            { label: t('teachers.title'), path: '/teaching-staff?tab=teachers' },
+            { label: teacherPersonalData?.fullName || t('common.loading') },
+          ];
 
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'personal-data');
 
@@ -83,10 +93,24 @@ export default function TeacherDetailsPage() {
     {
       id: 'educational-stages',
       label: t('teachers.details.educationalStagesAndClassrooms'),
-      content: (
+      content: isFromAttendance ? (
         <EducationalStagesTab teacherId={id || ''} isActive={activeTab === 'educational-stages'} />
+      ) : (
+        <EducationalStagesTabAttendance
+          teacherId={id || ''}
+          isActive={activeTab === 'educational-stages'}
+        />
       ),
     },
+    ...(isFromAttendance
+      ? []
+      : [
+          {
+            id: 'leaves',
+            label: t('teachers.details.leaves'),
+            content: <LeavesTab teacherId={id || ''} isActive={activeTab === 'leaves'} />,
+          },
+        ]),
   ];
 
   if (isLoadingPersonalData || !teacherPersonalData) {
@@ -114,7 +138,7 @@ export default function TeacherDetailsPage() {
   }
 
   const headerActions =
-    activeTab === 'educational-stages'
+    activeTab === 'educational-stages' && isFromAttendance
       ? [
           {
             label: 'teachers.details.addClassroom',

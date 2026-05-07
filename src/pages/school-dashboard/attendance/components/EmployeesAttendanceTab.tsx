@@ -388,7 +388,7 @@ export default function EmployeesAttendanceTab({
             ariaLabel={t('jobAnnouncement.viewApplicants')}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/teachers/${row.teacherId}?tab=attendance`);
+              navigate(`/employees/attendance/teachers/${row.teacherId}?tab=attendance`);
             }}
             className="h-8 w-8"
           >
