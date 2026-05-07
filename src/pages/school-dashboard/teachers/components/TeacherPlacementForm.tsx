@@ -16,6 +16,7 @@ import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
 import CustomImage from '@/shared/components/CustomImage';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
+import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import SuccessPlacementPopup from '../popups/SuccessPlacementPopup';
 import { useToast } from '@/shared/context/ToastContext';
@@ -315,73 +316,65 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
     <Card>
       <div className="space-y-6">
         {assignments.map((row) => (
-          <div key={row.id} className="flex items-start gap-3">
-            {/* Bordered section containing the form fields */}
-            <div className="flex-1 rounded-lg border border-gray-200 p-4">
-              {/* Trash button - INSIDE the border, only when multiple rows */}
-              {assignments.length > 1 && (
-                <div className="mb-3 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveRow(row.id)}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 transition-colors hover:bg-red-100"
+          <div
+            key={row.id}
+            className="flex items-start gap-4 rounded-2xl border border-[#E6E6E6] px-4 py-3"
+          >
+            {/* Inner bordered section containing the form fields */}
+            <div className="flex flex-1 items-start gap-4 rounded-2xl border border-[#E6E6E6] px-4 py-3">
+              <div className="flex-1 space-y-8">
+                {/* Subject and Stage Row */}
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                  <FormField
+                    label={t('teachers.placement.subject')}
+                    required
+                    htmlFor={`subject-${row.id}`}
                   >
-                    <CustomImage src={TrashIcon} alt="remove" className="h-5 w-5" />
-                  </button>
+                    <CustomSelect
+                      value={row.subjectId}
+                      onChange={(value) =>
+                        handleRowChange(
+                          row.id,
+                          'subjectId',
+                          Array.isArray(value) ? value[0] || '' : value
+                        )
+                      }
+                      options={subjectOptions}
+                      placeholder={
+                        isLoadingSubjects
+                          ? t('common.loading')
+                          : t('teachers.placement.selectSubject')
+                      }
+                      disabled={isLoadingSubjects}
+                      error={!!formErrors[`subjectId-${row.id}`]}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label={t('teachers.placement.stage')}
+                    required
+                    htmlFor={`stage-${row.id}`}
+                  >
+                    <CustomSelect
+                      value={row.gradeId}
+                      onChange={(value) =>
+                        handleRowChange(
+                          row.id,
+                          'gradeId',
+                          Array.isArray(value) ? value[0] || '' : value
+                        )
+                      }
+                      options={gradeOptions}
+                      placeholder={
+                        isLoadingGrades ? t('common.loading') : t('teachers.placement.selectStage')
+                      }
+                      disabled={isLoadingGrades}
+                      error={!!formErrors[`gradeId-${row.id}`]}
+                    />
+                  </FormField>
                 </div>
-              )}
 
-              {/* Subject and Stage Row */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField
-                  label={t('teachers.placement.subject')}
-                  required
-                  htmlFor={`subject-${row.id}`}
-                >
-                  <CustomSelect
-                    value={row.subjectId}
-                    onChange={(value) =>
-                      handleRowChange(
-                        row.id,
-                        'subjectId',
-                        Array.isArray(value) ? value[0] || '' : value
-                      )
-                    }
-                    options={subjectOptions}
-                    placeholder={
-                      isLoadingSubjects
-                        ? t('common.loading')
-                        : t('teachers.placement.selectSubject')
-                    }
-                    disabled={isLoadingSubjects}
-                  />
-                </FormField>
-
-                <FormField
-                  label={t('teachers.placement.stage')}
-                  required
-                  htmlFor={`stage-${row.id}`}
-                >
-                  <CustomSelect
-                    value={row.gradeId}
-                    onChange={(value) =>
-                      handleRowChange(
-                        row.id,
-                        'gradeId',
-                        Array.isArray(value) ? value[0] || '' : value
-                      )
-                    }
-                    options={gradeOptions}
-                    placeholder={
-                      isLoadingGrades ? t('common.loading') : t('teachers.placement.selectStage')
-                    }
-                    disabled={isLoadingGrades}
-                  />
-                </FormField>
-              </div>
-
-              {/* Classrooms Field */}
-              <div className="mt-4">
+                {/* Classrooms Field */}
                 <FormField
                   label={t('teachers.placement.classrooms')}
                   required
@@ -396,7 +389,6 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
                           r.id === row.id ? { ...r, classroomIds: selectedIds as string[] } : r
                         )
                       );
-                      // Clear classroom error
                       if (formErrors[`classroomIds-${row.id}`]) {
                         setFormErrors((prev) => {
                           const newErrors = { ...prev };
@@ -419,66 +411,83 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
                     disabled={!row.gradeId || loadingClassroomsForRow[row.id]}
                     isMulti={true}
                     id={`classrooms-${row.id}`}
+                    error={!!formErrors[`classroomIds-${row.id}`]}
                   />
                 </FormField>
+
+                {/* Books Section with circular add button */}
+                {row.books.map((bookEntry, bookIndex) => (
+                  <div key={bookEntry.id} className="flex flex-row-reverse items-end gap-8">
+                    {bookIndex === 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => handleAddBook(row.id)}
+                        className="mb-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(0,81,46,0.1)] transition-colors hover:bg-[rgba(0,81,46,0.18)]"
+                        aria-label="add book"
+                      >
+                        <CustomImage src={GreenPlusCircleIcon} alt="add book" className="h-6 w-6" />
+                      </button>
+                    ) : (
+                      <div className="h-10 w-10 shrink-0" aria-hidden="true" />
+                    )}
+                    <div className="flex-1">
+                      <FormField
+                        label={bookIndex === 0 ? t('teachers.placement.book') : ' '}
+                        htmlFor={`book-${bookEntry.id}`}
+                      >
+                        <CustomSelect
+                          value={bookEntry.bookId}
+                          onChange={(value) =>
+                            handleBookChange(
+                              row.id,
+                              bookEntry.id,
+                              Array.isArray(value) ? value[0] || '' : value
+                            )
+                          }
+                          options={getBookOptionsForSubject(row.subjectId)}
+                          placeholder={
+                            !row.subjectId
+                              ? t('teachers.placement.selectSubjectFirst')
+                              : isLoadingBooks
+                                ? t('common.loading')
+                                : t('teachers.placement.selectBook')
+                          }
+                          disabled={!row.subjectId || isLoadingBooks}
+                          id={`book-${bookEntry.id}`}
+                        />
+                      </FormField>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {/* Books Section with Add Button */}
-              {row.books.map((bookEntry, bookIndex) => (
-                <div key={bookEntry.id} className="mt-4">
-                  {bookIndex > 0 && <div className="w-8 shrink-0" />}
-                  <div>
-                    <div className="mb-2 flex items-center justify-between">
-                      <label className="block text-sm font-medium text-gray-700">
-                        {bookIndex === 0 ? t('teachers.placement.book') : ''}
-                      </label>
-                      {bookIndex === 0 && (
-                        <button
-                          type="button"
-                          onClick={() => handleAddBook(row.id)}
-                          className="flex h-8 w-8 shrink-0 items-center justify-center"
-                        >
-                          <CustomImage src={GreenPlusIcon} alt="add book" className="h-6 w-6" />
-                        </button>
-                      )}
-                    </div>
-                    <CustomSelect
-                      value={bookEntry.bookId}
-                      onChange={(value) =>
-                        handleBookChange(
-                          row.id,
-                          bookEntry.id,
-                          Array.isArray(value) ? value[0] || '' : value
-                        )
-                      }
-                      options={getBookOptionsForSubject(row.subjectId)}
-                      placeholder={
-                        !row.subjectId
-                          ? t('teachers.placement.selectSubjectFirst')
-                          : isLoadingBooks
-                            ? t('common.loading')
-                            : t('teachers.placement.selectBook')
-                      }
-                      disabled={!row.subjectId || isLoadingBooks}
-                    />
-                  </div>
-                </div>
-              ))}
+              {/* Trash button - INSIDE the inner border, last child so it sits on the end (left in RTL) */}
+              {assignments.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveRow(row.id)}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(221,4,23,0.1)] transition-colors hover:bg-[rgba(221,4,23,0.18)]"
+                  aria-label="remove row"
+                >
+                  <CustomImage src={TrashIcon} alt="remove" className="h-6 w-6" />
+                </button>
+              )}
             </div>
 
-            {/* Plus button - OUTSIDE the border */}
+            {/* Big plus button - OUTSIDE the border, end-aligned in RTL (visually on the left) */}
             <button
               type="button"
               onClick={handleAddRow}
-              className="mt-2 flex h-8 w-8 shrink-0 items-center justify-center"
+              className="mt-1 flex h-12 w-12 shrink-0 items-center justify-center"
+              aria-label="add row"
             >
-              <CustomImage src={GreenPlusIcon} alt="add" className="h-7 w-7" />
+              <CustomImage src={GreenPlusIcon} alt="add" className="h-12 w-12" />
             </button>
           </div>
         ))}
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-3 pt-4">
+        <div className="flex justify-end gap-4 pt-2">
           <Button type="button" variant="outline" onClick={handleCancel} disabled={isSubmitting}>
             {t('common.cancel')}
           </Button>
