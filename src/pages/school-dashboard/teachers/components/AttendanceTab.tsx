@@ -1,16 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Loading from '@/shared/components/Loading';
 import MetricCard from '@/shared/components/MetricCard';
+import IconButton from '@/shared/components/IconButton';
 import { getAttendanceStatusBadgeColor } from '@/shared/components/SharedBadges';
 import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
 import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
 import TimeSyncIcon from '@gradex/assets/icons/TimeSync.svg';
 import VacationIcon from '@gradex/assets/icons/Vacation.svg';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import EyeStyledDarkBlueIcon from '@gradex/assets/icons/EyeStyledDarkBlue.svg';
+import NotificationIcon from '@gradex/assets/icons/Notification.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import RecordAttendancePopup, {
   type TeacherPreparationFormValues,
@@ -48,6 +53,7 @@ export default function AttendanceTab({
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { showToast } = useToast();
 
   const [searchDate, setSearchDate] = useState('');
@@ -245,6 +251,22 @@ export default function AttendanceTab({
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
+    {
+      header: '',
+      accessor: (row) => (
+        <div className="flex justify-center">
+          <IconButton
+            variant="blue"
+            ariaLabel={t('common.view')}
+            onClick={() => navigate(`/teaching-staff/teachers/${teacherId}/attendance/${row.id}`)}
+          >
+            <CustomImage src={EyeStyledIcon} alt="" className="h-5 w-5" />
+          </IconButton>
+        </div>
+      ),
+      headerClassName: 'w-16',
+      className: 'text-center',
+    },
   ];
 
   const filterConfigs: FilterConfig[] = [
@@ -392,7 +414,25 @@ export default function AttendanceTab({
             />
           }
           iconClassName="bg-blue-100 text-blue-600"
+          valueAction={
+            <button
+              type="button"
+              onClick={() => navigate(`/teaching-staff/teachers/${teacherId}?tab=leaves`)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[rgba(9,9,177,0.1)] transition-colors hover:bg-[rgba(9,9,177,0.18)]"
+              aria-label={t('common.view')}
+            >
+              <CustomImage src={EyeStyledDarkBlueIcon} alt="" className="h-5 w-5" />
+            </button>
+          }
         />
+      </div>
+
+      {/* Pending leave-request reminder banner */}
+      <div className="flex hidden items-center justify-start gap-3 rounded-2xl border border-[#FFEBB1] bg-[#FFF8E3] px-4 py-3 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
+        <CustomImage src={NotificationIcon} alt="" className="h-6 w-6 shrink-0" />
+        <span className="text-base font-normal text-[#0E1F1F]">
+          {t('teachers.details.leaveRequestReminder', { date: '22/2/2025' })}
+        </span>
       </div>
 
       {/* Attendance Table */}
