@@ -144,7 +144,7 @@ export default function TeachersList() {
             ariaLabel={t('jobAnnouncement.viewApplicants')}
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/teachers/${row.id}`);
+              navigate(`/teaching-staff/teachers/${row.id}`);
             }}
             className="h-10 w-10 shrink-0"
           >
