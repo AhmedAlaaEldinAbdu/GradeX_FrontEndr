@@ -113,7 +113,7 @@ export const fetchStudents = createAsyncThunk<FetchStudentsResponse, FetchStuden
         if (payload.limit) params.PageSize = payload.limit;
 
         if (payload.filters) {
-          if (payload.filters.search) params.Search = payload.filters.search;
+          if (payload.filters.search) params.StudentName = payload.filters.search;
           if (payload.filters.gradeId) params.GradeId = payload.filters.gradeId;
           if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
           if (payload.filters.schoolBranchId)

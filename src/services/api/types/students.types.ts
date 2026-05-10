@@ -60,7 +60,7 @@ export interface StudentListResponse {
 export interface StudentQueryParams {
   PageIndex?: number;
   PageSize?: number;
-  Search?: string;
+  StudentName?: string;
   SchoolBranchId?: string;
   SchoolBrancheId?: string; // TODO: temp fix for inconsistent API param name, should be removed once API is fixed
   GradeId?: string;
