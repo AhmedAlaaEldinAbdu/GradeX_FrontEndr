@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -13,6 +14,11 @@ import TimeSyncIcon from '@gradex/assets/icons/TimeSync.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EarlyExitDetailsPopup from '../../popups/EarlyExitDetailsPopup';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchStudentAttendanceByStudent } from '@/redux/features/student-attendance';
+import { StudentAttendanceStatus } from '@/types/studentAttendance';
+import type { StudentAttendanceByStudentDto } from '@/types/studentAttendance';
+import { formatDateDisplay, formatTime } from '@/shared/common/common';
 
 interface AttendanceTabProps {
   studentId: string;
@@ -26,123 +32,82 @@ interface EarlyExitInfo {
   delegateEn: string;
 }
 
-interface AttendanceRecord {
-  id: string;
-  date: string;
-  status: 'present' | 'absent' | 'late';
-  attendanceTime: string | null;
-  attendanceTimeNote?: string | null;
-  departureTime: string | null;
-  earlyExit: EarlyExitInfo | null;
-  doneByName: string;
-  doneByNameEn: string;
-  doneByRole: string;
-  doneByRoleEn: string;
-}
+type AttendanceUiStatus = 'present' | 'absent' | 'late';
 
-const mockSummary = {
-  totalPresent: 89,
-  totalLate: 15,
-  totalAbsent: 13,
+const STATUS_FILTER_TO_API: Record<AttendanceUiStatus, number> = {
+  present: StudentAttendanceStatus.Present,
+  absent: StudentAttendanceStatus.Absent,
+  late: StudentAttendanceStatus.Late,
 };
 
-const mockAttendanceRecords: AttendanceRecord[] = [
-  {
-    id: '1',
-    date: '22/2/2025',
-    status: 'absent',
-    attendanceTime: null,
-    departureTime: null,
-    earlyExit: null,
-    doneByName: 'أحمد حسن',
-    doneByNameEn: 'Ahmed Hassan',
-    doneByRole: 'مدرس الرياضيات',
-    doneByRoleEn: 'Math Teacher',
-  },
-  {
-    id: '2',
-    date: '22/2/2025',
-    status: 'present',
-    attendanceTime: '7:34 ص',
-    departureTime: '3:30 م',
-    earlyExit: null,
-    doneByName: 'أحمد حسن',
-    doneByNameEn: 'Ahmed Hassan',
-    doneByRole: 'مدرس الرياضيات',
-    doneByRoleEn: 'Math Teacher',
-  },
-  {
-    id: '3',
-    date: '22/2/2025',
-    status: 'late',
-    attendanceTime: '8:34 صباحا',
-    attendanceTimeNote: 'ساعة',
-    departureTime: '3:30 م',
-    earlyExit: null,
-    doneByName: 'أحمد حسن',
-    doneByNameEn: 'Ahmed Hassan',
-    doneByRole: 'مدرس الرياضيات',
-    doneByRoleEn: 'Math Teacher',
-  },
-  {
-    id: '4',
-    date: '22/2/2025',
-    status: 'present',
-    attendanceTime: '7:34 ص',
-    departureTime: '3:30 م',
-    earlyExit: null,
-    doneByName: 'أحمد حسن',
-    doneByNameEn: 'Ahmed Hassan',
-    doneByRole: 'مدرس الرياضيات',
-    doneByRoleEn: 'Math Teacher',
-  },
-  {
-    id: '5',
-    date: '22/2/2025',
-    status: 'present',
-    attendanceTime: '7:34 ص',
-    departureTime: '3:30 م',
-    earlyExit: null,
-    doneByName: 'أحمد حسن',
-    doneByNameEn: 'Ahmed Hassan',
-    doneByRole: 'مدرس الرياضيات',
-    doneByRoleEn: 'Math Teacher',
-  },
-  {
-    id: '6',
-    date: '22/2/2025',
-    status: 'present',
-    attendanceTime: '7:34 ص',
-    departureTime: '3:30 م',
-    earlyExit: {
-      exitTime: '12:00 مساءا',
-      reason: 'مرض الطفل',
-      reasonEn: 'Child illness',
-      delegate: 'ولي الأمر',
-      delegateEn: 'Guardian',
-    },
-    doneByName: 'أحمد حسن',
-    doneByNameEn: 'Ahmed Hassan',
-    doneByRole: 'مدرس الرياضيات',
-    doneByRoleEn: 'Math Teacher',
-  },
-];
+const mapApiStatus = (status: number): AttendanceUiStatus => {
+  switch (status) {
+    case StudentAttendanceStatus.Absent:
+      return 'absent';
+    case StudentAttendanceStatus.Late:
+      return 'late';
+    case StudentAttendanceStatus.Present:
+    case StudentAttendanceStatus.EarlyLeave:
+    default:
+      return 'present';
+  }
+};
 
-export default function AttendanceTab(_props: AttendanceTabProps) {
+export default function AttendanceTab({ studentId }: AttendanceTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
+  const dispatch = useAppDispatch();
+  const [searchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab');
 
   const [searchDate, setSearchDate] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<'' | AttendanceUiStatus>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [activeEarlyExit, setActiveEarlyExit] = useState<EarlyExitInfo | null>(null);
   const pageSize = 10;
 
-  const filteredRecords = mockAttendanceRecords.filter((record) => {
-    const matchesDate = !searchDate || record.date.includes(searchDate);
-    const matchesStatus = !selectedStatus || record.status === selectedStatus;
-    return matchesDate && matchesStatus;
-  });
+  const attendances = useAppSelector((state) => state.studentAttendance.byStudent.attendances);
+  const summary = useAppSelector((state) => state.studentAttendance.byStudent.summary);
+  const pagination = useAppSelector((state) => state.studentAttendance.byStudent.pagination);
+  const isLoading = useAppSelector((state) => state.studentAttendance.byStudent.isLoading);
+
+  useEffect(() => {
+    if (!studentId) return;
+    if (activeTab !== 'attendance') return;
+    dispatch(
+      fetchStudentAttendanceByStudent({
+        studentId,
+        page: currentPage,
+        limit: pageSize,
+        status: selectedStatus ? STATUS_FILTER_TO_API[selectedStatus] : undefined,
+        date: searchDate || undefined,
+      })
+    );
+  }, [dispatch, studentId, activeTab, currentPage, selectedStatus, searchDate]);
+
+  const records = useMemo(
+    () =>
+      attendances.map((row: StudentAttendanceByStudentDto) => ({
+        id: row.id,
+        date: row.date ? formatDateDisplay(row.date) : '-',
+        status: mapApiStatus(row.status),
+        attendanceTime: row.checkInTime ? formatTime(row.checkInTime, currentLang) : null,
+        departureTime: row.checkOutTime ? formatTime(row.checkOutTime, currentLang) : null,
+        earlyExit:
+          row.earlyLeaveTime || row.earlyLeaveReason
+            ? {
+                exitTime: formatTime(row.earlyLeaveTime, currentLang),
+                reason: row.earlyLeaveReason || '',
+                reasonEn: row.earlyLeaveReason || '',
+                delegate: '',
+                delegateEn: '',
+              }
+            : null,
+      })),
+    [attendances, currentLang]
+  );
+
+  type AttendanceRecord = (typeof records)[number];
 
   const getStatusBadge = (status: 'present' | 'absent' | 'late') => {
     const labels: Record<'present' | 'absent' | 'late', string> = {
@@ -185,14 +150,7 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
       header: t('attendance.attendanceTime'),
       accessor: (row) =>
         row.attendanceTime ? (
-          <div className="flex flex-col items-center">
-            <span className={cellCls}>{row.attendanceTime}</span>
-            {row.attendanceTimeNote && (
-              <span className="text-xs font-normal leading-[1.7251] text-[#9CA3AF]">
-                {row.attendanceTimeNote}
-              </span>
-            )}
-          </div>
+          <span className={cellCls}>{row.attendanceTime}</span>
         ) : (
           <span className={cellCls}>-</span>
         ),
@@ -232,16 +190,7 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
     },
     {
       header: t('students.details.doneBy'),
-      accessor: (row) => (
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className={cellCls}>
-            {currentLang === 'ar' ? row.doneByName : row.doneByNameEn}
-          </span>
-          <span className="text-sm font-normal leading-[1.7251] text-[#A9A7A7]">
-            {currentLang === 'ar' ? row.doneByRole : row.doneByRoleEn}
-          </span>
-        </div>
-      ),
+      accessor: () => <span className={cellCls}>-</span>,
       headerClassName: `min-w-[160px] ${headerCls}`,
       className: `text-center ${cellCls}`,
     },
@@ -259,7 +208,10 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
         <Input
           type="search"
           value={searchDate}
-          onChange={(e) => setSearchDate(e.target.value)}
+          onChange={(e) => {
+            setSearchDate(e.target.value);
+            setCurrentPage(1);
+          }}
           placeholder={t('teachers.details.searchByDate')}
         />
       ),
@@ -274,7 +226,11 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
       customComponent: (
         <CustomSelect
           value={selectedStatus}
-          onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
+          onChange={(value) => {
+            const next = Array.isArray(value) ? (value[0] ?? '') : value;
+            setSelectedStatus((next as AttendanceUiStatus) || '');
+            setCurrentPage(1);
+          }}
           options={[
             { value: 'present', label: t('attendance.present') },
             { value: 'absent', label: t('attendance.absent') },
@@ -298,7 +254,7 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <MetricCard
           title={t('teachers.details.totalPresent')}
-          value={mockSummary.totalPresent}
+          value={summary.totalAttendance}
           icon={
             <CustomImage
               src={CheckCircleIcon}
@@ -310,7 +266,7 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
         />
         <MetricCard
           title={t('teachers.details.totalLate')}
-          value={mockSummary.totalLate}
+          value={summary.totalLate}
           icon={
             <CustomImage
               src={TimeSyncIcon}
@@ -322,7 +278,7 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
         />
         <MetricCard
           title={t('teachers.details.totalAbsent')}
-          value={mockSummary.totalAbsent}
+          value={summary.totalAbsence}
           icon={
             <CustomImage
               src={XmarkCircleRedIcon}
@@ -336,20 +292,20 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
 
       <Card>
         <DataTable
-          data={filteredRecords}
+          data={records}
           columns={columns}
           keyExtractor={(row) => row.id}
           pagination={{
-            page: currentPage,
-            limit: pageSize,
-            total: filteredRecords.length,
-            totalPages: Math.max(1, Math.ceil(filteredRecords.length / pageSize)),
+            page: pagination.pageIndex || currentPage,
+            limit: pagination.pageSize || pageSize,
+            total: pagination.totalItems,
+            totalPages: pagination.totalPages,
           }}
           onPageChange={setCurrentPage}
           filters={filterConfigs}
           showFilters={true}
           onResetFilters={handleResetFilters}
-          isLoading={false}
+          isLoading={isLoading}
           emptyMessage={t('teachers.details.noAttendanceRecords')}
           t={t}
         />
@@ -360,32 +316,6 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
         onClose={() => setActiveEarlyExit(null)}
         details={activeEarlyExit}
       />
-    </div>
-  );
-}
-
-function SummaryCard({
-  icon,
-  iconBg,
-  label,
-  value,
-}: {
-  icon: string;
-  iconBg: string;
-  label: string;
-  value: number;
-}) {
-  return (
-    <div className="flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-white p-5">
-      <div className="flex flex-col gap-1">
-        <p className="text-sm text-[#646969]">{label}</p>
-        <p className="text-2xl font-semibold text-[#0E1F1F]">{value}</p>
-      </div>
-      <div
-        className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${iconBg}`}
-      >
-        <CustomImage src={icon} alt="" className="h-5 w-5" />
-      </div>
     </div>
   );
 }
