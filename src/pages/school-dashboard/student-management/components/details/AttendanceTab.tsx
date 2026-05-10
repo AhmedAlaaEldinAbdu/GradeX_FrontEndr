@@ -206,7 +206,7 @@ export default function AttendanceTab({ studentId }: AttendanceTabProps) {
       width: '30%',
       customComponent: (
         <Input
-          type="search"
+          type="date"
           value={searchDate}
           onChange={(e) => {
             setSearchDate(e.target.value);
