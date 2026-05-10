@@ -494,11 +494,11 @@ const BadgeView: React.FC<{ badge: MenuBadge }> = ({ badge }) => {
 
 const BrandMark: React.FC = () => (
   // <div className="relative h-[40px] w-[40px] flex-shrink-0 overflow-hidden rounded-[12px] shadow-[0_1px_12px_1px_rgba(255,245,245,0.06)]">
-    <CustomImage
-      src={MainLogo}
-      alt="Classti"
-      // className="absolute left-[-13px] top-[-12px] h-[66px] w-[61px] max-w-none"
-    />
+  <CustomImage
+    src={MainLogo}
+    alt="Classti"
+    // className="absolute left-[-13px] top-[-12px] h-[66px] w-[61px] max-w-none"
+  />
   // </div>
 );
 
@@ -682,8 +682,8 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const location = useLocation();
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const [schoolName, setSchoolName] = useState<string>('');
-  const [isLoadingSchoolName, setIsLoadingSchoolName] = useState<boolean>(false);
+  const [, setSchoolName] = useState<string>('');
+  const [, setIsLoadingSchoolName] = useState<boolean>(false);
   const [hasUserOverride, setHasUserOverride] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem(SIDEBAR_COLLAPSE_STORAGE_KEY) !== null;
