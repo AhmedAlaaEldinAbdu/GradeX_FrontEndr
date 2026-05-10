@@ -64,16 +64,20 @@ export default function StudentManagement() {
         schoolBranchId: schoolBranchId || undefined,
       })
     );
+  }, [dispatch, schoolBranchId]);
+
+  useEffect(() => {
     dispatch(
       fetchClassrooms({
         page: 1,
         limit: 1000,
         filters: {
           schoolBranchId: schoolBranchId || undefined,
+          gradeId: selectedGradeId || undefined,
         },
       })
     );
-  }, [dispatch]);
+  }, [dispatch, schoolBranchId, selectedGradeId]);
 
   useEffect(() => {
     dispatch(
@@ -302,7 +306,11 @@ export default function StudentManagement() {
       customComponent: (
         <CustomSelect
           value={selectedGradeId}
-          onChange={(value) => setSelectedGradeId(Array.isArray(value) ? (value[0] ?? '') : value)}
+          onChange={(value) => {
+            const next = Array.isArray(value) ? (value[0] ?? '') : value;
+            setSelectedGradeId(next);
+            setSelectedClassroomId('');
+          }}
           options={
             Array.isArray(educationalStages)
               ? educationalStages.map((stage) => ({
@@ -342,8 +350,14 @@ export default function StudentManagement() {
                 }))
               : []
           }
-          placeholder={isLoadingClassrooms ? t('common.loading') : t('studentManagement.classes')}
-          disabled={isLoadingClassrooms}
+          placeholder={
+            !selectedGradeId
+              ? t('studentManagement.educationalStage')
+              : isLoadingClassrooms
+                ? t('common.loading')
+                : t('studentManagement.classes')
+          }
+          disabled={!selectedGradeId || isLoadingClassrooms}
           maxHeight="200px"
         />
       ),
