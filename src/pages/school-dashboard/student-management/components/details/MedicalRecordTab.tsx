@@ -205,7 +205,7 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
   );
 
   const InlineRow = ({ label, value }: { label: string; value: string }) => (
-    <div className="flex items-center gap-2 text-base">
+    <div className="flex items-center gap-2 text-start text-base">
       <span className="font-normal text-[#3A3A3A]">{label}:</span>
       <span className="font-normal text-[#3A3A3A]">{value}</span>
     </div>
@@ -241,12 +241,16 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
 
         <SectionCard title={t('medicalRecord.medicalRecordTitle')}>
           <div className="flex flex-col gap-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <InlineRow
-                label={t('medicalRecord.bloodType')}
-                value={t('medicalRecord.bloodTypeValue')}
-              />
-              <InlineRow label={t('medicalRecord.lastExamDate')} value="11/4/2022" />
+            <div className="grid grid-cols-2 items-center gap-4">
+              <div className="justify-self-start">
+                <InlineRow label={t('medicalRecord.lastExamDate')} value="11/4/2022" />
+              </div>
+              <div className="justify-self-start">
+                <InlineRow
+                  label={t('medicalRecord.bloodType')}
+                  value={t('medicalRecord.bloodTypeValue')}
+                />
+              </div>
             </div>
             <InlineRow label={t('medicalRecord.allergies')} value={t('medicalRecord.none')} />
           </div>
