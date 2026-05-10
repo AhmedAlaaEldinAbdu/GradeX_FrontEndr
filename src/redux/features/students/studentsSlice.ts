@@ -17,6 +17,7 @@ export interface StudentFilters {
   gradeId?: string;
   classroomId?: string;
   schoolBranchId?: string;
+  date?: string;
 }
 
 export interface StudentsState {
@@ -118,6 +119,7 @@ export const fetchStudents = createAsyncThunk<FetchStudentsResponse, FetchStuden
           if (payload.filters.schoolBranchId)
             params.SchoolBranchId = payload.filters.schoolBranchId;
           params.SchoolBrancheId = payload.filters.schoolBranchId; // TODO: temp fix for inconsistent API param name, should be removed once API is fixed
+          if (payload.filters.date) params.Date = payload.filters.date;
         }
       }
 

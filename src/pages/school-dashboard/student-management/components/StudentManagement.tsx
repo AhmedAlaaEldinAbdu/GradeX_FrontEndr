@@ -89,6 +89,7 @@ export default function StudentManagement() {
           gradeId: selectedGradeId || undefined,
           classroomId: selectedClassroomId || undefined,
           schoolBranchId: getCurrentSchoolBranchId() || undefined,
+          date: selectedDate || undefined,
         },
       })
     );
@@ -100,6 +101,7 @@ export default function StudentManagement() {
     selectedGradeId,
     selectedClassroomId,
     selectedSchoolBranchId,
+    selectedDate,
   ]);
 
   const handlePageChange = (page: number) => {
@@ -112,6 +114,7 @@ export default function StudentManagement() {
           gradeId: selectedGradeId || undefined,
           classroomId: selectedClassroomId || undefined,
           schoolBranchId: getCurrentSchoolBranchId() || undefined,
+          date: selectedDate || undefined,
         },
       })
     );
@@ -160,6 +163,7 @@ export default function StudentManagement() {
             gradeId: selectedGradeId || undefined,
             classroomId: selectedClassroomId || undefined,
             schoolBranchId: getCurrentSchoolBranchId() || undefined,
+            date: selectedDate || undefined,
           },
         })
       );
