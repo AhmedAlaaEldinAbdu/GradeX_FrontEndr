@@ -58,7 +58,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
           width: '794px',
           minHeight: '1123px',
           backgroundColor: '#FCFCFC',
-          fontFamily: 'Tajawal, "Helvetica Neue", sans-serif',
+          fontFamily: '"IBM Plex Sans Arabic", "Helvetica Neue", sans-serif',
           color: '#333333',
           direction: isAr ? 'rtl' : 'ltr',
           position: 'relative',
