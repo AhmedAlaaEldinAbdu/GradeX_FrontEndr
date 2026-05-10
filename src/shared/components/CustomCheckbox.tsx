@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import CheckMarkWhiteIcon from '@gradex/assets/icons/CheckMarkWhite.svg';
+import CheckMarkWhiteIcon from '@gradex/assets/icons/CheckmarkWhite.svg';
 
 interface CustomCheckboxProps {
   checked: boolean;
