@@ -5,13 +5,34 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 import { studentAttendanceApiService } from '@/services/api/student-attendance/student-attendance.service';
-import type { StudentAttendanceDto, StudentBulkAttendanceRequest } from '@/types/studentAttendance';
+import type {
+  StudentAttendanceDto,
+  StudentBulkAttendanceRequest,
+  StudentAttendanceByStudentDto,
+} from '@/types/studentAttendance';
 import { getErrorMessage } from '@/lib/http';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 // ============================================================================
 // Types
 // ============================================================================
+
+interface StudentAttendanceByStudentState {
+  attendances: StudentAttendanceByStudentDto[];
+  summary: {
+    totalAttendance: number;
+    totalAbsence: number;
+    totalLate: number;
+  };
+  pagination: {
+    pageIndex: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  isLoading: boolean;
+  error: string | null;
+}
 
 interface StudentAttendanceState {
   attendances: StudentAttendanceDto[];
@@ -24,6 +45,7 @@ interface StudentAttendanceState {
   isLoading: boolean;
   error: string | null;
   selectedAttendanceIds: string[];
+  byStudent: StudentAttendanceByStudentState;
 }
 
 const initialState: StudentAttendanceState = {
@@ -37,6 +59,22 @@ const initialState: StudentAttendanceState = {
   isLoading: false,
   error: null,
   selectedAttendanceIds: [],
+  byStudent: {
+    attendances: [],
+    summary: {
+      totalAttendance: 0,
+      totalAbsence: 0,
+      totalLate: 0,
+    },
+    pagination: {
+      pageIndex: 1,
+      pageSize: 10,
+      totalItems: 0,
+      totalPages: 0,
+    },
+    isLoading: false,
+    error: null,
+  },
 };
 
 export interface FetchStudentAttendancePayload {
@@ -106,6 +144,66 @@ export const fetchStudentAttendance = createAsyncThunk<
         pageIndex: response.data.pageIndex || 1,
         pageSize: response.data.pageSize || 10,
         totalPages: response.data.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export interface FetchStudentAttendanceByStudentPayload {
+  studentId: string;
+  page?: number;
+  limit?: number;
+  status?: number;
+  date?: string;
+}
+
+export interface FetchStudentAttendanceByStudentResponse {
+  data: StudentAttendanceByStudentDto[];
+  summary: {
+    totalAttendance: number;
+    totalAbsence: number;
+    totalLate: number;
+  };
+  meta: {
+    totalItems: number;
+    pageIndex: number;
+    pageSize: number;
+    totalPages: number;
+  };
+}
+
+export const fetchStudentAttendanceByStudent = createAsyncThunk<
+  FetchStudentAttendanceByStudentResponse,
+  FetchStudentAttendanceByStudentPayload,
+  { rejectValue: string }
+>('studentAttendance/fetchStudentAttendanceByStudent', async (payload, { rejectWithValue }) => {
+  try {
+    if (!payload?.studentId) {
+      return rejectWithValue('Student ID is required');
+    }
+
+    const response = await studentAttendanceApiService.getStudentAttendanceByStudent({
+      StudentId: payload.studentId,
+      PageIndex: payload?.page || 1,
+      PageSize: payload?.limit || 10,
+      Status: payload?.status,
+      Date: payload?.date,
+    });
+
+    return {
+      data: response?.attendances || [],
+      summary: {
+        totalAttendance: response?.totalAttendance || 0,
+        totalAbsence: response?.totalAbsence || 0,
+        totalLate: response?.totalLate || 0,
+      },
+      meta: {
+        totalItems: response?.totalItems || 0,
+        pageIndex: response?.pageIndex || 1,
+        pageSize: response?.pageSize || 10,
+        totalPages: response?.totalPages || 0,
       },
     };
   } catch (error) {
@@ -189,6 +287,31 @@ const studentAttendanceSlice = createSlice({
       .addCase(bulkCreateStudentAttendance.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      });
+
+    // Fetch Student Attendance By Student Id
+    builder
+      .addCase(fetchStudentAttendanceByStudent.pending, (state) => {
+        state.byStudent.isLoading = true;
+        state.byStudent.error = null;
+      })
+      .addCase(
+        fetchStudentAttendanceByStudent.fulfilled,
+        (state, action: PayloadAction<FetchStudentAttendanceByStudentResponse>) => {
+          state.byStudent.isLoading = false;
+          state.byStudent.attendances = action.payload.data;
+          state.byStudent.summary = action.payload.summary;
+          state.byStudent.pagination = {
+            pageIndex: action.payload.meta.pageIndex,
+            pageSize: action.payload.meta.pageSize,
+            totalItems: action.payload.meta.totalItems,
+            totalPages: action.payload.meta.totalPages,
+          };
+        }
+      )
+      .addCase(fetchStudentAttendanceByStudent.rejected, (state, action) => {
+        state.byStudent.isLoading = false;
+        state.byStudent.error = action.payload as string;
       });
   },
 });

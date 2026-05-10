@@ -6,6 +6,8 @@ import type {
   StudentAttendanceQueryParams,
   StudentAttendanceListData,
   StudentBulkAttendanceRequest,
+  StudentAttendanceByStudentData,
+  StudentAttendanceByStudentQueryParams,
 } from '@/types/studentAttendance';
 
 /**
@@ -79,7 +81,33 @@ export async function bulkCreateStudentAttendance(
   }
 }
 
+/**
+ * Get attendance records for a single student
+ */
+export async function getStudentAttendanceByStudent(
+  params: StudentAttendanceByStudentQueryParams
+): Promise<StudentAttendanceByStudentData> {
+  const response: AxiosResponse<StudentAttendanceByStudentData> = await axiosClient.get(
+    StudentAttendanceEndpoints.getByStudent,
+    { params }
+  );
+
+  return (
+    response?.data ?? {
+      attendances: [],
+      totalAttendance: 0,
+      totalAbsence: 0,
+      totalLate: 0,
+      pageIndex: params?.PageIndex || 1,
+      totalPages: 0,
+      totalItems: 0,
+      pageSize: params?.PageSize || 10,
+    }
+  );
+}
+
 export const studentAttendanceApiService = {
   getStudentAttendanceByBranch,
   bulkCreateStudentAttendance,
+  getStudentAttendanceByStudent,
 };

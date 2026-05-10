@@ -67,3 +67,33 @@ export const StudentAttendanceStatus = {
   Late: 3,
   EarlyLeave: 4,
 } as const;
+
+export interface StudentAttendanceByStudentDto {
+  id: string;
+  studentId: string;
+  date: string | null;
+  checkInTime: string | null;
+  checkOutTime: string | null;
+  status: number;
+  earlyLeaveReason: string | null;
+  earlyLeaveTime: string | null;
+}
+
+export interface StudentAttendanceByStudentData {
+  attendances: StudentAttendanceByStudentDto[];
+  totalAttendance: number;
+  totalAbsence: number;
+  totalLate: number;
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface StudentAttendanceByStudentQueryParams {
+  StudentId: string;
+  PageIndex?: number;
+  PageSize?: number;
+  Status?: number;
+  Date?: string;
+}
