@@ -450,6 +450,7 @@ export default function StudentManagement() {
             onClose={handleReassignClose}
             onConfirm={handleReassignConfirm}
             isProcessing={isReassigning}
+            gradeId={reassignStudent?.gradeId || undefined}
           />
         </div>
       ) : null}
