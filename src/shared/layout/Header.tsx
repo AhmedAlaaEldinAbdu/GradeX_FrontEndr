@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaKey, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { clearUser } from '@gradex/redux/features/auth/authSlice';
-import { selectUser } from '@gradex/redux/features/auth/authSelectors';
+import { selectUser, selectUserRole } from '@gradex/redux/features/auth/authSelectors';
 import profileImage from '@gradex/assets/images/profile.png';
-import ArrowDownIcon from '@gradex/assets/icons/ArrowDown.svg';
+import ArrowDownXsIcon from '@gradex/assets/icons/ArrowDownXs.svg';
 import NotificationDarkIcon from '@gradex/assets/icons/NotificationDark.svg';
 import SearchDarkIcon from '@gradex/assets/icons/SearchDark.svg';
 import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
@@ -15,6 +15,10 @@ import RoleSwitcher from '@/shared/components/RoleSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
 import CustomImage from '@/shared/components/CustomImage';
 import ChangePasswordModal from '@/shared/components/ChangePasswordModal';
+import { axiosClient } from '@/lib/http';
+import { SchoolsEndpoints } from '@/services/api/endpoints/schools-endpoints';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { UserRole } from '@gradex/constants';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -22,8 +26,27 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const userRole = useSelector(selectUserRole);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [schoolName, setSchoolName] = useState('');
+
+  useEffect(() => {
+    if (userRole !== UserRole.SCHOOL_ADMIN) return;
+    const branchId = getCurrentSchoolBranchId();
+    if (!branchId) return;
+    let cancelled = false;
+    axiosClient
+      .get(SchoolsEndpoints.getSchoolBranchMobile(branchId))
+      .then((res) => {
+        const name = res?.data?.data?.nameBranch;
+        if (!cancelled && name) setSchoolName(name);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [userRole]);
 
   const handleLogout = () => {
     dispatch(clearUser());
@@ -47,9 +70,12 @@ const Header: React.FC = () => {
 
           {/* Notifications */}
           <div className="relative">
-            <button className="flex h-14 w-14 items-center justify-center rounded-[20px] border border-[#DDE0E0] bg-black-100 transition-colors hover:bg-black-50">
-              <img src={NotificationDarkIcon} alt="" aria-hidden="true" className="h-6 w-6" />
-              <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-sm">
+            <button className="flex h-10 w-10 items-center justify-center rounded-[20px] border border-[#DDE0E0] bg-[#F1F1F1] transition-colors hover:bg-black-50">
+              <img src={NotificationDarkIcon} alt="" aria-hidden="true" className="h-5 w-5" />
+              <span
+                style={{ width: '14px' }}
+                className="absolute right-1 top-3 flex h-3.5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-sm"
+              >
                 1
               </span>
             </button>
@@ -59,18 +85,25 @@ const Header: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="flex h-14 items-center gap-3 rounded-[20px] border border-[#DDE0E0] bg-black-100 px-3 py-1 transition-colors hover:bg-black-50"
+              className="flex h-10 items-center gap-3 rounded-[20px] border border-[#DDE0E0] bg-[#F1F1F1] px-4 py-1 transition-colors hover:bg-black-50"
             >
-              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gray-200">
-                <CustomImage
-                  src={profileImage}
-                  alt="User Avatar"
-                  className="h-full w-full object-cover"
-                />
+              <div className="flex items-center justify-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-[#DDE0E0] bg-gray-200">
+                  <CustomImage
+                    src={profileImage}
+                    alt="User Avatar"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-col items-start text-start leading-tight">
+                  <span className="text-xs font-medium text-[#0E1F1F]">{user?.name}</span>
+                  {schoolName && (
+                    <span className="text-xs font-normal text-[#646969]">{schoolName}</span>
+                  )}
+                </div>
               </div>
-              <span className="text-base font-normal text-black-900">{user?.name}</span>
               <img
-                src={ArrowDownIcon}
+                src={ArrowDownXsIcon}
                 alt=""
                 aria-hidden="true"
                 className={`h-4 w-4 transition-transform ${showDropdown ? 'rotate-180' : ''}`}

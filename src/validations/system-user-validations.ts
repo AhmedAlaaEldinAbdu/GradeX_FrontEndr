@@ -10,6 +10,11 @@ export const userValidationSchema = yup.object({
     .required('rolesManagement.validation.userNameRequired')
     .min(3, 'rolesManagement.validation.userNameMin')
     .max(100, 'rolesManagement.validation.userNameMax')
+    .test(
+      'triple-name',
+      'rolesManagement.validation.userNameTriple',
+      (value) => !!value && value.trim().split(/\s+/).filter(Boolean).length >= 3
+    )
     .trim(),
 
   email: yup
@@ -37,6 +42,11 @@ export const userEditValidationSchema = yup.object({
     .required('rolesManagement.validation.userNameRequired')
     .min(3, 'rolesManagement.validation.userNameMin')
     .max(100, 'rolesManagement.validation.userNameMax')
+    .test(
+      'triple-name',
+      'rolesManagement.validation.userNameTriple',
+      (value) => !!value && value.trim().split(/\s+/).filter(Boolean).length >= 3
+    )
     .trim(),
 
   email: yup

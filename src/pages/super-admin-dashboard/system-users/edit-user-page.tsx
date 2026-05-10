@@ -1,7 +1,7 @@
 import React from 'react';
 import PageHeader from '@gradex/shared/components/PageHeader';
 import Breadcrumb from '@gradex/shared/layout/Breadcrumb';
-import EditUser from './components/EditUser';
+import AddEditUser from './components/AddEditUser';
 
 const EditUserPage: React.FC = () => {
   return (
@@ -22,7 +22,7 @@ const EditUserPage: React.FC = () => {
       <PageHeader title="rolesManagement.editUser" />
 
       {/* Main Content */}
-      <EditUser />
+      <AddEditUser mode="edit" />
     </div>
   );
 };

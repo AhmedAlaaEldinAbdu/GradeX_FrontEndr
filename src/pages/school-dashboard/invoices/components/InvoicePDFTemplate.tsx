@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import FocusPoint from '@gradex/assets/icons/FocusPoint.svg';
 import WavePattern from '@gradex/assets/illustrations/WavePattern.svg';
 import PencilCup from '@gradex/assets/illustrations/PencilCup.svg';
-import AlNukhbaLogo from '@/assets/identity/AlNukhbaLogo.svg';
+import MainLogo from '@/assets/identity/MainLogo.svg';
 import RyalIcon from '@gradex/assets/icons/Ryal.svg';
 import { FiGlobe, FiSmartphone, FiMail } from 'react-icons/fi';
 import { BsTelephoneFill } from 'react-icons/bs';
@@ -116,7 +116,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
               }}
             >
               <img
-                src={AlNukhbaLogo}
+                src={MainLogo}
                 alt="Logo"
                 style={{ width: '120px', height: '120px', objectFit: 'contain' }}
               />
@@ -782,7 +782,7 @@ const InvoicePDFTemplate = React.forwardRef<HTMLDivElement, InvoicePDFTemplatePr
               }}
             >
               <img
-                src={AlNukhbaLogo}
+                src={MainLogo}
                 alt="Logo"
                 style={{ width: '90px', height: '90px', objectFit: 'contain' }}
               />
