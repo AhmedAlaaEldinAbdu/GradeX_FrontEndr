@@ -72,10 +72,7 @@ const Header: React.FC = () => {
           <div className="relative">
             <button className="flex h-10 w-10 items-center justify-center rounded-[20px] border border-[#DDE0E0] bg-[#F1F1F1] transition-colors hover:bg-black-50">
               <img src={NotificationDarkIcon} alt="" aria-hidden="true" className="h-5 w-5" />
-              <span
-                style={{ width: '14px' }}
-                className="absolute right-1 top-3 flex h-3.5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-sm"
-              >
+              <span className="absolute right-1 top-3 flex h-3.5 w-[14px] items-center justify-center rounded-full bg-[#B80817] text-[10px] font-bold text-white shadow-sm">
                 1
               </span>
             </button>

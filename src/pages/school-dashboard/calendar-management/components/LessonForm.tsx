@@ -193,11 +193,11 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   });
 
   const watchedGradeId = watch('gradeId');
+  const watchedClassroomId = watch('classroomId');
   const watchedMaterialId = watch('materialId');
 
-  // Initial data fetches
+  // Initial data fetches (teachers and grades are independent of classroom)
   useEffect(() => {
-    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId: schoolBranchId } }));
     dispatch(
       fetchTeachersThunk({
         page: 1,
@@ -213,6 +213,24 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
       })
     );
   }, [dispatch, schoolBranchId]);
+
+  // Subjects depend on the selected classroom — refetch with GradeId when classroom changes
+  useEffect(() => {
+    if (watchedClassroomId && watchedGradeId) {
+      dispatch(
+        fetchSubjects({
+          page: 1,
+          limit: 100,
+          filters: {
+            schoolBranchesId: schoolBranchId,
+            gradeId: watchedGradeId,
+          },
+        })
+      );
+    }
+    // Reset the subject choice whenever the classroom changes so a stale id can't be submitted
+    setValue('materialId', '');
+  }, [dispatch, watchedClassroomId, watchedGradeId, schoolBranchId, setValue]);
 
   // Fetch books when material or grade changes
   useEffect(() => {
@@ -532,59 +550,6 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
               </FormField>
             </div>
 
-            {/* Subject & Teacher */}
-            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
-                label={t('lesson.subjectName')}
-                required
-                error={errors.materialId?.message}
-                htmlFor="materialId"
-              >
-                <Controller
-                  name="materialId"
-                  control={control}
-                  rules={{ required: t('lesson.validation.subjectRequired') }}
-                  render={({ field }) => (
-                    <CustomSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={materialOptions}
-                      placeholder={
-                        isLoadingMaterials
-                          ? t('lesson.loadingMaterials')
-                          : t('lesson.selectSubject')
-                      }
-                      disabled={isLoadingMaterials}
-                    />
-                  )}
-                />
-              </FormField>
-
-              <FormField
-                label={t('lesson.teacherName')}
-                required
-                error={errors.teacherId?.message}
-                htmlFor="teacherId"
-              >
-                <Controller
-                  name="teacherId"
-                  control={control}
-                  rules={{ required: t('lesson.validation.teacherRequired') }}
-                  render={({ field }) => (
-                    <CustomSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={teacherOptions}
-                      placeholder={
-                        isLoadingTeachers ? t('lesson.loadingTeachers') : t('lesson.selectTeacher')
-                      }
-                      disabled={isLoadingTeachers}
-                    />
-                  )}
-                />
-              </FormField>
-            </div>
-
             {/* Educational Stage & Grade/Classroom */}
             <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
@@ -636,6 +601,61 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                               : t('lesson.selectClassroom')
                       }
                       disabled={!watchedGradeId || isLoadingClassrooms}
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+
+            {/* Subject & Teacher */}
+            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                label={t('lesson.subjectName')}
+                required
+                error={errors.materialId?.message}
+                htmlFor="materialId"
+              >
+                <Controller
+                  name="materialId"
+                  control={control}
+                  rules={{ required: t('lesson.validation.subjectRequired') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={materialOptions}
+                      placeholder={
+                        !watchedClassroomId
+                          ? t('lesson.selectClassroomFirst')
+                          : isLoadingMaterials
+                            ? t('lesson.loadingMaterials')
+                            : t('lesson.selectSubject')
+                      }
+                      disabled={!watchedClassroomId || isLoadingMaterials}
+                    />
+                  )}
+                />
+              </FormField>
+
+              <FormField
+                label={t('lesson.teacherName')}
+                required
+                error={errors.teacherId?.message}
+                htmlFor="teacherId"
+              >
+                <Controller
+                  name="teacherId"
+                  control={control}
+                  rules={{ required: t('lesson.validation.teacherRequired') }}
+                  render={({ field }) => (
+                    <CustomSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={teacherOptions}
+                      placeholder={
+                        isLoadingTeachers ? t('lesson.loadingTeachers') : t('lesson.selectTeacher')
+                      }
+                      disabled={isLoadingTeachers}
                     />
                   )}
                 />

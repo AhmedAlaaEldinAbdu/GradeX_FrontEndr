@@ -2601,6 +2601,7 @@
     "loadingClassrooms": "جاري تحميل الفصول...",
     "loadingStudents": "جاري تحميل الطلاب...",
     "selectGradeFirst": "يرجى اختيار الصف أولاً",
+    "selectClassroomFirst": "يرجى اختيار الفصل أولاً",
     "selectMaterialFirst": "يرجى اختيار المادة أولاً",
     "noBooksAvailable": "لا توجد كتب متاحة للمادة والصف المحددين",
     "noClassroomsAvailable": "لا توجد فصول متاحة للصف المحدد",

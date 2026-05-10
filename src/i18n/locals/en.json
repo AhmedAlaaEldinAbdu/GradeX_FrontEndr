@@ -2588,6 +2588,7 @@
     "loadingClassrooms": "Loading classrooms...",
     "loadingStudents": "Loading students...",
     "selectGradeFirst": "Please select a grade first",
+    "selectClassroomFirst": "Please select a classroom first",
     "selectMaterialFirst": "Please select a subject first",
     "noBooksAvailable": "No books available for selected subject and grade",
     "noClassroomsAvailable": "No classrooms available for selected grade",
