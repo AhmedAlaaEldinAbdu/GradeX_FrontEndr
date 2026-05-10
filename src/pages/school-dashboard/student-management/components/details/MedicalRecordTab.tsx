@@ -52,9 +52,7 @@ const mockVaccinationRecords: VaccinationRecord[] = [
   },
 ];
 
-const attachments = [
-  { id: '1', name: 'التقرير الطبي', nameEn: 'Medical Report', size: '520 KB' },
-];
+const attachments = [{ id: '1', name: 'التقرير الطبي', nameEn: 'Medical Report', size: '520 KB' }];
 
 export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
   const { t, i18n } = useTranslation();
@@ -134,7 +132,7 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
       placeholder: '',
       value: searchQuery,
       onChange: () => {},
-      width: '40%',
+      width: '30%',
       customComponent: (
         <Input
           type="search"
@@ -150,7 +148,7 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
       placeholder: '',
       value: selectedClass,
       onChange: () => {},
-      width: '20%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={selectedClass}
@@ -176,7 +174,7 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
       placeholder: '',
       value: selectedStatus,
       onChange: () => {},
-      width: '15%',
+      width: '12%',
       customComponent: (
         <CustomSelect
           value={selectedStatus}
@@ -200,27 +198,24 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
   };
 
   const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="rounded-2xl border border-[#EDEDED] p-5">
-      <h3 className="mb-4 text-base font-medium text-[#0E1F1F]">{title}</h3>
+    <div className="rounded-2xl border border-[#DDE0E0] p-4">
+      <h3 className="mb-6 text-start text-base font-normal text-[#0E1F1F]">{title}</h3>
       {children}
     </div>
   );
 
   const InlineRow = ({ label, value }: { label: string; value: string }) => (
-    <div className="flex items-center gap-2 text-sm">
-      <span className="font-medium text-[#0E1F1F]">{label}:</span>
-      <span className="text-[#646969]">{value}</span>
+    <div className="flex items-center gap-2 text-start text-base">
+      <span className="font-normal text-[#3A3A3A]">{label}:</span>
+      <span className="font-normal text-[#3A3A3A]">{value}</span>
     </div>
   );
 
   return (
     <Card>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <SectionCard title={t('medicalRecord.healthStatus')}>
-          <InlineRow
-            label={t('medicalRecord.disabilityType')}
-            value={t('medicalRecord.none')}
-          />
+          <InlineRow label={t('medicalRecord.disabilityType')} value={t('medicalRecord.none')} />
         </SectionCard>
 
         <SectionCard title={t('medicalRecord.vaccinationRecord')}>
@@ -245,18 +240,19 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
         </SectionCard>
 
         <SectionCard title={t('medicalRecord.medicalRecordTitle')}>
-          <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
-            <InlineRow label={t('medicalRecord.lastExamDate')} value="11/4/2022" />
-            <InlineRow
-              label={t('medicalRecord.bloodType')}
-              value={t('medicalRecord.bloodTypeValue')}
-            />
-            <div className="md:col-span-2">
-              <InlineRow
-                label={t('medicalRecord.allergies')}
-                value={t('medicalRecord.none')}
-              />
+          <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-2 items-center gap-4">
+              <div className="justify-self-start">
+                <InlineRow label={t('medicalRecord.lastExamDate')} value="11/4/2022" />
+              </div>
+              <div className="justify-self-start">
+                <InlineRow
+                  label={t('medicalRecord.bloodType')}
+                  value={t('medicalRecord.bloodTypeValue')}
+                />
+              </div>
             </div>
+            <InlineRow label={t('medicalRecord.allergies')} value={t('medicalRecord.none')} />
           </div>
         </SectionCard>
 
@@ -265,24 +261,24 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
             {attachments.map((attachment) => (
               <div
                 key={attachment.id}
-                className="flex items-center justify-between gap-4 rounded-xl border border-[#EDEDED] bg-white p-3"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-[#DDE0E0] bg-white px-3 py-2"
               >
-                <div className="flex items-center gap-3">
-                  <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-9 flex-shrink-0" />
+                <div className="flex items-center gap-4">
+                  <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-10 flex-shrink-0" />
                   <div className="text-start">
-                    <p className="text-sm font-medium text-[#0E1F1F]">
+                    <p className="text-base font-normal text-[#0E1F1F]">
                       {currentLang === 'ar' ? attachment.name : attachment.nameEn}
                     </p>
-                    <p className="text-xs font-normal text-[#646969]">{attachment.size}</p>
+                    <p className="text-sm font-normal text-[#3A3A3A]">{attachment.size}</p>
                   </div>
                 </div>
                 <button
                   type="button"
-                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#E7F2FB] transition-colors hover:bg-[#D5E9F7]"
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#117BD7]/10 transition-colors hover:bg-[#117BD7]/20"
                   title={t('common.download')}
                   aria-label={t('common.download')}
                 >
-                  <CustomImage src={DownloadIcon} alt="" className="h-5 w-5" />
+                  <CustomImage src={DownloadIcon} alt="" className="h-4 w-4" />
                 </button>
               </div>
             ))}

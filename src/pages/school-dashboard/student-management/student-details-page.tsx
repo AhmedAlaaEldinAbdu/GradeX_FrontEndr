@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
@@ -11,45 +12,45 @@ import PerformanceTab from '@/pages/school-dashboard/student-management/componen
 import MedicalRecordTab from '@/pages/school-dashboard/student-management/components/details/MedicalRecordTab';
 import ExamsTab from '@/pages/school-dashboard/student-management/components/details/ExamsTab';
 import PageHeader from '@/shared/components/PageHeader';
-
-// Mock data for now
-const mockStudentDetails = {
-  id: '1',
-  fullName: 'أحمد محمود حسن إبراهيم',
-  fullNameEn: 'Ahmed Mahmoud Hassan Ibrahim',
-  pictureProfilePath: null,
-  systemType: 'امريكي',
-  systemTypeEn: 'American',
-  educationalSystem: 'عالمي',
-  educationalSystemEn: 'International',
-  className: '1/أ',
-  classNameEn: '1/A',
-  educationalStage: 'المرحلة الإعدادية',
-  educationalStageEn: 'Middle School',
-  guardianName: 'محمود حسن إبراهيم',
-  guardianNameEn: 'Mahmoud Hassan Ibrahim',
-  relationship: 'عم',
-  relationshipEn: 'Uncle',
-  guardianPhone: '+20 10 1234 5678',
-  guardianEmail: 'Ahmed@gmail.com',
-  nationality: 'مصري',
-  nationalityEn: 'Egyptian',
-  address: 'مدينة نصر - شارع مصطفى النحاس - عمارة 12',
-  addressEn: 'Nasr City - Mostafa El-Nahhas St. - Building 12',
-  schoolName: 'اسم المدرسة السابقة',
-  schoolNameEn: 'Previous School Name',
-  birthDate: '11/4/2022',
-  medicalNotes: 'لا يوجد',
-  medicalNotesEn: 'None',
-};
+import Loading from '@/shared/components/Loading';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { fetchStudentByIdSilent } from '@/redux/features/students/studentsSlice';
+import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
 
 export default function StudentDetailsPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
-  const currentLang = i18n.language as 'ar' | 'en';
+  const dispatch = useAppDispatch();
 
-  const student = mockStudentDetails;
+  const [student, setStudent] = useState<StudentDto | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchStudent = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await dispatch(fetchStudentByIdSilent(id)).unwrap();
+        setStudent(data);
+      } catch (err) {
+        console.error('Failed to fetch student:', err);
+        setError((err as { message?: string })?.message || t('common.error'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStudent();
+  }, [dispatch, id, t]);
+
+  const studentName = student ? getStudentFullName(student) : '';
 
   const isFromAttendance = location.state?.from === 'attendance';
   const isFromStudentsRecord = location.state?.from === 'studentsRecord';
@@ -59,20 +60,36 @@ export default function StudentDetailsPage() {
         { label: t('sidebar.studentAffairs') },
         { label: t('sidebar.studentManagement') },
         { label: t('sidebar.attendance'), path: '/students/attendance' },
-        { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+        { label: studentName },
       ]
     : isFromStudentsRecord
       ? [
           { label: t('sidebar.studentAffairs') },
           { label: t('sidebar.studentManagement') },
           { label: t('studentManagement.studentsRecord'), path: '/students-record' },
-          { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+          { label: studentName },
         ]
       : [
           { label: t('sidebar.studentManagement') },
           { label: t('students.title'), path: '/students-record' },
-          { label: currentLang === 'ar' ? student.fullName : student.fullNameEn },
+          { label: studentName },
         ];
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loading size="lg" />
+      </div>
+    );
+  }
+
+  if (error || !student) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-red-500">{error || t('common.noDataFound')}</div>
+      </div>
+    );
+  }
 
   const tabItems: TabItem[] = [
     {
@@ -123,7 +140,7 @@ export default function StudentDetailsPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Student Name Title */}
-      <PageHeader title={currentLang === 'ar' ? student.fullName : student.fullNameEn} />
+      <PageHeader title={studentName} />
 
       {/* Tabs */}
       <Tabs

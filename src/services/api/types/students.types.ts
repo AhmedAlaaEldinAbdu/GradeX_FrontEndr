@@ -3,6 +3,14 @@
  * Defines API contracts for students endpoints.
  */
 
+export interface StudentAttachment {
+  id: string;
+  name: string;
+  nameEn?: string | null;
+  size?: string | null;
+  filePath?: string | null;
+}
+
 export interface StudentDto {
   id: string;
   firstName: string;
@@ -25,6 +33,13 @@ export interface StudentDto {
   grade: string | null;
   className: string | null;
   parentId: string | null;
+  parentNationalId: string | null;
+  studentNationalId: string | null;
+  nationalityId: string | null;
+  nationality: string | null;
+  isAssignToClassroom: boolean;
+  hasAnotherNationality: boolean | null;
+  attachments?: StudentAttachment[] | null;
 }
 
 export interface StudentListData {
