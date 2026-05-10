@@ -7,6 +7,7 @@ import Input from '@/shared/components/Input';
 import IconButton from '@/shared/components/IconButton';
 import { getAttendanceStatusBadgeColor } from '@/shared/components/SharedBadges';
 import CustomImage from '@/shared/components/CustomImage';
+import MetricCard from '@/shared/components/MetricCard';
 import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
 import TimeSyncIcon from '@gradex/assets/icons/TimeSync.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
@@ -149,88 +150,100 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
       absent: t('attendance.absent'),
       late: t('attendance.late'),
     };
-    return <span className={getAttendanceStatusBadgeColor(status)}>{labels[status]}</span>;
+    return (
+      <span
+        className={`${getAttendanceStatusBadgeColor(status)} text-sm font-medium leading-[1.7251]`}
+      >
+        {labels[status]}
+      </span>
+    );
   };
+
+  const headerCls = 'text-base font-normal leading-[1.7251] text-[#0E1F1F]';
+  const cellCls = 'text-sm font-normal leading-[1.7251] text-[#646969]';
 
   const columns: DataTableColumn<AttendanceRecord>[] = [
     {
       header: '#',
       accessor: (_row, index) => (currentPage - 1) * pageSize + (index ?? 0) + 1,
-      headerClassName: 'w-12',
-      className: 'text-center',
+      headerClassName: `w-12 ${headerCls}`,
+      className: `text-center ${cellCls}`,
     },
     {
       header: t('attendance.date'),
-      accessor: (row) => <span>{row.date}</span>,
-      headerClassName: 'min-w-[120px]',
-      className: 'text-center',
+      accessor: (row) => <span className={cellCls}>{row.date}</span>,
+      headerClassName: `min-w-[120px] ${headerCls}`,
+      className: `text-center ${cellCls}`,
     },
     {
       header: t('teachers.details.status'),
       accessor: (row) => getStatusBadge(row.status),
-      headerClassName: 'min-w-[100px]',
-      className: 'text-center',
+      headerClassName: `min-w-[100px] ${headerCls}`,
+      className: `text-center ${cellCls}`,
     },
     {
       header: t('attendance.attendanceTime'),
       accessor: (row) =>
         row.attendanceTime ? (
           <div className="flex flex-col items-center">
-            <span>{row.attendanceTime}</span>
+            <span className={cellCls}>{row.attendanceTime}</span>
             {row.attendanceTimeNote && (
-              <span className="text-xs text-[#9CA3AF]">{row.attendanceTimeNote}</span>
+              <span className="text-xs font-normal leading-[1.7251] text-[#9CA3AF]">
+                {row.attendanceTimeNote}
+              </span>
             )}
           </div>
         ) : (
-          <span>-</span>
+          <span className={cellCls}>-</span>
         ),
-      headerClassName: 'min-w-[140px]',
-      className: 'text-center',
+      headerClassName: `min-w-[140px] ${headerCls}`,
+      className: `text-center ${cellCls}`,
     },
     {
       header: t('teachers.details.checkOutTime'),
-      accessor: (row) => <span>{row.departureTime || '-'}</span>,
-      headerClassName: 'min-w-[120px]',
-      className: 'text-center',
+      accessor: (row) => <span className={cellCls}>{row.departureTime || '-'}</span>,
+      headerClassName: `min-w-[120px] ${headerCls}`,
+      className: `text-center ${cellCls}`,
     },
     {
       header: t('teachers.details.earlyDeparture'),
       accessor: (row) =>
         row.earlyExit ? (
           <div className="flex items-center justify-center gap-2">
-            <span>{row.earlyExit.exitTime}</span>
+            <span className={cellCls}>{row.earlyExit.exitTime}</span>
             <IconButton
               variant="blue"
               ariaLabel={t('students.details.earlyExitTitle')}
               onClick={() => setActiveEarlyExit(row.earlyExit)}
-              className="h-8 w-8"
+              className="h-10 w-10"
             >
               <CustomImage
                 src={EyeStyledIcon}
                 alt={t('students.details.earlyExitTitle')}
-                className="h-4 w-4"
+                className="h-6 w-6"
               />
             </IconButton>
           </div>
         ) : (
-          <span>-</span>
+          <span className={cellCls}>-</span>
         ),
-      headerClassName: 'min-w-[160px]',
-      className: 'text-center',
+      headerClassName: `min-w-[160px] ${headerCls}`,
+      className: `text-center ${cellCls}`,
     },
     {
       header: t('students.details.doneBy'),
       accessor: (row) => (
-        <div className="flex flex-col gap-1 text-start">
-          <span className="text-sm font-normal text-[#646969]">
+        <div className="flex flex-col items-center gap-1 text-center">
+          <span className={cellCls}>
             {currentLang === 'ar' ? row.doneByName : row.doneByNameEn}
           </span>
-          <span className="text-xs text-[#A9A7A7]">
+          <span className="text-sm font-normal leading-[1.7251] text-[#A9A7A7]">
             {currentLang === 'ar' ? row.doneByRole : row.doneByRoleEn}
           </span>
         </div>
       ),
-      headerClassName: 'min-w-[160px]',
+      headerClassName: `min-w-[160px] ${headerCls}`,
+      className: `text-center ${cellCls}`,
     },
   ];
 
@@ -283,23 +296,41 @@ export default function AttendanceTab(_props: AttendanceTabProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <SummaryCard
-          icon={CheckCircleIcon}
-          iconBg="bg-[#E8F4EE]"
-          label={t('teachers.details.totalPresent')}
+        <MetricCard
+          title={t('teachers.details.totalPresent')}
           value={mockSummary.totalPresent}
+          icon={
+            <CustomImage
+              src={CheckCircleIcon}
+              alt={t('teachers.details.totalPresent')}
+              className="h-5 w-5"
+            />
+          }
+          iconClassName="bg-[#E8F4EE]"
         />
-        <SummaryCard
-          icon={TimeSyncIcon}
-          iconBg="bg-[#FEF3E2]"
-          label={t('teachers.details.totalLate')}
+        <MetricCard
+          title={t('teachers.details.totalLate')}
           value={mockSummary.totalLate}
+          icon={
+            <CustomImage
+              src={TimeSyncIcon}
+              alt={t('teachers.details.totalLate')}
+              className="h-5 w-5"
+            />
+          }
+          iconClassName="bg-[#FEF3E2]"
         />
-        <SummaryCard
-          icon={XmarkCircleRedIcon}
-          iconBg="bg-[#FCE8E8]"
-          label={t('teachers.details.totalAbsent')}
+        <MetricCard
+          title={t('teachers.details.totalAbsent')}
           value={mockSummary.totalAbsent}
+          icon={
+            <CustomImage
+              src={XmarkCircleRedIcon}
+              alt={t('teachers.details.totalAbsent')}
+              className="h-5 w-5"
+            />
+          }
+          iconClassName="bg-[#FCE8E8]"
         />
       </div>
 
