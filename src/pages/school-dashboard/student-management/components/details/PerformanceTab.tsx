@@ -130,9 +130,9 @@ export default function PerformanceTab(_props: PerformanceTabProps) {
     // open teacher details
   };
 
-  const handleViewNotes = (_report: PerformanceReport) => {
-    // open notes details
-  };
+  // const handleViewNotes = (_report: PerformanceReport) => {
+  //   // open notes details
+  // };
 
   const ViewIconButton = ({ onClick, label }: { onClick: () => void; label: string }) => (
     <IconButton variant="blue" ariaLabel={label} onClick={onClick} className="h-8 w-8">
@@ -172,7 +172,8 @@ export default function PerformanceTab(_props: PerformanceTabProps) {
           <span className="text-sm text-[#646969]">
             {currentLang === 'ar' ? row.teacherName : row.teacherNameEn}
           </span>
-          <ViewIconButton onClick={() => handleViewTeacher(row)} label={t('common.view')} />        </div>
+          <ViewIconButton onClick={() => handleViewTeacher(row)} label={t('common.view')} />{' '}
+        </div>
       ),
       headerClassName: 'min-w-[220px]',
     },
