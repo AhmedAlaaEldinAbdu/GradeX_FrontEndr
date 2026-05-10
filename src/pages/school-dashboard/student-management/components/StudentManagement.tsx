@@ -354,13 +354,7 @@ export default function StudentManagement() {
                 }))
               : []
           }
-          placeholder={
-            !selectedGradeId
-              ? t('studentManagement.educationalStage')
-              : isLoadingClassrooms
-                ? t('common.loading')
-                : t('studentManagement.classes')
-          }
+          placeholder={isLoadingClassrooms ? t('common.loading') : t('studentManagement.classes')}
           disabled={!selectedGradeId || isLoadingClassrooms}
           maxHeight="200px"
         />

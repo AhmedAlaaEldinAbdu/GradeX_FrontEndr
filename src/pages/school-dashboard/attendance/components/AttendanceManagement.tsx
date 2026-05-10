@@ -66,7 +66,7 @@ export default function AttendanceManagement() {
   const [popupStudentName, setPopupStudentName] = useState('');
   const [popupStudentId, setPopupStudentId] = useState<string | null>(null);
 
-  // Load educational stages and classrooms for filters
+  // Load educational stages for the stage filter
   useEffect(() => {
     dispatch(
       getEducationalStages({
@@ -75,14 +75,21 @@ export default function AttendanceManagement() {
         schoolBranchId: schoolBranchId || undefined,
       })
     );
+  }, [dispatch, schoolBranchId]);
+
+  // Load classrooms whenever the selected stage changes (cascading filter)
+  useEffect(() => {
     dispatch(
       fetchClassrooms({
         page: 1,
         limit: 1000,
-        filters: { schoolBranchId: schoolBranchId || undefined },
+        filters: {
+          schoolBranchId: schoolBranchId || undefined,
+          gradeId: selectedStageId || undefined,
+        },
       })
     );
-  }, [dispatch, schoolBranchId]);
+  }, [dispatch, schoolBranchId, selectedStageId]);
 
   // Fetch student attendance
   useEffect(() => {
@@ -498,7 +505,11 @@ export default function AttendanceManagement() {
       customComponent: (
         <CustomSelect
           value={selectedStageId}
-          onChange={(value) => setSelectedStageId(Array.isArray(value) ? (value[0] ?? '') : value)}
+          onChange={(value) => {
+            const next = Array.isArray(value) ? (value[0] ?? '') : value;
+            setSelectedStageId(next);
+            setSelectedClassroomId('');
+          }}
           options={
             Array.isArray(educationalStages)
               ? educationalStages.map((stage) => ({
@@ -534,6 +545,7 @@ export default function AttendanceManagement() {
               : []
           }
           placeholder={t('attendance.classroom')}
+          disabled={!selectedStageId}
           maxHeight="200px"
         />
       ),
