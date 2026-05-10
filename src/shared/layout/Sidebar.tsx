@@ -62,7 +62,7 @@ const MUTED_OPACITY: React.CSSProperties = { opacity: 0.8 };
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(' ');
 
-const SIDEBAR_FONT = "font-['Tajawal',sans-serif]";
+const SIDEBAR_FONT = "font-['IBM_Plex_Sans_Arabic',sans-serif]";
 const MUTED_TEXT = 'text-[#8FA89A] opacity-80';
 const SIDEBAR_COLLAPSE_STORAGE_KEY = 'gradex.sidebar.collapsed';
 const ACTIVE_ROW_BG_RTL =
@@ -478,7 +478,6 @@ const Chevron: React.FC<{ expanded: boolean; isRTL: boolean; active: boolean }> 
 const BadgeView: React.FC<{ badge: MenuBadge }> = ({ badge }) => {
   if (badge.type === 'tag') {
     // Figma LMS chip: padding 2px 8px, bg #00BC7D, radius 4,
-    // text Tajawal 700 / 10px / line-height 15px / white.
     return (
       <span className="inline-flex h-[19px] w-[34.362px] flex-shrink-0 items-center justify-center rounded-[4px] bg-[#00bc7d] px-[8px] py-[2px] text-[10px] font-bold leading-[15px] text-white">
         {badge.value}
