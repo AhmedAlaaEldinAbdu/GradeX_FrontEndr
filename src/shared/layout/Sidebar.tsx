@@ -21,8 +21,8 @@ import ReportsIcon from '@gradex/assets/icons/Reports.svg';
 import SettingsIcon from '@gradex/assets/icons/Settings.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
-import AlNukhbaLogo from '@/assets/identity/AlNukhbaLogo.svg';
-import ElmLogo from '@/assets/identity/MainLogo.webp';
+import MainLogo from '@/assets/identity/MainLogo.svg';
+import ElmLogo from '@/assets/identity/elmLogo.webp';
 import DataSourcesIcon from '@gradex/assets/icons/DataSources.svg';
 import DatePickerIcon from '@gradex/assets/icons/DatePicker.svg';
 import DocumentEditIcon from '@gradex/assets/icons/DocumentEdit.svg';
@@ -494,13 +494,13 @@ const BadgeView: React.FC<{ badge: MenuBadge }> = ({ badge }) => {
 };
 
 const BrandMark: React.FC = () => (
-  <div className="relative h-[40px] w-[40px] flex-shrink-0 overflow-hidden rounded-[12px] shadow-[0_1px_12px_1px_rgba(255,245,245,0.06)]">
+  // <div className="relative h-[40px] w-[40px] flex-shrink-0 overflow-hidden rounded-[12px] shadow-[0_1px_12px_1px_rgba(255,245,245,0.06)]">
     <CustomImage
-      src={AlNukhbaLogo}
-      alt="School"
-      className="absolute left-[-13px] top-[-12px] h-[66px] w-[61px] max-w-none"
+      src={MainLogo}
+      alt="Classti"
+      // className="absolute left-[-13px] top-[-12px] h-[66px] w-[61px] max-w-none"
     />
-  </div>
+  // </div>
 );
 
 interface CollapsedGroupItemProps {
@@ -1045,7 +1045,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
               )}
             >
               <BrandMark />
-              <div
+              {/* <div
                 className={cn(
                   'flex h-[45px] w-[125px] min-w-0 flex-1 flex-col justify-center p-0 text-center',
                   isRTL ? 'items-end' : 'items-start'
@@ -1068,7 +1068,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                     )}
                   </>
                 )}
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="flex items-center justify-center self-center px-[14px]">
