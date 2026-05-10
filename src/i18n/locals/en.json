@@ -416,6 +416,7 @@
       "userNameRequired": "Username is required",
       "userNameMin": "Username must be at least 3 characters",
       "userNameMax": "Username must not exceed 100 characters",
+      "userNameTriple": "Please enter a triple name",
       "emailRequired": "Email is required",
       "emailInvalid": "Email is invalid",
       "phoneRequired": "Phone number is required",
