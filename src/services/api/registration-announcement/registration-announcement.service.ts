@@ -11,7 +11,7 @@ export const registrationAnnouncementApi = {
   getAll: async ({
     pageIndex = 1,
     pageSize = 10,
-    searchTerm,
+    gradeName,
     status,
     startDate,
     endDate,
@@ -23,7 +23,7 @@ export const registrationAnnouncementApi = {
         params: {
           PageIndex: pageIndex,
           PageSize: pageSize,
-          SearchTerm: searchTerm || undefined,
+          GradeName: gradeName || undefined,
           Status: status || undefined,
           StartDate: startDate || undefined,
           EndDate: endDate || undefined,

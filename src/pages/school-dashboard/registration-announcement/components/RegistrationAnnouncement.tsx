@@ -80,7 +80,7 @@ export default function RegistrationAnnouncement() {
     () => ({
       pageIndex: pagination.page,
       pageSize: pagination.limit,
-      searchTerm: searchTerm.trim() || undefined,
+      gradeName: searchTerm.trim() || undefined,
       status: selectedStatus ? ANNOUNCEMENT_STATUS_VALUE[selectedStatus] : undefined,
       startDate: startDate || undefined,
       endDate: endDate || undefined,
@@ -201,7 +201,7 @@ export default function RegistrationAnnouncement() {
       className: 'text-center',
     },
     {
-      header: 'registrationAnnouncement.gradesLabel',
+      header: 'registrationAnnouncement.educationalStagesLabel',
       accessor: (row) => {
         const rowGrades = (row.gradeIds || [])
           .map((id) => allGrades.find((g) => g.id.toLowerCase() === id.toLowerCase()))
