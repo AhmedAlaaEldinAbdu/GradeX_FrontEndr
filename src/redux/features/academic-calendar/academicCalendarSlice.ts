@@ -189,6 +189,7 @@ export interface FetchWeeklyCalendarPayload {
   schoolBranchId: string;
   startDate?: string;
   endDate?: string;
+  gradeId?: string;
 }
 
 /**
@@ -223,18 +224,30 @@ export const fetchAcademicCalendarsForWeek = createAsyncThunk<
       return [];
     }
 
-    const calendars = listData.academicCalendarDto || listData.calendars || [];
+    const allCalendars = listData.academicCalendarDto || listData.calendars || [];
 
-    if (calendars.length === 0) {
+    if (allCalendars.length === 0) {
       return [];
     }
 
-    // Step 2: Fetch full details for each calendar (to get breaks, breakfasts, assemblies with times)
+    // Step 2: Narrow to the selected stage (gradeId) BEFORE fetching details,
+    // so we only hit `/AcademicCalendar/{id}` for the matching calendar(s).
+    const calendarsForStage = payload.gradeId
+      ? allCalendars.filter((calendar) => calendar.gradeId === payload.gradeId)
+      : allCalendars;
+
+    if (calendarsForStage.length === 0) {
+      return [];
+    }
+
+    // Step 3: Fetch full details only for the filtered calendars
     const detailedCalendars = await Promise.all(
-      calendars.map((calendar) => academicCalendarApiService.getAcademicCalendarById(calendar.id))
+      calendarsForStage.map((calendar) =>
+        academicCalendarApiService.getAcademicCalendarById(calendar.id)
+      )
     );
 
-    // Step 3: Filter calendars where the current date is between studyStartDate and studyEndDate
+    // Step 4: Keep only calendars active for the current date
     const now = new Date();
     const activeCalendars = detailedCalendars.filter((calendar) => {
       const studyStart = new Date(calendar.studyStartDate);

@@ -664,8 +664,8 @@
     "cancelled": "ملغي",
     "addPageTitle": "إضافة اعلان تسجيل",
     "editPageTitle": "تعديل إعلان تسجيل",
-    "educationalStagesLabel": "المراحل الدراسية",
-    "selectEducationalStages": "اختر المراحل الدراسية",
+    "educationalStagesLabel": "المراحل التعليمية",
+    "selectEducationalStages": "اختر المراحل التعليمية",
     "gradesLabel": "الصفوف الدراسية",
     "selectGrades": "اختر الصفوف الدراسية",
     "startDateLabel": "تاريخ بداية التسجيل",
@@ -2470,6 +2470,7 @@
   },
   "weeklyCalendar": {
     "title": "التقويم الاسبوعي",
+    "selectStagePrompt": "الرجاء اختيار المرحلة التعليمية لعرض الجدول",
     "recoverLessons": "إسترجاع الحصص بالتساوي",
     "duration": "مدة المحاضرة: {{minutes}} دقيقة",
     "lessonDuration": "مدة المحاضرة",

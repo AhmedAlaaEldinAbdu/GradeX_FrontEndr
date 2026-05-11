@@ -167,9 +167,9 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} noValidate className="space-y-6">
-        {/* Grades (Multi Select) */}
+        {/* Educational Stages (Multi Select) */}
         <FormField
-          label={t('registrationAnnouncement.gradesLabel', 'Grades')} // You might want to add translations or just use existing
+          label={t('registrationAnnouncement.educationalStagesLabel')}
           required
           error={errors.gradeIds?.message && t(errors.gradeIds.message)}
           htmlFor="gradeIds"
@@ -185,7 +185,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
                 placeholder={
                   isLoadingGrades
                     ? t('common.loading')
-                    : t('registrationAnnouncement.selectGrades', 'Select Grades')
+                    : t('registrationAnnouncement.selectEducationalStages')
                 }
                 disabled={isLoadingGrades}
                 error={!!errors.gradeIds}

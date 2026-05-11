@@ -30,7 +30,7 @@ export interface GetRegistrationAnnouncementByIdResponse {
 export interface RegistrationAnnouncementQueryParams {
   pageIndex?: number;
   pageSize?: number;
-  searchTerm?: string;
+  gradeName?: string;
   status?: number;
   startDate?: string;
   endDate?: string;

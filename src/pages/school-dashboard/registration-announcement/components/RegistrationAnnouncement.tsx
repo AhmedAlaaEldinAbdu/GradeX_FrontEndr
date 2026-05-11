@@ -80,7 +80,7 @@ export default function RegistrationAnnouncement() {
     () => ({
       pageIndex: pagination.page,
       pageSize: pagination.limit,
-      searchTerm: searchTerm.trim() || undefined,
+      gradeName: searchTerm.trim() || undefined,
       status: selectedStatus ? ANNOUNCEMENT_STATUS_VALUE[selectedStatus] : undefined,
       startDate: startDate || undefined,
       endDate: endDate || undefined,
@@ -102,18 +102,19 @@ export default function RegistrationAnnouncement() {
       setIsLoading(true);
       const response = await registrationAnnouncementApi.getAll(requestParams);
 
-      if (response?.data) {
-        setAnnouncements(response.data.registrationAnouncementDto || []);
-        setPagination((prev) => ({
-          ...prev,
-          page: response.data.pageIndex,
-          limit: response.data.pageSize,
-          total: response.data.totalItems,
-          totalPages: response.data.totalPages,
-        }));
-      }
+      const data = response?.data;
+      setAnnouncements(data?.registrationAnouncementDto || []);
+      setPagination((prev) => ({
+        ...prev,
+        page: data?.pageIndex ?? prev.page,
+        limit: data?.pageSize ?? prev.limit,
+        total: data?.totalItems ?? 0,
+        totalPages: data?.totalPages ?? 0,
+      }));
     } catch (error) {
       console.error('Failed to fetch announcements:', error);
+      setAnnouncements([]);
+      setPagination((prev) => ({ ...prev, total: 0, totalPages: 0 }));
     } finally {
       setIsLoading(false);
     }
@@ -200,7 +201,7 @@ export default function RegistrationAnnouncement() {
       className: 'text-center',
     },
     {
-      header: 'registrationAnnouncement.gradesLabel',
+      header: 'registrationAnnouncement.educationalStagesLabel',
       accessor: (row) => {
         const rowGrades = (row.gradeIds || [])
           .map((id) => allGrades.find((g) => g.id.toLowerCase() === id.toLowerCase()))

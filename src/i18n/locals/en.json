@@ -2457,6 +2457,7 @@
   },
   "weeklyCalendar": {
     "title": "Weekly Calendar",
+    "selectStagePrompt": "Please select the educational stage to view the schedule",
     "recoverLessons": "Recover Lessons Equally",
     "duration": "Duration: {{minutes}} min",
     "lessonDuration": "Lesson Duration",
