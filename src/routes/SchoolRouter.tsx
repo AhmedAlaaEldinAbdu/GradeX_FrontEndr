@@ -50,6 +50,9 @@ import AddAcademicCalendarPage from '@/pages/school-dashboard/calendar-managemen
 import EditAcademicCalendarPage from '@/pages/school-dashboard/calendar-management/edit-academic-calendar-page';
 import TuitionFeesPage from '@/pages/school-dashboard/tuition-fees/tuition-fees-page';
 import AddTuitionFeePage from '@/pages/school-dashboard/tuition-fees/add-tuition-fee-page';
+import ContractsPage from '@/pages/school-dashboard/contracts/contracts-page';
+import AddContractPage from '@/pages/school-dashboard/contracts/add-contract-page';
+import EditContractPage from '@/pages/school-dashboard/contracts/edit-contract-page';
 import EditTuitionFeePage from '@/pages/school-dashboard/tuition-fees/edit-tuition-fee-page';
 import AddDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/add-discount-offer-page';
 import EditDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/edit-discount-offer-page';
@@ -1017,10 +1020,27 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">العقود</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <ContractsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/financial-management/contracts/add-contract"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddContractPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/financial-management/contracts/edit-contract"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditContractPage />
             </MainLayout>
           </ProtectedRoute>
         }
