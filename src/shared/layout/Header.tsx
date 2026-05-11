@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaKey, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { clearUser } from '@gradex/redux/features/auth/authSlice';
-import { selectUser, selectUserRole } from '@gradex/redux/features/auth/authSelectors';
+import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import profileImage from '@gradex/assets/images/profile.png';
 import ArrowDownXsIcon from '@gradex/assets/icons/ArrowDownXs.svg';
 import NotificationDarkIcon from '@gradex/assets/icons/NotificationDark.svg';
@@ -13,12 +13,9 @@ import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 // TODO(TEST TEAM): Temporary role switcher (remove later)
 import RoleSwitcher from '@/shared/components/RoleSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useSchoolBranchName } from '@/hooks/useSchoolBranchName';
 import CustomImage from '@/shared/components/CustomImage';
 import ChangePasswordModal from '@/shared/components/ChangePasswordModal';
-import { axiosClient } from '@/lib/http';
-import { SchoolsEndpoints } from '@/services/api/endpoints/schools-endpoints';
-import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import { UserRole } from '@gradex/constants';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -26,27 +23,9 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
-  const userRole = useSelector(selectUserRole);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [schoolName, setSchoolName] = useState('');
-
-  useEffect(() => {
-    if (userRole !== UserRole.SCHOOL_ADMIN) return;
-    const branchId = getCurrentSchoolBranchId();
-    if (!branchId) return;
-    let cancelled = false;
-    axiosClient
-      .get(SchoolsEndpoints.getSchoolBranchMobile(branchId))
-      .then((res) => {
-        const name = res?.data?.data?.nameBranch;
-        if (!cancelled && name) setSchoolName(name);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [userRole]);
+  const { name: schoolName } = useSchoolBranchName();
 
   const handleLogout = () => {
     dispatch(clearUser());

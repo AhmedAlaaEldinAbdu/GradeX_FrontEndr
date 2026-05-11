@@ -3,11 +3,9 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useSchoolBranchName } from '@/hooks/useSchoolBranchName';
 import { UserRole, type UserRoleType } from '@gradex/constants';
 import CustomImage from '@/shared/components/CustomImage';
-import { axiosClient } from '@/lib/http';
-import { SchoolsEndpoints } from '@/services/api/endpoints/schools-endpoints';
-import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 // Icons
 import HomeIcon from '@gradex/assets/icons/Home.svg';
@@ -682,8 +680,11 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const location = useLocation();
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const [, setSchoolName] = useState<string>('');
-  const [, setIsLoadingSchoolName] = useState<boolean>(false);
+  // Shared cached fetch — Header consumes the same hook so the network call is deduped.
+  // The locals are kept named so the (currently commented) JSX block that displays them
+  // stays compatible if it's restored.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { name: _schoolName, isLoading: _isLoadingSchoolName } = useSchoolBranchName();
   const [hasUserOverride, setHasUserOverride] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem(SIDEBAR_COLLAPSE_STORAGE_KEY) !== null;
@@ -763,23 +764,6 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   useEffect(() => {
     setFlyoutKey(null);
   }, [location.pathname, isCollapsed]);
-
-  useEffect(() => {
-    if (dashboardType === UserRole.SCHOOL_ADMIN) {
-      const branchId = getCurrentSchoolBranchId();
-      if (branchId) {
-        setIsLoadingSchoolName(true);
-        axiosClient
-          .get(SchoolsEndpoints.getSchoolBranchMobile(branchId))
-          .then((res) => {
-            const name = res?.data?.data?.nameBranch;
-            if (name) setSchoolName(name);
-          })
-          .catch(() => {})
-          .finally(() => setIsLoadingSchoolName(false));
-      }
-    }
-  }, [dashboardType]);
 
   const sections: MenuSection[] = customMenuItems
     ? [{ items: customMenuItems }]
