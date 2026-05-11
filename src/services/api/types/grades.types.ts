@@ -18,6 +18,7 @@ export interface GradeDto {
   nameEn: string;
   age: number;
   classroomCount?: number;
+  classroomPrecentage?: number;
   createdDate?: string;
   lkSchoolStageId?: string | null;
   lkSchoolStageNameAr?: string | null;
