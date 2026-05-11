@@ -805,6 +805,20 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     return transformAcademicCalendarToSpecialColumns(academicCalendars, t);
   }, [academicCalendars, t]);
 
+  const workingDays = useMemo<number[]>(() => {
+    if (!academicCalendars || academicCalendars.length === 0) {
+      return [];
+    }
+
+    const allDays = new Set<number>();
+    for (const calendar of academicCalendars) {
+      for (const day of getWorkingDaysFromSchedules(calendar.daySchedules)) {
+        allDays.add(day);
+      }
+    }
+    return Array.from(allDays).sort((a, b) => a - b);
+  }, [academicCalendars]);
+
   // Handle week change from calendar navigation
   const handleWeekChange = useCallback((weekStart: Date) => {
     setCurrentWeekStart(weekStart);
@@ -1179,6 +1193,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
             extendingLessonId={extendingLessonId}
             onWeekChange={handleWeekChange}
             weekStart={currentWeekStart}
+            workingDays={workingDays}
           />
         )}
       </div>

@@ -88,6 +88,7 @@ interface WeeklyScheduleCalendarProps {
   onChangeDuration?: (lesson: ScheduleLesson, deltaMinutes: number) => void; // Callback to change duration (+/- minutes)
   extendingLessonId?: string | null; // ID of lesson currently being extended (for loading state)
   weekStart?: Date;
+  workingDays?: number[];
   className?: string;
 }
 
@@ -140,8 +141,13 @@ export default function WeeklyScheduleCalendar({
   extendingLessonId,
   onWeekChange,
   weekStart: controlledWeekStart,
+  workingDays,
   className = '',
 }: WeeklyScheduleCalendarProps) {
+  const isWorkingDay = (dayIndex: number) => {
+    if (!workingDays) return true;
+    return workingDays.includes(dayIndex);
+  };
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const currentLang = i18n.language;
@@ -854,9 +860,11 @@ export default function WeeklyScheduleCalendar({
                           {/* Empty Gap Slot */}
                           <div
                             style={{ width: `${offsetPercent * 100}%` }}
-                            className="group relative flex-shrink-0 cursor-pointer rounded-lg border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
+                            className={`group relative flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
+                              isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
+                            }`}
                           >
-                            {onEmptyCellClick && (
+                            {onEmptyCellClick && isWorkingDay(dayIndex) && (
                               <button
                                 onClick={() =>
                                   onEmptyCellClick(dayIndex, periodIndex, gapStartTime, gapEndTime)
@@ -920,9 +928,11 @@ export default function WeeklyScheduleCalendar({
                         />
                         <div
                           style={{ width: `calc(${remainingPart * 100}% - 8px)` }}
-                          className="group relative flex-shrink-0 cursor-pointer rounded-lg border border-[#DDE0E0] bg-transparent transition-colors hover:border-green-500"
+                          className={`group relative flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
+                            isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
+                          }`}
                         >
-                          {onEmptyCellClick && (
+                          {onEmptyCellClick && isWorkingDay(dayIndex) && (
                             <button
                               onClick={() =>
                                 onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
@@ -949,7 +959,9 @@ export default function WeeklyScheduleCalendar({
                   return (
                     <div
                       key={periodIndex}
-                      className={`group relative min-h-[100px] overflow-visible rounded-lg hover:border-green-500 ${cellBgClass}`}
+                      className={`group relative min-h-[100px] overflow-visible rounded-lg ${
+                        isWorkingDay(dayIndex) ? 'hover:border-green-500' : ''
+                      } ${cellBgClass}`}
                     >
                       {/* Event block (can span horizontally and vertically) */}
                       {eventAtCell && isEventStart && (
@@ -960,18 +972,25 @@ export default function WeeklyScheduleCalendar({
                         />
                       )}
                       {/* Plus icon for empty cells - shown on hover */}
-                      {!eventAtCell && cellLessons.length === 0 && onEmptyCellClick && (
-                        <button
-                          onClick={() =>
-                            onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
-                          }
-                          className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
-                        >
-                          <div className="flex h-7 w-7 items-center justify-center">
-                            <CustomImage src={GreenPlusCircleIcon} alt="add" className="h-6 w-6" />
-                          </div>
-                        </button>
-                      )}
+                      {!eventAtCell &&
+                        cellLessons.length === 0 &&
+                        onEmptyCellClick &&
+                        isWorkingDay(dayIndex) && (
+                          <button
+                            onClick={() =>
+                              onEmptyCellClick(dayIndex, periodIndex, startTime, endTime)
+                            }
+                            className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
+                          >
+                            <div className="flex h-7 w-7 items-center justify-center">
+                              <CustomImage
+                                src={GreenPlusCircleIcon}
+                                alt="add"
+                                className="h-6 w-6"
+                              />
+                            </div>
+                          </button>
+                        )}
                     </div>
                   );
                 })}
