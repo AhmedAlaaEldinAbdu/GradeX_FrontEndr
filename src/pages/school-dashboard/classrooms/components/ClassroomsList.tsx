@@ -22,14 +22,6 @@ type StageOverview = {
   grades: GradeDto[];
 };
 
-type GradeWithStudentCount = GradeDto & {
-  studentCount?: number | null;
-  studentsCount?: number | null;
-  totalStudents?: number | null;
-  numberOfStudents?: number | null;
-  studentNumber?: number | null;
-};
-
 export default function ClassroomsList() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -49,19 +41,6 @@ export default function ClassroomsList() {
   useEffect(() => {
     dispatch(fetchGrades(schoolBranchId ?? ''));
   }, [dispatch, schoolBranchId]);
-
-  const getGradeStudentCount = (grade: GradeDto) => {
-    const gradeWithStudentCount = grade as GradeWithStudentCount;
-
-    return (
-      gradeWithStudentCount.studentCount ??
-      gradeWithStudentCount.studentsCount ??
-      gradeWithStudentCount.totalStudents ??
-      gradeWithStudentCount.numberOfStudents ??
-      gradeWithStudentCount.studentNumber ??
-      0
-    );
-  };
 
   const hasActiveFilters = searchTerm || selectedAcademicSystemId || selectedGradeId;
 
@@ -101,15 +80,26 @@ export default function ClassroomsList() {
   const shouldShowEmptyState = !isLoading && !hasDisplayableStages && !hasActiveFilters;
   const shouldShowContent = isLoading || hasDisplayableStages || hasActiveFilters;
 
-  const totalEducationalStages = stageOverview.length;
-  const totalClassrooms = (Array.isArray(grades) ? grades : []).reduce(
-    (accumulator, grade) => accumulator + (grade.classroomCount || 0),
-    0
-  );
-  const totalStudents = (Array.isArray(grades) ? grades : []).reduce(
-    (accumulator, grade) => accumulator + getGradeStudentCount(grade),
-    0
-  );
+  // Top-of-page aggregate metrics derived from the grades response.
+  // - Educational stages: count of distinct lkSchoolStageId values.
+  // - Classrooms: sum of classroomCount across every grade.
+  // NOTE: Total students is intentionally 0 until the API exposes a student
+  // count on grades; wire it through here once that field lands.
+  const { totalEducationalStages, totalClassrooms } = useMemo(() => {
+    const list = Array.isArray(grades) ? grades : [];
+    const stageIds = new Set<string>();
+    let classrooms = 0;
+    for (const grade of list) {
+      const stageId = grade.lkSchoolStageId || grade.id;
+      if (stageId) stageIds.add(stageId);
+      classrooms += grade.classroomCount || 0;
+    }
+    return {
+      totalEducationalStages: stageIds.size,
+      totalClassrooms: classrooms,
+    };
+  }, [grades]);
+  const totalStudents = 0;
 
   const maxStudentCount = useMemo(
     () =>
@@ -169,7 +159,7 @@ export default function ClassroomsList() {
                 <div className="text-base font-medium text-black-900">{stage.title}</div>
                 <span className="text-sm font-normal text-[#646969]">
                   {stage.grades.reduce(
-                    (accumulator, grade) => accumulator + getGradeStudentCount(grade),
+                    (accumulator, grade) => accumulator + (grade.classroomCount || 0),
                     0
                   )}{' '}
                   {t('grades.studentPlural')}
@@ -181,8 +171,15 @@ export default function ClassroomsList() {
                   const gradeName =
                     currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr;
                   const classroomCount = grade.classroomCount || 0;
+                  // Prefer the API-supplied percentage; fall back to a relative
+                  // calculation (this grade's classroom count vs the max in the list)
+                  // when the API value isn't present.
                   const progress =
-                    maxStudentCount > 0 ? Math.round((classroomCount / maxStudentCount) * 100) : 0;
+                    typeof grade.classroomPrecentage === 'number'
+                      ? Math.max(0, Math.min(100, Math.round(grade.classroomPrecentage)))
+                      : maxStudentCount > 0
+                        ? Math.round((classroomCount / maxStudentCount) * 100)
+                        : 0;
                   const footerAction =
                     classroomCount === 0
                       ? {
