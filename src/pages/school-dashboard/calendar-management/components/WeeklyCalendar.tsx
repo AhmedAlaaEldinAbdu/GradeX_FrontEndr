@@ -683,33 +683,24 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     setGrade('');
   }, [subSystemId, educationSystem]);
 
-  // Fetch lessons when classroom (grade) or stage changes
+  // Fetch lessons + monthly events only when a stage is selected
   useEffect(() => {
-    // Build filters based on selected values
-    const filters: { classroomId?: string; gradeId?: string } = {};
+    if (!stage) return;
 
-    if (stage) {
-      filters.gradeId = stage;
-    }
+    const filters: { classroomId?: string; gradeId?: string } = { gradeId: stage };
     if (grade) {
       filters.classroomId = grade;
     }
 
-    // Fetch lessons with filters (or no filters if nothing selected)
-    if (Object.keys(filters).length > 0) {
-      dispatch(fetchLessons({ filters: { ...filters, schoolBranchesId: schoolBranchId } }));
-    } else {
-      dispatch(fetchLessons({ filters: { schoolBranchesId: schoolBranchId } }));
-    }
+    dispatch(fetchLessons({ filters: { ...filters, schoolBranchesId: schoolBranchId } }));
 
-    // Fetch monthly calendar events with schoolBranchId and optional grade filter
     dispatch(
       fetchMonthlyCalendarEvents({
         page: 1,
         limit: 100,
         filters: {
           schoolBranchId,
-          grade: stage || undefined,
+          grade: stage,
         },
       })
     );
@@ -735,16 +726,17 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   }, [dispatch, educationSystem, stage, schoolBranchId]);
 
   useEffect(() => {
-    if (!schoolBranchId) {
+    if (!schoolBranchId || !stage) {
       return;
     }
 
     dispatch(
       fetchAcademicCalendarsForWeek({
         schoolBranchId,
+        gradeId: stage,
       })
     );
-  }, [dispatch, currentWeekStart, schoolBranchId]);
+  }, [dispatch, currentWeekStart, schoolBranchId, stage]);
 
   // Computed options for filters
   const educationSystemOptions = useMemo(() => {
@@ -1060,7 +1052,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           {/* Group 1: Education System */}
           <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
             <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
-              {t('weeklyCalendar.filters.educationSystem') || 'اختر النظام التعليم'}
+              {t('weeklyCalendar.filters.educationSystem')}
             </span>
             <div className="h-full border-e border-gray-200" />
             <CustomSelect
@@ -1096,7 +1088,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           {/* Group 2: Stage Selection */}
           <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
             <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
-              {t('weeklyCalendar.filters.selectStage') || 'اختر المرحلة'}
+              {t('weeklyCalendar.filters.selectStage')}
             </span>
             <div className="h-full border-e border-gray-200" />
             <CustomSelect
@@ -1120,7 +1112,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           {/* Group 3: Classroom Selection */}
           <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
             <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
-              {t('weeklyCalendar.filters.classroom') || 'الصف الدراسي'}
+              {t('weeklyCalendar.filters.classroom')}
             </span>
             <div className="h-full border-e border-gray-200" />
             <CustomSelect
@@ -1163,7 +1155,14 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         </div>
 
         {/* Calendar Content */}
-        {isLoading ? (
+        {!stage ? (
+          <div className="flex h-96 flex-col items-center justify-center gap-2 text-center">
+            <p className="text-base font-medium text-[#0E1F1F]">
+              {t('weeklyCalendar.filters.selectStage')}
+            </p>
+            <p className="text-sm text-[#646969]">{t('weeklyCalendar.selectStagePrompt')}</p>
+          </div>
+        ) : isLoading ? (
           <div className="flex h-96 items-center justify-center">
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-500"></div>
           </div>
