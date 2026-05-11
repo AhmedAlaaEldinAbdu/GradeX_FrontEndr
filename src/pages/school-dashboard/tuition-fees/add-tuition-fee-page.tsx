@@ -30,7 +30,7 @@ export default function AddTuitionFeePage() {
     tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
-    { label: t('sidebar.fees'), path: '/fees' },
+    { label: t('sidebar.fees'), path: '/financial-management/fees' },
     { label: t('fees.tuition.addTitle') },
   ];
 
@@ -42,7 +42,7 @@ export default function AddTuitionFeePage() {
       <Card className="rounded-2xl" padding="lg">
         <AddEditTuitionFeeForm
           schoolBranchId={schoolBranchId}
-          onCancel={() => navigate('/fees')}
+          onCancel={() => navigate('/financial-management/fees')}
           onSubmit={async (values: TuitionFeeFormValues) => {
             const payload = {
               schoolBrancheId: schoolBranchId,
@@ -108,7 +108,7 @@ export default function AddTuitionFeePage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={showPopupMessage.type === 'success' ? '/fees' : undefined}
+        navigateAfterClose={showPopupMessage.type === 'success' ? '/financial-management/fees' : undefined}
       />
     </div>
   );

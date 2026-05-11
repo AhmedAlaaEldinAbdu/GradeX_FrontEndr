@@ -15,7 +15,7 @@ export default function TuitionFeesPage() {
             ? [
                 {
                   label: 'fees.tuition.addAction',
-                  to: '/fees/add-tuition-fee',
+                  to: '/financial-management/fees/add-tuition-fee',
                   variant: 'primary',
                   imgSrc: PlusIcon,
                   imgClassName: 'h-5 w-5',
@@ -24,7 +24,7 @@ export default function TuitionFeesPage() {
             : [
                 {
                   label: 'fees.discounts.addAction',
-                  to: '/fees/add-discount-offer',
+                  to: '/financial-management/fees/add-discount-offer',
                   variant: 'primary',
                   imgSrc: PlusIcon,
                   imgClassName: 'h-5 w-5',

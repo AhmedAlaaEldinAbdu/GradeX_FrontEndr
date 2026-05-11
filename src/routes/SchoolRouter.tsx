@@ -636,7 +636,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/fees"
+        path="/financial-management/fees"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
@@ -646,7 +646,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/fees/add-tuition-fee"
+        path="/financial-management/fees/add-tuition-fee"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
@@ -656,7 +656,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/fees/edit-tuition-fee/:id"
+        path="/financial-management/fees/edit-tuition-fee/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
@@ -666,7 +666,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/fees/add-discount-offer"
+        path="/financial-management/fees/add-discount-offer"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
@@ -676,7 +676,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/fees/edit-discount-offer/:id"
+        path="/financial-management/fees/edit-discount-offer/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>

@@ -253,7 +253,7 @@ export default function DiscountsAndOffersTab() {
               status="edit"
               ariaLabel={t('actions.edit')}
               onClick={() => {
-                navigate(`/fees/edit-discount-offer/${row.id}`);
+                navigate(`/financial-management/fees/edit-discount-offer/${row.id}`);
               }}
             />
             <IconButton

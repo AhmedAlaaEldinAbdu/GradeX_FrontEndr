@@ -54,7 +54,7 @@ export default function EditDiscountOfferPage() {
   }, [offerDetails]);
 
   const breadcrumbItems = [
-    { label: t('sidebar.fees'), path: '/fees?tab=discounts' },
+    { label: t('sidebar.fees'), path: '/financial-management/fees?tab=discounts' },
     { label: t('fees.discounts.form.editTitle') },
   ];
 
@@ -68,7 +68,7 @@ export default function EditDiscountOfferPage() {
           mode="edit"
           initialOffers={initialOffer ? [initialOffer] : undefined}
           isSubmitting={isLoadingDetails}
-          onCancel={() => navigate('/fees?tab=discounts')}
+          onCancel={() => navigate('/financial-management/fees?tab=discounts')}
           onSubmit={async (offers: DiscountOfferFormValues[]) => {
             if (!id) return;
             if (!schoolBranchId) {
@@ -136,7 +136,7 @@ export default function EditDiscountOfferPage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={showPopupMessage.type === 'success' ? '/fees?tab=discounts' : undefined}
+        navigateAfterClose={showPopupMessage.type === 'success' ? '/financial-management/fees?tab=discounts' : undefined}
       />
     </div>
   );

@@ -33,7 +33,7 @@ export default function AddDiscountOfferPage() {
   const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
-    { label: t('sidebar.fees'), path: '/fees?tab=discounts' },
+    { label: t('sidebar.fees'), path: '/financial-management/fees?tab=discounts' },
     { label: t('fees.discounts.form.addTitle') },
   ];
 
@@ -45,7 +45,7 @@ export default function AddDiscountOfferPage() {
       <Card className="rounded-2xl" padding="lg">
         <AddEditDiscountOfferForm
           mode="add"
-          onCancel={() => navigate('/fees?tab=discounts')}
+          onCancel={() => navigate('/financial-management/fees?tab=discounts')}
           onSubmit={async (offers: DiscountOfferFormValues[]) => {
             if (!schoolBranchId) {
               showToast({ message: t('common.error'), type: 'error' });
@@ -111,7 +111,7 @@ export default function AddDiscountOfferPage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={showPopupMessage.type === 'success' ? '/fees?tab=discounts' : undefined}
+        navigateAfterClose={showPopupMessage.type === 'success' ? '/financial-management/fees?tab=discounts' : undefined}
       />
     </div>
   );

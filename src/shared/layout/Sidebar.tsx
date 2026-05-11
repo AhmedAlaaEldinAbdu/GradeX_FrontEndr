@@ -384,7 +384,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
         icon: renderIcon(DataSourcesIcon, 'Financial Management'),
         subItems: [
           { key: 'financialTransactions', path: '/financial-management/transactions' },
-          { key: 'tuitionFees', path: '/fees' },
+          { key: 'tuitionFees', path: '/financial-management/fees' },
           { key: 'invoices', path: '/financial-management/invoices' },
           { key: 'customers', path: '/financial-management/customers' },
           { key: 'contracts', path: '/financial-management/contracts' },

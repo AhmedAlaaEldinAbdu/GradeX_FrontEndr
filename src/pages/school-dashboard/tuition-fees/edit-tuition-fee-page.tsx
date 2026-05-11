@@ -37,7 +37,7 @@ export default function EditTuitionFeePage() {
     tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
-    { label: t('sidebar.fees'), path: '/fees' },
+    { label: t('sidebar.fees'), path: '/financial-management/fees' },
     { label: t('fees.tuition.editTitle') },
   ];
 
@@ -96,7 +96,7 @@ export default function EditTuitionFeePage() {
           mode="edit"
           formKey={id}
           initialValues={initialValues}
-          onCancel={() => navigate('/fees')}
+          onCancel={() => navigate('/financial-management/fees')}
           onSubmit={async (values: TuitionFeeFormValues) => {
             if (!id) return;
 
@@ -167,7 +167,7 @@ export default function EditTuitionFeePage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={showPopupMessage.type === 'success' ? '/fees' : undefined}
+        navigateAfterClose={showPopupMessage.type === 'success' ? '/financial-management/fees' : undefined}
       />
     </div>
   );

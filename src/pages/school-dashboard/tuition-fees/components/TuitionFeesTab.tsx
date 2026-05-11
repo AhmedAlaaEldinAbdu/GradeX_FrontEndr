@@ -211,7 +211,7 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
               status="edit"
               ariaLabel={t('actions.edit')}
               onClick={() => {
-                navigate(`/fees/edit-tuition-fee/${row.id}`);
+                navigate(`/financial-management/fees/edit-tuition-fee/${row.id}`);
               }}
             />
             <IconButton
