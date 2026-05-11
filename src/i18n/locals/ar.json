@@ -2470,6 +2470,7 @@
   },
   "weeklyCalendar": {
     "title": "التقويم الاسبوعي",
+    "selectStagePrompt": "الرجاء اختيار المرحلة التعليمية لعرض الجدول",
     "recoverLessons": "إسترجاع الحصص بالتساوي",
     "duration": "مدة المحاضرة: {{minutes}} دقيقة",
     "lessonDuration": "مدة المحاضرة",
