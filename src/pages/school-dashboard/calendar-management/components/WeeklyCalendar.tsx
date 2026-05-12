@@ -657,6 +657,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
+    if (!educationSystem) return;
+
     if (subSystemId) {
       dispatch(
         getEducationalStagesBySubSystemId({
@@ -676,23 +678,26 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         })
       );
     }
-  }, [dispatch, subSystemId, schoolBranchId]);
+  }, [dispatch, educationSystem, subSystemId, schoolBranchId]);
 
   useEffect(() => {
     setStage('');
     setGrade('');
   }, [subSystemId, educationSystem]);
 
-  // Fetch lessons + monthly events only when a stage is selected
+  // Fetch lessons + monthly events only when a classroom is selected
   useEffect(() => {
-    if (!stage) return;
+    if (!grade) return;
 
-    const filters: { classroomId?: string; gradeId?: string } = { gradeId: stage };
-    if (grade) {
-      filters.classroomId = grade;
-    }
-
-    dispatch(fetchLessons({ filters: { ...filters, schoolBranchesId: schoolBranchId } }));
+    dispatch(
+      fetchLessons({
+        filters: {
+          gradeId: stage || undefined,
+          classroomId: grade,
+          schoolBranchesId: schoolBranchId,
+        },
+      })
+    );
 
     dispatch(
       fetchMonthlyCalendarEvents({
@@ -707,8 +712,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   }, [dispatch, grade, stage, schoolBranchId]);
 
   useEffect(() => {
-    if (!educationSystem) {
-      setGrade('');
+    if (!educationSystem || !stage) {
       return;
     }
 
@@ -718,7 +722,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         limit: 10000,
         filters: {
           academicSystemId: educationSystem,
-          ...(stage && { gradeId: stage }),
+          gradeId: stage,
           ...(schoolBranchId && { schoolBranchId }),
         },
       })
@@ -726,7 +730,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   }, [dispatch, educationSystem, stage, schoolBranchId]);
 
   useEffect(() => {
-    if (!schoolBranchId || !stage) {
+    if (!schoolBranchId || !stage || !grade) {
       return;
     }
 
@@ -736,7 +740,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         gradeId: stage,
       })
     );
-  }, [dispatch, currentWeekStart, schoolBranchId, stage]);
+  }, [dispatch, currentWeekStart, schoolBranchId, stage, grade]);
 
   // Computed options for filters
   const educationSystemOptions = useMemo(() => {
@@ -1107,16 +1111,21 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
             <div className="h-full border-e border-gray-200" />
             <CustomSelect
               value={stage}
-              onChange={(val) => setStage(val as string)}
+              onChange={(val) => {
+                setStage(val as string);
+                setGrade('');
+              }}
               options={stageOptions}
               placeholder={
-                isLoadingStages
-                  ? t('common.loading')
-                  : stage
-                    ? stageOptions.find((s) => s.value === stage)?.label || ''
-                    : ''
+                !educationSystem
+                  ? t('weeklyCalendar.filters.chooseEducationSystemFirst')
+                  : isLoadingStages
+                    ? t('common.loading')
+                    : stage
+                      ? stageOptions.find((s) => s.value === stage)?.label || ''
+                      : ''
               }
-              disabled={isLoadingStages}
+              disabled={!educationSystem || isLoadingStages}
               variant="ghost"
               showSearch={false}
               className="w-full"
@@ -1134,13 +1143,15 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
               onChange={(val) => setGrade(val as string)}
               options={classroomOptions}
               placeholder={
-                isLoadingClassrooms
-                  ? t('common.loading')
-                  : grade
-                    ? classroomOptions.find((c) => c.value === grade)?.label || ''
-                    : ''
+                !stage
+                  ? t('weeklyCalendar.filters.chooseStageFirst')
+                  : isLoadingClassrooms
+                    ? t('common.loading')
+                    : grade
+                      ? classroomOptions.find((c) => c.value === grade)?.label || ''
+                      : ''
               }
-              disabled={!educationSystem || isLoadingClassrooms}
+              disabled={!stage || isLoadingClassrooms}
               variant="ghost"
               showSearch={false}
               className="w-full"
@@ -1169,12 +1180,12 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         </div>
 
         {/* Calendar Content */}
-        {!stage ? (
+        {!grade ? (
           <div className="flex h-96 flex-col items-center justify-center gap-2 text-center">
             <p className="text-base font-medium text-[#0E1F1F]">
-              {t('weeklyCalendar.filters.selectStage')}
+              {t('weeklyCalendar.filters.classroom')}
             </p>
-            <p className="text-sm text-[#646969]">{t('weeklyCalendar.selectStagePrompt')}</p>
+            <p className="text-sm text-[#646969]">{t('weeklyCalendar.selectClassroomPrompt')}</p>
           </div>
         ) : isLoading ? (
           <div className="flex h-96 items-center justify-center">
