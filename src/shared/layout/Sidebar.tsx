@@ -20,7 +20,7 @@ import SettingsIcon from '@gradex/assets/icons/Settings.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
 import MainLogo from '@/assets/identity/MainLogo.svg';
-import ElmLogo from '@/assets/identity/elmLogo.webp';
+import ClasstiLogo from '@/assets/identity/classtiLogo.svg';
 import DataSourcesIcon from '@gradex/assets/icons/DataSources.svg';
 import DatePickerIcon from '@gradex/assets/icons/DatePicker.svg';
 import DocumentEditIcon from '@gradex/assets/icons/DocumentEdit.svg';
@@ -905,7 +905,6 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     );
   };
 
-  const isSchoolAdmin = dashboardType === UserRole.SCHOOL_ADMIN;
   const sidebarWidthClass = isCollapsed ? 'w-[64px]' : 'w-[230px]';
 
   return (
@@ -925,19 +924,11 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
         <div className="relative z-[4] flex h-[57px] w-full flex-shrink-0 flex-col items-end justify-center gap-[12px] px-[8px]">
           {isCollapsed ? (
-            // Collapsed: center the logo only.
+            // Collapsed: center the Classti logo only.
             <div className="flex items-center justify-center self-center px-2">
-              {isSchoolAdmin ? (
-                <BrandMark />
-              ) : (
-                <CustomImage
-                  src={ElmLogo}
-                  alt="elm"
-                  className="h-10 w-10 rounded-full object-contain"
-                />
-              )}
+              <CustomImage src={ClasstiLogo} alt="Classti" className="h-10 w-10 object-contain" />
             </div>
-          ) : isSchoolAdmin ? (
+          ) : (
             <div
               className={cn(
                 'flex h-[45px] w-[177px] shrink-0 items-center justify-center gap-[12px] self-center',
@@ -945,38 +936,6 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
               )}
             >
               <BrandMark />
-              {/* <div
-                className={cn(
-                  'flex h-[45px] w-[125px] min-w-0 flex-1 flex-col justify-center p-0 text-center',
-                  isRTL ? 'items-end' : 'items-start'
-                )}
-              >
-                {isLoadingSchoolName && !schoolName ? (
-                  <>
-                    <div className="h-[18px] w-[125px] animate-pulse rounded-md bg-white/10" />
-                    <div className="mt-2 h-[12px] w-[90px] animate-pulse rounded-md bg-white/[0.06]" />
-                  </>
-                ) : (
-                  <>
-                    <div className="flex h-[24px] w-[126px] items-center truncate whitespace-nowrap text-center text-[14px] font-bold leading-[1.7251] text-white">
-                      {schoolName}
-                    </div>
-                    {t('sidebar.schoolSubtitle', { defaultValue: '' }) && (
-                      <div className="flex h-[21px] w-[125px] items-center truncate text-center text-[12px] font-medium leading-[1.7251] text-[#a2bbad]">
-                        {t('sidebar.schoolSubtitle')}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div> */}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center self-center px-[14px]">
-              <CustomImage
-                src={ElmLogo}
-                alt="elm"
-                className="h-12 w-12 rounded-full object-contain"
-              />
             </div>
           )}
 
