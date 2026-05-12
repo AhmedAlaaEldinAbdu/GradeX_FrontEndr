@@ -927,7 +927,13 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     const dateStr = `${year}-${month}-${day}`;
 
     navigate(
-      `/calendar/weekly/add-lesson?date=${dateStr}&startTime=${startTime}&endTime=${endTime}`
+      `/calendar/weekly/add-lesson?date=${dateStr}&startTime=${startTime}&endTime=${endTime}`,
+      {
+        state: {
+          gradeId: stage || undefined,
+          classroomId: grade || undefined,
+        },
+      }
     );
   };
 
