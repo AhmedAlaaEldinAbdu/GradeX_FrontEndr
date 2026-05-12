@@ -186,10 +186,21 @@ const findApplicableLessonForSlot = (
   dayIndex: number,
   periodIndex: number,
   weekStart: Date,
-  lang: string
+  lang: string,
+  studyStartDate?: Date | null,
+  studyEndDate?: Date | null
 ): ScheduleLesson | null => {
   // Get the actual date for this day in the current week
   const currentDayDate = getDateForDayInWeek(weekStart, dayIndex);
+
+  if (studyStartDate && studyEndDate) {
+    const dayStart = startOfDay(currentDayDate);
+    const studyStart = startOfDay(studyStartDate);
+    const studyEnd = startOfDay(studyEndDate);
+    if (isBefore(dayStart, studyStart) || isBefore(studyEnd, dayStart)) {
+      return null;
+    }
+  }
 
   // Filter lessons that match this day of week and time slot
   const matchingLessons = lessons.filter((lesson) => {
@@ -206,8 +217,13 @@ const findApplicableLessonForSlot = (
       return false;
     }
 
-    // Lesson date must be on or before the current day in the week
-    // (lesson can only apply from its creation date forward)
+    if (studyStartDate && studyEndDate) {
+      const lDayStart = startOfDay(lessonDate);
+      const studyStart = startOfDay(studyStartDate);
+      const studyEnd = startOfDay(studyEndDate);
+      return !isBefore(lDayStart, studyStart) && !isBefore(studyEnd, lDayStart);
+    }
+
     return isDateOnOrBefore(lessonDate, currentDayDate);
   });
 
@@ -276,7 +292,9 @@ const findApplicableLessonForSlot = (
 const transformLessonsForWeek = (
   apiLessons: Lesson[],
   weekStart: Date,
-  lang: string
+  lang: string,
+  studyStartDate?: Date | null,
+  studyEndDate?: Date | null
 ): ScheduleLesson[] => {
   const scheduleLessons: ScheduleLesson[] = [];
   const processedSlots = new Set<string>();
@@ -296,7 +314,9 @@ const transformLessonsForWeek = (
         dayIndex,
         periodIndex,
         weekStart,
-        lang
+        lang,
+        studyStartDate,
+        studyEndDate
       );
 
       if (lesson) {
@@ -765,13 +785,29 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     }));
   }, [classroomsList, isArabic]);
 
-  // Transform API lessons to ScheduleLesson format with weekly repetition
+  const studyPeriod = useMemo<{ start: Date | null; end: Date | null }>(() => {
+    if (!academicCalendars || academicCalendars.length === 0) {
+      return { start: null, end: null };
+    }
+    const calendar = academicCalendars[0];
+    return {
+      start: calendar.studyStartDate ? new Date(calendar.studyStartDate) : null,
+      end: calendar.studyEndDate ? new Date(calendar.studyEndDate) : null,
+    };
+  }, [academicCalendars]);
+
   const transformedLessons: ScheduleLesson[] = useMemo(() => {
     if (!apiLessons || apiLessons.length === 0) {
       return [];
     }
 
-    const lessons = transformLessonsForWeek(apiLessons, currentWeekStart, currentLang);
+    const lessons = transformLessonsForWeek(
+      apiLessons,
+      currentWeekStart,
+      currentLang,
+      studyPeriod.start,
+      studyPeriod.end
+    );
 
     // Apply optimistic updates
     if (optimisticLessons.size > 0) {
@@ -789,7 +825,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     }
 
     return lessons;
-  }, [apiLessons, currentWeekStart, currentLang, optimisticLessons]);
+  }, [apiLessons, currentWeekStart, currentLang, optimisticLessons, studyPeriod]);
 
   // Transform API events to ScheduleEvent format for current week
   const transformedEvents: ScheduleEvent[] = useMemo(() => {
@@ -800,28 +836,75 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     return transformEventsForWeek(apiEvents, currentWeekStart, currentLang);
   }, [apiEvents, currentWeekStart, currentLang]);
 
-  // Transform academic calendar data to SpecialColumn format
   const specialColumns: SpecialColumn[] = useMemo(() => {
     if (!academicCalendars || academicCalendars.length === 0) {
       return FALLBACK_SPECIAL_COLUMNS;
     }
 
-    return transformAcademicCalendarToSpecialColumns(academicCalendars, t);
-  }, [academicCalendars, t]);
+    const baseColumns = transformAcademicCalendarToSpecialColumns(academicCalendars, t);
+
+    if (!studyPeriod.start || !studyPeriod.end) {
+      return baseColumns;
+    }
+
+    const studyStart = startOfDay(studyPeriod.start);
+    const studyEnd = startOfDay(studyPeriod.end);
+
+    const allowedDayIndices: number[] = [];
+    for (let dayIdx = 0; dayIdx <= 6; dayIdx++) {
+      const dayStart = startOfDay(addDays(currentWeekStart, dayIdx));
+      if (!isBefore(dayStart, studyStart) && !isBefore(studyEnd, dayStart)) {
+        allowedDayIndices.push(dayIdx);
+      }
+    }
+
+    return baseColumns
+      .map((col) => {
+        const sourceDays =
+          col.days && col.days.length > 0
+            ? col.days
+            : Array.from(
+                {
+                  length: (col.endDayIndex ?? 5) - (col.startDayIndex ?? 1) + 1,
+                },
+                (_, i) => (col.startDayIndex ?? 1) + i
+              );
+
+        const days = sourceDays.filter((d) => allowedDayIndices.includes(d));
+        return { ...col, days };
+      })
+      .filter((col) => (col.days?.length ?? 0) > 0);
+  }, [academicCalendars, t, studyPeriod, currentWeekStart]);
 
   const workingDays = useMemo<number[]>(() => {
     if (!academicCalendars || academicCalendars.length === 0) {
       return [];
     }
 
-    const allDays = new Set<number>();
+    const scheduleDays = new Set<number>();
     for (const calendar of academicCalendars) {
       for (const day of getWorkingDaysFromSchedules(calendar.daySchedules)) {
-        allDays.add(day);
+        scheduleDays.add(day);
       }
     }
-    return Array.from(allDays).sort((a, b) => a - b);
-  }, [academicCalendars]);
+
+    if (!studyPeriod.start || !studyPeriod.end) {
+      return Array.from(scheduleDays).sort((a, b) => a - b);
+    }
+
+    const studyStart = startOfDay(studyPeriod.start);
+    const studyEnd = startOfDay(studyPeriod.end);
+
+    const allowed: number[] = [];
+    for (const day of scheduleDays) {
+      const dayStart = startOfDay(addDays(currentWeekStart, day));
+      if (!isBefore(dayStart, studyStart) && !isBefore(studyEnd, dayStart)) {
+        allowed.push(day);
+      }
+    }
+
+    return allowed.sort((a, b) => a - b);
+  }, [academicCalendars, studyPeriod, currentWeekStart]);
 
   // Handle week change from calendar navigation
   const handleWeekChange = useCallback((weekStart: Date) => {
