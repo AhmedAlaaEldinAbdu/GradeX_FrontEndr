@@ -2539,6 +2539,7 @@
   "weeklyCalendar": {
     "title": "التقويم الاسبوعي",
     "selectStagePrompt": "الرجاء اختيار المرحلة التعليمية لعرض الجدول",
+    "selectClassroomPrompt": "الرجاء اختيار الصف الدراسي لعرض الجدول",
     "recoverLessons": "إسترجاع الحصص بالتساوي",
     "duration": "مدة المحاضرة: {{minutes}} دقيقة",
     "lessonDuration": "مدة المحاضرة",
@@ -2586,7 +2587,9 @@
       "grade": "الصف الدراسي",
       "classroom": "الصف الدراسي",
       "division": "الشعبة",
-      "global": "عالمي"
+      "global": "عالمي",
+      "chooseEducationSystemFirst": "الرجاء اختيار النظام التعليمي أولاً",
+      "chooseStageFirst": "الرجاء اختيار المرحلة أولاً"
     }
   },
   "addLesson": {

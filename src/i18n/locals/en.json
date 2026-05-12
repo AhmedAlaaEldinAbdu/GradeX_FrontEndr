@@ -2526,6 +2526,7 @@
   "weeklyCalendar": {
     "title": "Weekly Calendar",
     "selectStagePrompt": "Please select the educational stage to view the schedule",
+    "selectClassroomPrompt": "Please select the classroom to view the schedule",
     "recoverLessons": "Recover Lessons Equally",
     "duration": "Duration: {{minutes}} min",
     "lessonDuration": "Lesson Duration",
@@ -2573,7 +2574,9 @@
       "grade": "Grade",
       "classroom": "Classroom",
       "division": "Division",
-      "global": "Global"
+      "global": "Global",
+      "chooseEducationSystemFirst": "Please select the education system first",
+      "chooseStageFirst": "Please select the stage first"
     }
   },
   "addLesson": {
