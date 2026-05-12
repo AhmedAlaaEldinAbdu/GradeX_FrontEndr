@@ -583,11 +583,41 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   // Combined loading state
   const isLoading = isLoadingLessons || isLoadingEvents || isLoadingAcademicCalendars;
 
-  // Filter states
-  const [educationSystem, setEducationSystem] = useState('');
-  const [subSystemId, setSubSystemId] = useState('');
-  const [stage, setStage] = useState('');
-  const [grade, setGrade] = useState('');
+  // Filter states — persisted in sessionStorage so they survive a round-trip
+  // to the add/edit lesson page without re-prompting the user.
+  const FILTERS_STORAGE_KEY = 'weeklyCalendar.filters';
+  const persistedFilters = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = window.sessionStorage.getItem(FILTERS_STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw) as {
+        educationSystem?: string;
+        subSystemId?: string;
+        stage?: string;
+        grade?: string;
+      };
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const [educationSystem, setEducationSystem] = useState(persistedFilters?.educationSystem ?? '');
+  const [subSystemId, setSubSystemId] = useState(persistedFilters?.subSystemId ?? '');
+  const [stage, setStage] = useState(persistedFilters?.stage ?? '');
+  const [grade, setGrade] = useState(persistedFilters?.grade ?? '');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.sessionStorage.setItem(
+        FILTERS_STORAGE_KEY,
+        JSON.stringify({ educationSystem, subSystemId, stage, grade })
+      );
+    } catch {
+      // ignore storage errors (private mode, quota, etc.)
+    }
+  }, [educationSystem, subSystemId, stage, grade]);
 
   // Redux state for filter data
   const { academicSystems: academicSystemsList, isLoading: isLoadingAcademicSystems } =
@@ -653,11 +683,6 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       );
     }
   }, [dispatch, educationSystem, subSystemId, schoolBranchId]);
-
-  useEffect(() => {
-    setStage('');
-    setGrade('');
-  }, [subSystemId, educationSystem]);
 
   // Fetch lessons + monthly events only when a classroom is selected
   useEffect(() => {
