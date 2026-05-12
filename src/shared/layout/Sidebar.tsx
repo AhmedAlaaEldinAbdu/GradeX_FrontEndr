@@ -39,11 +39,6 @@ import SidebarTopVector2 from '@/assets/sidebar-pattern/top-vector-2.svg';
 import SidebarTopVector3 from '@/assets/sidebar-pattern/top-vector-3.svg';
 import SidebarTopVector4 from '@/assets/sidebar-pattern/top-vector-4.svg';
 import SidebarTopVector5 from '@/assets/sidebar-pattern/top-vector-5.svg';
-import SidebarBottomVector1 from '@/assets/sidebar-pattern/bottom-vector-1.svg';
-import SidebarBottomVector2 from '@/assets/sidebar-pattern/bottom-vector-2.svg';
-import SidebarBottomVector3 from '@/assets/sidebar-pattern/bottom-vector-3.svg';
-import SidebarBottomVector4 from '@/assets/sidebar-pattern/bottom-vector-4.svg';
-import SidebarBottomVector5 from '@/assets/sidebar-pattern/bottom-vector-5.svg';
 import SidebarEllipseGlow from '@/assets/sidebar-pattern/ellipse-glow.svg';
 
 const ICON_FILTER_WHITE: React.CSSProperties = {
@@ -87,29 +82,6 @@ const SIDEBAR_TOP_PATTERN_LAYERS = [
   {
     src: SidebarTopVector5,
     className: 'absolute inset-[-1.1%_-0.08%_0_10.72%] mix-blend-color-dodge',
-  },
-] as const;
-
-const SIDEBAR_BOTTOM_PATTERN_LAYERS = [
-  {
-    src: SidebarBottomVector1,
-    className: 'absolute inset-[-0.65%_-206.69%_-4.4%_-133.19%] mix-blend-color-dodge',
-  },
-  {
-    src: SidebarBottomVector2,
-    className: 'absolute inset-[-0.64%_-175.44%_15.8%_-205.83%] mix-blend-color-dodge',
-  },
-  {
-    src: SidebarBottomVector3,
-    className: 'absolute inset-[-1.88%_-208.59%_25.02%_-89.44%] mix-blend-screen',
-  },
-  {
-    src: SidebarBottomVector4,
-    className: 'absolute inset-[1.24%_-206.71%_15.35%_128.41%] mix-blend-color-dodge',
-  },
-  {
-    src: SidebarBottomVector5,
-    className: 'absolute inset-[-0.64%_-206.7%_-52.82%_-150.93%] mix-blend-color-dodge',
   },
 ] as const;
 
@@ -162,22 +134,6 @@ const SidebarPatternBackground: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
       ))}
     </div>
 
-    <div
-      aria-hidden
-      className={cn(
-        'pointer-events-none absolute top-[698px] z-0 flex h-[532px] w-[315px] items-center justify-center',
-        isRTL ? 'left-[-0.5px]' : 'right-[-0.5px] scale-x-[-1]'
-      )}
-    >
-      <div className="rotate-180">
-        <div className="relative h-[532px] w-[315px] overflow-hidden opacity-10">
-          {SIDEBAR_BOTTOM_PATTERN_LAYERS.map((layer) => (
-            <SidebarPatternLayer key={layer.src} src={layer.src} className={layer.className} />
-          ))}
-        </div>
-      </div>
-    </div>
-
     <img
       alt=""
       src={SidebarEllipseGlow}
@@ -186,46 +142,7 @@ const SidebarPatternBackground: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
         isRTL ? 'left-[-164px]' : 'right-[-164px]'
       )}
     />
-    <img
-      alt=""
-      src={SidebarEllipseGlow}
-      className={cn(
-        'pointer-events-none absolute top-[794px] z-[1] h-[400px] w-[401px] max-w-none',
-        isRTL ? 'right-[-104px]' : 'left-[-104px]'
-      )}
-    />
   </>
-);
-
-const SidebarF11BottomCover: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
-  <div
-    aria-hidden
-    className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] overflow-hidden bg-[#0f1f17]"
-  >
-    <div
-      className={cn(
-        'absolute top-[-142px] z-0 flex h-[532px] w-[315px] items-center justify-center',
-        isRTL ? 'left-[-0.5px]' : 'right-[-0.5px] scale-x-[-1]'
-      )}
-    >
-      <div className="rotate-180">
-        <div className="relative h-[532px] w-[315px] overflow-hidden opacity-10">
-          {SIDEBAR_BOTTOM_PATTERN_LAYERS.map((layer) => (
-            <SidebarPatternLayer key={layer.src} src={layer.src} className={layer.className} />
-          ))}
-        </div>
-      </div>
-    </div>
-
-    <img
-      alt=""
-      src={SidebarEllipseGlow}
-      className={cn(
-        'pointer-events-none absolute top-[-126px] z-[1] h-[400px] w-[401px] max-w-none opacity-30',
-        isRTL ? 'right-[-104px]' : 'left-[-104px]'
-      )}
-    />
-  </div>
 );
 
 /**
@@ -1069,7 +986,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         </div>
 
         {/* Scroll region wrapper for the custom nav-only scrollbar. */}
-        <div className="relative z-[2] min-h-0 flex-1" style={{ maxHeight: '650px' }}>
+        <div className="relative z-[2] min-h-0 flex-1">
           <nav
             ref={navRef}
             className="sidebar-scroll absolute inset-0 overflow-y-auto overflow-x-hidden px-[8px]"
@@ -1132,7 +1049,6 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             </div>
           )}
         </div>
-        <SidebarF11BottomCover isRTL={isRTL} />
       </aside>
 
       <button
