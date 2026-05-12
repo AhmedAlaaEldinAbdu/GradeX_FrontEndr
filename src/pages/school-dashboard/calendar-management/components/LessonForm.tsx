@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import Card from '@/shared/components/Card';
 import FormField from '@/shared/components/FormField';
@@ -112,15 +112,19 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navState = (location.state as { gradeId?: string; classroomId?: string } | null) ?? null;
   const { validateStartTime, validateEndTime } = useLessonValidations();
   const scrollToFirstError = useScrollToFirstError<LessonFormData>();
   const userData = tokenManager.getUserData();
   const schoolBranchId = userData?.schoolBrancheId ?? userData?.schoolBranchId ?? undefined;
 
-  // Get date and time from URL params if available (for add mode)
+  // Date/time come from URL params (user-facing context), while stage and
   const dateParam = searchParams.get('date');
   const startTimeParam = searchParams.get('startTime');
   const endTimeParam = searchParams.get('endTime');
+  const gradeIdParam = navState?.gradeId;
+  const classroomIdParam = navState?.classroomId;
 
   // Normalize initialData
   const normalizedInitialData = useMemo(() => {
@@ -177,8 +181,8 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
       lessonType: normalizedInitialData?.lessonType || '',
       materialId: normalizedInitialData?.materialId || '',
       teacherId: normalizedInitialData?.teacherId || '',
-      gradeId: normalizedInitialData?.gradeId || '',
-      classroomId: normalizedInitialData?.classroomId || '',
+      gradeId: normalizedInitialData?.gradeId || gradeIdParam || '',
+      classroomId: normalizedInitialData?.classroomId || classroomIdParam || '',
       bookId: normalizedInitialData?.bookId || '',
       classworkFromPage: normalizedInitialData?.classworkFromPage || '',
       classworkToPage: normalizedInitialData?.classworkToPage || '',
@@ -665,13 +669,14 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
             {/* Book Name */}
             <FormField
               label={t('lesson.bookName')}
-              optional
+              required
               error={errors.bookId?.message}
               htmlFor="bookId"
             >
               <Controller
                 name="bookId"
                 control={control}
+                rules={{ required: t('lesson.validation.bookNameRequired') }}
                 render={({ field }) => (
                   <CustomSelect
                     value={field.value}
@@ -687,6 +692,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                             : t('lesson.selectBook')
                     }
                     disabled={!watchedMaterialId || !watchedGradeId || isLoadingBooks}
+                    error={!!errors.bookId}
                   />
                 )}
               />
