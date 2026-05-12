@@ -157,15 +157,6 @@ const getSubjectColor = (subjectName: string): ScheduleLesson['color'] => {
 };
 
 /**
- * Check if date1 is on or before date2 (comparing only date parts, ignoring time)
- */
-const isDateOnOrBefore = (date1: Date, date2: Date): boolean => {
-  const d1 = startOfDay(date1);
-  const d2 = startOfDay(date2);
-  return isBefore(d1, d2) || isEqual(d1, d2);
-};
-
-/**
  * Get the date for a specific day index within a week
  * dayIndex: 0=Saturday, 1=Sunday, ..., 6=Friday
  */
@@ -174,71 +165,38 @@ const getDateForDayInWeek = (weekStart: Date, dayIndex: number): Date => {
 };
 
 /**
- * Find the applicable lesson for a specific day and period within a week.
- * A lesson applies if:
- * 1. It's on the same day of the week (e.g., both are Sunday)
- * 2. It's on the same time slot (periodIndex)
- * 3. Its date is on or before the current week's day
- * 4. There's no newer lesson for the same day+period that also applies
+ * Find the lesson for a specific day and period within a week.
  */
 const findApplicableLessonForSlot = (
   lessons: Lesson[],
   dayIndex: number,
   periodIndex: number,
   weekStart: Date,
-  lang: string,
-  studyStartDate?: Date | null,
-  studyEndDate?: Date | null
+  lang: string
 ): ScheduleLesson | null => {
-  // Get the actual date for this day in the current week
-  const currentDayDate = getDateForDayInWeek(weekStart, dayIndex);
+  const currentDayDate = startOfDay(getDateForDayInWeek(weekStart, dayIndex));
 
-  if (studyStartDate && studyEndDate) {
-    const dayStart = startOfDay(currentDayDate);
-    const studyStart = startOfDay(studyStartDate);
-    const studyEnd = startOfDay(studyEndDate);
-    if (isBefore(dayStart, studyStart) || isBefore(studyEnd, dayStart)) {
-      return null;
-    }
-  }
-
-  // Filter lessons that match this day of week and time slot
   const matchingLessons = lessons.filter((lesson) => {
-    const lessonDate = parseISO(lesson.date);
-    const lessonDayIndex = getDayIndexFromDate(lessonDate);
+    const lessonDate = startOfDay(parseISO(lesson.date));
+    if (!isEqual(lessonDate, currentDayDate)) {
+      return false;
+    }
+
     const startTimeParsed = parseTimeString(lesson.startTime);
     const lessonPeriodIndex = getPeriodIndexFromTime(
       startTimeParsed.hours,
       startTimeParsed.minutes
     );
-
-    // Must be same day of week and same period
-    if (lessonDayIndex !== dayIndex || lessonPeriodIndex !== periodIndex) {
-      return false;
-    }
-
-    if (studyStartDate && studyEndDate) {
-      const lDayStart = startOfDay(lessonDate);
-      const studyStart = startOfDay(studyStartDate);
-      const studyEnd = startOfDay(studyEndDate);
-      return !isBefore(lDayStart, studyStart) && !isBefore(studyEnd, lDayStart);
-    }
-
-    return isDateOnOrBefore(lessonDate, currentDayDate);
+    return lessonPeriodIndex === periodIndex;
   });
 
   if (matchingLessons.length === 0) {
     return null;
   }
 
-  // Sort by date descending to get the most recent applicable lesson
-  matchingLessons.sort((a, b) => {
-    const dateA = parseISO(a.date);
-    const dateB = parseISO(b.date);
-    return dateB.getTime() - dateA.getTime();
-  });
+  // Defensive tie-breaker if duplicates exist for the same date+slot.
+  matchingLessons.sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
 
-  // Get the most recent lesson that applies to this slot
   const mostRecentLesson = matchingLessons[0];
 
   // Get subject name based on language
@@ -286,15 +244,13 @@ const findApplicableLessonForSlot = (
 };
 
 /**
- * Transform all API Lessons to ScheduleLessons for the current week.
- * Lessons repeat weekly until a newer lesson for the same slot is added.
+ * Transform API Lessons to ScheduleLessons for the current week. Each lesson
+ * is rendered only on its own exact date — no week-over-week repetition.
  */
 const transformLessonsForWeek = (
   apiLessons: Lesson[],
   weekStart: Date,
-  lang: string,
-  studyStartDate?: Date | null,
-  studyEndDate?: Date | null
+  lang: string
 ): ScheduleLesson[] => {
   const scheduleLessons: ScheduleLesson[] = [];
   const processedSlots = new Set<string>();
@@ -314,9 +270,7 @@ const transformLessonsForWeek = (
         dayIndex,
         periodIndex,
         weekStart,
-        lang,
-        studyStartDate,
-        studyEndDate
+        lang
       );
 
       if (lesson) {
@@ -801,13 +755,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       return [];
     }
 
-    const lessons = transformLessonsForWeek(
-      apiLessons,
-      currentWeekStart,
-      currentLang,
-      studyPeriod.start,
-      studyPeriod.end
-    );
+    const lessons = transformLessonsForWeek(apiLessons, currentWeekStart, currentLang);
 
     // Apply optimistic updates
     if (optimisticLessons.size > 0) {
@@ -825,7 +773,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     }
 
     return lessons;
-  }, [apiLessons, currentWeekStart, currentLang, optimisticLessons, studyPeriod]);
+  }, [apiLessons, currentWeekStart, currentLang, optimisticLessons]);
 
   // Transform API events to ScheduleEvent format for current week
   const transformedEvents: ScheduleEvent[] = useMemo(() => {
