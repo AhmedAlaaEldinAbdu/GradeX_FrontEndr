@@ -61,6 +61,42 @@ const TERM_OPTIONS: CustomSelectOption[] = [
   { value: 'term-3', label: 'الفصل الدراسي الثالث' },
 ];
 
+// Kept at module scope so React keeps a stable component identity across
+// re-renders — otherwise every keystroke would remount the whole subtree
+// (and the focused input would lose focus + the page would scroll).
+const RadioOption = ({
+  name,
+  value,
+  label,
+  checked,
+  onChange,
+}: {
+  name: string;
+  value: string;
+  label: string;
+  checked: boolean;
+  onChange: () => void;
+}) => (
+  <label className="flex cursor-pointer items-center gap-2 text-sm text-[#3A3A3A]">
+    <input
+      type="radio"
+      name={name}
+      value={value}
+      checked={checked}
+      onChange={onChange}
+      className="h-4 w-4"
+    />
+    <span>{label}</span>
+  </label>
+);
+
+const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="rounded-2xl border border-[#EDEDED] bg-white p-5">
+    <h3 className="mb-6 text-start text-base font-medium text-[#3A3A3A]">{title}</h3>
+    {children}
+  </div>
+);
+
 export default function AddEditContractForm({
   mode,
   initialValues,
@@ -109,39 +145,6 @@ export default function AddEditContractForm({
       setIsSubmitting(false);
     }
   };
-
-  const RadioOption = ({
-    name,
-    value,
-    label,
-    checked,
-    onChange,
-  }: {
-    name: string;
-    value: string;
-    label: string;
-    checked: boolean;
-    onChange: () => void;
-  }) => (
-    <label className="flex cursor-pointer items-center gap-2 text-sm text-[#3A3A3A]">
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-        className="h-4 w-4"
-      />
-      <span>{label}</span>
-    </label>
-  );
-
-  const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="rounded-2xl border border-[#EDEDED] bg-white p-5">
-      <h3 className="mb-6 text-start text-base font-medium text-[#3A3A3A]">{title}</h3>
-      {children}
-    </div>
-  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -261,6 +264,19 @@ export default function AddEditContractForm({
             />
           </div>
 
+          <div className="md:col-span-2">
+            <FormField label={t('contracts.form.nationality')} required htmlFor="nationality">
+              <CustomSelect
+                value={values.nationality}
+                onChange={(v) => setField('nationality', v as string)}
+                options={nationalityOptions}
+                placeholder={t('contracts.form.nationalityPlaceholder')}
+                disabled={isLoadingCountries}
+                maxHeight="200px"
+              />
+            </FormField>
+          </div>
+
           <FormField label={t('contracts.form.email')} required htmlFor="email">
             <Input
               id="email"
@@ -296,17 +312,6 @@ export default function AddEditContractForm({
 
           <FormField label={t('contracts.form.phone')} required htmlFor="phone">
             <PhoneInput value={values.phone} onChange={(v) => setField('phone', v)} required />
-          </FormField>
-
-          <FormField label={t('contracts.form.nationality')} required htmlFor="nationality">
-            <CustomSelect
-              value={values.nationality}
-              onChange={(v) => setField('nationality', v as string)}
-              options={nationalityOptions}
-              placeholder={t('contracts.form.nationalityPlaceholder')}
-              disabled={isLoadingCountries}
-              maxHeight="200px"
-            />
           </FormField>
         </div>
       </SectionCard>
