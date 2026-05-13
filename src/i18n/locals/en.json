@@ -158,6 +158,30 @@
       "editSuccess": "Contract updated successfully",
       "deleteConfirm": "Are you sure you want to delete this contract?",
       "deleteSuccess": "Contract deleted successfully"
+    },
+    "validation": {
+      "shortNationalAddressRequired": "Short national address is required",
+      "schoolKindRequired": "Please select the school type",
+      "commercialRegisterRequired": "Commercial registration no. is required",
+      "adminFeesRequired": "Administrative fees are required",
+      "adminFeesPositive": "Administrative fees must be a positive number",
+      "taxNumberRequired": "Tax number is required",
+      "representativeNameRequired": "Representative name is required",
+      "representativeRoleRequired": "Representative role is required",
+      "roleDocumentRequired": "Role document is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "idTypeRequired": "Please select the ID type",
+      "mobileRequired": "Mobile number is required",
+      "mobileInvalid": "Please enter a valid mobile number",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Please enter a valid phone number",
+      "nationalityRequired": "Nationality is required",
+      "withdrawalTypeRequired": "Please select a withdrawal type",
+      "termRequired": "Please select a term",
+      "withdrawalPeriodRequired": "Withdrawal period is required",
+      "adminFeesDiscountRequired": "Admin fees discount % is required",
+      "adminFeesDiscountRange": "Admin fees discount % must be between 0 and 100"
     }
   },
   "changePassword": {

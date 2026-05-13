@@ -158,6 +158,30 @@
       "editSuccess": "تم تعديل العقد بنجاح",
       "deleteConfirm": "هل أنت متأكد من حذف العقد؟",
       "deleteSuccess": "تم حذف العقد بنجاح"
+    },
+    "validation": {
+      "shortNationalAddressRequired": "العنوان الوطني المختصر مطلوب",
+      "schoolKindRequired": "يرجى اختيار وصف المدرسة",
+      "commercialRegisterRequired": "رقم التسجيل التجاري مطلوب",
+      "adminFeesRequired": "الرسوم الإدارية مطلوبة",
+      "adminFeesPositive": "الرسوم الإدارية يجب أن تكون رقمًا موجبًا",
+      "taxNumberRequired": "الرقم الضريبي مطلوب",
+      "representativeNameRequired": "اسم الممثل مطلوب",
+      "representativeRoleRequired": "صفة الممثل مطلوبة",
+      "roleDocumentRequired": "مستند الصفة مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح",
+      "idTypeRequired": "يرجى اختيار نوع الهوية",
+      "mobileRequired": "رقم الجوال مطلوب",
+      "mobileInvalid": "يرجى إدخال رقم جوال صحيح",
+      "phoneRequired": "رقم الهاتف مطلوب",
+      "phoneInvalid": "يرجى إدخال رقم هاتف صحيح",
+      "nationalityRequired": "الجنسية مطلوبة",
+      "withdrawalTypeRequired": "يرجى اختيار نوع العدول",
+      "termRequired": "يرجى اختيار الفصل الدراسي",
+      "withdrawalPeriodRequired": "فترة العدول مطلوبة",
+      "adminFeesDiscountRequired": "نسبة خصم الرسوم الإدارية مطلوبة",
+      "adminFeesDiscountRange": "نسبة خصم الرسوم الإدارية يجب أن تكون بين 0 و 100"
     }
   },
   "changePassword": {
