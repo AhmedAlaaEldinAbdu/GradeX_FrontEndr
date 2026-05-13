@@ -61,6 +61,7 @@
 .react-international-phone-country-selector-button {
   font-size: 16px !important;
   height: unset !important;
+  height: 48px !important;
   padding-top: 0.5rem !important;
   padding-bottom: 0.5rem !important;
   padding-left: 0.75rem !important;
@@ -69,6 +70,7 @@
 .react-international-phone-input-container .react-international-phone-input {
   font-size: 16px !important;
   height: unset !important;
+  height: 48px !important;
   padding-top: 0.5rem !important;
   padding-bottom: 0.5rem !important;
   padding-left: 0.75rem !important;

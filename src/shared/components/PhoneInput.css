@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: row-reverse; /* RTL: country selector on the left, input on the right */
   width: 100%;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   border: 1px solid #d1d5db;
   background-color: #ffffff;
   transition: all 0.15s ease-in-out;
@@ -48,7 +48,7 @@
   padding: 0.5rem 4px;
   border: none !important;
   border-left: 1px solid #e5e7eb !important;
-  border-radius: 0.5rem 0 0 0.5rem !important; /* Rounded corners on the left side */
+  border-radius: 1rem 0 0 1rem !important; /* Rounded corners on the left side */
   background-color: #f9fafb;
   cursor: pointer;
   transition: background-color 0.15s ease-in-out;

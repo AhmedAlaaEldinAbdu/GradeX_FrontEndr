@@ -58,8 +58,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
     <div className="w-full">
       {label && (
         <label className="mb-2 block text-start text-sm font-medium text-gray-700">
-          {label}
-          {required && <span className="text-red-500">*</span>}
+          <span className={`${required && 'required'}`}>{label}</span>
         </label>
       )}
       <div className="phone-input-wrapper" dir="rtl">
