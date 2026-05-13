@@ -26,16 +26,16 @@ const FormField: React.FC<FormFieldProps> = ({
   return (
     <div data-form-field={name ?? htmlFor}>
       <label
-        className={`mb-2 block text-start text-base font-normal text-black-800 ${required && 'required'}`}
+        className={`mb-1 block text-start text-base font-normal text-black-800`}
         htmlFor={htmlFor}
       >
-        {label}
+        <span className={`${required && 'required'}`}>{label}</span>
         {/* {required && <span className="text-red-500">*</span>} */}
         {optional && (
           <span className="text-sm font-normal text-gray-500"> ({t('schools.optional')}) </span>
         )}
+        <div className="pt-2">{children}</div>
       </label>
-      {children}
       {/* {error && <p className="mt-1 text-right text-xs text-red-600">{error}</p>} */}
       <FormErrorMessage message={error} />
     </div>
