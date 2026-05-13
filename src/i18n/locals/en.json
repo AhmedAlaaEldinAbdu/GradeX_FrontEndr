@@ -108,7 +108,7 @@
       "actions": "Actions"
     },
     "emptyTitle": "No contracts yet",
-    "emptyDescription": "Start by adding the first contract.",
+    "emptyDescription": "Start by adding the contract.",
     "sections": {
       "schoolData": "School Data",
       "representative": "Educational Institution Representative",
@@ -138,7 +138,9 @@
       "idTypeNational": "National ID",
       "idTypeResident": "Resident ID",
       "mobile": "Mobile Number",
+      "mobilePlaceholder": "Enter the mobile number",
       "phone": "Phone",
+      "phonePlaceholder": "Enter the phone number",
       "nationality": "Nationality",
       "nationalityPlaceholder": "Select nationality",
       "withdrawalType": "Withdrawal Type",

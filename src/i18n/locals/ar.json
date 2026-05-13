@@ -108,7 +108,7 @@
       "actions": "الإجراءات"
     },
     "emptyTitle": "لا توجد عقود حتى الآن",
-    "emptyDescription": "ابدأ بإضافة بيانات العقد الأول.",
+    "emptyDescription": "ابدأ بإضافة بيانات العقد.",
     "sections": {
       "schoolData": "بيانات المدرسة",
       "representative": "ممثل المنشأة التعليمية فى العقد",
@@ -138,7 +138,9 @@
       "idTypeNational": "هوية وطنية",
       "idTypeResident": "هوية مقيم",
       "mobile": "رقم الجوال",
+      "mobilePlaceholder": "أدخل رقم الجوال",
       "phone": "الهاتف",
+      "phonePlaceholder": "أدخل رقم الهاتف",
       "nationality": "الجنسية",
       "nationalityPlaceholder": "اختر الجنسية",
       "withdrawalType": "نوع العدول",
