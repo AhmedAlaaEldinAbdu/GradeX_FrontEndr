@@ -14,26 +14,11 @@ import CustomImage from '@/shared/components/CustomImage';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
-import MonyBagIcon from '@/assets/icons/MonyBag.svg';
-
-type ContractRow = {
-  id: string;
-  code: string;
-  studentName: string;
-  studentAvatar: string | null;
-  date: string;
-  contractFileUrl?: string | null;
-};
-
-// Mock data — swap for API once the endpoint is wired.
-const mockContracts: ContractRow[] = Array.from({ length: 7 }).map((_, i) => ({
-  id: `${i + 1}`,
-  code: '26258',
-  studentName: 'أحمد معتز حسن',
-  studentAvatar: null,
-  date: '1/1/2020',
-  contractFileUrl: null,
-}));
+import FullReceiptIcon from '@gradex/assets/icons/FullReceipt.svg';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchContracts } from '@/redux/features/contracts/contractsSlice';
+import { tokenManager } from '@/lib/auth/token-manager';
+import type { ContractListItem } from '@/services/api/types/contracts.types';
 
 type ContractsListProps = {
   /** Notifies the parent how many contracts the data source has (unfiltered). */
@@ -43,52 +28,78 @@ type ContractsListProps = {
 export default function ContractsList({ onContractsCountChange }: ContractsListProps = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const schoolBranchId =
+    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
+
+  const contracts = useAppSelector((state) => state.contracts.contracts);
+  const pagination = useAppSelector((state) => state.contracts.pagination);
+  const isLoading = useAppSelector((state) => state.contracts.isLoading);
 
   const [search, setSearch] = useState('');
   const [code, setCode] = useState('');
   const [page, setPage] = useState(1);
   const limit = 10;
 
+  // Fetch the contracts list whenever the page changes.
+  // Search/code stay client-side for now (no server filter params confirmed yet).
+  useEffect(() => {
+    if (!schoolBranchId) return;
+    dispatch(
+      fetchContracts({
+        SchoolBranchId: schoolBranchId,
+        PageNumber: page,
+        PageSize: limit,
+      })
+    );
+  }, [dispatch, schoolBranchId, page]);
+
   // Surface the unfiltered count so the page header can swap its action button
   // (Add vs Edit) based on whether any contract has been set up yet.
   useEffect(() => {
-    // onContractsCountChange?.(mockContracts.length);
-  }, [onContractsCountChange]);
+    onContractsCountChange?.(contracts.length);
+  }, [contracts.length, onContractsCountChange]);
 
   const filteredRows = useMemo(() => {
-    return mockContracts.filter((row) => {
+    return (contracts ?? []).filter((row) => {
+      const studentName = row.studentName ?? '';
+      const rowCode = row.code ?? '';
       const matchesSearch =
-        !search.trim() || row.studentName.toLowerCase().includes(search.trim().toLowerCase());
-      const matchesCode = !code || row.code === code;
+        !search.trim() || studentName.toLowerCase().includes(search.trim().toLowerCase());
+      const matchesCode = !code || rowCode === code;
       return matchesSearch && matchesCode;
     });
-  }, [search, code]);
-
-  const totalItems = filteredRows.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / limit));
-  const safePage = Math.min(page, totalPages);
-  const pagedRows = filteredRows.slice((safePage - 1) * limit, safePage * limit);
+  }, [contracts, search, code]);
 
   const codeOptions = useMemo<CustomSelectOption[]>(
     () =>
-      Array.from(new Set(mockContracts.map((c) => c.code))).map((c) => ({
-        value: c,
-        label: c,
-      })),
-    []
+      Array.from(new Set((contracts ?? []).map((c) => c.code).filter(Boolean) as string[])).map(
+        (c) => ({ value: c, label: c })
+      ),
+    [contracts]
   );
 
-  const handleViewStudent = (row: ContractRow) => {
-    navigate(`/students/${row.id}`, { state: { from: 'contracts' } });
+  const handleViewStudent = (row: ContractListItem) => {
+    if (!row.studentId) return;
+    navigate(`/students/${row.studentId}`, { state: { from: 'contracts' } });
   };
 
-  const handleViewContract = (row: ContractRow) => {
+  const handleViewContract = (row: ContractListItem) => {
     if (row.contractFileUrl) {
       window.open(row.contractFileUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
-  const columns = useMemo<DataTableColumn<ContractRow>[]>(
+  const totalItems = pagination?.totalItems ?? filteredRows.length;
+  const totalPages = Math.max(1, pagination?.totalPages ?? Math.ceil(totalItems / limit));
+  const safePage = Math.min(page, totalPages);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  const columns = useMemo<DataTableColumn<ContractListItem>[]>(
     () => [
       {
         header: 'contracts.table.index',
@@ -98,7 +109,7 @@ export default function ContractsList({ onContractsCountChange }: ContractsListP
       },
       {
         header: 'contracts.table.code',
-        accessor: (row) => <span className="text-sm text-[#646969]">{row.code}</span>,
+        accessor: (row) => <span className="text-sm text-[#646969]">{row.code ?? '-'}</span>,
         headerClassName: 'min-w-[120px] text-center',
         className: 'text-center',
       },
@@ -109,40 +120,45 @@ export default function ContractsList({ onContractsCountChange }: ContractsListP
             <CustomImage
               src={row.studentAvatar || DefaultAvatar}
               fallbackSrc={DefaultAvatar}
-              alt={row.studentName}
+              alt={row.studentName ?? ''}
               className="h-9 w-9 flex-shrink-0 rounded-lg object-cover"
             />
-            <span className="text-sm text-[#646969]">{row.studentName}</span>
-            <IconButton
-              variant="blue"
-              ariaLabel={t('common.view')}
-              onClick={() => handleViewStudent(row)}
-              className="h-8 w-8"
-            >
-              <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-4 w-4" />
-            </IconButton>
+            <span className="text-sm text-[#646969]">{row.studentName ?? '-'}</span>
+            {row.studentId && (
+              <IconButton
+                variant="blue"
+                ariaLabel={t('common.view')}
+                onClick={() => handleViewStudent(row)}
+                className="h-8 w-8"
+              >
+                <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-4 w-4" />
+              </IconButton>
+            )}
           </div>
         ),
         headerClassName: 'min-w-[260px] text-center',
       },
       {
         header: 'contracts.table.date',
-        accessor: (row) => <span className="text-sm text-[#646969]">{row.date}</span>,
+        accessor: (row) => <span className="text-sm text-[#646969]">{row.date ?? '-'}</span>,
         headerClassName: 'min-w-[120px] text-center',
         className: 'text-center',
       },
       {
         header: 'contracts.table.contract',
-        accessor: (row) => (
-          <button
-            type="button"
-            onClick={() => handleViewContract(row)}
-            className="flex justify-center transition-opacity hover:opacity-80"
-            aria-label={t('contracts.table.contract')}
-          >
-            <CustomImage src={PdfIcon} alt="PDF" className="h-9 w-8" />
-          </button>
-        ),
+        accessor: (row) =>
+          row.contractFileUrl ? (
+            <button
+              type="button"
+              onClick={() => handleViewContract(row)}
+              className="flex justify-center transition-opacity hover:opacity-80"
+              aria-label={t('contracts.table.contract')}
+            >
+              <CustomImage src={PdfIcon} alt="PDF" className="h-9 w-8" />
+            </button>
+          ) : (
+            <span className="text-sm text-[#9CA3AF]">-</span>
+          ),
         headerClassName: 'min-w-[100px] text-center',
         className: 'text-center',
       },
@@ -157,17 +173,17 @@ export default function ContractsList({ onContractsCountChange }: ContractsListP
   );
 
   const hasActiveFilters = search.trim().length > 0 || code !== '';
-  const shouldShowEmptyState = mockContracts.length === 0 && !hasActiveFilters;
+  const shouldShowEmptyState =
+    !isLoading && (contracts?.length ?? 0) === 0 && !hasActiveFilters;
 
   if (shouldShowEmptyState) {
     return (
       <Card className="rounded-2xl" padding="lg">
         <EmptyState
-          imgSrc={MonyBagIcon}
+          imgSrc={FullReceiptIcon}
           title={t('contracts.emptyTitle')}
           description={t('contracts.emptyDescription')}
           actionLabel={t('contracts.addAction')}
-          onAction={() => navigate('/financial-management/contracts/add-contract')}
           blend
         />
       </Card>
@@ -204,9 +220,10 @@ export default function ContractsList({ onContractsCountChange }: ContractsListP
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={pagedRows}
+        data={filteredRows}
         columns={columns}
         keyExtractor={(row) => row.id}
+        isLoading={isLoading}
         filters={[
           {
             type: 'search',
