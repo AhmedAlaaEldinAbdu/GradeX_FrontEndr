@@ -47,6 +47,15 @@ export interface PeriodHeader {
   time: string;
 }
 
+export interface PeriodSlot {
+  periodIndex: number;
+  label: string;
+  startHour: number;
+  startMin: number;
+  endHour: number;
+  endMin: number;
+}
+
 // Special column configuration (e.g., فطار, الحديقة)
 export interface SpecialColumn {
   columnIndex: number; // Which column (0-8)
@@ -73,6 +82,7 @@ interface WeeklyScheduleCalendarProps {
   lessons?: ScheduleLesson[];
   events?: ScheduleEvent[];
   periodHeaders?: PeriodHeader[]; // Customizable period headers
+  periodSlots?: PeriodSlot[];
   specialColumns?: SpecialColumn[]; // Dynamic special columns (breakfast, garden, etc.)
   lessonContextActions?: LessonContextAction[]; // Context menu actions for lessons
   onLessonClick?: (lesson: ScheduleLesson) => void;
@@ -92,7 +102,7 @@ interface WeeklyScheduleCalendarProps {
   className?: string;
 }
 
-const PERIOD_TIME_SLOTS = [
+const DEFAULT_PERIOD_TIME_SLOTS: PeriodSlot[] = [
   { periodIndex: 0, label: '1', startHour: 8, startMin: 30, endHour: 9, endMin: 15 },
   { periodIndex: 1, label: '2', startHour: 9, startMin: 15, endHour: 10, endMin: 0 },
   { periodIndex: 2, label: '3', startHour: 10, startMin: 0, endHour: 10, endMin: 45 },
@@ -134,6 +144,7 @@ export default function WeeklyScheduleCalendar({
   lessons = [],
   events = [],
   specialColumns = DEFAULT_SPECIAL_COLUMNS,
+  periodSlots,
   lessonContextActions = [],
   onDotsClick,
   onEmptyCellClick,
@@ -144,6 +155,11 @@ export default function WeeklyScheduleCalendar({
   workingDays,
   className = '',
 }: WeeklyScheduleCalendarProps) {
+  const PERIOD_TIME_SLOTS: PeriodSlot[] =
+    periodSlots && periodSlots.length > 0 ? periodSlots : DEFAULT_PERIOD_TIME_SLOTS;
+  const periodCount = PERIOD_TIME_SLOTS.length;
+  const periodIndices = useMemo(() => PERIOD_TIME_SLOTS.map((_, idx) => idx), [PERIOD_TIME_SLOTS]);
+  const gridTemplateColumns = `80px repeat(${periodCount}, minmax(90px,1fr))`;
   const isWorkingDay = (dayIndex: number) => {
     if (!workingDays) return true;
     return workingDays.includes(dayIndex);
@@ -622,10 +638,10 @@ export default function WeeklyScheduleCalendar({
       <div className="overflow-x-auto p-2">
         <div className="relative">
           {/* Header Row - Period/Time columns */}
-          <div className="relative mb-2 grid grid-cols-[80px_repeat(9,minmax(90px,1fr))] gap-2">
+          <div className="relative mb-2 grid gap-2" style={{ gridTemplateColumns }}>
             {/* Row label header - empty space */}
             <div className="flex items-center justify-center" />
-            {/* Period headers - 9 columns for time slots */}
+            {/* Period headers */}
             {localizedPeriodHeaders.map((period, idx) => {
               // Check if this column is a special column
               const specialCol = specialColumns.find((sc) => sc.columnIndex === idx);
@@ -663,7 +679,8 @@ export default function WeeklyScheduleCalendar({
             return (
               <div
                 key={dayIndex}
-                className="relative mb-2 grid grid-cols-[80px_repeat(9,minmax(90px,1fr))] gap-2 overflow-visible"
+                className="relative mb-2 grid gap-2 overflow-visible"
+                style={{ gridTemplateColumns }}
               >
                 {/* Day label on the right */}
                 {isCurrentDay ? (
@@ -683,8 +700,8 @@ export default function WeeklyScheduleCalendar({
                     </span>
                   </div>
                 )}
-                {/* Period cells (9 columns) */}
-                {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((periodIndex) => {
+                {/* Period cells (driven by the dynamic period count) */}
+                {periodIndices.map((periodIndex) => {
                   const cellLessons = getLessonsForCell(dayIndex, periodIndex);
                   const eventAtCell = getEventForCell(dayIndex, periodIndex);
                   const isEventStart = isEventStartCell(dayIndex, periodIndex);
@@ -776,8 +793,8 @@ export default function WeeklyScheduleCalendar({
                         </div>
                       );
                     }
-                    // Last cell (periodIndex 8) has rounded left corner
-                    if (periodIndex === 8) {
+                    // Last cell has rounded left corner
+                    if (periodIndex === periodCount - 1) {
                       return (
                         <div
                           key={periodIndex}
