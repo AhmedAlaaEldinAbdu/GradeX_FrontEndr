@@ -214,7 +214,11 @@ export default function AcademicCalendarForm({
     breakfastSchedules: initialValues?.breakfastSchedules ?? [createEmptySchedule()],
   });
 
-  const submitLabel = mode === 'add' ? t('common.add') : t('common.save');
+  const submitLabel = isSubmitting
+    ? t('common.saving')
+    : mode === 'add'
+      ? t('common.add')
+      : t('common.save');
   const cancelLabel = t('common.cancel');
 
   const patch = (partial: Partial<AcademicCalendarFormValues>) => {

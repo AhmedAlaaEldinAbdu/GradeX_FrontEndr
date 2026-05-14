@@ -1,12 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import AcademicCalendarForm from './components/AcademicCalendarForm';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { createAcademicCalendar } from '@/redux/features/academic-calendar/academicCalendarSlice';
-import { useToast } from '@/shared/context/ToastContext';
-import { getErrorMessage } from '@/lib/http';
 import type { AcademicCalendarFormValues } from './components/AcademicCalendarForm';
 import {
   toDaysEnumValues,
@@ -93,10 +95,15 @@ export default function AddAcademicCalendarPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { showToast } = useToast();
 
   const schoolBranchId =
     tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
+
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
@@ -106,57 +113,76 @@ export default function AddAcademicCalendarPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title="academicCalendar.addTitle" />
+    <>
+      <div className="space-y-6">
+        <Breadcrumb items={breadcrumbItems} />
+        <PageHeader title="academicCalendar.addTitle" />
 
-      <AcademicCalendarForm
-        mode="add"
-        schoolBranchId={schoolBranchId}
-        onCancel={() => navigate('/calendar/academic')}
-        onSubmit={async (values: AcademicCalendarFormValues) => {
-          if (!schoolBranchId) {
-            showToast({
-              message: 'common.errorOccurred',
-              type: 'error',
-            });
-            return;
-          }
-
-          const requests = mapFormValuesToCreateRequests(values, schoolBranchId);
-
-          if (requests.length === 0) {
-            showToast({
-              message: 'common.errorOccurred',
-              type: 'error',
-            });
-            return;
-          }
-
-          try {
-            const res = await dispatch(createAcademicCalendar(requests[0])).unwrap();
-            if (!res.isSuccess) {
-              showToast({
-                message: 'common.errorOccurred',
+        <AcademicCalendarForm
+          mode="add"
+          schoolBranchId={schoolBranchId}
+          onCancel={() => navigate('/calendar/academic')}
+          onSubmit={async (values: AcademicCalendarFormValues) => {
+            if (!schoolBranchId) {
+              setShowPopupMessage({
+                show: true,
                 type: 'error',
+                message: t('common.errorOccurred'),
               });
               return;
             }
 
-            showToast({
-              message: 'academicCalendar.toast.addSuccess',
-              type: 'success',
-            });
+            const requests = mapFormValuesToCreateRequests(values, schoolBranchId);
+
+            if (requests.length === 0) {
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: t('common.errorOccurred'),
+              });
+              return;
+            }
+
+            try {
+              const res = await dispatch(createAcademicCalendar(requests[0])).unwrap();
+              if (!res.isSuccess) {
+                setShowPopupMessage({
+                  show: true,
+                  type: 'error',
+                  message: t('common.errorOccurred'),
+                });
+                return;
+              }
+
+              setShowPopupMessage({
+                show: true,
+                type: 'success',
+                message: t('academicCalendar.toast.addSuccess'),
+              });
+            } catch (error) {
+              console.error('Failed to add academic calendar:', error);
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: t('common.errorOccurred'),
+              });
+            }
+          }}
+        />
+      </div>
+
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        message={showPopupMessage.message}
+        onClose={() => {
+          setShowPopupMessage({ show: false, type: 'success', message: '' });
+          if (showPopupMessage.type === 'success') {
             navigate('/calendar/academic');
-          } catch (error) {
-            showToast({
-              message: getErrorMessage(error),
-              type: 'error',
-              isRaw: true,
-            });
           }
         }}
       />
-    </div>
+    </>
   );
 }
