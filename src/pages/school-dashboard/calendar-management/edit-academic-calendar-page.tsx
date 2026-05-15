@@ -12,6 +12,7 @@ import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchAcademicCalendarById,
+  setCurrentCalendar,
   updateAcademicCalendar,
 } from '@/redux/features/academic-calendar/academicCalendarSlice';
 import type { AcademicCalendarFormValues } from './components/AcademicCalendarForm';
@@ -224,7 +225,12 @@ export default function EditAcademicCalendarPage() {
 
   useEffect(() => {
     if (!id) return;
+    dispatch(setCurrentCalendar(null));
     dispatch(fetchAcademicCalendarById(id));
+
+    return () => {
+      dispatch(setCurrentCalendar(null));
+    };
   }, [dispatch, id]);
 
   const initialValues = useMemo(
@@ -249,11 +255,11 @@ export default function EditAcademicCalendarPage() {
           <Card>
             <div className="p-6 text-center text-gray-600">{t('common.errorOccurred')}</div>
           </Card>
-        ) : isLoading && !currentCalendar ? (
+        ) : !currentCalendar || isLoading ? (
           <Card>
             <Loading />
           </Card>
-        ) : currentCalendar && initialValues ? (
+        ) : initialValues ? (
           <AcademicCalendarForm
             key={currentCalendar.id}
             mode="edit"
