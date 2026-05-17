@@ -11,7 +11,7 @@
       "studentsCount": "عدد الطلاب",
       "teachersCount": "عدد المدرسين"
     },
-    "busRoute": "خط سير الحافلات",
+    "busRoute": "خط سير الباصات",
     "attendanceRate": "نسبة الحضور",
     "filters": {
       "day": "يوم",
