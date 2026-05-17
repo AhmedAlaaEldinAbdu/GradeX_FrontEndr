@@ -1,4 +1,39 @@
 {
+  "schoolDashboard": {
+    "title": "Dashboard",
+    "summaryPrefix": "Here's your summary for",
+    "firstTerm": "First Term",
+    "secondTerm": "Second Term",
+    "thirdTerm": "Third Term",
+    "metrics": {
+      "ordersCount": "Applications",
+      "classroomsCount": "Classrooms",
+      "studentsCount": "Students",
+      "teachersCount": "Teachers"
+    },
+    "busRoute": "Bus Route",
+    "attendanceRate": "Attendance Rate",
+    "filters": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "term": "Term"
+    },
+    "vsLastMonth": "vs last month",
+    "stages": {
+      "kindergarten": "Kindergarten",
+      "primary": "Primary",
+      "preparatory": "Preparatory",
+      "secondary": "Secondary"
+    },
+    "applicationsSummary": "Applications Summary",
+    "applications": {
+      "incompleteData": "Incomplete Data",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "accepted": "Accepted"
+    }
+  },
   "sidebar": {
     "expand": "Expand sidebar",
     "collapse": "Collapse sidebar",
@@ -1488,7 +1523,7 @@
     "noBooksMessage": "No books have been added yet. You can start by adding books to organize curricula and manage education better.",
     "book": "Book",
     "bookName": "Book Name",
-    "bookNameAr": "Book Name in Arabic",
+    "enterBookName": "Enter book name",
     "bookNameEn": "Book Name in English",
     "enterBookNameAr": "Enter book name in Arabic",
     "enterBookNameEn": "Enter book name in English",

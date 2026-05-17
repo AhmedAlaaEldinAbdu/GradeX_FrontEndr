@@ -1,4 +1,39 @@
 {
+  "schoolDashboard": {
+    "title": "لوحة التحكم",
+    "summaryPrefix": "إليك ملخص اليوم",
+    "firstTerm": "الفصل الدراسي الأول",
+    "secondTerm": "الفصل الدراسي الثاني",
+    "thirdTerm": "الفصل الدراسي الثالث",
+    "metrics": {
+      "ordersCount": "عدد الطلبات",
+      "classroomsCount": "عدد الصفوف الدراسية",
+      "studentsCount": "عدد الطلاب",
+      "teachersCount": "عدد المدرسين"
+    },
+    "busRoute": "خط سير الحافلات",
+    "attendanceRate": "نسبة الحضور",
+    "filters": {
+      "day": "يوم",
+      "week": "اسبوع",
+      "month": "شهر",
+      "term": "ترم"
+    },
+    "vsLastMonth": "عن الشهر الماضي",
+    "stages": {
+      "kindergarten": "رياض الاطفال",
+      "primary": "الابتدائية",
+      "preparatory": "الإعدادية",
+      "secondary": "الثانوية"
+    },
+    "applicationsSummary": "ملخص الطلبات التقديم",
+    "applications": {
+      "incompleteData": "بيانات ناقصة",
+      "rejected": "مرفوض",
+      "pending": "قيد الانتظار",
+      "accepted": "مقبول"
+    }
+  },
   "sidebar": {
     "expand": "توسيع القائمة الجانبية",
     "collapse": "طي القائمة الجانبية",
@@ -1488,7 +1523,7 @@
     "noBooksMessage": "لم يتم إضافة أي كتاب حتى الآن. يمكنك البدء بإضافة الكتب لتنظيم المناهج وإدارة التعليم بشكل أفضل.",
     "book": "كتاب",
     "bookName": "اسم الكتاب",
-    "bookNameAr": "اسم الكتاب (باللغة العربية)",
+    "enterBookName": "أدخل اسم الكتاب",
     "bookNameEn": "اسم الكتاب (باللغة الإنجليزية)",
     "enterBookNameAr": "أدخل اسم الكتاب بالعربية",
     "enterBookNameEn": "أدخل اسم الكتاب بالإنجليزية",
