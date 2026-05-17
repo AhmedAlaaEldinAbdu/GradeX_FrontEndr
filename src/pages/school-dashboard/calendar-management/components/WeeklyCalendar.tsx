@@ -451,6 +451,8 @@ const SPECIAL_COLUMN_COLORS = {
   },
 } as const;
 
+const mapApiDayToCalendarIndex = (apiDay: number): number => (apiDay === 7 ? 0 : apiDay);
+
 const getWorkingDaysFromSchedules = (
   daySchedules: AcademicCalendarEntity['daySchedules']
 ): number[] => {
@@ -463,7 +465,7 @@ const getWorkingDaysFromSchedules = (
   const allDays = new Set<number>();
   for (const schedule of daySchedules) {
     if (schedule.days && schedule.days.length > 0) {
-      schedule.days.forEach((day) => allDays.add(day));
+      schedule.days.forEach((day) => allDays.add(mapApiDayToCalendarIndex(day)));
     }
   }
 
@@ -477,7 +479,7 @@ const getWorkingDaysFromSchedules = (
 
 const getApplicableDays = (scheduleDays: number[], workingDays: number[]): number[] => {
   if (scheduleDays && scheduleDays.length > 0) {
-    return [...scheduleDays].sort((a, b) => a - b);
+    return scheduleDays.map(mapApiDayToCalendarIndex).sort((a, b) => a - b);
   }
 
   return workingDays;
