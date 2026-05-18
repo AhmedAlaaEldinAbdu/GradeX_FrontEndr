@@ -34,6 +34,7 @@ import schoolTasksReducer from '../features/school-tasks/schoolTasksSlice';
 import taskCorrectionsReducer from '../features/task-corrections/taskCorrectionsSlice';
 import taskStudentsReducer from '../features/task-students/taskStudentsSlice';
 import gradesReducer from '../features/grades/gradesSlice';
+import controlPanelReducer from '../features/control-panel/controlPanelSlice';
 
 export const store = configureStore({
   reducer: {
@@ -72,6 +73,7 @@ export const store = configureStore({
     taskCorrections: taskCorrectionsReducer,
     taskStudents: taskStudentsReducer,
     grades: gradesReducer,
+    controlPanel: controlPanelReducer,
   },
 });
 
