@@ -378,8 +378,10 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
                 >
                   {/* Group header */}
                   <div
-                    className={`flex min-h-[60px] items-center justify-between gap-4 rounded-xl px-3 py-2 ${
-                      expanded ? 'border border-[#E5FFF4] bg-[#EEFDF6]' : ''
+                    className={`flex items-center justify-between gap-4 rounded-xl px-3 ${
+                      expanded
+                        ? 'min-h-[3.75rem] border border-[#E5FFF4] bg-[#EEFDF6] py-2'
+                        : 'min-h-6'
                     }`}
                   >
                     <RoleCheckbox
