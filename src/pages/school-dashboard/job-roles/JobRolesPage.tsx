@@ -33,7 +33,14 @@ export default function JobRolesPage() {
                   imgClassName: 'w-[24px] h-[24px]',
                 },
               ]
-            : []
+            : [
+                {
+                  label: 'rolesManagement.addUser',
+                  to: '/settings/job-roles/add-user',
+                  imgSrc: PlusIcon,
+                  imgClassName: 'w-[24px] h-[24px]',
+                },
+              ]
         }
         hasHeaderControls={true}
       />

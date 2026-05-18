@@ -227,7 +227,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
     setExpandedGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
   };
 
-  const onValid = (_data: JobRoleFormValues) => {
+  const onValid = () => {
     const permissionsResult = validatePermissions(Object.keys(selectedPermissions).length);
     if (permissionsResult !== true) {
       setPermissionsError(permissionsResult);
