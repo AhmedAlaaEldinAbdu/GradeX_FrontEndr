@@ -25,6 +25,7 @@ import TeacherLeaveDetailsPage from '@/pages/school-dashboard/teachers/teacher-l
 import TeachingStaffPage from '@/pages/school-dashboard/teaching-staff/TeachingStaffPage';
 import JobRolesPage from '@/pages/school-dashboard/job-roles/JobRolesPage';
 import AddJobRolePage from '@/pages/school-dashboard/job-roles/add-job-role-page';
+import EditJobRolePage from '@/pages/school-dashboard/job-roles/edit-job-role-page';
 import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page';
 import AttendancePage from '@/pages/school-dashboard/attendance/attendance-page';
 import StudentsAttendancePage from '@/pages/school-dashboard/attendance/students-attendance-page';
@@ -877,6 +878,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AddJobRolePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/job-roles/edit-role/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditJobRolePage />
             </MainLayout>
           </ProtectedRoute>
         }
