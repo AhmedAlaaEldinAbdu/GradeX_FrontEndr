@@ -3,16 +3,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import AcademicCalendarForm from './components/AcademicCalendarForm';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Card from '@/shared/components/Card';
 import Loading from '@/shared/components/Loading';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchAcademicCalendarById,
+  setCurrentCalendar,
   updateAcademicCalendar,
 } from '@/redux/features/academic-calendar/academicCalendarSlice';
-import { useToast } from '@/shared/context/ToastContext';
-import { getErrorMessage } from '@/lib/http';
 import type { AcademicCalendarFormValues } from './components/AcademicCalendarForm';
 import {
   toDaysEnumValues,
@@ -210,15 +212,25 @@ export default function EditAcademicCalendarPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useAppDispatch();
-  const { showToast } = useToast();
 
   const schoolBranchId = getCurrentSchoolBranchId() || '';
+
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
   const { currentCalendar, isLoading } = useAppSelector((state) => state.academicCalendar);
 
   useEffect(() => {
     if (!id) return;
+    dispatch(setCurrentCalendar(null));
     dispatch(fetchAcademicCalendarById(id));
+
+    return () => {
+      dispatch(setCurrentCalendar(null));
+    };
   }, [dispatch, id]);
 
   const initialValues = useMemo(
@@ -234,74 +246,92 @@ export default function EditAcademicCalendarPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title="academicCalendar.editTitle" />
+    <>
+      <div className="space-y-6">
+        <Breadcrumb items={breadcrumbItems} />
+        <PageHeader title="academicCalendar.editTitle" />
 
-      {!id ? (
-        <Card>
-          <div className="p-6 text-center text-gray-600">{t('common.errorOccurred')}</div>
-        </Card>
-      ) : isLoading && !currentCalendar ? (
-        <Card>
-          <Loading />
-        </Card>
-      ) : currentCalendar && initialValues ? (
-        <AcademicCalendarForm
-          key={currentCalendar.id}
-          mode="edit"
-          schoolBranchId={schoolBranchId}
-          onCancel={() => navigate('/calendar/academic')}
-          initialValues={initialValues}
-          onSubmit={async (values: AcademicCalendarFormValues) => {
-            try {
-              if (!schoolBranchId) {
-                showToast({
-                  message: 'common.errorOccurred',
-                  type: 'error',
+        {!id ? (
+          <Card>
+            <div className="p-6 text-center text-gray-600">{t('common.errorOccurred')}</div>
+          </Card>
+        ) : !currentCalendar || isLoading ? (
+          <Card>
+            <Loading />
+          </Card>
+        ) : initialValues ? (
+          <AcademicCalendarForm
+            key={currentCalendar.id}
+            mode="edit"
+            schoolBranchId={schoolBranchId}
+            onCancel={() => navigate('/calendar/academic')}
+            initialValues={initialValues}
+            onSubmit={async (values: AcademicCalendarFormValues) => {
+              try {
+                if (!schoolBranchId) {
+                  setShowPopupMessage({
+                    show: true,
+                    type: 'error',
+                    message: t('common.errorOccurred'),
+                  });
+                  return;
+                }
+
+                const stageId = values.educationalStageId || currentCalendar.gradeId;
+                const req = mapFormValuesToUpdateRequest(
+                  values,
+                  schoolBranchId,
+                  stageId,
+                  currentCalendar.id
+                );
+
+                const res = await dispatch(
+                  updateAcademicCalendar({ id: currentCalendar.id, data: req })
+                ).unwrap();
+
+                if (!res.isSuccess) {
+                  setShowPopupMessage({
+                    show: true,
+                    type: 'error',
+                    message: t('common.errorOccurred'),
+                  });
+                  return;
+                }
+
+                setShowPopupMessage({
+                  show: true,
+                  type: 'success',
+                  message: t('academicCalendar.toast.editSuccess'),
                 });
-                return;
-              }
-
-              const stageId = values.educationalStageId || currentCalendar.gradeId;
-              const req = mapFormValuesToUpdateRequest(
-                values,
-                schoolBranchId,
-                stageId,
-                currentCalendar.id
-              );
-
-              const res = await dispatch(
-                updateAcademicCalendar({ id: currentCalendar.id, data: req })
-              ).unwrap();
-
-              if (!res.isSuccess) {
-                showToast({
-                  message: 'common.errorOccurred',
+              } catch (error) {
+                console.error('Failed to update academic calendar:', error);
+                setShowPopupMessage({
+                  show: true,
                   type: 'error',
+                  message: t('common.errorOccurred'),
                 });
-                return;
               }
+            }}
+          />
+        ) : (
+          <Card>
+            <div className="p-6 text-center text-gray-600">{t('common.noResults')}</div>
+          </Card>
+        )}
+      </div>
 
-              showToast({
-                message: 'academicCalendar.toast.editSuccess',
-                type: 'success',
-              });
-              navigate('/calendar/academic');
-            } catch (error) {
-              showToast({
-                message: getErrorMessage(error),
-                type: 'error',
-                isRaw: true,
-              });
-            }
-          }}
-        />
-      ) : (
-        <Card>
-          <div className="p-6 text-center text-gray-600">{t('common.noResults')}</div>
-        </Card>
-      )}
-    </div>
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        message={showPopupMessage.message}
+        onClose={() => {
+          setShowPopupMessage({ show: false, type: 'success', message: '' });
+          if (showPopupMessage.type === 'success') {
+            navigate('/calendar/academic');
+          }
+        }}
+      />
+    </>
   );
 }

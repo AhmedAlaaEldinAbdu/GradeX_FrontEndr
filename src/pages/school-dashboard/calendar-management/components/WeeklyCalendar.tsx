@@ -6,6 +6,7 @@ import WeeklyScheduleCalendar, {
   type ScheduleLesson,
   type ScheduleEvent,
   type PeriodHeader,
+  type PeriodSlot,
   type SpecialColumn,
   type LessonContextAction,
 } from '@/shared/components/WeeklyScheduleCalendar';
@@ -44,19 +45,60 @@ import { addMinutesToTime } from '@/lib/utils/date-utils';
 import { tokenManager } from '@/lib/auth/token-manager';
 import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
 
-// Period time slots for mapping API times to periodIndex
-// Each slot has start and end times in 24h format (HH:mm)
-const PERIOD_TIME_SLOTS = [
-  { periodIndex: 0, startHour: 8, startMin: 30, endHour: 9, endMin: 15 },
-  { periodIndex: 1, startHour: 9, startMin: 15, endHour: 10, endMin: 0 },
-  { periodIndex: 2, startHour: 10, startMin: 0, endHour: 10, endMin: 45 },
-  { periodIndex: 3, startHour: 10, startMin: 45, endHour: 11, endMin: 30 },
-  { periodIndex: 4, startHour: 11, startMin: 30, endHour: 12, endMin: 15 },
-  { periodIndex: 5, startHour: 12, startMin: 15, endHour: 13, endMin: 0 },
-  { periodIndex: 6, startHour: 13, startMin: 0, endHour: 13, endMin: 45 },
-  { periodIndex: 7, startHour: 13, startMin: 45, endHour: 14, endMin: 30 },
-  { periodIndex: 8, startHour: 14, startMin: 30, endHour: 15, endMin: 15 },
+// Default period slots — used when the academic calendar hasn't loaded yet.
+// Each cell is 45 minutes from 08:30 to 15:15.
+const DEFAULT_PERIOD_TIME_SLOTS: PeriodSlot[] = [
+  { periodIndex: 0, label: '1', startHour: 8, startMin: 30, endHour: 9, endMin: 15 },
+  { periodIndex: 1, label: '2', startHour: 9, startMin: 15, endHour: 10, endMin: 0 },
+  { periodIndex: 2, label: '3', startHour: 10, startMin: 0, endHour: 10, endMin: 45 },
+  { periodIndex: 3, label: '4', startHour: 10, startMin: 45, endHour: 11, endMin: 30 },
+  { periodIndex: 4, label: '5', startHour: 11, startMin: 30, endHour: 12, endMin: 15 },
+  { periodIndex: 5, label: '6', startHour: 12, startMin: 15, endHour: 13, endMin: 0 },
+  { periodIndex: 6, label: '7', startHour: 13, startMin: 0, endHour: 13, endMin: 45 },
+  { periodIndex: 7, label: '8', startHour: 13, startMin: 45, endHour: 14, endMin: 30 },
+  { periodIndex: 8, label: '9', startHour: 14, startMin: 30, endHour: 15, endMin: 15 },
 ];
+
+/**
+ * Build period slots from the academic calendar.
+ * Cell duration = `lessonDuration` (minutes). Slots are generated from
+ * `dayStartTime` until `dayEndTime`, dropping any final partial cell.
+ */
+const buildPeriodSlots = (
+  dayStartTime: string | null | undefined,
+  dayEndTime: string | null | undefined,
+  lessonDuration: number | null | undefined
+): PeriodSlot[] => {
+  if (!dayStartTime || !dayEndTime || !lessonDuration || lessonDuration <= 0) {
+    return DEFAULT_PERIOD_TIME_SLOTS;
+  }
+  const start = parseTimeString(dayStartTime);
+  const end = parseTimeString(dayEndTime);
+  const startMinutes = start.hours * 60 + start.minutes;
+  const endMinutes = end.hours * 60 + end.minutes;
+  if (endMinutes <= startMinutes) {
+    return DEFAULT_PERIOD_TIME_SLOTS;
+  }
+
+  const slots: PeriodSlot[] = [];
+  let cursor = startMinutes;
+  let idx = 0;
+  while (cursor + lessonDuration <= endMinutes) {
+    const slotEnd = cursor + lessonDuration;
+    slots.push({
+      periodIndex: idx,
+      label: String(idx + 1),
+      startHour: Math.floor(cursor / 60),
+      startMin: cursor % 60,
+      endHour: Math.floor(slotEnd / 60),
+      endMin: slotEnd % 60,
+    });
+    cursor = slotEnd;
+    idx += 1;
+  }
+
+  return slots.length > 0 ? slots : DEFAULT_PERIOD_TIME_SLOTS;
+};
 
 // Subject color mapping
 const SUBJECT_COLORS: Record<string, ScheduleLesson['color']> = {
@@ -81,13 +123,12 @@ const getDayIndexFromDate = (date: Date): number => {
 };
 
 /**
- * Get period index based on time
- * Returns the period index that contains the given time, or -1 if not found
+ * Get period index based on time and the active period slots.
  */
-const getPeriodIndexFromTime = (hours: number, minutes: number): number => {
+const getPeriodIndexFromTime = (hours: number, minutes: number, slots: PeriodSlot[]): number => {
   const timeInMinutes = hours * 60 + minutes;
 
-  for (const slot of PERIOD_TIME_SLOTS) {
+  for (const slot of slots) {
     const slotStart = slot.startHour * 60 + slot.startMin;
     const slotEnd = slot.endHour * 60 + slot.endMin;
 
@@ -96,14 +137,12 @@ const getPeriodIndexFromTime = (hours: number, minutes: number): number => {
     }
   }
 
-  // If time is before first slot, return 0
-  const firstSlotStart = PERIOD_TIME_SLOTS[0].startHour * 60 + PERIOD_TIME_SLOTS[0].startMin;
+  const firstSlotStart = slots[0].startHour * 60 + slots[0].startMin;
   if (timeInMinutes < firstSlotStart) {
     return 0;
   }
 
-  // If time is after last slot, return last index
-  return 8;
+  return slots.length - 1;
 };
 
 /**
@@ -172,7 +211,8 @@ const findApplicableLessonForSlot = (
   dayIndex: number,
   periodIndex: number,
   weekStart: Date,
-  lang: string
+  lang: string,
+  periodSlots: PeriodSlot[]
 ): ScheduleLesson | null => {
   const currentDayDate = startOfDay(getDateForDayInWeek(weekStart, dayIndex));
 
@@ -185,7 +225,8 @@ const findApplicableLessonForSlot = (
     const startTimeParsed = parseTimeString(lesson.startTime);
     const lessonPeriodIndex = getPeriodIndexFromTime(
       startTimeParsed.hours,
-      startTimeParsed.minutes
+      startTimeParsed.minutes,
+      periodSlots
     );
     return lessonPeriodIndex === periodIndex;
   });
@@ -208,23 +249,23 @@ const findApplicableLessonForSlot = (
   // Calculate duration in minutes
   const duration = calculateDuration(mostRecentLesson.startTime, mostRecentLesson.endTime);
 
-  // Calculate exact colSpan based on duration (each period is 45 minutes)
-  // Use precise calculation: 45min=1.0, 90min=2.0, 108min=2.4
-  const colSpan = Math.max(1, duration / 45);
+  // colSpan is the lesson duration relative to one period cell (any custom duration).
+  const slot = periodSlots[periodIndex];
+  const slotDurationMinutes = slot
+    ? slot.endHour * 60 + slot.endMin - (slot.startHour * 60 + slot.startMin)
+    : 45;
+  const colSpan = Math.max(1, duration / slotDurationMinutes);
 
   // Calculate start offset for lessons not starting at period boundaries
   let startOffset = 0;
-  const slot = PERIOD_TIME_SLOTS[periodIndex];
-
   if (slot) {
     const slotStartMinutes = slot.startHour * 60 + slot.startMin;
     const lessonStartParts = parseTimeString(mostRecentLesson.startTime);
     const lessonStartMinutes = lessonStartParts.hours * 60 + lessonStartParts.minutes;
 
     const diffMinutes = lessonStartMinutes - slotStartMinutes;
-    // Only apply offset if positive and less than period duration (mostly 45 min)
-    if (diffMinutes > 0 && diffMinutes < 45) {
-      startOffset = diffMinutes / 45;
+    if (diffMinutes > 0 && diffMinutes < slotDurationMinutes) {
+      startOffset = diffMinutes / slotDurationMinutes;
     }
   }
 
@@ -250,17 +291,16 @@ const findApplicableLessonForSlot = (
 const transformLessonsForWeek = (
   apiLessons: Lesson[],
   weekStart: Date,
-  lang: string
+  lang: string,
+  periodSlots: PeriodSlot[]
 ): ScheduleLesson[] => {
   const scheduleLessons: ScheduleLesson[] = [];
   const processedSlots = new Set<string>();
 
-  // For each day (0-6) and each period (0-8), find the applicable lesson
   for (let dayIndex = 0; dayIndex <= 6; dayIndex++) {
-    for (let periodIndex = 0; periodIndex <= 8; periodIndex++) {
+    for (let periodIndex = 0; periodIndex < periodSlots.length; periodIndex++) {
       const slotKey = `${dayIndex}-${periodIndex}`;
 
-      // Skip if we've already processed this slot
       if (processedSlots.has(slotKey)) {
         continue;
       }
@@ -270,7 +310,8 @@ const transformLessonsForWeek = (
         dayIndex,
         periodIndex,
         weekStart,
-        lang
+        lang,
+        periodSlots
       );
 
       if (lesson) {
@@ -292,9 +333,10 @@ const getEventColor = (index: number): ScheduleEvent['color'] => {
 
 const getEventPeriodRange = (
   startTime: string | null | undefined,
-  duration: number
+  duration: number,
+  periodSlots: PeriodSlot[]
 ): { startPeriod: number; endPeriod: number } => {
-  if (!startTime) {
+  if (!startTime || periodSlots.length === 0) {
     return { startPeriod: 0, endPeriod: 0 };
   }
 
@@ -304,16 +346,24 @@ const getEventPeriodRange = (
   }
 
   const startTimeParsed = parseTimeString(timeOnly);
+  const startPeriod = getPeriodIndexFromTime(
+    startTimeParsed.hours,
+    startTimeParsed.minutes,
+    periodSlots
+  );
 
-  const startPeriod = getPeriodIndexFromTime(startTimeParsed.hours, startTimeParsed.minutes);
-
-  const periodsToSpan = Math.max(1, Math.ceil(duration / 0.75)); // 45 min = 0.75 hours per period
+  // `duration` is in hours from the API. Convert to minutes, then divide by
+  // the active slot length (which equals the academic-calendar lessonDuration).
+  const firstSlot = periodSlots[0];
+  const slotDurationMinutes =
+    firstSlot.endHour * 60 + firstSlot.endMin - (firstSlot.startHour * 60 + firstSlot.startMin);
+  const durationMinutes = duration * 60;
+  const periodsToSpan = Math.max(1, Math.ceil(durationMinutes / slotDurationMinutes));
 
   let endPeriod = startPeriod + periodsToSpan - 1;
-
-  // Cap at max period index (8)
-  if (endPeriod > 8) {
-    endPeriod = 8;
+  const lastIndex = periodSlots.length - 1;
+  if (endPeriod > lastIndex) {
+    endPeriod = lastIndex;
   }
 
   return { startPeriod, endPeriod };
@@ -322,7 +372,8 @@ const getEventPeriodRange = (
 const transformEventsForWeek = (
   apiEvents: MonthlyCalendarEvent[],
   weekStart: Date,
-  lang: string
+  lang: string,
+  periodSlots: PeriodSlot[]
 ): ScheduleEvent[] => {
   const scheduleEvents: ScheduleEvent[] = [];
   const weekEnd = addDays(weekStart, 6);
@@ -353,7 +404,11 @@ const transformEventsForWeek = (
     const dayIndex = getDayIndexFromDate(eventDate);
 
     // Get period range from start time and duration
-    const { startPeriod, endPeriod } = getEventPeriodRange(event.startTime, event.duration ?? 0);
+    const { startPeriod, endPeriod } = getEventPeriodRange(
+      event.startTime,
+      event.duration ?? 0,
+      periodSlots
+    );
 
     // Get title based on language
     const title = lang === 'ar' ? event.nameAr : event.nameEn || event.nameAr;
@@ -396,6 +451,8 @@ const SPECIAL_COLUMN_COLORS = {
   },
 } as const;
 
+const mapApiDayToCalendarIndex = (apiDay: number): number => (apiDay === 7 ? 0 : apiDay);
+
 const getWorkingDaysFromSchedules = (
   daySchedules: AcademicCalendarEntity['daySchedules']
 ): number[] => {
@@ -408,7 +465,7 @@ const getWorkingDaysFromSchedules = (
   const allDays = new Set<number>();
   for (const schedule of daySchedules) {
     if (schedule.days && schedule.days.length > 0) {
-      schedule.days.forEach((day) => allDays.add(day));
+      schedule.days.forEach((day) => allDays.add(mapApiDayToCalendarIndex(day)));
     }
   }
 
@@ -422,7 +479,7 @@ const getWorkingDaysFromSchedules = (
 
 const getApplicableDays = (scheduleDays: number[], workingDays: number[]): number[] => {
   if (scheduleDays && scheduleDays.length > 0) {
-    return [...scheduleDays].sort((a, b) => a - b);
+    return scheduleDays.map(mapApiDayToCalendarIndex).sort((a, b) => a - b);
   }
 
   return workingDays;
@@ -435,7 +492,8 @@ const transformTimedSchedulesToSpecialColumns = (
   schedules: AcademicCalendarTimedSchedule[],
   type: 'breakfast' | 'break' | 'assembly',
   t: (key: string) => string,
-  workingDays: number[]
+  workingDays: number[],
+  periodSlots: PeriodSlot[]
 ): SpecialColumn[] => {
   if (!schedules || schedules.length === 0) {
     return [];
@@ -448,7 +506,7 @@ const transformTimedSchedulesToSpecialColumns = (
     const timeParts = schedule.startTime.split(':');
     const hours = parseInt(timeParts[0], 10);
     const minutes = parseInt(timeParts[1], 10);
-    const periodIndex = getPeriodIndexFromTime(hours, minutes);
+    const periodIndex = getPeriodIndexFromTime(hours, minutes, periodSlots);
 
     // Get applicable days for this schedule
     const applicableDays = getApplicableDays(schedule.days, workingDays);
@@ -470,7 +528,8 @@ const transformTimedSchedulesToSpecialColumns = (
  */
 const transformAcademicCalendarToSpecialColumns = (
   calendars: AcademicCalendarEntity[],
-  t: (key: string) => string
+  t: (key: string) => string,
+  periodSlots: PeriodSlot[]
 ): SpecialColumn[] => {
   if (!calendars || calendars.length === 0) {
     return [];
@@ -479,17 +538,15 @@ const transformAcademicCalendarToSpecialColumns = (
   const allSpecialColumns: SpecialColumn[] = [];
   const usedColumnIndices = new Set<number>();
 
-  // Process all calendars (there might be multiple for different stages)
   for (const calendar of calendars) {
-    // Get working days from this calendar's daySchedules
     const workingDays = getWorkingDaysFromSchedules(calendar.daySchedules);
 
-    // Process breakfasts
     const breakfastColumns = transformTimedSchedulesToSpecialColumns(
       calendar.breakfasts || [],
       'breakfast',
       t,
-      workingDays
+      workingDays,
+      periodSlots
     );
     for (const col of breakfastColumns) {
       if (!usedColumnIndices.has(col.columnIndex)) {
@@ -498,12 +555,12 @@ const transformAcademicCalendarToSpecialColumns = (
       }
     }
 
-    // Process breaks
     const breakColumns = transformTimedSchedulesToSpecialColumns(
       calendar.breaks || [],
       'break',
       t,
-      workingDays
+      workingDays,
+      periodSlots
     );
     for (const col of breakColumns) {
       if (!usedColumnIndices.has(col.columnIndex)) {
@@ -512,12 +569,12 @@ const transformAcademicCalendarToSpecialColumns = (
       }
     }
 
-    // Process assemblies
     const assemblyColumns = transformTimedSchedulesToSpecialColumns(
       calendar.assemblies || [],
       'assembly',
       t,
-      workingDays
+      workingDays,
+      periodSlots
     );
     for (const col of assemblyColumns) {
       if (!usedColumnIndices.has(col.columnIndex)) {
@@ -527,23 +584,28 @@ const transformAcademicCalendarToSpecialColumns = (
     }
   }
 
-  // Sort by column index for consistent ordering
   return allSpecialColumns.sort((a, b) => a.columnIndex - b.columnIndex);
 };
 
 // Dynamic period headers - these can be customized per school
 // This configuration would typically come from an API or school settings
-const DEFAULT_PERIOD_HEADERS: PeriodHeader[] = [
-  { label: '1', time: '8:30ص - 9:15ص' },
-  { label: '2', time: '9:15ص - 10ص' },
-  { label: '3', time: '10ص - 10:45ص' },
-  { label: '4', time: '10:45ص - 11:30ص' },
-  { label: '5', time: '11:30ص - 12:15م' },
-  { label: '6', time: '12:15م - 1م' },
-  { label: '7', time: '1م - 1:45م' },
-  { label: '8', time: '1:45م - 2:30م' },
-  { label: '9', time: '2:30م - 3:15م' },
-];
+// Format a slot's hours/minutes into a localized label like "8:30ص" / "10AM".
+const formatSlotTime = (hour: number, min: number, isArabic: boolean): string => {
+  const suffix = isArabic ? (hour < 12 ? 'ص' : 'م') : hour < 12 ? 'AM' : 'PM';
+  const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+  const minStr = min > 0 ? `:${String(min).padStart(2, '0')}` : '';
+  return `${displayHour}${minStr}${suffix}`;
+};
+
+const buildPeriodHeaders = (slots: PeriodSlot[], isArabic: boolean): PeriodHeader[] =>
+  slots.map((slot) => ({
+    label: slot.label,
+    time: `${formatSlotTime(slot.startHour, slot.startMin, isArabic)} - ${formatSlotTime(
+      slot.endHour,
+      slot.endMin,
+      isArabic
+    )}`,
+  }));
 
 // Fallback special columns when no academic calendar data is available
 const FALLBACK_SPECIAL_COLUMNS: SpecialColumn[] = [];
@@ -775,12 +837,34 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     };
   }, [academicCalendars]);
 
+  // Period slots are derived from the academic calendar's daySchedules +
+  // lessonDuration. When the API returns lessonDuration: 60 the calendar
+  // renders 60-min cells; when it returns 45 (or no calendar is loaded yet)
+  // we fall back to the historical 45-min default.
+  const periodSlots = useMemo<PeriodSlot[]>(() => {
+    if (!academicCalendars || academicCalendars.length === 0) {
+      return DEFAULT_PERIOD_TIME_SLOTS;
+    }
+    const calendar = academicCalendars[0];
+    const daySchedule = calendar.daySchedules?.[0];
+    return buildPeriodSlots(
+      daySchedule?.dayStartTime,
+      daySchedule?.dayEndTime,
+      calendar.lessonDuration
+    );
+  }, [academicCalendars]);
+
+  const periodHeaders = useMemo<PeriodHeader[]>(
+    () => buildPeriodHeaders(periodSlots, isArabic),
+    [periodSlots, isArabic]
+  );
+
   const transformedLessons: ScheduleLesson[] = useMemo(() => {
     if (!apiLessons || apiLessons.length === 0) {
       return [];
     }
 
-    const lessons = transformLessonsForWeek(apiLessons, currentWeekStart, currentLang);
+    const lessons = transformLessonsForWeek(apiLessons, currentWeekStart, currentLang, periodSlots);
 
     // Apply optimistic updates
     if (optimisticLessons.size > 0) {
@@ -798,7 +882,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     }
 
     return lessons;
-  }, [apiLessons, currentWeekStart, currentLang, optimisticLessons]);
+  }, [apiLessons, currentWeekStart, currentLang, optimisticLessons, periodSlots]);
 
   // Transform API events to ScheduleEvent format for current week
   const transformedEvents: ScheduleEvent[] = useMemo(() => {
@@ -806,15 +890,19 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       return [];
     }
 
-    return transformEventsForWeek(apiEvents, currentWeekStart, currentLang);
-  }, [apiEvents, currentWeekStart, currentLang]);
+    return transformEventsForWeek(apiEvents, currentWeekStart, currentLang, periodSlots);
+  }, [apiEvents, currentWeekStart, currentLang, periodSlots]);
 
   const specialColumns: SpecialColumn[] = useMemo(() => {
     if (!academicCalendars || academicCalendars.length === 0) {
       return FALLBACK_SPECIAL_COLUMNS;
     }
 
-    const baseColumns = transformAcademicCalendarToSpecialColumns(academicCalendars, t);
+    const baseColumns = transformAcademicCalendarToSpecialColumns(
+      academicCalendars,
+      t,
+      periodSlots
+    );
 
     if (!studyPeriod.start || !studyPeriod.end) {
       return baseColumns;
@@ -847,7 +935,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         return { ...col, days };
       })
       .filter((col) => (col.days?.length ?? 0) > 0);
-  }, [academicCalendars, t, studyPeriod, currentWeekStart]);
+  }, [academicCalendars, t, studyPeriod, currentWeekStart, periodSlots]);
 
   const workingDays = useMemo<number[]>(() => {
     if (!academicCalendars || academicCalendars.length === 0) {
@@ -1257,7 +1345,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           <WeeklyScheduleCalendar
             lessons={transformedLessons}
             events={transformedEvents}
-            periodHeaders={DEFAULT_PERIOD_HEADERS}
+            periodHeaders={periodHeaders}
+            periodSlots={periodSlots}
             specialColumns={specialColumns}
             lessonContextActions={lessonContextActions}
             onLessonClick={handleViewDetails}
