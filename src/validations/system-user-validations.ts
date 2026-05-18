@@ -1,4 +1,23 @@
 import * as yup from 'yup';
+import { useTranslation } from 'react-i18next';
+
+/**
+ * react-hook-form rules for the school-dashboard "Add/Edit System User" form
+ * (mirrors useJobRoleValidations).
+ */
+export const useSystemUserValidations = () => {
+  const { t } = useTranslation();
+
+  return {
+    userNameRules: {
+      validate: (value: string[]) =>
+        (Array.isArray(value) && value.length > 0) || t('rolesManagement.userNameRequired'),
+    },
+    roleRules: {
+      required: t('rolesManagement.roleRequired'),
+    },
+  };
+};
 
 /**
  * Validation schema for User creation
