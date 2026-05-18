@@ -4,7 +4,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import PersonalDataTab from '@/pages/school-dashboard/student-management/components/details/PersonalDataTab';
-import AuthorizedTab from '@/pages/school-dashboard/student-management/components/details/AuthorizedTab';
+import DelegationTab from '@/pages/school-dashboard/student-management/components/details/DelegationTab';
 import AttendanceTab from '@/pages/school-dashboard/student-management/components/details/AttendanceTab';
 import FeesTab from '@/pages/school-dashboard/student-management/components/details/FeesTab';
 import HomeworkTab from '@/pages/school-dashboard/student-management/components/details/HomeworkTab';
@@ -98,9 +98,9 @@ export default function StudentDetailsPage() {
       content: <PersonalDataTab student={student} />,
     },
     {
-      id: 'authorized',
-      label: t('students.details.authorized'),
-      content: <AuthorizedTab studentId={id || ''} />,
+      id: 'delegation',
+      label: t('students.details.delegation'),
+      content: <DelegationTab studentId={id || ''} />,
     },
     {
       id: 'attendance',

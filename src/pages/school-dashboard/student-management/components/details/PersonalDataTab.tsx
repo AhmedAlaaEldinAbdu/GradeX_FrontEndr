@@ -48,7 +48,7 @@ export default function PersonalDataTab({ student }: PersonalDataTabProps) {
       className={`flex items-center gap-2 text-start text-base ${fullWidth ? 'md:col-span-2' : ''}`}
     >
       <span className="font-medium text-[#3A3A3A]">{label}:</span>
-      <span className="font-normal text-[#646969]">{value || PLACEHOLDER}</span>
+      <span className="ltr font-normal text-[#646969]">{value || PLACEHOLDER}</span>
     </div>
   );
 
