@@ -2,10 +2,8 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import Tabs from '@/shared/components/Tabs';
-import Card from '@/shared/components/Card';
-import EmptyState from '@/shared/components/EmptyState';
-import PeopleSupportIcon from '@/assets/icons/PeopleSupport.svg';
 import JobRolesList from './JobRolesList';
+import SystemUsersList from './SystemUsersList';
 
 interface JobRolesProps {
   onTabChange?: (tab: string) => void;
@@ -35,15 +33,7 @@ export default function JobRoles({ onTabChange }: JobRolesProps) {
     {
       id: 'system-users',
       label: t('rolesManagement.systemUsers'),
-      content: (
-        <Card>
-          <EmptyState
-            imgSrc={PeopleSupportIcon}
-            description={t('rolesManagement.noUsersMessage')}
-            blend={true}
-          />
-        </Card>
-      ),
+      content: <SystemUsersList />,
     },
   ];
 

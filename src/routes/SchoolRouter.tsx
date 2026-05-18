@@ -27,6 +27,8 @@ import TeachingStaffPage from '@/pages/school-dashboard/teaching-staff/TeachingS
 import JobRolesPage from '@/pages/school-dashboard/job-roles/JobRolesPage';
 import AddJobRolePage from '@/pages/school-dashboard/job-roles/add-job-role-page';
 import EditJobRolePage from '@/pages/school-dashboard/job-roles/edit-job-role-page';
+import AddSystemUserPage from '@/pages/school-dashboard/job-roles/add-system-user-page';
+import EditSystemUserPage from '@/pages/school-dashboard/job-roles/edit-system-user-page';
 import InterviewsPage from '@/pages/school-dashboard/interviews/interviews-page';
 import AttendancePage from '@/pages/school-dashboard/attendance/attendance-page';
 import StudentsAttendancePage from '@/pages/school-dashboard/attendance/students-attendance-page';
@@ -886,6 +888,26 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <EditJobRolePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/job-roles/add-user"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddSystemUserPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/job-roles/edit-user/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditSystemUserPage />
             </MainLayout>
           </ProtectedRoute>
         }
