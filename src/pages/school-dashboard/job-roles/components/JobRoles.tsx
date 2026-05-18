@@ -5,6 +5,7 @@ import Tabs from '@/shared/components/Tabs';
 import Card from '@/shared/components/Card';
 import EmptyState from '@/shared/components/EmptyState';
 import PeopleSupportIcon from '@/assets/icons/PeopleSupport.svg';
+import JobRolesList from './JobRolesList';
 
 interface JobRolesProps {
   onTabChange?: (tab: string) => void;
@@ -29,15 +30,7 @@ export default function JobRoles({ onTabChange }: JobRolesProps) {
     {
       id: 'roles-permissions',
       label: t('rolesManagement.rolesAndPermissions'),
-      content: (
-        <Card>
-          <EmptyState
-            imgSrc={PeopleSupportIcon}
-            description={t('rolesManagement.noRolesMessage')}
-            blend={true}
-          />
-        </Card>
-      ),
+      content: <JobRolesList />,
     },
     {
       id: 'system-users',
