@@ -20,6 +20,7 @@ export * from './lessons/lessons.service';
 export * from './tuition-fees/tuition-fees.service';
 export * from './offer/offer.service';
 export * from './control-panel/control-panel.service';
+export * from './student-delegation/student-delegation.service';
 
 // Types
 export * from './types/auth.types';
@@ -35,6 +36,7 @@ export * from './types/lessons.types';
 export * from './types/tuition-fees.types';
 export * from './types/offer.types';
 export * from './types/control-panel.types';
+export * from './types/student-delegation.types';
 
 // Endpoints
 export * from './endpoints/auth-endpoints';
@@ -50,3 +52,4 @@ export * from './endpoints/lessons-endpoints';
 export * from './endpoints/tuition-fees-endpoints';
 export * from './endpoints/offer-endpoints';
 export * from './endpoints/control-panel-endpoints';
+export * from './endpoints/student-delegation-endpoints';
