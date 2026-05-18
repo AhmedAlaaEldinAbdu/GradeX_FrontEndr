@@ -8,6 +8,7 @@ import type {
   UpdateOfficialHolidayRequest,
   CountriesWithLeaveResponse,
   CountriesWithLeaveQueryParams,
+  LeaveBySchoolBranchQueryParams,
 } from '@/services/api/types/official-holidays.types';
 import type { ApiResponseModel } from '../config';
 
@@ -70,6 +71,30 @@ export async function getOfficialHolidays(
       totalPages: 0,
       pageIndex: params?.PageIndex || 1,
       pageSize: params?.PageSize || 10,
+    };
+  }
+
+  return response.data.value;
+}
+
+/**
+ * Get list of leaves/holidays for a specific school branch
+ */
+export async function getLeaveBySchoolBranchId(
+  params: LeaveBySchoolBranchQueryParams
+): Promise<OfficialHolidaysListResponse> {
+  const response: AxiosResponse<ApiResponseModel<OfficialHolidaysListResponse>> =
+    await axiosClient.get(OfficialHolidaysEndpoints.getLeaveBySchoolBranchId, {
+      params,
+    });
+
+  if (!response?.data?.value) {
+    return {
+      leaveDto: [],
+      totalItems: 0,
+      totalPages: 0,
+      pageIndex: 0,
+      pageSize: 0,
     };
   }
 
@@ -219,6 +244,7 @@ export async function deleteHoliday(id: string): Promise<{ success: boolean }> {
 
 export const officialHolidaysApiService = {
   getOfficialHolidays,
+  getLeaveBySchoolBranchId,
   getCountriesWithLeave,
   createHoliday,
   updateHoliday,

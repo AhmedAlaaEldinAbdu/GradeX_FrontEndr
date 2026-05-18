@@ -54,6 +54,10 @@ export interface OfficialHolidaysQueryParams {
   sortOrder?: 'asc' | 'desc';
 }
 
+export interface LeaveBySchoolBranchQueryParams {
+  SchoolBrancheId: string;
+}
+
 // ============================================================================
 // Response Types
 // ============================================================================

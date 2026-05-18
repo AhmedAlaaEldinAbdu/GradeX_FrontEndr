@@ -124,6 +124,40 @@ export const fetchOfficialHolidays = createAsyncThunk<
   }
 });
 
+export const fetchLeaveBySchoolBranch = createAsyncThunk<
+  FetchOfficialHolidaysResponse,
+  { schoolBranchId: string }
+>('officialHolidays/fetchLeaveBySchoolBranch', async ({ schoolBranchId }, { rejectWithValue }) => {
+  try {
+    if (!schoolBranchId) {
+      return rejectWithValue('School branch ID is missing');
+    }
+
+    const response = await officialHolidaysApiService.getLeaveBySchoolBranchId({
+      SchoolBrancheId: schoolBranchId,
+    });
+
+    if (!response) {
+      return {
+        data: [],
+        meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
+      };
+    }
+
+    return {
+      data: response.leaveDto || [],
+      meta: {
+        total: response.totalItems || 0,
+        page: response.pageIndex || 1,
+        limit: response.pageSize || 10,
+        totalPages: response.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 export const createHoliday = createAsyncThunk<ApiResponseModel<any>, CreateOfficialHolidayRequest>(
   'officialHolidays/createHoliday',
   async (data, { rejectWithValue }) => {
@@ -235,6 +269,28 @@ const officialHolidaysSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchOfficialHolidays.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchLeaveBySchoolBranch.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchLeaveBySchoolBranch.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.holidays = action.payload.data;
+        state.pagination = {
+          page: action.payload.meta.page,
+          limit: action.payload.meta.limit,
+          total: action.payload.meta.total,
+          totalPages: action.payload.meta.totalPages,
+        };
+        state.error = null;
+      })
+      .addCase(fetchLeaveBySchoolBranch.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
