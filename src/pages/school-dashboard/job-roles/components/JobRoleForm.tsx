@@ -50,18 +50,18 @@ const RoleCheckbox = ({
         name={name}
         checked={checked}
         onChange={onChange}
-        className="peer h-6 w-6 appearance-none rounded-lg border border-[#DDE0E0] transition checked:border-green-700 checked:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="peer h-6 w-6 appearance-none rounded-lg border border-[#DDE0E0] bg-white transition checked:border-[#00512E] focus:outline-none focus:ring-2 focus:ring-green-500"
       />
       <svg
         viewBox="0 0 14 14"
         fill="none"
         aria-hidden="true"
-        className="pointer-events-none absolute hidden h-3.5 w-3.5 text-white peer-checked:block"
+        className="pointer-events-none absolute hidden h-3.5 w-3.5 text-[#00512E] peer-checked:block"
       >
         <path
           d="M11.5 3.5L5.25 10L2.5 7.25"
           stroke="currentColor"
-          strokeWidth="1.8"
+          strokeWidth="3.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
