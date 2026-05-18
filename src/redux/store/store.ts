@@ -36,6 +36,7 @@ import taskStudentsReducer from '../features/task-students/taskStudentsSlice';
 import gradesReducer from '../features/grades/gradesSlice';
 import controlPanelReducer from '../features/control-panel/controlPanelSlice';
 import studentDelegationReducer from '../features/student-delegation/studentDelegationSlice';
+import dailyReportReducer from '../features/daily-report/dailyReportSlice';
 
 export const store = configureStore({
   reducer: {
@@ -76,6 +77,7 @@ export const store = configureStore({
     grades: gradesReducer,
     controlPanel: controlPanelReducer,
     studentDelegation: studentDelegationReducer,
+    dailyReport: dailyReportReducer,
   },
 });
 
