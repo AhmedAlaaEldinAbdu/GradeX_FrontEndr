@@ -12,10 +12,8 @@ import FileUpload from '@/shared/components/FileUpload';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchCountries } from '@/redux/features/lookups/lookupsSlice';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
-import {
-  ContractFormSchema,
-  type ContractFormProps,
-} from '@/validations/contracts-validations';
+import { ContractFormSchema, type ContractFormProps } from '@/validations/contracts-validations';
+import Card from '@/shared/components/Card';
 
 // Public shape used by the parent add/edit pages. Numerics stay as strings here
 // because the parent code already calls `Number(values.x || 0)` when building
@@ -112,8 +110,7 @@ const buildDefaults = (initial?: Partial<ContractFormValues>): Partial<ContractF
   term: initial?.term ?? '',
   withdrawalPeriod: initial?.withdrawalPeriod ?? '',
   adminFeesDiscountPercentage:
-    initial?.adminFeesDiscountPercentage !== undefined &&
-    initial.adminFeesDiscountPercentage !== ''
+    initial?.adminFeesDiscountPercentage !== undefined && initial.adminFeesDiscountPercentage !== ''
       ? Number(initial.adminFeesDiscountPercentage)
       : (undefined as unknown as number),
 });
@@ -199,403 +196,99 @@ export default function AddEditContractForm({
   };
 
   return (
-    <form onSubmit={rhfHandleSubmit(submit, scrollToFirstError)} className="space-y-4">
-      <SectionCard title={t('contracts.sections.schoolData')}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <FormField
-            label={t('contracts.form.shortNationalAddress')}
-            required
-            error={errors.shortNationalAddress?.message}
-            htmlFor="shortNationalAddress"
-          >
-            <Controller
-              name="shortNationalAddress"
-              control={control}
-              render={({ field }) => (
-                <TextArea
-                  {...field}
-                  id="shortNationalAddress"
-                  placeholder={t('contracts.form.shortNationalAddressPlaceholder')}
-                  rows={3}
-                  autoComplete="street-address"
-                />
-              )}
-            />
-          </FormField>
-
-          <FormField
-            label={t('contracts.form.schoolKind')}
-            required
-            error={errors.schoolKind?.message}
-            htmlFor="schoolKind"
-          >
-            <div className="flex items-center gap-6 pt-3">
-              <RadioOption
-                id="schoolKind"
-                name="schoolKind"
-                value="company"
-                label={t('contracts.form.schoolKindCompany')}
-                checked={watchedSchoolKind === 'company'}
-                onChange={() =>
-                  setValue('schoolKind', 'company', { shouldValidate: true, shouldDirty: true })
-                }
-              />
-              <RadioOption
-                name="schoolKind"
-                value="foundation"
-                label={t('contracts.form.schoolKindFoundation')}
-                checked={watchedSchoolKind === 'foundation'}
-                onChange={() =>
-                  setValue('schoolKind', 'foundation', { shouldValidate: true, shouldDirty: true })
-                }
-              />
-            </div>
-          </FormField>
-
-          <FormField
-            label={t('contracts.form.commercialRegister')}
-            required
-            error={errors.commercialRegister?.message}
-            htmlFor="commercialRegister"
-          >
-            <Controller
-              name="commercialRegister"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="commercialRegister"
-                  placeholder={t('contracts.form.commercialRegisterPlaceholder')}
-                  autoComplete="off"
-                />
-              )}
-            />
-          </FormField>
-
-          <FormField
-            label={t('contracts.form.adminFees')}
-            required
-            error={errors.adminFees?.message}
-            htmlFor="adminFees"
-          >
-            <Controller
-              name="adminFees"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="adminFees"
-                  type="number"
-                  min={0}
-                  placeholder={t('contracts.form.adminFeesPlaceholder')}
-                  autoComplete="off"
-                  value={field.value ?? ''}
-                  onChange={(e) =>
-                    field.onChange(e.target.value === '' ? undefined : Number(e.target.value))
-                  }
-                />
-              )}
-            />
-          </FormField>
-
-          <div className="md:col-span-2">
+    <Card className="w-full">
+      <form onSubmit={rhfHandleSubmit(submit, scrollToFirstError)} className="space-y-4">
+        <SectionCard title={t('contracts.sections.schoolData')}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
-              label={t('contracts.form.taxNumber')}
+              label={t('contracts.form.shortNationalAddress')}
               required
-              error={errors.taxNumber?.message}
-              htmlFor="taxNumber"
+              error={errors.shortNationalAddress?.message}
+              htmlFor="shortNationalAddress"
             >
               <Controller
-                name="taxNumber"
+                name="shortNationalAddress"
+                control={control}
+                render={({ field }) => (
+                  <TextArea
+                    {...field}
+                    id="shortNationalAddress"
+                    placeholder={t('contracts.form.shortNationalAddressPlaceholder')}
+                    rows={3}
+                    autoComplete="street-address"
+                  />
+                )}
+              />
+            </FormField>
+
+            <FormField
+              label={t('contracts.form.schoolKind')}
+              required
+              error={errors.schoolKind?.message}
+              htmlFor="schoolKind"
+            >
+              <div className="flex items-center gap-6 pt-3">
+                <RadioOption
+                  id="schoolKind"
+                  name="schoolKind"
+                  value="company"
+                  label={t('contracts.form.schoolKindCompany')}
+                  checked={watchedSchoolKind === 'company'}
+                  onChange={() =>
+                    setValue('schoolKind', 'company', { shouldValidate: true, shouldDirty: true })
+                  }
+                />
+                <RadioOption
+                  name="schoolKind"
+                  value="foundation"
+                  label={t('contracts.form.schoolKindFoundation')}
+                  checked={watchedSchoolKind === 'foundation'}
+                  onChange={() =>
+                    setValue('schoolKind', 'foundation', {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
+                />
+              </div>
+            </FormField>
+
+            <FormField
+              label={t('contracts.form.commercialRegister')}
+              required
+              error={errors.commercialRegister?.message}
+              htmlFor="commercialRegister"
+            >
+              <Controller
+                name="commercialRegister"
                 control={control}
                 render={({ field }) => (
                   <Input
                     {...field}
-                    id="taxNumber"
-                    placeholder={t('contracts.form.taxNumberPlaceholder')}
+                    id="commercialRegister"
+                    placeholder={t('contracts.form.commercialRegisterPlaceholder')}
                     autoComplete="off"
                   />
                 )}
               />
             </FormField>
-          </div>
-        </div>
-      </SectionCard>
 
-      <SectionCard title={t('contracts.sections.representative')}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <FormField
-            label={t('contracts.form.representativeName')}
-            required
-            error={errors.representativeName?.message}
-            htmlFor="representativeName"
-          >
-            <Controller
-              name="representativeName"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="representativeName"
-                  placeholder={t('contracts.form.representativeNamePlaceholder')}
-                  autoComplete="name"
-                />
-              )}
-            />
-          </FormField>
-
-          <FormField
-            label={t('contracts.form.representativeRole')}
-            required
-            error={errors.representativeRole?.message}
-            htmlFor="representativeRole"
-          >
-            <Controller
-              name="representativeRole"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="representativeRole"
-                  placeholder={t('contracts.form.representativeRolePlaceholder')}
-                  autoComplete="organization-title"
-                />
-              )}
-            />
-          </FormField>
-
-          <div className="md:col-span-2" data-form-field="roleDocument">
-            <FileUpload
-              label={t('contracts.form.roleDocument')}
-              accept="image/png,image/jpg,image/jpeg,image/gif,image/svg+xml,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-              onChange={(e) => {
-                const file = e.target.files?.[0] ?? null;
-                setRoleDocument(file);
-                if (file) setRoleDocumentError(undefined);
-              }}
-              onDelete={() => setRoleDocument(null)}
-              files={roleDocument ? [roleDocument] : []}
-              fileName={roleDocument?.name}
-              required
-              uploadText={t('contracts.form.roleDocumentHint')}
-              formatHints={['SVG', 'JPG', 'PNG', 'GIF', 'PDF', 'DOC', 'XLS', 'PPT', 'TXT']}
-            />
-            {roleDocumentError && (
-              <p className="mt-1 text-sm text-red-500">{roleDocumentError}</p>
-            )}
-          </div>
-
-          <div className="md:col-span-2">
-            {/* No htmlFor — CustomSelect doesn't expose a matching id to attach a <label for=> to. */}
             <FormField
-              label={t('contracts.form.nationality')}
+              label={t('contracts.form.adminFees')}
               required
-              error={errors.nationality?.message}
+              error={errors.adminFees?.message}
+              htmlFor="adminFees"
             >
               <Controller
-                name="nationality"
-                control={control}
-                render={({ field }) => (
-                  <CustomSelect
-                    value={field.value}
-                    onChange={(v) => {
-                      const val = Array.isArray(v) ? v[0] : v;
-                      field.onChange(val);
-                    }}
-                    options={nationalityOptions}
-                    placeholder={t('contracts.form.nationalityPlaceholder')}
-                    disabled={isLoadingCountries}
-                    error={!!errors.nationality}
-                    maxHeight="200px"
-                  />
-                )}
-              />
-            </FormField>
-          </div>
-
-          <FormField
-            label={t('contracts.form.email')}
-            required
-            error={errors.email?.message}
-            htmlFor="email"
-          >
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="email"
-                  type="email"
-                  placeholder={t('contracts.form.emailPlaceholder')}
-                  autoComplete="email"
-                />
-              )}
-            />
-          </FormField>
-
-          <FormField
-            label={t('contracts.form.idType')}
-            required
-            error={errors.idType?.message}
-            htmlFor="idType"
-          >
-            <div className="flex items-center gap-6 pt-3">
-              <RadioOption
-                id="idType"
-                name="idType"
-                value="national"
-                label={t('contracts.form.idTypeNational')}
-                checked={watchedIdType === 'national'}
-                onChange={() =>
-                  setValue('idType', 'national', { shouldValidate: true, shouldDirty: true })
-                }
-              />
-              <RadioOption
-                name="idType"
-                value="resident"
-                label={t('contracts.form.idTypeResident')}
-                checked={watchedIdType === 'resident'}
-                onChange={() =>
-                  setValue('idType', 'resident', { shouldValidate: true, shouldDirty: true })
-                }
-              />
-            </div>
-          </FormField>
-
-          {/* No htmlFor on PhoneInput-wrapping FormFields — PhoneInput doesn't expose its inner id. */}
-          <FormField
-            label={t('contracts.form.mobile')}
-            required
-            error={errors.mobile?.message}
-          >
-            <Controller
-              name="mobile"
-              control={control}
-              render={({ field }) => (
-                <PhoneInput value={field.value ?? ''} onChange={field.onChange} required />
-              )}
-            />
-          </FormField>
-
-          <FormField
-            label={t('contracts.form.phone')}
-            required
-            error={errors.phone?.message}
-          >
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <PhoneInput value={field.value ?? ''} onChange={field.onChange} required />
-              )}
-            />
-          </FormField>
-        </div>
-      </SectionCard>
-
-      <SectionCard title={t('contracts.sections.withdrawal')}>
-        <div className="mb-4">
-          <FormField
-            label={t('contracts.form.withdrawalType')}
-            required
-            error={errors.withdrawalType?.message}
-            htmlFor="withdrawalType"
-          >
-            <div className="flex flex-wrap items-center gap-6 pt-3">
-              <RadioOption
-                id="withdrawalType"
-                name="withdrawalType"
-                value="beforeTerm"
-                label={t('contracts.form.withdrawalBeforeTerm')}
-                checked={watchedWithdrawalType === 'beforeTerm'}
-                onChange={() =>
-                  setValue('withdrawalType', 'beforeTerm', {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-              />
-              <RadioOption
-                name="withdrawalType"
-                value="afterTerm"
-                label={t('contracts.form.withdrawalAfterTerm')}
-                checked={watchedWithdrawalType === 'afterTerm'}
-                onChange={() =>
-                  setValue('withdrawalType', 'afterTerm', {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-              />
-            </div>
-          </FormField>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {/* No htmlFor — CustomSelect doesn't expose a matching id. */}
-          <FormField
-            label={t('contracts.form.term')}
-            required
-            error={errors.term?.message}
-          >
-            <Controller
-              name="term"
-              control={control}
-              render={({ field }) => (
-                <CustomSelect
-                  value={field.value}
-                  onChange={(v) => {
-                    const val = Array.isArray(v) ? v[0] : v;
-                    field.onChange(val);
-                  }}
-                  options={TERM_OPTIONS}
-                  placeholder={t('contracts.form.termPlaceholder')}
-                  error={!!errors.term}
-                  maxHeight="200px"
-                />
-              )}
-            />
-          </FormField>
-
-          <FormField
-            label={t('contracts.form.withdrawalPeriod')}
-            required
-            error={errors.withdrawalPeriod?.message}
-            htmlFor="withdrawalPeriod"
-          >
-            <Controller
-              name="withdrawalPeriod"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="withdrawalPeriod"
-                  placeholder={t('contracts.form.withdrawalPeriodPlaceholder')}
-                  autoComplete="off"
-                />
-              )}
-            />
-          </FormField>
-
-          <div className="md:col-span-2">
-            <FormField
-              label={t('contracts.form.adminFeesDiscountPercentage')}
-              required
-              error={errors.adminFeesDiscountPercentage?.message}
-              htmlFor="adminFeesDiscountPercentage"
-            >
-              <Controller
-                name="adminFeesDiscountPercentage"
+                name="adminFees"
                 control={control}
                 render={({ field }) => (
                   <Input
                     {...field}
-                    id="adminFeesDiscountPercentage"
+                    id="adminFees"
                     type="number"
                     min={0}
-                    max={100}
-                    placeholder={t('contracts.form.adminFeesDiscountPercentagePlaceholder')}
+                    placeholder={t('contracts.form.adminFeesPlaceholder')}
                     autoComplete="off"
                     value={field.value ?? ''}
                     onChange={(e) =>
@@ -605,18 +298,315 @@ export default function AddEditContractForm({
                 )}
               />
             </FormField>
-          </div>
-        </div>
-      </SectionCard>
 
-      <div className="flex items-center justify-end gap-3">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-          {t('common.cancel')}
-        </Button>
-        <Button type="submit" variant="primary" disabled={isSubmitting} loading={isSubmitting}>
-          {t(mode === 'add' ? 'common.add' : 'common.saveChanges')}
-        </Button>
-      </div>
-    </form>
+            <div className="md:col-span-2">
+              <FormField
+                label={t('contracts.form.taxNumber')}
+                required
+                error={errors.taxNumber?.message}
+                htmlFor="taxNumber"
+              >
+                <Controller
+                  name="taxNumber"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="taxNumber"
+                      placeholder={t('contracts.form.taxNumberPlaceholder')}
+                      autoComplete="off"
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+          </div>
+        </SectionCard>
+
+        <SectionCard title={t('contracts.sections.representative')}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField
+              label={t('contracts.form.representativeName')}
+              required
+              error={errors.representativeName?.message}
+              htmlFor="representativeName"
+            >
+              <Controller
+                name="representativeName"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="representativeName"
+                    placeholder={t('contracts.form.representativeNamePlaceholder')}
+                    autoComplete="name"
+                  />
+                )}
+              />
+            </FormField>
+
+            <FormField
+              label={t('contracts.form.representativeRole')}
+              required
+              error={errors.representativeRole?.message}
+              htmlFor="representativeRole"
+            >
+              <Controller
+                name="representativeRole"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="representativeRole"
+                    placeholder={t('contracts.form.representativeRolePlaceholder')}
+                    autoComplete="organization-title"
+                  />
+                )}
+              />
+            </FormField>
+
+            <div className="md:col-span-2" data-form-field="roleDocument">
+              <FileUpload
+                label={t('contracts.form.roleDocument')}
+                accept="image/png,image/jpg,image/jpeg,image/gif,image/svg+xml,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  setRoleDocument(file);
+                  if (file) setRoleDocumentError(undefined);
+                }}
+                onDelete={() => setRoleDocument(null)}
+                files={roleDocument ? [roleDocument] : []}
+                fileName={roleDocument?.name}
+                required
+                uploadText={t('contracts.form.roleDocumentHint')}
+                formatHints={['SVG', 'JPG', 'PNG', 'GIF', 'PDF', 'DOC', 'XLS', 'PPT', 'TXT']}
+              />
+              {roleDocumentError && (
+                <p className="mt-1 text-sm text-red-500">{roleDocumentError}</p>
+              )}
+            </div>
+
+            <div className="md:col-span-2">
+              {/* No htmlFor — CustomSelect doesn't expose a matching id to attach a <label for=> to. */}
+              <FormField
+                label={t('contracts.form.nationality')}
+                required
+                error={errors.nationality?.message}
+              >
+                <Controller
+                  name="nationality"
+                  control={control}
+                  render={({ field }) => (
+                    <CustomSelect
+                      value={field.value}
+                      onChange={(v) => {
+                        const val = Array.isArray(v) ? v[0] : v;
+                        field.onChange(val);
+                      }}
+                      options={nationalityOptions}
+                      placeholder={t('contracts.form.nationalityPlaceholder')}
+                      disabled={isLoadingCountries}
+                      error={!!errors.nationality}
+                      maxHeight="200px"
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+
+            <FormField
+              label={t('contracts.form.email')}
+              required
+              error={errors.email?.message}
+              htmlFor="email"
+            >
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="email"
+                    type="email"
+                    placeholder={t('contracts.form.emailPlaceholder')}
+                    autoComplete="email"
+                  />
+                )}
+              />
+            </FormField>
+
+            <FormField
+              label={t('contracts.form.idType')}
+              required
+              error={errors.idType?.message}
+              htmlFor="idType"
+            >
+              <div className="flex items-center gap-6 pt-3">
+                <RadioOption
+                  id="idType"
+                  name="idType"
+                  value="national"
+                  label={t('contracts.form.idTypeNational')}
+                  checked={watchedIdType === 'national'}
+                  onChange={() =>
+                    setValue('idType', 'national', { shouldValidate: true, shouldDirty: true })
+                  }
+                />
+                <RadioOption
+                  name="idType"
+                  value="resident"
+                  label={t('contracts.form.idTypeResident')}
+                  checked={watchedIdType === 'resident'}
+                  onChange={() =>
+                    setValue('idType', 'resident', { shouldValidate: true, shouldDirty: true })
+                  }
+                />
+              </div>
+            </FormField>
+
+            {/* No htmlFor on PhoneInput-wrapping FormFields — PhoneInput doesn't expose its inner id. */}
+            <FormField label={t('contracts.form.mobile')} required error={errors.mobile?.message}>
+              <Controller
+                name="mobile"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput value={field.value ?? ''} onChange={field.onChange} required />
+                )}
+              />
+            </FormField>
+
+            <FormField label={t('contracts.form.phone')} required error={errors.phone?.message}>
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput value={field.value ?? ''} onChange={field.onChange} required />
+                )}
+              />
+            </FormField>
+          </div>
+        </SectionCard>
+
+        <SectionCard title={t('contracts.sections.withdrawal')}>
+          <div className="mb-4">
+            <FormField
+              label={t('contracts.form.withdrawalType')}
+              required
+              error={errors.withdrawalType?.message}
+              htmlFor="withdrawalType"
+            >
+              <div className="flex flex-wrap items-center gap-6 pt-3">
+                <RadioOption
+                  id="withdrawalType"
+                  name="withdrawalType"
+                  value="beforeTerm"
+                  label={t('contracts.form.withdrawalBeforeTerm')}
+                  checked={watchedWithdrawalType === 'beforeTerm'}
+                  onChange={() =>
+                    setValue('withdrawalType', 'beforeTerm', {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
+                />
+                <RadioOption
+                  name="withdrawalType"
+                  value="afterTerm"
+                  label={t('contracts.form.withdrawalAfterTerm')}
+                  checked={watchedWithdrawalType === 'afterTerm'}
+                  onChange={() =>
+                    setValue('withdrawalType', 'afterTerm', {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
+                />
+              </div>
+            </FormField>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* No htmlFor — CustomSelect doesn't expose a matching id. */}
+            <FormField label={t('contracts.form.term')} required error={errors.term?.message}>
+              <Controller
+                name="term"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value}
+                    onChange={(v) => {
+                      const val = Array.isArray(v) ? v[0] : v;
+                      field.onChange(val);
+                    }}
+                    options={TERM_OPTIONS}
+                    placeholder={t('contracts.form.termPlaceholder')}
+                    error={!!errors.term}
+                    maxHeight="200px"
+                  />
+                )}
+              />
+            </FormField>
+
+            <FormField
+              label={t('contracts.form.withdrawalPeriod')}
+              required
+              error={errors.withdrawalPeriod?.message}
+              htmlFor="withdrawalPeriod"
+            >
+              <Controller
+                name="withdrawalPeriod"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="withdrawalPeriod"
+                    placeholder={t('contracts.form.withdrawalPeriodPlaceholder')}
+                    autoComplete="off"
+                  />
+                )}
+              />
+            </FormField>
+
+            <div className="md:col-span-2">
+              <FormField
+                label={t('contracts.form.adminFeesDiscountPercentage')}
+                required
+                error={errors.adminFeesDiscountPercentage?.message}
+                htmlFor="adminFeesDiscountPercentage"
+              >
+                <Controller
+                  name="adminFeesDiscountPercentage"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="adminFeesDiscountPercentage"
+                      type="number"
+                      min={0}
+                      max={100}
+                      placeholder={t('contracts.form.adminFeesDiscountPercentagePlaceholder')}
+                      autoComplete="off"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === '' ? undefined : Number(e.target.value))
+                      }
+                    />
+                  )}
+                />
+              </FormField>
+            </div>
+          </div>
+        </SectionCard>
+
+        <div className="flex items-center justify-end gap-3">
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" variant="primary" disabled={isSubmitting} loading={isSubmitting}>
+            {t(mode === 'add' ? 'common.add' : 'common.saveChanges')}
+          </Button>
+        </div>
+      </form>
+    </Card>
   );
 }
