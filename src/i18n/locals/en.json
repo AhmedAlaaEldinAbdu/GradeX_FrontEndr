@@ -953,6 +953,20 @@
     "details": {
       "personalData": "Personal Data",
       "authorized": "Authorized",
+      "delegation": "Delegation",
+      "delegationEmpty": "No delegations found",
+      "delegationPersonType": {
+        "1": "Father",
+        "2": "Mother",
+        "3": "Driver",
+        "4": "Building Guard",
+        "5": "Nanny",
+        "6": "Other"
+      },
+      "delegationDurationType": {
+        "1": "Permanent",
+        "2": "Temporary"
+      },
       "attendance": "Attendance and Departure",
       "performance": "Performance",
       "exams": "Exams",

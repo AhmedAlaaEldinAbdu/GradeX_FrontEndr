@@ -953,6 +953,20 @@
     "details": {
       "personalData": "البيانات الشخصية",
       "authorized": "المفوضين",
+      "delegation": "المفوضين",
+      "delegationEmpty": "لا يوجد مفوضين",
+      "delegationPersonType": {
+        "1": "والد",
+        "2": "والدة",
+        "3": "سائق",
+        "4": "حارس العقار",
+        "5": "مربية",
+        "6": "أخرى"
+      },
+      "delegationDurationType": {
+        "1": "دائم",
+        "2": "مؤقت"
+      },
       "attendance": "الحضور و الإنصراف",
       "performance": "الأداء",
       "exams": "الإختبارات",

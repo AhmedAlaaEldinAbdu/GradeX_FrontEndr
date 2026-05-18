@@ -132,3 +132,23 @@ export const InvoicePaymentType = {
   Deferred: 2,
 } as const;
 export type InvoicePaymentType = typeof InvoicePaymentType[keyof typeof InvoicePaymentType];
+
+
+export const DelegationDurationType = {
+  Permanent: 1, // دائم
+  Temporary: 2, // مؤقت
+} as const;
+export type DelegationDurationType =
+  typeof DelegationDurationType[keyof typeof DelegationDurationType];
+
+
+export const DelegationPersonType = {
+  Father: 1, // والد
+  Mother: 2, // والدة
+  Driver: 3, // سائق
+  BuildingGuard: 4, // حارس العقار
+  Nanny: 5, // مربية
+  Other: 6, // أخرى
+} as const;
+export type DelegationPersonType =
+  typeof DelegationPersonType[keyof typeof DelegationPersonType];
