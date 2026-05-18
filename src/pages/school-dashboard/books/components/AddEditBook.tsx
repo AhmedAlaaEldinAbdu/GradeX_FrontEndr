@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import BookIcon from '@gradex/assets/icons/Book.svg';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import FormField from '@/shared/components/FormField';
 import { Controller, useForm } from 'react-hook-form';
@@ -12,34 +13,46 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
-import { fetchBookById, updateBook } from '@/redux/features/books/booksSlice';
+import { addBook, fetchBookById, fetchBooks, updateBook } from '@/redux/features/books/booksSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import type { FlattenedBook } from '@/types/books';
+import { AddBookSchema, type AddBookProps } from '@/validations/books-validations';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
-import { EditBookSchema, type EditBookProps } from '@/validations/books-validations';
-import FileUpload, { type FileUploadRef } from '@/shared/components/FileUpload';
+import FileUpload from '@/shared/components/FileUpload';
+import DataTable, { type DataTableColumn } from '@/shared/components/DataTable';
+import CustomImage from '@/shared/components/CustomImage';
 import Loading from '@/shared/components/Loading';
 
-// Package type options
 const PACKAGE_TYPES = [
   { value: '1', labelKey: 'books.packageIndividual' },
   { value: '2', labelKey: 'books.packageSet' },
 ];
 
-// Price view options: 1 = Individual (show price in each row), 2 = Set (show price below table)
 const PRICE_VIEW_OPTIONS = [
   { value: '1', labelKey: 'books.priceViewOptions.individual' },
   { value: '2', labelKey: 'books.priceViewOptions.set' },
 ];
 
-export default function EditBook() {
+interface BookItem {
+  id: string;
+  name: string;
+  code: string;
+  quantity: number;
+  price: number;
+  imagePreview: string | null;
+}
+
+export default function AddEditBook() {
   const { t, i18n } = useTranslation();
-  const { gradeBookId, bookId } = useParams<{ gradeBookId: string; bookId: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { gradeBookId, bookId } = useParams<{ gradeBookId: string; bookId: string }>();
   const currentLang = i18n.language as 'ar' | 'en';
   const schoolBranchesId = getCurrentSchoolBranchId() || undefined;
+
+  const isEditMode = Boolean(bookId && gradeBookId);
 
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
@@ -47,11 +60,13 @@ export default function EditBook() {
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
-  const fileUploadRef = useRef<FileUploadRef>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [books] = useState<BookItem[]>([]);
 
-  const currentBook = useAppSelector((state) => state.books.currentBook);
-  const isLoading = useAppSelector((state) => state.books.isLoading);
+  const isCreating = useAppSelector((state) => state.books.isCreating);
   const isUpdating = useAppSelector((state) => state.books.isUpdating);
+  const isLoadingBook = useAppSelector((state) => state.books.isLoading);
+  const currentBook = useAppSelector((state) => state.books.currentBook);
 
   const subjects = useAppSelector((state) => state.subjects.subjects);
   const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
@@ -59,21 +74,25 @@ export default function EditBook() {
   const grades = useAppSelector((state) => state.educationalStages.educationalStages);
   const isLoadingGrades = useAppSelector((state) => state.educationalStages.isLoading);
 
+  const existingBooks = useAppSelector((state) => state.books.flattenedBooks);
+  const isLoadingExistingBooks = useAppSelector((state) => state.books.isLoading);
+
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
     watch,
     setValue,
+    getValues,
     reset,
   } = useForm({
-    resolver: yupResolver(EditBookSchema),
+    resolver: yupResolver(AddBookSchema),
     mode: 'onBlur',
     defaultValues: {
+      restorePreviousCurriculum: 'no' as const,
       lkSchoolStageId: '',
       materialId: '',
       name: '',
-      nameEn: '',
       code: '',
       packageType: '1' as '1' | '2',
       setQuantity: undefined as number | undefined,
@@ -83,16 +102,19 @@ export default function EditBook() {
     },
   });
 
-  const scrollToFirstError = useScrollToFirstError<EditBookProps>();
+  const scrollToFirstError = useScrollToFirstError<AddBookProps>();
 
+  const watchedRestoreCurriculum = watch('restorePreviousCurriculum');
   const watchedPackageType = watch('packageType');
   const watchedPriceView = watch('priceView');
+  const watchedLkSchoolStageId = watch('lkSchoolStageId');
+  const watchedMaterialId = watch('materialId');
+  const watchedName = watch('name');
+  const watchedQuantity = watch('quantity');
+  const watchedPrice = watch('price');
+  const watchedSetQuantity = watch('setQuantity');
 
   useEffect(() => {
-    if (gradeBookId && bookId) {
-      dispatch(fetchBookById({ bookId, gradeBookId }));
-    }
-    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
     dispatch(
       getEducationalStages({
         pageIndex: 1,
@@ -100,16 +122,47 @@ export default function EditBook() {
         schoolBranchId: schoolBranchesId || undefined,
       })
     );
-  }, [dispatch, gradeBookId, bookId]);
+  }, [dispatch]);
 
-  // Populate form when book data is loaded
   useEffect(() => {
-    if (currentBook) {
+    if (isEditMode) {
+      if (bookId && gradeBookId) {
+        dispatch(fetchBookById({ bookId, gradeBookId }));
+      }
+      dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId } }));
+    }
+  }, [dispatch, isEditMode, bookId, gradeBookId]);
+
+  useEffect(() => {
+    if (!isEditMode && watchedLkSchoolStageId) {
+      setValue('materialId', '');
+      dispatch(
+        fetchSubjects({
+          page: 1,
+          limit: 100,
+          filters: { schoolBranchesId, gradeId: watchedLkSchoolStageId },
+        })
+      );
+    }
+  }, [dispatch, isEditMode, watchedLkSchoolStageId, schoolBranchesId, setValue]);
+
+  useEffect(() => {
+    if (!isEditMode && (watchedLkSchoolStageId || watchedMaterialId)) {
+      const filters: { gradeId?: string; materialId?: string } = {};
+      if (watchedLkSchoolStageId) filters.gradeId = watchedLkSchoolStageId;
+      if (watchedMaterialId) filters.materialId = watchedMaterialId;
+      dispatch(fetchBooks({ page: 1, limit: 100, filters: { ...filters, schoolBranchesId } }));
+    }
+  }, [dispatch, isEditMode, watchedLkSchoolStageId, watchedMaterialId, schoolBranchesId]);
+
+  // Populate form when editing and book data is loaded
+  useEffect(() => {
+    if (isEditMode && currentBook) {
       reset({
+        restorePreviousCurriculum: 'no',
         lkSchoolStageId: currentBook.gradeId || '',
         materialId: currentBook.materialId || '',
         name: currentBook.name || '',
-        nameEn: '', // API doesn't return nameEn, would need to add if available
         code: currentBook.code || '',
         packageType: String(currentBook.packageType || 1) as '1' | '2',
         setQuantity: currentBook.number || undefined,
@@ -118,19 +171,83 @@ export default function EditBook() {
         price: currentBook.price || 0,
       });
     }
-  }, [currentBook, reset]);
+  }, [isEditMode, currentBook, reset]);
 
-  const onSubmit = async (data: EditBookProps) => {
-    if (!bookId) return;
+  const selectedGrade = grades.find((g) => g.id === watchedLkSchoolStageId);
+  const selectedSubject = subjects.find((s) => s.id === watchedMaterialId);
+  const gradeName = selectedGrade
+    ? currentLang === 'ar'
+      ? selectedGrade.nameAr
+      : selectedGrade.nameEn
+    : '';
+  const subjectName = selectedSubject
+    ? currentLang === 'ar'
+      ? selectedSubject.name
+      : selectedSubject.nameEn || selectedSubject.name
+    : '';
 
+  const setQty = watchedPackageType === '2' && watchedSetQuantity ? watchedSetQuantity : 1;
+  const formBookPrice = (watchedPrice || 0) * (watchedQuantity || 0) * setQty;
+  const booksListPrice = books.reduce((sum, book) => sum + book.price * book.quantity, 0);
+  const totalPrice = formBookPrice + booksListPrice;
+  const hasFormData = watchedName && watchedQuantity > 0 && watchedPrice > 0;
+  const showTotalFooter = watchedPackageType === '2' && watchedPriceView === '2';
+
+  const generatePreviewRows = (): BookItem[] => {
+    if (!hasFormData) return [];
+    const baseBook = {
+      name: watchedName,
+      code: getValues('code') || '',
+      quantity: watchedQuantity,
+      price: watchedPrice,
+      imagePreview: imageFile ? URL.createObjectURL(imageFile) : null,
+    };
+    if (watchedPackageType === '2' && watchedSetQuantity && watchedSetQuantity > 1) {
+      return Array.from({ length: watchedSetQuantity }, (_, i) => ({
+        ...baseBook,
+        id: `current-form-${i + 1}`,
+        name: `${watchedName} ${i + 1}`,
+      }));
+    }
+    return [{ ...baseBook, id: 'current-form' }];
+  };
+
+  const previewData: BookItem[] = [...generatePreviewRows(), ...books];
+
+  const onSubmit = async (data: AddBookProps) => {
     try {
-      await dispatch(
-        updateBook({
-          id: bookId,
-          data: {
+      if (isEditMode && bookId) {
+        await dispatch(
+          updateBook({
             id: bookId,
+            data: {
+              id: bookId,
+              name: data.name,
+              nameEn: '',
+              code: data.code,
+              price: data.price,
+              priceView: data.packageType === '2' ? Number(data.priceView) || 1 : 1,
+              totalQuantity: data.quantity,
+              packageType: Number(data.packageType),
+              number: data.packageType === '2' ? Number(data.setQuantity) || 0 : 0,
+              gradeId: data.lkSchoolStageId,
+              materialId: data.materialId,
+              fileName: imageFile?.name ?? currentBook?.fileName ?? '',
+              file: imageFile ?? undefined,
+              schoolBranchesId,
+            },
+          })
+        ).unwrap();
+        setShowPopupMessage({
+          show: true,
+          type: 'success',
+          message: t('books.bookUpdatedSuccessfully'),
+        });
+      } else {
+        await dispatch(
+          addBook({
             name: data.name,
-            nameEn: data.nameEn,
+            nameEn: '',
             code: data.code,
             price: data.price,
             priceView: data.packageType === '2' ? Number(data.priceView) || 1 : 1,
@@ -139,31 +256,102 @@ export default function EditBook() {
             number: data.packageType === '2' ? Number(data.setQuantity) || 0 : 0,
             gradeId: data.lkSchoolStageId,
             materialId: data.materialId,
-            fileName: fileUploadRef.current?.getFiles().length
-              ? fileUploadRef.current.getFiles()[0].name
-              : (currentBook?.fileName ?? ''),
-            file: fileUploadRef.current?.getFiles()[0] ?? undefined,
+            fileName: imageFile?.name ?? '',
+            filePath: '',
+            file: imageFile ?? undefined,
             schoolBranchesId,
-          },
-        })
-      ).unwrap();
-
-      setShowPopupMessage({
-        show: true,
-        type: 'success',
-        message: t('books.bookUpdatedSuccessfully'),
-      });
+          })
+        ).unwrap();
+        setShowPopupMessage({
+          show: true,
+          type: 'success',
+          message: t('books.booksAddedSuccessfully'),
+        });
+        reset();
+        setImageFile(null);
+      }
     } catch (error) {
       const errorMessage = typeof error === 'string' ? error : t('common.errorOccurred');
-      setShowPopupMessage({
-        show: true,
-        type: 'error',
-        message: errorMessage,
-      });
+      setShowPopupMessage({ show: true, type: 'error', message: errorMessage });
     }
   };
 
-  if (isLoading) {
+  const previewColumns: DataTableColumn<BookItem>[] = [
+    {
+      header: '#',
+      accessor: (_row, index) => (index ?? 0) + 1,
+      headerClassName: 'w-16',
+      className: 'text-center',
+    },
+    {
+      header: 'books.bookName',
+      accessor: (row) => <span>{row.name}</span>,
+      headerClassName: 'min-w-[150px]',
+    },
+    {
+      header: 'books.bookCode2',
+      accessor: (row) => <span>{row.code || '-'}</span>,
+      headerClassName: 'min-w-[120px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.bookFile',
+      accessor: (row) =>
+        row.imagePreview ? (
+          <CustomImage src={BookIcon} alt={row.name} className="mx-auto h-8 w-8" />
+        ) : (
+          <span className="text-gray-400">-</span>
+        ),
+      headerClassName: 'min-w-[110px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.stock',
+      accessor: (row) => <span>{row.quantity}</span>,
+      headerClassName: 'min-w-[80px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.bookPrice',
+      accessor: (row) => <span>{row.price}</span>,
+      headerClassName: 'min-w-[100px]',
+      className: 'text-center',
+    },
+  ];
+
+  const existingBooksColumns: DataTableColumn<FlattenedBook>[] = [
+    {
+      header: '#',
+      accessor: (_row, index) => (index ?? 0) + 1,
+      headerClassName: 'w-16',
+      className: 'text-center',
+    },
+    {
+      header: 'books.bookName',
+      accessor: (row) => <span>{row.name}</span>,
+      headerClassName: 'min-w-[150px]',
+    },
+    {
+      header: 'books.bookCode2',
+      accessor: (row) => <span>{row.code || '-'}</span>,
+      headerClassName: 'min-w-[100px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.stock',
+      accessor: (row) => <span>{row.totalQuantity}</span>,
+      headerClassName: 'min-w-[80px]',
+      className: 'text-center',
+    },
+    {
+      header: 'books.bookPrice',
+      accessor: (row) => <span>{row.price}</span>,
+      headerClassName: 'min-w-[100px]',
+      className: 'text-center',
+    },
+  ];
+
+  if (isEditMode && isLoadingBook && !currentBook) {
     return (
       <Card>
         <div className="flex items-center justify-center py-8">
@@ -177,9 +365,42 @@ export default function EditBook() {
     <Card>
       <div>
         <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
+          {/* Restore Previous Curriculum — add mode only */}
+          {!isEditMode && (
+            <div className="mb-6">
+              <FormField
+                label={t('books.restorePreviousCurriculum')}
+                required
+                htmlFor="restorePreviousCurriculum"
+              >
+                <div className="flex items-center gap-6">
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      value="no"
+                      checked={watchedRestoreCurriculum === 'no'}
+                      onChange={() => setValue('restorePreviousCurriculum', 'no')}
+                      className="h-4 w-4 accent-green-600 focus:ring-green-500"
+                    />
+                    <span className="text-base text-black-800">{t('common.no')}</span>
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      value="yes"
+                      checked={watchedRestoreCurriculum === 'yes'}
+                      onChange={() => setValue('restorePreviousCurriculum', 'yes')}
+                      className="h-4 w-4 accent-green-600 focus:ring-green-500"
+                    />
+                    <span className="text-base text-black-800">{t('common.yes')}</span>
+                  </label>
+                </div>
+              </FormField>
+            </div>
+          )}
+
           {/* Educational Stage and Subject */}
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Educational Stage */}
             <FormField
               label={t('books.educationalStage')}
               required
@@ -211,7 +432,6 @@ export default function EditBook() {
               />
             </FormField>
 
-            {/* Subject */}
             <FormField
               label={t('books.subjectName')}
               required
@@ -233,7 +453,7 @@ export default function EditBook() {
                       label: currentLang === 'ar' ? subject.name : subject.nameEn || subject.name,
                     }))}
                     placeholder={isLoadingSubjects ? t('common.loading') : t('books.selectSubject')}
-                    disabled={isLoadingSubjects}
+                    disabled={!isEditMode && (!watchedLkSchoolStageId || isLoadingSubjects)}
                     error={!!errors.materialId}
                     id="materialId"
                   />
@@ -242,11 +462,10 @@ export default function EditBook() {
             </FormField>
           </div>
 
-          {/* Book Names */}
+          {/* Book Name and Book Code */}
           <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Book Name Arabic */}
             <FormField
-              label={t('books.bookNameAr')}
+              label={t('books.bookName')}
               required
               error={errors.name?.message}
               htmlFor="name"
@@ -258,40 +477,13 @@ export default function EditBook() {
                   <Input
                     {...field}
                     type="text"
-                    placeholder={t('books.enterBookNameAr')}
+                    placeholder={t('books.enterBookName')}
                     className="w-full"
                     id="name"
                   />
                 )}
               />
             </FormField>
-
-            {/* Book Name English */}
-            <FormField
-              label={t('books.bookNameEn')}
-              required
-              error={errors.nameEn?.message}
-              htmlFor="nameEn"
-            >
-              <Controller
-                name="nameEn"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder={t('books.enterBookNameEn')}
-                    className="w-full"
-                    id="nameEn"
-                  />
-                )}
-              />
-            </FormField>
-          </div>
-
-          {/* Book Code and Package Type */}
-          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Book Code */}
             <FormField
               label={t('books.bookCode2')}
               required
@@ -312,8 +504,10 @@ export default function EditBook() {
                 )}
               />
             </FormField>
+          </div>
 
-            {/* Package Type */}
+          {/* Package Type */}
+          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('books.packageType')}
               required
@@ -337,10 +531,9 @@ export default function EditBook() {
             </FormField>
           </div>
 
-          {/* Set-specific fields (only show when packageType is '2') */}
+          {/* Set-specific fields */}
           {watchedPackageType === '2' && (
             <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-              {/* Set Quantity */}
               <FormField
                 label={t('books.setQuantity')}
                 required
@@ -367,7 +560,6 @@ export default function EditBook() {
                 />
               </FormField>
 
-              {/* Price View */}
               <FormField
                 label={t('books.priceView')}
                 required
@@ -394,7 +586,6 @@ export default function EditBook() {
 
           {/* Quantity and Price */}
           <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Quantity */}
             <FormField
               label={t('books.stock')}
               required
@@ -418,7 +609,6 @@ export default function EditBook() {
               />
             </FormField>
 
-            {/* Price */}
             <FormField
               label={t('books.bookPrice')}
               required
@@ -443,22 +633,47 @@ export default function EditBook() {
             </FormField>
           </div>
 
-          {/* Book PDF */}
+          {/* File upload */}
           <div className="mb-6">
             <FileUpload
-              ref={fileUploadRef}
               label={t('books.uploadBook')}
+              accept="application/pdf,image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                setImageFile(file);
+              }}
+              onDelete={() => setImageFile(null)}
+              fileName={imageFile?.name}
               uploadText={t('books.uploadBookFile')}
               formatHints={['PDF', 'JPG', 'PNG']}
-              multiple={false}
+              id="bookPdf"
               attachments={
-                currentBook?.filePath
+                isEditMode && currentBook?.filePath && !imageFile
                   ? [{ fileName: currentBook.fileName || 'file', filePath: currentBook.filePath }]
                   : undefined
               }
-              id="bookPdf"
             />
           </div>
+
+          {/* Preview table — add mode only */}
+          {!isEditMode && previewData.length > 0 && (
+            <div className="mb-6">
+              <DataTable
+                columns={previewColumns}
+                data={previewData}
+                keyExtractor={(row) => row.id}
+                isLoading={false}
+                emptyMessage={t('books.noBooks')}
+                t={t}
+              />
+              {showTotalFooter && (
+                <div className="mt-4 flex items-center justify-between border-t pt-4">
+                  <span className="text-lg font-semibold">{t('books.total')}</span>
+                  <span className="text-lg font-semibold text-green-600">{totalPrice}</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="mt-6 flex items-center justify-end gap-3">
@@ -466,18 +681,42 @@ export default function EditBook() {
               type="button"
               variant="outline"
               onClick={() => navigate(-1)}
-              disabled={isSubmitting || isUpdating}
+              disabled={isSubmitting || isCreating || isUpdating}
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting || isUpdating}>
-              {isSubmitting || isUpdating ? t('common.saving') : t('common.save')}
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isSubmitting || isCreating || isUpdating}
+            >
+              {isSubmitting || isCreating || isUpdating
+                ? t('common.saving')
+                : isEditMode
+                  ? t('common.save')
+                  : t('common.add')}
             </Button>
           </div>
         </form>
       </div>
 
-      {/* Popup Message */}
+      {/* Existing Books — add mode only */}
+      {!isEditMode && (watchedLkSchoolStageId || watchedMaterialId) && (
+        <div className="mt-8 border-t pt-6">
+          <h3 className="mb-4 text-lg font-semibold">
+            {subjectName && gradeName ? `${subjectName} - ${gradeName}` : subjectName || gradeName}
+          </h3>
+          <DataTable
+            columns={existingBooksColumns}
+            data={existingBooks}
+            keyExtractor={(row) => row.id}
+            isLoading={isLoadingExistingBooks}
+            emptyMessage={t('books.noBooks')}
+            t={t}
+          />
+        </div>
+      )}
+
       <PopupMessage
         open={showPopupMessage.show}
         type={showPopupMessage.type}

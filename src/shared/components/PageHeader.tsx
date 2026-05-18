@@ -28,23 +28,28 @@ type StatisticType = {
 
 type PageHeaderProps = {
   title: string;
+  subtitle?: string;
   actions?: ActionType[];
   statistics?: StatisticType;
+  statisticsClassName?: string;
   hasHeaderControls?: boolean;
 };
 
 const PageHeader = ({
   title,
+  subtitle,
   actions = [],
   statistics,
+  statisticsClassName,
   hasHeaderControls = false,
 }: PageHeaderProps) => {
   const { t } = useTranslation();
 
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col items-start gap-1">
         <h1 className="text-lg font-medium text-black-900">{t(`${title}`)}</h1>
+        {subtitle && <p className="text-sm font-normal text-[#3A3A3A]">{subtitle}</p>}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -88,10 +93,11 @@ const PageHeader = ({
 
         {statistics && (
           <div
-            className={`flex items-center justify-center rounded-3xl bg-blue-100 px-4 py-1 text-sm font-normal text-[#0A6FC2] ${statistics.className ?? ''}`}
+            className={`flex items-center justify-center rounded-3xl bg-blue-100 px-4 py-1 text-sm font-normal text-[#0A6FC2] ${statisticsClassName ? statisticsClassName : ''}`}
           >
             <span className="whitespace-nowrap">
-              {statistics.value} {t(`${statistics.label}`)}
+              {statistics.value}
+              {statistics.label ? ` ${t(`${statistics.label}`)}` : ''}
             </span>
           </div>
         )}

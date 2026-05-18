@@ -10,12 +10,7 @@ export const AddBookSchema = object({
     .typeError('books.validation.subjectRequired'),
   name: string()
     .required('books.validation.bookNameRequired')
-    .typeError('books.validation.bookNameRequired')
-    .matches(/^[\u0600-\u06FF\s\d\p{P}]+$/u, 'books.validation.bookNameArInvalid'),
-  nameEn: string()
-    .required('books.validation.bookNameEnRequired')
-    .typeError('books.validation.bookNameEnRequired')
-    .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'books.validation.bookNameEnInvalid'),
+    .typeError('books.validation.bookNameRequired'),
   code: string()
     .required('books.validation.bookCodeRequired')
     .typeError('books.validation.bookCodeRequired'),
@@ -59,12 +54,7 @@ export const EditBookSchema = object({
     .typeError('books.validation.subjectRequired'),
   name: string()
     .required('books.validation.bookNameRequired')
-    .typeError('books.validation.bookNameRequired')
-    .matches(/^[\u0600-\u06FF\s\d\p{P}]+$/u, 'books.validation.bookNameArInvalid'),
-  nameEn: string()
-    .required('books.validation.bookNameEnRequired')
-    .typeError('books.validation.bookNameEnRequired')
-    .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'books.validation.bookNameEnInvalid'),
+    .typeError('books.validation.bookNameRequired'),
   code: string()
     .required('books.validation.bookCodeRequired')
     .typeError('books.validation.bookCodeRequired'),
