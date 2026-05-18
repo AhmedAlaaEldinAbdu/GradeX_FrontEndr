@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Controller, useForm } from 'react-hook-form';
 import Card from '@/shared/components/Card';
 import Button from '@/shared/components/Button';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import TextArea from '@/shared/components/TextArea';
 import { useToast } from '@/shared/context/ToastContext';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { useJobRoleValidations } from '@/validations/job-role-validations';
 import ChevronDownIcon from '@/assets/icons/ChevronDown.svg';
 import {
   MOCK_PERMISSION_GROUPS,
@@ -99,6 +102,13 @@ const AccessRadio = ({ name, value, current, label, disabled, onChange }: Access
   </label>
 );
 
+interface JobRoleFormValues {
+  nameAr: string;
+  nameEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
+}
+
 interface JobRoleFormProps {
   mode: 'add' | 'edit';
   initialData?: MockRole;
@@ -108,28 +118,45 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const scrollToFirstError = useScrollToFirstError<JobRoleFormValues>();
+  const { nameArRules, nameEnRules, descriptionRules, validatePermissions } =
+    useJobRoleValidations();
 
-  const [nameAr, setNameAr] = useState('');
-  const [nameEn, setNameEn] = useState('');
-  const [descriptionAr, setDescriptionAr] = useState('');
-  const [descriptionEn, setDescriptionEn] = useState('');
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<JobRoleFormValues>({
+    defaultValues: { nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '' },
+  });
+
   const [selectedPermissions, setSelectedPermissions] = useState<SelectedPermissionsMap>({});
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() =>
     MOCK_PERMISSION_GROUPS.reduce((acc, group) => ({ ...acc, [group.id]: true }), {})
   );
-  const [errors, setErrors] = useState<{ nameAr?: string; nameEn?: string }>({});
+  const [permissionsError, setPermissionsError] = useState<string | undefined>();
 
   // Edit mode: prefill from the provided role. Replace with API data on integration.
   useEffect(() => {
     if (!initialData) return;
-    setNameAr(initialData.name);
-    setDescriptionAr(initialData.description);
-  }, [initialData]);
+    reset({
+      nameAr: initialData.name,
+      nameEn: '',
+      descriptionAr: initialData.description,
+      descriptionEn: '',
+    });
+  }, [initialData, reset]);
 
   const allPermissionIds = MOCK_PERMISSION_GROUPS.flatMap((g) => g.permissions.map((p) => p.id));
   const isAllSelected = allPermissionIds.every((pid) => selectedPermissions[pid]);
 
+  const clearPermissionsError = () => {
+    if (permissionsError) setPermissionsError(undefined);
+  };
+
   const togglePermission = (pid: string) => {
+    clearPermissionsError();
     setSelectedPermissions((prev) => {
       const next = { ...prev };
       if (next[pid]) {
@@ -158,8 +185,6 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
   const isGroupFullyChecked = (group: MockPermissionGroup) =>
     group.permissions.every((p) => selectedPermissions[p.id]);
 
-  // Group radio reflects its children: a value only when every selected
-  // permission in the group shares it, otherwise none is selected.
   const getGroupAccess = (group: MockPermissionGroup): PermissionAccess | null => {
     const accesses = group.permissions
       .map((p) => selectedPermissions[p.id]?.access)
@@ -169,6 +194,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
   };
 
   const toggleGroup = (group: MockPermissionGroup) => {
+    clearPermissionsError();
     const allChecked = isGroupFullyChecked(group);
     setSelectedPermissions((prev) => {
       const next = { ...prev };
@@ -184,6 +210,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
   };
 
   const handleSelectAll = () => {
+    clearPermissionsError();
     if (isAllSelected) {
       setSelectedPermissions({});
     } else {
@@ -200,14 +227,13 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
     setExpandedGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const nextErrors: { nameAr?: string; nameEn?: string } = {};
-    if (!nameAr.trim()) nextErrors.nameAr = t('rolesManagement.roleNameArRequired');
-    if (!nameEn.trim()) nextErrors.nameEn = t('rolesManagement.roleNameEnRequired');
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+  const onValid = (_data: JobRoleFormValues) => {
+    const permissionsResult = validatePermissions(Object.keys(selectedPermissions).length);
+    if (permissionsResult !== true) {
+      setPermissionsError(permissionsResult);
+      scrollToFirstError({ permissions: { message: permissionsResult } });
+      return;
+    }
 
     // Dummy submit — wire to the backend on integration.
     showToast({
@@ -221,7 +247,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit(onValid, scrollToFirstError)} className="flex flex-col gap-6">
       <Card padding="md" className="flex flex-col gap-8">
         {/* Name fields */}
         <div className="flex flex-col gap-8 md:flex-row">
@@ -229,15 +255,22 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
             <FormField
               label={t('rolesManagement.roleNameAr')}
               required
-              htmlFor="roleNameAr"
-              error={errors.nameAr}
+              htmlFor="nameAr"
+              name="nameAr"
+              error={errors.nameAr?.message}
             >
-              <Input
-                id="roleNameAr"
-                type="text"
-                value={nameAr}
-                onChange={(e) => setNameAr(e.target.value)}
-                placeholder={t('rolesManagement.enterRoleNameAr')}
+              <Controller
+                name="nameAr"
+                control={control}
+                rules={nameArRules}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="nameAr"
+                    type="text"
+                    placeholder={t('rolesManagement.enterRoleNameAr')}
+                  />
+                )}
               />
             </FormField>
           </div>
@@ -245,15 +278,22 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
             <FormField
               label={t('rolesManagement.roleNameEn')}
               required
-              htmlFor="roleNameEn"
-              error={errors.nameEn}
+              htmlFor="nameEn"
+              name="nameEn"
+              error={errors.nameEn?.message}
             >
-              <Input
-                id="roleNameEn"
-                type="text"
-                value={nameEn}
-                onChange={(e) => setNameEn(e.target.value)}
-                placeholder={t('rolesManagement.enterRoleNameEn')}
+              <Controller
+                name="nameEn"
+                control={control}
+                rules={nameEnRules}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="nameEn"
+                    type="text"
+                    placeholder={t('rolesManagement.enterRoleNameEn')}
+                  />
+                )}
               />
             </FormField>
           </div>
@@ -265,14 +305,22 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
             <FormField
               label={t('rolesManagement.roleDescriptionAr')}
               optional
-              htmlFor="roleDescriptionAr"
+              htmlFor="descriptionAr"
+              name="descriptionAr"
+              error={errors.descriptionAr?.message}
             >
-              <TextArea
-                id="roleDescriptionAr"
-                value={descriptionAr}
-                onChange={(e) => setDescriptionAr(e.target.value)}
-                placeholder={t('rolesManagement.enterText')}
-                rows={3}
+              <Controller
+                name="descriptionAr"
+                control={control}
+                rules={descriptionRules}
+                render={({ field }) => (
+                  <TextArea
+                    {...field}
+                    id="descriptionAr"
+                    placeholder={t('rolesManagement.enterText')}
+                    rows={3}
+                  />
+                )}
               />
             </FormField>
           </div>
@@ -280,21 +328,29 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
             <FormField
               label={t('rolesManagement.roleDescriptionEn')}
               optional
-              htmlFor="roleDescriptionEn"
+              htmlFor="descriptionEn"
+              name="descriptionEn"
+              error={errors.descriptionEn?.message}
             >
-              <TextArea
-                id="roleDescriptionEn"
-                value={descriptionEn}
-                onChange={(e) => setDescriptionEn(e.target.value)}
-                placeholder={t('rolesManagement.enterText')}
-                rows={3}
+              <Controller
+                name="descriptionEn"
+                control={control}
+                rules={descriptionRules}
+                render={({ field }) => (
+                  <TextArea
+                    {...field}
+                    id="descriptionEn"
+                    placeholder={t('rolesManagement.enterText')}
+                    rows={3}
+                  />
+                )}
               />
             </FormField>
           </div>
         </div>
 
         {/* Permissions */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4" data-form-field="permissions">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-medium text-[#3A3A3A]">
               {t('rolesManagement.permissions')}
@@ -307,6 +363,10 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
               labelClassName="text-base font-medium text-green-800"
             />
           </div>
+
+          {permissionsError && (
+            <p className="text-start text-sm text-red-500">{permissionsError}</p>
+          )}
 
           <div className="flex flex-col gap-4">
             {MOCK_PERMISSION_GROUPS.map((group) => {
@@ -406,16 +466,17 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
             })}
           </div>
         </div>
-      </Card>
 
-      <div className="flex items-center justify-end gap-4">
-        <Button type="button" variant="outline" onClick={() => navigate('/settings/job-roles')}>
-          {t('common.cancel')}
-        </Button>
-        <Button type="submit" variant="success">
-          {mode === 'edit' ? t('common.save') : t('common.add')}
-        </Button>
-      </div>
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-4">
+          <Button type="button" variant="outline" onClick={() => navigate('/settings/job-roles')}>
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" variant="success">
+            {mode === 'edit' ? t('common.save') : t('common.add')}
+          </Button>
+        </div>
+      </Card>
     </form>
   );
 }
