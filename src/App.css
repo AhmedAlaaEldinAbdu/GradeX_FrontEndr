@@ -184,3 +184,9 @@ tr:hover .sticky-cell-right {
 .floating-actions-cell:hover {
   background-color: rgb(249, 250, 251);
 }
+.ltr {
+     direction: ltr; 
+}
+.rtl {
+     direction: rtl; 
+}
