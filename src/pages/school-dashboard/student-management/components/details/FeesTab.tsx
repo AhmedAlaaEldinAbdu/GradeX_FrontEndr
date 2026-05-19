@@ -1,239 +1,214 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchTuitionFeesByGradeAndSchoolBranch } from '@/redux/features/tuition-fees/tuitionFeesSlice';
 import Card from '@/shared/components/Card';
-import CustomCheckbox from '@/shared/components/CustomCheckbox';
-import Input from '@/shared/components/Input';
+import Loading from '@/shared/components/Loading';
 import CustomImage from '@/shared/components/CustomImage';
+import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import RyalGreenIcon from '@gradex/assets/icons/RyalGreen.svg';
-import MonyIcon from '@gradex/assets/icons/Mony.svg';
 
 interface FeesTabProps {
   studentId: string;
+  gradeId?: string | null;
+  schoolBranchId?: string | null;
 }
 
-interface ServiceItem {
-  id: string;
-  name: string;
-  nameEn: string;
-  price: number | null;
-  checked: boolean;
-}
+const formatNumber = (value: number | null | undefined) =>
+  value == null ? '-' : value.toLocaleString('en-US');
 
-interface PaymentSchedule {
-  id: string;
-  date: string;
-  percentage: number;
-}
+const formatDate = (value: string) => {
+  if (!value) return '-';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-GB');
+};
 
-const includedServicesLeft: ServiceItem[] = [
-  { id: 'i1', name: 'الزي المدرسي', nameEn: 'School Uniform', price: 290, checked: true },
-  { id: 'i2', name: 'الكتب', nameEn: 'Books', price: 130, checked: true },
-  { id: 'i3', name: 'ركوب الخيل', nameEn: 'Horse Riding', price: 23, checked: false },
-  {
-    id: 'i4',
-    name: 'أزياء العروض المسرحية',
-    nameEn: 'Theater Costumes',
-    price: 23,
-    checked: false,
-  },
-  { id: 'i5', name: 'أخري', nameEn: 'Other', price: null, checked: false },
-];
+const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="rounded-2xl border border-[#EDEDED] p-5">
+    <h3 className="flex mb-4 text-base font-medium text-[#0E1F1F]">{title}</h3>
+    {children}
+  </div>
+);
 
-const includedServicesRight: ServiceItem[] = [
-  { id: 'i6', name: 'الرحلات المدرسية', nameEn: 'School Trips', price: 67, checked: true },
-  { id: 'i7', name: 'حجز الباص', nameEn: 'Bus Booking', price: 80, checked: true },
-  { id: 'i8', name: 'الكتب', nameEn: 'Books', price: 70, checked: true },
-  { id: 'i9', name: 'الرماية', nameEn: 'Archery', price: 80, checked: false },
-];
+export default function FeesTab({ gradeId, schoolBranchId }: FeesTabProps) {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
-const paidServicesLeft: ServiceItem[] = [
-  { id: 'p1', name: 'الزي المدرسي', nameEn: 'School Uniform', price: 290, checked: false },
-  { id: 'p2', name: 'الكتب', nameEn: 'Books', price: 130, checked: false },
-  { id: 'p3', name: 'ركوب الخيل', nameEn: 'Horse Riding', price: 23, checked: true },
-  { id: 'p4', name: 'أزياء العروض المسرحية', nameEn: 'Theater Costumes', price: 23, checked: true },
-  { id: 'p5', name: 'أخري', nameEn: 'Other', price: null, checked: true },
-];
+  const fees = useAppSelector((state) => state.tuitionFees.tuitionFeesByGradeAndBranch);
+  const isLoading = useAppSelector((state) => state.tuitionFees.isLoadingDetails);
 
-const paidServicesRight: ServiceItem[] = [
-  { id: 'p6', name: 'الرحلات المدرسية', nameEn: 'School Trips', price: 67, checked: false },
-  { id: 'p7', name: 'حجز الباص', nameEn: 'Bus Booking', price: 80, checked: false },
-  { id: 'p8', name: 'الكتب', nameEn: 'Books', price: 70, checked: false },
-  { id: 'p9', name: 'الرماية', nameEn: 'Archery', price: 80, checked: true },
-];
+  useEffect(() => {
+    if (!gradeId || !schoolBranchId) return;
+    dispatch(
+      fetchTuitionFeesByGradeAndSchoolBranch({
+        gradId: gradeId,
+        schoolBrancheId: schoolBranchId,
+      })
+    );
+  }, [dispatch, gradeId, schoolBranchId]);
 
-const mockPaymentSchedule: PaymentSchedule[] = [
-  { id: '1', date: '22/2/2024', percentage: 40 },
-  { id: '2', date: '22/3/2024', percentage: 30 },
-  { id: '3', date: '22/4/2024', percentage: 30 },
-];
+  if (isLoading) {
+    return (
+      <Card>
+        <div className="flex min-h-[240px] items-center justify-center">
+          <Loading size="lg" />
+        </div>
+      </Card>
+    );
+  }
 
-export default function FeesTab(_props: FeesTabProps) {
-  const { t, i18n } = useTranslation();
-  const currentLang = i18n.language as 'ar' | 'en';
+  if (!fees) {
+    return (
+      <Card>
+        <div className="flex min-h-[240px] items-center justify-center text-sm text-[#646969]">
+          {t('fees.noFees')}
+        </div>
+      </Card>
+    );
+  }
 
-  const [paymentOption, setPaymentOption] = useState<'equal' | 'ratio'>('ratio');
+  const plan = fees.installmentPlansDto?.[0];
 
-  const ServiceRow = ({ service }: { service: ServiceItem }) => (
-    <div className="flex items-center justify-between py-2">
-      <CustomCheckbox
-        checked={service.checked}
-        onChange={() => {}}
-        label={currentLang === 'ar' ? service.name : service.nameEn}
-        disabled
-      />
-      {service.price !== null && (
-        <span className="text-sm text-[#646969]">
-          {service.price} {t('fees.currency')}
-        </span>
-      )}
-    </div>
-  );
-
-  const ServicesGrid = ({
-    leftColumn,
-    rightColumn,
+  const ServiceList = ({
+    items,
   }: {
-    leftColumn: ServiceItem[];
-    rightColumn: ServiceItem[];
-  }) => (
-    <div className="grid grid-cols-1 gap-x-12 md:grid-cols-2">
-      <div className="flex flex-col">
-        {rightColumn.map((s) => (
-          <ServiceRow key={s.id} service={s} />
+    items: { id: string; name: string; amount: number | null }[];
+  }) =>
+    items.length === 0 ? (
+      <p className="text-sm text-[#9CA3AF]">-</p>
+    ) : (
+      <div className="grid grid-cols-1 gap-x-12 md:grid-cols-2">
+        {items.map((s) => (
+          <div key={s.id || s.name} className="flex items-center justify-between py-2">
+            <CustomCheckbox checked disabled onChange={() => {}} label={s.name} />
+            {s.amount != null && (
+              <span className="text-sm text-[#646969]">
+                {formatNumber(s.amount)} {t('fees.currency')}
+              </span>
+            )}
+          </div>
         ))}
       </div>
-      <div className="flex flex-col">
-        {leftColumn.map((s) => (
-          <ServiceRow key={s.id} service={s} />
-        ))}
-      </div>
-    </div>
-  );
-
-  const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="rounded-2xl border border-[#EDEDED] p-5">
-      <h3 className="mb-4 text-base font-medium text-[#0E1F1F]">{title}</h3>
-      {children}
-    </div>
-  );
+    );
 
   return (
     <Card>
       <div className="space-y-4">
+        {/* Total tuition + grade */}
         <div className="flex items-center justify-between rounded-2xl border border-[#EDEDED] p-4">
-          <h2 className="text-base font-medium text-[#0E1F1F]">{t('fees.totalExpenses')}</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-[#9CA3AF] line-through">5,900</span>
-            <span className="flex items-center gap-1 text-base font-semibold text-green-500">
-              5,500
-              <CustomImage src={RyalGreenIcon} alt={t('fees.currency')} className="h-4 w-4" />
-            </span>
+          <div>
+            <h2 className="text-base font-medium text-green-500">{t('fees.totalExpenses')}</h2>
+            <p className="mt-1 text-sm text-[#646969]">
+              {t('fees.grade')}: {fees.gradeName}
+            </p>
           </div>
+          <span className="flex items-center gap-1 text-base font-semibold text-green-500">
+            {formatNumber(fees.tuitionAmount)}
+            <CustomImage src={RyalGreenIcon} alt={t('fees.currency')} className="h-4 w-4" />
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 rounded-2xl border border-[#EDEDED] p-5 md:grid-cols-2">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium text-[#0E1F1F]">{t('fees.paymentMethod')}:</span>
+        {/* Payment methods */}
+        {fees.paymentMethodIds?.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#EDEDED] p-4 text-sm">
+            <span className="font-medium text-[#0E1F1F]">{t('fees.paymentMethods')}:</span>
             <span className="text-[#646969]">
-              {t('fees.installmentPlan')} (3 {t('fees.months')})
+              {fees.paymentMethodIds.map((m) => m.name).join('، ')}
             </span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium text-[#0E1F1F]">{t('fees.discount')}:</span>
-            <span className="text-[#646969]">{t('fees.siblingsDiscount')} 15%</span>
-          </div>
-        </div>
+        )}
+
+        {/* Offers & discounts */}
+        {fees.offers?.length > 0 && (
+          <SectionCard title={t('fees.offers')}>
+            <div className="space-y-2">
+              {fees.offers.map((o) => (
+                <div
+                  key={o.id}
+                  className="flex items-center justify-between border-b border-[#F0F0F0] py-2 last:border-0"
+                >
+                  <span className="text-sm text-[#0E1F1F]">{o.name}</span>
+                  <span className="text-sm text-[#646969]">
+                    {o.percentage != null
+                      ? `${o.percentage}%`
+                      : `${formatNumber(o.amount)} ${t('fees.currency')}`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
 
         <SectionCard title={t('fees.servicesIncluded')}>
-          <ServicesGrid leftColumn={includedServicesLeft} rightColumn={includedServicesRight} />
+          <ServiceList items={fees.tuitionFeesServicesDto ?? []} />
         </SectionCard>
 
         <SectionCard title={t('fees.paidServices')}>
-          <ServicesGrid leftColumn={paidServicesLeft} rightColumn={paidServicesRight} />
-
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-2 block text-sm text-[#646969]">{t('fees.service')}</label>
-              <Input value={t('fees.swimmingLessons')} readOnly className="bg-[#F5F5F5]" />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm text-[#646969]">{t('fees.amount')}</label>
-              <Input
-                value="80"
-                readOnly
-                className="bg-[#F5F5F5]"
-                icon={<img src={MonyIcon} alt="" className="h-5 w-5" />}
-              />
-            </div>
-          </div>
+          <ServiceList items={fees.tuitionFeesPaidServicesDto ?? []} />
         </SectionCard>
 
-        <SectionCard title={t('fees.installmentPlanTitle')}>
-          <div className="mb-6">
-            <label className="mb-2 block text-sm text-[#646969]">
-              {t('fees.numberOfPayments')} <span className="text-red-500">*</span>
-            </label>
-            <Input value={`3 ${t('fees.months')}`} readOnly />
-          </div>
-
-          <div className="mb-6">
-            <label className="mb-3 block text-sm text-[#646969]">
-              {t('fees.paymentDueOptions')}
-            </label>
-            <div className="flex flex-wrap items-center gap-8">
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-[#0E1F1F]">
-                <input
-                  type="radio"
-                  name="paymentOption"
-                  value="equal"
-                  checked={paymentOption === 'equal'}
-                  onChange={() => setPaymentOption('equal')}
-                  className="h-4 w-4 accent-green-500"
-                />
-                <span>{t('fees.equalPayments')}</span>
-              </label>
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-[#0E1F1F]">
-                <input
-                  type="radio"
-                  name="paymentOption"
-                  value="ratio"
-                  checked={paymentOption === 'ratio'}
-                  onChange={() => setPaymentOption('ratio')}
-                  className="h-4 w-4 accent-green-500"
-                />
-                <span>{t('fees.ratioPerPayment')}</span>
-              </label>
+        {/* Books */}
+        {fees.books?.length > 0 && (
+          <SectionCard title={t('fees.books')}>
+            <div className="space-y-2">
+              {fees.books.map((b) => (
+                <div
+                  key={b.code || b.name}
+                  className="flex items-center justify-between border-b border-[#F0F0F0] py-2 last:border-0 text-sm"
+                >
+                  <span className="text-[#0E1F1F]">{b.name}</span>
+                  <span className="text-[#9CA3AF]">
+                    {t('fees.code')}: {b.code || '-'}
+                  </span>
+                  <span className="text-[#646969]">
+                    {formatNumber(b.price)} {t('fees.currency')}
+                  </span>
+                </div>
+              ))}
             </div>
-          </div>
+          </SectionCard>
+        )}
 
-          <div className="space-y-4">
-            {mockPaymentSchedule.map((payment) => (
-              <div key={payment.id} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-sm text-[#646969]">{t('fees.dueDate')}</label>
-                  <Input
-                    type="date"
-                    value={toIsoDate(payment.date)}
-                    readOnly
-                    className="bg-[#F5F5F5]"
-                  />
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm text-[#646969]">
-                    {t('fees.percentage')}
-                  </label>
-                  <Input value={`${payment.percentage}%`} readOnly className="bg-[#F5F5F5]" />
-                </div>
+        {/* Installment plan */}
+        {plan && (
+          <SectionCard title={t('fees.installmentPlanTitle')}>
+            <div className="mb-4 flex flex-wrap gap-x-12 gap-y-2 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-[#0E1F1F]">{t('fees.numberOfPayments')}:</span>
+                <span className="text-[#646969]">
+                  {plan.installmentsCount} {t('fees.months')}
+                </span>
               </div>
-            ))}
-          </div>
-        </SectionCard>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-[#0E1F1F]">{t('fees.paymentDueOptions')}:</span>
+                <span className="text-[#646969]">
+                  {plan.distributionType === 1
+                    ? t('fees.equalPayments')
+                    : t('fees.ratioPerPayment')}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {(plan.installmentDto ?? []).map((inst, idx) => (
+                <div
+                  key={`${inst.dueDate}-${idx}`}
+                  className="grid grid-cols-1 gap-4 md:grid-cols-2"
+                >
+                  <div className="flex items-center justify-between rounded-xl bg-[#F5F5F5] px-4 py-2 text-sm">
+                    <span className="text-[#646969]">{t('fees.dueDate')}</span>
+                    <span className="text-[#0E1F1F]">{formatDate(inst.dueDate)}</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl bg-[#F5F5F5] px-4 py-2 text-sm">
+                    <span className="text-[#646969]">{t('fees.percentage')}</span>
+                    <span className="text-[#0E1F1F]">{inst.percentage ?? 0}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
       </div>
     </Card>
   );
-}
-
-function toIsoDate(date: string): string {
-  const [d, m, y] = date.split('/');
-  return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
 }
