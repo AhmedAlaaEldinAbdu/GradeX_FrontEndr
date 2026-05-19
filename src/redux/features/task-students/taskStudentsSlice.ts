@@ -8,14 +8,40 @@ import { getErrorMessage } from '@/lib/http';
 import { taskStudentApiService } from '@/services/api/task-students/task-students.service';
 import type {
   StudentMaterialTasksQueryParams,
+  StudentExamItem,
+  StudentExamsListData,
+  StudentExamsQueryParams,
+  StudentHomeworkItem,
+  StudentHomeworkListData,
+  StudentHomeworkQueryParams,
   TaskStudent,
   UpdateTaskStudentRequest,
 } from '@/types/taskStudents';
 
+interface ListPagination {
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+const emptyPagination: ListPagination = {
+  pageIndex: 1,
+  totalPages: 0,
+  totalItems: 0,
+  pageSize: 10,
+};
+
 export interface TaskStudentsState {
   currentTaskStudent: TaskStudent | null;
   studentMaterialTasks: TaskStudent[];
+  studentExams: StudentExamItem[];
+  studentHomework: StudentHomeworkItem[];
+  examsPagination: ListPagination;
+  homeworkPagination: ListPagination;
   isLoading: boolean;
+  isExamsLoading: boolean;
+  isHomeworkLoading: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
   error: string | null;
@@ -27,10 +53,26 @@ export interface FetchStudentMaterialTasksPayload {
   taskDate?: string;
 }
 
+export interface FetchStudentExamsPayload {
+  studentId: string;
+  params?: StudentExamsQueryParams;
+}
+
+export interface FetchStudentHomeworkPayload {
+  studentId: string;
+  params?: StudentHomeworkQueryParams;
+}
+
 export const initialState: TaskStudentsState = {
   currentTaskStudent: null,
   studentMaterialTasks: [],
+  studentExams: [],
+  studentHomework: [],
+  examsPagination: emptyPagination,
+  homeworkPagination: emptyPagination,
   isLoading: false,
+  isExamsLoading: false,
+  isHomeworkLoading: false,
   isUpdating: false,
   isDeleting: false,
   error: null,
@@ -70,6 +112,40 @@ export const fetchStudentMaterialTasks = createAsyncThunk<
     }
 
     return response.data.taskStudents || [];
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const fetchStudentExams = createAsyncThunk<
+  StudentExamsListData,
+  FetchStudentExamsPayload
+>('taskStudents/fetchStudentExams', async ({ studentId, params }, { rejectWithValue }) => {
+  try {
+    const response = await taskStudentApiService.getStudentExams(studentId, params);
+
+    if (!response?.isSuccess) {
+      return rejectWithValue(response?.message || 'Failed to fetch student exams');
+    }
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const fetchStudentHomework = createAsyncThunk<
+  StudentHomeworkListData,
+  FetchStudentHomeworkPayload
+>('taskStudents/fetchStudentHomework', async ({ studentId, params }, { rejectWithValue }) => {
+  try {
+    const response = await taskStudentApiService.getStudentHomework(studentId, params);
+
+    if (!response?.isSuccess) {
+      return rejectWithValue(response?.message || 'Failed to fetch student homework');
+    }
+
+    return response.data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }
@@ -146,6 +222,44 @@ const taskStudentsSlice = createSlice({
       })
       .addCase(fetchStudentMaterialTasks.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchStudentExams.pending, (state) => {
+        state.isExamsLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchStudentExams.fulfilled, (state, action) => {
+        state.isExamsLoading = false;
+        state.studentExams = action.payload.exams || [];
+        state.examsPagination = {
+          pageIndex: action.payload.pageIndex || 1,
+          totalPages: action.payload.totalPages || 0,
+          totalItems: action.payload.totalItems || 0,
+          pageSize: action.payload.pageSize || 10,
+        };
+        state.isInitialized = true;
+      })
+      .addCase(fetchStudentExams.rejected, (state, action) => {
+        state.isExamsLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchStudentHomework.pending, (state) => {
+        state.isHomeworkLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchStudentHomework.fulfilled, (state, action) => {
+        state.isHomeworkLoading = false;
+        state.studentHomework = action.payload.exams || [];
+        state.homeworkPagination = {
+          pageIndex: action.payload.pageIndex || 1,
+          totalPages: action.payload.totalPages || 0,
+          totalItems: action.payload.totalItems || 0,
+          pageSize: action.payload.pageSize || 10,
+        };
+        state.isInitialized = true;
+      })
+      .addCase(fetchStudentHomework.rejected, (state, action) => {
+        state.isHomeworkLoading = false;
         state.error = action.payload as string;
       })
       .addCase(editTaskStudent.pending, (state) => {

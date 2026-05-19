@@ -4,11 +4,33 @@ import { TaskStudentEndpoints } from '../endpoints/task-student-endpoints';
 import type {
   StudentMaterialTaskListResponse,
   StudentMaterialTasksQueryParams,
+  StudentExamsListResponse,
+  StudentExamsQueryParams,
+  StudentHomeworkListResponse,
+  StudentHomeworkQueryParams,
   TaskStudent,
   TaskStudentMutationResponse,
   TaskStudentResponse,
   UpdateTaskStudentRequest,
 } from '@/types/taskStudents';
+
+const serializeQuery = (params?: Record<string, unknown>) => {
+  const searchParams = new URLSearchParams();
+
+  if (!params) {
+    return searchParams.toString();
+  }
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') {
+      return;
+    }
+
+    searchParams.append(key, String(value));
+  });
+
+  return searchParams.toString();
+};
 
 const serializeParams = (params?: StudentMaterialTasksQueryParams) => {
   const searchParams = new URLSearchParams();
@@ -161,11 +183,73 @@ export async function updateTaskStudent(
   };
 }
 
+export async function getStudentExams(
+  studentId: string,
+  params?: StudentExamsQueryParams
+): Promise<StudentExamsListResponse> {
+  const response: AxiosResponse<StudentExamsListResponse> = await axiosClient.get(
+    TaskStudentEndpoints.getStudentExams(studentId),
+    {
+      params,
+      paramsSerializer: { serialize: serializeQuery },
+    }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      data: {
+        exams: [],
+        pageIndex: params?.PageIndex || 1,
+        totalPages: 0,
+        totalItems: 0,
+        pageSize: params?.PageSize || 10,
+      },
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
+
+export async function getStudentHomework(
+  studentId: string,
+  params?: StudentHomeworkQueryParams
+): Promise<StudentHomeworkListResponse> {
+  const response: AxiosResponse<StudentHomeworkListResponse> = await axiosClient.get(
+    TaskStudentEndpoints.getStudentHomework(studentId),
+    {
+      params,
+      paramsSerializer: { serialize: serializeQuery },
+    }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      data: {
+        exams: [],
+        pageIndex: params?.PageIndex || 1,
+        totalPages: 0,
+        totalItems: 0,
+        pageSize: params?.PageSize || 10,
+      },
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
+
 export const taskStudentApiService = {
   getTaskStudentById,
   deleteTaskStudent,
   getStudentMaterialTasks,
   updateTaskStudent,
+  getStudentExams,
+  getStudentHomework,
 };
 
 export default taskStudentApiService;

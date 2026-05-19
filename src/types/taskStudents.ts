@@ -62,3 +62,91 @@ export interface UpdateTaskStudentRequest {
   id: string;
   attachment?: File[];
 }
+
+// ============================================================================
+// Student Exams (GET /api/TaskStudent/Exams/{studentId})
+// ============================================================================
+
+export interface StudentExamItem {
+  nameAr: string;
+  nameEn: string;
+  materialId: string;
+  materialNameAr: string;
+  materialNameEn: string;
+  date: string;
+  taskType: number;
+  deliveryDate: string;
+  correctionType: number | null;
+  evaluationGrade: number | null;
+  studentScore: number | null;
+  maxScore: number | null;
+}
+
+export interface StudentExamsListData {
+  exams: StudentExamItem[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface StudentExamsListResponse {
+  data: StudentExamsListData;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+export interface StudentExamsQueryParams {
+  PageSize?: number;
+  PageIndex?: number;
+  Search?: string;
+  Date?: string;
+  TaskType?: number; // 4, 5, 6
+  EvaluationGrade?: number; // 1-5
+}
+
+// ============================================================================
+// Student Homework (GET /api/TaskStudent/HomeWork/{studentId})
+// ============================================================================
+
+export interface StudentHomeworkItem {
+  nameAr: string;
+  nameEn: string;
+  materialId: string;
+  materialNameAr: string;
+  materialNameEn: string;
+  date: string;
+  deliveryDate: string;
+  correctionType: number | null;
+  evaluationGrade: number | null;
+  studentScore: number | null;
+  maxScore: number | null;
+  descriptionAr: string | null;
+  descriptionEn: string | null;
+  schoolTaskAttachment: string[];
+  taskSubmissionAttachment: string[];
+}
+
+export interface StudentHomeworkListData {
+  exams: StudentHomeworkItem[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface StudentHomeworkListResponse {
+  data: StudentHomeworkListData;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: string[] | null;
+}
+
+export interface StudentHomeworkQueryParams {
+  PageSize?: number;
+  PageIndex?: number;
+  Search?: string;
+  Date?: string;
+  EvaluationGrade?: number; // 1-5
+}
