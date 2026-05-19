@@ -1828,6 +1828,13 @@
     "ratioPerPayment": "نسبة لكل دفعة",
     "dueDate": "تاريخ الاستحقاق",
     "percentage": "النسبة",
+    "grade": "الصف",
+    "paymentMethods": "طرق الدفع",
+    "books": "الكتب",
+    "code": "الكود",
+    "price": "السعر",
+    "offers": "العروض والخصومات",
+    "noFees": "لا توجد رسوم محددة لهذا الصف",
     "tuition": {
       "tabTitle": "الرسوم الدراسية",
       "addTitle": "إضافة الرسوم الدراسية",

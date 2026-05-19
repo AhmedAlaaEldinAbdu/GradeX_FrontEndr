@@ -1826,6 +1826,13 @@
     "ratioPerPayment": "Ratio per payment",
     "dueDate": "Due Date",
     "percentage": "Percentage",
+    "grade": "Grade",
+    "paymentMethods": "Payment Methods",
+    "books": "Books",
+    "code": "Code",
+    "price": "Price",
+    "offers": "Offers & Discounts",
+    "noFees": "No fees configured for this grade",
     "tuition": {
       "tabTitle": "Tuition Fees",
       "addTitle": "Add Tuition Fees",
