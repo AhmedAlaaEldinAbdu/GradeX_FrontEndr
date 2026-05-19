@@ -1761,6 +1761,7 @@
     "unsatisfactory": "غير مرضي",
     "searchSubject": "ابحث عن اسم المادة",
     "noRecords": "لا توجد سجلات",
+    "allDates": "كل التواريخ",
     "august": "أغسطس",
     "reportDetailsTitle": "تفاصيل {{name}}",
     "academicEvaluation": "تقيم أكاديمى",
@@ -1800,7 +1801,8 @@
     "finalResult": "النتيجة النهائية",
     "notes": "ملاحظات",
     "searchSubject": "ابحث عن اسم المادة",
-    "noRecords": "لا توجد سجلات"
+    "noRecords": "لا توجد سجلات",
+    "allDates": "كل التواريخ"
   },
   "fees": {
     "title": "الرسوم",

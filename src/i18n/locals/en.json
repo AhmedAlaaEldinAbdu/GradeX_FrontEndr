@@ -1761,6 +1761,7 @@
     "unsatisfactory": "Unsatisfactory",
     "searchSubject": "Search by subject name",
     "noRecords": "No records found",
+    "allDates": "All Dates",
     "august": "August",
     "reportDetailsTitle": "{{name}} Details",
     "academicEvaluation": "Academic Evaluation",
@@ -1800,7 +1801,8 @@
     "finalResult": "Final Result",
     "notes": "Notes",
     "searchSubject": "Search by subject name",
-    "noRecords": "No records found"
+    "noRecords": "No records found",
+    "allDates": "All Dates"
   },
   "fees": {
     "title": "Fees",
