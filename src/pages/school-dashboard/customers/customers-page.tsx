@@ -10,6 +10,7 @@ export default function CustomersPage() {
   const navigate = useNavigate();
 
   const breadcrumbItems = [
+    { label: t('sidebar.financialAffairs') },
     { label: t('sidebar.financialManagement') },
     { label: t('customers.title') },
   ];
