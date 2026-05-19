@@ -22,6 +22,7 @@ export * from './offer/offer.service';
 export * from './control-panel/control-panel.service';
 export * from './student-delegation/student-delegation.service';
 export * from './daily-report/daily-report.service';
+export * from './parent/parent.service';
 
 // Types
 export * from './types/auth.types';
@@ -39,6 +40,7 @@ export * from './types/offer.types';
 export * from './types/control-panel.types';
 export * from './types/student-delegation.types';
 export * from './types/daily-report.types';
+export * from './types/parent.types';
 
 // Endpoints
 export * from './endpoints/auth-endpoints';
@@ -56,3 +58,4 @@ export * from './endpoints/offer-endpoints';
 export * from './endpoints/control-panel-endpoints';
 export * from './endpoints/student-delegation-endpoints';
 export * from './endpoints/daily-report-endpoints';
+export * from './endpoints/parent-endpoints';
