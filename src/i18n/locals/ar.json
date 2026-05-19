@@ -20,6 +20,11 @@
       "term": "ترم"
     },
     "vsLastMonth": "عن الشهر الماضي",
+    "attendanceTooltip": {
+      "present": "الحاضرون",
+      "total": "الإجمالي",
+      "percentage": "النسبة"
+    },
     "stages": {
       "kindergarten": "رياض الاطفال",
       "primary": "الابتدائية",

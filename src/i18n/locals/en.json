@@ -20,6 +20,11 @@
       "term": "Term"
     },
     "vsLastMonth": "vs last month",
+    "attendanceTooltip": {
+      "present": "Present",
+      "total": "Total",
+      "percentage": "Percentage"
+    },
     "stages": {
       "kindergarten": "Kindergarten",
       "primary": "Primary",
