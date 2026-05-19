@@ -46,6 +46,55 @@ export interface TuitionFeesDto {
   paymentMethodIds: TuitionFeesPaymentMethodDto[];
 }
 
+// ============================================================================
+// GET /api/TuitionFees/{gradId}/{schoolBrancheId} — detailed breakdown
+// ============================================================================
+
+export interface TuitionFeesByGradeServiceDto {
+  id: string;
+  name: string;
+  amount: number | null;
+}
+
+export interface TuitionFeesByGradePaymentMethodDto {
+  paymentMethodId: string;
+  name: string;
+}
+
+export interface TuitionFeesByGradeOfferDto {
+  id: string;
+  name: string;
+  offerType: number;
+  amount: number | null;
+  percentage: number | null;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
+
+export interface TuitionFeesByGradeBookDto {
+  name: string;
+  code: string;
+  price: number;
+  fileName: string | null;
+  filePath: string | null;
+  status: number | null;
+}
+
+export interface TuitionFeesByGradeDto {
+  id: string;
+  schoolBrancheId: string;
+  tuitionAmount: number;
+  gradeId: string;
+  gradeName: string;
+  installmentPlansDto: TuitionFeesInstallmentPlanDto[];
+  tuitionFeesServicesDto: TuitionFeesByGradeServiceDto[];
+  tuitionFeesPaidServicesDto: TuitionFeesByGradeServiceDto[];
+  paymentMethodIds: TuitionFeesByGradePaymentMethodDto[];
+  offers: TuitionFeesByGradeOfferDto[];
+  books: TuitionFeesByGradeBookDto[];
+}
+
 export interface TuitionFeesListData {
   tuitionFees: TuitionFeesDto[];
   pageIndex: number;

@@ -9,6 +9,7 @@ import type {
   CreateTuitionFeesRequest,
   UpdateTuitionFeesRequest,
   TuitionFeesGradeFeesItem,
+  TuitionFeesByGradeDto,
   InstallmentListResponse,
   InstallmentQueryParams,
   InstallmentPlanByIdResponse,
@@ -98,12 +99,12 @@ export async function calculationTuitionFees(
 export async function getTuitionFeesByGradeAndSchoolBranch(
   gradId: string,
   schoolBrancheId: string
-): Promise<TuitionFeesDto> {
-  const response: AxiosResponse<ApiResponseModel<TuitionFeesDto>> = await axiosClient.get(
+): Promise<TuitionFeesByGradeDto> {
+  const response: AxiosResponse<ApiResponseModel<TuitionFeesByGradeDto>> = await axiosClient.get(
     TuitionFeesEndpoints.getByGradeAndSchoolBranch(gradId, schoolBrancheId)
   );
 
-  return (response.data.data ?? response.data.value) as TuitionFeesDto;
+  return (response.data.data ?? response.data.value) as TuitionFeesByGradeDto;
 }
 
 export async function getGradesFeesBySchoolBranch(

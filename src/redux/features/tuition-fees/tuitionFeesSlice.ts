@@ -15,6 +15,7 @@ import type {
   CreateTuitionFeesRequest,
   UpdateTuitionFeesRequest,
   TuitionFeesGradeFeesItem,
+  TuitionFeesByGradeDto,
   InstallmentDto,
   InstallmentQueryParams,
   InstallmentPlanByIdDto,
@@ -23,7 +24,7 @@ import type {
 interface TuitionFeesState {
   tuitionFees: TuitionFeesDto[];
   tuitionFeesDetails: TuitionFeesDto | null;
-  tuitionFeesByGradeAndBranch: TuitionFeesDto | null;
+  tuitionFeesByGradeAndBranch: TuitionFeesByGradeDto | null;
   gradesFees: TuitionFeesGradeFeesItem[];
   installments: InstallmentDto[];
   installmentPlan: InstallmentPlanByIdDto | null;
@@ -103,7 +104,7 @@ export const fetchTuitionFeesById = createAsyncThunk<TuitionFeesDto, string>(
 );
 
 export const fetchTuitionFeesByGradeAndSchoolBranch = createAsyncThunk<
-  TuitionFeesDto,
+  TuitionFeesByGradeDto,
   { gradId: string; schoolBrancheId: string }
 >('tuitionFees/fetchByGradeAndBranch', async ({ gradId, schoolBrancheId }, { rejectWithValue }) => {
   try {
@@ -271,7 +272,7 @@ const tuitionFeesSlice = createSlice({
       })
       .addCase(
         fetchTuitionFeesByGradeAndSchoolBranch.fulfilled,
-        (state, action: PayloadAction<TuitionFeesDto>) => {
+        (state, action: PayloadAction<TuitionFeesByGradeDto>) => {
           state.isLoadingDetails = false;
           state.tuitionFeesByGradeAndBranch = action.payload;
         }
