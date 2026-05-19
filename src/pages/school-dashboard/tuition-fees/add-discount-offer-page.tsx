@@ -33,6 +33,8 @@ export default function AddDiscountOfferPage() {
   const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
+    { label: t('sidebar.financialAffairs') },
+    { label: t('sidebar.financialManagement') },
     { label: t('sidebar.fees'), path: '/financial-management/fees?tab=discounts' },
     { label: t('fees.discounts.form.addTitle') },
   ];
