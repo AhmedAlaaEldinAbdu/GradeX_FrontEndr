@@ -14,6 +14,7 @@ export default function InvoiceDetailsPage() {
   const [isExporting, setIsExporting] = useState(false);
 
   const breadcrumbItems = [
+    { label: t('sidebar.financialAffairs') },
     { label: t('sidebar.financialManagement') },
     { label: t('invoices.title'), path: '/financial-management/invoices' },
     { label: t('invoices.invoiceDetails') },

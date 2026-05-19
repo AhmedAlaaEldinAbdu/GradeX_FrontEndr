@@ -8,6 +8,7 @@ export default function InvoicesPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
+    { label: t('sidebar.financialAffairs') },
     { label: t('sidebar.financialManagement') },
     { label: t('invoices.title') },
   ];
