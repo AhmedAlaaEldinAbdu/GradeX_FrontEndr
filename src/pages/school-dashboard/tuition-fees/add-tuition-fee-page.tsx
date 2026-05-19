@@ -30,6 +30,8 @@ export default function AddTuitionFeePage() {
     tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
+    { label: t('sidebar.financialAffairs') },
+    { label: t('sidebar.financialManagement') },
     { label: t('sidebar.fees'), path: '/financial-management/fees' },
     { label: t('fees.tuition.addTitle') },
   ];

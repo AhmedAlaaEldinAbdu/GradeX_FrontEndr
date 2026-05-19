@@ -2,12 +2,23 @@ import { useState } from 'react';
 import PageHeader from '@/shared/components/PageHeader';
 import PlusIcon from '@/assets/icons/Plus.svg';
 import TuitionFees, { TUITION_TAB, type TuitionFeesTabId } from './components/TuitionFees';
+import Breadcrumb from '@/shared/layout/Breadcrumb';
+import { useTranslation } from 'react-i18next';
 
 export default function TuitionFeesPage() {
+  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState<TuitionFeesTabId>(TUITION_TAB);
+
+  const breadcrumbItems = [
+    { label: t('sidebar.financialAffairs') },
+    { label: t('sidebar.financialManagement') },
+    { label: t('sidebar.fees') },
+  ];
 
   return (
     <div>
+      <Breadcrumb items={breadcrumbItems} />
+
       <PageHeader
         title="sidebar.fees"
         actions={
