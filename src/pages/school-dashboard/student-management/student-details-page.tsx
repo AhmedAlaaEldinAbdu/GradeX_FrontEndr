@@ -125,7 +125,13 @@ export default function StudentDetailsPage() {
     {
       id: 'fees',
       label: t('students.details.fees'),
-      content: <FeesTab studentId={id || ''} />,
+      content: (
+        <FeesTab
+          studentId={id || ''}
+          gradeId={student?.gradeId}
+          schoolBranchId={student?.schoolBrancheId}
+        />
+      ),
     },
     {
       id: 'medical-record',
