@@ -67,11 +67,11 @@ import StudentApplicationDetailsPage from '@/pages/school-dashboard/student-appl
 import PreparationsPage from '@/pages/school-dashboard/preparations/preparations-page';
 import AddPreparationPage from '@/pages/school-dashboard/preparations/add-preparation-page';
 import EditPreparationPage from '@/pages/school-dashboard/preparations/edit-preparation-page';
-import TransactionsPage from '@/pages/school-dashboard/transactions/TransactionsPage';
+import TransactionsPage from '@/pages/school-dashboard/transactions/transactions-page';
 import InvoicesPage from '@/pages/school-dashboard/invoices/InvoicesPage';
 import InvoiceDetailsPage from '@/pages/school-dashboard/invoices/InvoiceDetailsPage';
 import IssueInvoicePage from '@/pages/school-dashboard/invoices/issue-invoice-page';
-import CustomersPage from '@/pages/school-dashboard/customers/CustomersPage';
+import CustomersPage from '@/pages/school-dashboard/customers/customers-page';
 import AddCustomerPage from '@/pages/school-dashboard/customers/add-customer-page';
 import EditCustomerPage from '@/pages/school-dashboard/customers/edit-customer-page';
 import CustomerDetailsPage from '@/pages/school-dashboard/customers/customer-details-page';
