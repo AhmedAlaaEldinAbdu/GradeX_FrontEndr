@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchStudentHomework } from '@/redux/features/task-students/taskStudentsSlice';
+import type { StudentHomeworkItem } from '@/types/taskStudents';
 import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -16,84 +19,90 @@ interface HomeworkTabProps {
 
 type HomeworkStatus = 'excellent' | 'veryGood' | 'good' | 'weak';
 
-interface HomeworkRecord {
-  id: string;
-  subjectName: string;
-  subjectNameEn: string;
-  hasHomework: boolean;
-  status: HomeworkStatus;
-  date: string;
-  finalResult: string;
-  notes: string;
-  notesEn: string;
-}
+// EvaluationGrade (1-5) -> badge status. null/0 => no badge.
+const evaluationGradeToStatus = (grade: number | null): HomeworkStatus | null => {
+  switch (grade) {
+    case 5:
+      return 'excellent';
+    case 4:
+      return 'veryGood';
+    case 3:
+      return 'good';
+    case 2:
+    case 1:
+      return 'weak';
+    default:
+      return null;
+  }
+};
 
-const mockHomeworkRecords: HomeworkRecord[] = [
-  {
-    id: '1',
-    subjectName: 'اللغة الفرنسية',
-    subjectNameEn: 'French',
-    hasHomework: true,
-    status: 'excellent',
-    date: '1-1-2020',
-    finalResult: '29/30',
-    notes: 'لا يوجد',
-    notesEn: 'None',
-  },
-  {
-    id: '2',
-    subjectName: 'اللغة العربية',
-    subjectNameEn: 'Arabic',
-    hasHomework: true,
-    status: 'good',
-    date: '1-1-2021',
-    finalResult: '20/30',
-    notes: 'لا يوجد',
-    notesEn: 'None',
-  },
-  {
-    id: '3',
-    subjectName: 'اللغة الإنجليزية',
-    subjectNameEn: 'English',
-    hasHomework: true,
-    status: 'weak',
-    date: '1-1-2021',
-    finalResult: '5/30',
-    notes: 'لا يوجد',
-    notesEn: 'None',
-  },
-  {
-    id: '4',
-    subjectName: 'الرياضيات',
-    subjectNameEn: 'Mathematics',
-    hasHomework: true,
-    status: 'veryGood',
-    date: '1-1-2021',
-    finalResult: '25/30',
-    notes: 'لا يوجد',
-    notesEn: 'None',
-  },
-];
-
-export default function HomeworkTab(_props: HomeworkTabProps) {
+export default function HomeworkTab({ studentId }: HomeworkTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
+  const dispatch = useAppDispatch();
 
-  const [viewMode, setViewMode] = useState<'byDay' | 'all'>('byDay');
+  const homework = useAppSelector((state) => state.taskStudents.studentHomework);
+  const pagination = useAppSelector((state) => state.taskStudents.homeworkPagination);
+  const isLoading = useAppSelector((state) => state.taskStudents.isHomeworkLoading);
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const filteredRecords = mockHomeworkRecords.filter((record) => {
-    const subjectName = currentLang === 'ar' ? record.subjectName : record.subjectNameEn;
-    const matchesSearch =
-      !searchQuery || subjectName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = !selectedStatus || record.status === selectedStatus;
-    const matchesDate = viewMode === 'byDay' || !selectedDate || record.date.includes(selectedDate);
-    return matchesSearch && matchesStatus && matchesDate;
-  });
+  // Local-time YYYY-MM-DD (avoids the UTC day-shift of toISOString()).
+  const toApiDate = (d: Date) => {
+    const month = `${d.getMonth() + 1}`.padStart(2, '0');
+    const day = `${d.getDate()}`.padStart(2, '0');
+    return `${d.getFullYear()}-${month}-${day}`;
+  };
+
+  useEffect(() => {
+    if (!studentId) return;
+    dispatch(
+      fetchStudentHomework({
+        studentId,
+        params: {
+          PageIndex: currentPage,
+          PageSize: pageSize,
+          Search: searchQuery || undefined,
+          EvaluationGrade: selectedGrade ? Number(selectedGrade) : undefined,
+          Date: selectedDate ? toApiDate(selectedDate) : undefined,
+        },
+      })
+    );
+  }, [dispatch, studentId, currentPage, searchQuery, selectedGrade, selectedDate]);
+
+  const shiftSelectedDate = (days: number) => {
+    setSelectedDate((prev) => {
+      const base = prev ?? new Date();
+      const next = new Date(base);
+      next.setDate(next.getDate() + days);
+      return next;
+    });
+    setCurrentPage(1);
+  };
+
+  const clearSelectedDate = () => {
+    setSelectedDate(null);
+    setCurrentPage(1);
+  };
+
+  const formatDate = (value: string) => {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-US');
+  };
+
+  const selectedDateLabel = selectedDate
+    ? selectedDate.toLocaleDateString(currentLang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : t('homework.allDates');
 
   const getStatusLabel = (status: HomeworkStatus) => {
     const map: Record<HomeworkStatus, string> = {
@@ -105,7 +114,7 @@ export default function HomeworkTab(_props: HomeworkTabProps) {
     return map[status];
   };
 
-  const baseColumns: DataTableColumn<HomeworkRecord>[] = [
+  const columns: DataTableColumn<StudentHomeworkItem>[] = [
     {
       header: '#',
       accessor: (_row, index) => (currentPage - 1) * pageSize + (index ?? 0) + 1,
@@ -114,14 +123,16 @@ export default function HomeworkTab(_props: HomeworkTabProps) {
     },
     {
       header: t('homework.subjectName'),
-      accessor: (row) => <span>{currentLang === 'ar' ? row.subjectName : row.subjectNameEn}</span>,
+      accessor: (row) => (
+        <span>{currentLang === 'ar' ? row.materialNameAr : row.materialNameEn}</span>
+      ),
       headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
     {
       header: t('homework.assignment'),
       accessor: (row) =>
-        row.hasHomework ? (
+        row.schoolTaskAttachment?.length ? (
           <div className="flex items-center justify-center">
             <CustomImage src={PdfIcon} alt="PDF" className="h-9 w-8" />
           </div>
@@ -133,44 +144,46 @@ export default function HomeworkTab(_props: HomeworkTabProps) {
     },
     {
       header: t('homework.status'),
-      accessor: (row) => (
-        <span className={getExamStatusBadgeColor(row.status)}>{getStatusLabel(row.status)}</span>
-      ),
+      accessor: (row) => {
+        const status = evaluationGradeToStatus(row.evaluationGrade);
+        if (!status) return <span className="text-[#646969]">-</span>;
+        return <span className={getExamStatusBadgeColor(status)}>{getStatusLabel(status)}</span>;
+      },
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
-  ];
-
-  const dateColumn: DataTableColumn<HomeworkRecord> = {
-    header: t('homework.date'),
-    accessor: (row) => <span>{row.date}</span>,
-    headerClassName: 'min-w-[120px]',
-    className: 'text-center',
-  };
-
-  const tailColumns: DataTableColumn<HomeworkRecord>[] = [
+    {
+      header: t('homework.date'),
+      accessor: (row) => <span>{formatDate(row.date)}</span>,
+      headerClassName: 'min-w-[120px]',
+      className: 'text-center',
+    },
     {
       header: t('homework.finalResult'),
-      accessor: (row) => <span className="text-sm text-[#646969]">{row.finalResult}</span>,
+      accessor: (row) => {
+        if (row.studentScore == null || row.maxScore == null) {
+          return <span className="text-sm text-[#646969]">-</span>;
+        }
+        return (
+          <span className="text-sm">
+            <span className="font-medium text-[#1A9F58]">{row.studentScore}</span>
+            <span className="text-[#646969]">/{row.maxScore}</span>
+          </span>
+        );
+      },
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: t('homework.notes'),
-      accessor: (row) => (
-        <span className="text-sm text-[#646969]">
-          {currentLang === 'ar' ? row.notes : row.notesEn}
-        </span>
-      ),
+      accessor: (row) => {
+        const note = currentLang === 'ar' ? row.descriptionAr : row.descriptionEn;
+        return <span className="text-sm text-[#646969]">{note || '-'}</span>;
+      },
       headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
   ];
-
-  const columns =
-    viewMode === 'all'
-      ? [...baseColumns, dateColumn, ...tailColumns]
-      : [...baseColumns, ...tailColumns];
 
   const filterConfigs: FilterConfig[] = [
     {
@@ -184,117 +197,95 @@ export default function HomeworkTab(_props: HomeworkTabProps) {
         <Input
           type="search"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setCurrentPage(1);
+          }}
           placeholder={t('homework.searchSubject')}
         />
       ),
     },
     {
       type: 'custom',
-      name: 'status-filter',
+      name: 'grade-filter',
       placeholder: '',
-      value: selectedStatus,
+      value: selectedGrade,
       onChange: () => {},
       width: '15%',
       customComponent: (
         <CustomSelect
-          value={selectedStatus}
-          onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
+          value={selectedGrade}
+          onChange={(value) => {
+            setSelectedGrade(Array.isArray(value) ? (value[0] ?? '') : value);
+            setCurrentPage(1);
+          }}
           options={[
-            { value: 'excellent', label: t('performance.excellent') },
-            { value: 'veryGood', label: t('performance.veryGood') },
-            { value: 'good', label: t('performance.good') },
-            { value: 'weak', label: t('performance.weak') },
+            { value: '5', label: t('performance.excellent') },
+            { value: '4', label: t('performance.veryGood') },
+            { value: '3', label: t('performance.good') },
+            { value: '2', label: t('performance.struggling') },
+            { value: '1', label: t('performance.weak') },
           ]}
           placeholder={t('homework.status')}
           maxHeight="200px"
         />
       ),
     },
-    ...(viewMode === 'all'
-      ? ([
-          {
-            type: 'custom',
-            name: 'date-filter',
-            placeholder: '',
-            value: selectedDate,
-            onChange: () => {},
-            width: '15%',
-            customComponent: (
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                placeholder={t('homework.date')}
-              />
-            ),
-          },
-        ] satisfies FilterConfig[])
-      : []),
   ];
 
   const handleResetFilters = () => {
     setSearchQuery('');
-    setSelectedStatus('');
-    setSelectedDate('');
-    setCurrentPage(1);
-  };
-
-  const toggleViewMode = () => {
-    setViewMode((prev) => (prev === 'byDay' ? 'all' : 'byDay'));
+    setSelectedGrade('');
+    setSelectedDate(null);
     setCurrentPage(1);
   };
 
   return (
     <Card>
-      <div className={`mb-4 flex items-center ${viewMode === 'byDay' ? 'justify-between' : 'justify-end'}`}>
-        {viewMode === 'byDay' && (
-          <div className="flex w-full items-center justify-center gap-3 text-sm text-[#0E1F1F]">
-            <button
-              type="button"
-              className="flex h-7 w-7 items-center justify-center rounded-full border border-[#EDEDED] hover:bg-gray-50"
-              aria-label="previous"
-            >
-              <CustomImage src={ArrowRightIcon} alt="" className="h-3 w-3" />
-            </button>
-            <span>8 {t('performance.august')} 2025</span>
-            <button
-              type="button"
-              className="flex h-7 w-7 items-center justify-center rounded-full border border-[#EDEDED] hover:bg-gray-50"
-              aria-label="next"
-            >
-              <CustomImage src={ArrowLeftIcon} alt="" className="h-3 w-3" />
-            </button>
-          </div>
-        )}
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex w-full items-center justify-center gap-3 text-sm text-[#0E1F1F]">
+          <button
+            type="button"
+            onClick={() => shiftSelectedDate(-1)}
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-[#EDEDED] hover:bg-gray-50"
+            aria-label="previous"
+          >
+            <CustomImage src={ArrowRightIcon} alt="" className="h-3 w-3" />
+          </button>
+          <span>{selectedDateLabel}</span>
+          <button
+            type="button"
+            onClick={() => shiftSelectedDate(1)}
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-[#EDEDED] hover:bg-gray-50"
+            aria-label="next"
+          >
+            <CustomImage src={ArrowLeftIcon} alt="" className="h-3 w-3" />
+          </button>
+        </div>
         <button
           type="button"
-          onClick={toggleViewMode}
+          onClick={clearSelectedDate}
           className="flex-shrink-0 text-sm font-medium text-green-500 hover:text-green-700"
         >
-          {viewMode === 'byDay' ? t('common.showAll') : t('homework.showByDay')}
+          {t('common.showAll')}
         </button>
       </div>
 
       <DataTable
-        data={filteredRecords}
+        data={homework}
         columns={columns}
-        keyExtractor={(row) => row.id}
-        pagination={
-          viewMode === 'all'
-            ? {
-                page: currentPage,
-                limit: pageSize,
-                total: filteredRecords.length,
-                totalPages: Math.max(1, Math.ceil(filteredRecords.length / pageSize)),
-              }
-            : undefined
-        }
-        onPageChange={viewMode === 'all' ? setCurrentPage : undefined}
+        keyExtractor={(row) => `${row.materialId}-${row.nameEn}-${row.date}`}
+        pagination={{
+          page: pagination.pageIndex || currentPage,
+          limit: pagination.pageSize || pageSize,
+          total: pagination.totalItems,
+          totalPages: Math.max(1, pagination.totalPages || 1),
+        }}
+        onPageChange={setCurrentPage}
         filters={filterConfigs}
         showFilters={true}
         onResetFilters={handleResetFilters}
-        isLoading={false}
+        isLoading={isLoading}
         emptyMessage={t('homework.noRecords')}
         t={t}
       />
