@@ -7,6 +7,7 @@ export default function EditCustomerPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
+    { label: t('sidebar.financialAffairs') },
     { label: t('sidebar.financialManagement') },
     { label: t('customers.title'), path: '/financial-management/customers' },
     { label: t('actions.edit') },
