@@ -30,6 +30,7 @@ export default function TransactionsPage() {
 
   const breadcrumbItems = [
     { label: t('sidebar.financialManagement') },
+    { label: t('sidebar.financialAffairs') },
     { label: t('sidebar.transactions') },
   ];
 

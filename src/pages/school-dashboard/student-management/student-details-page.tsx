@@ -13,6 +13,7 @@ import MedicalRecordTab from '@/pages/school-dashboard/student-management/compon
 import ExamsTab from '@/pages/school-dashboard/student-management/components/details/ExamsTab';
 import PageHeader from '@/shared/components/PageHeader';
 import Loading from '@/shared/components/Loading';
+import ShareIcon from '@gradex/assets/icons/Share.svg';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { fetchStudentByIdSilent } from '@/redux/features/students/studentsSlice';
 import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
@@ -146,7 +147,19 @@ export default function StudentDetailsPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Student Name Title */}
-      <PageHeader title={studentName} />
+      <PageHeader
+        title={studentName}
+        actions={[
+          {
+            label: 'students.details.sendToParents',
+            // Action wired later — the Figma doesn't define the behaviour yet.
+            onClick: () => {},
+            variant: 'primary',
+            imgSrc: ShareIcon,
+            imgClassName: 'h-4 w-4',
+          },
+        ]}
+      />
 
       {/* Tabs */}
       <Tabs
