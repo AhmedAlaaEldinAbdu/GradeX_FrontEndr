@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchStudentExams } from '@/redux/features/task-students/taskStudentsSlice';
+import type { StudentExamItem } from '@/types/taskStudents';
 import Card from '@/shared/components/Card';
+import BarChart from '@/shared/components/BarChart';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
@@ -20,59 +24,22 @@ interface ExamsTabProps {
 
 type ExamStatus = 'excellent' | 'veryGood' | 'good' | 'weak';
 
-interface ExamRecord {
-  id: string;
-  subjectName: string;
-  subjectNameEn: string;
-  examType: string;
-  examTypeEn: string;
-  status: ExamStatus;
-  examDate: string;
-  finalResult: string;
-}
-
-const mockExamRecords: ExamRecord[] = [
-  {
-    id: '1',
-    subjectName: 'اللغة الفرنسية',
-    subjectNameEn: 'French',
-    examType: 'الاختبار الشهري',
-    examTypeEn: 'Monthly Exam',
-    status: 'excellent',
-    examDate: '1-1-2020',
-    finalResult: '89/100',
-  },
-  {
-    id: '2',
-    subjectName: 'اللغة العربية',
-    subjectNameEn: 'Arabic',
-    examType: 'اختبار تقييم المستوى',
-    examTypeEn: 'Level Assessment',
-    status: 'good',
-    examDate: '1-1-2021',
-    finalResult: '89/100',
-  },
-  {
-    id: '3',
-    subjectName: 'اللغة الإنجليزية',
-    subjectNameEn: 'English',
-    examType: 'اختبار منتصف الفصل الدراسي',
-    examTypeEn: 'Midterm Exam',
-    status: 'weak',
-    examDate: '1-1-2021',
-    finalResult: '89/100',
-  },
-  {
-    id: '4',
-    subjectName: 'الرياضيات',
-    subjectNameEn: 'Mathematics',
-    examType: 'شهري',
-    examTypeEn: 'Monthly',
-    status: 'veryGood',
-    examDate: '1-1-2021',
-    finalResult: '89/100',
-  },
-];
+// EvaluationGrade (1-5) -> badge status. null/0 => no badge.
+const evaluationGradeToStatus = (grade: number | null): ExamStatus | null => {
+  switch (grade) {
+    case 5:
+      return 'excellent';
+    case 4:
+      return 'veryGood';
+    case 3:
+      return 'good';
+    case 2:
+    case 1:
+      return 'weak';
+    default:
+      return null;
+  }
+};
 
 const subjectAverages: { label: string; labelEn: string; value: number }[] = [
   { label: 'إنجليزي', labelEn: 'English', value: 78 },
@@ -91,28 +58,73 @@ const monthlyPerformance: { label: string; labelEn: string; value: number }[] = 
   { label: 'شهر أكتوبر', labelEn: 'October', value: 23.6 },
 ];
 
-export default function ExamsTab(_props: ExamsTabProps) {
+export default function ExamsTab({ studentId }: ExamsTabProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
+  const dispatch = useAppDispatch();
+
+  const exams = useAppSelector((state) => state.taskStudents.studentExams);
+  const pagination = useAppSelector((state) => state.taskStudents.examsPagination);
+  const isLoading = useAppSelector((state) => state.taskStudents.isExamsLoading);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [examType, setExamType] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const filteredRecords = mockExamRecords.filter((record) => {
-    const subjectName = currentLang === 'ar' ? record.subjectName : record.subjectNameEn;
-    const matchesSearch =
-      !searchQuery || subjectName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = !selectedStatus || record.status === selectedStatus;
-    const matchesType =
-      !examType ||
-      (currentLang === 'ar' ? record.examType : record.examTypeEn)
-        .toLowerCase()
-        .includes(examType.toLowerCase());
-    return matchesSearch && matchesStatus && matchesType;
-  });
+  // Local-time YYYY-MM-DD (avoids the UTC day-shift of toISOString()).
+  const toApiDate = (d: Date) => {
+    const month = `${d.getMonth() + 1}`.padStart(2, '0');
+    const day = `${d.getDate()}`.padStart(2, '0');
+    return `${d.getFullYear()}-${month}-${day}`;
+  };
+
+  useEffect(() => {
+    if (!studentId) return;
+    dispatch(
+      fetchStudentExams({
+        studentId,
+        params: {
+          PageIndex: currentPage,
+          PageSize: pageSize,
+          Search: searchQuery || undefined,
+          EvaluationGrade: selectedGrade ? Number(selectedGrade) : undefined,
+          Date: selectedDate ? toApiDate(selectedDate) : undefined,
+        },
+      })
+    );
+  }, [dispatch, studentId, currentPage, searchQuery, selectedGrade, selectedDate]);
+
+  const shiftSelectedDate = (days: number) => {
+    setSelectedDate((prev) => {
+      const base = prev ?? new Date();
+      const next = new Date(base);
+      next.setDate(next.getDate() + days);
+      return next;
+    });
+    setCurrentPage(1);
+  };
+
+  const clearSelectedDate = () => {
+    setSelectedDate(null);
+    setCurrentPage(1);
+  };
+
+  const formatDate = (value: string) => {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString(currentLang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-US');
+  };
+
+  const selectedDateLabel = selectedDate
+    ? selectedDate.toLocaleDateString(currentLang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : t('exams.allDates');
 
   const getStatusLabel = (status: ExamStatus) => {
     const map: Record<ExamStatus, string> = {
@@ -124,7 +136,7 @@ export default function ExamsTab(_props: ExamsTabProps) {
     return map[status];
   };
 
-  const columns: DataTableColumn<ExamRecord>[] = [
+  const columns: DataTableColumn<StudentExamItem>[] = [
     {
       header: '#',
       accessor: (_row, index) => (currentPage - 1) * pageSize + (index ?? 0) + 1,
@@ -133,38 +145,44 @@ export default function ExamsTab(_props: ExamsTabProps) {
     },
     {
       header: t('exams.subjectName'),
-      accessor: (row) => <span>{currentLang === 'ar' ? row.subjectName : row.subjectNameEn}</span>,
+      accessor: (row) => (
+        <span>{currentLang === 'ar' ? row.materialNameAr : row.materialNameEn}</span>
+      ),
       headerClassName: 'min-w-[140px]',
       className: 'text-center',
     },
     {
       header: t('exams.examType'),
-      accessor: (row) => <span>{currentLang === 'ar' ? row.examType : row.examTypeEn}</span>,
+      accessor: (row) => <span>{currentLang === 'ar' ? row.nameAr : row.nameEn}</span>,
       headerClassName: 'min-w-[180px]',
       className: 'text-center',
     },
     {
       header: t('exams.status'),
-      accessor: (row) => (
-        <span className={getExamStatusBadgeColor(row.status)}>{getStatusLabel(row.status)}</span>
-      ),
+      accessor: (row) => {
+        const status = evaluationGradeToStatus(row.evaluationGrade);
+        if (!status) return <span className="text-[#646969]">-</span>;
+        return <span className={getExamStatusBadgeColor(status)}>{getStatusLabel(status)}</span>;
+      },
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: t('exams.examDate'),
-      accessor: (row) => <span>{row.examDate}</span>,
+      accessor: (row) => <span>{formatDate(row.date)}</span>,
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
     {
       header: t('exams.finalResult'),
       accessor: (row) => {
-        const [score, total] = row.finalResult.split('/');
+        if (row.studentScore == null || row.maxScore == null) {
+          return <span className="text-sm text-[#646969]">-</span>;
+        }
         return (
           <span className="text-sm">
-            <span className="font-medium text-[#1A9F58]">{score}</span>
-            <span className="text-[#646969]">/{total}</span>
+            <span className="font-medium text-[#1A9F58]">{row.studentScore}</span>
+            <span className="text-[#646969]">/{row.maxScore}</span>
           </span>
         );
       },
@@ -185,49 +203,34 @@ export default function ExamsTab(_props: ExamsTabProps) {
         <Input
           type="search"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setCurrentPage(1);
+          }}
           placeholder={t('exams.searchSubject')}
         />
       ),
     },
     {
       type: 'custom',
-      name: 'exam-type-filter',
+      name: 'grade-filter',
       placeholder: '',
-      value: examType,
+      value: selectedGrade,
       onChange: () => {},
       width: '15%',
       customComponent: (
         <CustomSelect
-          value={examType}
-          onChange={(value) => setExamType(Array.isArray(value) ? (value[0] ?? '') : value)}
+          value={selectedGrade}
+          onChange={(value) => {
+            setSelectedGrade(Array.isArray(value) ? (value[0] ?? '') : value);
+            setCurrentPage(1);
+          }}
           options={[
-            { value: 'الاختبار الشهري', label: t('exams.monthlyExam') },
-            { value: 'اختبار منتصف الفصل الدراسي', label: t('exams.midtermExam') },
-            { value: 'اختبار تقييم المستوى', label: t('exams.levelAssessment') },
-            { value: 'اختبار نهاية العام', label: t('exams.finalExam') },
-          ]}
-          placeholder={t('exams.examType')}
-          maxHeight="200px"
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'status-filter',
-      placeholder: '',
-      value: selectedStatus,
-      onChange: () => {},
-      width: '12%',
-      customComponent: (
-        <CustomSelect
-          value={selectedStatus}
-          onChange={(value) => setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : value)}
-          options={[
-            { value: 'excellent', label: t('performance.excellent') },
-            { value: 'veryGood', label: t('performance.veryGood') },
-            { value: 'good', label: t('performance.good') },
-            { value: 'weak', label: t('performance.weak') },
+            { value: '5', label: t('performance.excellent') },
+            { value: '4', label: t('performance.veryGood') },
+            { value: '3', label: t('performance.good') },
+            { value: '2', label: t('performance.struggling') },
+            { value: '1', label: t('performance.weak') },
           ]}
           placeholder={t('exams.status')}
           maxHeight="200px"
@@ -238,8 +241,7 @@ export default function ExamsTab(_props: ExamsTabProps) {
 
   const handleResetFilters = () => {
     setSearchQuery('');
-    setExamType('');
-    setSelectedStatus('');
+    setSelectedGrade('');
     setCurrentPage(1);
   };
 
@@ -296,12 +298,18 @@ export default function ExamsTab(_props: ExamsTabProps) {
               <span className="text-[#646969]">{t('exams.vsLastMonth')}</span>
             </div>
           </div>
-          <SubjectsBarChart
+          <BarChart
             data={subjectAverages.map((s) => ({
-              ...s,
+              key: s.labelEn,
               label: currentLang === 'ar' ? s.label : s.labelEn,
+              value: s.value,
+              tooltip: `${s.value}%`,
             }))}
-            highlightedIndex={2}
+            yTicks={[100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0]}
+            max={100}
+            renderTick={(tick) => `${tick}%`}
+            barWidthClassName="w-8"
+            plotHeightClassName="h-[22rem]"
           />
         </Card>
       </div>
@@ -311,14 +319,16 @@ export default function ExamsTab(_props: ExamsTabProps) {
           <div className="flex w-full items-center justify-center gap-3 text-sm text-[#0E1F1F]">
             <button
               type="button"
+              onClick={() => shiftSelectedDate(-1)}
               className="flex h-7 w-7 items-center justify-center rounded-full border border-[#EDEDED] hover:bg-gray-50"
               aria-label="previous"
             >
               <CustomImage src={ArrowRightIcon} alt="" className="h-3 w-3" />
             </button>
-            <span>8 {t('performance.august')} 2025</span>
+            <span>{selectedDateLabel}</span>
             <button
               type="button"
+              onClick={() => shiftSelectedDate(1)}
               className="flex h-7 w-7 items-center justify-center rounded-full border border-[#EDEDED] hover:bg-gray-50"
               aria-label="next"
             >
@@ -327,6 +337,7 @@ export default function ExamsTab(_props: ExamsTabProps) {
           </div>
           <button
             type="button"
+            onClick={clearSelectedDate}
             className="flex-shrink-0 text-sm font-medium text-green-500 hover:text-green-700"
           >
             {t('common.showAll')}
@@ -334,65 +345,24 @@ export default function ExamsTab(_props: ExamsTabProps) {
         </div>
 
         <DataTable
-          data={filteredRecords}
+          data={exams}
           columns={columns}
-          keyExtractor={(row) => row.id}
+          keyExtractor={(row) => `${row.materialId}-${row.nameEn}-${row.date}`}
           pagination={{
-            page: currentPage,
-            limit: pageSize,
-            total: filteredRecords.length,
-            totalPages: Math.max(1, Math.ceil(filteredRecords.length / pageSize)),
+            page: pagination.pageIndex || currentPage,
+            limit: pagination.pageSize || pageSize,
+            total: pagination.totalItems,
+            totalPages: Math.max(1, pagination.totalPages || 1),
           }}
           onPageChange={setCurrentPage}
           filters={filterConfigs}
           showFilters={true}
           onResetFilters={handleResetFilters}
-          isLoading={false}
+          isLoading={isLoading}
           emptyMessage={t('exams.noRecords')}
           t={t}
         />
       </Card>
-    </div>
-  );
-}
-
-function SubjectsBarChart({
-  data,
-  highlightedIndex,
-}: {
-  data: { label: string; value: number }[];
-  highlightedIndex?: number;
-}) {
-  const yLabels = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
-
-  return (
-    <div className="flex h-[22rem] gap-3">
-      <div className="flex flex-col justify-between py-1 text-xs text-[#9CA3AF]">
-        {yLabels.map((y) => (
-          <span key={y}>{y}%</span>
-        ))}
-      </div>
-      <div className="flex flex-1 flex-col">
-        <div className="relative flex flex-1 items-end justify-between gap-3 border-b border-[#EDEDED]">
-          {data.map((d, i) => (
-            <div key={d.label} className="relative flex flex-1 flex-col items-center">
-              {highlightedIndex === i && (
-                <div className="absolute -top-7 rounded-md bg-[#0E1F1F] px-2 py-0.5 text-xs font-medium text-white">
-                  {d.value}%
-                </div>
-              )}
-              <div className="w-8 rounded-t-md bg-[#1A9F58]" style={{ height: `${d.value}%` }} />
-            </div>
-          ))}
-        </div>
-        <div className="mt-2 flex justify-between gap-3 text-xs text-[#646969]">
-          {data.map((d) => (
-            <div key={d.label} className="flex-1 text-center">
-              {d.label}
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
