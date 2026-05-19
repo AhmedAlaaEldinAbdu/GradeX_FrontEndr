@@ -4,6 +4,8 @@ import { ControlPanelEndpoints } from '../endpoints/control-panel-endpoints';
 import type {
   DashboardMetricsQueryParams,
   DashboardMetricsResponse,
+  AttendanceStatisticsQueryParams,
+  AttendanceStatisticsResponse,
 } from '../types/control-panel.types';
 
 /**
@@ -41,10 +43,35 @@ export async function getDashboardMetrics(
   return response.data;
 }
 
+/**
+ * Get attendance statistics per educational stage for a given school branch,
+ * filtered by day / week / month.
+ */
+export async function getAttendanceStatistics(
+  params: AttendanceStatisticsQueryParams
+): Promise<AttendanceStatisticsResponse> {
+  const response: AxiosResponse<AttendanceStatisticsResponse> = await axiosClient.get(
+    ControlPanelEndpoints.attendanceStatistics,
+    { params }
+  );
+
+  if (!response?.data) {
+    return {
+      data: [],
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
+
 // ============================================================================
 // Export Service Object
 // ============================================================================
 
 export const controlPanelApiService = {
   getDashboardMetrics,
+  getAttendanceStatistics,
 };

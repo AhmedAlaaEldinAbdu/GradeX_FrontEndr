@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchDashboardMetrics } from '@/redux/features/control-panel/controlPanelSlice';
+import {
+  fetchDashboardMetrics,
+  fetchAttendanceStatistics,
+} from '@/redux/features/control-panel/controlPanelSlice';
+import { AttendanceFilterType } from '@/shared/enums/enums';
 import Card from '@/shared/components/Card';
 import PageHeader from '@/shared/components/PageHeader';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
+import Tooltip from '@/shared/components/Tooltip';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import SchoolPurpleIcon from '@gradex/assets/icons/SchoolPurple.svg';
 import StudentYellowIcon from '@gradex/assets/icons/StudentYellow.svg';
@@ -16,9 +21,18 @@ import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TimeEstimationYellowIcon from '@gradex/assets/icons/TimeEstimationYellow.svg';
 import CheckCircleIcon from '@gradex/assets/icons/CheckCircle.svg';
 import SupplyCurveIcon from '@gradex/assets/icons/SupplyCurve.svg';
+import DecreaseRedIcon from '@gradex/assets/icons/DecreaseRed.svg';
 
-type AttendanceFilter = 'day' | 'week' | 'month' | 'term';
+// 'term' is hidden for now (not yet supported by the AttendanceStatistics endpoint).
+type AttendanceFilter = 'day' | 'week' | 'month';
 
+const ATTENDANCE_FILTER_MAP: Record<AttendanceFilter, number> = {
+  day: AttendanceFilterType.Day,
+  week: AttendanceFilterType.Week,
+  month: AttendanceFilterType.Month,
+};
+
+// Bars show the present-student count per stage; the y-axis caps at 400+.
 const ATTENDANCE_MAX = 400;
 const Y_TICKS = [400, 350, 300, 250, 200, 150, 100, 50, 0];
 
@@ -30,10 +44,19 @@ export default function DashboardPage() {
   const [attendanceFilter, setAttendanceFilter] = useState<AttendanceFilter>('month');
 
   const dashboardMetrics = useAppSelector((state) => state.controlPanel.dashboardMetrics);
+  const attendanceStatistics = useAppSelector((state) => state.controlPanel.attendanceStatistics);
+  const attendanceChangePercentage = useAppSelector(
+    (state) => state.controlPanel.attendanceChangePercentage
+  );
+  const attendanceIsIncrease = useAppSelector((state) => state.controlPanel.attendanceIsIncrease);
 
   useEffect(() => {
     dispatch(fetchDashboardMetrics());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchAttendanceStatistics({ filterType: ATTENDANCE_FILTER_MAP[attendanceFilter] }));
+  }, [dispatch, attendanceFilter]);
 
   const stats = {
     orders: dashboardMetrics?.totalStudentsRequests ?? 0,
@@ -44,17 +67,36 @@ export default function DashboardPage() {
     rejected: dashboardMetrics?.totalStudentApplications.totalRejection ?? 0,
     pending: dashboardMetrics?.totalStudentApplications.totalPending ?? 0,
     accepted: dashboardMetrics?.totalStudentApplications.totalAcceptance ?? 0,
-    // Not yet exposed by the dashboard-metrics endpoint.
-    attendanceChangePercent: 18,
   };
 
   // Ordered left-to-right; the chart renders LTR regardless of page direction.
-  const stageBars = [
-    { key: 'kindergarten', value: 120 },
-    { key: 'primary', value: 310 },
-    { key: 'preparatory', value: 215 },
-    { key: 'secondary', value: 385 },
-  ];
+  const stageBars = useMemo(
+    () =>
+      attendanceStatistics.map((stage) => ({
+        key: stage.stageId,
+        label: isAr ? stage.stageNameAr : stage.stageNameEn,
+        value: stage.presentCount,
+        presentCount: stage.presentCount,
+        totalCount: stage.totalCount,
+        attendancePercentage: stage.attendancePercentage,
+      })),
+    [attendanceStatistics, isAr]
+  );
+
+  const renderStageTooltip = (bar: (typeof stageBars)[number]) => (
+    <>
+      <p className="mb-1 font-semibold">{bar.label}</p>
+      <p>
+        {t('schoolDashboard.attendanceTooltip.present')}: {bar.presentCount}
+      </p>
+      <p>
+        {t('schoolDashboard.attendanceTooltip.total')}: {bar.totalCount}
+      </p>
+      <p>
+        {t('schoolDashboard.attendanceTooltip.percentage')}: {bar.attendancePercentage}%
+      </p>
+    </>
+  );
 
   const todayLabel = useMemo(() => {
     const locale = isAr ? 'ar-EG-u-nu-latn' : 'en-US';
@@ -73,7 +115,7 @@ export default function DashboardPage() {
     return now.getMonth() >= 7 ? `${y}-${y + 1}` : `${y - 1}-${y}`;
   }, []);
 
-  const filterTabs: AttendanceFilter[] = ['day', 'week', 'month', 'term'];
+  const filterTabs: AttendanceFilter[] = ['day', 'week', 'month'];
 
   return (
     <div className="space-y-6">
@@ -142,11 +184,19 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {stats.attendanceChangePercent > 0 && (
+          {attendanceChangePercentage != null && (
             <div className="mb-4 flex items-center gap-2 text-sm">
-              <span className="flex items-center gap-1 text-sm font-normal text-[#1A9F58]">
-                %{stats.attendanceChangePercent}
-                <CustomImage src={SupplyCurveIcon} alt="SupplyCurve" className="h-5 w-5" />
+              <span
+                className={`flex items-center gap-1 text-sm font-normal ${
+                  attendanceIsIncrease === false ? 'text-[#DD0417]' : 'text-[#1A9F58]'
+                }`}
+              >
+                %{attendanceChangePercentage}
+                <CustomImage
+                  src={attendanceIsIncrease === false ? DecreaseRedIcon : SupplyCurveIcon}
+                  alt={attendanceIsIncrease === false ? 'Decrease' : 'Increase'}
+                  className="h-5 w-5"
+                />
               </span>
               <span className="text-[#8C8C8C]">{t('schoolDashboard.vsLastMonth')}</span>
             </div>
@@ -177,24 +227,28 @@ export default function DashboardPage() {
                       key={bar.key}
                       className="flex h-full flex-1 flex-col items-center justify-end"
                     >
-                      <div
-                        className="w-10 rounded-t-md bg-[#4D9E7B] transition-all"
+                      <Tooltip
+                        content={renderStageTooltip(bar)}
+                        wrapperClassName="w-10"
                         style={{
                           height: `${Math.min(100, (bar.value / ATTENDANCE_MAX) * 100)}%`,
                         }}
-                      />
+                      >
+                        <div className="h-full w-full rounded-t-md bg-[#4D9E7B] transition-all" />
+                      </Tooltip>
                     </div>
                   ))}
                 </div>
               </div>
               <div className="mt-3 flex items-center justify-around gap-4">
                 {stageBars.map((bar) => (
-                  <span
-                    key={bar.key}
-                    className="flex-1 text-center text-sm font-normal text-[#0E1F1F]"
-                  >
-                    {t(`schoolDashboard.stages.${bar.key}`)}
-                  </span>
+                  <div key={bar.key} className="flex flex-1 justify-center">
+                    <Tooltip content={renderStageTooltip(bar)}>
+                      <span className="cursor-default text-sm font-normal text-[#0E1F1F]">
+                        {bar.label}
+                      </span>
+                    </Tooltip>
+                  </div>
                 ))}
               </div>
             </div>

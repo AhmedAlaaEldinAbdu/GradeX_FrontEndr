@@ -142,6 +142,15 @@ export type DelegationDurationType =
   typeof DelegationDurationType[keyof typeof DelegationDurationType];
 
 
+export const AttendanceFilterType = {
+  Day: 1,
+  Week: 2,
+  Month: 3,
+} as const;
+export type AttendanceFilterType =
+  typeof AttendanceFilterType[keyof typeof AttendanceFilterType];
+
+
 export const DelegationPersonType = {
   Father: 1, // والد
   Mother: 2, // والدة

@@ -5,7 +5,10 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 import { controlPanelApiService } from '@/services/api/control-panel/control-panel.service';
-import type { DashboardMetrics } from '@/services/api/types/control-panel.types';
+import type {
+  DashboardMetrics,
+  AttendanceStageStat,
+} from '@/services/api/types/control-panel.types';
 import { getErrorMessage } from '@/lib/http';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
@@ -15,12 +18,27 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 export interface ControlPanelState {
   dashboardMetrics: DashboardMetrics | null;
+  attendanceStatistics: AttendanceStageStat[];
+  attendanceChangePercentage: number | null;
+  attendanceIsIncrease: boolean | null;
   isLoading: boolean;
+  isAttendanceLoading: boolean;
   error: string | null;
   isInitialized: boolean;
 }
 
+export interface AttendanceStatisticsResult {
+  stages: AttendanceStageStat[];
+  changePercentage: number | null;
+  isIncrease: boolean | null;
+}
+
 export interface FetchDashboardMetricsPayload {
+  schoolBranchId?: string;
+}
+
+export interface FetchAttendanceStatisticsPayload {
+  filterType: number;
   schoolBranchId?: string;
 }
 
@@ -30,7 +48,11 @@ export interface FetchDashboardMetricsPayload {
 
 const initialState: ControlPanelState = {
   dashboardMetrics: null,
+  attendanceStatistics: [],
+  attendanceChangePercentage: null,
+  attendanceIsIncrease: null,
   isLoading: false,
+  isAttendanceLoading: false,
   error: null,
   isInitialized: false,
 };
@@ -64,6 +86,36 @@ export const fetchDashboardMetrics = createAsyncThunk<
   }
 });
 
+export const fetchAttendanceStatistics = createAsyncThunk<
+  AttendanceStatisticsResult,
+  FetchAttendanceStatisticsPayload
+>('controlPanel/fetchAttendanceStatistics', async (payload, { rejectWithValue }) => {
+  try {
+    const schoolBranchId = payload.schoolBranchId || getCurrentSchoolBranchId();
+
+    if (!schoolBranchId) {
+      return rejectWithValue('School branch ID is missing');
+    }
+
+    const response = await controlPanelApiService.getAttendanceStatistics({
+      SchoolBranchId: schoolBranchId,
+      FilterType: payload.filterType,
+    });
+
+    if (!response?.isSuccess || !response.data) {
+      return rejectWithValue(response?.message || 'Failed to fetch attendance statistics');
+    }
+
+    return {
+      stages: response.data,
+      changePercentage: response.changePercentage ?? null,
+      isIncrease: response.isIncrease ?? null,
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 // ============================================================================
 // Slice
 // ============================================================================
@@ -92,6 +144,25 @@ const controlPanelSlice = createSlice({
       )
       .addCase(fetchDashboardMetrics.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchAttendanceStatistics.pending, (state) => {
+        state.isAttendanceLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchAttendanceStatistics.fulfilled,
+        (state, action: PayloadAction<AttendanceStatisticsResult>) => {
+          state.isAttendanceLoading = false;
+          state.attendanceStatistics = action.payload.stages;
+          state.attendanceChangePercentage = action.payload.changePercentage;
+          state.attendanceIsIncrease = action.payload.isIncrease;
+        }
+      )
+      .addCase(fetchAttendanceStatistics.rejected, (state, action) => {
+        state.isAttendanceLoading = false;
         state.error = action.payload as string;
       });
   },
