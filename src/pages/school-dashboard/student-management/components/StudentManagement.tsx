@@ -17,6 +17,7 @@ import { fetchStudents, deleteStudent } from '@/redux/features/students/students
 import { studentsApiService } from '@/services/api/students/students.service';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchParentsByBranch } from '@/redux/features/parent/parentSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
@@ -55,6 +56,8 @@ export default function StudentManagement() {
   const isLoadingEducationalStages = useAppSelector((state) => state.educationalStages.isLoading);
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
   const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
+  const parents = useAppSelector((state) => state.parent.parents);
+  const isLoadingParents = useAppSelector((state) => state.parent.isParentsLoading);
 
   useEffect(() => {
     dispatch(
@@ -63,6 +66,13 @@ export default function StudentManagement() {
         pageSize: 1000,
         schoolBranchId: schoolBranchId || undefined,
       })
+    );
+  }, [dispatch, schoolBranchId]);
+
+  useEffect(() => {
+    if (!schoolBranchId) return;
+    dispatch(
+      fetchParentsByBranch({ schoolBranchId, pageIndex: 1, pageSize: 1000 })
     );
   }, [dispatch, schoolBranchId]);
 
@@ -373,8 +383,18 @@ export default function StudentManagement() {
           onChange={(value) =>
             setSelectedCreatedById(Array.isArray(value) ? (value[0] ?? '') : value)
           }
-          options={[]}
-          placeholder={t('studentManagement.createdBy')}
+          options={
+            Array.isArray(parents)
+              ? parents.map((p) => ({
+                  value: p.id || '',
+                  label: p.fullName || '-',
+                }))
+              : []
+          }
+          placeholder={
+            isLoadingParents ? t('common.loading') : t('studentManagement.createdBy')
+          }
+          disabled={isLoadingParents}
           maxHeight="200px"
         />
       ),
