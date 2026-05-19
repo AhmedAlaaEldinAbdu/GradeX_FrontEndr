@@ -119,7 +119,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const scrollToFirstError = useScrollToFirstError<JobRoleFormValues>();
-  const { nameArRules, nameEnRules, descriptionRules, validatePermissions } =
+  const { nameArRules, nameEnRules, descriptionArRules, descriptionEnRules, validatePermissions } =
     useJobRoleValidations();
 
   const {
@@ -312,7 +312,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
               <Controller
                 name="descriptionAr"
                 control={control}
-                rules={descriptionRules}
+                rules={descriptionArRules}
                 render={({ field }) => (
                   <TextArea
                     {...field}
@@ -335,7 +335,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
               <Controller
                 name="descriptionEn"
                 control={control}
-                rules={descriptionRules}
+                rules={descriptionEnRules}
                 render={({ field }) => (
                   <TextArea
                     {...field}
