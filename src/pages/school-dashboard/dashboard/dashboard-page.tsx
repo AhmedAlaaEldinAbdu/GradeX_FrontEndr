@@ -10,7 +10,7 @@ import Card from '@/shared/components/Card';
 import PageHeader from '@/shared/components/PageHeader';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
-import Tooltip from '@/shared/components/Tooltip';
+import BarChart from '@/shared/components/BarChart';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import SchoolPurpleIcon from '@gradex/assets/icons/SchoolPurple.svg';
 import StudentYellowIcon from '@gradex/assets/icons/StudentYellow.svg';
@@ -203,56 +203,17 @@ export default function DashboardPage() {
           )}
 
           {/* Bar chart */}
-          <div dir="ltr" className="flex gap-3">
-            {/* Y axis — height matches the plot so "0" lines up with the bar baseline */}
-            <div className="flex h-[280px] flex-col justify-between text-xs font-normal text-[#A9A7A7]">
-              {Y_TICKS.map((tick) => (
-                <span key={tick} className="-translate-y-1/2 leading-none">
-                  {tick === ATTENDANCE_MAX ? `${tick}+` : tick}
-                </span>
-              ))}
-            </div>
-
-            {/* Plot */}
-            <div className="flex-1">
-              <div className="relative h-[280px]">
-                <div className="absolute inset-0 flex flex-col justify-between">
-                  {Y_TICKS.map((tick) => (
-                    <div key={tick} className="border-t border-dashed border-[#DDE0E0]" />
-                  ))}
-                </div>
-                <div className="relative flex h-full items-end justify-around gap-4">
-                  {stageBars.map((bar) => (
-                    <div
-                      key={bar.key}
-                      className="flex h-full flex-1 flex-col items-center justify-end"
-                    >
-                      <Tooltip
-                        content={renderStageTooltip(bar)}
-                        wrapperClassName="w-10"
-                        style={{
-                          height: `${Math.min(100, (bar.value / ATTENDANCE_MAX) * 100)}%`,
-                        }}
-                      >
-                        <div className="h-full w-full rounded-t-md bg-[#4D9E7B] transition-all" />
-                      </Tooltip>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-3 flex items-center justify-around gap-4">
-                {stageBars.map((bar) => (
-                  <div key={bar.key} className="flex flex-1 justify-center">
-                    <Tooltip content={renderStageTooltip(bar)}>
-                      <span className="cursor-default text-sm font-normal text-[#0E1F1F]">
-                        {bar.label}
-                      </span>
-                    </Tooltip>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <BarChart
+            data={stageBars.map((bar) => ({
+              key: bar.key,
+              label: bar.label,
+              value: bar.value,
+              tooltip: renderStageTooltip(bar),
+            }))}
+            yTicks={Y_TICKS}
+            max={ATTENDANCE_MAX}
+            renderTick={(tick) => (tick === ATTENDANCE_MAX ? `${tick}+` : tick)}
+          />
         </Card>
 
         {/* Bus route */}
