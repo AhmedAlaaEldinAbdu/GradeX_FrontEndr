@@ -1011,7 +1011,8 @@
       "feesComingSoon": "قريباً - سجلات الرسوم",
       "homeworkComingSoon": "قريباً - سجلات الواجبات",
       "performanceComingSoon": "قريباً - الأداء الأكاديمي",
-      "medicalRecordComingSoon": "قريباً - السجلات الطبية"
+      "medicalRecordComingSoon": "قريباً - السجلات الطبية",
+      "sendToParents": "إرسال لأولياء الأمور"
     }
   },
   "attendance": {

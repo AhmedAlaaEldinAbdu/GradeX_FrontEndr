@@ -1011,7 +1011,8 @@
       "feesComingSoon": "Coming Soon - Fee Records",
       "homeworkComingSoon": "Coming Soon - Homework Records",
       "performanceComingSoon": "Coming Soon - Academic Performance",
-      "medicalRecordComingSoon": "Coming Soon - Medical Records"
+      "medicalRecordComingSoon": "Coming Soon - Medical Records",
+      "sendToParents": "Send to Parents"
     }
   },
   "attendance": {
