@@ -121,6 +121,8 @@ export interface ApiResponseModel<T = unknown> {
   status: number;
   isSuccess: boolean;
   successMessage: string;
+  /** Optional human-readable message some endpoints return alongside the envelope. */
+  message?: string;
   correlationId: string;
   location: string;
   errors: string[];
