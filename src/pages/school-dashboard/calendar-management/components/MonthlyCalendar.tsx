@@ -572,12 +572,14 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     return getLeavesForDay(dayKey);
   }, [selectedEvent?.day, selectedLeaveDay, getLeavesForDay]);
 
-  const hasMultipleEventsOnDay = useCallback(
+  const hasMultipleItemsOnDay = useCallback(
     (day: string) => {
       if (!day) return false;
-      return normalizedEvents.filter((event) => event.day === day).length > 1;
+      const eventCount = normalizedEvents.filter((event) => event.day === day).length;
+      const leaveCount = getLeavesForDay(day).length;
+      return eventCount + leaveCount > 1;
     },
-    [normalizedEvents]
+    [normalizedEvents, getLeavesForDay]
   );
 
   const contextMenuActions = useMemo<ContextMenuAction[]>(
@@ -612,7 +614,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         onClick: (_date, calendarEvent) => {
           if (resolveLeave(calendarEvent)) return;
           const event = resolveEvent(calendarEvent);
-          if (event && !hasMultipleEventsOnDay(event.day)) {
+          if (event && !hasMultipleItemsOnDay(event.day)) {
             handleOpenEditPopup(event);
           }
         },
@@ -622,7 +624,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         hidden: (_date, calendarEvent) => {
           if (resolveLeave(calendarEvent)) return true;
           const event = resolveEvent(calendarEvent);
-          return event ? hasMultipleEventsOnDay(event.day) : false;
+          return event ? hasMultipleItemsOnDay(event.day) : false;
         },
       },
       {
@@ -632,7 +634,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
           if (resolveLeave(calendarEvent)) return;
           const event = resolveEvent(calendarEvent);
           if (event) {
-            if (!hasMultipleEventsOnDay(event.day)) {
+            if (!hasMultipleItemsOnDay(event.day)) {
               handleRequestDelete(event.id);
             }
           }
@@ -643,7 +645,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         hidden: (_date, calendarEvent) => {
           if (resolveLeave(calendarEvent)) return true;
           const event = resolveEvent(calendarEvent);
-          return event ? hasMultipleEventsOnDay(event.day) : false;
+          return event ? hasMultipleItemsOnDay(event.day) : false;
         },
       },
     ],
@@ -653,7 +655,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       handleRequestDelete,
       handleViewDetails,
       handleViewLeaveDay,
-      hasMultipleEventsOnDay,
+      hasMultipleItemsOnDay,
       resolveEvent,
       resolveLeave,
       resolveLeaveDay,

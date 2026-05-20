@@ -330,7 +330,7 @@ export default function MonthlyEventDetailsPopup({
                     <h3 className="text-right text-lg font-semibold text-gray-900">
                       {localizedEventName}
                     </h3>
-                    {normalizedPopupEvents.length > 1 && (
+                    {totalCards > 1 && (
                       <div className="flex items-center gap-2 pb-3">
                         <IconButton
                           status="edit"
