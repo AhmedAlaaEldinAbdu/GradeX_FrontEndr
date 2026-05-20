@@ -36,6 +36,8 @@ import {
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchLeaveBySchoolBranch } from '@/redux/features/official-holidays/officialHolidaysSlice';
+import type { OfficialHoliday } from '@/services/api/types/official-holidays.types';
 import type {
   CreateMonthlyCalendarRequest,
   MonthlyCalendarEvent,
@@ -127,6 +129,8 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     (state) => state.classrooms
   );
   const hasRequestedClassroomsRef = useRef(false);
+  const hasRequestedLeavesRef = useRef(false);
+  const [leaves, setLeaves] = useState<OfficialHoliday[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [stageFilter, setStageFilter] = useState('');
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -139,6 +143,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const [selectedDateForEditor, setSelectedDateForEditor] = useState<Date | undefined>(undefined);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [eventIdPendingDelete, setEventIdPendingDelete] = useState<string | null>(null);
+  const [selectedLeaveDay, setSelectedLeaveDay] = useState<string | null>(null);
 
   const educationalStagesCount = educationalStages.length;
 
@@ -194,6 +199,28 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     return () => {
       isMounted = false;
     };
+  }, [dispatch, showToast, schoolBranchId]);
+
+  useEffect(() => {
+    if (!schoolBranchId || hasRequestedLeavesRef.current) {
+      return;
+    }
+    hasRequestedLeavesRef.current = true;
+
+    const loadLeaves = async () => {
+      try {
+        const response = await dispatch(fetchLeaveBySchoolBranch({ schoolBranchId })).unwrap();
+        setLeaves(response.data);
+      } catch (error) {
+        showToast({
+          message: getErrorMessage(error),
+          type: 'error',
+          isRaw: true,
+        });
+      }
+    };
+
+    loadLeaves();
   }, [dispatch, showToast, schoolBranchId]);
 
   const buildFilters = useCallback((): MonthlyCalendarFilters => {
@@ -269,26 +296,69 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     });
   }, [normalizedEvents, getLocalizedName]);
 
+  const leaveCalendarEvents = useMemo<CalendarEvent[]>(() => {
+    const result: CalendarEvent[] = [];
+
+    leaves.forEach((leave) => {
+      if (!leave.startDate) return;
+
+      const start = new Date(leave.startDate);
+      if (Number.isNaN(start.getTime())) return;
+
+      const end = leave.endDate ? new Date(leave.endDate) : start;
+      const cursor = new Date(start);
+      cursor.setHours(0, 0, 0, 0);
+      const last = new Date(Number.isNaN(end.getTime()) ? start : end);
+      last.setHours(0, 0, 0, 0);
+
+      let guard = 0;
+      while (cursor <= last && guard < 366) {
+        const dayKey = format(cursor, 'yyyy-MM-dd');
+        result.push({
+          id: `leave-${leave.id}-${dayKey}`,
+          title: currentLang === 'ar' ? leave.reasonAr : leave.reasonEN || leave.reasonAr,
+          start: buildDateTime(dayKey, DEFAULT_CALENDAR_START),
+          end: buildDateTime(dayKey, DEFAULT_CALENDAR_END),
+          isLeave: true,
+          leave,
+          leaveDay: dayKey,
+        });
+        cursor.setDate(cursor.getDate() + 1);
+        guard += 1;
+      }
+    });
+
+    return result;
+  }, [leaves, currentLang]);
+
+  const combinedCalendarEvents = useMemo<CalendarEvent[]>(
+    () => [...calendarEvents, ...leaveCalendarEvents],
+    [calendarEvents, leaveCalendarEvents]
+  );
+
   const handleViewDetails = useCallback((event: MonthlyEventEntity) => {
     setSelectedEvent(event);
     setDetailsOpen(true);
   }, []);
 
-  const handleOpenAddPopup = useCallback((date?: Date) => {
-    if (isPastCalendarDate(date)) {
-      showToast({
-        message: t('monthlyCalendar.messages.cannotAddPastEvent'),
-        type: 'error',
-      });
-      return;
-    }
+  const handleOpenAddPopup = useCallback(
+    (date?: Date) => {
+      if (isPastCalendarDate(date)) {
+        showToast({
+          message: t('monthlyCalendar.messages.cannotAddPastEvent'),
+          type: 'error',
+        });
+        return;
+      }
 
-    setEditorMode('add');
-    setEditingEventId(null);
-    setEditorInitialValues(null);
-    setSelectedDateForEditor(date);
-    setIsEditorOpen(true);
-  }, [showToast, t]);
+      setEditorMode('add');
+      setEditingEventId(null);
+      setEditorInitialValues(null);
+      setSelectedDateForEditor(date);
+      setIsEditorOpen(true);
+    },
+    [showToast, t]
+  );
 
   useImperativeHandle(
     ref,
@@ -451,6 +521,57 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     [normalizedEvents]
   );
 
+  const resolveLeave = useCallback((calendarEvent?: CalendarEvent): OfficialHoliday | undefined => {
+    if (!calendarEvent) return undefined;
+    const candidate = calendarEvent as CalendarEvent & {
+      isLeave?: boolean;
+      leave?: OfficialHoliday;
+    };
+    return candidate.isLeave ? candidate.leave : undefined;
+  }, []);
+
+  const resolveLeaveDay = useCallback((calendarEvent?: CalendarEvent): string | undefined => {
+    if (!calendarEvent) return undefined;
+    const candidate = calendarEvent as CalendarEvent & {
+      isLeave?: boolean;
+      leaveDay?: string;
+    };
+    return candidate.isLeave ? candidate.leaveDay : undefined;
+  }, []);
+
+  const getLeavesForDay = useCallback(
+    (dayKey: string): OfficialHoliday[] => {
+      if (!dayKey) return [];
+
+      const target = new Date(`${dayKey}T00:00:00`);
+      if (Number.isNaN(target.getTime())) return [];
+      target.setHours(0, 0, 0, 0);
+      const targetTime = target.getTime();
+
+      return leaves.filter((leave) => {
+        if (!leave.startDate) return false;
+        const start = new Date(leave.startDate);
+        if (Number.isNaN(start.getTime())) return false;
+        start.setHours(0, 0, 0, 0);
+        const end = leave.endDate ? new Date(leave.endDate) : start;
+        end.setHours(0, 0, 0, 0);
+        return targetTime >= start.getTime() && targetTime <= end.getTime();
+      });
+    },
+    [leaves]
+  );
+
+  const handleViewLeaveDay = useCallback((dayKey: string) => {
+    setSelectedEvent(null);
+    setSelectedLeaveDay(dayKey);
+    setDetailsOpen(true);
+  }, []);
+
+  const detailsLeaves = useMemo<OfficialHoliday[]>(() => {
+    const dayKey = selectedEvent?.day ?? selectedLeaveDay ?? '';
+    return getLeavesForDay(dayKey);
+  }, [selectedEvent?.day, selectedLeaveDay, getLeavesForDay]);
+
   const hasMultipleEventsOnDay = useCallback(
     (day: string) => {
       if (!day) return false;
@@ -465,6 +586,11 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         label: t('monthlyCalendar.actions.viewDetails'),
         icon: EyeFillIcon,
         onClick: (_date, calendarEvent) => {
+          const leaveDay = resolveLeaveDay(calendarEvent);
+          if (leaveDay) {
+            handleViewLeaveDay(leaveDay);
+            return;
+          }
           const event = resolveEvent(calendarEvent);
           if (event) {
             handleViewDetails(event);
@@ -484,6 +610,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         label: t('monthlyCalendar.actions.editEvent'),
         icon: EditFilledIcon,
         onClick: (_date, calendarEvent) => {
+          if (resolveLeave(calendarEvent)) return;
           const event = resolveEvent(calendarEvent);
           if (event && !hasMultipleEventsOnDay(event.day)) {
             handleOpenEditPopup(event);
@@ -493,6 +620,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         showOnDate: false,
         showOnEvent: true,
         hidden: (_date, calendarEvent) => {
+          if (resolveLeave(calendarEvent)) return true;
           const event = resolveEvent(calendarEvent);
           return event ? hasMultipleEventsOnDay(event.day) : false;
         },
@@ -501,6 +629,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         label: t('monthlyCalendar.actions.deleteEvent'),
         icon: TrashFillIcon,
         onClick: (_date, calendarEvent) => {
+          if (resolveLeave(calendarEvent)) return;
           const event = resolveEvent(calendarEvent);
           if (event) {
             if (!hasMultipleEventsOnDay(event.day)) {
@@ -512,6 +641,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         showOnDate: false,
         showOnEvent: true,
         hidden: (_date, calendarEvent) => {
+          if (resolveLeave(calendarEvent)) return true;
           const event = resolveEvent(calendarEvent);
           return event ? hasMultipleEventsOnDay(event.day) : false;
         },
@@ -522,8 +652,11 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       handleOpenEditPopup,
       handleRequestDelete,
       handleViewDetails,
+      handleViewLeaveDay,
       hasMultipleEventsOnDay,
       resolveEvent,
+      resolveLeave,
+      resolveLeaveDay,
       t,
     ]
   );
@@ -572,8 +705,13 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
           <Loading size="lg" />
         ) : (
           <SharedCalendar
-            events={calendarEvents}
+            events={combinedCalendarEvents}
             onSelectEvent={(calendarEvent) => {
+              const leaveDay = resolveLeaveDay(calendarEvent);
+              if (leaveDay) {
+                handleViewLeaveDay(leaveDay);
+                return;
+              }
               const event = resolveEvent(calendarEvent);
               if (event) {
                 handleViewDetails(event);
@@ -604,13 +742,17 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         onClose={() => {
           setDetailsOpen(false);
           setSelectedEvent(null);
+          setSelectedLeaveDay(null);
         }}
         onEdit={(item) => {
           setDetailsOpen(false);
           setSelectedEvent(null);
+          setSelectedLeaveDay(null);
           handleOpenEditPopup(item);
         }}
         event={selectedEvent}
+        date={selectedLeaveDay ?? undefined}
+        leaves={detailsLeaves}
       />
 
       <DeletePopup
