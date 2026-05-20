@@ -2636,6 +2636,20 @@
       "eventDeleted": "تم حذف الحدث بنجاح",
       "cannotAddPastEvent": "لا يمكن إضافة حدث في تاريخ سابق."
     },
+    "leaveDetails": {
+      "title": "تفاصيل الإجازة",
+      "reasonAr": "السبب (بالعربية)",
+      "reasonEn": "السبب (بالإنجليزية)",
+      "date": "التاريخ",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "category": "الفئة",
+      "country": "الدولة",
+      "categories": {
+        "official": "رسمية",
+        "static": "ثابتة"
+      }
+    },
     "validation": {
       "nameAr": "اسم الحدث بالعربية مطلوب",
       "nameEn": "اسم الحدث بالإنجليزية مطلوب",

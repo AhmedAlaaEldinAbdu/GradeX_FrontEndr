@@ -2623,6 +2623,20 @@
       "eventDeleted": "Event deleted successfully",
       "cannotAddPastEvent": "You cannot add an event on a previous day."
     },
+    "leaveDetails": {
+      "title": "Leave details",
+      "reasonAr": "Reason (in Arabic)",
+      "reasonEn": "Reason (in English)",
+      "date": "Date",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "category": "Category",
+      "country": "Country",
+      "categories": {
+        "official": "Official",
+        "static": "Fixed"
+      }
+    },
     "validation": {
       "nameAr": "Arabic name is required",
       "nameEn": "English name is required",
