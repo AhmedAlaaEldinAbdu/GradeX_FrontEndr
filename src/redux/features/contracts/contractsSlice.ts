@@ -107,7 +107,7 @@ export const createContract = createAsyncThunk<SchoolContractDto, CreateSchoolCo
       const response = await contractsApiService.createSchoolContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue({
-          message: response.errors?.join(', ') ?? response.successMessage ?? null,
+          message: response.message ?? response.errors?.join(', ') ?? response.successMessage ?? null,
           validationErrors: response.validationErrors ?? null,
         });
       }
@@ -125,7 +125,7 @@ export const updateContract = createAsyncThunk<SchoolContractDto, UpdateSchoolCo
       const response = await contractsApiService.updateSchoolContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue({
-          message: response.errors?.join(', ') ?? response.successMessage ?? null,
+          message: response.message ?? response.errors?.join(', ') ?? response.successMessage ?? null,
           validationErrors: response.validationErrors ?? null,
         });
       }
@@ -143,7 +143,7 @@ export const requestSignContract = createAsyncThunk<unknown, RequestSignContract
       const response = await contractsApiService.requestSignContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue(
-          response.errors?.join(', ') ?? response.successMessage ?? 'common.errorOccurred'
+          response.message ?? response.errors?.join(', ') ?? response.successMessage ?? 'common.errorOccurred'
         );
       }
       return response.data ?? response.value;
@@ -160,7 +160,7 @@ export const confirmSignContract = createAsyncThunk<unknown, ConfirmSignContract
       const response = await contractsApiService.confirmSignContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue(
-          response.errors?.join(', ') ?? response.successMessage ?? 'common.errorOccurred'
+          response.message ?? response.errors?.join(', ') ?? response.successMessage ?? 'common.errorOccurred'
         );
       }
       return response.data ?? response.value;
