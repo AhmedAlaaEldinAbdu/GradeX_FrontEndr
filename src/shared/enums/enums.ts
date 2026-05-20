@@ -161,3 +161,37 @@ export const DelegationPersonType = {
 } as const;
 export type DelegationPersonType =
   typeof DelegationPersonType[keyof typeof DelegationPersonType];
+
+
+// ============================================================================
+// School Contract enums
+// TODO(api-mapping): confirm each integer mapping with the backend.
+// ============================================================================
+
+/** `Description` field on CreateSchoolContract — the school's legal kind. */
+export const SchoolKind = {
+  Company: 1,
+  Foundation: 2,
+} as const;
+export type SchoolKind = (typeof SchoolKind)[keyof typeof SchoolKind];
+
+/** `IdentityType` field on CreateSchoolContract — the representative's id kind. */
+export const IdentityType = {
+  National: 1,
+  Resident: 2,
+} as const;
+export type IdentityType = (typeof IdentityType)[keyof typeof IdentityType];
+
+/** `semester` on CreateSchoolContractWithdrawalPeriodsDto. Enum schema: [1, 2]. */
+export const Semester = {
+  First: 1,
+  Second: 2,
+} as const;
+export type Semester = (typeof Semester)[keyof typeof Semester];
+
+/** `withdrawalTime` on CreateSchoolContractWithdrawalPeriodsDto. Enum schema: [0, 1]. */
+export const WithdrawalTime = {
+  BeforeTerm: 0,
+  AfterTerm: 1,
+} as const;
+export type WithdrawalTime = (typeof WithdrawalTime)[keyof typeof WithdrawalTime];
