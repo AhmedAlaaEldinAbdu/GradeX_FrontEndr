@@ -68,8 +68,8 @@ import PreparationsPage from '@/pages/school-dashboard/preparations/preparations
 import AddPreparationPage from '@/pages/school-dashboard/preparations/add-preparation-page';
 import EditPreparationPage from '@/pages/school-dashboard/preparations/edit-preparation-page';
 import TransactionsPage from '@/pages/school-dashboard/transactions/transactions-page';
-import InvoicesPage from '@/pages/school-dashboard/invoices/InvoicesPage';
-import InvoiceDetailsPage from '@/pages/school-dashboard/invoices/InvoiceDetailsPage';
+import InvoicesPage from '@/pages/school-dashboard/invoices/invoices-page';
+import InvoiceDetailsPage from '@/pages/school-dashboard/invoices/invoice-details-page';
 import IssueInvoicePage from '@/pages/school-dashboard/invoices/issue-invoice-page';
 import CustomersPage from '@/pages/school-dashboard/customers/customers-page';
 import AddCustomerPage from '@/pages/school-dashboard/customers/add-customer-page';
