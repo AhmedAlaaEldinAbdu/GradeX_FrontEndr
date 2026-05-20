@@ -13,6 +13,7 @@ import type {
   MonthlyCalendarEvent,
   MonthlyEventEntity,
 } from '@/services/api/types/monthly-calendar.types';
+import type { OfficialHoliday } from '@/services/api/types/official-holidays.types';
 import { MonthlyCalendarDuration } from '@/shared/enums/enums';
 import IconButton from '@/shared/components/IconButton';
 import DeletePopup from '@/shared/popups/DeletePopup';
@@ -24,6 +25,8 @@ interface MonthlyEventDetailsPopupProps {
   isOpen: boolean;
   onClose: () => void;
   event: MonthlyEventEntity | null;
+  date?: string;
+  leaves?: OfficialHoliday[];
   onEdit?: (event: MonthlyEventEntity) => void;
 }
 
@@ -31,6 +34,8 @@ export default function MonthlyEventDetailsPopup({
   isOpen,
   onClose,
   event,
+  date,
+  leaves,
   onEdit,
 }: MonthlyEventDetailsPopupProps) {
   const { t, i18n } = useTranslation();
@@ -44,21 +49,23 @@ export default function MonthlyEventDetailsPopup({
   const [eventIdPendingDelete, setEventIdPendingDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const dayKey = event?.day ?? date ?? '';
+  const hasLeaves = Boolean(leaves && leaves.length > 0);
+
   const formattedDate = useMemo(() => {
-    const day = event?.day;
-    if (!day) {
+    if (!dayKey) {
       return '';
     }
 
-    const parsed = new Date(`${day}T00:00:00`);
+    const parsed = new Date(`${dayKey}T00:00:00`);
     if (Number.isNaN(parsed.getTime())) {
-      return day;
+      return dayKey;
     }
 
     return format(parsed, 'PPP', {
       locale: i18n.language === 'ar' ? ar : undefined,
     });
-  }, [event?.day, i18n.language]);
+  }, [dayKey, i18n.language]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -68,8 +75,7 @@ export default function MonthlyEventDetailsPopup({
       return;
     }
 
-    const day = event?.day;
-    if (!day) {
+    if (!dayKey) {
       return;
     }
 
@@ -77,13 +83,13 @@ export default function MonthlyEventDetailsPopup({
 
     dispatch(
       fetchMonthlyCalendarEvents({
-        filters: { date: day, schoolBranchId: getCurrentSchoolBranchId() },
+        filters: { date: dayKey, schoolBranchId: getCurrentSchoolBranchId() },
         target: 'popup',
       })
     )
       .unwrap()
       .then((res) => {
-        if (!res.data.length) {
+        if (!res.data.length && !hasLeaves) {
           const message = t('common.noData');
           setFetchError(message);
           showToast({ message, type: 'error' });
@@ -96,7 +102,7 @@ export default function MonthlyEventDetailsPopup({
         setFetchError(fallback);
         showToast({ message: fallback, type: 'error' });
       });
-  }, [dispatch, event?.day, isOpen, t, showToast]);
+  }, [dispatch, dayKey, hasLeaves, isOpen, t, showToast]);
 
   const handleRequestDelete = (id: string) => {
     setEventIdPendingDelete(id);
@@ -201,9 +207,19 @@ export default function MonthlyEventDetailsPopup({
     return isRTL ? target.nameAr : target.nameEn || target.nameAr;
   }, [eventIdPendingDelete, isRTL, normalizedPopupEvents]);
 
-  if (!event) {
+  if (!event && !date) {
     return null;
   }
+
+  const dayLeaves = leaves ?? [];
+  const totalCards = normalizedPopupEvents.length + dayLeaves.length;
+
+  const getCategoryLabel = (raw: string | undefined) => {
+    const key = (raw || '').toString().toLowerCase();
+    if (key === 'official') return t('monthlyCalendar.leaveDetails.categories.official');
+    if (key === 'static') return t('monthlyCalendar.leaveDetails.categories.static');
+    return raw || '-';
+  };
 
   return (
     <Modal
@@ -220,6 +236,73 @@ export default function MonthlyEventDetailsPopup({
           </div>
         ) : (
           <div className="space-y-6">
+            {dayLeaves.map((leave) => {
+              const localizedReason = isRTL ? leave.reasonAr : leave.reasonEN || leave.reasonAr;
+              const localizedCountry = isRTL
+                ? leave.countryNameAR || leave.countryNameEN
+                : leave.countryNameEN || leave.countryNameAR;
+
+              return (
+                <div
+                  key={`leave-${leave.id}`}
+                  className="rounded-2xl border border-gray-200 bg-white p-5"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-right text-lg font-semibold text-gray-900">
+                      {localizedReason}
+                    </h3>
+                  </div>
+
+                  <div className="mt-4 space-y-3 text-sm">
+                    <div className="flex items-center gap-2 pb-3">
+                      <span className="text-base font-normal text-[#3A3A3A]">
+                        {t('monthlyCalendar.leaveDetails.reasonAr')}:
+                      </span>
+                      <span className="text-sm font-normal text-[#646969] md:text-center">
+                        {leave.reasonAr || '-'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 pb-3">
+                      <span className="text-base font-normal text-[#3A3A3A]">
+                        {t('monthlyCalendar.leaveDetails.reasonEn')}:
+                      </span>
+                      <span className="text-sm font-normal text-[#646969] md:text-center">
+                        {leave.reasonEN || '-'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 pb-3">
+                      <span className="text-base font-normal text-[#3A3A3A]">
+                        {t('monthlyCalendar.form.duration')}:
+                      </span>
+                      <span className="text-sm font-normal text-[#646969] md:text-center">
+                        {t('monthlyCalendar.details.fullDay')}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 pb-3">
+                      <span className="text-base font-normal text-[#3A3A3A]">
+                        {t('monthlyCalendar.leaveDetails.category')}:
+                      </span>
+                      <span className="rounded-lg bg-[#DFF8ED] px-3 py-1 text-sm font-normal text-[#3A3A3A]">
+                        {getCategoryLabel(leave.leaveCategory)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-base font-normal text-[#3A3A3A]">
+                        {t('monthlyCalendar.leaveDetails.country')}:
+                      </span>
+                      <span className="text-sm font-normal text-[#646969] md:text-center">
+                        {localizedCountry || '-'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
             {normalizedPopupEvents.map((item) => {
               const localizedEventName = isRTL ? item.nameAr : item.nameEn || item.nameAr;
 
@@ -366,7 +449,7 @@ export default function MonthlyEventDetailsPopup({
               );
             })}
 
-            {fetchError && <p className="text-sm text-red-500">{fetchError}</p>}
+            {fetchError && totalCards === 0 && <p className="text-sm text-red-500">{fetchError}</p>}
           </div>
         )}
       </div>
