@@ -107,7 +107,7 @@ export const createContract = createAsyncThunk<SchoolContractDto, CreateSchoolCo
       const response = await contractsApiService.createSchoolContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue({
-          message: response.message ?? null,
+          message: response.errors?.join(', ') ?? response.successMessage ?? null,
           validationErrors: response.validationErrors ?? null,
         });
       }
@@ -125,7 +125,7 @@ export const updateContract = createAsyncThunk<SchoolContractDto, UpdateSchoolCo
       const response = await contractsApiService.updateSchoolContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue({
-          message: response.message ?? null,
+          message: response.errors?.join(', ') ?? response.successMessage ?? null,
           validationErrors: response.validationErrors ?? null,
         });
       }
@@ -142,7 +142,9 @@ export const requestSignContract = createAsyncThunk<unknown, RequestSignContract
     try {
       const response = await contractsApiService.requestSignContract(payload);
       if (response.isSuccess === false) {
-        return rejectWithValue(response.message ?? 'common.errorOccurred');
+        return rejectWithValue(
+          response.errors?.join(', ') ?? response.successMessage ?? 'common.errorOccurred'
+        );
       }
       return response.data ?? response.value;
     } catch (error) {
@@ -157,7 +159,9 @@ export const confirmSignContract = createAsyncThunk<unknown, ConfirmSignContract
     try {
       const response = await contractsApiService.confirmSignContract(payload);
       if (response.isSuccess === false) {
-        return rejectWithValue(response.message ?? 'common.errorOccurred');
+        return rejectWithValue(
+          response.errors?.join(', ') ?? response.successMessage ?? 'common.errorOccurred'
+        );
       }
       return response.data ?? response.value;
     } catch (error) {
