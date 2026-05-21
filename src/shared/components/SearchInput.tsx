@@ -37,6 +37,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   // Debounced change handler
   useEffect(() => {
     if (debounce <= 0) return; // no debounce, handled inline
+    if (localValue === (value ?? '')) return;
     if (timerRef.current) window.clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => {
       onChange(localValue);
@@ -44,7 +45,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
     };
-  }, [localValue, debounce, onChange]);
+  }, [localValue, value, debounce, onChange]);
 
   const inputClasses = useMemo(
     () =>
