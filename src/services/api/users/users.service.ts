@@ -8,6 +8,7 @@ import type {
   UpdateUserRequest,
   DeleteUserRequest,
   UserQueryParams,
+  AssignRoleRequest,
 } from '@/services/api/types/users.types';
 import type { ApiResponseModel } from '../config';
 
@@ -143,12 +144,37 @@ export async function deleteUser(data: DeleteUserRequest): Promise<{ success: bo
   return { success: response.data.isSuccess };
 }
 
+/**
+ * Assign a role to a user
+ */
+export async function assignRole(data: AssignRoleRequest): Promise<{ success: boolean }> {
+  const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.post(
+    UsersEndpoints.assignRole,
+    data
+  );
+
+  if (!response.data.isSuccess) {
+    const error = new Error(response.data.message || 'Failed to assign role') as Error & {
+      validationErrors?: typeof response.data.validationErrors;
+      isValidationError?: boolean;
+    };
+    if (response.data.validationErrors && response.data.validationErrors.length > 0) {
+      error.validationErrors = response.data.validationErrors;
+      error.isValidationError = true;
+    }
+    throw error;
+  }
+
+  return { success: response.data.isSuccess };
+}
+
 export const usersApiService = {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
+  assignRole,
 };
 
 export default usersApiService;

@@ -6,4 +6,5 @@ export const UsersEndpoints = {
   createUser: `${USERS}/create`,
   updateUser: `${USERS}/update`,
   deleteUser: `${USERS}/Delete`,
+  assignRole: `${USERS}/assignRole`,
 };
