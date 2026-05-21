@@ -30,6 +30,7 @@ export interface UserManagementState {
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
+  isAssigning: boolean;
 
   // Error States
   error: string | null;

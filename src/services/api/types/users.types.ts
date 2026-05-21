@@ -54,6 +54,11 @@ export interface DeleteUserRequest {
   userId: string;
 }
 
+export interface AssignRoleRequest {
+  userId: string;
+  roleId: string;
+}
+
 // ============================================================================
 // Response Types
 // ============================================================================
