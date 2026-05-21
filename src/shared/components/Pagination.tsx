@@ -24,24 +24,38 @@ const Pagination: React.FC<PaginationProps> = ({
   const { isRTL } = useLanguage();
 
   const getPages = (): (number | string)[] => {
+    const siblings = 1;
+    // first + last + current + 2*siblings + 2 ellipses worth of slots
+    const totalShown = siblings * 2 + 5;
+
+    if (totalPages <= totalShown) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const leftSibling = Math.max(currentPage - siblings, 1);
+    const rightSibling = Math.min(currentPage + siblings, totalPages);
+    const showLeftDots = leftSibling > 2;
+    const showRightDots = rightSibling < totalPages - 1;
+
     const pages: (number | string)[] = [];
 
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-      return pages;
+    if (!showLeftDots && showRightDots) {
+      // near the start: 1 2 3 4 5 … last
+      const leftItemCount = 3 + 2 * siblings;
+      for (let i = 1; i <= leftItemCount; i++) pages.push(i);
+      pages.push('...', totalPages);
+    } else if (showLeftDots && !showRightDots) {
+      // near the end: 1 … n-4 n-3 n-2 n-1 n
+      const rightItemCount = 3 + 2 * siblings;
+      pages.push(1, '...');
+      for (let i = totalPages - rightItemCount + 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      // somewhere in the middle: 1 … c-1 c c+1 … last
+      pages.push(1, '...');
+      for (let i = leftSibling; i <= rightSibling; i++) pages.push(i);
+      pages.push('...', totalPages);
     }
 
-    if (currentPage <= 2) {
-      pages.push(1, 2, '...', totalPages - 1, totalPages);
-      return pages;
-    }
-    if (currentPage >= totalPages - 1) {
-      pages.push(1, 2, '...', totalPages - 1, totalPages);
-      return pages;
-    }
-    pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
     return pages;
   };
 
