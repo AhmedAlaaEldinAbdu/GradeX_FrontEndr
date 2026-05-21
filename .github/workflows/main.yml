@@ -52,4 +52,5 @@ jobs:
           protocol: ftp
           local-dir: dist/
           server-dir: /wwwroot/
-          dangerous-clean-slate: true
+          dangerous-clean-slate: true  
+          
