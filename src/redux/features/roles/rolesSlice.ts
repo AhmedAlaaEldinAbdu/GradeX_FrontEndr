@@ -101,6 +101,17 @@ export const fetchRoles = createAsyncThunk<FetchRolesResponse, FetchRolesPayload
   }
 );
 
+export const fetchAllRoles = createAsyncThunk<Role[]>(
+  'roles/fetchAllRoles',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await rolesApiService.getAllRoles();
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 export const fetchRoleById = createAsyncThunk<Role, string>(
   'roles/fetchRoleById',
   async (id, { rejectWithValue }) => {
@@ -226,6 +237,29 @@ const rolesSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchRoles.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch All Roles (flat list, no pagination)
+    builder
+      .addCase(fetchAllRoles.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllRoles.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.roles = action.payload;
+        state.pagination = {
+          page: 1,
+          limit: action.payload.length || 10,
+          total: action.payload.length,
+          totalPages: 1,
+        };
+        state.error = null;
+      })
+      .addCase(fetchAllRoles.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
