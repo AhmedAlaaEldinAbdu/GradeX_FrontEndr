@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
@@ -9,55 +9,73 @@ import { useToast } from '@/shared/context/ToastContext';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import PeopleSupportIcon from '@/assets/icons/PeopleSupport.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import { MOCK_SYSTEM_USERS, type MockSystemUser } from '../data/mockSystemUsers';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import {
+  fetchUsers,
+  deleteUser,
+  selectUsers,
+  selectIsLoading,
+  selectIsDeleting,
+  selectIsInitialized,
+  selectPagination,
+} from '@/redux/features/user-management';
+import type { User } from '@/services/api/types/users.types';
+
+const PAGE_SIZE = 10;
 
 export default function SystemUsersList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
-  // Dummy local data — replace with Redux/API on backend integration.
-  const [users, setUsers] = useState<MockSystemUser[]>(MOCK_SYSTEM_USERS);
+  const users = useAppSelector(selectUsers);
+  const isLoading = useAppSelector(selectIsLoading);
+  const isDeleting = useAppSelector(selectIsDeleting);
+  const isInitialized = useAppSelector(selectIsInitialized);
+  const pagination = useAppSelector(selectPagination);
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
 
-  const limit = 10;
-
-  const filteredUsers = useMemo(
-    () =>
-      searchTerm
-        ? users.filter((u) => u.userName.toLowerCase().includes(searchTerm.toLowerCase()))
-        : users,
-    [users, searchTerm]
-  );
-
-  const total = filteredUsers.length;
-  const totalPages = Math.max(1, Math.ceil(total / limit));
-  const pagedUsers = useMemo(
-    () => filteredUsers.slice((page - 1) * limit, page * limit),
-    [filteredUsers, page]
-  );
+  useEffect(() => {
+    dispatch(
+      fetchUsers({
+        page,
+        limit: PAGE_SIZE,
+        filters: {
+          searchTerm: searchTerm || undefined,
+        },
+      })
+    );
+  }, [dispatch, page, searchTerm]);
 
   const hasActiveFilters = !!searchTerm;
-  const shouldShowEmptyState = users.length === 0 && !hasActiveFilters;
+  const shouldShowEmptyState =
+    !isLoading && isInitialized && users.length === 0 && !hasActiveFilters;
 
-  const columns: DataTableColumn<MockSystemUser>[] = [
+  const columns: DataTableColumn<User>[] = [
     {
       header: '#',
-      accessor: (row) => (page - 1) * limit + pagedUsers.findIndex((u) => u.id === row.id) + 1,
+      accessor: (row) => {
+        const rowIndex = users.findIndex((u) => u.id === row.id);
+        return (page - 1) * PAGE_SIZE + rowIndex + 1;
+      },
       headerClassName: 'w-16',
       className: 'text-center',
     },
     {
       header: 'rolesManagement.role',
-      accessor: (row) => <span>{row.role}</span>,
+      accessor: (row) => (
+        <span>{row.roles && row.roles.length > 0 ? row.roles.join(', ') : '-'}</span>
+      ),
       headerClassName: 'min-w-[200px]',
     },
     {
       header: 'rolesManagement.userName',
-      accessor: (row) => <span>{row.userName}</span>,
+      accessor: (row) => <span>{row.fullName}</span>,
       headerClassName: 'min-w-[300px]',
     },
     {
@@ -77,6 +95,7 @@ export default function SystemUsersList() {
               setSelectedUserId(row.id);
               setShowDeletePopup(true);
             }}
+            disabled={isDeleting}
             ariaLabel="Delete"
           />
         </div>
@@ -100,12 +119,28 @@ export default function SystemUsersList() {
     },
   ];
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!selectedUserId) return;
-    setUsers((prev) => prev.filter((u) => u.id !== selectedUserId));
-    setShowDeletePopup(false);
-    setSelectedUserId(null);
-    showToast({ message: 'rolesManagement.userDeleted', type: 'success' });
+    try {
+      await dispatch(deleteUser(selectedUserId)).unwrap();
+      showToast({ message: 'rolesManagement.userDeleted', type: 'success' });
+      dispatch(
+        fetchUsers({
+          page,
+          limit: PAGE_SIZE,
+          filters: {
+            searchTerm: searchTerm || undefined,
+          },
+        })
+      );
+    } catch (error) {
+      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
+      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
+      showToast({ message: errorMessage, type: 'error', isRaw: isApiError });
+    } finally {
+      setShowDeletePopup(false);
+      setSelectedUserId(null);
+    }
   };
 
   return (
@@ -119,14 +154,23 @@ export default function SystemUsersList() {
       ) : (
         <div>
           <DataTable
-            data={pagedUsers}
+            data={users}
             columns={columns}
             keyExtractor={(row) => row.id}
-            pagination={{ page, limit, total, totalPages }}
+            pagination={{
+              page,
+              limit: PAGE_SIZE,
+              total: pagination.total,
+              totalPages: pagination.totalPages,
+            }}
             onPageChange={setPage}
             filters={filterConfigs}
             showFilters={true}
-            onResetFilters={() => setSearchTerm('')}
+            onResetFilters={() => {
+              setSearchTerm('');
+              setPage(1);
+            }}
+            isLoading={isLoading}
             emptyMessage={t('common.noResults')}
             t={t}
           />
@@ -134,10 +178,11 @@ export default function SystemUsersList() {
           <DeletePopup
             open={showDeletePopup}
             message="rolesManagement.confirmDeleteUser"
-            itemName={users.find((u) => u.id === selectedUserId)?.userName ?? ''}
+            itemName={users.find((u) => u.id === selectedUserId)?.fullName ?? ''}
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
+            isProcessing={isDeleting}
           />
         </div>
       )}
