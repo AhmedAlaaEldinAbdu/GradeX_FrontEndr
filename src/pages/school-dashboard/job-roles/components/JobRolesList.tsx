@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
@@ -9,21 +9,31 @@ import { useToast } from '@/shared/context/ToastContext';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import PeopleSupportIcon from '@/assets/icons/PeopleSupport.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import { MOCK_ROLES, type MockRole } from '../data/mockRoles';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchAllRoles, deleteRole as deleteRoleAction } from '@/redux/features/roles/rolesSlice';
+import type { Role } from '@/services/api/types/roles.types';
 
 export default function JobRolesList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
-  // Dummy local data — replace with Redux/API on backend integration.
-  const [roles, setRoles] = useState<MockRole[]>(MOCK_ROLES);
+  const roles = useAppSelector((state) => state.roles.roles);
+  const isLoading = useAppSelector((state) => state.roles.isLoading);
+  const isDeleting = useAppSelector((state) => state.roles.isDeleting);
+  const isInitialized = useAppSelector((state) => state.roles.isInitialized);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
   const limit = 10;
+
+  useEffect(() => {
+    dispatch(fetchAllRoles());
+  }, [dispatch]);
 
   const filteredRoles = useMemo(
     () =>
@@ -41,9 +51,10 @@ export default function JobRolesList() {
   );
 
   const hasActiveFilters = !!searchTerm;
-  const shouldShowEmptyState = roles.length === 0 && !hasActiveFilters;
+  const shouldShowEmptyState =
+    !isLoading && isInitialized && roles.length === 0 && !hasActiveFilters;
 
-  const columns: DataTableColumn<MockRole>[] = [
+  const columns: DataTableColumn<Role>[] = [
     {
       header: '#',
       accessor: (row) => (page - 1) * limit + pagedRoles.findIndex((r) => r.id === row.id) + 1,
@@ -57,7 +68,7 @@ export default function JobRolesList() {
     },
     {
       header: 'rolesManagement.description',
-      accessor: (row) => <span>{row.description}</span>,
+      accessor: (row) => <span>{row.description ?? '-'}</span>,
       headerClassName: 'min-w-[300px]',
     },
     {
@@ -77,6 +88,7 @@ export default function JobRolesList() {
               setSelectedRoleId(row.id);
               setShowDeletePopup(true);
             }}
+            disabled={isDeleting}
             ariaLabel="Delete"
           />
         </div>
@@ -100,12 +112,19 @@ export default function JobRolesList() {
     },
   ];
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!selectedRoleId) return;
-    setRoles((prev) => prev.filter((r) => r.id !== selectedRoleId));
-    setShowDeletePopup(false);
-    setSelectedRoleId(null);
-    showToast({ message: 'rolesManagement.roleDeleted', type: 'success' });
+    try {
+      await dispatch(deleteRoleAction(selectedRoleId)).unwrap();
+      showToast({ message: 'rolesManagement.roleDeleted', type: 'success' });
+    } catch (error) {
+      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
+      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
+      showToast({ message: errorMessage, type: 'error', isRaw: isApiError });
+    } finally {
+      setShowDeletePopup(false);
+      setSelectedRoleId(null);
+    }
   };
 
   return (
@@ -127,6 +146,7 @@ export default function JobRolesList() {
             filters={filterConfigs}
             showFilters={true}
             onResetFilters={() => setSearchTerm('')}
+            isLoading={isLoading}
             emptyMessage={t('common.noResults')}
             t={t}
           />
@@ -138,6 +158,7 @@ export default function JobRolesList() {
             onConfirm={handleDeleteConfirm}
             onCancel={() => setShowDeletePopup(false)}
             iconSrc={BigTrashIcon}
+            isProcessing={isDeleting}
           />
         </div>
       )}
