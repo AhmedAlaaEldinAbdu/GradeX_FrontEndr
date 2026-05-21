@@ -13,7 +13,8 @@ export const useSystemUserValidations = () => {
       required: t('rolesManagement.userNameRequired'),
     },
     roleRules: {
-      required: t('rolesManagement.roleRequired'),
+      validate: (value: string[]) =>
+        (Array.isArray(value) && value.length > 0) || t('rolesManagement.roleRequired'),
     },
   };
 };

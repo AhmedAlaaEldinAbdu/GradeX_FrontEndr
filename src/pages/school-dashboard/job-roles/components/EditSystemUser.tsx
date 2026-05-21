@@ -10,13 +10,12 @@ export default function EditSystemUser() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.userManagement.currentUser);
-  const isLoading = useAppSelector((state) => state.userManagement.isLoading);
 
   useEffect(() => {
     if (id) dispatch(fetchUserById(id));
   }, [dispatch, id]);
 
-  if (isLoading || !currentUser || currentUser.id !== id) {
+  if (!currentUser || currentUser.id !== id) {
     return (
       <Card padding="md">
         <Loading />
@@ -29,7 +28,7 @@ export default function EditSystemUser() {
       mode="edit"
       initialData={{
         userId: currentUser.id,
-        roleId: currentUser.roleId ?? '',
+        roleIds: currentUser.roles ?? [],
       }}
     />
   );

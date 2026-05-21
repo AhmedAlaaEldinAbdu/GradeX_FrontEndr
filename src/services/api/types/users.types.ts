@@ -54,9 +54,9 @@ export interface DeleteUserRequest {
   userId: string;
 }
 
-export interface AssignRoleRequest {
+export interface AssignSchoolRoleRequest {
   userId: string;
-  roleId: string;
+  roleIds: string[];
 }
 
 // ============================================================================

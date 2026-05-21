@@ -8,7 +8,7 @@ import type {
   UpdateUserRequest,
   DeleteUserRequest,
   UserQueryParams,
-  AssignRoleRequest,
+  AssignSchoolRoleRequest,
 } from '@/services/api/types/users.types';
 import type { ApiResponseModel } from '../config';
 
@@ -145,11 +145,13 @@ export async function deleteUser(data: DeleteUserRequest): Promise<{ success: bo
 }
 
 /**
- * Assign a role to a user
+ * Assign one or more school roles to a user
  */
-export async function assignRole(data: AssignRoleRequest): Promise<{ success: boolean }> {
+export async function assignSchoolRole(
+  data: AssignSchoolRoleRequest
+): Promise<{ success: boolean }> {
   const response: AxiosResponse<ApiResponseModel<string>> = await axiosClient.post(
-    UsersEndpoints.assignRole,
+    UsersEndpoints.assignSchoolRole,
     data
   );
 
@@ -174,7 +176,7 @@ export const usersApiService = {
   createUser,
   updateUser,
   deleteUser,
-  assignRole,
+  assignSchoolRole,
 };
 
 export default usersApiService;

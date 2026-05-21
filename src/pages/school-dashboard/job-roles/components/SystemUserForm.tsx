@@ -14,7 +14,7 @@ import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { useSystemUserValidations } from '@/validations/system-user-validations';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
-  assignRole,
+  assignSchoolRole,
   fetchUsers,
   selectUsers,
   selectIsLoading,
@@ -24,14 +24,14 @@ import { fetchAllRoles } from '@/redux/features/roles/rolesSlice';
 
 interface SystemUserFormValues {
   userName: string;
-  role: string;
+  role: string[];
 }
 
 interface SystemUserFormProps {
   mode: 'add' | 'edit';
   initialData?: {
     userId: string;
-    roleId: string;
+    roleIds: string[];
   };
 }
 
@@ -61,7 +61,7 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
     reset,
     formState: { errors },
   } = useForm<SystemUserFormValues>({
-    defaultValues: { userName: '', role: '' },
+    defaultValues: { userName: '', role: [] },
   });
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
     if (!initialData) return;
     reset({
       userName: initialData.userId,
-      role: initialData.roleId,
+      role: initialData.roleIds,
     });
   }, [initialData, reset]);
 
@@ -87,9 +87,9 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
   const onValid = async (values: SystemUserFormValues) => {
     try {
       await dispatch(
-        assignRole({
+        assignSchoolRole({
           userId: values.userName,
-          roleId: values.role,
+          roleIds: values.role,
         })
       ).unwrap();
       setShowPopupMessage({
@@ -174,6 +174,7 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
                 render={({ field }) => (
                   <CustomSelect
                     id="role"
+                    isMulti
                     value={field.value}
                     onChange={field.onChange}
                     options={roleOptions}

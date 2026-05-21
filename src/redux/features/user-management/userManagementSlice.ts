@@ -21,7 +21,7 @@ import {
   type UserQueryParams,
   type UpdateUserRequest,
   type DeleteUserRequest,
-  type AssignRoleRequest,
+  type AssignSchoolRoleRequest,
 } from '@/services/api';
 import { getErrorMessage } from '@/lib/http';
 
@@ -180,11 +180,11 @@ export const deleteUser = createAsyncThunk<string, string>(
   }
 );
 
-export const assignRole = createAsyncThunk<AssignRoleRequest, AssignRoleRequest>(
-  'userManagement/assignRole',
+export const assignSchoolRole = createAsyncThunk<AssignSchoolRoleRequest, AssignSchoolRoleRequest>(
+  'userManagement/assignSchoolRole',
   async (data, { rejectWithValue }) => {
     try {
-      await usersApiService.assignRole(data);
+      await usersApiService.assignSchoolRole(data);
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
@@ -351,17 +351,17 @@ const userManagementSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Assign Role
+    // Assign School Role
     builder
-      .addCase(assignRole.pending, (state) => {
+      .addCase(assignSchoolRole.pending, (state) => {
         state.isAssigning = true;
         state.error = null;
       })
-      .addCase(assignRole.fulfilled, (state) => {
+      .addCase(assignSchoolRole.fulfilled, (state) => {
         state.isAssigning = false;
         state.error = null;
       })
-      .addCase(assignRole.rejected, (state, action) => {
+      .addCase(assignSchoolRole.rejected, (state, action) => {
         state.isAssigning = false;
         state.error = action.payload as string;
       });
