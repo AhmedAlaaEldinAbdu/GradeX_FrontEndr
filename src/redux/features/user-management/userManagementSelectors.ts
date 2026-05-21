@@ -141,6 +141,14 @@ export const selectIsDeleting = createSelector(
 );
 
 /**
+ * Select assigning state
+ */
+export const selectIsAssigning = createSelector(
+  [selectUserManagementState],
+  (userManagementState) => userManagementState.isAssigning
+);
+
+/**
  * Select if any operation is in progress
  */
 export const selectIsOperationInProgress = createSelector(

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
@@ -6,31 +6,54 @@ import Card from '@/shared/components/Card';
 import Button from '@/shared/components/Button';
 import FormField from '@/shared/components/FormField';
 import CustomSelect from '@/shared/components/CustomSelect';
-import { useToast } from '@/shared/context/ToastContext';
+import Loading from '@/shared/components/Loading';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { useSystemUserValidations } from '@/validations/system-user-validations';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
-  MOCK_USER_NAME_OPTIONS,
-  MOCK_ROLE_OPTIONS,
-  type MockSystemUser,
-} from '../data/mockSystemUsers';
+  assignRole,
+  fetchUsers,
+  selectUsers,
+  selectIsLoading,
+  selectIsAssigning,
+} from '@/redux/features/user-management';
+import { fetchAllRoles } from '@/redux/features/roles/rolesSlice';
 
 interface SystemUserFormValues {
-  userName: string[];
+  userName: string;
   role: string;
 }
 
 interface SystemUserFormProps {
   mode: 'add' | 'edit';
-  initialData?: MockSystemUser;
+  initialData?: {
+    userId: string;
+    roleId: string;
+  };
 }
 
 export default function SystemUserForm({ mode, initialData }: SystemUserFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const dispatch = useAppDispatch();
   const scrollToFirstError = useScrollToFirstError<SystemUserFormValues>();
   const { userNameRules, roleRules } = useSystemUserValidations();
+
+  const [showPopupMessage, setShowPopupMessage] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+    isRaw: boolean;
+  }>({ show: false, type: 'success', message: '', isRaw: false });
+
+  const users = useAppSelector(selectUsers);
+  const isLoadingUsers = useAppSelector(selectIsLoading);
+  const isAssigning = useAppSelector(selectIsAssigning);
+  const roles = useAppSelector((state) => state.roles.roles);
+  const isLoadingRoles = useAppSelector((state) => state.roles.isLoading);
 
   const {
     control,
@@ -38,100 +61,165 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
     reset,
     formState: { errors },
   } = useForm<SystemUserFormValues>({
-    defaultValues: { userName: [], role: '' },
+    defaultValues: { userName: '', role: '' },
   });
 
-  // Edit mode: prefill from the provided user. Replace with API data on integration.
+  useEffect(() => {
+    dispatch(fetchUsers({ page: 1, limit: 1000 }));
+    dispatch(fetchAllRoles());
+  }, [dispatch]);
+
   useEffect(() => {
     if (!initialData) return;
     reset({
-      userName: [initialData.userName],
-      role: initialData.role,
+      userName: initialData.userId,
+      role: initialData.roleId,
     });
   }, [initialData, reset]);
 
-  const onValid = () => {
-    // Dummy submit — wire to the backend on integration.
-    showToast({
-      message:
-        mode === 'edit'
-          ? 'rolesManagement.userUpdatedSuccessfully'
-          : 'rolesManagement.userCreatedSuccessfully',
-      type: 'success',
-    });
-    navigate('/settings/job-roles?tab=system-users');
+  const userOptions = useMemo(
+    () => users.map((u) => ({ value: u.id, label: u.fullName })),
+    [users]
+  );
+
+  const roleOptions = useMemo(() => roles.map((r) => ({ value: r.id, label: r.name })), [roles]);
+
+  const onValid = async (values: SystemUserFormValues) => {
+    try {
+      await dispatch(
+        assignRole({
+          userId: values.userName,
+          roleId: values.role,
+        })
+      ).unwrap();
+      setShowPopupMessage({
+        show: true,
+        type: 'success',
+        message: t(
+          mode === 'edit'
+            ? 'rolesManagement.userUpdatedSuccessfully'
+            : 'rolesManagement.userCreatedSuccessfully'
+        ),
+        isRaw: true,
+      });
+    } catch (error) {
+      const rawMessage =
+        typeof error === 'string'
+          ? error
+          : typeof error === 'object' && error && 'message' in error
+            ? String((error as { message: unknown }).message)
+            : null;
+      const isRaw = Boolean(rawMessage) && rawMessage !== 'common.errorOccurred';
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: isRaw ? (rawMessage as string) : t('common.errorOccurred'),
+        isRaw,
+      });
+    }
   };
 
-  return (
-    <form onSubmit={handleSubmit(onValid, scrollToFirstError)} className="flex flex-col gap-6">
-      <Card padding="md" className="flex flex-col gap-8">
-        {/* User name */}
-        <div className="w-full">
-          <FormField
-            label={t('rolesManagement.userName')}
-            required
-            htmlFor="userName"
-            name="userName"
-            error={errors.userName?.message}
-          >
-            <Controller
-              name="userName"
-              control={control}
-              rules={userNameRules}
-              render={({ field }) => (
-                <CustomSelect
-                  id="userName"
-                  isMulti
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={MOCK_USER_NAME_OPTIONS}
-                  placeholder={t('rolesManagement.selectUserName')}
-                />
-              )}
-            />
-          </FormField>
-        </div>
-
-        {/* Role */}
-        <div className="w-full md:w-1/2">
-          <FormField
-            label={t('rolesManagement.role')}
-            required
-            htmlFor="role"
-            name="role"
-            error={errors.role?.message}
-          >
-            <Controller
-              name="role"
-              control={control}
-              rules={roleRules}
-              render={({ field }) => (
-                <CustomSelect
-                  id="role"
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={MOCK_ROLE_OPTIONS}
-                  placeholder={t('rolesManagement.selectRole')}
-                />
-              )}
-            />
-          </FormField>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate('/settings/job-roles?tab=system-users')}
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit" variant="success">
-            {mode === 'edit' ? t('common.save') : t('common.add')}
-          </Button>
-        </div>
+  if (isLoadingUsers && users.length === 0) {
+    return (
+      <Card padding="md">
+        <Loading />
       </Card>
-    </form>
+    );
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSubmit(onValid, scrollToFirstError)} className="flex flex-col gap-6">
+        <Card padding="md" className="flex flex-col gap-8">
+          {/* User name */}
+          <div className="w-full">
+            <FormField
+              label={t('rolesManagement.userName')}
+              required
+              htmlFor="userName"
+              name="userName"
+              error={errors.userName?.message}
+            >
+              <Controller
+                name="userName"
+                control={control}
+                rules={userNameRules}
+                render={({ field }) => (
+                  <CustomSelect
+                    id="userName"
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={userOptions}
+                    placeholder={t('rolesManagement.selectUserName')}
+                    disabled={mode === 'edit' || isLoadingUsers}
+                  />
+                )}
+              />
+            </FormField>
+          </div>
+
+          {/* Role */}
+          <div className="w-full md:w-1/2">
+            <FormField
+              label={t('rolesManagement.role')}
+              required
+              htmlFor="role"
+              name="role"
+              error={errors.role?.message}
+            >
+              <Controller
+                name="role"
+                control={control}
+                rules={roleRules}
+                render={({ field }) => (
+                  <CustomSelect
+                    id="role"
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={roleOptions}
+                    placeholder={t('rolesManagement.selectRole')}
+                    disabled={isLoadingRoles}
+                  />
+                )}
+              />
+            </FormField>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-end gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/settings/job-roles?tab=system-users')}
+              disabled={isAssigning}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" variant="success" disabled={isAssigning}>
+              {isAssigning
+                ? t('common.saving')
+                : mode === 'edit'
+                  ? t('common.save')
+                  : t('common.add')}
+            </Button>
+          </div>
+        </Card>
+      </form>
+
+      <PopupMessage
+        open={showPopupMessage.show}
+        type={showPopupMessage.type}
+        iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isRaw}
+        onClose={() => {
+          const wasSuccess = showPopupMessage.type === 'success';
+          setShowPopupMessage({ show: false, type: 'success', message: '', isRaw: false });
+          if (wasSuccess) {
+            navigate('/settings/job-roles?tab=system-users');
+          }
+        }}
+      />
+    </>
   );
 }

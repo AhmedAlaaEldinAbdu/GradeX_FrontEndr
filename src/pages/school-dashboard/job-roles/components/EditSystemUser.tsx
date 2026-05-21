@@ -1,18 +1,36 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Card from '@/shared/components/Card';
+import Loading from '@/shared/components/Loading';
 import SystemUserForm from './SystemUserForm';
-import { MOCK_SYSTEM_USERS } from '../data/mockSystemUsers';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchUserById } from '@/redux/features/user-management';
 
 export default function EditSystemUser() {
   const { id } = useParams<{ id: string }>();
-  const user = MOCK_SYSTEM_USERS.find((u) => u.id === id);
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((state) => state.userManagement.currentUser);
+  const isLoading = useAppSelector((state) => state.userManagement.isLoading);
 
-  if (!user) {
+  useEffect(() => {
+    if (id) dispatch(fetchUserById(id));
+  }, [dispatch, id]);
+
+  if (isLoading || !currentUser || currentUser.id !== id) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-gray-500">User not found</div>
-      </div>
+      <Card padding="md">
+        <Loading />
+      </Card>
     );
   }
 
-  return <SystemUserForm mode="edit" initialData={user} />;
+  return (
+    <SystemUserForm
+      mode="edit"
+      initialData={{
+        userId: currentUser.id,
+        roleId: currentUser.roleId ?? '',
+      }}
+    />
+  );
 }
