@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
@@ -10,7 +10,7 @@ import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/com
 import PeopleSupportIcon from '@/assets/icons/PeopleSupport.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchAllRoles, deleteRole as deleteRoleAction } from '@/redux/features/roles/rolesSlice';
+import { fetchRoles, deleteRole as deleteRoleAction } from '@/redux/features/roles/rolesSlice';
 import type { Role } from '@/services/api/types/roles.types';
 
 export default function JobRolesList() {
@@ -22,7 +22,7 @@ export default function JobRolesList() {
   const roles = useAppSelector((state) => state.roles.roles);
   const isLoading = useAppSelector((state) => state.roles.isLoading);
   const isDeleting = useAppSelector((state) => state.roles.isDeleting);
-  const isInitialized = useAppSelector((state) => state.roles.isInitialized);
+  const pagination = useAppSelector((state) => state.roles.pagination);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -32,32 +32,23 @@ export default function JobRolesList() {
   const limit = 10;
 
   useEffect(() => {
-    dispatch(fetchAllRoles());
-  }, [dispatch]);
-
-  const filteredRoles = useMemo(
-    () =>
-      searchTerm
-        ? roles.filter((r) => r.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        : roles,
-    [roles, searchTerm]
-  );
-
-  const total = filteredRoles.length;
-  const totalPages = Math.max(1, Math.ceil(total / limit));
-  const pagedRoles = useMemo(
-    () => filteredRoles.slice((page - 1) * limit, page * limit),
-    [filteredRoles, page]
-  );
+    dispatch(
+      fetchRoles({
+        page,
+        limit,
+        filters: searchTerm ? { searchTerm } : undefined,
+      })
+    );
+  }, [dispatch, page, searchTerm]);
 
   const hasActiveFilters = !!searchTerm;
-  const shouldShowEmptyState =
-    !isLoading && isInitialized && roles.length === 0 && !hasActiveFilters;
+  const shouldShowEmptyState = !isLoading && roles.length === 0 && !hasActiveFilters;
+  const shouldShowContent = isLoading || roles.length > 0 || hasActiveFilters;
 
   const columns: DataTableColumn<Role>[] = [
     {
       header: '#',
-      accessor: (row) => (page - 1) * limit + pagedRoles.findIndex((r) => r.id === row.id) + 1,
+      accessor: (row) => (page - 1) * limit + roles.findIndex((r) => r.id === row.id) + 1,
       headerClassName: 'w-16',
       className: 'text-center',
     },
@@ -117,6 +108,13 @@ export default function JobRolesList() {
     try {
       await dispatch(deleteRoleAction(selectedRoleId)).unwrap();
       showToast({ message: 'rolesManagement.roleDeleted', type: 'success' });
+      dispatch(
+        fetchRoles({
+          page,
+          limit,
+          filters: searchTerm ? { searchTerm } : undefined,
+        })
+      );
     } catch (error) {
       const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
       const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
@@ -135,13 +133,18 @@ export default function JobRolesList() {
           description={t('rolesManagement.noRolesMessage')}
           blend={true}
         />
-      ) : (
+      ) : shouldShowContent ? (
         <div>
           <DataTable
-            data={pagedRoles}
+            data={roles}
             columns={columns}
             keyExtractor={(row) => row.id}
-            pagination={{ page, limit, total, totalPages }}
+            pagination={{
+              page,
+              limit,
+              total: pagination.total,
+              totalPages: pagination.totalPages,
+            }}
             onPageChange={setPage}
             filters={filterConfigs}
             showFilters={true}
@@ -161,7 +164,7 @@ export default function JobRolesList() {
             isProcessing={isDeleting}
           />
         </div>
-      )}
+      ) : null}
     </Card>
   );
 }
