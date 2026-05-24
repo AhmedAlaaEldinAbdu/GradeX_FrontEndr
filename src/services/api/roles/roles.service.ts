@@ -59,17 +59,6 @@ export async function getRoles(params?: RoleQueryParams): Promise<RoleListRespon
 }
 
 /**
- * Get all roles as a flat list (no pagination). Used by the school-dashboard job-roles list.
- */
-export async function getAllRoles(): Promise<Role[]> {
-  const response: AxiosResponse<ApiResponseModel<Role[]>> = await axiosClient.get(
-    RolesEndpoints.getAllRoles
-  );
-
-  return response?.data?.value ?? [];
-}
-
-/**
  * Get role by ID
  */
 export async function getRoleById(id: string): Promise<Role> {
@@ -121,7 +110,6 @@ export async function deleteRole(id: string): Promise<{ success: boolean }> {
 
 export const rolesApiService = {
   getRoles,
-  getAllRoles,
   getRoleById,
   createRole,
   updateRole,
