@@ -24,12 +24,10 @@ export type StudentInterviewFormProps = InferType<typeof StudentInterviewFormSch
 export const StudentInterviewApiSchema = object({
   nameAr: string()
     .required('common.validation.nameArRequired')
-    .typeError('common.validation.nameArRequired')
-    .matches(/^[\u0600-\u06FF\s]+$/, 'interviews.validation.nameArInvalid'),
+    .typeError('common.validation.nameArRequired'),
   nameEn: string()
     .required('common.validation.nameEnRequired')
-    .typeError('common.validation.nameEnRequired')
-    .matches(/^[a-zA-Z\s]+$/, 'interviews.validation.nameEnInvalid'),
+    .typeError('common.validation.nameEnRequired'),
   schoolBranchesId: string()
     .required('interviews.validation.schoolBranchesIdRequired')
     .typeError('interviews.validation.schoolBranchesIdRequired'),

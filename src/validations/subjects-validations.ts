@@ -13,12 +13,10 @@ export const AddSubjectSchema = object({
       object({
         name: string()
           .required('subjects.validation.subjectNameRequired')
-          .typeError('subjects.validation.subjectNameRequired')
-          .matches(/^[\u0600-\u06FF\s\d\p{P}]+$/u, 'subjects.validation.subjectNameArInvalid'),
+          .typeError('subjects.validation.subjectNameRequired'),
         nameEn: string()
           .required('subjects.validation.subjectNameEnRequired')
-          .typeError('subjects.validation.subjectNameEnRequired')
-          .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'subjects.validation.subjectNameEnInvalid'),
+          .typeError('subjects.validation.subjectNameEnRequired'),
       })
     )
     .required('subjects.validation.requiredList')
@@ -35,12 +33,10 @@ export const SubjectsSchema = object({
       object({
         name: string()
           .required('subjects.validation.subjectNameRequired')
-          .typeError('subjects.validation.subjectNameRequired')
-          .matches(/^[\u0600-\u06FF\s\d\p{P}]+$/u, 'subjects.validation.subjectNameArInvalid'),
+          .typeError('subjects.validation.subjectNameRequired'),
         nameEn: string()
           .required('subjects.validation.subjectNameEnRequired')
-          .typeError('subjects.validation.subjectNameEnRequired')
-          .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'subjects.validation.subjectNameEnInvalid'),
+          .typeError('subjects.validation.subjectNameEnRequired'),
       })
     )
     .required('subjects.validation.requiredList')
@@ -58,12 +54,10 @@ export const EditSubjectSchema = object({
     .required('subjects.validation.schoolStagesRequired'),
   name: string()
     .required('subjects.validation.subjectNameRequired')
-    .typeError('subjects.validation.subjectNameRequired')
-    .matches(/^[\u0600-\u06FF\s\d\p{P}]+$/u, 'subjects.validation.subjectNameArInvalid'),
+    .typeError('subjects.validation.subjectNameRequired'),
   nameEn: string()
     .required('subjects.validation.subjectNameEnRequired')
-    .typeError('subjects.validation.subjectNameEnRequired')
-    .matches(/^[a-zA-Z\s\d\p{P}]+$/u, 'subjects.validation.subjectNameEnInvalid'),
+    .typeError('subjects.validation.subjectNameEnRequired'),
 });
 
 export type AddSubjectProps = InferType<typeof AddSubjectSchema>;

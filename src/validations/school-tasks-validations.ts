@@ -1,7 +1,5 @@
 import { array, mixed, number, object, string, type InferType } from 'yup';
 
-const ARABIC_TEXT_REGEX = /^[\u0600-\u06FF\s\d\p{P}]+$/u;
-const ENGLISH_TEXT_REGEX = /^[a-zA-Z\s\d\p{P}]+$/u;
 const SCHOOL_TASK_TYPES = [1, 2, 3, 4, 5, 6] as const;
 
 const baseSchoolTaskSchema = {
@@ -19,12 +17,10 @@ const baseSchoolTaskSchema = {
     .typeError('tasksManagement.validation.subjectRequired'),
   nameAr: string()
     .required('tasksManagement.validation.taskNameArRequired')
-    .typeError('tasksManagement.validation.taskNameArRequired')
-    .matches(ARABIC_TEXT_REGEX, 'tasksManagement.validation.taskNameArInvalid'),
+    .typeError('tasksManagement.validation.taskNameArRequired'),
   nameEn: string()
     .required('tasksManagement.validation.taskNameEnRequired')
-    .typeError('tasksManagement.validation.taskNameEnRequired')
-    .matches(ENGLISH_TEXT_REGEX, 'tasksManagement.validation.taskNameEnInvalid'),
+    .typeError('tasksManagement.validation.taskNameEnRequired'),
   taskType: number()
     .required('tasksManagement.validation.taskTypeRequired')
     .oneOf([...SCHOOL_TASK_TYPES], 'tasksManagement.validation.taskTypeRequired')
@@ -57,24 +53,8 @@ const baseSchoolTaskSchema = {
         return value >= startPageNumber;
       }
     ),
-  descriptionAr: string()
-    .optional()
-    .test('arabic-description', 'Arabic description is invalid', (value) => {
-      if (!value) {
-        return true;
-      }
-
-      return ARABIC_TEXT_REGEX.test(value);
-    }),
-  descriptionEn: string()
-    .optional()
-    .test('english-description', 'English description is invalid', (value) => {
-      if (!value) {
-        return true;
-      }
-
-      return ENGLISH_TEXT_REGEX.test(value);
-    }),
+  descriptionAr: string().optional(),
+  descriptionEn: string().optional(),
   assignmentType: number()
     .required('tasksManagement.validation.assignmentTypeRequired')
     .integer('tasksManagement.validation.assignmentTypeRequired')
