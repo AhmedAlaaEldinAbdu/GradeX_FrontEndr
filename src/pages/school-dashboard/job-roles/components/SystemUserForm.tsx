@@ -20,7 +20,7 @@ import {
   selectIsLoading,
   selectIsAssigning,
 } from '@/redux/features/user-management';
-import { fetchAllRoles } from '@/redux/features/roles/rolesSlice';
+import { fetchRoles } from '@/redux/features/roles/rolesSlice';
 
 interface SystemUserFormValues {
   userName: string;
@@ -66,7 +66,7 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
 
   useEffect(() => {
     dispatch(fetchUsers({ page: 1, limit: 1000 }));
-    dispatch(fetchAllRoles());
+    dispatch(fetchRoles({ page: 1, limit: 1000 }));
   }, [dispatch]);
 
   useEffect(() => {
