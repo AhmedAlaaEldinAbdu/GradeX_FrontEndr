@@ -46,7 +46,7 @@ const RoleCheckbox = ({
   name,
   labelClassName = 'text-sm font-normal text-[#646969]',
 }: RoleCheckboxProps) => (
-  <label dir="rtl" className="flex cursor-pointer items-center gap-3">
+  <label className="flex cursor-pointer items-center gap-3">
     <span className="relative flex h-6 w-6 items-center justify-center">
       <input
         type="checkbox"
