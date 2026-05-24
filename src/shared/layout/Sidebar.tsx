@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSchoolBranchName } from '@/hooks/useSchoolBranchName';
 import { UserRole, type UserRoleType } from '@gradex/constants';
@@ -595,7 +595,6 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const location = useLocation();
-  const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   // Shared cached fetch — Header consumes the same hook so the network call is deduped.
   // The locals are kept named so the (currently commented) JSX block that displays them
@@ -710,13 +709,12 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     // eslint-disable-next-line
   }, [location.pathname]);
 
-  const toggleExpand = (key: string, firstSubItemPath?: string) => {
+  const toggleExpand = (key: string) => {
     const isExpanded = expandedItems.includes(key);
     if (isExpanded) {
       setExpandedItems((prev) => prev.filter((k) => k !== key));
     } else {
       setExpandedItems([key]);
-      if (firstSubItemPath) navigate(firstSubItemPath);
     }
   };
 
@@ -837,14 +835,13 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       );
 
     if (hasSubItems) {
-      const firstPath = item.subItems![0].path;
       const isActive = isAnySubItemActive;
 
       return (
         <div key={item.key}>
           <button
             type="button"
-            onClick={() => toggleExpand(item.key, firstPath)}
+            onClick={() => toggleExpand(item.key)}
             className={cn('cursor-pointer', getMainItemClass(isActive))}
           >
             {renderRow(item, { active: isActive, hasSubItems: true, expanded: isExpanded })}
