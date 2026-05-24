@@ -24,7 +24,7 @@ import TeacherPlacementPage from '@/pages/school-dashboard/teachers/teacher-plac
 import TeacherEditPlacementPage from '@/pages/school-dashboard/teachers/teacher-edit-placement-page';
 import TeacherLeaveDetailsPage from '@/pages/school-dashboard/teachers/teacher-leave-details-page';
 import TeachingStaffPage from '@/pages/school-dashboard/teaching-staff/TeachingStaffPage';
-import JobRolesPage from '@/pages/school-dashboard/job-roles/JobRolesPage';
+import JobRolesPage from '@/pages/school-dashboard/preparations/job-roles-page';
 import AddJobRolePage from '@/pages/school-dashboard/job-roles/add-job-role-page';
 import EditJobRolePage from '@/pages/school-dashboard/job-roles/edit-job-role-page';
 import AddSystemUserPage from '@/pages/school-dashboard/job-roles/add-system-user-page';
