@@ -238,6 +238,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
         const response = await permissionsApiService.getPermissions({
           PageIndex: 1,
           PageSize: 1000,
+          PermissionScope: 2,
         });
         if (cancelled) return;
         const groups = response.permissionGroupDtos ?? [];

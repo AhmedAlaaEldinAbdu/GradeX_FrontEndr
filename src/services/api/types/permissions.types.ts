@@ -39,4 +39,5 @@ export interface PermissionsListResponse {
 export interface PermissionsQueryParams {
   PageIndex?: number;
   PageSize?: number;
+  PermissionScope?: number;
 }
