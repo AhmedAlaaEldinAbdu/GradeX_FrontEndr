@@ -6,12 +6,10 @@ export const AcademicSystemSchema = object({
       object({
         nameAr: string()
           .required('academicSystem.validation.academicSystemNameRequired')
-          .typeError('academicSystem.validation.academicSystemNameRequired')
-          .matches(/^[\u0600-\u06FF\s]+$/, 'academicSystem.validation.academicSystemNameArInvalid'),
+          .typeError('academicSystem.validation.academicSystemNameRequired'),
         nameEn: string()
           .required('academicSystem.validation.academicSystemNameRequired')
-          .typeError('academicSystem.validation.academicSystemNameRequired')
-          .matches(/^[a-zA-Z\s]+$/, 'academicSystem.validation.academicSystemNameEnInvalid'),
+          .typeError('academicSystem.validation.academicSystemNameRequired'),
         subSystemIds: array()
           .of(string())
           .min(1, 'academicSystem.validation.systemTypeRequired')
@@ -31,12 +29,10 @@ export const AcademicSystemSchema = object({
 export const EditAcademicSystemSchema = object({
   nameAr: string()
     .required('academicSystem.validation.academicSystemNameRequired')
-    .typeError('academicSystem.validation.academicSystemNameRequired')
-    .matches(/^[\u0600-\u06FF\s]+$/, 'academicSystem.validation.academicSystemNameArInvalid'),
+    .typeError('academicSystem.validation.academicSystemNameRequired'),
   nameEn: string()
     .required('academicSystem.validation.academicSystemNameRequired')
-    .typeError('academicSystem.validation.academicSystemNameRequired')
-    .matches(/^[a-zA-Z\s]+$/, 'academicSystem.validation.academicSystemNameEnInvalid'),
+    .typeError('academicSystem.validation.academicSystemNameRequired'),
   subSystemIds: array()
     .of(string())
     .min(1, 'academicSystem.validation.systemTypeRequired')
@@ -55,15 +51,10 @@ export const EducationalStagesSchema = object({
       object({
         nameAr: string()
           .required('academicSystem.validation.academicSystemNameRequired')
-          .typeError('academicSystem.validation.academicSystemNameRequired')
-          .matches(
-            /^[\u0600-\u06FF\s]+$/,
-            'academicSystem.validation.educationalStageNameArInvalid'
-          ),
+          .typeError('academicSystem.validation.academicSystemNameRequired'),
         nameEn: string()
           .required('academicSystem.validation.academicSystemNameRequired')
-          .typeError('academicSystem.validation.academicSystemNameRequired')
-          .matches(/^[a-zA-Z\s]+$/, 'academicSystem.validation.educationalStageNameEnInvalid'),
+          .typeError('academicSystem.validation.academicSystemNameRequired'),
         academicSystem: string()
           .required('academicSystem.validation.academicSystemRequired')
           .typeError('academicSystem.validation.academicSystemRequired'),
@@ -76,12 +67,10 @@ export const EducationalStagesSchema = object({
 export const EditEducationalStagesSchema = object({
   nameAr: string()
     .required('academicSystem.validation.academicSystemNameRequired')
-    .typeError('academicSystem.validation.academicSystemNameRequired')
-    .matches(/^[\u0600-\u06FF\s]+$/, 'academicSystem.validation.educationalStageNameArInvalid'),
+    .typeError('academicSystem.validation.academicSystemNameRequired'),
   nameEn: string()
     .required('academicSystem.validation.academicSystemNameRequired')
-    .typeError('academicSystem.validation.academicSystemNameRequired')
-    .matches(/^[a-zA-Z\s]+$/, 'academicSystem.validation.educationalStageNameEnInvalid'),
+    .typeError('academicSystem.validation.academicSystemNameRequired'),
   academicSystem: string()
     .required('academicSystem.validation.academicSystemRequired')
     .typeError('academicSystem.validation.academicSystemRequired'),

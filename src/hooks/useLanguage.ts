@@ -1,7 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/i18n';
 
-export type Language = 'ar' | 'en';
+export type Language = SupportedLanguage;
 export type Direction = 'rtl' | 'ltr';
 
 const LANGUAGE_STORAGE_KEY = 'gradex-language';
@@ -15,12 +16,16 @@ interface UseLanguageReturn {
   setLanguage: (lang: Language) => void;
 }
 
+const isSupportedLanguage = (value: string): value is Language =>
+  (SUPPORTED_LANGUAGES as readonly string[]).includes(value);
+
 export const useLanguage = (): UseLanguageReturn => {
   const { i18n } = useTranslation();
 
-  const currentLanguage = (i18n.language || 'ar') as Language;
-  const isRTL = currentLanguage === 'ar';
+  const rawLanguage = i18n.language || 'ar';
+  const currentLanguage: Language = isSupportedLanguage(rawLanguage) ? rawLanguage : 'ar';
   const isArabic = currentLanguage === 'ar';
+  const isRTL = isArabic;
   const direction: Direction = isRTL ? 'rtl' : 'ltr';
 
   useEffect(() => {
@@ -58,7 +63,7 @@ export const getSavedLanguage = (): Language => {
   if (typeof window === 'undefined') return 'ar';
 
   const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  if (saved === 'ar' || saved === 'en') {
+  if (saved && isSupportedLanguage(saved)) {
     return saved;
   }
 

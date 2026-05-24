@@ -13,7 +13,6 @@ export const basicInfoSchema = yup.object().shape({
     .required('schools.validation.schoolNameArRequired')
     .min(3, 'schools.validation.schoolNameMin')
     .max(100, 'schools.validation.schoolNameMax')
-    .matches(/^[\u0600-\u06FF\s]+$/, 'schools.validation.schoolNameArInvalid')
     .trim(),
 
   schoolNameEn: yup
@@ -21,7 +20,6 @@ export const basicInfoSchema = yup.object().shape({
     .required('schools.validation.schoolNameEnRequired')
     .min(3, 'schools.validation.schoolNameMin')
     .max(100, 'schools.validation.schoolNameMax')
-    .matches(/^[a-zA-Z\s]+$/, 'schools.validation.schoolNameEnInvalid')
     .trim(),
 
   academicSystemIds: yup
