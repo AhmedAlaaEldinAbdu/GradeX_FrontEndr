@@ -54,12 +54,27 @@
     "exams": {
       "title": "Examens",
       "viewAll": "Tout afficher",
-      "emptyDescription": "Aucun examen n'a encore été ajouté. Vous pouvez commencer par ajouter des examens"
+      "emptyDescription": "Aucun examen n'a encore été ajouté. Vous pouvez commencer par ajouter des examens",
+      "completed": "terminé",
+      "sources": {
+        "ai": "Intelligence artificielle",
+        "questionBank": "Banque de questions",
+        "manual": "Manuel"
+      },
+      "status": {
+        "scheduled": "Planifié",
+        "pending": "En attente"
+      }
     },
     "courses": {
       "title": "Cours de formation",
       "viewAll": "Tout afficher",
-      "emptyDescription": "Aucun cours de formation n'a encore été ajouté. Vous pouvez commencer par ajouter des cours"
+      "emptyDescription": "Aucun cours de formation n'a encore été ajouté. Vous pouvez commencer par ajouter des cours",
+      "progress": "Progression",
+      "lessonsUnit": "leçons",
+      "status": {
+        "active": "Actif"
+      }
     }
   },
   "schoolDashboard": {

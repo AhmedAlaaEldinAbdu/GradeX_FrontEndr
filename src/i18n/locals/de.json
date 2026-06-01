@@ -54,12 +54,27 @@
     "exams": {
       "title": "Prüfungen",
       "viewAll": "Alle anzeigen",
-      "emptyDescription": "Es wurden noch keine Prüfungen hinzugefügt. Sie können mit dem Hinzufügen von Prüfungen beginnen"
+      "emptyDescription": "Es wurden noch keine Prüfungen hinzugefügt. Sie können mit dem Hinzufügen von Prüfungen beginnen",
+      "completed": "abgeschlossen",
+      "sources": {
+        "ai": "Künstliche Intelligenz",
+        "questionBank": "Fragenpool",
+        "manual": "Manuell"
+      },
+      "status": {
+        "scheduled": "Geplant",
+        "pending": "Ausstehend"
+      }
     },
     "courses": {
       "title": "Schulungskurse",
       "viewAll": "Alle anzeigen",
-      "emptyDescription": "Es wurden noch keine Schulungskurse hinzugefügt. Sie können mit dem Hinzufügen von Kursen beginnen"
+      "emptyDescription": "Es wurden noch keine Schulungskurse hinzugefügt. Sie können mit dem Hinzufügen von Kursen beginnen",
+      "progress": "Fortschritt",
+      "lessonsUnit": "Lektionen",
+      "status": {
+        "active": "Aktiv"
+      }
     }
   },
   "schoolDashboard": {
