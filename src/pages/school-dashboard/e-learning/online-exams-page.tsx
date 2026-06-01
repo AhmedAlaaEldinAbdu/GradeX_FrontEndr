@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
@@ -6,6 +7,7 @@ import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
 import ExamCreationCard from './components/ExamCreationCard';
 import OnlineExamsList from './components/OnlineExamsList';
+import CreateExamPopup from './components/CreateExamPopup';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import TaskIcon from '@gradex/assets/icons/Task.svg';
@@ -15,6 +17,7 @@ import WritingIcon from '@gradex/assets/icons/Writing.svg';
 
 export default function OnlineExamsPage() {
   const { t } = useTranslation();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
@@ -34,6 +37,7 @@ export default function OnlineExamsPage() {
         actions={[
           {
             label: 'eLearning.onlineExams.createNew',
+            onClick: () => setIsCreateOpen(true),
             variant: 'primary',
             imgSrc: PlusIcon,
             imgClassName: 'w-6 h-6',
@@ -101,6 +105,9 @@ export default function OnlineExamsPage() {
           <OnlineExamsList />
         </Card>
       </div>
+
+      {/* Create new exam popup */}
+      <CreateExamPopup isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
     </div>
   );
 }
