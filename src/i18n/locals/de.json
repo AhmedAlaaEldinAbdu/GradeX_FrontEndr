@@ -111,7 +111,35 @@
         "active": "Aktiv",
         "scheduled": "Geplant"
       },
-      "completedExam": "haben die Prüfung abgeschlossen"
+      "completedExam": "haben die Prüfung abgeschlossen",
+      "popup": {
+        "methods": {
+          "ai": {
+            "title": "Mit KI",
+            "subtitle": "Erstellt sofort Fragen",
+            "time": "Ein bis zwei Minuten",
+            "f1": "100% neue Fragen",
+            "f2": "Erklärungen zu Fragen verfügbar",
+            "f3": "Anpassung nach Niveau"
+          },
+          "questionBank": {
+            "title": "Aus dem Fragenpool",
+            "subtitle": "Wählen Sie aus 1.200 Fragen",
+            "time": "5 - 10 Minuten",
+            "f1": "Erprobte Fragen",
+            "f2": "Vielfältige Fragen",
+            "f3": "Mehrere Quellen"
+          },
+          "manual": {
+            "title": "Manuell von Grund auf",
+            "subtitle": "Schreiben Sie Ihre eigenen Fragen",
+            "time": "Individuelle Zeit",
+            "f1": "Kreative Note",
+            "f2": "Volle Kontrolle",
+            "f3": "Vollständige Privatsphäre"
+          }
+        }
+      }
     }
   },
   "schoolDashboard": {

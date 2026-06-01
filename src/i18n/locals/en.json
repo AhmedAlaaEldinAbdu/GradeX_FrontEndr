@@ -111,7 +111,35 @@
         "active": "Active",
         "scheduled": "Scheduled"
       },
-      "completedExam": "completed the exam"
+      "completedExam": "completed the exam",
+      "popup": {
+        "methods": {
+          "ai": {
+            "title": "With AI",
+            "subtitle": "Generates questions instantly",
+            "time": "One to two minutes",
+            "f1": "100% new questions",
+            "f2": "Explanations available for questions",
+            "f3": "Customization by level"
+          },
+          "questionBank": {
+            "title": "From the question bank",
+            "subtitle": "Choose from 1,200 questions",
+            "time": "5 - 10 minutes",
+            "f1": "Tested questions",
+            "f2": "Varied questions",
+            "f3": "Multiple sources"
+          },
+          "manual": {
+            "title": "Manually from scratch",
+            "subtitle": "Write your own questions",
+            "time": "Custom time",
+            "f1": "Creative touch",
+            "f2": "Full control",
+            "f3": "Complete privacy"
+          }
+        }
+      }
     }
   },
   "schoolDashboard": {

@@ -111,7 +111,35 @@
         "active": "Actif",
         "scheduled": "Planifié"
       },
-      "completedExam": "ont terminé l'examen"
+      "completedExam": "ont terminé l'examen",
+      "popup": {
+        "methods": {
+          "ai": {
+            "title": "Avec l'IA",
+            "subtitle": "Génère des questions instantanément",
+            "time": "Une à deux minutes",
+            "f1": "100% de nouvelles questions",
+            "f2": "Explications disponibles pour les questions",
+            "f3": "Personnalisation par niveau"
+          },
+          "questionBank": {
+            "title": "Depuis la banque de questions",
+            "subtitle": "Choisissez parmi 1 200 questions",
+            "time": "5 - 10 minutes",
+            "f1": "Questions éprouvées",
+            "f2": "Questions variées",
+            "f3": "Sources multiples"
+          },
+          "manual": {
+            "title": "Manuellement à partir de zéro",
+            "subtitle": "Rédigez vos propres questions",
+            "time": "Temps personnalisé",
+            "f1": "Touche créative",
+            "f2": "Contrôle total",
+            "f3": "Confidentialité totale"
+          }
+        }
+      }
     }
   },
   "schoolDashboard": {
