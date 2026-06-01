@@ -75,6 +75,43 @@
       "status": {
         "active": "Actif"
       }
+    },
+    "onlineExams": {
+      "title": "Examens en ligne",
+      "createNew": "Créer un nouvel examen",
+      "create": {
+        "ai": {
+          "title": "Ajouter un examen avec l'IA",
+          "description": "Choisissez parmi plus de 1 200 questions pour chaque matière et description souhaitée."
+        },
+        "questionBank": {
+          "title": "Ajouter un examen depuis la banque de questions",
+          "description": "Utilisez la banque de questions dans l'examen efficacement et facilement."
+        },
+        "manual": {
+          "title": "Ajouter un examen manuel",
+          "description": "Rédigez les questions que vous souhaitez en toute simplicité."
+        }
+      },
+      "listTitle": "Examens",
+      "searchPlaceholder": "Rechercher un nom d'examen",
+      "clearFilter": "Effacer le filtre",
+      "filters": {
+        "status": "Statut",
+        "level": "Niveau de l'examen",
+        "stage": "Niveau scolaire",
+        "subject": "Matière"
+      },
+      "difficulty": {
+        "easy": "Facile",
+        "medium": "Moyen",
+        "hard": "Difficile"
+      },
+      "status": {
+        "active": "Actif",
+        "scheduled": "Planifié"
+      },
+      "completedExam": "ont terminé l'examen"
     }
   },
   "schoolDashboard": {

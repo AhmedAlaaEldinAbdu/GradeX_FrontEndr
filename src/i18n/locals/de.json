@@ -75,6 +75,43 @@
       "status": {
         "active": "Aktiv"
       }
+    },
+    "onlineExams": {
+      "title": "Online-Prüfungen",
+      "createNew": "Neue Prüfung erstellen",
+      "create": {
+        "ai": {
+          "title": "Prüfung mit KI hinzufügen",
+          "description": "Wählen Sie aus mehr als 1.200 Fragen für jedes Fach und jede gewünschte Beschreibung."
+        },
+        "questionBank": {
+          "title": "Prüfung aus dem Fragenpool hinzufügen",
+          "description": "Nutzen Sie den Fragenpool in der Prüfung effizient und einfach."
+        },
+        "manual": {
+          "title": "Manuelle Prüfung hinzufügen",
+          "description": "Schreiben Sie die gewünschten Fragen ganz einfach."
+        }
+      },
+      "listTitle": "Prüfungen",
+      "searchPlaceholder": "Nach einem Prüfungsnamen suchen",
+      "clearFilter": "Filter löschen",
+      "filters": {
+        "status": "Status",
+        "level": "Prüfungsniveau",
+        "stage": "Bildungsstufe",
+        "subject": "Fach"
+      },
+      "difficulty": {
+        "easy": "Einfach",
+        "medium": "Mittel",
+        "hard": "Schwer"
+      },
+      "status": {
+        "active": "Aktiv",
+        "scheduled": "Geplant"
+      },
+      "completedExam": "haben die Prüfung abgeschlossen"
     }
   },
   "schoolDashboard": {

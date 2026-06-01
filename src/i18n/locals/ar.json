@@ -75,6 +75,43 @@
       "status": {
         "active": "نشط"
       }
+    },
+    "onlineExams": {
+      "title": "الأختبارات إلكترونية",
+      "createNew": "إنشاء الأختبار الجديدة",
+      "create": {
+        "ai": {
+          "title": "إضافة أختبار بالذكاء الأصطناعي",
+          "description": "أختر من أكثر من 1,200 سؤال لكل مادة وصف تريده."
+        },
+        "questionBank": {
+          "title": "إضافة أختبار بواسطة بنك الأسئلة",
+          "description": "أستخدم بنك الاسئلة في الأختبار بكفاءة و سهولة."
+        },
+        "manual": {
+          "title": "إضافة أختبار يدوي",
+          "description": "أكتب الاسئلة التي تريدها بكل سهولة و يسير."
+        }
+      },
+      "listTitle": "الأختبارات",
+      "searchPlaceholder": "ابحث عن اسم الأختبار",
+      "clearFilter": "مسح الفلتر",
+      "filters": {
+        "status": "الحالة",
+        "level": "مستوى الأختبار",
+        "stage": "المرحلة التعليمية",
+        "subject": "المادة"
+      },
+      "difficulty": {
+        "easy": "سهل",
+        "medium": "متوسط",
+        "hard": "صعب"
+      },
+      "status": {
+        "active": "نشط",
+        "scheduled": "مجدول"
+      },
+      "completedExam": "أكملوا الأختبار"
     }
   },
   "schoolDashboard": {
