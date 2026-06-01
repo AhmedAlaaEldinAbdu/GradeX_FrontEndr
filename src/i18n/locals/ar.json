@@ -10,6 +10,58 @@
       "fr": "الفرنسية"
     }
   },
+  "eLearning": {
+    "title": "نظرة عامة",
+    "metrics": {
+      "successRate": "معدل النجاح",
+      "questionBank": "بنك الأسئلة",
+      "totalStudents": "إجمالي الطلاب",
+      "activeExams": "الاختبارات النشطة"
+    },
+    "units": {
+      "question": "سؤال",
+      "student": "طالب",
+      "exam": "أختبار"
+    },
+    "moodle": {
+      "name": "Moodle LMS",
+      "connected": "متصل",
+      "lastSync": "آخر مزامنة: منذ {{minutes}} دقائق – {{questions}} سؤال مزامن – {{students}} طالب",
+      "syncNow": "مزامنة الآن"
+    },
+    "programs": {
+      "title": "البرامج التعليمية",
+      "exams": "الأختبارت",
+      "courses": "الكورسات",
+      "workshops": "الورش التعليمية"
+    },
+    "content": {
+      "title": "المحتوى التعليمي",
+      "filters": {
+        "term": "ترم",
+        "month": "شهر",
+        "week": "اسبوع",
+        "day": "يوم"
+      },
+      "days": {
+        "sun": "الأحد",
+        "mon": "الأثنين",
+        "tue": "الثلاثاء",
+        "wed": "الأربعاء",
+        "thu": "الخميس"
+      }
+    },
+    "exams": {
+      "title": "الأختبارات",
+      "viewAll": "عرض الكل",
+      "emptyDescription": "لم يتم إضافة أي أختبار حتى الآن. يمكنك البدء بإضافة أختبارات"
+    },
+    "courses": {
+      "title": "الدورات التدريبية",
+      "viewAll": "عرض الكل",
+      "emptyDescription": "لم يتم إضافة أي دورات تدريبية حتى الآن. يمكنك البدء بإضافة الكورسات"
+    }
+  },
   "schoolDashboard": {
     "title": "لوحة التحكم",
     "summaryPrefix": "إليك ملخص اليوم",

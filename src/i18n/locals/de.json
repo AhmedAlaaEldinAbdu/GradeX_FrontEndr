@@ -10,6 +10,58 @@
       "fr": "Französisch"
     }
   },
+  "eLearning": {
+    "title": "Übersicht",
+    "metrics": {
+      "successRate": "Erfolgsquote",
+      "questionBank": "Fragenpool",
+      "totalStudents": "Schüler insgesamt",
+      "activeExams": "Aktive Prüfungen"
+    },
+    "units": {
+      "question": "Frage",
+      "student": "Schüler",
+      "exam": "Prüfung"
+    },
+    "moodle": {
+      "name": "Moodle LMS",
+      "connected": "Verbunden",
+      "lastSync": "Letzte Synchronisierung: vor {{minutes}} Minuten – {{questions}} Fragen synchronisiert – {{students}} Schüler",
+      "syncNow": "Jetzt synchronisieren"
+    },
+    "programs": {
+      "title": "Bildungsprogramme",
+      "exams": "Prüfungen",
+      "courses": "Kurse",
+      "workshops": "Workshops"
+    },
+    "content": {
+      "title": "Lerninhalte",
+      "filters": {
+        "term": "Semester",
+        "month": "Monat",
+        "week": "Woche",
+        "day": "Tag"
+      },
+      "days": {
+        "sun": "So",
+        "mon": "Mo",
+        "tue": "Di",
+        "wed": "Mi",
+        "thu": "Do"
+      }
+    },
+    "exams": {
+      "title": "Prüfungen",
+      "viewAll": "Alle anzeigen",
+      "emptyDescription": "Es wurden noch keine Prüfungen hinzugefügt. Sie können mit dem Hinzufügen von Prüfungen beginnen"
+    },
+    "courses": {
+      "title": "Schulungskurse",
+      "viewAll": "Alle anzeigen",
+      "emptyDescription": "Es wurden noch keine Schulungskurse hinzugefügt. Sie können mit dem Hinzufügen von Kursen beginnen"
+    }
+  },
   "schoolDashboard": {
     "title": "Dashboard",
     "summaryPrefix": "Hier ist Ihre Zusammenfassung für",

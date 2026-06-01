@@ -10,6 +10,58 @@
       "fr": "French"
     }
   },
+  "eLearning": {
+    "title": "Overview",
+    "metrics": {
+      "successRate": "Success Rate",
+      "questionBank": "Question Bank",
+      "totalStudents": "Total Students",
+      "activeExams": "Active Exams"
+    },
+    "units": {
+      "question": "question",
+      "student": "student",
+      "exam": "exam"
+    },
+    "moodle": {
+      "name": "Moodle LMS",
+      "connected": "Connected",
+      "lastSync": "Last sync: {{minutes}} minutes ago – {{questions}} questions synced – {{students}} students",
+      "syncNow": "Sync Now"
+    },
+    "programs": {
+      "title": "Educational Programs",
+      "exams": "Exams",
+      "courses": "Courses",
+      "workshops": "Workshops"
+    },
+    "content": {
+      "title": "Educational Content",
+      "filters": {
+        "term": "Term",
+        "month": "Month",
+        "week": "Week",
+        "day": "Day"
+      },
+      "days": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu"
+      }
+    },
+    "exams": {
+      "title": "Exams",
+      "viewAll": "View All",
+      "emptyDescription": "No exams have been added yet. You can start by adding exams"
+    },
+    "courses": {
+      "title": "Training Courses",
+      "viewAll": "View All",
+      "emptyDescription": "No training courses have been added yet. You can start by adding courses"
+    }
+  },
   "schoolDashboard": {
     "title": "Dashboard",
     "summaryPrefix": "Here's your summary for",

@@ -10,6 +10,58 @@
       "fr": "Français"
     }
   },
+  "eLearning": {
+    "title": "Aperçu",
+    "metrics": {
+      "successRate": "Taux de réussite",
+      "questionBank": "Banque de questions",
+      "totalStudents": "Total des élèves",
+      "activeExams": "Examens actifs"
+    },
+    "units": {
+      "question": "question",
+      "student": "élève",
+      "exam": "examen"
+    },
+    "moodle": {
+      "name": "Moodle LMS",
+      "connected": "Connecté",
+      "lastSync": "Dernière synchronisation : il y a {{minutes}} minutes – {{questions}} questions synchronisées – {{students}} élèves",
+      "syncNow": "Synchroniser"
+    },
+    "programs": {
+      "title": "Programmes éducatifs",
+      "exams": "Examens",
+      "courses": "Cours",
+      "workshops": "Ateliers"
+    },
+    "content": {
+      "title": "Contenu éducatif",
+      "filters": {
+        "term": "Trimestre",
+        "month": "Mois",
+        "week": "Semaine",
+        "day": "Jour"
+      },
+      "days": {
+        "sun": "Dim",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mer",
+        "thu": "Jeu"
+      }
+    },
+    "exams": {
+      "title": "Examens",
+      "viewAll": "Tout afficher",
+      "emptyDescription": "Aucun examen n'a encore été ajouté. Vous pouvez commencer par ajouter des examens"
+    },
+    "courses": {
+      "title": "Cours de formation",
+      "viewAll": "Tout afficher",
+      "emptyDescription": "Aucun cours de formation n'a encore été ajouté. Vous pouvez commencer par ajouter des cours"
+    }
+  },
   "schoolDashboard": {
     "title": "Tableau de bord",
     "summaryPrefix": "Voici votre résumé pour",

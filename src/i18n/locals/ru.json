@@ -10,6 +10,58 @@
       "fr": "Французский"
     }
   },
+  "eLearning": {
+    "title": "Обзор",
+    "metrics": {
+      "successRate": "Процент успеха",
+      "questionBank": "Банк вопросов",
+      "totalStudents": "Всего учащихся",
+      "activeExams": "Активные экзамены"
+    },
+    "units": {
+      "question": "вопрос",
+      "student": "учащийся",
+      "exam": "экзамен"
+    },
+    "moodle": {
+      "name": "Moodle LMS",
+      "connected": "Подключено",
+      "lastSync": "Последняя синхронизация: {{minutes}} мин. назад – {{questions}} вопросов синхронизировано – {{students}} учащихся",
+      "syncNow": "Синхронизировать"
+    },
+    "programs": {
+      "title": "Образовательные программы",
+      "exams": "Экзамены",
+      "courses": "Курсы",
+      "workshops": "Мастер-классы"
+    },
+    "content": {
+      "title": "Учебный контент",
+      "filters": {
+        "term": "Семестр",
+        "month": "Месяц",
+        "week": "Неделя",
+        "day": "День"
+      },
+      "days": {
+        "sun": "Вс",
+        "mon": "Пн",
+        "tue": "Вт",
+        "wed": "Ср",
+        "thu": "Чт"
+      }
+    },
+    "exams": {
+      "title": "Экзамены",
+      "viewAll": "Показать все",
+      "emptyDescription": "Экзамены ещё не добавлены. Вы можете начать с добавления экзаменов"
+    },
+    "courses": {
+      "title": "Учебные курсы",
+      "viewAll": "Показать все",
+      "emptyDescription": "Учебные курсы ещё не добавлены. Вы можете начать с добавления курсов"
+    }
+  },
   "schoolDashboard": {
     "title": "Главная панель",
     "summaryPrefix": "Ваша сводка на",
