@@ -3,17 +3,16 @@ import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
 import MetricCard from '@/shared/components/MetricCard';
-import EmptyState from '@/shared/components/EmptyState';
 import CustomImage from '@/shared/components/CustomImage';
 import MoodleSyncBanner from './components/MoodleSyncBanner';
 import EducationalProgramsCard from './components/EducationalProgramsCard';
 import EducationalContentCard from './components/EducationalContentCard';
+import ExamsList from './components/ExamsList';
+import TrainingCoursesList from './components/TrainingCoursesList';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import TeachersLightBlueIcon from '@gradex/assets/icons/TeachersLightBlue.svg';
 import StudentYellowIcon from '@gradex/assets/icons/StudentYellow.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
-import MathIcon from '@gradex/assets/icons/Math.svg';
-import CourseMaterialIcon from '@gradex/assets/icons/CourseMaterial.svg';
 
 export default function ELearningOverviewPage() {
   const { t } = useTranslation();
@@ -82,16 +81,7 @@ export default function ELearningOverviewPage() {
               {t('eLearning.exams.viewAll')}
             </button>
           </div>
-          <EmptyState
-            icon={
-              <CustomImage
-                src={MathIcon}
-                alt=""
-                className="mx-auto h-[150px] w-[150px] mix-blend-luminosity"
-              />
-            }
-            description={t('eLearning.exams.emptyDescription')}
-          />
+          <ExamsList />
         </Card>
 
         {/* Training courses */}
@@ -103,16 +93,7 @@ export default function ELearningOverviewPage() {
               {t('eLearning.courses.viewAll')}
             </button>
           </div>
-          <EmptyState
-            icon={
-              <CustomImage
-                src={CourseMaterialIcon}
-                alt=""
-                className="mx-auto h-[150px] w-[150px] mix-blend-luminosity"
-              />
-            }
-            description={t('eLearning.courses.emptyDescription')}
-          />
+          <TrainingCoursesList />
         </Card>
       </div>
     </div>
