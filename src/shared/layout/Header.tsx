@@ -45,7 +45,7 @@ const Header: React.FC = () => {
           <RoleSwitcher variant="icon-only" size="md" />
 
           {/* Language Switcher */}
-          <LanguageSwitcher variant="icon-only" size="md" />
+          <LanguageSwitcher variant="icon-only" size="sm" />
 
           {/* Notifications */}
           <div className="relative">
