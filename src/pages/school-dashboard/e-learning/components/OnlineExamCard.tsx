@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
 import InstituteIcon from '@gradex/assets/icons/Institute.svg';
@@ -80,10 +81,22 @@ function ExamMetaItem({ icon, text }: { icon: string; text: string }) {
 
 export default function OnlineExamCard({ exam }: { exam: OnlineExamItem }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const source = SOURCE_STYLES[exam.source];
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-[#DDE0E0] p-4">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => navigate(`/lms/online-exams/${exam.id}`)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          navigate(`/lms/online-exams/${exam.id}`);
+        }
+      }}
+      className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-[#DDE0E0] p-4 transition-colors hover:bg-gray-50"
+    >
       <div className="flex items-center gap-4">
         <div
           className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${source.boxClass}`}
