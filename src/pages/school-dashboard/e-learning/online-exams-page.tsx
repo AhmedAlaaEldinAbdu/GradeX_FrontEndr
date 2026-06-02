@@ -7,7 +7,7 @@ import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
 import ExamCreationCard from './components/ExamCreationCard';
 import OnlineExamsList from './components/OnlineExamsList';
-import CreateExamPopup from './components/CreateExamPopup';
+import CreateExamPopup from './popups/CreateExamPopup';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import TaskIcon from '@gradex/assets/icons/Task.svg';
