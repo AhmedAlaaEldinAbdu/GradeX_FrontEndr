@@ -112,6 +112,40 @@
         "scheduled": "Geplant"
       },
       "completedExam": "haben die Prüfung abgeschlossen",
+      "details": {
+        "avgTime": "Durchschnittszeit",
+        "questionsCount": "Anzahl der Fragen",
+        "attendanceCount": "Anwesenheitszahl",
+        "minuteUnit": "Minuten",
+        "tabs": {
+          "overview": "Überblick",
+          "questions": "Fragen",
+          "students": "Schüler"
+        },
+        "distribution": {
+          "title": "Ergebnisverteilung",
+          "vsPrevious": "im Vergleich zur vorherigen Prüfung"
+        },
+        "questionsEmpty": "Die Prüfungsfragen werden hier in Kürze angezeigt",
+        "studentsEmpty": "Die Schülerliste wird hier in Kürze angezeigt",
+        "correctAnswers": "Richtige Antworten",
+        "wrongAnswers": "Falsche Antworten",
+        "avgQuestionTime": "Durchschnittszeit",
+        "secondUnit": "Sekunden",
+        "studentsTable": {
+          "searchPlaceholder": "Nach einem Schülernamen suchen",
+          "reviewCorrection": "Korrektur ansehen",
+          "studentName": "Schülername",
+          "grade": "Note",
+          "rating": "Bewertung",
+          "timeTaken": "Benötigte Zeit"
+        },
+        "review": {
+          "correctAnswer": "Richtige Antwort",
+          "wrongAnswer": "Falsche Antwort",
+          "answer": "Antwort"
+        }
+      },
       "popup": {
         "methods": {
           "ai": {

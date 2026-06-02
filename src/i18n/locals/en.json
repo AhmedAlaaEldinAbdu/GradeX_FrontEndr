@@ -112,6 +112,40 @@
         "scheduled": "Scheduled"
       },
       "completedExam": "completed the exam",
+      "details": {
+        "avgTime": "Average time",
+        "questionsCount": "Number of questions",
+        "attendanceCount": "Attendance count",
+        "minuteUnit": "minutes",
+        "tabs": {
+          "overview": "Overview",
+          "questions": "Questions",
+          "students": "Students"
+        },
+        "distribution": {
+          "title": "Results distribution",
+          "vsPrevious": "vs. the previous exam"
+        },
+        "questionsEmpty": "The exam questions will be shown here soon",
+        "studentsEmpty": "The list of students will be shown here soon",
+        "correctAnswers": "Correct answers",
+        "wrongAnswers": "Wrong answers",
+        "avgQuestionTime": "Average time",
+        "secondUnit": "seconds",
+        "studentsTable": {
+          "searchPlaceholder": "Search for a student name",
+          "reviewCorrection": "Review correction",
+          "studentName": "Student name",
+          "grade": "Grade",
+          "rating": "Rating",
+          "timeTaken": "Time taken"
+        },
+        "review": {
+          "correctAnswer": "Correct answer",
+          "wrongAnswer": "Wrong answer",
+          "answer": "Answer"
+        }
+      },
       "popup": {
         "methods": {
           "ai": {

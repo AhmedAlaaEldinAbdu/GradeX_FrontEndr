@@ -112,6 +112,40 @@
         "scheduled": "Planifié"
       },
       "completedExam": "ont terminé l'examen",
+      "details": {
+        "avgTime": "Temps moyen",
+        "questionsCount": "Nombre de questions",
+        "attendanceCount": "Nombre de présents",
+        "minuteUnit": "minutes",
+        "tabs": {
+          "overview": "Aperçu",
+          "questions": "Questions",
+          "students": "Étudiants"
+        },
+        "distribution": {
+          "title": "Distribution des résultats",
+          "vsPrevious": "par rapport à l'examen précédent"
+        },
+        "questionsEmpty": "Les questions de l'examen seront affichées ici bientôt",
+        "studentsEmpty": "La liste des étudiants sera affichée ici bientôt",
+        "correctAnswers": "Réponses correctes",
+        "wrongAnswers": "Réponses incorrectes",
+        "avgQuestionTime": "Temps moyen",
+        "secondUnit": "secondes",
+        "studentsTable": {
+          "searchPlaceholder": "Rechercher un nom d'étudiant",
+          "reviewCorrection": "Voir la correction",
+          "studentName": "Nom de l'étudiant",
+          "grade": "Note",
+          "rating": "Évaluation",
+          "timeTaken": "Temps écoulé"
+        },
+        "review": {
+          "correctAnswer": "Bonne réponse",
+          "wrongAnswer": "Mauvaise réponse",
+          "answer": "Réponse"
+        }
+      },
       "popup": {
         "methods": {
           "ai": {

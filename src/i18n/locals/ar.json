@@ -112,6 +112,40 @@
         "scheduled": "مجدول"
       },
       "completedExam": "أكملوا الأختبار",
+      "details": {
+        "avgTime": "متوسط الوقت",
+        "questionsCount": "عدد الاسئلة",
+        "attendanceCount": "عدد الحضور",
+        "minuteUnit": "دقيقة",
+        "tabs": {
+          "overview": "نظرة عامة",
+          "questions": "الأسئلة",
+          "students": "الطلاب"
+        },
+        "distribution": {
+          "title": "توزيع النتائج",
+          "vsPrevious": "عن الأختبار السابق"
+        },
+        "questionsEmpty": "سيتم عرض أسئلة الأختبار هنا قريباً",
+        "studentsEmpty": "سيتم عرض قائمة الطلاب هنا قريباً",
+        "correctAnswers": "عدد الإجابات صحيحة",
+        "wrongAnswers": "عدد الإجابات خاطئة",
+        "avgQuestionTime": "متوسط الوقت",
+        "secondUnit": "ثانية",
+        "studentsTable": {
+          "searchPlaceholder": "ابحث عن اسم الطالب",
+          "reviewCorrection": "معاينة التصحيح",
+          "studentName": "اسم الطالب",
+          "grade": "الدرجة",
+          "rating": "التقدير",
+          "timeTaken": "الوقت المستغرق"
+        },
+        "review": {
+          "correctAnswer": "الإجابة صحيحة",
+          "wrongAnswer": "الإجابة الخطأ",
+          "answer": "الإجابة"
+        }
+      },
       "popup": {
         "methods": {
           "ai": {

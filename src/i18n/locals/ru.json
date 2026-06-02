@@ -112,6 +112,40 @@
         "scheduled": "Запланировано"
       },
       "completedExam": "завершили экзамен",
+      "details": {
+        "avgTime": "Среднее время",
+        "questionsCount": "Количество вопросов",
+        "attendanceCount": "Количество присутствующих",
+        "minuteUnit": "мин.",
+        "tabs": {
+          "overview": "Обзор",
+          "questions": "Вопросы",
+          "students": "Студенты"
+        },
+        "distribution": {
+          "title": "Распределение результатов",
+          "vsPrevious": "по сравнению с прошлым экзаменом"
+        },
+        "questionsEmpty": "Вопросы экзамена скоро появятся здесь",
+        "studentsEmpty": "Список студентов скоро появится здесь",
+        "correctAnswers": "Правильные ответы",
+        "wrongAnswers": "Неправильные ответы",
+        "avgQuestionTime": "Среднее время",
+        "secondUnit": "сек.",
+        "studentsTable": {
+          "searchPlaceholder": "Поиск по имени студента",
+          "reviewCorrection": "Просмотр проверки",
+          "studentName": "Имя студента",
+          "grade": "Оценка",
+          "rating": "Рейтинг",
+          "timeTaken": "Затраченное время"
+        },
+        "review": {
+          "correctAnswer": "Правильный ответ",
+          "wrongAnswer": "Неправильный ответ",
+          "answer": "Ответ"
+        }
+      },
       "popup": {
         "methods": {
           "ai": {
