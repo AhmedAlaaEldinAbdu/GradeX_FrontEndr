@@ -9,6 +9,8 @@ import ELearningOverviewPage from '@/pages/school-dashboard/e-learning/e-learnin
 import OnlineExamsPage from '@/pages/school-dashboard/e-learning/online-exams-page';
 import ExamDetailsPage from '@/pages/school-dashboard/e-learning/exam-details-page';
 import ExamReviewPage from '@/pages/school-dashboard/e-learning/exam-review-page';
+import TrainingCoursesPage from '@/pages/school-dashboard/e-learning/training-courses-page';
+import AddTrainingCoursePage from '@/pages/school-dashboard/e-learning/add-training-course-page';
 import StudentManagementPage from '@/pages/school-dashboard/student-management/student-management-page';
 import StudentDetailsPage from '@/pages/school-dashboard/student-management/student-details-page';
 import StudentInterviewsPage from '@/pages/school-dashboard/student-interviews/student-interviews-page';
@@ -1026,10 +1028,17 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الدورات التدريبية</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
-              </div>
+              <TrainingCoursesPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/courses/add"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddTrainingCoursePage />
             </MainLayout>
           </ProtectedRoute>
         }
