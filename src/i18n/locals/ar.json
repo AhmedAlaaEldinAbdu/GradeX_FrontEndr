@@ -77,6 +77,59 @@
       }
     },
     "onlineExams": {
+      "addAI": {
+        "steps": {
+          "basicInfo": "المعلومات الأساسية",
+          "questions": "أسئلة الأختبار",
+          "review": "توليد و مراجعة"
+        },
+        "fields": {
+          "titleAr": "عنوان الاختبار (باللغة الأولى)",
+          "titleArPlaceholder": "ادخل عنوان الاختبار (باللغة الأولى)",
+          "titleEn": "عنوان الاختبار (باللغة الثانية)",
+          "titleEnPlaceholder": "ادخل عنوان الاختبار (باللغة الثانية)",
+          "topic": "الدرس / الموضوع",
+          "topicPlaceholder": "مثل ضرب الكسور أو القسمة",
+          "language": "اللغة",
+          "languagePlaceholder": "أختر اللغة",
+          "subject": "المادة",
+          "subjectPlaceholder": "اختر المادة",
+          "stage": "المراحل الدراسية",
+          "stagePlaceholder": "اختر المراحل الدراسية",
+          "grade": "الصف",
+          "gradePlaceholder": "اختر الصفوف",
+          "targetAudience": "الأختبار موجه إلي",
+          "allClasses": "جميع طلاب الفصول",
+          "specificStudents": "تحديد طلاب",
+          "startDate": "موعد بدء الأختبار",
+          "startDatePlaceholder": "اختر موعد بدء الأختبار",
+          "endDate": "موعد انتهاء الأختبار",
+          "endDatePlaceholder": "اختر موعد انتهاء الأختبار",
+          "passingGrade": "درجة النجاح %",
+          "passingGradePlaceholder": "ادخل درجة النجاح",
+          "duration": "المدة (دقيقة)",
+          "durationPlaceholder": "اختر المدة"
+        },
+        "moreStudents": "+{{num}} طالب",
+        "languageOptions": {
+          "ar": "اللغة العربية",
+          "en": "اللغة الإنجليزية"
+        },
+        "comingSoon": "سيتم إضافة هذه الخطوة قريباً",
+        "validation": {
+          "titleArRequired": "عنوان الاختبار باللغة الأولى مطلوب",
+          "titleEnRequired": "عنوان الاختبار باللغة الثانية مطلوب",
+          "topicRequired": "الدرس / الموضوع مطلوب",
+          "languageRequired": "اللغة مطلوبة",
+          "subjectRequired": "المادة مطلوبة",
+          "stageRequired": "المرحلة الدراسية مطلوبة",
+          "gradeRequired": "الصف مطلوب",
+          "targetAudienceRequired": "يرجى تحديد الفئة المستهدفة",
+          "startDateRequired": "موعد بدء الأختبار مطلوب",
+          "passingGradeRequired": "درجة النجاح مطلوبة",
+          "passingGradeRange": "درجة النجاح يجب أن تكون بين 0 و 100"
+        }
+      },
       "title": "الأختبارات إلكترونية",
       "createNew": "إنشاء الأختبار الجديدة",
       "create": {

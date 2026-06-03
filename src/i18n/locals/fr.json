@@ -77,6 +77,59 @@
       }
     },
     "onlineExams": {
+      "addAI": {
+        "steps": {
+          "basicInfo": "Informations de base",
+          "questions": "Questions de l'examen",
+          "review": "Génération et révision"
+        },
+        "fields": {
+          "titleAr": "Titre de l'examen (dans la première langue)",
+          "titleArPlaceholder": "Saisissez le titre de l'examen (dans la première langue)",
+          "titleEn": "Titre de l'examen (dans la deuxième langue)",
+          "titleEnPlaceholder": "Saisissez le titre de l'examen (dans la deuxième langue)",
+          "topic": "Leçon / Sujet",
+          "topicPlaceholder": "ex. multiplication de fractions ou division",
+          "language": "Langue",
+          "languagePlaceholder": "Sélectionnez la langue",
+          "subject": "Matière",
+          "subjectPlaceholder": "Sélectionnez la matière",
+          "stage": "Niveau scolaire",
+          "stagePlaceholder": "Sélectionnez le niveau scolaire",
+          "grade": "Classe",
+          "gradePlaceholder": "Sélectionnez les classes",
+          "targetAudience": "L'examen s'adresse à",
+          "allClasses": "Tous les élèves des classes",
+          "specificStudents": "Élèves spécifiques",
+          "startDate": "Date de début de l'examen",
+          "startDatePlaceholder": "Sélectionnez la date de début de l'examen",
+          "endDate": "Date de fin de l'examen",
+          "endDatePlaceholder": "Sélectionnez la date de fin de l'examen",
+          "passingGrade": "Note de passage %",
+          "passingGradePlaceholder": "Saisissez la note de passage",
+          "duration": "Durée (minutes)",
+          "durationPlaceholder": "Sélectionnez la durée"
+        },
+        "moreStudents": "+{{num}} élèves",
+        "languageOptions": {
+          "ar": "Arabe",
+          "en": "Anglais"
+        },
+        "comingSoon": "Cette étape sera ajoutée prochainement",
+        "validation": {
+          "titleArRequired": "Le titre de l'examen dans la première langue est requis",
+          "titleEnRequired": "Le titre de l'examen dans la deuxième langue est requis",
+          "topicRequired": "La leçon / le sujet est requis",
+          "languageRequired": "La langue est requise",
+          "subjectRequired": "La matière est requise",
+          "stageRequired": "Le niveau scolaire est requis",
+          "gradeRequired": "La classe est requise",
+          "targetAudienceRequired": "Veuillez sélectionner le public cible",
+          "startDateRequired": "La date de début de l'examen est requise",
+          "passingGradeRequired": "La note de passage est requise",
+          "passingGradeRange": "La note de passage doit être comprise entre 0 et 100"
+        }
+      },
       "title": "Examens en ligne",
       "createNew": "Créer un nouvel examen",
       "create": {

@@ -77,6 +77,59 @@
       }
     },
     "onlineExams": {
+      "addAI": {
+        "steps": {
+          "basicInfo": "Basic Information",
+          "questions": "Exam Questions",
+          "review": "Generate & Review"
+        },
+        "fields": {
+          "titleAr": "Exam title (in First Language)",
+          "titleArPlaceholder": "Enter the exam title (in First Language)",
+          "titleEn": "Exam title (in Second Language)",
+          "titleEnPlaceholder": "Enter the exam title (in Second Language)",
+          "topic": "Lesson / Topic",
+          "topicPlaceholder": "e.g. multiplying fractions or division",
+          "language": "Language",
+          "languagePlaceholder": "Select the language",
+          "subject": "Subject",
+          "subjectPlaceholder": "Select the subject",
+          "stage": "Educational stage",
+          "stagePlaceholder": "Select the educational stage",
+          "grade": "Class",
+          "gradePlaceholder": "Select classes",
+          "targetAudience": "Exam is directed to",
+          "allClasses": "All class students",
+          "specificStudents": "Specific students",
+          "startDate": "Exam start date",
+          "startDatePlaceholder": "Select the exam start date",
+          "endDate": "Exam end date",
+          "endDatePlaceholder": "Select the exam end date",
+          "passingGrade": "Passing grade %",
+          "passingGradePlaceholder": "Enter the passing grade",
+          "duration": "Duration (minutes)",
+          "durationPlaceholder": "Select the duration"
+        },
+        "moreStudents": "+{{num}} students",
+        "languageOptions": {
+          "ar": "Arabic",
+          "en": "English"
+        },
+        "comingSoon": "This step will be added soon",
+        "validation": {
+          "titleArRequired": "The exam title in the first language is required",
+          "titleEnRequired": "The exam title in the second language is required",
+          "topicRequired": "The lesson / topic is required",
+          "languageRequired": "The language is required",
+          "subjectRequired": "The subject is required",
+          "stageRequired": "The educational stage is required",
+          "gradeRequired": "The class is required",
+          "targetAudienceRequired": "Please select the target audience",
+          "startDateRequired": "The exam start date is required",
+          "passingGradeRequired": "The passing grade is required",
+          "passingGradeRange": "The passing grade must be between 0 and 100"
+        }
+      },
       "title": "Online Exams",
       "createNew": "Create New Exam",
       "create": {

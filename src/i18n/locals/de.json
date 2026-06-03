@@ -77,6 +77,59 @@
       }
     },
     "onlineExams": {
+      "addAI": {
+        "steps": {
+          "basicInfo": "Grundinformationen",
+          "questions": "Prüfungsfragen",
+          "review": "Erstellen & Überprüfen"
+        },
+        "fields": {
+          "titleAr": "Prüfungstitel (in der ersten Sprache)",
+          "titleArPlaceholder": "Geben Sie den Prüfungstitel ein (in der ersten Sprache)",
+          "titleEn": "Prüfungstitel (in der zweiten Sprache)",
+          "titleEnPlaceholder": "Geben Sie den Prüfungstitel ein (in der zweiten Sprache)",
+          "topic": "Lektion / Thema",
+          "topicPlaceholder": "z. B. Multiplikation von Brüchen oder Division",
+          "language": "Sprache",
+          "languagePlaceholder": "Sprache auswählen",
+          "subject": "Fach",
+          "subjectPlaceholder": "Fach auswählen",
+          "stage": "Bildungsstufe",
+          "stagePlaceholder": "Bildungsstufe auswählen",
+          "grade": "Klasse",
+          "gradePlaceholder": "Klassen auswählen",
+          "targetAudience": "Prüfung richtet sich an",
+          "allClasses": "Alle Schüler der Klassen",
+          "specificStudents": "Bestimmte Schüler",
+          "startDate": "Startdatum der Prüfung",
+          "startDatePlaceholder": "Startdatum der Prüfung auswählen",
+          "endDate": "Enddatum der Prüfung",
+          "endDatePlaceholder": "Enddatum der Prüfung auswählen",
+          "passingGrade": "Bestehensnote %",
+          "passingGradePlaceholder": "Bestehensnote eingeben",
+          "duration": "Dauer (Minuten)",
+          "durationPlaceholder": "Dauer auswählen"
+        },
+        "moreStudents": "+{{num}} Schüler",
+        "languageOptions": {
+          "ar": "Arabisch",
+          "en": "Englisch"
+        },
+        "comingSoon": "Dieser Schritt wird bald hinzugefügt",
+        "validation": {
+          "titleArRequired": "Der Prüfungstitel in der ersten Sprache ist erforderlich",
+          "titleEnRequired": "Der Prüfungstitel in der zweiten Sprache ist erforderlich",
+          "topicRequired": "Lektion / Thema ist erforderlich",
+          "languageRequired": "Die Sprache ist erforderlich",
+          "subjectRequired": "Das Fach ist erforderlich",
+          "stageRequired": "Die Bildungsstufe ist erforderlich",
+          "gradeRequired": "Die Klasse ist erforderlich",
+          "targetAudienceRequired": "Bitte wählen Sie die Zielgruppe",
+          "startDateRequired": "Das Startdatum der Prüfung ist erforderlich",
+          "passingGradeRequired": "Die Bestehensnote ist erforderlich",
+          "passingGradeRange": "Die Bestehensnote muss zwischen 0 und 100 liegen"
+        }
+      },
       "title": "Online-Prüfungen",
       "createNew": "Neue Prüfung erstellen",
       "create": {
