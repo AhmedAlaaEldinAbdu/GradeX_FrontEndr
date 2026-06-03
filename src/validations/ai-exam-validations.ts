@@ -1,4 +1,4 @@
-import { array, object, string, type InferType } from 'yup';
+import { array, boolean, number, object, string, type InferType } from 'yup';
 
 export const AIExamBasicInfoSchema = object({
   titleAr: string().trim().required('eLearning.onlineExams.addAI.validation.titleArRequired'),
@@ -27,3 +27,23 @@ export const AIExamBasicInfoSchema = object({
 });
 
 export type AIExamBasicInfoProps = InferType<typeof AIExamBasicInfoSchema>;
+
+export const AIExamQuestionsSchema = object({
+  numberOfQuestions: string().required(
+    'eLearning.onlineExams.addAI.validation.numberOfQuestionsRequired'
+  ),
+  totalPoints: string().required('eLearning.onlineExams.addAI.validation.totalPointsRequired'),
+  resultVisibility: string().required(
+    'eLearning.onlineExams.addAI.validation.resultVisibilityRequired'
+  ),
+  difficultyEasy: number().min(0).max(100).default(0),
+  difficultyMedium: number().min(0).max(100).default(0),
+  difficultyHard: number().min(0).max(100).default(0),
+  generateExplanation: boolean().default(false),
+});
+
+/** Full wizard schema (basic info + questions) used by the form resolver. */
+export const AIExamSchema = AIExamBasicInfoSchema.concat(AIExamQuestionsSchema);
+
+export type AIExamQuestionsProps = InferType<typeof AIExamQuestionsSchema>;
+export type AIExamProps = InferType<typeof AIExamSchema>;
