@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Modal from '@/shared/popups/Modal';
 import CustomImage from '@/shared/components/CustomImage';
 import ClockIcon from '@gradex/assets/icons/ClockYellow.svg';
@@ -49,6 +50,14 @@ type CreateExamPopupProps = {
 
 export default function CreateExamPopup({ isOpen, onClose }: CreateExamPopupProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleSelectMethod = (method: ExamMethod) => {
+    if (method === 'ai') {
+      onClose();
+      navigate('/lms/online-exams/create/ai');
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t('eLearning.onlineExams.createNew')} size="md">
@@ -61,6 +70,7 @@ export default function CreateExamPopup({ isOpen, onClose }: CreateExamPopupProp
             <button
               key={method.key}
               type="button"
+              onClick={() => handleSelectMethod(method.key)}
               className="flex flex-1 flex-col items-start gap-6 rounded-3xl border border-[#DDE0E0] p-6 text-start transition-colors hover:bg-gray-50"
             >
               <div className="flex flex-col items-start gap-3 self-stretch">
