@@ -1,19 +1,24 @@
 import { useTranslation } from 'react-i18next';
 import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
-import DotsIcon from '@gradex/assets/icons/Dots.svg';
+import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 import UserIcon from '@gradex/assets/icons/User.svg';
 import PeopleOutlineIcon from '@gradex/assets/icons/PeopleOutline.svg';
 import BookIcon from '@gradex/assets/icons/Book.svg';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import DocumentEditOutlineIcon from '@gradex/assets/icons/DocumentEditOutline.svg';
+import EditIcon from '@gradex/assets/icons/Edit.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import LearningCover from '@gradex/assets/images/Learning.png';
+
+export type CourseStatus = 'active' | 'completed' | 'ended';
 
 export type CourseItem = {
   id: string;
   title: string;
   description: string;
   instructor: string;
+  status: CourseStatus;
   progress: number;
   studentsCount: number;
   subject: string;
@@ -21,6 +26,12 @@ export type CourseItem = {
   /** e.g. "6/24" */
   lessons: string;
   coverImage?: string | null;
+};
+
+const STATUS_VARIANT: Record<CourseStatus, 'success' | 'info' | 'default'> = {
+  active: 'success',
+  completed: 'info',
+  ended: 'default',
 };
 
 function CourseInfoBox({ icon, text }: { icon: string; text: string }) {
@@ -46,9 +57,31 @@ function CourseInfoBox({ icon, text }: { icon: string; text: string }) {
   );
 }
 
-export default function CourseCard({ course }: { course: CourseItem }) {
+type CourseCardProps = {
+  course: CourseItem;
+  onEdit?: (course: CourseItem) => void;
+  onDelete?: (course: CourseItem) => void;
+};
+
+export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
   const { t } = useTranslation();
   const progress = Math.min(100, Math.max(0, course.progress));
+
+  const actions: Action[] = [
+    {
+      id: 'edit',
+      label: t('eLearning.courses.actions.edit'),
+      icon: EditIcon,
+      onClick: () => onEdit?.(course),
+    },
+    {
+      id: 'delete',
+      label: t('eLearning.courses.actions.delete'),
+      icon: TrashIcon,
+      color: 'text-red-500 hover:bg-red-50',
+      onClick: () => onDelete?.(course),
+    },
+  ];
 
   return (
     <div className="app-card-shadow flex flex-col overflow-hidden rounded-3xl border border-[#E6E6E6] bg-white">
@@ -61,12 +94,13 @@ export default function CourseCard({ course }: { course: CourseItem }) {
           className="h-full w-full object-cover"
         />
         <div className="bg-black/30 absolute inset-0" />
-        <button
-          type="button"
-          className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#F6F8F9]/60"
-        >
-          <CustomImage src={DotsIcon} alt="" className="h-4 w-4" />
-        </button>
+        <div className="absolute left-3 top-3">
+          <ActionsDropdown
+            actions={actions}
+            iconClassName="h-4 w-4"
+            triggerClassName="flex h-8 w-8 items-center justify-center rounded-full bg-[#F6F8F9]/60 transition-colors hover:bg-[#F6F8F9]"
+          />
+        </div>
       </div>
 
       {/* Body */}
@@ -80,7 +114,9 @@ export default function CourseCard({ course }: { course: CourseItem }) {
               {course.instructor}
             </div>
           </div>
-          <Badge variant="success">{t('eLearning.courses.status.active')}</Badge>
+          <Badge variant={STATUS_VARIANT[course.status]}>
+            {t(`eLearning.courses.status.${course.status}`)}
+          </Badge>
         </div>
 
         {/* Progress */}
@@ -99,7 +135,7 @@ export default function CourseCard({ course }: { course: CourseItem }) {
           <CourseInfoBox icon={BookIcon} text={course.subject} />
           <CourseInfoBox
             icon={PeopleOutlineIcon}
-            text={`${course.studentsCount} ${t('eLearning.units.student')}`}
+            text={`${course.studentsCount} ${t('eLearning.courses.units.student')}`}
           />
           <CourseInfoBox
             icon={DocumentEditOutlineIcon}
