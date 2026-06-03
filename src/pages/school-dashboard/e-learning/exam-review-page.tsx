@@ -25,7 +25,7 @@ export default function ExamReviewPage() {
         hasHeaderControls={false}
       />
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         <ReviewSummaryBanner />
         <ReviewCorrectionList />
       </div>
