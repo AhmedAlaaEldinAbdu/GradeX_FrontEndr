@@ -69,11 +69,126 @@
     "courses": {
       "title": "الدورات التدريبية",
       "viewAll": "عرض الكل",
-      "emptyDescription": "لم يتم إضافة أي دورات تدريبية حتى الآن. يمكنك البدء بإضافة الكورسات",
+      "emptyDescription": "لم يتم إضافة أي كورسات حتى الآن.",
       "progress": "التقدم",
       "lessonsUnit": "درس",
+      "searchPlaceholder": "ابحث عن اسم الدورة",
       "status": {
-        "active": "نشط"
+        "active": "نشط",
+        "completed": "مكتمل",
+        "ended": "انتهت"
+      },
+      "metrics": {
+        "attendanceRate": "معدل الحضور",
+        "totalStudents": "إجمالي الطلاب",
+        "activeCourses": "الدورات النشطة"
+      },
+      "units": {
+        "course": "دورة",
+        "student": "طالب"
+      },
+      "filters": {
+        "status": "الحالة",
+        "grades": "الصفوف الدراسية",
+        "subject": "اسم المادة"
+      },
+      "actions": {
+        "edit": "تعديل الدورة",
+        "delete": "حذف الدورة"
+      },
+      "add": {
+        "title": "إضافة دورة تدريبية",
+        "steps": {
+          "basic": "البيانات الأساسية",
+          "students": "الطلاب",
+          "lectures": "المحاضرات"
+        },
+        "uploadText": "اضغط هنا للاضافة صورة  أو ملف",
+        "lecturesPlaceholder": "سيتم إضافة المحاضرات هنا قريباً",
+        "studentsPlaceholder": "لم يتم تحديد أي طالب بعد",
+        "selectStudents": "تحديد الطلاب",
+        "selectedCount": "تم تحديد {{count}} طالب",
+        "samples": {
+          "subject": "مادة الرياضيات",
+          "teacher": "أحمد معتز حسن",
+          "platformTitle": "دورة عملية الضرب",
+          "platformDescription": "دورة تدريبية مبسطة لتعلّم مهارات الضرب وفهم أساسياته بطريقة سهلة وتفاعلية.",
+          "stages": {
+            "prep1": "الأول الأعدادي",
+            "prep2": "الثاني الأعدادي",
+            "prep3": "الثالث الأعدادي"
+          },
+          "grades": {
+            "g1": "1/1 ع",
+            "g2": "1/1 عر",
+            "g3": "2/1 ع",
+            "g4": "3/1 ع"
+          }
+        },
+        "students": {
+          "stage": "المرحلة الدراسية",
+          "stagePlaceholder": "اختر المرحلة الدراسية",
+          "grade": "الصف",
+          "gradePlaceholder": "اختر الصفوف",
+          "audience": "الدورة موجهة إلى",
+          "allClasses": "جميع طلاب الفصول",
+          "specific": "تحديد طلاب",
+          "moreStudents": "+{{count}} طالب"
+        },
+        "lectures": {
+          "source": "مصدر المحتوى",
+          "manual": "يدوي",
+          "platform": "من المنصة",
+          "section": "الدورة التدريبية",
+          "nameAr": "اسم المحاضرة (باللغة العربية)",
+          "nameArPlaceholder": "أدخل اسم المحاضرة باللغة العربية",
+          "nameEn": "اسم المحاضرة (باللغة الإنجليزية)",
+          "nameEnPlaceholder": "أدخل اسم المحاضرة باللغة الإنجليزية",
+          "duration": "مدة الدرس (دقيقة)",
+          "durationPlaceholder": "اختر مدة الأختبار (دقيقة)",
+          "video": "الفيديو",
+          "attachments": "مرفقات",
+          "searchPlaceholder": "ابحث عن اسم الدورة",
+          "lecturesCount": "عدد المحاضرات",
+          "level": "المستوى",
+          "lectureUnit": "محاضرة",
+          "avgTime": "{{minutes}} دقيقة متوسط الوقت للمحاضرة"
+        },
+        "fields": {
+          "nameAr": "اسم الدورة التدريبية (باللغة العربية)",
+          "nameArPlaceholder": "ادخل اسم الدورة التدريبية (باللغة العربية)",
+          "nameEn": "اسم الدورة التدريبية (باللغة الإنجليزية)",
+          "nameEnPlaceholder": "ادخل اسم الدورة التدريبية (باللغة الإنجليزية)",
+          "descAr": "وصف الدورة التدريبية (باللغة العربية)",
+          "descArPlaceholder": "أدخل وصف الدورة التدريبية (باللغة العربية)",
+          "descEn": "وصف الدورة التدريبية (باللغة الإنجليزية)",
+          "descEnPlaceholder": "ادخل وصف الدورة التدريبية (باللغة الإنجليزية)",
+          "subject": "المادة",
+          "subjectPlaceholder": "اختر المادة",
+          "teacher": "اسم المعلم",
+          "teacherPlaceholder": "اختر اسم المعلم",
+          "startDate": "موعد بدء الدورة التدريبية",
+          "startDatePlaceholder": "اختر موعد بدء الأختبار",
+          "endDate": "موعد انتهاء الدورة التدريبية",
+          "endDatePlaceholder": "اختر موعد انتهاء الأختبار",
+          "lessonsCount": "عدد الدروس",
+          "lessonsCountPlaceholder": "أدخل عدد الدروس",
+          "lessonDuration": "مدة الدرس (دقيقة)",
+          "lessonDurationPlaceholder": "أختر مدة الدرس",
+          "cover": "صورة غلاف الدورة التدريبية"
+        }
+      },
+      "selectStudents": {
+        "title": "تحديد الطلاب",
+        "searchPlaceholder": "ابحث بسهولة عما تريد",
+        "studentSearchPlaceholder": "ابحث بسهولة عن اسم الطالب",
+        "confirm": "تحديد",
+        "grades": {
+          "g1": "صف 1/2 ع",
+          "g2": "صف 2/2 ع",
+          "g3": "صف 3/2 ع"
+        },
+        "sampleStudent": "علي محمد"
       }
     },
     "onlineExams": {

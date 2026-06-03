@@ -69,11 +69,126 @@
     "courses": {
       "title": "Cours de formation",
       "viewAll": "Tout afficher",
-      "emptyDescription": "Aucun cours de formation n'a encore été ajouté. Vous pouvez commencer par ajouter des cours",
+      "emptyDescription": "Aucun cours n'a encore été ajouté.",
       "progress": "Progression",
       "lessonsUnit": "leçons",
+      "searchPlaceholder": "Rechercher un nom de cours",
       "status": {
-        "active": "Actif"
+        "active": "Actif",
+        "completed": "Terminé",
+        "ended": "Clôturé"
+      },
+      "metrics": {
+        "attendanceRate": "Taux de présence",
+        "totalStudents": "Total des étudiants",
+        "activeCourses": "Cours actifs"
+      },
+      "units": {
+        "course": "cours",
+        "student": "étudiant"
+      },
+      "filters": {
+        "status": "Statut",
+        "grades": "Classes",
+        "subject": "Nom de la matière"
+      },
+      "actions": {
+        "edit": "Modifier le cours",
+        "delete": "Supprimer le cours"
+      },
+      "add": {
+        "title": "Ajouter un cours de formation",
+        "steps": {
+          "basic": "Données de base",
+          "students": "Étudiants",
+          "lectures": "Conférences"
+        },
+        "uploadText": "Cliquez ici pour ajouter une image ou un fichier",
+        "lecturesPlaceholder": "Les conférences seront bientôt ajoutées ici",
+        "studentsPlaceholder": "Aucun étudiant sélectionné pour le moment",
+        "selectStudents": "Sélectionner des étudiants",
+        "selectedCount": "{{count}} étudiants sélectionnés",
+        "samples": {
+          "subject": "Mathématiques",
+          "teacher": "Ahmed Moataz Hassan",
+          "platformTitle": "Cours de multiplication",
+          "platformDescription": "Un cours de formation simplifié pour apprendre les compétences de multiplication et en comprendre les bases de manière simple et interactive.",
+          "stages": {
+            "prep1": "Première préparatoire",
+            "prep2": "Deuxième préparatoire",
+            "prep3": "Troisième préparatoire"
+          },
+          "grades": {
+            "g1": "1/1 A",
+            "g2": "1/1 B",
+            "g3": "2/1 A",
+            "g4": "3/1 A"
+          }
+        },
+        "students": {
+          "stage": "Niveau d'études",
+          "stagePlaceholder": "Sélectionnez le niveau d'études",
+          "grade": "Classe",
+          "gradePlaceholder": "Sélectionnez les classes",
+          "audience": "Cours destiné à",
+          "allClasses": "Tous les étudiants des classes",
+          "specific": "Sélectionner des étudiants",
+          "moreStudents": "+{{count}} étudiants"
+        },
+        "lectures": {
+          "source": "Source du contenu",
+          "manual": "Manuel",
+          "platform": "Depuis la plateforme",
+          "section": "Cours de formation",
+          "nameAr": "Nom de la conférence (arabe)",
+          "nameArPlaceholder": "Saisissez le nom de la conférence en arabe",
+          "nameEn": "Nom de la conférence (anglais)",
+          "nameEnPlaceholder": "Saisissez le nom de la conférence en anglais",
+          "duration": "Durée de la leçon (minutes)",
+          "durationPlaceholder": "Sélectionnez la durée de la leçon (minutes)",
+          "video": "Vidéo",
+          "attachments": "Pièces jointes",
+          "searchPlaceholder": "Rechercher un nom de cours",
+          "lecturesCount": "Nombre de conférences",
+          "level": "Niveau",
+          "lectureUnit": "conférences",
+          "avgTime": "{{minutes}} min de temps moyen par conférence"
+        },
+        "fields": {
+          "nameAr": "Nom du cours (arabe)",
+          "nameArPlaceholder": "Saisissez le nom du cours en arabe",
+          "nameEn": "Nom du cours (anglais)",
+          "nameEnPlaceholder": "Saisissez le nom du cours en anglais",
+          "descAr": "Description du cours (arabe)",
+          "descArPlaceholder": "Saisissez la description du cours en arabe",
+          "descEn": "Description du cours (anglais)",
+          "descEnPlaceholder": "Saisissez la description du cours en anglais",
+          "subject": "Matière",
+          "subjectPlaceholder": "Sélectionnez une matière",
+          "teacher": "Nom de l'enseignant",
+          "teacherPlaceholder": "Sélectionnez un enseignant",
+          "startDate": "Date de début du cours",
+          "startDatePlaceholder": "Sélectionnez la date de début",
+          "endDate": "Date de fin du cours",
+          "endDatePlaceholder": "Sélectionnez la date de fin",
+          "lessonsCount": "Nombre de leçons",
+          "lessonsCountPlaceholder": "Saisissez le nombre de leçons",
+          "lessonDuration": "Durée de la leçon (minutes)",
+          "lessonDurationPlaceholder": "Sélectionnez la durée de la leçon",
+          "cover": "Image de couverture du cours"
+        }
+      },
+      "selectStudents": {
+        "title": "Sélection des étudiants",
+        "searchPlaceholder": "Recherchez facilement ce que vous voulez",
+        "studentSearchPlaceholder": "Recherchez facilement un nom d'étudiant",
+        "confirm": "Sélectionner",
+        "grades": {
+          "g1": "Classe 1/2",
+          "g2": "Classe 2/2",
+          "g3": "Classe 3/2"
+        },
+        "sampleStudent": "Ali Mohamed"
       }
     },
     "onlineExams": {

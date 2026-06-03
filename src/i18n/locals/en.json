@@ -69,11 +69,126 @@
     "courses": {
       "title": "Training Courses",
       "viewAll": "View All",
-      "emptyDescription": "No training courses have been added yet. You can start by adding courses",
+      "emptyDescription": "No courses have been added yet.",
       "progress": "Progress",
       "lessonsUnit": "lessons",
+      "searchPlaceholder": "Search for a course name",
       "status": {
-        "active": "Active"
+        "active": "Active",
+        "completed": "Completed",
+        "ended": "Ended"
+      },
+      "metrics": {
+        "attendanceRate": "Attendance Rate",
+        "totalStudents": "Total Students",
+        "activeCourses": "Active Courses"
+      },
+      "units": {
+        "course": "course",
+        "student": "student"
+      },
+      "filters": {
+        "status": "Status",
+        "grades": "Grades",
+        "subject": "Subject"
+      },
+      "actions": {
+        "edit": "Edit Course",
+        "delete": "Delete Course"
+      },
+      "add": {
+        "title": "Add Training Course",
+        "steps": {
+          "basic": "Basic Information",
+          "students": "Students",
+          "lectures": "Lectures"
+        },
+        "uploadText": "Click here to add an image or file",
+        "lecturesPlaceholder": "Lectures will be added here soon",
+        "studentsPlaceholder": "No students selected yet",
+        "selectStudents": "Select Students",
+        "selectedCount": "{{count}} students selected",
+        "samples": {
+          "subject": "Mathematics",
+          "teacher": "Ahmed Moataz Hassan",
+          "platformTitle": "Multiplication Course",
+          "platformDescription": "A simplified training course to learn multiplication skills and understand its basics in an easy and interactive way.",
+          "stages": {
+            "prep1": "First Preparatory",
+            "prep2": "Second Preparatory",
+            "prep3": "Third Preparatory"
+          },
+          "grades": {
+            "g1": "1/1 A",
+            "g2": "1/1 B",
+            "g3": "2/1 A",
+            "g4": "3/1 A"
+          }
+        },
+        "students": {
+          "stage": "Educational Stage",
+          "stagePlaceholder": "Select educational stage",
+          "grade": "Class",
+          "gradePlaceholder": "Select classes",
+          "audience": "Course directed to",
+          "allClasses": "All class students",
+          "specific": "Specific students",
+          "moreStudents": "+{{count}} students"
+        },
+        "lectures": {
+          "source": "Content Source",
+          "manual": "Manual",
+          "platform": "From Platform",
+          "section": "Training Course",
+          "nameAr": "Lecture Name (Arabic)",
+          "nameArPlaceholder": "Enter the lecture name in Arabic",
+          "nameEn": "Lecture Name (English)",
+          "nameEnPlaceholder": "Enter the lecture name in English",
+          "duration": "Lesson Duration (minutes)",
+          "durationPlaceholder": "Select lesson duration (minutes)",
+          "video": "Video",
+          "attachments": "Attachments",
+          "searchPlaceholder": "Search for a course name",
+          "lecturesCount": "Number of Lectures",
+          "level": "Level",
+          "lectureUnit": "lectures",
+          "avgTime": "{{minutes}} min avg. time per lecture"
+        },
+        "fields": {
+          "nameAr": "Course Name (Arabic)",
+          "nameArPlaceholder": "Enter the course name (Arabic)",
+          "nameEn": "Course Name (English)",
+          "nameEnPlaceholder": "Enter the course name (English)",
+          "descAr": "Course Description (Arabic)",
+          "descArPlaceholder": "Enter the course description (Arabic)",
+          "descEn": "Course Description (English)",
+          "descEnPlaceholder": "Enter the course description (English)",
+          "subject": "Subject",
+          "subjectPlaceholder": "Select a subject",
+          "teacher": "Teacher Name",
+          "teacherPlaceholder": "Select a teacher",
+          "startDate": "Course Start Date",
+          "startDatePlaceholder": "Select start date",
+          "endDate": "Course End Date",
+          "endDatePlaceholder": "Select end date",
+          "lessonsCount": "Number of Lessons",
+          "lessonsCountPlaceholder": "Enter the number of lessons",
+          "lessonDuration": "Lesson Duration (minutes)",
+          "lessonDurationPlaceholder": "Select lesson duration",
+          "cover": "Course Cover Image"
+        }
+      },
+      "selectStudents": {
+        "title": "Select Students",
+        "searchPlaceholder": "Search easily for anything",
+        "studentSearchPlaceholder": "Search easily for a student name",
+        "confirm": "Confirm",
+        "grades": {
+          "g1": "Class 1/2",
+          "g2": "Class 2/2",
+          "g3": "Class 3/2"
+        },
+        "sampleStudent": "Ali Mohamed"
       }
     },
     "onlineExams": {

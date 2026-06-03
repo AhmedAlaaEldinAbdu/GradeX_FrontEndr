@@ -69,11 +69,126 @@
     "courses": {
       "title": "Schulungskurse",
       "viewAll": "Alle anzeigen",
-      "emptyDescription": "Es wurden noch keine Schulungskurse hinzugefügt. Sie können mit dem Hinzufügen von Kursen beginnen",
+      "emptyDescription": "Es wurden noch keine Kurse hinzugefügt.",
       "progress": "Fortschritt",
       "lessonsUnit": "Lektionen",
+      "searchPlaceholder": "Nach Kursnamen suchen",
       "status": {
-        "active": "Aktiv"
+        "active": "Aktiv",
+        "completed": "Abgeschlossen",
+        "ended": "Beendet"
+      },
+      "metrics": {
+        "attendanceRate": "Anwesenheitsrate",
+        "totalStudents": "Schüler insgesamt",
+        "activeCourses": "Aktive Kurse"
+      },
+      "units": {
+        "course": "Kurs",
+        "student": "Schüler"
+      },
+      "filters": {
+        "status": "Status",
+        "grades": "Klassen",
+        "subject": "Fachname"
+      },
+      "actions": {
+        "edit": "Kurs bearbeiten",
+        "delete": "Kurs löschen"
+      },
+      "add": {
+        "title": "Schulungskurs hinzufügen",
+        "steps": {
+          "basic": "Grunddaten",
+          "students": "Schüler",
+          "lectures": "Vorlesungen"
+        },
+        "uploadText": "Hier klicken, um ein Bild oder eine Datei hinzuzufügen",
+        "lecturesPlaceholder": "Vorlesungen werden hier bald hinzugefügt",
+        "studentsPlaceholder": "Noch keine Schüler ausgewählt",
+        "selectStudents": "Schüler auswählen",
+        "selectedCount": "{{count}} Schüler ausgewählt",
+        "samples": {
+          "subject": "Mathematik",
+          "teacher": "Ahmed Moataz Hassan",
+          "platformTitle": "Multiplikationskurs",
+          "platformDescription": "Ein vereinfachter Schulungskurs, um Multiplikationsfähigkeiten zu erlernen und die Grundlagen auf einfache und interaktive Weise zu verstehen.",
+          "stages": {
+            "prep1": "Erste Vorbereitungsstufe",
+            "prep2": "Zweite Vorbereitungsstufe",
+            "prep3": "Dritte Vorbereitungsstufe"
+          },
+          "grades": {
+            "g1": "1/1 A",
+            "g2": "1/1 B",
+            "g3": "2/1 A",
+            "g4": "3/1 A"
+          }
+        },
+        "students": {
+          "stage": "Bildungsstufe",
+          "stagePlaceholder": "Bildungsstufe auswählen",
+          "grade": "Klasse",
+          "gradePlaceholder": "Klassen auswählen",
+          "audience": "Kurs gerichtet an",
+          "allClasses": "Alle Schüler der Klassen",
+          "specific": "Schüler auswählen",
+          "moreStudents": "+{{count}} Schüler"
+        },
+        "lectures": {
+          "source": "Inhaltsquelle",
+          "manual": "Manuell",
+          "platform": "Von der Plattform",
+          "section": "Schulungskurs",
+          "nameAr": "Vorlesungsname (Arabisch)",
+          "nameArPlaceholder": "Vorlesungsname auf Arabisch eingeben",
+          "nameEn": "Vorlesungsname (Englisch)",
+          "nameEnPlaceholder": "Vorlesungsname auf Englisch eingeben",
+          "duration": "Lektionsdauer (Minuten)",
+          "durationPlaceholder": "Lektionsdauer auswählen (Minuten)",
+          "video": "Video",
+          "attachments": "Anhänge",
+          "searchPlaceholder": "Nach Kursnamen suchen",
+          "lecturesCount": "Anzahl der Vorlesungen",
+          "level": "Niveau",
+          "lectureUnit": "Vorlesungen",
+          "avgTime": "{{minutes}} Min. durchschn. Zeit pro Vorlesung"
+        },
+        "fields": {
+          "nameAr": "Kursname (Arabisch)",
+          "nameArPlaceholder": "Kursname auf Arabisch eingeben",
+          "nameEn": "Kursname (Englisch)",
+          "nameEnPlaceholder": "Kursname auf Englisch eingeben",
+          "descAr": "Kursbeschreibung (Arabisch)",
+          "descArPlaceholder": "Kursbeschreibung auf Arabisch eingeben",
+          "descEn": "Kursbeschreibung (Englisch)",
+          "descEnPlaceholder": "Kursbeschreibung auf Englisch eingeben",
+          "subject": "Fach",
+          "subjectPlaceholder": "Fach auswählen",
+          "teacher": "Name des Lehrers",
+          "teacherPlaceholder": "Lehrer auswählen",
+          "startDate": "Kursbeginn",
+          "startDatePlaceholder": "Startdatum auswählen",
+          "endDate": "Kursende",
+          "endDatePlaceholder": "Enddatum auswählen",
+          "lessonsCount": "Anzahl der Lektionen",
+          "lessonsCountPlaceholder": "Anzahl der Lektionen eingeben",
+          "lessonDuration": "Lektionsdauer (Minuten)",
+          "lessonDurationPlaceholder": "Lektionsdauer auswählen",
+          "cover": "Kurs-Titelbild"
+        }
+      },
+      "selectStudents": {
+        "title": "Schüler auswählen",
+        "searchPlaceholder": "Einfach nach allem suchen",
+        "studentSearchPlaceholder": "Einfach nach einem Schülernamen suchen",
+        "confirm": "Auswählen",
+        "grades": {
+          "g1": "Klasse 1/2",
+          "g2": "Klasse 2/2",
+          "g3": "Klasse 3/2"
+        },
+        "sampleStudent": "Ali Mohamed"
       }
     },
     "onlineExams": {
