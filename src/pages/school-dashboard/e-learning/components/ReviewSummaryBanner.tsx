@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import { REVIEW_SUMMARY } from './examDetailsData';
@@ -51,9 +50,9 @@ export default function ReviewSummaryBanner() {
           <CustomImage src={DefaultAvatar} alt="" className="h-full w-full object-cover" />
         </div>
         <span className="text-base font-medium text-[#0E1F1F]">{summary.studentName}</span>
-        <Badge variant="success" size="sm">
-          {summary.grade}
-        </Badge>
+        <span className="inline-flex items-center justify-center rounded-3xl bg-[#1A9F58]/10 px-4 py-0.5 text-sm font-medium text-[#1A9F58]">
+          <bdi>{summary.grade}</bdi>
+        </span>
       </div>
 
       {/* Summary stats */}
