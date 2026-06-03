@@ -53,8 +53,6 @@ const DURATION_OPTIONS = ['15', '30', '45', '60'].map((v) => ({ value: v, label:
 
 type PlatformCourse = {
   id: string;
-  title: string;
-  description: string;
   lectures: number;
   avgMinutes: number;
   difficulty: 'easy' | 'medium' | 'hard';
@@ -67,30 +65,9 @@ const DIFFICULTY_VARIANT: Record<PlatformCourse['difficulty'], 'success' | 'warn
 };
 
 const PLATFORM_COURSES: PlatformCourse[] = [
-  {
-    id: 'p1',
-    title: 'دورة عملية الضرب',
-    description: 'دورة تدريبية مبسطة لتعلّم مهارات الضرب وفهم أساسياته بطريقة سهلة وتفاعلية.',
-    lectures: 24,
-    avgMinutes: 30,
-    difficulty: 'easy',
-  },
-  {
-    id: 'p2',
-    title: 'دورة عملية الضرب',
-    description: 'دورة تدريبية مبسطة لتعلّم مهارات الضرب وفهم أساسياته بطريقة سهلة وتفاعلية.',
-    lectures: 24,
-    avgMinutes: 30,
-    difficulty: 'medium',
-  },
-  {
-    id: 'p3',
-    title: 'دورة عملية الضرب',
-    description: 'دورة تدريبية مبسطة لتعلّم مهارات الضرب وفهم أساسياته بطريقة سهلة وتفاعلية.',
-    lectures: 24,
-    avgMinutes: 30,
-    difficulty: 'hard',
-  },
+  { id: 'p1', lectures: 24, avgMinutes: 30, difficulty: 'easy' },
+  { id: 'p2', lectures: 24, avgMinutes: 30, difficulty: 'medium' },
+  { id: 'p3', lectures: 24, avgMinutes: 30, difficulty: 'hard' },
 ];
 
 type CourseLecturesStepProps = {
@@ -116,9 +93,12 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
     set({ items: data.items.filter((lec) => lec.id !== id) });
   };
 
+  const platformTitle = t('eLearning.courses.add.samples.platformTitle');
+  const platformDescription = t('eLearning.courses.add.samples.platformDescription');
+
   const filteredCourses = PLATFORM_COURSES.filter(
     (course) =>
-      (!search || course.title.includes(search)) && (!level || course.difficulty === level)
+      (!search || platformTitle.includes(search)) && (!level || course.difficulty === level)
   );
 
   const lecturesCountOptions = ['12', '24', '36'].map((v) => ({ value: v, label: v }));
@@ -298,8 +278,8 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     }`}
                   >
                     <div className="flex flex-1 flex-col gap-2">
-                      <h4 className="text-base font-medium text-[#0E1F1F]">{course.title}</h4>
-                      <p className="text-sm font-normal text-[#3A3A3A]">{course.description}</p>
+                      <h4 className="text-base font-medium text-[#0E1F1F]">{platformTitle}</h4>
+                      <p className="text-sm font-normal text-[#3A3A3A]">{platformDescription}</p>
                       <div className="flex items-center gap-2 text-sm font-normal text-[#646969]">
                         <CustomImage src={DocumentEditOutlineIcon} alt="" className="h-4 w-4" />
                         <span>

@@ -47,8 +47,6 @@ const FILE_FORMATS = [
 ];
 const FILE_ACCEPT = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.ppt,.pptx';
 
-const SUBJECT_OPTIONS = [{ value: 'math', label: 'مادة الرياضيات' }];
-const TEACHER_OPTIONS = [{ value: 'ahmed', label: 'أحمد معتز حسن' }];
 const LESSONS_COUNT_OPTIONS = Array.from({ length: 30 }, (_, i) => ({
   value: String(i + 1),
   label: String(i + 1),
@@ -64,6 +62,9 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
   const { t } = useTranslation();
 
   const set = (key: keyof BasicInfoData) => (value: string) => onChange({ ...data, [key]: value });
+
+  const subjectOptions = [{ value: 'math', label: t('eLearning.courses.add.samples.subject') }];
+  const teacherOptions = [{ value: 'ahmed', label: t('eLearning.courses.add.samples.teacher') }];
 
   return (
     <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
@@ -101,7 +102,7 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
         <CustomSelect
           value={data.subject}
           onChange={(v) => set('subject')(v as string)}
-          options={SUBJECT_OPTIONS}
+          options={subjectOptions}
           placeholder={t('eLearning.courses.add.fields.subjectPlaceholder')}
           showSearch={false}
         />
@@ -110,7 +111,7 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
         <CustomSelect
           value={data.teacher}
           onChange={(v) => set('teacher')(v as string)}
-          options={TEACHER_OPTIONS}
+          options={teacherOptions}
           placeholder={t('eLearning.courses.add.fields.teacherPlaceholder')}
           showSearch={false}
         />

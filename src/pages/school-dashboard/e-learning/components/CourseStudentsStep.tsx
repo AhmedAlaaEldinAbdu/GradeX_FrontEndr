@@ -20,19 +20,6 @@ export const INITIAL_STUDENTS_DATA: StudentsData = {
   selectedStudents: [],
 };
 
-const STAGE_OPTIONS = [
-  { value: 'prep-1', label: 'الأول الأعدادي' },
-  { value: 'prep-2', label: 'الثاني الأعدادي' },
-  { value: 'prep-3', label: 'الثالث الأعدادي' },
-];
-
-const GRADE_OPTIONS = [
-  { value: 'g1', label: '1/1 ع' },
-  { value: 'g2', label: '1/1 عر' },
-  { value: 'g3', label: '2/1 ع' },
-  { value: 'g4', label: '3/1 ع' },
-];
-
 type CourseStudentsStepProps = {
   data: StudentsData;
   onChange: (data: StudentsData) => void;
@@ -44,13 +31,22 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
 
   const set = (partial: Partial<StudentsData>) => onChange({ ...data, ...partial });
 
+  const stageOptions = (['prep1', 'prep2', 'prep3'] as const).map((key) => ({
+    value: key,
+    label: t(`eLearning.courses.add.samples.stages.${key}`),
+  }));
+  const gradeOptions = (['g1', 'g2', 'g3', 'g4'] as const).map((key) => ({
+    value: key,
+    label: t(`eLearning.courses.add.samples.grades.${key}`),
+  }));
+
   return (
     <div className="flex flex-col gap-5">
       <FormField label={t('eLearning.courses.add.students.stage')} required>
         <CustomSelect
           value={data.stage}
           onChange={(v) => set({ stage: v as string })}
-          options={STAGE_OPTIONS}
+          options={stageOptions}
           placeholder={t('eLearning.courses.add.students.stagePlaceholder')}
           showSearch={false}
         />
@@ -60,7 +56,7 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
         <CustomSelect
           value={data.grades}
           onChange={(v) => set({ grades: v as string[] })}
-          options={GRADE_OPTIONS}
+          options={gradeOptions}
           placeholder={t('eLearning.courses.add.students.gradePlaceholder')}
           isMulti
           showSearch={false}
@@ -115,7 +111,9 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
               })}
             </span>
           )}
-          <span className="text-base font-normal text-[#3A3A3A]">علي محمد</span>
+          <span className="text-base font-normal text-[#3A3A3A]">
+            {t('eLearning.selectStudents.sampleStudent')}
+          </span>
           <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-[#DDE0E0]">
             <CustomImage src={DefaultAvatar} alt="" className="h-full w-full object-cover" />
           </div>
