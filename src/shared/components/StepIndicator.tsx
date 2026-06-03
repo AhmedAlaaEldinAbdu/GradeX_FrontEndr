@@ -1,4 +1,6 @@
 import React from 'react';
+import CustomImage from '@/shared/components/CustomImage';
+import CheckWhiteIcon from '@gradex/assets/icons/CheckWhite.svg';
 
 interface Step {
   id: number;
@@ -29,19 +31,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
             >
               {/* Show checkmark for completed steps, icon for current and future steps */}
               {currentStep > step.id ? (
-                <svg
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+                <CustomImage src={CheckWhiteIcon} alt="" className="h-6 w-6" />
               ) : (
                 <div
                   className="text-green-500"
@@ -49,7 +39,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
                     currentStep === step.id
                       ? {
                           filter:
-                            'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(101%)',
+                            'brightness(0) saturate(100%) invert(24%) sepia(18%) saturate(2628%) hue-rotate(110deg) brightness(93%) contrast(103%)',
                         }
                       : {
                           filter: 'grayscale(100%) opacity(0.5)',
