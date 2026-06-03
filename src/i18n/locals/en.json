@@ -108,7 +108,19 @@
           "passingGrade": "Passing grade %",
           "passingGradePlaceholder": "Enter the passing grade",
           "duration": "Duration (minutes)",
-          "durationPlaceholder": "Select the duration"
+          "durationPlaceholder": "Select the duration",
+          "numberOfQuestions": "Number of questions",
+          "numberOfQuestionsPlaceholder": "Select the number of questions",
+          "totalPoints": "Total points",
+          "totalPointsPlaceholder": "Select the total points",
+          "examDuration": "Exam duration (minutes)",
+          "examDurationPlaceholder": "Select the exam duration (minutes)",
+          "resultVisibility": "Result visibility to the student",
+          "resultAfterExam": "Right after the exam",
+          "resultAfterEachQuestion": "Show the result after each question",
+          "difficultyDistribution": "Difficulty level distribution",
+          "generateExplanation": "Generate a detailed explanation for each question (useful for student review)",
+          "classificationsTitle": "Classification questions"
         },
         "moreStudents": "+{{num}} students",
         "languageOptions": {
@@ -116,6 +128,8 @@
           "en": "English"
         },
         "comingSoon": "This step will be added soon",
+        "generateQuestions": "Generate questions",
+        "addButton": "Add",
         "validation": {
           "titleArRequired": "The exam title in the first language is required",
           "titleEnRequired": "The exam title in the second language is required",
@@ -127,7 +141,10 @@
           "targetAudienceRequired": "Please select the target audience",
           "startDateRequired": "The exam start date is required",
           "passingGradeRequired": "The passing grade is required",
-          "passingGradeRange": "The passing grade must be between 0 and 100"
+          "passingGradeRange": "The passing grade must be between 0 and 100",
+          "numberOfQuestionsRequired": "The number of questions is required",
+          "totalPointsRequired": "The total points are required",
+          "resultVisibilityRequired": "Please select when the result is shown"
         }
       },
       "title": "Online Exams",

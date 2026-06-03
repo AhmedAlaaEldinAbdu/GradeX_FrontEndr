@@ -108,7 +108,19 @@
           "passingGrade": "Проходной балл %",
           "passingGradePlaceholder": "Введите проходной балл",
           "duration": "Длительность (минуты)",
-          "durationPlaceholder": "Выберите длительность"
+          "durationPlaceholder": "Выберите длительность",
+          "numberOfQuestions": "Количество вопросов",
+          "numberOfQuestionsPlaceholder": "Выберите количество вопросов",
+          "totalPoints": "Всего баллов",
+          "totalPointsPlaceholder": "Выберите общее количество баллов",
+          "examDuration": "Длительность экзамена (минуты)",
+          "examDurationPlaceholder": "Выберите длительность экзамена (минуты)",
+          "resultVisibility": "Показ результата студенту",
+          "resultAfterExam": "Сразу после экзамена",
+          "resultAfterEachQuestion": "Показывать результат после каждого вопроса",
+          "difficultyDistribution": "Распределение уровня сложности",
+          "generateExplanation": "Создать подробное объяснение для каждого вопроса (полезно для повторения студентом)",
+          "classificationsTitle": "Вопросы по категориям"
         },
         "moreStudents": "+{{num}} студентов",
         "languageOptions": {
@@ -116,6 +128,8 @@
           "en": "Английский"
         },
         "comingSoon": "Этот шаг будет добавлен в ближайшее время",
+        "generateQuestions": "Сгенерировать вопросы",
+        "addButton": "Добавить",
         "validation": {
           "titleArRequired": "Название экзамена на первом языке обязательно",
           "titleEnRequired": "Название экзамена на втором языке обязательно",
@@ -127,7 +141,10 @@
           "targetAudienceRequired": "Пожалуйста, выберите целевую аудиторию",
           "startDateRequired": "Дата начала экзамена обязательна",
           "passingGradeRequired": "Проходной балл обязателен",
-          "passingGradeRange": "Проходной балл должен быть от 0 до 100"
+          "passingGradeRange": "Проходной балл должен быть от 0 до 100",
+          "numberOfQuestionsRequired": "Количество вопросов обязательно",
+          "totalPointsRequired": "Общее количество баллов обязательно",
+          "resultVisibilityRequired": "Пожалуйста, выберите, когда показывать результат"
         }
       },
       "title": "Онлайн-экзамены",

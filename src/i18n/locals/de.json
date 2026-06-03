@@ -108,7 +108,19 @@
           "passingGrade": "Bestehensnote %",
           "passingGradePlaceholder": "Bestehensnote eingeben",
           "duration": "Dauer (Minuten)",
-          "durationPlaceholder": "Dauer auswählen"
+          "durationPlaceholder": "Dauer auswählen",
+          "numberOfQuestions": "Anzahl der Fragen",
+          "numberOfQuestionsPlaceholder": "Anzahl der Fragen auswählen",
+          "totalPoints": "Gesamtpunktzahl",
+          "totalPointsPlaceholder": "Gesamtpunktzahl auswählen",
+          "examDuration": "Prüfungsdauer (Minuten)",
+          "examDurationPlaceholder": "Prüfungsdauer auswählen (Minuten)",
+          "resultVisibility": "Ergebnisanzeige für den Schüler",
+          "resultAfterExam": "Direkt nach der Prüfung",
+          "resultAfterEachQuestion": "Ergebnis nach jeder Frage anzeigen",
+          "difficultyDistribution": "Verteilung des Schwierigkeitsgrads",
+          "generateExplanation": "Eine ausführliche Erklärung für jede Frage erstellen (hilfreich für die Wiederholung des Schülers)",
+          "classificationsTitle": "Kategorisierungsfragen"
         },
         "moreStudents": "+{{num}} Schüler",
         "languageOptions": {
@@ -116,6 +128,8 @@
           "en": "Englisch"
         },
         "comingSoon": "Dieser Schritt wird bald hinzugefügt",
+        "generateQuestions": "Fragen generieren",
+        "addButton": "Hinzufügen",
         "validation": {
           "titleArRequired": "Der Prüfungstitel in der ersten Sprache ist erforderlich",
           "titleEnRequired": "Der Prüfungstitel in der zweiten Sprache ist erforderlich",
@@ -127,7 +141,10 @@
           "targetAudienceRequired": "Bitte wählen Sie die Zielgruppe",
           "startDateRequired": "Das Startdatum der Prüfung ist erforderlich",
           "passingGradeRequired": "Die Bestehensnote ist erforderlich",
-          "passingGradeRange": "Die Bestehensnote muss zwischen 0 und 100 liegen"
+          "passingGradeRange": "Die Bestehensnote muss zwischen 0 und 100 liegen",
+          "numberOfQuestionsRequired": "Die Anzahl der Fragen ist erforderlich",
+          "totalPointsRequired": "Die Gesamtpunktzahl ist erforderlich",
+          "resultVisibilityRequired": "Bitte wählen Sie, wann das Ergebnis angezeigt wird"
         }
       },
       "title": "Online-Prüfungen",

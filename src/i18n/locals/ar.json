@@ -108,7 +108,19 @@
           "passingGrade": "درجة النجاح %",
           "passingGradePlaceholder": "ادخل درجة النجاح",
           "duration": "المدة (دقيقة)",
-          "durationPlaceholder": "اختر المدة"
+          "durationPlaceholder": "اختر المدة",
+          "numberOfQuestions": "عدد الأسئلة",
+          "numberOfQuestionsPlaceholder": "اختر عدد الأسئلة",
+          "totalPoints": "إجمالي النقاط",
+          "totalPointsPlaceholder": "اختر إجمالي النقاط",
+          "examDuration": "مدة الأختبار (دقيقة)",
+          "examDurationPlaceholder": "أختر مدة الأختبار (دقيقة)",
+          "resultVisibility": "ظهور النتيجة للطالب",
+          "resultAfterExam": "بعد الأختبار مباشرة",
+          "resultAfterEachQuestion": "عرض النتيجة بعد كل سؤال",
+          "difficultyDistribution": "توزيع مستوى الصعوبة",
+          "generateExplanation": "إنشاء شرح تفصيلي لكل سؤال (مفيد لمراجعة الطالب)",
+          "classificationsTitle": "اسئلة التصنيفات"
         },
         "moreStudents": "+{{num}} طالب",
         "languageOptions": {
@@ -116,6 +128,8 @@
           "en": "اللغة الإنجليزية"
         },
         "comingSoon": "سيتم إضافة هذه الخطوة قريباً",
+        "generateQuestions": "توليد الأسئلة",
+        "addButton": "إضافة",
         "validation": {
           "titleArRequired": "عنوان الاختبار باللغة الأولى مطلوب",
           "titleEnRequired": "عنوان الاختبار باللغة الثانية مطلوب",
@@ -127,7 +141,10 @@
           "targetAudienceRequired": "يرجى تحديد الفئة المستهدفة",
           "startDateRequired": "موعد بدء الأختبار مطلوب",
           "passingGradeRequired": "درجة النجاح مطلوبة",
-          "passingGradeRange": "درجة النجاح يجب أن تكون بين 0 و 100"
+          "passingGradeRange": "درجة النجاح يجب أن تكون بين 0 و 100",
+          "numberOfQuestionsRequired": "عدد الأسئلة مطلوب",
+          "totalPointsRequired": "إجمالي النقاط مطلوب",
+          "resultVisibilityRequired": "يرجى تحديد وقت ظهور النتيجة"
         }
       },
       "title": "الأختبارات إلكترونية",

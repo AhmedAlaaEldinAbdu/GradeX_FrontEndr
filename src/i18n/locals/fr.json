@@ -108,7 +108,19 @@
           "passingGrade": "Note de passage %",
           "passingGradePlaceholder": "Saisissez la note de passage",
           "duration": "Durée (minutes)",
-          "durationPlaceholder": "Sélectionnez la durée"
+          "durationPlaceholder": "Sélectionnez la durée",
+          "numberOfQuestions": "Nombre de questions",
+          "numberOfQuestionsPlaceholder": "Sélectionnez le nombre de questions",
+          "totalPoints": "Total des points",
+          "totalPointsPlaceholder": "Sélectionnez le total des points",
+          "examDuration": "Durée de l'examen (minutes)",
+          "examDurationPlaceholder": "Sélectionnez la durée de l'examen (minutes)",
+          "resultVisibility": "Affichage du résultat à l'élève",
+          "resultAfterExam": "Juste après l'examen",
+          "resultAfterEachQuestion": "Afficher le résultat après chaque question",
+          "difficultyDistribution": "Répartition du niveau de difficulté",
+          "generateExplanation": "Générer une explication détaillée pour chaque question (utile pour la révision de l'élève)",
+          "classificationsTitle": "Questions de catégorisation"
         },
         "moreStudents": "+{{num}} élèves",
         "languageOptions": {
@@ -116,6 +128,8 @@
           "en": "Anglais"
         },
         "comingSoon": "Cette étape sera ajoutée prochainement",
+        "generateQuestions": "Générer les questions",
+        "addButton": "Ajouter",
         "validation": {
           "titleArRequired": "Le titre de l'examen dans la première langue est requis",
           "titleEnRequired": "Le titre de l'examen dans la deuxième langue est requis",
@@ -127,7 +141,10 @@
           "targetAudienceRequired": "Veuillez sélectionner le public cible",
           "startDateRequired": "La date de début de l'examen est requise",
           "passingGradeRequired": "La note de passage est requise",
-          "passingGradeRange": "La note de passage doit être comprise entre 0 et 100"
+          "passingGradeRange": "La note de passage doit être comprise entre 0 et 100",
+          "numberOfQuestionsRequired": "Le nombre de questions est requis",
+          "totalPointsRequired": "Le total des points est requis",
+          "resultVisibilityRequired": "Veuillez sélectionner quand le résultat est affiché"
         }
       },
       "title": "Examens en ligne",
