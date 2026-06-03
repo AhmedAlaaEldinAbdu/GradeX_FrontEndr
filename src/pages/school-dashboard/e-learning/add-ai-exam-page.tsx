@@ -12,10 +12,8 @@ import CustomImage from '@/shared/components/CustomImage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { logger } from '@/lib/utils/logger';
 import AIExamBasicInfoStep from './components/AIExamBasicInfoStep';
-import {
-  AIExamBasicInfoSchema,
-  type AIExamBasicInfoProps,
-} from '@/validations/ai-exam-validations';
+import AIExamQuestionsStep from './components/AIExamQuestionsStep';
+import { AIExamSchema, type AIExamProps } from '@/validations/ai-exam-validations';
 import FilesFillGreenIcon from '@gradex/assets/icons/FilesFillGreen.svg';
 import QuestionBankIcon from '@gradex/assets/icons/QuestionBank.svg';
 import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
@@ -23,13 +21,32 @@ import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
 const ONLINE_EXAMS_PATH = '/lms/online-exams';
 const LAST_STEP = 3;
 
+const STEP1_FIELDS: (keyof AIExamProps)[] = [
+  'titleAr',
+  'titleEn',
+  'topic',
+  'language',
+  'subject',
+  'stage',
+  'grades',
+  'targetAudience',
+  'startDate',
+  'passingGrade',
+];
+const STEP2_FIELDS: (keyof AIExamProps)[] = [
+  'numberOfQuestions',
+  'totalPoints',
+  'passingGrade',
+  'resultVisibility',
+];
+
 export default function AddAIExamPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
 
-  const methods = useForm<AIExamBasicInfoProps>({
-    resolver: yupResolver(AIExamBasicInfoSchema),
+  const methods = useForm<AIExamProps>({
+    resolver: yupResolver(AIExamSchema),
     mode: 'onChange',
     reValidateMode: 'onSubmit',
     defaultValues: {
@@ -45,10 +62,17 @@ export default function AddAIExamPage() {
       endDate: '',
       passingGrade: '',
       duration: '',
+      numberOfQuestions: '',
+      totalPoints: '',
+      resultVisibility: '',
+      difficultyEasy: 0,
+      difficultyMedium: 0,
+      difficultyHard: 0,
+      generateExplanation: false,
     },
   });
 
-  const scrollToFirstError = useScrollToFirstError<AIExamBasicInfoProps>();
+  const scrollToFirstError = useScrollToFirstError<AIExamProps>();
 
   const breadcrumbItems = [
     { label: 'sidebar.academicAffairs' },
@@ -75,21 +99,27 @@ export default function AddAIExamPage() {
     },
   ];
 
-  // Step 1 passed validation — advance. Persisting/creating is wired to the backend later.
-  const handleBasicInfoValid = (data: AIExamBasicInfoProps) => {
-    logger.debug('AI exam basic info submitted', data);
-    setCurrentStep(2);
-  };
-
-  const handlePrimary = () => {
+  const handlePrimary = async () => {
     if (currentStep === 1) {
-      void methods.handleSubmit(handleBasicInfoValid, scrollToFirstError)();
+      const isValid = await methods.trigger(STEP1_FIELDS);
+      if (isValid) {
+        setCurrentStep(2);
+      } else {
+        scrollToFirstError(methods.formState.errors);
+      }
       return;
     }
-    if (currentStep < LAST_STEP) {
-      setCurrentStep((prev) => prev + 1);
+    if (currentStep === 2) {
+      const isValid = await methods.trigger(STEP2_FIELDS);
+      if (!isValid) {
+        scrollToFirstError(methods.formState.errors);
+        return;
+      }
+      logger.debug('AI exam — generate questions', methods.getValues());
+      setCurrentStep(LAST_STEP);
       return;
     }
+
     navigate(ONLINE_EXAMS_PATH);
   };
 
@@ -101,7 +131,12 @@ export default function AddAIExamPage() {
     }
   };
 
-  const primaryLabel = currentStep === LAST_STEP ? t('common.save') : t('common.next');
+  const primaryLabel =
+    currentStep === 1
+      ? t('common.next')
+      : currentStep === 2
+        ? t('eLearning.onlineExams.addAI.generateQuestions')
+        : t('common.save');
   const secondaryLabel = currentStep === 1 ? t('common.cancel') : t('common.previous');
 
   return (
@@ -115,9 +150,9 @@ export default function AddAIExamPage() {
 
           <Card padding="md">
             <div className="space-y-8">
-              {currentStep === 1 ? (
-                <AIExamBasicInfoStep />
-              ) : (
+              {currentStep === 1 && <AIExamBasicInfoStep />}
+              {currentStep === 2 && <AIExamQuestionsStep />}
+              {currentStep === 3 && (
                 <div className="flex min-h-[320px] items-center justify-center">
                   <p className="text-base font-normal text-[#646969]">
                     {t('eLearning.onlineExams.addAI.comingSoon')}
@@ -132,7 +167,7 @@ export default function AddAIExamPage() {
                   <Button type="button" variant="outline" onClick={handleSecondary}>
                     {secondaryLabel}
                   </Button>
-                  <Button type="button" variant="primary" onClick={handlePrimary}>
+                  <Button type="button" variant="primary" onClick={() => void handlePrimary()}>
                     {primaryLabel}
                   </Button>
                 </div>
