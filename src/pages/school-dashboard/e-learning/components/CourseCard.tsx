@@ -7,8 +7,8 @@ import PeopleOutlineIcon from '@gradex/assets/icons/PeopleOutline.svg';
 import BookIcon from '@gradex/assets/icons/Book.svg';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import DocumentEditOutlineIcon from '@gradex/assets/icons/DocumentEditOutline.svg';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
-import TrashIcon from '@gradex/assets/icons/Trash.svg';
+import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
+import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import LearningCover from '@gradex/assets/images/Learning.png';
 
 export type CourseStatus = 'active' | 'completed' | 'ended';
@@ -71,13 +71,13 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
     {
       id: 'edit',
       label: t('eLearning.courses.actions.edit'),
-      icon: EditIcon,
+      icon: EditFillIcon,
       onClick: () => onEdit?.(course),
     },
     {
       id: 'delete',
       label: t('eLearning.courses.actions.delete'),
-      icon: TrashIcon,
+      icon: TrashFillIcon,
       color: 'text-red-500 hover:bg-red-50',
       onClick: () => onDelete?.(course),
     },
