@@ -177,21 +177,80 @@
           "lessonDurationPlaceholder": "Sélectionnez la durée de la leçon",
           "cover": "Image de couverture du cours"
         }
-      },
-      "selectStudents": {
-        "title": "Sélection des étudiants",
-        "searchPlaceholder": "Recherchez facilement ce que vous voulez",
-        "studentSearchPlaceholder": "Recherchez facilement un nom d'étudiant",
-        "confirm": "Sélectionner",
-        "grades": {
-          "g1": "Classe 1/2",
-          "g2": "Classe 2/2",
-          "g3": "Classe 3/2"
-        },
-        "sampleStudent": "Ali Mohamed"
       }
     },
+    "selectStudents": {
+      "title": "Sélection des étudiants",
+      "searchPlaceholder": "Recherchez facilement ce que vous voulez",
+      "studentSearchPlaceholder": "Recherchez facilement un nom d'étudiant",
+      "confirm": "Sélectionner",
+      "grades": {
+        "g1": "Classe 1/2",
+        "g2": "Classe 2/2",
+        "g3": "Classe 3/2"
+      },
+      "sampleStudent": "Ali Mohamed"
+    },
     "onlineExams": {
+      "addQuestionBank": {
+        "steps": {
+          "basicInfo": "Informations de base",
+          "questions": "Questions de l'examen",
+          "review": "Réviser l'examen"
+        },
+        "fields": {
+          "titleAr": "Titre de l'examen (dans la première langue)",
+          "titleArPlaceholder": "Saisissez le titre de l'examen (dans la première langue)",
+          "titleEn": "Titre de l'examen (dans la deuxième langue)",
+          "titleEnPlaceholder": "Saisissez le titre de l'examen (dans la deuxième langue)",
+          "subject": "Matière",
+          "subjectPlaceholder": "Sélectionnez la matière",
+          "stage": "Niveaux scolaires",
+          "stagePlaceholder": "Sélectionnez les niveaux scolaires",
+          "grade": "Classe",
+          "gradePlaceholder": "Sélectionnez les classes",
+          "targetAudience": "L'examen est destiné à",
+          "allClasses": "Tous les élèves des classes",
+          "specificStudents": "Élèves spécifiques",
+          "startDate": "Date de début de l'examen",
+          "startDatePlaceholder": "Sélectionnez la date de début de l'examen",
+          "endDate": "Date de fin de l'examen",
+          "endDatePlaceholder": "Sélectionnez la date de fin de l'examen",
+          "totalPoints": "Total des points",
+          "totalPointsPlaceholder": "Sélectionnez le total des points",
+          "examDuration": "Durée de l'examen (minutes)",
+          "examDurationPlaceholder": "Sélectionnez la durée de l'examen (minutes)",
+          "passingGrade": "Note de réussite %",
+          "passingGradePlaceholder": "Saisissez la note de réussite %",
+          "resultVisibility": "Visibilité du résultat pour l'élève",
+          "resultAfterExam": "Juste après l'examen",
+          "resultAfterEachQuestion": "Afficher le résultat après chaque question"
+        },
+        "moreStudents": "+{{num}} élèves",
+        "submit": "Ajouter l'examen",
+        "comingSoon": "Cette étape sera ajoutée prochainement",
+        "questionsStep": {
+          "searchPlaceholder": "Rechercher une question",
+          "typePlaceholder": "Type de question",
+          "levelPlaceholder": "Niveau"
+        },
+        "reviewStep": {
+          "emptyDescription": "Aucune question sélectionnée pour le moment. Revenez à l'étape des questions de l'examen pour en choisir."
+        },
+        "validation": {
+          "titleArRequired": "Le titre de l'examen dans la première langue est requis",
+          "titleEnRequired": "Le titre de l'examen dans la deuxième langue est requis",
+          "subjectRequired": "La matière est requise",
+          "stageRequired": "Le niveau scolaire est requis",
+          "gradeRequired": "La classe est requise",
+          "targetAudienceRequired": "Veuillez sélectionner le public cible",
+          "startDateRequired": "La date de début de l'examen est requise",
+          "totalPointsRequired": "Le total des points est requis",
+          "passingGradeRequired": "La note de réussite est requise",
+          "passingGradeRange": "La note de réussite doit être comprise entre 0 et 100",
+          "resultVisibilityRequired": "Veuillez sélectionner quand le résultat apparaît"
+        }
+      },
       "addAI": {
         "steps": {
           "basicInfo": "Informations de base",
@@ -244,7 +303,43 @@
         },
         "comingSoon": "Cette étape sera ajoutée prochainement",
         "generateQuestions": "Générer les questions",
+        "submit": "Ajouter l'examen",
         "addButton": "Ajouter",
+        "classifications": {
+          "searchPlaceholder": "Rechercher un nom de catégorie",
+          "multipleChoice": "Choix multiple",
+          "correctAnswer": "Bonne réponse"
+        },
+        "saveClassification": {
+          "classification": "Catégorie",
+          "existingClassification": "Catégorie existante",
+          "newClassification": "Nouvelle catégorie",
+          "educationalStage": "Niveau scolaire",
+          "educationalStagePlaceholder": "Sélectionnez le niveau scolaire",
+          "questionsTitle": "Questions"
+        },
+        "review": {
+          "sectionTitle": "Questions de catégorisation",
+          "selectedQuestionsCount": "Questions sélectionnées ({{num}})",
+          "regenerate": "Régénérer",
+          "saveInClassification": "Enregistrer dans la catégorie",
+          "trueFalse": "Vrai ou faux",
+          "explanationLabel": "Explication",
+          "editForm": {
+            "question": "Question",
+            "questionPlaceholder": "Saisissez la question",
+            "difficulty": "Niveau de la question",
+            "difficultyPlaceholder": "Sélectionnez le niveau de la question",
+            "questionType": "Type de question",
+            "questionTypePlaceholder": "Sélectionnez le type de question",
+            "correctAnswer": "Bonne réponse",
+            "correctAnswerPlaceholder": "Saisissez la bonne réponse",
+            "wrongAnswer": "Mauvaise réponse",
+            "wrongAnswerPlaceholder": "Saisissez la mauvaise réponse",
+            "explanation": "Explication de la réponse",
+            "explanationPlaceholder": "Saisissez l'explication de la réponse"
+          }
+        },
         "validation": {
           "titleArRequired": "Le titre de l'examen dans la première langue est requis",
           "titleEnRequired": "Le titre de l'examen dans la deuxième langue est requis",

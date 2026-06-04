@@ -177,21 +177,80 @@
           "lessonDurationPlaceholder": "Select lesson duration",
           "cover": "Course Cover Image"
         }
-      },
-      "selectStudents": {
-        "title": "Select Students",
-        "searchPlaceholder": "Search easily for anything",
-        "studentSearchPlaceholder": "Search easily for a student name",
-        "confirm": "Confirm",
-        "grades": {
-          "g1": "Class 1/2",
-          "g2": "Class 2/2",
-          "g3": "Class 3/2"
-        },
-        "sampleStudent": "Ali Mohamed"
       }
     },
+    "selectStudents": {
+      "title": "Select Students",
+      "searchPlaceholder": "Search easily for anything",
+      "studentSearchPlaceholder": "Search easily for a student name",
+      "confirm": "Confirm",
+      "grades": {
+        "g1": "Class 1/2",
+        "g2": "Class 2/2",
+        "g3": "Class 3/2"
+      },
+      "sampleStudent": "Ali Mohamed"
+    },
     "onlineExams": {
+      "addQuestionBank": {
+        "steps": {
+          "basicInfo": "Basic information",
+          "questions": "Exam questions",
+          "review": "Review exam"
+        },
+        "fields": {
+          "titleAr": "Exam title (in first language)",
+          "titleArPlaceholder": "Enter the exam title (in first language)",
+          "titleEn": "Exam title (in second language)",
+          "titleEnPlaceholder": "Enter the exam title (in second language)",
+          "subject": "Subject",
+          "subjectPlaceholder": "Select the subject",
+          "stage": "Educational stages",
+          "stagePlaceholder": "Select the educational stages",
+          "grade": "Grade",
+          "gradePlaceholder": "Select the grades",
+          "targetAudience": "Exam is directed to",
+          "allClasses": "All class students",
+          "specificStudents": "Specific students",
+          "startDate": "Exam start date",
+          "startDatePlaceholder": "Select the exam start date",
+          "endDate": "Exam end date",
+          "endDatePlaceholder": "Select the exam end date",
+          "totalPoints": "Total points",
+          "totalPointsPlaceholder": "Select the total points",
+          "examDuration": "Exam duration (minutes)",
+          "examDurationPlaceholder": "Select the exam duration (minutes)",
+          "passingGrade": "Passing grade %",
+          "passingGradePlaceholder": "Enter the passing grade %",
+          "resultVisibility": "Result visibility to student",
+          "resultAfterExam": "Right after the exam",
+          "resultAfterEachQuestion": "Show result after each question"
+        },
+        "moreStudents": "+{{num}} students",
+        "submit": "Add exam",
+        "comingSoon": "This step will be added soon",
+        "questionsStep": {
+          "searchPlaceholder": "Search for a question",
+          "typePlaceholder": "Question type",
+          "levelPlaceholder": "Level"
+        },
+        "reviewStep": {
+          "emptyDescription": "No questions selected yet. Go back to the exam questions step to choose questions."
+        },
+        "validation": {
+          "titleArRequired": "Exam title in the first language is required",
+          "titleEnRequired": "Exam title in the second language is required",
+          "subjectRequired": "Subject is required",
+          "stageRequired": "Educational stage is required",
+          "gradeRequired": "Grade is required",
+          "targetAudienceRequired": "Please select the target audience",
+          "startDateRequired": "Exam start date is required",
+          "totalPointsRequired": "Total points is required",
+          "passingGradeRequired": "Passing grade is required",
+          "passingGradeRange": "Passing grade must be between 0 and 100",
+          "resultVisibilityRequired": "Please select when the result appears"
+        }
+      },
       "addAI": {
         "steps": {
           "basicInfo": "Basic Information",
@@ -244,7 +303,43 @@
         },
         "comingSoon": "This step will be added soon",
         "generateQuestions": "Generate questions",
+        "submit": "Add exam",
         "addButton": "Add",
+        "classifications": {
+          "searchPlaceholder": "Search for a classification name",
+          "multipleChoice": "Multiple choice",
+          "correctAnswer": "Correct answer"
+        },
+        "saveClassification": {
+          "classification": "Classification",
+          "existingClassification": "Existing classification",
+          "newClassification": "New classification",
+          "educationalStage": "Educational stage",
+          "educationalStagePlaceholder": "Select the educational stage",
+          "questionsTitle": "Questions"
+        },
+        "review": {
+          "sectionTitle": "Classification questions",
+          "selectedQuestionsCount": "Selected questions ({{num}})",
+          "regenerate": "Regenerate",
+          "saveInClassification": "Save to classification",
+          "trueFalse": "True or false",
+          "explanationLabel": "Explanation",
+          "editForm": {
+            "question": "Question",
+            "questionPlaceholder": "Enter the question",
+            "difficulty": "Question level",
+            "difficultyPlaceholder": "Select question level",
+            "questionType": "Question type",
+            "questionTypePlaceholder": "Select question type",
+            "correctAnswer": "Correct answer",
+            "correctAnswerPlaceholder": "Enter the correct answer",
+            "wrongAnswer": "Wrong answer",
+            "wrongAnswerPlaceholder": "Enter the wrong answer",
+            "explanation": "Answer explanation",
+            "explanationPlaceholder": "Enter the answer explanation"
+          }
+        },
         "validation": {
           "titleArRequired": "The exam title in the first language is required",
           "titleEnRequired": "The exam title in the second language is required",

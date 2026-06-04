@@ -177,21 +177,80 @@
           "lessonDurationPlaceholder": "Выберите длительность урока",
           "cover": "Обложка курса"
         }
-      },
-      "selectStudents": {
-        "title": "Выбор студентов",
-        "searchPlaceholder": "Легко найдите всё, что нужно",
-        "studentSearchPlaceholder": "Легко найдите имя студента",
-        "confirm": "Выбрать",
-        "grades": {
-          "g1": "Класс 1/2",
-          "g2": "Класс 2/2",
-          "g3": "Класс 3/2"
-        },
-        "sampleStudent": "Али Мохамед"
       }
     },
+    "selectStudents": {
+      "title": "Выбор студентов",
+      "searchPlaceholder": "Легко найдите всё, что нужно",
+      "studentSearchPlaceholder": "Легко найдите имя студента",
+      "confirm": "Выбрать",
+      "grades": {
+        "g1": "Класс 1/2",
+        "g2": "Класс 2/2",
+        "g3": "Класс 3/2"
+      },
+      "sampleStudent": "Али Мохамед"
+    },
     "onlineExams": {
+      "addQuestionBank": {
+        "steps": {
+          "basicInfo": "Основная информация",
+          "questions": "Вопросы экзамена",
+          "review": "Проверка экзамена"
+        },
+        "fields": {
+          "titleAr": "Название экзамена (на первом языке)",
+          "titleArPlaceholder": "Введите название экзамена (на первом языке)",
+          "titleEn": "Название экзамена (на втором языке)",
+          "titleEnPlaceholder": "Введите название экзамена (на втором языке)",
+          "subject": "Предмет",
+          "subjectPlaceholder": "Выберите предмет",
+          "stage": "Учебные этапы",
+          "stagePlaceholder": "Выберите учебные этапы",
+          "grade": "Класс",
+          "gradePlaceholder": "Выберите классы",
+          "targetAudience": "Экзамен предназначен для",
+          "allClasses": "Все ученики классов",
+          "specificStudents": "Определённые ученики",
+          "startDate": "Дата начала экзамена",
+          "startDatePlaceholder": "Выберите дату начала экзамена",
+          "endDate": "Дата окончания экзамена",
+          "endDatePlaceholder": "Выберите дату окончания экзамена",
+          "totalPoints": "Всего баллов",
+          "totalPointsPlaceholder": "Выберите общее количество баллов",
+          "examDuration": "Длительность экзамена (минуты)",
+          "examDurationPlaceholder": "Выберите длительность экзамена (минуты)",
+          "passingGrade": "Проходной балл %",
+          "passingGradePlaceholder": "Введите проходной балл %",
+          "resultVisibility": "Видимость результата для ученика",
+          "resultAfterExam": "Сразу после экзамена",
+          "resultAfterEachQuestion": "Показывать результат после каждого вопроса"
+        },
+        "moreStudents": "+{{num}} учеников",
+        "submit": "Добавить экзамен",
+        "comingSoon": "Этот шаг будет добавлен в ближайшее время",
+        "questionsStep": {
+          "searchPlaceholder": "Поиск вопроса",
+          "typePlaceholder": "Тип вопроса",
+          "levelPlaceholder": "Уровень"
+        },
+        "reviewStep": {
+          "emptyDescription": "Вопросы ещё не выбраны. Вернитесь к шагу «Вопросы экзамена», чтобы выбрать вопросы."
+        },
+        "validation": {
+          "titleArRequired": "Название экзамена на первом языке обязательно",
+          "titleEnRequired": "Название экзамена на втором языке обязательно",
+          "subjectRequired": "Предмет обязателен",
+          "stageRequired": "Учебный этап обязателен",
+          "gradeRequired": "Класс обязателен",
+          "targetAudienceRequired": "Пожалуйста, выберите целевую аудиторию",
+          "startDateRequired": "Дата начала экзамена обязательна",
+          "totalPointsRequired": "Общее количество баллов обязательно",
+          "passingGradeRequired": "Проходной балл обязателен",
+          "passingGradeRange": "Проходной балл должен быть от 0 до 100",
+          "resultVisibilityRequired": "Пожалуйста, выберите, когда показывать результат"
+        }
+      },
       "addAI": {
         "steps": {
           "basicInfo": "Основная информация",
@@ -244,7 +303,43 @@
         },
         "comingSoon": "Этот шаг будет добавлен в ближайшее время",
         "generateQuestions": "Сгенерировать вопросы",
+        "submit": "Добавить экзамен",
         "addButton": "Добавить",
+        "classifications": {
+          "searchPlaceholder": "Поиск по названию категории",
+          "multipleChoice": "Множественный выбор",
+          "correctAnswer": "Правильный ответ"
+        },
+        "saveClassification": {
+          "classification": "Категория",
+          "existingClassification": "Существующая категория",
+          "newClassification": "Новая категория",
+          "educationalStage": "Учебный этап",
+          "educationalStagePlaceholder": "Выберите учебный этап",
+          "questionsTitle": "Вопросы"
+        },
+        "review": {
+          "sectionTitle": "Вопросы по категории",
+          "selectedQuestionsCount": "Выбранные вопросы ({{num}})",
+          "regenerate": "Сгенерировать заново",
+          "saveInClassification": "Сохранить в категорию",
+          "trueFalse": "Верно или неверно",
+          "explanationLabel": "Пояснение",
+          "editForm": {
+            "question": "Вопрос",
+            "questionPlaceholder": "Введите вопрос",
+            "difficulty": "Уровень вопроса",
+            "difficultyPlaceholder": "Выберите уровень вопроса",
+            "questionType": "Тип вопроса",
+            "questionTypePlaceholder": "Выберите тип вопроса",
+            "correctAnswer": "Правильный ответ",
+            "correctAnswerPlaceholder": "Введите правильный ответ",
+            "wrongAnswer": "Неправильный ответ",
+            "wrongAnswerPlaceholder": "Введите неправильный ответ",
+            "explanation": "Пояснение к ответу",
+            "explanationPlaceholder": "Введите пояснение к ответу"
+          }
+        },
         "validation": {
           "titleArRequired": "Название экзамена на первом языке обязательно",
           "titleEnRequired": "Название экзамена на втором языке обязательно",

@@ -177,21 +177,80 @@
           "lessonDurationPlaceholder": "أختر مدة الدرس",
           "cover": "صورة غلاف الدورة التدريبية"
         }
-      },
-      "selectStudents": {
-        "title": "تحديد الطلاب",
-        "searchPlaceholder": "ابحث بسهولة عما تريد",
-        "studentSearchPlaceholder": "ابحث بسهولة عن اسم الطالب",
-        "confirm": "تحديد",
-        "grades": {
-          "g1": "صف 1/2 ع",
-          "g2": "صف 2/2 ع",
-          "g3": "صف 3/2 ع"
-        },
-        "sampleStudent": "علي محمد"
       }
     },
+    "selectStudents": {
+      "title": "تحديد الطلاب",
+      "searchPlaceholder": "ابحث بسهولة عما تريد",
+      "studentSearchPlaceholder": "ابحث بسهولة عن اسم الطالب",
+      "confirm": "تحديد",
+      "grades": {
+        "g1": "صف 1/2 ع",
+        "g2": "صف 2/2 ع",
+        "g3": "صف 3/2 ع"
+      },
+      "sampleStudent": "علي محمد"
+    },
     "onlineExams": {
+      "addQuestionBank": {
+        "steps": {
+          "basicInfo": "المعلومات الأساسية",
+          "questions": "أسئلة الأختبار",
+          "review": "مراجعة الأختبار"
+        },
+        "fields": {
+          "titleAr": "عنوان الاختبار (باللغة الأولى)",
+          "titleArPlaceholder": "ادخل عنوان الاختبار (باللغة الأولى)",
+          "titleEn": "عنوان الاختبار (باللغة الثانية)",
+          "titleEnPlaceholder": "ادخل عنوان الاختبار (باللغة الثانية)",
+          "subject": "المادة",
+          "subjectPlaceholder": "اختر المادة",
+          "stage": "المراحل الدراسية",
+          "stagePlaceholder": "اختر المراحل الدراسية",
+          "grade": "الصف",
+          "gradePlaceholder": "اختر الصفوف",
+          "targetAudience": "الأختبار موجه إلي",
+          "allClasses": "جميع طلاب الفصول",
+          "specificStudents": "تحديد طلاب",
+          "startDate": "موعد بدء الأختبار",
+          "startDatePlaceholder": "اختر موعد بدء الأختبار",
+          "endDate": "موعد انتهاء الأختبار",
+          "endDatePlaceholder": "اختر موعد انتهاء الأختبار",
+          "totalPoints": "إجمالي النقاط",
+          "totalPointsPlaceholder": "اختر إجمالي النقاط",
+          "examDuration": "مدة الأختبار (دقيقة)",
+          "examDurationPlaceholder": "اختر مدة الأختبار (دقيقة)",
+          "passingGrade": "درجة النجاح %",
+          "passingGradePlaceholder": "أدخل درجة النجاح %",
+          "resultVisibility": "ظهور النتيجة للطالب",
+          "resultAfterExam": "بعد الأختبار مباشرة",
+          "resultAfterEachQuestion": "عرض النتيجة بعد كل سؤال"
+        },
+        "moreStudents": "+{{num}} طالب",
+        "submit": "إضافة الأختبار",
+        "comingSoon": "سيتم إضافة هذه الخطوة قريباً",
+        "questionsStep": {
+          "searchPlaceholder": "ابحث عن السؤال",
+          "typePlaceholder": "نوع الأسئلة",
+          "levelPlaceholder": "المستوى"
+        },
+        "reviewStep": {
+          "emptyDescription": "لم يتم اختيار أي أسئلة بعد. ارجع إلى خطوة أسئلة الأختبار لاختيار الأسئلة."
+        },
+        "validation": {
+          "titleArRequired": "عنوان الاختبار باللغة الأولى مطلوب",
+          "titleEnRequired": "عنوان الاختبار باللغة الثانية مطلوب",
+          "subjectRequired": "المادة مطلوبة",
+          "stageRequired": "المرحلة الدراسية مطلوبة",
+          "gradeRequired": "الصف مطلوب",
+          "targetAudienceRequired": "يرجى تحديد الفئة المستهدفة",
+          "startDateRequired": "موعد بدء الأختبار مطلوب",
+          "totalPointsRequired": "إجمالي النقاط مطلوب",
+          "passingGradeRequired": "درجة النجاح مطلوبة",
+          "passingGradeRange": "درجة النجاح يجب أن تكون بين 0 و 100",
+          "resultVisibilityRequired": "يرجى تحديد وقت ظهور النتيجة"
+        }
+      },
       "addAI": {
         "steps": {
           "basicInfo": "المعلومات الأساسية",
@@ -244,7 +303,43 @@
         },
         "comingSoon": "سيتم إضافة هذه الخطوة قريباً",
         "generateQuestions": "توليد الأسئلة",
+        "submit": "إضافة الأختبار",
         "addButton": "إضافة",
+        "classifications": {
+          "searchPlaceholder": "ابحث عن اسم التصنيف",
+          "multipleChoice": "أختيارات متعددة",
+          "correctAnswer": "الإجابة الصحيحة"
+        },
+        "saveClassification": {
+          "classification": "التصنيف",
+          "existingClassification": "تصنيف تم إنشاءها",
+          "newClassification": "تصنيف جديد",
+          "educationalStage": "المرحلة التعليمية",
+          "educationalStagePlaceholder": "اختر المرحلة التعليمية",
+          "questionsTitle": "الأسئلة"
+        },
+        "review": {
+          "sectionTitle": "أسئلة التصنيف",
+          "selectedQuestionsCount": "عدد الأسئلة المختارة ({{num}})",
+          "regenerate": "إعادة توليد",
+          "saveInClassification": "حفظ في تصنيف",
+          "trueFalse": "صح أو غلط",
+          "explanationLabel": "الشرح",
+          "editForm": {
+            "question": "السؤال",
+            "questionPlaceholder": "ادخل السؤال",
+            "difficulty": "مستوى السؤال",
+            "difficultyPlaceholder": "اختر مستوى السؤال",
+            "questionType": "نوع السؤال",
+            "questionTypePlaceholder": "اختر نوع السؤال",
+            "correctAnswer": "الإجابة الصحيحة",
+            "correctAnswerPlaceholder": "أدخل الإجابة الصحيحة",
+            "wrongAnswer": "الإجابة الخاطئة",
+            "wrongAnswerPlaceholder": "أدخل الإجابة الخاطئة",
+            "explanation": "شرح الإجابة",
+            "explanationPlaceholder": "أدخل شرح الإجابة"
+          }
+        },
         "validation": {
           "titleArRequired": "عنوان الاختبار باللغة الأولى مطلوب",
           "titleEnRequired": "عنوان الاختبار باللغة الثانية مطلوب",

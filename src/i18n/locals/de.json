@@ -177,21 +177,80 @@
           "lessonDurationPlaceholder": "Lektionsdauer auswählen",
           "cover": "Kurs-Titelbild"
         }
-      },
-      "selectStudents": {
-        "title": "Schüler auswählen",
-        "searchPlaceholder": "Einfach nach allem suchen",
-        "studentSearchPlaceholder": "Einfach nach einem Schülernamen suchen",
-        "confirm": "Auswählen",
-        "grades": {
-          "g1": "Klasse 1/2",
-          "g2": "Klasse 2/2",
-          "g3": "Klasse 3/2"
-        },
-        "sampleStudent": "Ali Mohamed"
       }
     },
+    "selectStudents": {
+      "title": "Schüler auswählen",
+      "searchPlaceholder": "Einfach nach allem suchen",
+      "studentSearchPlaceholder": "Einfach nach einem Schülernamen suchen",
+      "confirm": "Auswählen",
+      "grades": {
+        "g1": "Klasse 1/2",
+        "g2": "Klasse 2/2",
+        "g3": "Klasse 3/2"
+      },
+      "sampleStudent": "Ali Mohamed"
+    },
     "onlineExams": {
+      "addQuestionBank": {
+        "steps": {
+          "basicInfo": "Grundinformationen",
+          "questions": "Prüfungsfragen",
+          "review": "Prüfung überprüfen"
+        },
+        "fields": {
+          "titleAr": "Prüfungstitel (in der ersten Sprache)",
+          "titleArPlaceholder": "Geben Sie den Prüfungstitel ein (in der ersten Sprache)",
+          "titleEn": "Prüfungstitel (in der zweiten Sprache)",
+          "titleEnPlaceholder": "Geben Sie den Prüfungstitel ein (in der zweiten Sprache)",
+          "subject": "Fach",
+          "subjectPlaceholder": "Fach auswählen",
+          "stage": "Bildungsstufen",
+          "stagePlaceholder": "Bildungsstufen auswählen",
+          "grade": "Klasse",
+          "gradePlaceholder": "Klassen auswählen",
+          "targetAudience": "Prüfung richtet sich an",
+          "allClasses": "Alle Schüler der Klassen",
+          "specificStudents": "Bestimmte Schüler",
+          "startDate": "Prüfungsbeginn",
+          "startDatePlaceholder": "Prüfungsbeginn auswählen",
+          "endDate": "Prüfungsende",
+          "endDatePlaceholder": "Prüfungsende auswählen",
+          "totalPoints": "Gesamtpunkte",
+          "totalPointsPlaceholder": "Gesamtpunkte auswählen",
+          "examDuration": "Prüfungsdauer (Minuten)",
+          "examDurationPlaceholder": "Prüfungsdauer auswählen (Minuten)",
+          "passingGrade": "Bestehensgrenze %",
+          "passingGradePlaceholder": "Bestehensgrenze eingeben %",
+          "resultVisibility": "Sichtbarkeit des Ergebnisses für den Schüler",
+          "resultAfterExam": "Direkt nach der Prüfung",
+          "resultAfterEachQuestion": "Ergebnis nach jeder Frage anzeigen"
+        },
+        "moreStudents": "+{{num}} Schüler",
+        "submit": "Prüfung hinzufügen",
+        "comingSoon": "Dieser Schritt wird bald hinzugefügt",
+        "questionsStep": {
+          "searchPlaceholder": "Frage suchen",
+          "typePlaceholder": "Fragetyp",
+          "levelPlaceholder": "Niveau"
+        },
+        "reviewStep": {
+          "emptyDescription": "Noch keine Fragen ausgewählt. Kehren Sie zum Schritt „Prüfungsfragen“ zurück, um Fragen auszuwählen."
+        },
+        "validation": {
+          "titleArRequired": "Prüfungstitel in der ersten Sprache ist erforderlich",
+          "titleEnRequired": "Prüfungstitel in der zweiten Sprache ist erforderlich",
+          "subjectRequired": "Fach ist erforderlich",
+          "stageRequired": "Bildungsstufe ist erforderlich",
+          "gradeRequired": "Klasse ist erforderlich",
+          "targetAudienceRequired": "Bitte wählen Sie die Zielgruppe",
+          "startDateRequired": "Prüfungsbeginn ist erforderlich",
+          "totalPointsRequired": "Gesamtpunkte sind erforderlich",
+          "passingGradeRequired": "Bestehensgrenze ist erforderlich",
+          "passingGradeRange": "Die Bestehensgrenze muss zwischen 0 und 100 liegen",
+          "resultVisibilityRequired": "Bitte wählen Sie, wann das Ergebnis erscheint"
+        }
+      },
       "addAI": {
         "steps": {
           "basicInfo": "Grundinformationen",
@@ -244,7 +303,43 @@
         },
         "comingSoon": "Dieser Schritt wird bald hinzugefügt",
         "generateQuestions": "Fragen generieren",
+        "submit": "Prüfung hinzufügen",
         "addButton": "Hinzufügen",
+        "classifications": {
+          "searchPlaceholder": "Nach Kategoriename suchen",
+          "multipleChoice": "Multiple Choice",
+          "correctAnswer": "Richtige Antwort"
+        },
+        "saveClassification": {
+          "classification": "Kategorie",
+          "existingClassification": "Vorhandene Kategorie",
+          "newClassification": "Neue Kategorie",
+          "educationalStage": "Bildungsstufe",
+          "educationalStagePlaceholder": "Bildungsstufe auswählen",
+          "questionsTitle": "Fragen"
+        },
+        "review": {
+          "sectionTitle": "Kategorisierungsfragen",
+          "selectedQuestionsCount": "Ausgewählte Fragen ({{num}})",
+          "regenerate": "Neu generieren",
+          "saveInClassification": "In Kategorie speichern",
+          "trueFalse": "Richtig oder falsch",
+          "explanationLabel": "Erklärung",
+          "editForm": {
+            "question": "Frage",
+            "questionPlaceholder": "Frage eingeben",
+            "difficulty": "Schwierigkeitsgrad",
+            "difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
+            "questionType": "Fragetyp",
+            "questionTypePlaceholder": "Fragetyp auswählen",
+            "correctAnswer": "Richtige Antwort",
+            "correctAnswerPlaceholder": "Richtige Antwort eingeben",
+            "wrongAnswer": "Falsche Antwort",
+            "wrongAnswerPlaceholder": "Falsche Antwort eingeben",
+            "explanation": "Antworterklärung",
+            "explanationPlaceholder": "Antworterklärung eingeben"
+          }
+        },
         "validation": {
           "titleArRequired": "Der Prüfungstitel in der ersten Sprache ist erforderlich",
           "titleEnRequired": "Der Prüfungstitel in der zweiten Sprache ist erforderlich",
