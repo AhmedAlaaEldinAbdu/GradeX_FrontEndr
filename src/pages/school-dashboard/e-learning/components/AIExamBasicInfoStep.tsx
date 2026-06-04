@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
@@ -5,6 +6,7 @@ import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import Input from '@/shared/components/Input';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
+import SelectStudentsPopup from '../popups/SelectStudentsPopup';
 import type { AIExamBasicInfoProps } from '@/validations/ai-exam-validations';
 import StudentAvatar from '@/assets/images/profile.png';
 
@@ -34,18 +36,14 @@ const TARGET_AUDIENCE_OPTIONS = [
   { value: 'specific', labelKey: 'eLearning.onlineExams.addAI.fields.specificStudents' },
 ];
 
-const SELECTED_STUDENTS_PREVIEW = {
-  name: 'علي محمد',
-  extraCount: 30,
-  avatar: StudentAvatar,
-};
-
 const AIExamBasicInfoStep = () => {
   const { t } = useTranslation();
   const {
     control,
     formState: { errors },
   } = useFormContext<AIExamBasicInfoProps>();
+  const [isStudentsOpen, setIsStudentsOpen] = useState(false);
+  const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
 
   const languageOptions = [
     { value: 'ar', label: t('eLearning.onlineExams.addAI.languageOptions.ar') },
@@ -241,7 +239,14 @@ const AIExamBasicInfoStep = () => {
                     <button
                       key={option.value}
                       type="button"
-                      onClick={() => field.onChange(option.value)}
+                      onClick={() => {
+                        field.onChange(option.value);
+                        if (option.value === 'specific') {
+                          setIsStudentsOpen(true);
+                        } else {
+                          setSelectedStudentIds([]);
+                        }
+                      }}
                       className="flex items-center gap-2"
                     >
                       <span
@@ -260,24 +265,30 @@ const AIExamBasicInfoStep = () => {
               </div>
 
               {/* Preview of the chosen students, shown when "specific students" is selected. */}
-              {field.value === 'specific' && (
-                <div className="flex items-center gap-3">
-                  <div className="h-[52px] w-[52px] overflow-hidden rounded-lg border border-[#E6E6E6]">
+              {field.value === 'specific' && selectedStudentIds.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsStudentsOpen(true)}
+                  className="flex items-center gap-3 self-start text-start"
+                >
+                  <div className="h-[52px] w-[52px] shrink-0 overflow-hidden rounded-lg border border-[#E6E6E6]">
                     <CustomImage
-                      src={SELECTED_STUDENTS_PREVIEW.avatar}
+                      src={StudentAvatar}
                       alt=""
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <span className="text-xl font-normal text-[#4D4D4D]">
-                    {SELECTED_STUDENTS_PREVIEW.name}
+                    {t('eLearning.selectStudents.sampleStudent')}
                   </span>
-                  <span className="text-xl font-bold text-green-500">
-                    {t('eLearning.onlineExams.addAI.moreStudents', {
-                      num: SELECTED_STUDENTS_PREVIEW.extraCount,
-                    })}
-                  </span>
-                </div>
+                  {selectedStudentIds.length > 1 && (
+                    <span className="text-xl font-bold text-green-500">
+                      {t('eLearning.onlineExams.addAI.moreStudents', {
+                        num: selectedStudentIds.length - 1,
+                      })}
+                    </span>
+                  )}
+                </button>
               )}
             </div>
           )}
@@ -378,6 +389,13 @@ const AIExamBasicInfoStep = () => {
           />
         </FormField>
       </div>
+
+      <SelectStudentsPopup
+        isOpen={isStudentsOpen}
+        onClose={() => setIsStudentsOpen(false)}
+        value={selectedStudentIds}
+        onConfirm={(ids) => setSelectedStudentIds(ids)}
+      />
     </div>
   );
 };
