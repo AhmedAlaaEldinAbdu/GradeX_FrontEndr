@@ -56,6 +56,9 @@ export default function CreateExamPopup({ isOpen, onClose }: CreateExamPopupProp
     if (method === 'ai') {
       onClose();
       navigate('/lms/online-exams/create/ai');
+    } else if (method === 'questionBank') {
+      onClose();
+      navigate('/lms/online-exams/create/question-bank');
     }
   };
 
