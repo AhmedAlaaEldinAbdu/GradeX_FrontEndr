@@ -8,6 +8,7 @@ import DashboardPage from '@/pages/school-dashboard/dashboard/dashboard-page';
 import ELearningOverviewPage from '@/pages/school-dashboard/e-learning/e-learning-overview-page';
 import OnlineExamsPage from '@/pages/school-dashboard/e-learning/online-exams-page';
 import AddAIExamPage from '@/pages/school-dashboard/e-learning/add-ai-exam-page';
+import AddQuestionBankExamPage from '@/pages/school-dashboard/e-learning/add-question-bank-exam-page';
 import ExamDetailsPage from '@/pages/school-dashboard/e-learning/exam-details-page';
 import ExamReviewPage from '@/pages/school-dashboard/e-learning/exam-review-page';
 import TrainingCoursesPage from '@/pages/school-dashboard/e-learning/training-courses-page';
@@ -1010,6 +1011,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AddAIExamPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/online-exams/create/question-bank"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddQuestionBankExamPage />
             </MainLayout>
           </ProtectedRoute>
         }
