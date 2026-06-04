@@ -13,6 +13,9 @@ import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { logger } from '@/lib/utils/logger';
 import AIExamBasicInfoStep from './components/AIExamBasicInfoStep';
 import AIExamQuestionsStep from './components/AIExamQuestionsStep';
+import AIExamReviewStep from './components/AIExamReviewStep';
+import SaveInClassificationPopup from './popups/SaveInClassificationPopup';
+import type { ReviewQuestion } from './components/ExamReviewQuestionCard';
 import { AIExamSchema, type AIExamProps } from '@/validations/ai-exam-validations';
 import FilesFillGreenIcon from '@gradex/assets/icons/FilesFillGreen.svg';
 import QuestionBankIcon from '@gradex/assets/icons/QuestionBank.svg';
@@ -44,6 +47,8 @@ export default function AddAIExamPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [classificationQuestions, setClassificationQuestions] = useState<ReviewQuestion[]>([]);
+  const [isSaveInClassificationOpen, setIsSaveInClassificationOpen] = useState(false);
 
   const methods = useForm<AIExamProps>({
     resolver: yupResolver(AIExamSchema),
@@ -99,6 +104,13 @@ export default function AddAIExamPage() {
     },
   ];
 
+  const handleClassificationsSelected = (questions: ReviewQuestion[]) => {
+    setClassificationQuestions((prev) => {
+      const seen = new Set(prev.map((question) => question.id));
+      return [...prev, ...questions.filter((question) => !seen.has(question.id))];
+    });
+  };
+
   const handlePrimary = async () => {
     if (currentStep === 1) {
       const isValid = await methods.trigger(STEP1_FIELDS);
@@ -110,6 +122,7 @@ export default function AddAIExamPage() {
       return;
     }
     if (currentStep === 2) {
+      // "Generate questions" — validate the step, then move on to review.
       const isValid = await methods.trigger(STEP2_FIELDS);
       if (!isValid) {
         scrollToFirstError(methods.formState.errors);
@@ -119,7 +132,8 @@ export default function AddAIExamPage() {
       setCurrentStep(LAST_STEP);
       return;
     }
-
+    // Final step — creation will be wired to the backend later.
+    logger.debug('AI exam — finalize', { values: methods.getValues(), classificationQuestions });
     navigate(ONLINE_EXAMS_PATH);
   };
 
@@ -131,13 +145,40 @@ export default function AddAIExamPage() {
     }
   };
 
+  const handleSaveInClassification = () => {
+    setIsSaveInClassificationOpen(true);
+  };
+
   const primaryLabel =
     currentStep === 1
       ? t('common.next')
       : currentStep === 2
         ? t('eLearning.onlineExams.addAI.generateQuestions')
-        : t('common.save');
+        : t('eLearning.onlineExams.addAI.submit');
   const secondaryLabel = currentStep === 1 ? t('common.cancel') : t('common.previous');
+
+  const footer = (
+    <div className="flex items-center justify-between">
+      <div />
+      <div className="flex items-center gap-3">
+        <Button type="button" variant="outline" onClick={handleSecondary}>
+          {secondaryLabel}
+        </Button>
+        {currentStep === LAST_STEP && (
+          <button
+            type="button"
+            onClick={handleSaveInClassification}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#A7F1CA] bg-[#E5FFF4] px-5 py-2 text-lg font-medium text-green-500 transition-colors hover:bg-[#d6fbe9]"
+          >
+            {t('eLearning.onlineExams.addAI.review.saveInClassification')}
+          </button>
+        )}
+        <Button type="button" variant="primary" onClick={() => void handlePrimary()}>
+          {primaryLabel}
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -148,34 +189,36 @@ export default function AddAIExamPage() {
         <form onSubmit={(e) => e.preventDefault()} noValidate>
           <StepIndicator steps={steps} currentStep={currentStep} />
 
-          <Card padding="md">
-            <div className="space-y-8">
-              {currentStep === 1 && <AIExamBasicInfoStep />}
-              {currentStep === 2 && <AIExamQuestionsStep />}
-              {currentStep === 3 && (
-                <div className="flex min-h-[320px] items-center justify-center">
-                  <p className="text-base font-normal text-[#646969]">
-                    {t('eLearning.onlineExams.addAI.comingSoon')}
-                  </p>
-                </div>
-              )}
-
-              {/* Navigation */}
-              <div className="flex items-center justify-between">
-                <div />
-                <div className="flex items-center gap-3">
-                  <Button type="button" variant="outline" onClick={handleSecondary}>
-                    {secondaryLabel}
-                  </Button>
-                  <Button type="button" variant="primary" onClick={() => void handlePrimary()}>
-                    {primaryLabel}
-                  </Button>
-                </div>
-              </div>
+          {currentStep === LAST_STEP ? (
+            <div className="space-y-6">
+              <AIExamReviewStep
+                classificationQuestions={classificationQuestions}
+                onRemoveClassification={(id) =>
+                  setClassificationQuestions((prev) =>
+                    prev.filter((question) => question.id !== id)
+                  )
+                }
+              />
+              {footer}
             </div>
-          </Card>
+          ) : (
+            <Card padding="md">
+              <div className="space-y-8">
+                {currentStep === 1 && <AIExamBasicInfoStep />}
+                {currentStep === 2 && (
+                  <AIExamQuestionsStep onClassificationsSelected={handleClassificationsSelected} />
+                )}
+                {footer}
+              </div>
+            </Card>
+          )}
         </form>
       </FormProvider>
+
+      <SaveInClassificationPopup
+        isOpen={isSaveInClassificationOpen}
+        onClose={() => setIsSaveInClassificationOpen(false)}
+      />
     </div>
   );
 }
