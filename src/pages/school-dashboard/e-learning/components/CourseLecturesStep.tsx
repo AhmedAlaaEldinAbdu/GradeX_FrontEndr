@@ -7,7 +7,7 @@ import FileUpload from '@/shared/components/FileUpload';
 import SearchInput from '@/shared/components/SearchInput';
 import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
-import PlusIcon from '@gradex/assets/icons/Plus.svg';
+import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import DocumentEditOutlineIcon from '@gradex/assets/icons/DocumentEditOutline.svg';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
@@ -144,7 +144,7 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
       {/* Manual lectures */}
       {data.source === 'manual' && (
         <div className="flex flex-col gap-4">
-          <p className="required text-base font-normal text-black-800">
+          <p className="required flex text-base font-normal text-black-800">
             {t('eLearning.courses.add.lectures.section')}
           </p>
 
@@ -217,14 +217,12 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
               </div>
 
               {/* Add another lecture */}
-              <button
-                type="button"
+              <CustomImage
                 onClick={addLecture}
-                aria-label={t('common.add')}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-800"
-              >
-                <CustomImage src={PlusIcon} alt="" className="h-6 w-6" />
-              </button>
+                src={GreenPlusIcon}
+                alt={t('common.add')}
+                className="h-8 w-8 cursor-pointer"
+              />
             </div>
           ))}
         </div>
@@ -233,18 +231,17 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
       {/* Platform courses */}
       {data.source === 'platform' && (
         <div className="flex flex-col gap-4">
-          <p className="required text-base font-normal text-black-800">
+          <p className="required flex text-base font-normal text-black-800">
             {t('eLearning.courses.add.lectures.section')}
           </p>
 
           <div className="flex flex-col gap-4 rounded-3xl border border-[#E6E6E6] p-4">
             {/* Filters */}
-            <div className="flex flex-wrap items-center justify-end gap-4">
+            <div className="flex flex-wrap items-center justify-start gap-4">
               <SearchInput
                 value={search}
                 onChange={setSearch}
                 placeholder={t('eLearning.courses.add.lectures.searchPlaceholder')}
-                wrapperClassName="min-w-[220px] flex-1"
               />
               <CustomSelect
                 value={lecturesCount}
@@ -252,7 +249,7 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                 options={lecturesCountOptions}
                 placeholder={t('eLearning.courses.add.lectures.lecturesCount')}
                 showSearch={false}
-                className="min-w-[150px]"
+                className="min-w-[180px]"
               />
               <CustomSelect
                 value={level}
@@ -269,37 +266,7 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
               {filteredCourses.map((course) => {
                 const isSelected = data.selectedCourseId === course.id;
                 return (
-                  <button
-                    key={course.id}
-                    type="button"
-                    onClick={() => set({ selectedCourseId: course.id })}
-                    className={`flex items-start gap-4 rounded-3xl border p-4 text-start transition-colors ${
-                      isSelected ? 'border-green-500' : 'border-[#E6E6E6] hover:border-green-200'
-                    }`}
-                  >
-                    <div className="flex flex-1 flex-col gap-2">
-                      <h4 className="text-base font-medium text-[#0E1F1F]">{platformTitle}</h4>
-                      <p className="text-sm font-normal text-[#3A3A3A]">{platformDescription}</p>
-                      <div className="flex items-center gap-2 text-sm font-normal text-[#646969]">
-                        <CustomImage src={DocumentEditOutlineIcon} alt="" className="h-4 w-4" />
-                        <span>
-                          {course.lectures} {t('eLearning.courses.add.lectures.lectureUnit')}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-normal text-[#646969]">
-                        <CustomImage src={ClockIcon} alt="" className="h-4 w-4" />
-                        <span>
-                          {t('eLearning.courses.add.lectures.avgTime', {
-                            minutes: course.avgMinutes,
-                          })}
-                        </span>
-                      </div>
-                    </div>
-
-                    <Badge variant={DIFFICULTY_VARIANT[course.difficulty]}>
-                      {t(`eLearning.onlineExams.difficulty.${course.difficulty}`)}
-                    </Badge>
-
+                  <div className="flex gap-2">
                     <span
                       className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
                         isSelected ? 'border-green-500' : 'border-[#DDE0E0]'
@@ -307,7 +274,38 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     >
                       {isSelected && <span className="h-2.5 w-2.5 rounded-full bg-green-500" />}
                     </span>
-                  </button>
+                    <button
+                      key={course.id}
+                      type="button"
+                      onClick={() => set({ selectedCourseId: course.id })}
+                      className={`flex flex-1 items-start gap-4 rounded-3xl border p-4 text-start transition-colors ${
+                        isSelected ? 'border-green-500' : 'border-[#E6E6E6] hover:border-green-200'
+                      }`}
+                    >
+                      <div className="flex flex-1 flex-col gap-2">
+                        <h4 className="text-base font-medium text-[#0E1F1F]">{platformTitle}</h4>
+                        <p className="text-sm font-normal text-[#3A3A3A]">{platformDescription}</p>
+                        <div className="flex items-center gap-2 text-sm font-normal text-[#646969]">
+                          <CustomImage src={DocumentEditOutlineIcon} alt="" className="h-4 w-4" />
+                          <span>
+                            {course.lectures} {t('eLearning.courses.add.lectures.lectureUnit')}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm font-normal text-[#646969]">
+                          <CustomImage src={ClockIcon} alt="" className="h-4 w-4" />
+                          <span>
+                            {t('eLearning.courses.add.lectures.avgTime', {
+                              minutes: course.avgMinutes,
+                            })}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Badge variant={DIFFICULTY_VARIANT[course.difficulty]}>
+                        {t(`eLearning.onlineExams.difficulty.${course.difficulty}`)}
+                      </Badge>
+                    </button>
+                  </div>
                 );
               })}
             </div>
