@@ -8,12 +8,11 @@ import CustomImage from '@/shared/components/CustomImage';
 import CustomCheckbox from '@/shared/components/CustomCheckbox';
 import Input from '@/shared/components/Input';
 import AttendanceConfirmPopup from '@/pages/school-dashboard/attendance/popups/AttendanceConfirmPopup';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import CheckGreenIcon from '@gradex/assets/icons/CheckGreen.svg';
 import HistoryIcon from '@gradex/assets/icons/History.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
-import ProfileImage from '@gradex/assets/images/profile.png';
 import IconButton from '@/shared/components/IconButton';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchStudentAttendance,
@@ -311,30 +310,16 @@ export default function AttendanceManagement() {
     {
       header: 'attendance.studentName',
       accessor: (row) => (
-        <div className="flex items-center gap-3">
-          <CustomImage
-            src={ProfileImage}
-            alt="profile"
-            className="h-10 w-10 flex-shrink-0 rounded-lg object-cover"
-          />
-
-          <span className="flex-1 text-sm font-normal text-[#646969]">
-            {row.teacherFullName || '-'}
-          </span>
-          <IconButton
-            variant="blue"
-            ariaLabel={t('common.view')}
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/students/${row.studentId}?tab=attendance`, {
-                state: { from: 'attendance' },
-              });
-            }}
-            className="h-10 w-10"
-          >
-            <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-6 w-6" />
-          </IconButton>
-        </div>
+        <UserAvatarName
+          name={row.teacherFullName}
+          align="start"
+          onView={(e) => {
+            e.stopPropagation();
+            navigate(`/students/${row.studentId}?tab=attendance`, {
+              state: { from: 'attendance' },
+            });
+          }}
+        />
       ),
       headerClassName: 'min-w-[230px]',
     },

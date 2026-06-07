@@ -21,9 +21,7 @@ import { fetchParentsByBranch } from '@/redux/features/parent/parentSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
-import CustomImage from '@/shared/components/CustomImage';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import DefaultAvatar from '@gradex/assets/images/profile.png';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import { getCurrentSchoolBranchId } from '@/lib/auth';
 
 export default function StudentManagement() {
@@ -227,31 +225,14 @@ export default function StudentManagement() {
     {
       header: 'studentManagement.studentName',
       accessor: (row) => (
-        <div className="flex items-center justify-center gap-3">
-          <CustomImage
-            src={row.profilePicture || DefaultAvatar}
-            fallbackSrc={DefaultAvatar}
-            alt={getStudentFullName(row)}
-            className="h-10 w-10 shrink-0 rounded-lg object-cover"
-          />
-          <span
-            className="w-[150px] truncate text-start text-sm font-normal text-[#646969]"
-            title={getStudentFullName(row)}
-          >
-            {getStudentFullName(row) || '-'}
-          </span>
-          <IconButton
-            variant="blue"
-            ariaLabel={t('common.view')}
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/students/${row.id}`, { state: { from: 'studentsRecord' } });
-            }}
-            className="h-10 w-10 shrink-0"
-          >
-            <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-6 w-6" />
-          </IconButton>
-        </div>
+        <UserAvatarName
+          name={getStudentFullName(row)}
+          avatarSrc={row.profilePicture}
+          onView={(e) => {
+            e.stopPropagation();
+            navigate(`/students/${row.id}`, { state: { from: 'studentsRecord' } });
+          }}
+        />
       ),
       headerClassName: 'min-w-[260px]',
     },
