@@ -18,7 +18,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
 
   return (
     <nav
-      className="mb-6 flex items-center gap-2 text-sm font-normal text-gray-600"
+      className="mb-6 flex items-center gap-2 text-sm font-normal leading-[22px] text-gray-600"
       dir={direction}
     >
       {items?.map((item, index) => (
@@ -28,7 +28,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
           {item.path ? (
             <Link
               to={item.path}
-              className="font-normal text-black-600 transition-colors hover:text-[#646969]"
+              className="font-normal text-[#646969] transition-colors hover:text-black-900"
             >
               {t(item.label)}
             </Link>
