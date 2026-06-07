@@ -95,17 +95,17 @@ export default function TrainingCoursesList() {
 
   const handleEdit = (course: CourseItem) => navigate(`/lms/courses/${course.id}/edit`);
 
-  const selectClass = 'min-w-[150px] flex-1';
+  const selectClass = 'min-w-[160px]';
 
   return (
     <div className="flex flex-col gap-6">
       {/* Filters */}
-      <div className="flex flex-wrap items-center justify-end gap-4">
+      <div className="flex flex-wrap items-center justify-start gap-4">
         <SearchInput
           value={search}
           onChange={setSearch}
           placeholder={t('eLearning.courses.searchPlaceholder')}
-          wrapperClassName="min-w-[220px] flex-1"
+          wrapperClassName="min-w-[220px]"
         />
         <CustomSelect
           value={subject}
@@ -114,7 +114,6 @@ export default function TrainingCoursesList() {
           placeholder={t('eLearning.courses.filters.subject')}
           showSearch={false}
           className={selectClass}
-          
         />
         <CustomSelect
           value={grade}

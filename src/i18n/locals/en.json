@@ -96,6 +96,9 @@
         "edit": "Edit Course",
         "delete": "Delete Course"
       },
+      "edit": {
+        "title": "Edit Training Course"
+      },
       "add": {
         "title": "Add Training Course",
         "steps": {
@@ -140,10 +143,10 @@
           "manual": "Manual",
           "platform": "From Platform",
           "section": "Training Course",
-          "nameAr": "Lecture Name (Arabic)",
-          "nameArPlaceholder": "Enter the lecture name in Arabic",
-          "nameEn": "Lecture Name (English)",
-          "nameEnPlaceholder": "Enter the lecture name in English",
+          "nameAr": "Lecture Name (First Language)",
+          "nameArPlaceholder": "Enter the lecture name in the first language",
+          "nameEn": "Lecture Name (Second Language)",
+          "nameEnPlaceholder": "Enter the lecture name in the second language",
           "duration": "Lesson Duration (minutes)",
           "durationPlaceholder": "Select lesson duration (minutes)",
           "video": "Video",
@@ -155,14 +158,14 @@
           "avgTime": "{{minutes}} min avg. time per lecture"
         },
         "fields": {
-          "nameAr": "Course Name (Arabic)",
-          "nameArPlaceholder": "Enter the course name (Arabic)",
-          "nameEn": "Course Name (English)",
-          "nameEnPlaceholder": "Enter the course name (English)",
-          "descAr": "Course Description (Arabic)",
-          "descArPlaceholder": "Enter the course description (Arabic)",
-          "descEn": "Course Description (English)",
-          "descEnPlaceholder": "Enter the course description (English)",
+          "nameAr": "Course Name (First Language)",
+          "nameArPlaceholder": "Enter the course name (First Language)",
+          "nameEn": "Course Name (Second Language)",
+          "nameEnPlaceholder": "Enter the course name (Second Language)",
+          "descAr": "Course Description (First Language)",
+          "descArPlaceholder": "Enter the course description (First Language)",
+          "descEn": "Course Description (Second Language)",
+          "descEnPlaceholder": "Enter the course description (Second Language)",
           "subject": "Subject",
           "subjectPlaceholder": "Select a subject",
           "teacher": "Teacher Name",

@@ -96,6 +96,9 @@
         "edit": "Kurs bearbeiten",
         "delete": "Kurs löschen"
       },
+      "edit": {
+        "title": "Schulungskurs bearbeiten"
+      },
       "add": {
         "title": "Schulungskurs hinzufügen",
         "steps": {
@@ -140,10 +143,10 @@
           "manual": "Manuell",
           "platform": "Von der Plattform",
           "section": "Schulungskurs",
-          "nameAr": "Vorlesungsname (Arabisch)",
-          "nameArPlaceholder": "Vorlesungsname auf Arabisch eingeben",
-          "nameEn": "Vorlesungsname (Englisch)",
-          "nameEnPlaceholder": "Vorlesungsname auf Englisch eingeben",
+          "nameAr": "Vorlesungsname (Erste Sprache)",
+          "nameArPlaceholder": "Vorlesungsname in der ersten Sprache eingeben",
+          "nameEn": "Vorlesungsname (Zweite Sprache)",
+          "nameEnPlaceholder": "Vorlesungsname in der zweiten Sprache eingeben",
           "duration": "Lektionsdauer (Minuten)",
           "durationPlaceholder": "Lektionsdauer auswählen (Minuten)",
           "video": "Video",
@@ -155,14 +158,14 @@
           "avgTime": "{{minutes}} Min. durchschn. Zeit pro Vorlesung"
         },
         "fields": {
-          "nameAr": "Kursname (Arabisch)",
-          "nameArPlaceholder": "Kursname auf Arabisch eingeben",
-          "nameEn": "Kursname (Englisch)",
-          "nameEnPlaceholder": "Kursname auf Englisch eingeben",
-          "descAr": "Kursbeschreibung (Arabisch)",
-          "descArPlaceholder": "Kursbeschreibung auf Arabisch eingeben",
-          "descEn": "Kursbeschreibung (Englisch)",
-          "descEnPlaceholder": "Kursbeschreibung auf Englisch eingeben",
+          "nameAr": "Kursname (Erste Sprache)",
+          "nameArPlaceholder": "Kursname in der ersten Sprache eingeben",
+          "nameEn": "Kursname (Zweite Sprache)",
+          "nameEnPlaceholder": "Kursname in der zweiten Sprache eingeben",
+          "descAr": "Kursbeschreibung (Erste Sprache)",
+          "descArPlaceholder": "Kursbeschreibung in der ersten Sprache eingeben",
+          "descEn": "Kursbeschreibung (Zweite Sprache)",
+          "descEnPlaceholder": "Kursbeschreibung in der zweiten Sprache eingeben",
           "subject": "Fach",
           "subjectPlaceholder": "Fach auswählen",
           "teacher": "Name des Lehrers",

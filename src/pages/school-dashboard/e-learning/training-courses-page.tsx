@@ -50,10 +50,11 @@ export default function TrainingCoursesPage() {
         hasHeaderControls={true}
         actions={[
           {
-            label: "+",
+            label: '+',
             to: '/lms/courses/add',
             variant: 'primary',
-            imgClassName: 'w-6 h-6',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />
