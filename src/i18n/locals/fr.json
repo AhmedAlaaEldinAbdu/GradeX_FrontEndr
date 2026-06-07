@@ -96,6 +96,9 @@
         "edit": "Modifier le cours",
         "delete": "Supprimer le cours"
       },
+      "edit": {
+        "title": "Modifier le cours de formation"
+      },
       "add": {
         "title": "Ajouter un cours de formation",
         "steps": {
@@ -140,10 +143,10 @@
           "manual": "Manuel",
           "platform": "Depuis la plateforme",
           "section": "Cours de formation",
-          "nameAr": "Nom de la conférence (arabe)",
-          "nameArPlaceholder": "Saisissez le nom de la conférence en arabe",
-          "nameEn": "Nom de la conférence (anglais)",
-          "nameEnPlaceholder": "Saisissez le nom de la conférence en anglais",
+          "nameAr": "Nom de la conférence (première langue)",
+          "nameArPlaceholder": "Saisissez le nom de la conférence dans la première langue",
+          "nameEn": "Nom de la conférence (deuxième langue)",
+          "nameEnPlaceholder": "Saisissez le nom de la conférence dans la deuxième langue",
           "duration": "Durée de la leçon (minutes)",
           "durationPlaceholder": "Sélectionnez la durée de la leçon (minutes)",
           "video": "Vidéo",
@@ -155,14 +158,14 @@
           "avgTime": "{{minutes}} min de temps moyen par conférence"
         },
         "fields": {
-          "nameAr": "Nom du cours (arabe)",
-          "nameArPlaceholder": "Saisissez le nom du cours en arabe",
-          "nameEn": "Nom du cours (anglais)",
-          "nameEnPlaceholder": "Saisissez le nom du cours en anglais",
-          "descAr": "Description du cours (arabe)",
-          "descArPlaceholder": "Saisissez la description du cours en arabe",
-          "descEn": "Description du cours (anglais)",
-          "descEnPlaceholder": "Saisissez la description du cours en anglais",
+          "nameAr": "Nom du cours (première langue)",
+          "nameArPlaceholder": "Saisissez le nom du cours dans la première langue",
+          "nameEn": "Nom du cours (deuxième langue)",
+          "nameEnPlaceholder": "Saisissez le nom du cours dans la deuxième langue",
+          "descAr": "Description du cours (première langue)",
+          "descArPlaceholder": "Saisissez la description du cours dans la première langue",
+          "descEn": "Description du cours (deuxième langue)",
+          "descEnPlaceholder": "Saisissez la description du cours dans la deuxième langue",
           "subject": "Matière",
           "subjectPlaceholder": "Sélectionnez une matière",
           "teacher": "Nom de l'enseignant",
