@@ -227,14 +227,17 @@ export default function StudentManagement() {
     {
       header: 'studentManagement.studentName',
       accessor: (row) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center gap-3">
           <CustomImage
             src={row.profilePicture || DefaultAvatar}
             fallbackSrc={DefaultAvatar}
             alt={getStudentFullName(row)}
-            className="h-10 w-10 flex-shrink-0 rounded-lg object-cover"
+            className="h-10 w-10 shrink-0 rounded-lg object-cover"
           />
-          <span className="flex-1 text-sm font-normal text-[#646969]">
+          <span
+            className="w-[150px] truncate text-start text-sm font-normal text-[#646969]"
+            title={getStudentFullName(row)}
+          >
             {getStudentFullName(row) || '-'}
           </span>
           <IconButton
@@ -244,7 +247,7 @@ export default function StudentManagement() {
               e.stopPropagation();
               navigate(`/students/${row.id}`, { state: { from: 'studentsRecord' } });
             }}
-            className="h-10 w-10"
+            className="h-10 w-10 shrink-0"
           >
             <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-6 w-6" />
           </IconButton>
