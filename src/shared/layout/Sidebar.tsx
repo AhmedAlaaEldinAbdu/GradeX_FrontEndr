@@ -93,6 +93,8 @@ interface SidebarProps {
 interface MenuSubItem {
   key: string;
   path: string;
+  // Hidden from the sidebar until the feature is implemented
+  comingSoon?: boolean;
 }
 
 type MenuBadge = { type: 'count'; value: string | number } | { type: 'tag'; value: string };
@@ -103,6 +105,8 @@ interface MenuItem {
   path?: string;
   badge?: MenuBadge;
   subItems?: MenuSubItem[];
+  // Hidden from the sidebar until the feature is implemented
+  comingSoon?: boolean;
 }
 
 interface MenuSection {
@@ -176,7 +180,12 @@ const getSuperAdminSections = (): MenuSection[] => [
           { key: 'systemUsers', path: '/employees-administration/system-users' },
         ],
       },
-      { key: 'reports', icon: renderIcon(ReportsIcon, 'Reports'), path: '/reports' },
+      {
+        key: 'reports',
+        icon: renderIcon(ReportsIcon, 'Reports'),
+        path: '/reports',
+        comingSoon: true,
+      },
       { key: 'tickets', icon: renderIcon(TicketsIcon, 'Tickets'), path: '/tickets' },
       {
         key: 'notifications',
@@ -184,7 +193,12 @@ const getSuperAdminSections = (): MenuSection[] => [
         path: '/notifications',
       },
       { key: 'messages', icon: renderIcon(SettingsIcon, 'Messages'), path: '/messages' },
-      { key: 'settings', icon: renderIcon(SettingsIcon, 'Settings'), path: '/settings' },
+      {
+        key: 'settings',
+        icon: renderIcon(SettingsIcon, 'Settings'),
+        path: '/settings',
+        comingSoon: true,
+      },
     ],
   },
 ];
@@ -214,10 +228,10 @@ const getSchoolAdminSections = (): MenuSection[] => [
         badge: { type: 'tag', value: 'LMS' },
         subItems: [
           { key: 'overview', path: '/lms/overview' },
-          { key: 'liveClasses', path: '/lms/live-classes' },
+          { key: 'liveClasses', path: '/lms/live-classes', comingSoon: true },
           { key: 'onlineExams', path: '/lms/online-exams' },
           { key: 'trainingCourses', path: '/lms/courses' },
-          { key: 'questionBank', path: '/lms/question-bank' },
+          { key: 'questionBank', path: '/lms/question-bank', comingSoon: true },
           { key: 'assignments', path: '/calendar/tasks' },
           { key: 'lessonPreparation', path: '/calendar/preparations' },
         ],
@@ -235,6 +249,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
         key: 'examResults',
         icon: renderIcon(NotesIcon, 'Exam Results'),
         path: '/exam-results',
+        comingSoon: true,
       },
     ],
   },
@@ -257,10 +272,12 @@ const getSchoolAdminSections = (): MenuSection[] => [
         icon: renderIcon(ReportApprovedIcon, 'Requests'),
         path: '/requests',
         badge: { type: 'count', value: 1 },
+        comingSoon: true,
       },
       {
         key: 'busManagement',
         icon: renderIcon(BusIcon, 'School Transport'),
+        comingSoon: true,
         subItems: [
           { key: 'buses', path: '/bus-management/bus' },
           { key: 'drivers', path: '/bus-management/drivers' },
@@ -290,6 +307,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
         icon: renderIcon(LedgerIcon, 'Admin Requests'),
         path: '/admin-requests',
         badge: { type: 'count', value: 1 },
+        comingSoon: true,
       },
     ],
   },
@@ -316,11 +334,13 @@ const getSchoolAdminSections = (): MenuSection[] => [
         key: 'studio',
         icon: renderIcon(ImageIcon, 'Studio'),
         path: '/studio',
+        comingSoon: true,
       },
       {
         key: 'reports',
         icon: renderIcon(AnalyticsIcon, 'Reports'),
         path: '/reports',
+        comingSoon: true,
       },
     ],
   },
@@ -331,26 +351,41 @@ const getSchoolAdminSections = (): MenuSection[] => [
         key: 'settings',
         icon: renderIcon(SettingsIcon, 'Settings'),
         subItems: [
-          { key: 'schoolData', path: '/settings/school-data' },
+          { key: 'schoolData', path: '/settings/school-data', comingSoon: true },
           { key: 'jobRoles', path: '/settings/job-roles' },
-          { key: 'paymentChannels', path: '/settings/payment-channels' },
-          { key: 'holidaysSettings', path: '/settings/holidays' },
-          { key: 'siteSettings', path: '/settings/site' },
-          { key: 'notifications', path: '/settings/notifications' },
+          { key: 'paymentChannels', path: '/settings/payment-channels', comingSoon: true },
+          { key: 'holidaysSettings', path: '/settings/holidays', comingSoon: true },
+          { key: 'siteSettings', path: '/settings/site', comingSoon: true },
+          { key: 'notifications', path: '/settings/notifications', comingSoon: true },
         ],
       },
     ],
   },
 ];
 
+const stripComingSoon = (sections: MenuSection[]): MenuSection[] =>
+  sections
+    .map((section) => ({
+      ...section,
+      items: section.items
+        .filter((item) => !item.comingSoon)
+        .map((item) =>
+          item.subItems
+            ? { ...item, subItems: item.subItems.filter((sub) => !sub.comingSoon) }
+            : item
+        )
+        .filter((item) => item.path || (item.subItems && item.subItems.length > 0)),
+    }))
+    .filter((section) => section.items.length > 0);
+
 const getSectionsForDashboard = (dashboardType: UserRoleType): MenuSection[] => {
   switch (dashboardType) {
     case UserRole.SUPER_ADMIN:
-      return getSuperAdminSections();
+      return stripComingSoon(getSuperAdminSections());
     case UserRole.SCHOOL_ADMIN:
-      return getSchoolAdminSections();
+      return stripComingSoon(getSchoolAdminSections());
     default:
-      return getSchoolAdminSections();
+      return stripComingSoon(getSchoolAdminSections());
   }
 };
 
