@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { useTranslation } from 'react-i18next';
 import HeaderControls from './HeaderControls';
+import CustomImage from './CustomImage';
+import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
 
 type ActionType = {
   label: string;
@@ -18,6 +20,7 @@ type ActionType = {
   disabled?: boolean;
   loading?: boolean;
   type?: 'button' | 'submit' | 'reset';
+  circle?: boolean;
 };
 
 type StatisticType = {
@@ -44,6 +47,7 @@ const PageHeader = ({
   hasHeaderControls = false,
 }: PageHeaderProps) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
@@ -55,22 +59,36 @@ const PageHeader = ({
       <div className="flex flex-wrap items-center gap-2">
         {actions.map((action, index) =>
           action.to ? (
-            <Link key={index} to={action.to}>
-              <Button
-                variant={action.variant}
-                size={action.size}
-                icon={action.icon}
-                imgSrc={action.imgSrc}
-                imgClassName={action.imgClassName}
-                fullWidth={action.fullWidth}
-                className={action.className}
-                disabled={action.disabled}
-                loading={action.loading}
-                type={action.type}
-              >
-                {action.label ? t(`${action.label}`) : null}
-              </Button>
-            </Link>
+            action.circle ? (
+              <CustomImage
+                onClick={() => navigate(action.to!)}
+                src={GreenPlusIcon}
+                className={`${action.imgClassName} cursor-pointer`}
+              />
+            ) : (
+              <Link key={index} to={action.to}>
+                <Button
+                  variant={action.variant}
+                  size={action.size}
+                  icon={action.icon}
+                  imgSrc={action.imgSrc}
+                  imgClassName={action.imgClassName}
+                  fullWidth={action.fullWidth}
+                  className={action.className}
+                  disabled={action.disabled}
+                  loading={action.loading}
+                  type={action.type}
+                >
+                  {action.label ? t(`${action.label}`) : null}
+                </Button>
+              </Link>
+            )
+          ) : action.circle ? (
+            <CustomImage
+              onClick={action.onClick}
+              src={GreenPlusIcon}
+              className={`${action.imgClassName} cursor-pointer`}
+            />
           ) : (
             <Button
               key={index}
