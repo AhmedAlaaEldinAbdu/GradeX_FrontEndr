@@ -38,6 +38,7 @@ import controlPanelReducer from '../features/control-panel/controlPanelSlice';
 import studentDelegationReducer from '../features/student-delegation/studentDelegationSlice';
 import dailyReportReducer from '../features/daily-report/dailyReportSlice';
 import parentReducer from '../features/parent/parentSlice';
+import schoolCoursesReducer from '../features/school-course/schoolCourseSlice';
 
 export const store = configureStore({
   reducer: {
@@ -80,6 +81,7 @@ export const store = configureStore({
     studentDelegation: studentDelegationReducer,
     dailyReport: dailyReportReducer,
     parent: parentReducer,
+    schoolCourses: schoolCoursesReducer,
   },
 });
 
