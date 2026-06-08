@@ -13,6 +13,7 @@ export interface StudentAttachment {
 
 export interface StudentDto {
   id: string;
+  name: string;
   firstName: string;
   secondName: string;
   thirdName: string | null;

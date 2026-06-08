@@ -89,7 +89,7 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
         id: student.id,
         name: [student.firstName, student.secondName, student.thirdName, student.fourthName]
           .filter(Boolean)
-          .join(' '),
+          .join(' ') || student.name,
         imageSrc: student.profilePicture
           ? `${baseUrl}/${student.profilePicture.replace(/^\/+/, '')}`
           : ProfileImage,
@@ -239,7 +239,7 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
           items={tabItems}
           value={activeTab}
           onChange={setActiveTab}
-          listClassName="mb-6 flex w-full xl:w-[25%] lg:w-[40%] md:w-[60%] items-center justify-end gap-8"
+          listClassName="mb-6 flex w-full xl:w-[25%] lg:w-[40%] md:w-[60%] items-center gap-8"
         />
       </Card>
     </div>
