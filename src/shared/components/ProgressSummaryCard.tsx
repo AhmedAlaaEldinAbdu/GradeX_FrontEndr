@@ -2,7 +2,7 @@ import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 
-type FooterAction = {
+type HeaderAction = {
   label: string;
   onClick: () => void;
   iconSrc?: string;
@@ -20,7 +20,7 @@ export type ProgressSummaryCardProps = {
   onClick?: () => void;
   actions?: Action[];
   className?: string;
-  footerAction?: FooterAction;
+  headerAction?: HeaderAction;
 };
 
 const clampProgress = (value?: number) => {
@@ -65,7 +65,7 @@ export default function ProgressSummaryCard({
   onClick,
   actions = [],
   className = '',
-  footerAction,
+  headerAction,
 }: ProgressSummaryCardProps) {
   const normalizedProgress = clampProgress(progress);
   const isClickable = Boolean(onClick);
@@ -111,6 +111,26 @@ export default function ProgressSummaryCard({
           </div>
 
           <div className="flex items-start">
+            {headerAction ? (
+              <button
+                type="button"
+                aria-label={headerAction.label}
+                title={headerAction.label}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  headerAction.onClick();
+                }}
+              >
+                {headerAction.iconSrc ? (
+                  <CustomImage
+                    src={headerAction.iconSrc}
+                    alt={headerAction.iconAlt || headerAction.label}
+                    className="h-5 w-5"
+                  />
+                ) : null}
+              </button>
+            ) : null}
             {actions.length > 0 ? (
               <ActionsDropdown
                 actions={actions}
@@ -121,35 +141,15 @@ export default function ProgressSummaryCard({
           </div>
         </div>
 
-        {footerAction ? (
-          <button
-            type="button"
-            className="flex items-center justify-center gap-2 rounded-2xl border border-green-500 px-6 py-1.5 text-base font-medium text-green-500 transition-colors"
-            onClick={(event) => {
-              event.stopPropagation();
-              footerAction.onClick();
-            }}
-          >
-            {footerAction.iconSrc ? (
-              <CustomImage
-                src={footerAction.iconSrc}
-                alt={footerAction.iconAlt || footerAction.label}
-                className="h-5 w-5"
-              />
-            ) : null}
-            <span>{footerAction.label}</span>
-          </button>
-        ) : (
-          <div className="mt-auto flex items-center gap-3">
-            <span className="text-base font-medium text-black-900">{normalizedProgress}%</span>
-            <div className="h-3 flex-1 rounded-full bg-[#EEEEEE]">
-              <div
-                className={`h-full rounded-full ${resolvedProgressColorClassName}`}
-                style={{ width: `${normalizedProgress}%` }}
-              />
-            </div>
+        <div className="mt-auto flex items-center gap-3">
+          <span className="text-base font-medium text-black-900">{normalizedProgress}%</span>
+          <div className="h-3 flex-1 rounded-full bg-[#EEEEEE]">
+            <div
+              className={`h-full rounded-full ${resolvedProgressColorClassName}`}
+              style={{ width: `${normalizedProgress}%` }}
+            />
           </div>
-        )}
+        </div>
       </div>
     </Card>
   );
