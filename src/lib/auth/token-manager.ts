@@ -99,6 +99,7 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ||
       `user-${Date.now()}`;
     const userName =
+      payload.full_name ||
       payload.FullName ||
       payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
       payload.name ||
