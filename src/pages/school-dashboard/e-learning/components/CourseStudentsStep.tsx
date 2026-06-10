@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
 import CustomSelect from '@/shared/components/CustomSelect';
-import CustomImage from '@/shared/components/CustomImage';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { fetchClassroomsByGrade } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import SelectStudentsPopup from '../popups/SelectStudentsPopup';
-import DefaultAvatar from '@gradex/assets/images/profile.png';
 
 export type StudentsData = {
   stage: string;
@@ -26,26 +28,61 @@ type CourseStudentsStepProps = {
 };
 
 export default function CourseStudentsStep({ data, onChange }: CourseStudentsStepProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+  const isArabic = i18n.language === 'ar';
+  const schoolBranchId = getCurrentSchoolBranchId();
   const [popupOpen, setPopupOpen] = useState(false);
+
+  const grades = useAppSelector((s) => s.grades.grades);
+  const gradeClassrooms = useAppSelector((s) => s.classrooms.gradeClassrooms);
+  const isLoadingClassrooms = useAppSelector((s) => s.classrooms.isLoadingGradeClassrooms);
+
+  // Stage (grade level) options come from the grades endpoint.
+  useEffect(() => {
+    if (schoolBranchId) dispatch(fetchGrades(schoolBranchId));
+  }, [dispatch, schoolBranchId]);
+
+  // When returning to the step with a stage already chosen, reload its classrooms.
+  useEffect(() => {
+    if (data.stage) dispatch(fetchClassroomsByGrade(data.stage));
+  }, [dispatch, data.stage]);
 
   const set = (partial: Partial<StudentsData>) => onChange({ ...data, ...partial });
 
-  const stageOptions = (['prep1', 'prep2', 'prep3'] as const).map((key) => ({
-    value: key,
-    label: t(`eLearning.courses.add.samples.stages.${key}`),
-  }));
-  const gradeOptions = (['g1', 'g2', 'g3', 'g4'] as const).map((key) => ({
-    value: key,
-    label: t(`eLearning.courses.add.samples.grades.${key}`),
-  }));
+  const handleStageChange = (gradeId: string) => {
+    // Switching stage invalidates the previously picked classrooms/students.
+    // The effect above reloads this stage's classrooms once `data.stage` updates.
+    set({ stage: gradeId, grades: [], selectedStudents: [] });
+  };
+
+  const stageOptions = useMemo(
+    () => grades.map((g) => ({ value: g.id, label: isArabic ? g.nameAr : g.nameEn })),
+    [grades, isArabic]
+  );
+
+  // الصف options are the classrooms that belong to the selected stage.
+  const gradeOptions = useMemo(
+    () =>
+      gradeClassrooms.map((c) => ({ value: c.id, label: isArabic ? c.name : c.nameEn || c.name })),
+    [gradeClassrooms, isArabic]
+  );
+
+  // The classrooms actually picked — handed to the popup so it can load their students.
+  const selectedClassrooms = useMemo(
+    () =>
+      gradeClassrooms
+        .filter((c) => data.grades.includes(c.id))
+        .map((c) => ({ id: c.id, name: isArabic ? c.name : c.nameEn || c.name })),
+    [gradeClassrooms, data.grades, isArabic]
+  );
 
   return (
     <div className="flex flex-col gap-5">
       <FormField label={t('eLearning.courses.add.students.stage')} required>
         <CustomSelect
           value={data.stage}
-          onChange={(v) => set({ stage: v as string })}
+          onChange={(v) => handleStageChange(v as string)}
           options={stageOptions}
           placeholder={t('eLearning.courses.add.students.stagePlaceholder')}
           showSearch={false}
@@ -60,6 +97,7 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
           placeholder={t('eLearning.courses.add.students.gradePlaceholder')}
           isMulti
           showSearch={false}
+          disabled={!data.stage || isLoadingClassrooms}
         />
       </FormField>
 
@@ -97,32 +135,21 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
         </div>
       </FormField>
 
-      {/* Selected students preview (only when targeting specific students) */}
+      {/* Selected students summary (only when targeting specific students) */}
       {data.audience === 'specific' && data.selectedStudents.length > 0 && (
         <button
           type="button"
           onClick={() => setPopupOpen(true)}
-          className="flex items-center gap-3 self-start text-start"
+          className="self-start text-start text-sm font-medium text-green-500"
         >
-          {data.selectedStudents.length > 1 && (
-            <span className="text-sm font-medium text-green-500">
-              {t('eLearning.courses.add.students.moreStudents', {
-                count: data.selectedStudents.length - 1,
-              })}
-            </span>
-          )}
-          <span className="text-base font-normal text-[#3A3A3A]">
-            {t('eLearning.selectStudents.sampleStudent')}
-          </span>
-          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full border border-[#DDE0E0]">
-            <CustomImage src={DefaultAvatar} alt="" className="h-full w-full object-cover" />
-          </div>
+          {t('eLearning.courses.add.selectedCount', { count: data.selectedStudents.length })}
         </button>
       )}
 
       <SelectStudentsPopup
         isOpen={popupOpen}
         onClose={() => setPopupOpen(false)}
+        classrooms={selectedClassrooms}
         value={data.selectedStudents}
         onConfirm={(ids) => set({ selectedStudents: ids })}
       />
