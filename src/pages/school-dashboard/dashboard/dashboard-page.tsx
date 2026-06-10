@@ -238,25 +238,25 @@ export default function DashboardPage() {
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
-            title={t('schoolDashboard.applications.accepted')}
+            title={t('studentApplications.acceptedCount')}
             value={stats.accepted}
             icon={<CustomImage src={CheckCircleIcon} alt="Checkmark" className="h-5 w-5" />}
             iconClassName="bg-[#1A9F58]/10"
           />
           <MetricCard
-            title={t('schoolDashboard.applications.pending')}
+            title={t('studentApplications.status.underReview')}
             value={stats.pending}
             icon={<CustomImage src={TimeEstimationYellowIcon} alt="Time" className="h-5 w-5" />}
             iconClassName="bg-[#F6CB3B]/10"
           />
           <MetricCard
-            title={t('schoolDashboard.applications.rejected')}
+            title={t('studentApplications.notPassedCount')}
             value={stats.rejected}
             icon={<CustomImage src={XmarkCircleRedIcon} alt="Xmark" className="h-5 w-5" />}
             iconClassName="bg-[#DD0417]/10"
           />
           <MetricCard
-            title={t('schoolDashboard.applications.incompleteData')}
+            title={t('studentApplications.underEditCount')}
             value={stats.incompleteData}
             icon={<CustomImage src={FilesTealIcon} alt="Files" className="h-5 w-5" />}
             iconClassName="bg-[#25BDD7]/10"
