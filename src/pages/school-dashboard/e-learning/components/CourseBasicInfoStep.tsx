@@ -1,9 +1,14 @@
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import TextArea from '@/shared/components/TextArea';
 import CustomSelect from '@/shared/components/CustomSelect';
 import FileUpload from '@/shared/components/FileUpload';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
+import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 
 export type BasicInfoData = {
   nameAr: string;
@@ -16,6 +21,9 @@ export type BasicInfoData = {
   endDate: string;
   lessonsCount: string;
   lessonDuration: string;
+  coverImage: File | null;
+  /** Existing cover URL (edit mode display only). */
+  coverImageUrl?: string;
 };
 
 export const INITIAL_BASIC_INFO_DATA: BasicInfoData = {
@@ -29,6 +37,7 @@ export const INITIAL_BASIC_INFO_DATA: BasicInfoData = {
   endDate: '',
   lessonsCount: '',
   lessonDuration: '',
+  coverImage: null,
 };
 
 const FILE_FORMATS = [
@@ -59,12 +68,30 @@ type CourseBasicInfoStepProps = {
 };
 
 export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoStepProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+  const isArabic = i18n.language === 'ar';
+  const schoolBranchId = getCurrentSchoolBranchId();
+
+  const materials = useAppSelector((s) => s.subjects.subjects);
+  const teachers = useAppSelector((s) => s.teachers.teachers);
+
+  useEffect(() => {
+    if (!schoolBranchId) return;
+    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId: schoolBranchId } }));
+    dispatch(fetchTeachers({ page: 1, limit: 100, filters: { schoolBranchesId: schoolBranchId } }));
+  }, [dispatch, schoolBranchId]);
+
+  const subjectOptions = useMemo(
+    () => materials.map((m) => ({ value: m.id, label: m.name })),
+    [materials]
+  );
+  const teacherOptions = useMemo(
+    () => teachers.map((teacher) => ({ value: teacher.id, label: teacher.fullName })),
+    [teachers]
+  );
 
   const set = (key: keyof BasicInfoData) => (value: string) => onChange({ ...data, [key]: value });
-
-  const subjectOptions = [{ value: 'math', label: t('eLearning.courses.add.samples.subject') }];
-  const teacherOptions = [{ value: 'ahmed', label: t('eLearning.courses.add.samples.teacher') }];
 
   return (
     <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
@@ -104,7 +131,6 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
           onChange={(v) => set('subject')(v as string)}
           options={subjectOptions}
           placeholder={t('eLearning.courses.add.fields.subjectPlaceholder')}
-          showSearch={false}
         />
       </FormField>
       <FormField label={t('eLearning.courses.add.fields.teacher')} required>
@@ -113,7 +139,6 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
           onChange={(v) => set('teacher')(v as string)}
           options={teacherOptions}
           placeholder={t('eLearning.courses.add.fields.teacherPlaceholder')}
-          showSearch={false}
         />
       </FormField>
 
@@ -160,6 +185,9 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
           uploadText={t('eLearning.courses.add.uploadText')}
           formatHints={FILE_FORMATS}
           accept={FILE_ACCEPT}
+          fileUrl={data.coverImageUrl}
+          onChange={(e) => onChange({ ...data, coverImage: e.target.files?.[0] ?? null })}
+          onDelete={() => onChange({ ...data, coverImage: null, coverImageUrl: undefined })}
         />
       </div>
     </div>
