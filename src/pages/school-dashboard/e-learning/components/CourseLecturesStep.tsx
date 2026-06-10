@@ -12,7 +12,14 @@ import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import DocumentEditOutlineIcon from '@gradex/assets/icons/DocumentEditOutline.svg';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
 
-export type Lecture = { id: string; nameAr: string; nameEn: string; duration: string };
+export type Lecture = {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  duration: string;
+  video: File | null;
+  attachments: File[];
+};
 
 export type LecturesData = {
   source: 'manual' | 'platform';
@@ -25,6 +32,8 @@ const newLecture = (): Lecture => ({
   nameAr: '',
   nameEn: '',
   duration: '',
+  video: null,
+  attachments: [],
 });
 
 export const INITIAL_LECTURES_DATA: LecturesData = {
@@ -200,6 +209,10 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     uploadText={t('eLearning.courses.add.uploadText')}
                     formatHints={FILE_FORMATS}
                     accept={FILE_ACCEPT}
+                    onChange={(e) =>
+                      updateLecture(lecture.id, { video: e.target.files?.[0] ?? null })
+                    }
+                    onDelete={() => updateLecture(lecture.id, { video: null })}
                   />
                 </div>
 
@@ -212,6 +225,7 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     uploadText={t('eLearning.courses.add.uploadText')}
                     formatHints={FILE_FORMATS}
                     accept={FILE_ACCEPT}
+                    onFilesChange={(files) => updateLecture(lecture.id, { attachments: files })}
                   />
                 </div>
               </div>
