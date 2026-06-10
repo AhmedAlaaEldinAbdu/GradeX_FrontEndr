@@ -172,14 +172,25 @@ export default function CourseForm({ mode }: CourseFormProps) {
       <StepIndicator steps={steps} currentStep={currentStep} />
 
       <Card className="rounded-3xl border border-[#E6E6E6]" padding="md">
+        {/*
+          All steps stay mounted (inactive ones hidden) so transient widget state —
+          e.g. the FileUpload previews for the cover image and lecture videos — survives
+          navigating between steps.
+        */}
         {/* Step 1 — basic information */}
-        {currentStep === 1 && <CourseBasicInfoStep data={basicInfo} onChange={setBasicInfo} />}
+        <div className={currentStep === 1 ? '' : 'hidden'}>
+          <CourseBasicInfoStep data={basicInfo} onChange={setBasicInfo} />
+        </div>
 
         {/* Step 2 — students */}
-        {currentStep === 2 && <CourseStudentsStep data={students} onChange={setStudents} />}
+        <div className={currentStep === 2 ? '' : 'hidden'}>
+          <CourseStudentsStep data={students} onChange={setStudents} />
+        </div>
 
         {/* Step 3 — lectures */}
-        {currentStep === 3 && <CourseLecturesStep data={lectures} onChange={setLectures} />}
+        <div className={currentStep === 3 ? '' : 'hidden'}>
+          <CourseLecturesStep data={lectures} onChange={setLectures} />
+        </div>
 
         {/* Navigation */}
         <div className="mt-8 flex items-center justify-end">
