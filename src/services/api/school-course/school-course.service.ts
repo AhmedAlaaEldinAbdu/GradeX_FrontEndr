@@ -24,8 +24,7 @@ const buildSchoolCourseFormData = (
 ): FormData => {
   const fd = new FormData();
 
-  if ('id' in data && data.id) fd.append('Id', data.id);
-
+  // `Id` is sent as the query parameter on update (?Id=…), not in the body.
   fd.append('NameAr', data.nameAr);
   fd.append('NameEn', data.nameEn);
   if (data.descriptionAr != null) fd.append('DescriptionAr', data.descriptionAr);
