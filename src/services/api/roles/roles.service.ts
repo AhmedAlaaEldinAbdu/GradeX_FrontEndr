@@ -26,6 +26,9 @@ export async function getRoles(params?: RoleQueryParams): Promise<RoleListRespon
   if (params?.pageSize) {
     apiParams.PageSize = params.pageSize;
   }
+  if (params?.SchoolBranchId) {
+    apiParams.SchoolBranchId = params.SchoolBranchId;
+  }
 
   const response: AxiosResponse<
     ApiResponseModel<{

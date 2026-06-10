@@ -69,6 +69,8 @@ export const fetchRoles = createAsyncThunk<FetchRolesResponse, FetchRolesPayload
 
         if (payload.filters) {
           if (payload.filters.searchTerm) params.searchTerm = payload.filters.searchTerm;
+          if (payload.filters.schoolBranchesId)
+            params.SchoolBranchId = payload.filters.schoolBranchesId;
         }
       }
 

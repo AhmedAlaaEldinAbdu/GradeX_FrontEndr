@@ -24,6 +24,7 @@ export interface CreateRoleRequest {
   roleName: string;
   description?: string;
   permissions: string[];
+  schoolBrancheId?: string;
 }
 
 export interface UpdateRoleRequest {
@@ -31,6 +32,7 @@ export interface UpdateRoleRequest {
   roleName: string;
   description?: string;
   permissions: string[];
+  schoolBrancheId?: string;
 }
 
 // ============================================================================
@@ -55,6 +57,7 @@ export interface RoleDetailResponse {
 
 export interface RoleFilters {
   searchTerm?: string;
+  schoolBranchesId?: string;
 }
 
 // ============================================================================
@@ -66,6 +69,8 @@ export interface RoleQueryParams extends RoleFilters {
   pageSize?: number;
   sortBy?: RoleSortField;
   sortOrder?: 'asc' | 'desc';
+  // Backend query-param spelling (PascalCase, singular) — matches the other list endpoints.
+  SchoolBranchId?: string;
 }
 
 export const RoleSortField = {
