@@ -22,6 +22,8 @@ export type CourseItem = {
   progress: number;
   studentsCount: number;
   subject: string;
+  materialNameAr: string;
+  materialNameEn: string;
   dateRange: string;
   /** e.g. "6/24" */
   lessons: string;
@@ -65,6 +67,7 @@ type CourseCardProps = {
 
 export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
   const { t } = useTranslation();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
   const progress = Math.min(100, Math.max(0, course.progress));
 
   const actions: Action[] = [
@@ -88,7 +91,7 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
       {/* Cover (falls back to a default image when the course has none) */}
       <div className="relative h-[163px] w-full overflow-hidden">
         <CustomImage
-          src={course.coverImage || LearningCover}
+          src={baseUrl + '/' + course.coverImage || LearningCover}
           fallbackSrc={LearningCover}
           alt={course.title}
           className="h-full w-full object-cover"
