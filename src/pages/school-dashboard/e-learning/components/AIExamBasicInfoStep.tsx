@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { useMemo, useState } from 'react';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import Input from '@/shared/components/Input';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
-import SelectStudentsPopup from '../popups/SelectStudentsPopup';
+import SelectStudentsPopup, { type SelectedStudent } from '../popups/SelectStudentsPopup';
 import type { AIExamBasicInfoProps } from '@/validations/ai-exam-validations';
 import StudentAvatar from '@/assets/images/profile.png';
 
@@ -43,7 +43,17 @@ const AIExamBasicInfoStep = () => {
     formState: { errors },
   } = useFormContext<AIExamBasicInfoProps>();
   const [isStudentsOpen, setIsStudentsOpen] = useState(false);
-  const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
+  const [selectedStudents, setSelectedStudents] = useState<SelectedStudent[]>([]);
+
+  // Classrooms handed to the popup so it can load their students.
+  const grades = useWatch({ control, name: 'grades' });
+  const selectedClassrooms = useMemo(() => {
+    const ids = Array.isArray(grades) ? grades : [];
+    return GRADE_OPTIONS.filter((option) => ids.includes(option.value)).map((option) => ({
+      id: option.value,
+      name: option.label,
+    }));
+  }, [grades]);
 
   const languageOptions = [
     { value: 'ar', label: t('eLearning.onlineExams.addAI.languageOptions.ar') },
@@ -244,7 +254,7 @@ const AIExamBasicInfoStep = () => {
                         if (option.value === 'specific') {
                           setIsStudentsOpen(true);
                         } else {
-                          setSelectedStudentIds([]);
+                          setSelectedStudents([]);
                         }
                       }}
                       className="flex items-center gap-2"
@@ -265,7 +275,7 @@ const AIExamBasicInfoStep = () => {
               </div>
 
               {/* Preview of the chosen students, shown when "specific students" is selected. */}
-              {field.value === 'specific' && selectedStudentIds.length > 0 && (
+              {field.value === 'specific' && selectedStudents.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setIsStudentsOpen(true)}
@@ -273,18 +283,19 @@ const AIExamBasicInfoStep = () => {
                 >
                   <div className="h-[52px] w-[52px] shrink-0 overflow-hidden rounded-lg border border-[#E6E6E6]">
                     <CustomImage
-                      src={StudentAvatar}
+                      src={selectedStudents[0].avatar || StudentAvatar}
+                      fallbackSrc={StudentAvatar}
                       alt=""
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <span className="text-xl font-normal text-[#4D4D4D]">
-                    {t('eLearning.selectStudents.sampleStudent')}
+                    {selectedStudents[0].name}
                   </span>
-                  {selectedStudentIds.length > 1 && (
+                  {selectedStudents.length > 1 && (
                     <span className="text-xl font-bold text-green-500">
                       {t('eLearning.onlineExams.addAI.moreStudents', {
-                        num: selectedStudentIds.length - 1,
+                        num: selectedStudents.length - 1,
                       })}
                     </span>
                   )}
@@ -393,8 +404,9 @@ const AIExamBasicInfoStep = () => {
       <SelectStudentsPopup
         isOpen={isStudentsOpen}
         onClose={() => setIsStudentsOpen(false)}
-        value={selectedStudentIds}
-        onConfirm={(ids) => setSelectedStudentIds(ids)}
+        classrooms={selectedClassrooms}
+        value={selectedStudents.map((s) => s.id)}
+        onConfirm={(students) => setSelectedStudents(students)}
       />
     </div>
   );
