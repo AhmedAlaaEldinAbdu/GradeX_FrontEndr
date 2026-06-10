@@ -1,86 +1,115 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import EmptyState from '@/shared/components/EmptyState';
+import Loading from '@/shared/components/Loading';
 import SearchInput from '@/shared/components/SearchInput';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
-import CourseCard, { type CourseItem } from './CourseCard';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { fetchSchoolCourses } from '@/redux/features/school-course/schoolCourseSlice';
+import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { SchoolCourseStatus, type SchoolCourse } from '@/services/api/types/school-course.types';
+import CourseCard, { type CourseItem, type CourseStatus } from './CourseCard';
 import BookOpenBadgeIcon from '@gradex/assets/icons/BookOpenBadge.svg';
 import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
 
-const SUBJECT = 'مادة الرياضيات';
-const GRADE = 'صف 3/2 ع';
+const STATUS_FROM_API: Record<number, CourseStatus> = {
+  [SchoolCourseStatus.Active]: 'active',
+  [SchoolCourseStatus.Completed]: 'completed',
+  [SchoolCourseStatus.Ended]: 'ended',
+};
 
-const INITIAL_COURSES: CourseItem[] = [
-  {
-    id: '1',
-    title: 'ورشة حل مسائل الكسور',
-    description: 'ورشة تفاعلية لحل المسائل الصعبة في الكسور',
-    instructor: 'أحمد معتز حسن',
-    status: 'active',
-    progress: 25,
-    studentsCount: 124,
-    subject: SUBJECT,
-    dateRange: '22/2/2024 - 22/3/2024',
-    lessons: '6/24',
-  },
-  {
-    id: '2',
-    title: 'ورشة حل مسائل الكسور',
-    description: 'ورشة تفاعلية لحل المسائل الصعبة في الكسور',
-    instructor: 'أحمد معتز حسن',
-    status: 'completed',
-    progress: 100,
-    studentsCount: 124,
-    subject: SUBJECT,
-    dateRange: '22/2/2024 - 22/3/2024',
-    lessons: '24/24',
-  },
-  {
-    id: '3',
-    title: 'ورشة حل مسائل الكسور',
-    description: 'ورشة تفاعلية لحل المسائل الصعبة في الكسور',
-    instructor: 'أحمد معتز حسن',
-    status: 'ended',
-    progress: 100,
-    studentsCount: 124,
-    subject: SUBJECT,
-    dateRange: '22/2/2024 - 22/3/2024',
-    lessons: '24/24',
-  },
-];
+function formatDate(value?: string | null): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+}
+
+function toCourseItem(course: SchoolCourse, isArabic: boolean): CourseItem {
+  const dateRange = [formatDate(course.startDate), formatDate(course.endDate)]
+    .filter(Boolean)
+    .join(' - ');
+
+  return {
+    id: course.id,
+    title: (isArabic ? course.nameAr : course.nameEn) || course.nameAr || course.nameEn || '',
+    description: (isArabic ? course.descriptionAr : course.descriptionEn) || '',
+    instructor: course.teacherName || '',
+    status: (course.status && STATUS_FROM_API[course.status]) || 'active',
+    progress: course.progressPercentage ?? 0,
+    studentsCount: course.studentsCount ?? 0,
+    subject: (isArabic ? course.materialNameAr : course.materialNameEn) || '',
+    dateRange,
+    lessons: `${course.addedLecturesCount ?? 0}/${course.totalLectures ?? 0}`,
+    coverImage: course.coverImage,
+    materialNameAr: course.materialNameAr || '',
+    materialNameEn: course.materialNameEn || '',
+  };
+}
 
 export default function TrainingCoursesList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const isArabic = i18n.language === 'ar';
+  const schoolBranchId = getCurrentSchoolBranchId();
 
-  const [courses, setCourses] = useState<CourseItem[]>(INITIAL_COURSES);
   const [search, setSearch] = useState('');
   const [subject, setSubject] = useState('');
   const [grade, setGrade] = useState('');
   const [status, setStatus] = useState('');
 
-  const subjectOptions = [{ value: SUBJECT, label: SUBJECT }];
-  const gradeOptions = [{ value: GRADE, label: GRADE }];
+  const courses = useAppSelector((s) => s.schoolCourses.courses);
+  const isLoading = useAppSelector((s) => s.schoolCourses.isLoading);
+  const materials = useAppSelector((s) => s.subjects.subjects);
+  const classrooms = useAppSelector((s) => s.classrooms.classrooms);
+
+  // Fetch courses whenever the branch or any server-side filter changes.
+  useEffect(() => {
+    dispatch(
+      fetchSchoolCourses({
+        schoolBranchId: schoolBranchId || undefined,
+        PageNumber: 1,
+        PageSize: 10,
+        Search: search || undefined,
+        MaterialId: subject || undefined,
+        ClassRoomId: grade || undefined,
+        Status: status ? (Number(status) as SchoolCourseStatus) : undefined,
+      })
+    );
+  }, [dispatch, schoolBranchId, search, subject, grade, status]);
+
+  // Load the filter option sources (materials + classrooms) once per branch.
+  useEffect(() => {
+    if (!schoolBranchId) return;
+    dispatch(fetchSubjects({ page: 1, limit: 100, filters: { schoolBranchesId: schoolBranchId } }));
+    dispatch(fetchClassrooms({ page: 1, limit: 100, filters: { schoolBranchId } }));
+  }, [dispatch, schoolBranchId]);
+
+  const subjectOptions = useMemo(
+    () => materials.map((m) => ({ value: m.id, label: m.name })),
+    [materials]
+  );
+  const gradeOptions = useMemo(
+    () => classrooms.map((c) => ({ value: c.id, label: isArabic ? c.name : c.nameEn || c.name })),
+    [classrooms, isArabic]
+  );
   const statusOptions = [
-    { value: 'active', label: t('eLearning.courses.status.active') },
-    { value: 'completed', label: t('eLearning.courses.status.completed') },
-    { value: 'ended', label: t('eLearning.courses.status.ended') },
+    { value: String(SchoolCourseStatus.Active), label: t('eLearning.courses.status.active') },
+    { value: String(SchoolCourseStatus.Completed), label: t('eLearning.courses.status.completed') },
+    { value: String(SchoolCourseStatus.Ended), label: t('eLearning.courses.status.ended') },
   ];
 
   const hasActiveFilters = Boolean(search || subject || grade || status);
 
-  const filteredCourses = useMemo(
-    () =>
-      courses.filter(
-        (course) =>
-          (!search || course.title.includes(search)) &&
-          (!subject || course.subject === subject) &&
-          (!status || course.status === status)
-      ),
-    [courses, search, subject, status]
+  const courseItems = useMemo(
+    () => courses.map((course) => toCourseItem(course, isArabic)),
+    [courses, isArabic]
   );
 
   const clearFilters = () => {
@@ -90,8 +119,8 @@ export default function TrainingCoursesList() {
     setStatus('');
   };
 
-  const handleDelete = (course: CourseItem) =>
-    setCourses((prev) => prev.filter((c) => c.id !== course.id));
+  // Delete endpoint is not available yet — wired once it's provided.
+  const handleDelete = () => {};
 
   const handleEdit = (course: CourseItem) => navigate(`/lms/courses/${course.id}/edit`);
 
@@ -112,7 +141,6 @@ export default function TrainingCoursesList() {
           onChange={(v) => setSubject(v as string)}
           options={subjectOptions}
           placeholder={t('eLearning.courses.filters.subject')}
-          showSearch={false}
           className={selectClass}
         />
         <CustomSelect
@@ -120,7 +148,6 @@ export default function TrainingCoursesList() {
           onChange={(v) => setGrade(v as string)}
           options={gradeOptions}
           placeholder={t('eLearning.courses.filters.grades')}
-          showSearch={false}
           className={selectClass}
         />
         <CustomSelect
@@ -144,7 +171,9 @@ export default function TrainingCoursesList() {
       </div>
 
       {/* List */}
-      {filteredCourses.length === 0 ? (
+      {isLoading && courseItems.length === 0 ? (
+        <Loading />
+      ) : courseItems.length === 0 ? (
         <Card className="rounded-3xl border border-[#E6E6E6]" padding="md">
           <EmptyState
             icon={
@@ -159,7 +188,7 @@ export default function TrainingCoursesList() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {filteredCourses.map((course) => (
+          {courseItems.map((course) => (
             <CourseCard
               key={course.id}
               course={course}
