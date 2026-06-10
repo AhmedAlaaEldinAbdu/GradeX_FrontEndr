@@ -49,18 +49,26 @@ export default function UserAvatarName({
 
   return (
     <div className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${className}`}>
-      <CustomImage
-        src={avatarSrc || fallbackSrc}
-        fallbackSrc={fallbackSrc}
-        alt={name ?? ''}
-        className={`${sizeClasses.avatar} shrink-0 rounded-lg object-cover`}
-      />
-      <span
-        className="w-[150px] truncate text-start text-sm font-normal text-[#646969]"
-        title={name ?? ''}
-      >
-        {name?.trim() ? name : '-'}
-      </span>
+      {avatarSrc ? (
+        <CustomImage
+          src={avatarSrc || fallbackSrc}
+          fallbackSrc={fallbackSrc}
+          alt={name ?? ''}
+          className={`${sizeClasses.avatar} shrink-0 rounded-lg object-cover`}
+        />
+      ) : (
+        ''
+      )}
+      {name ? (
+        <span
+          className="w-[150px] truncate text-start text-sm font-normal text-[#646969]"
+          title={name ?? ''}
+        >
+          {name?.trim() ? name : '-'}
+        </span>
+      ) : (
+        ''
+      )}
       {onView && (
         <IconButton
           variant="blue"
