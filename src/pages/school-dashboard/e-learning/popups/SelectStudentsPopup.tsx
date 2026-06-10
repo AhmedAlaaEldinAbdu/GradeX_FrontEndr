@@ -1,31 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
 import Button from '@/shared/components/Button';
 import SearchInput from '@/shared/components/SearchInput';
 import CustomImage from '@/shared/components/CustomImage';
+import { studentsApiService } from '@/services/api/students/students.service';
+import type { StudentDto } from '@/services/api/types/students.types';
 import ArrowDownSmIcon from '@gradex/assets/icons/ArrowDownSm.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 
-type Student = { id: string; nameKey: string };
-type Grade = { id: string; nameKey: string; students: Student[] };
+export type ClassroomOption = { id: string; name: string };
 
-const SAMPLE_STUDENT = 'eLearning.selectStudents.sampleStudent';
-
-const GRADES: Grade[] = [
-  { id: 'g1', nameKey: 'eLearning.selectStudents.grades.g1', students: [] },
-  { id: 'g2', nameKey: 'eLearning.selectStudents.grades.g2', students: [] },
-  {
-    id: 'g3',
-    nameKey: 'eLearning.selectStudents.grades.g3',
-    students: [
-      { id: 's1', nameKey: SAMPLE_STUDENT },
-      { id: 's2', nameKey: SAMPLE_STUDENT },
-      { id: 's3', nameKey: SAMPLE_STUDENT },
-      { id: 's4', nameKey: SAMPLE_STUDENT },
-    ],
-  },
-];
+const studentName = (student: StudentDto): string =>
+  [student.firstName, student.secondName, student.thirdName, student.fourthName]
+    .filter(Boolean)
+    .join(' ') || student.name;
 
 function CheckBox({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
@@ -55,6 +44,8 @@ function CheckBox({ checked, onChange }: { checked: boolean; onChange: () => voi
 type SelectStudentsPopupProps = {
   isOpen: boolean;
   onClose: () => void;
+  /** Classrooms picked in the الصف field — each becomes an accordion. */
+  classrooms: ClassroomOption[];
   value: string[];
   onConfirm: (selectedIds: string[]) => void;
 };
@@ -62,35 +53,68 @@ type SelectStudentsPopupProps = {
 export default function SelectStudentsPopup({
   isOpen,
   onClose,
+  classrooms,
   value,
   onConfirm,
 }: SelectStudentsPopupProps) {
   const { t } = useTranslation();
 
   const [selected, setSelected] = useState<string[]>(value);
-  const [openGrade, setOpenGrade] = useState<string | null>('g3');
+  const [openIds, setOpenIds] = useState<string[]>([]);
   const [globalSearch, setGlobalSearch] = useState('');
-  const [gradeSearch, setGradeSearch] = useState<Record<string, string>>({});
+  const [classroomSearch, setClassroomSearch] = useState<Record<string, string>>({});
+  const [studentsByClassroom, setStudentsByClassroom] = useState<Record<string, StudentDto[]>>({});
+  const [loadingClassroom, setLoadingClassroom] = useState<Record<string, boolean>>({});
+  const fetchedRef = useRef<Set<string>>(new Set());
 
-  // Re-seed local selection whenever the popup is (re)opened.
+  // Re-seed the local state whenever the popup is (re)opened; expand every classroom.
   useEffect(() => {
     if (isOpen) {
       setSelected(value);
       setGlobalSearch('');
-      setGradeSearch({});
+      setClassroomSearch({});
+      setOpenIds(classrooms.map((c) => c.id));
+    } else {
+      fetchedRef.current = new Set();
     }
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const visibleGrades = useMemo(
-    () => GRADES.filter((grade) => !globalSearch || t(grade.nameKey).includes(globalSearch)),
-    [globalSearch, t]
+  // Eagerly load the students of every selected classroom so they're all displayed.
+  useEffect(() => {
+    if (!isOpen) return;
+    classrooms.forEach((classroom) => {
+      if (fetchedRef.current.has(classroom.id)) return;
+      fetchedRef.current.add(classroom.id);
+      setLoadingClassroom((prev) => ({ ...prev, [classroom.id]: true }));
+      studentsApiService
+        .getStudentsByClassroomId(classroom.id)
+        .then((students) =>
+          setStudentsByClassroom((prev) => ({ ...prev, [classroom.id]: students }))
+        )
+        .catch(() => setStudentsByClassroom((prev) => ({ ...prev, [classroom.id]: [] })))
+        .finally(() => setLoadingClassroom((prev) => ({ ...prev, [classroom.id]: false })));
+    });
+  }, [isOpen, classrooms]);
+
+  const visibleClassrooms = useMemo(
+    () => classrooms.filter((c) => !globalSearch || c.name.includes(globalSearch)),
+    [classrooms, globalSearch]
   );
+
+  const toggleClassroom = (id: string) =>
+    setOpenIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   const toggleStudent = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('eLearning.selectStudents.title')} size="sm">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('eLearning.selectStudents.title')}
+      size="sm"
+      contentClassName="h-[550px]"
+    >
       <div className="flex h-full flex-col gap-4">
         {/* Global search */}
         <SearchInput
@@ -99,58 +123,84 @@ export default function SelectStudentsPopup({
           placeholder={t('eLearning.selectStudents.searchPlaceholder')}
         />
 
-        {/* Grade accordions */}
+        {/* Classroom accordions */}
         <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-          {visibleGrades.map((grade) => {
-            const isOpenGrade = openGrade === grade.id;
-            const query = gradeSearch[grade.id] ?? '';
-            const students = grade.students.filter((s) => !query || t(s.nameKey).includes(query));
+          {visibleClassrooms.length === 0 ? (
+            <p className="py-6 text-center text-sm font-normal text-[#646969]">
+              {t('common.noDataFound')}
+            </p>
+          ) : (
+            visibleClassrooms.map((classroom) => {
+              const isOpenClassroom = openIds.includes(classroom.id);
+              const query = classroomSearch[classroom.id] ?? '';
+              const all = studentsByClassroom[classroom.id] ?? [];
+              const students = all.filter((s) => !query || studentName(s).includes(query));
+              const isLoading = loadingClassroom[classroom.id];
 
-            return (
-              <div key={grade.id} className="rounded-2xl border border-[#DDE0E0]">
-                <button
-                  type="button"
-                  onClick={() => setOpenGrade(isOpenGrade ? null : grade.id)}
-                  className="flex w-full items-center justify-between gap-2 p-4 text-start"
-                >
-                  <span className="text-sm font-normal text-[#3A3A3A]">{t(grade.nameKey)}</span>
-                  <CustomImage
-                    src={ArrowDownSmIcon}
-                    alt=""
-                    className={`h-2.5 w-2.5 transition-transform ${isOpenGrade ? '' : 'rotate-180'}`}
-                  />
-                </button>
-
-                {isOpenGrade && (
-                  <div className="flex flex-col gap-3 border-t border-[#E6E6E6] p-4 ps-6">
-                    <SearchInput
-                      value={query}
-                      onChange={(v) => setGradeSearch((prev) => ({ ...prev, [grade.id]: v }))}
-                      placeholder={t('eLearning.selectStudents.studentSearchPlaceholder')}
+              return (
+                <div key={classroom.id} className="rounded-2xl border border-[#DDE0E0]">
+                  <button
+                    type="button"
+                    onClick={() => toggleClassroom(classroom.id)}
+                    className="flex w-full items-center justify-between gap-2 p-4 text-start"
+                  >
+                    <span className="text-sm font-normal text-[#3A3A3A]">{classroom.name}</span>
+                    <CustomImage
+                      src={ArrowDownSmIcon}
+                      alt=""
+                      className={`h-2.5 w-2.5 transition-transform ${isOpenClassroom ? '' : 'rotate-180'}`}
                     />
-                    {students.map((student) => (
-                      <div key={student.id} className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-[#DDE0E0]">
-                            <CustomImage
-                              src={DefaultAvatar}
-                              alt=""
-                              className="h-full w-full object-cover"
+                  </button>
+
+                  {isOpenClassroom && (
+                    <div className="flex flex-col gap-3 border-t border-[#E6E6E6] p-4 ps-6">
+                      <SearchInput
+                        value={query}
+                        onChange={(v) =>
+                          setClassroomSearch((prev) => ({ ...prev, [classroom.id]: v }))
+                        }
+                        placeholder={t('eLearning.selectStudents.studentSearchPlaceholder')}
+                      />
+                      {isLoading ? (
+                        <p className="py-3 text-center text-sm text-[#646969]">
+                          {t('common.loading')}
+                        </p>
+                      ) : students.length === 0 ? (
+                        <p className="py-3 text-center text-sm text-[#646969]">
+                          {t('common.noDataFound')}
+                        </p>
+                      ) : (
+                        students.map((student) => (
+                          <div
+                            key={student.id}
+                            className="flex items-center justify-between gap-3"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-[#DDE0E0]">
+                                <CustomImage
+                                  src={student.profilePicture || DefaultAvatar}
+                                  fallbackSrc={DefaultAvatar}
+                                  alt=""
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                              <span className="text-sm font-normal text-[#3A3A3A]">
+                                {studentName(student)}
+                              </span>
+                            </div>
+                            <CheckBox
+                              checked={selected.includes(student.id)}
+                              onChange={() => toggleStudent(student.id)}
                             />
                           </div>
-                          <span className="text-sm font-normal text-[#3A3A3A]">{t(student.nameKey)}</span>
-                        </div>
-                        <CheckBox
-                          checked={selected.includes(student.id)}
-                          onChange={() => toggleStudent(student.id)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
         </div>
 
         {/* Footer */}
