@@ -4,7 +4,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
-import TextArea from '@/shared/components/TextArea';
 import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
 import PhoneInput from '@/shared/components/PhoneInput';
@@ -210,11 +209,10 @@ export default function AddEditContractForm({
                 name="shortNationalAddress"
                 control={control}
                 render={({ field }) => (
-                  <TextArea
+                  <Input
                     {...field}
                     id="shortNationalAddress"
                     placeholder={t('contracts.form.shortNationalAddressPlaceholder')}
-                    rows={3}
                     autoComplete="street-address"
                   />
                 )}
@@ -324,7 +322,7 @@ export default function AddEditContractForm({
         </SectionCard>
 
         <SectionCard title={t('contracts.sections.representative')}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('contracts.form.representativeName')}
               required
@@ -475,12 +473,23 @@ export default function AddEditContractForm({
               />
             </FormField>
 
-            <FormField label={t('contracts.form.phone')} required error={errors.phone?.message}>
+            <FormField
+              label={t('contracts.form.phone')}
+              required
+              error={errors.phone?.message}
+              htmlFor="phone"
+            >
               <Controller
                 name="phone"
                 control={control}
                 render={({ field }) => (
-                  <PhoneInput value={field.value ?? ''} onChange={field.onChange} required />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    placeholder="011 234 5678"
+                  />
                 )}
               />
             </FormField>

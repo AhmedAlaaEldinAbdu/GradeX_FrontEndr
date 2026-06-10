@@ -39,9 +39,8 @@ export const ContractFormSchema = object({
   mobile: string()
     .required('contracts.validation.mobileRequired')
     .matches(/^[+\d\s\-()]{6,}$/, 'contracts.validation.mobileInvalid'),
-  phone: string()
-    .required('contracts.validation.phoneRequired')
-    .matches(/^[+\d\s\-()]{6,}$/, 'contracts.validation.phoneInvalid'),
+  // Accept any phone number format (only required) — no strict pattern.
+  phone: string().required('contracts.validation.phoneRequired'),
   nationality: string()
     .required('contracts.validation.nationalityRequired')
     .typeError('contracts.validation.nationalityRequired'),
