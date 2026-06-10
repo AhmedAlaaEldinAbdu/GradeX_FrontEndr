@@ -56,11 +56,17 @@ const FILE_FORMATS = [
 ];
 const FILE_ACCEPT = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.ppt,.pptx';
 
-const LESSONS_COUNT_OPTIONS = Array.from({ length: 30 }, (_, i) => ({
-  value: String(i + 1),
-  label: String(i + 1),
-}));
-const LESSON_DURATION_OPTIONS = ['15', '30', '45', '60'].map((v) => ({ value: v, label: v }));
+const LESSONS_COUNT_VALUES = Array.from({ length: 30 }, (_, i) => String(i + 1));
+const LESSON_DURATION_VALUES = ['15', '30', '45', '60'];
+
+/** Build select options from a base list, ensuring the current value is always present. */
+const withSelectedValue = (base: string[], current: string) => {
+  const values =
+    current && !base.includes(current)
+      ? [...base, current].sort((a, b) => Number(a) - Number(b))
+      : base;
+  return values.map((v) => ({ value: v, label: v }));
+};
 
 type CourseBasicInfoStepProps = {
   data: BasicInfoData;
@@ -89,6 +95,15 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
   const teacherOptions = useMemo(
     () => teachers.map((teacher) => ({ value: teacher.id, label: teacher.fullName })),
     [teachers]
+  );
+
+  const lessonsCountOptions = useMemo(
+    () => withSelectedValue(LESSONS_COUNT_VALUES, data.lessonsCount),
+    [data.lessonsCount]
+  );
+  const lessonDurationOptions = useMemo(
+    () => withSelectedValue(LESSON_DURATION_VALUES, data.lessonDuration),
+    [data.lessonDuration]
   );
 
   const set = (key: keyof BasicInfoData) => (value: string) => onChange({ ...data, [key]: value });
@@ -163,7 +178,7 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
         <CustomSelect
           value={data.lessonsCount}
           onChange={(v) => set('lessonsCount')(v as string)}
-          options={LESSONS_COUNT_OPTIONS}
+          options={lessonsCountOptions}
           placeholder={t('eLearning.courses.add.fields.lessonsCountPlaceholder')}
         />
       </FormField>
@@ -171,7 +186,7 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
         <CustomSelect
           value={data.lessonDuration}
           onChange={(v) => set('lessonDuration')(v as string)}
-          options={LESSON_DURATION_OPTIONS}
+          options={lessonDurationOptions}
           placeholder={t('eLearning.courses.add.fields.lessonDurationPlaceholder')}
           showSearch={false}
         />
