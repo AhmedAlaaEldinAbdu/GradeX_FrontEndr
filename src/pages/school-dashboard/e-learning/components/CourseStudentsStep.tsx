@@ -2,17 +2,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
 import CustomSelect from '@/shared/components/CustomSelect';
+import CustomImage from '@/shared/components/CustomImage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { fetchClassroomsByGrade } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
-import SelectStudentsPopup from '../popups/SelectStudentsPopup';
+import SelectStudentsPopup, { type SelectedStudent } from '../popups/SelectStudentsPopup';
+import DefaultAvatar from '@gradex/assets/images/profile.png';
 
 export type StudentsData = {
   stage: string;
   grades: string[];
   audience: 'all' | 'specific';
-  selectedStudents: string[];
+  selectedStudents: SelectedStudent[];
 };
 
 export const INITIAL_STUDENTS_DATA: StudentsData = {
@@ -68,14 +70,14 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
     [gradeClassrooms, isArabic]
   );
 
-  // The classrooms actually picked — handed to the popup so it can load their students.
-  const selectedClassrooms = useMemo(
-    () =>
-      gradeClassrooms
-        .filter((c) => data.grades.includes(c.id))
-        .map((c) => ({ id: c.id, name: isArabic ? c.name : c.nameEn || c.name })),
-    [gradeClassrooms, data.grades, isArabic]
-  );
+  // Classrooms handed to the popup so it can load their students.
+  // When specific classes are chosen → those; otherwise fall back to the whole stage.
+  const selectedClassrooms = useMemo(() => {
+    const source = data.grades.length
+      ? gradeClassrooms.filter((c) => data.grades.includes(c.id))
+      : gradeClassrooms;
+    return source.map((c) => ({ id: c.id, name: isArabic ? c.name : c.nameEn || c.name }));
+  }, [gradeClassrooms, data.grades, isArabic]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -122,7 +124,9 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
               name="audience"
               value="specific"
               checked={data.audience === 'specific'}
-              onChange={() => {
+              onChange={() => set({ audience: 'specific' })}
+              // Always open the picker on click — even when "specific" is already selected.
+              onClick={() => {
                 set({ audience: 'specific' });
                 setPopupOpen(true);
               }}
@@ -135,14 +139,31 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
         </div>
       </FormField>
 
-      {/* Selected students summary (only when targeting specific students) */}
+      {/* Selected students summary — first student + remaining count (only for specific). */}
       {data.audience === 'specific' && data.selectedStudents.length > 0 && (
         <button
           type="button"
           onClick={() => setPopupOpen(true)}
-          className="self-start text-start text-sm font-medium text-green-500"
+          className="flex items-center gap-3 self-start text-start"
         >
-          {t('eLearning.courses.add.selectedCount', { count: data.selectedStudents.length })}
+          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-md border border-[#DDE0E0]">
+            <CustomImage
+              src={data.selectedStudents[0].avatar || DefaultAvatar}
+              fallbackSrc={DefaultAvatar}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <span className="text-base font-normal text-[#3A3A3A]">
+            {data.selectedStudents[0].name}
+          </span>
+          {data.selectedStudents.length > 1 && (
+            <span className="text-md font-bold text-green-500">
+              {t('eLearning.courses.add.students.moreStudents', {
+                count: data.selectedStudents.length - 1,
+              })}
+            </span>
+          )}
         </button>
       )}
 
@@ -150,8 +171,8 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
         isOpen={popupOpen}
         onClose={() => setPopupOpen(false)}
         classrooms={selectedClassrooms}
-        value={data.selectedStudents}
-        onConfirm={(ids) => set({ selectedStudents: ids })}
+        value={data.selectedStudents.map((s) => s.id)}
+        onConfirm={(students) => set({ selectedStudents: students })}
       />
     </div>
   );
