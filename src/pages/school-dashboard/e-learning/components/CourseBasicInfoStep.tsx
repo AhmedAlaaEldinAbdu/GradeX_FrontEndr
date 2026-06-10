@@ -185,6 +185,8 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
           uploadText={t('eLearning.courses.add.uploadText')}
           formatHints={FILE_FORMATS}
           accept={FILE_ACCEPT}
+          maxSize={10}
+          fileName={data.coverImageUrl ? data.coverImageUrl.split('/').pop() : undefined}
           fileUrl={data.coverImageUrl}
           onChange={(e) => onChange({ ...data, coverImage: e.target.files?.[0] ?? null })}
           onDelete={() => onChange({ ...data, coverImage: null, coverImageUrl: undefined })}
