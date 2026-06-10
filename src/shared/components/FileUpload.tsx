@@ -441,7 +441,7 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
             </p>
           )}
           {maxSize != null && (
-            <p className="text-sm font-normal text-black-600" dir={isArabic ? 'ltr' : 'rtl'}>
+            <p className="text-sm font-normal text-black-600">
               {t('fileUpload.maxSize', { size: maxSize.toFixed(2) })}
             </p>
           )}
