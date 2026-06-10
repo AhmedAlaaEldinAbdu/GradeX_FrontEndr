@@ -3267,7 +3267,9 @@
   },
   "fileUpload": {
     "uploadText": "Нажмите, чтобы добавить изображение или файл",
-    "formatSeparator": " или "
+    "formatSeparator": " или ",
+    "maxSize": "(Макс. {{size}} МБ)",
+    "maxSizeError": "Файл превышает лимит {{size}} МБ"
   },
   "preparations": {
     "title": "Подготовки",

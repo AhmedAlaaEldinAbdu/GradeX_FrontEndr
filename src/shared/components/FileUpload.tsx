@@ -44,6 +44,8 @@ interface FileUploadProps {
   multiple?: boolean;
   error?: boolean;
   id?: string;
+  /** Max allowed size per file, in megabytes. Shown as a hint and enforced on select. */
+  maxSize?: number;
 }
 
 const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUpload(
@@ -69,11 +71,13 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
     error = false,
     id = '',
     files = [],
+    maxSize,
   },
   ref
 ) {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
+  const [sizeError, setSizeError] = useState<string | null>(null);
 
   // Use translation if uploadText is not provided
   const displayUploadText = uploadText || t('fileUpload.uploadText');
@@ -209,6 +213,18 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
+
+    // Enforce the per-file size limit (when provided) before accepting anything.
+    if (maxSize != null) {
+      const limitBytes = maxSize * 1024 * 1024;
+      const hasOversize = Array.from(selectedFiles).some((file) => file.size > limitBytes);
+      if (hasOversize) {
+        setSizeError(t('fileUpload.maxSizeError', { size: maxSize.toFixed(2) }));
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+    }
+    setSizeError(null);
 
     let addedFileInfos: FileInfo[] = [];
 
@@ -424,8 +440,15 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
               {formatHintsText()}
             </p>
           )}
+          {maxSize != null && (
+            <p className="text-sm font-normal text-black-600" dir={isArabic ? 'ltr' : 'rtl'}>
+              {t('fileUpload.maxSize', { size: maxSize.toFixed(2) })}
+            </p>
+          )}
         </div>
       </div>
+
+      {sizeError && <p className="text-start text-sm text-red-500">{sizeError}</p>}
 
       {/* Files Preview Section (works for both single and multiple) */}
       {hasFiles && (multiple || !singleFileName || fileInfoList.length > 0) && (

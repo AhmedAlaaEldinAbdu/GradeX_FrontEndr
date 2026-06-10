@@ -3267,7 +3267,9 @@
   },
   "fileUpload": {
     "uploadText": "Klicken Sie hier, um ein Bild oder eine Datei hinzuzufügen",
-    "formatSeparator": " oder "
+    "formatSeparator": " oder ",
+    "maxSize": "(Max. {{size}} MB)",
+    "maxSizeError": "Datei überschreitet das Limit von {{size}} MB"
   },
   "preparations": {
     "title": "Vorbereitungen",

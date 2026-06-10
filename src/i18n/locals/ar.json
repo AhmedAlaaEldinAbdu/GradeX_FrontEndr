@@ -3280,7 +3280,9 @@
   },
   "fileUpload": {
     "uploadText": "اضغط هنا للإضافة صورة أو ملف",
-    "formatSeparator": " أو "
+    "formatSeparator": " أو ",
+    "maxSize": "(الحد الأقصى {{size}} MB)",
+    "maxSizeError": "حجم الملف يتجاوز الحد الأقصى {{size}} MB"
   },
   "preparations": {
     "title": "التحضيرات",
