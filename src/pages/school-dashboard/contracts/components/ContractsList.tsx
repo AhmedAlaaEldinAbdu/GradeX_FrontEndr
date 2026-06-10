@@ -9,7 +9,6 @@ import DataTable, {
 import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import SearchInput from '@/shared/components/SearchInput';
 import EmptyState from '@/shared/components/EmptyState';
-import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
@@ -159,8 +158,7 @@ export default function ContractsList({ onContractsCountChange }: ContractsListP
   );
 
   const hasActiveFilters = search.trim().length > 0 || code !== '';
-  const shouldShowEmptyState =
-    !isLoading && (contracts?.length ?? 0) === 0 && !hasActiveFilters;
+  const shouldShowEmptyState = !isLoading && (contracts?.length ?? 0) === 0 && !hasActiveFilters;
 
   if (shouldShowEmptyState) {
     return (
