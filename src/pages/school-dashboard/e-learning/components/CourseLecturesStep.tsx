@@ -209,6 +209,7 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     uploadText={t('eLearning.courses.add.uploadText')}
                     formatHints={FILE_FORMATS}
                     accept={FILE_ACCEPT}
+                    maxSize={10}
                     onChange={(e) =>
                       updateLecture(lecture.id, { video: e.target.files?.[0] ?? null })
                     }
@@ -225,6 +226,7 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     uploadText={t('eLearning.courses.add.uploadText')}
                     formatHints={FILE_FORMATS}
                     accept={FILE_ACCEPT}
+                    maxSize={10}
                     onFilesChange={(files) => updateLecture(lecture.id, { attachments: files })}
                   />
                 </div>
