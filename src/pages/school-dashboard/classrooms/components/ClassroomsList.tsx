@@ -8,7 +8,7 @@ import MathIcon from '@gradex/assets/icons/Math.svg';
 import SchoolYellowIcon from '@gradex/assets/icons/SchoolYellow.svg';
 import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
 import StudentGreenIcon from '@gradex/assets/icons/StudentGreen.svg';
-import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
+import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -180,11 +180,11 @@ export default function ClassroomsList() {
                       : maxStudentCount > 0
                         ? Math.round((classroomCount / maxStudentCount) * 100)
                         : 0;
-                  const footerAction =
+                  const headerAction =
                     classroomCount === 0
                       ? {
                           label: t('grades.addClassroom'),
-                          iconSrc: GreenPlusIcon,
+                          iconSrc: WhitePlusIcon,
                           iconAlt: t('grades.addClassroom'),
                           onClick: () => navigate(`/classrooms/add-classroom?gradeId=${grade.id}`),
                         }
@@ -194,9 +194,13 @@ export default function ClassroomsList() {
                     <ProgressSummaryCard
                       key={grade.id}
                       title={gradeName}
-                      subtitle={classroomCount ? `${classroomCount} ${t('grades.classroomPlural')}` : ""}
+                      subtitle={
+                        classroomCount
+                          ? `${classroomCount} ${t('grades.classroomPlural')}`
+                          : t('grades.noClassrooms')
+                      }
                       progress={progress}
-                      footerAction={footerAction}
+                      headerAction={headerAction}
                       onClick={() => navigate(`/classrooms/${grade.id}`)}
                     />
                   );
