@@ -8,6 +8,7 @@ import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import EmptyState from '@/shared/components/EmptyState';
@@ -16,8 +17,6 @@ import type { CustomerDto } from '@/services/api/types/customer.types';
 import { getCurrentSchoolBranchId } from '@gradex/lib/auth/token-manager';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 
-import DefaultAvatar from '@gradex/assets/images/profile.png';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import WhatsAppIcon from '@gradex/assets/icons/WhatsApp.svg';
 import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
 import EyeIcon from '@gradex/assets/icons/EyeStyled.svg';
@@ -96,37 +95,10 @@ export default function CustomersList() {
     {
       header: 'customers.table.clientName',
       accessor: (row) => (
-        <div className="flex items-center justify-center gap-3">
-          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-200">
-            <CustomImage
-              src={DefaultAvatar}
-              alt="Customer"
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <span
-            className="w-[150px] truncate text-start font-medium text-gray-800"
-            title={row.name}
-          >
-            {row.name}
-          </span>
-          <IconButton
-            variant="blue"
-            ariaLabel="View"
-            onClick={() => navigate(`/financial-management/customers/${row.id}`)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
-          >
-            <CustomImage
-              src={EyeStyledIcon}
-              alt="View"
-              className="h-4 w-4"
-              style={{
-                filter:
-                  'brightness(0) saturate(100%) invert(43%) sepia(91%) saturate(1512%) hue-rotate(200deg) brightness(101%) contrast(94%)',
-              }}
-            />
-          </IconButton>
-        </div>
+        <UserAvatarName
+          name={row.name}
+          onView={() => navigate(`/financial-management/customers/${row.id}`)}
+        />
       ),
       headerClassName: 'min-w-[250px]',
       className: 'text-center',

@@ -5,10 +5,10 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchTeacherAssignmentList } from '@/redux/features/teachers';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import CustomImage from '@/shared/components/CustomImage';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable from '@/shared/components/DataTable';
 import EditGreenIcon from '@gradex/assets/icons/EditGreen.svg';
-import EyeViewIcon from '@gradex/assets/icons/EyeView.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
 
 export type TeacherRow = {
@@ -105,13 +105,7 @@ export default function TeacherTab({
   const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
 
   const renderPersonCell = (name: string, imageSrc: string) => (
-    <div className="flex w-[100%] items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
-        <CustomImage src={imageSrc} alt={name} className="h-11 w-11 rounded-lg object-cover" />
-        <span className="text-base font-normal text-[#646969]">{name}</span>
-      </div>
-      <div>{renderIconButton(EyeViewIcon, 'bg-blue-100', t('actions.view'))}</div>
-    </div>
+    <UserAvatarName name={name} avatarSrc={imageSrc} align="between" onView={() => {}} />
   );
 
   const renderIconButton = (

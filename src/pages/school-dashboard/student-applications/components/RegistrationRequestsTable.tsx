@@ -2,16 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
-import IconButton from '@/shared/components/IconButton';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import Card from '@gradex/shared/components/Card';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
-import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
 import FilesIcon from '@gradex/assets/icons/Files.svg';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 // import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import StudentIcon from '@gradex/assets/icons/Student.svg';
 
@@ -328,25 +326,13 @@ const RegistrationRequestsTable: React.FC = () => {
       accessor: (row) => {
         const fullName = `${row.firstName} ${row.secondName} ${row.thirdName}`; // figma not bind fourth name ${row.fourthName};
         return (
-          <div className="flex items-center gap-3">
-            <CustomImage
-              src={row.studentPhotoPath ? `${baseUrl}/${row.studentPhotoPath}` : ''}
-              fallbackSrc={StudentIcon}
-              alt={fullName}
-              className="h-10 w-10 rounded-full border border-gray-100 object-cover"
-            />
-            <span className="w-full text-start font-medium text-gray-900" title={fullName}>
-              {fullName}
-            </span>
-            <IconButton
-              variant="blue"
-              ariaLabel="View"
-              onClick={() => navigate(`/student-applications/${row.id}`)}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100"
-            >
-              <CustomImage src={EyeStyledIcon} alt="View" className="h-5 w-5" />
-            </IconButton>
-          </div>
+          <UserAvatarName
+            name={fullName}
+            avatarSrc={row.studentPhotoPath ? `${baseUrl}/${row.studentPhotoPath}` : undefined}
+            fallbackSrc={StudentIcon}
+            align="between"
+            onView={() => navigate(`/student-applications/${row.id}`)}
+          />
         );
       },
       headerClassName: 'min-w-[320px]',

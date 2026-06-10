@@ -4,13 +4,12 @@ import Card from '@/shared/components/Card';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import { useToast } from '@/shared/context/ToastContext';
 import AttendanceConfirmPopup from '@/pages/school-dashboard/attendance/popups/AttendanceConfirmPopup';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import HistoryIcon from '@gradex/assets/icons/History.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
-import ProfileImage from '@gradex/assets/images/profile.png';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherAttendance,
@@ -378,27 +377,15 @@ export default function EmployeesAttendanceTab({
     {
       header: 'attendance.employeeName',
       accessor: (row) => (
-        <div className="flex w-full items-center gap-2">
-          <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
-            <CustomImage src={ProfileImage} alt="profile" className="h-full w-full object-cover" />
-          </div>
-          <span className="flex-1 font-medium">{row.teacherFullName}</span>
-          <IconButton
-            variant="blue"
-            ariaLabel={t('jobAnnouncement.viewApplicants')}
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/employees/attendance/teachers/${row.teacherId}?tab=attendance`);
-            }}
-            className="h-8 w-8"
-          >
-            <CustomImage
-              src={EyeStyledIcon}
-              alt={t('jobAnnouncement.viewApplicants')}
-              className="h-4 w-4"
-            />
-          </IconButton>
-        </div>
+        <UserAvatarName
+          name={row.teacherFullName}
+          align="between"
+          viewLabel={t('jobAnnouncement.viewApplicants')}
+          onView={(e) => {
+            e.stopPropagation();
+            navigate(`/employees/attendance/teachers/${row.teacherId}?tab=attendance`);
+          }}
+        />
       ),
       headerClassName: 'min-w-[260px]',
     },

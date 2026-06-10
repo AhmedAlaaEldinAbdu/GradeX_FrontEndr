@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import DataTable from '@/shared/components/DataTable';
 import EditGreenIcon from '@gradex/assets/icons/EditGreen.svg';
-import EyeViewIcon from '@gradex/assets/icons/EyeView.svg';
 
 export type StudentRow = {
   id: string;
@@ -38,13 +38,7 @@ export default function StudentsTab({
   const { t } = useTranslation();
 
   const renderPersonCell = (name: string, imageSrc: string) => (
-    <div className="flex w-[100%] items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
-        <CustomImage src={imageSrc} alt={name} className="h-11 w-11 rounded-lg object-cover" />
-        <span className="text-base font-normal text-[#646969]">{name}</span>
-      </div>
-      <div>{renderIconButton(EyeViewIcon, 'bg-blue-100', t('actions.view'))}</div>
-    </div>
+    <UserAvatarName name={name} avatarSrc={imageSrc} align="between" onView={() => {}} />
   );
 
   const renderIconButton = (icon: string, backgroundClassName: string, alt: string) => (

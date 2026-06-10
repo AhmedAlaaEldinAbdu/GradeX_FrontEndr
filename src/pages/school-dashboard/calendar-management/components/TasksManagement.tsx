@@ -10,15 +10,14 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import EmptyState from '@/shared/components/EmptyState';
 import IconButton from '@/shared/components/IconButton';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import MetricCard from '@/shared/components/MetricCard';
 import DeletePopup from '@/shared/popups/DeletePopup';
-import DefaultAvatar from '@gradex/assets/images/profile.png';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import ClockYellowBoldIcon from '@gradex/assets/icons/ClockYellowBold.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import TasksBadgeIcon from '@gradex/assets/icons/TasksBadge.svg';
 import {
   getTaskCorrectionBadgeColor,
@@ -273,17 +272,11 @@ export default function TasksManagement() {
     {
       header: 'tasksManagement.table.taskName',
       accessor: (row) => (
-        <div className="flex w-full items-center justify-evenly gap-2">
-          <div>{isArabic ? row.nameAr || row.name : row.nameEn || row.name}</div>
-          <button
-            type="button"
-            onClick={() => handleViewTask(row.id)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50"
-            aria-label={t('actions.view')}
-          >
-            <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
-          </button>
-        </div>
+        <UserAvatarName
+          name={isArabic ? row.nameAr || row.name : row.nameEn || row.name}
+          align="between"
+          onView={() => handleViewTask(row.id)}
+        />
       ),
       headerClassName: 'min-w-[250px]',
     },
@@ -335,31 +328,11 @@ export default function TasksManagement() {
         const teacherId = getTeacherId(row);
 
         return (
-          <div className="flex w-full items-center justify-evenly gap-2">
-            <div className="flex items-center justify-center gap-2">
-              <div className="h-10 w-10 overflow-hidden rounded-md bg-gray-100">
-                <CustomImage
-                  src={DefaultAvatar}
-                  alt={row.teatcherName}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <span>{row.teatcherName}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (teacherId) {
-                  handleViewTeacher(teacherId);
-                }
-              }}
-              disabled={!teacherId}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label={t('actions.view')}
-            >
-              <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
-            </button>
-          </div>
+          <UserAvatarName
+            name={row.teatcherName}
+            align="between"
+            onView={teacherId ? () => handleViewTeacher(teacherId) : undefined}
+          />
         );
       },
       headerClassName: 'min-w-[250px]',
