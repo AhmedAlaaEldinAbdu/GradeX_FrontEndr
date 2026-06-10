@@ -203,7 +203,10 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
           maxSize={10}
           fileName={data.coverImageUrl ? data.coverImageUrl.split('/').pop() : undefined}
           fileUrl={data.coverImageUrl}
-          onChange={(e) => onChange({ ...data, coverImage: e.target.files?.[0] ?? null })}
+          onChange={(e) =>
+            // Selecting a new cover replaces the existing one (drop the old URL preview).
+            onChange({ ...data, coverImage: e.target.files?.[0] ?? null, coverImageUrl: undefined })
+          }
           onDelete={() => onChange({ ...data, coverImage: null, coverImageUrl: undefined })}
         />
       </div>
