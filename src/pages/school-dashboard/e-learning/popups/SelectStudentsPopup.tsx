@@ -11,6 +11,9 @@ import DefaultAvatar from '@gradex/assets/images/profile.png';
 
 export type ClassroomOption = { id: string; name: string };
 
+/** A picked student, with enough info for the summary chip in the students step. */
+export type SelectedStudent = { id: string; name: string; avatar?: string | null };
+
 const studentName = (student: StudentDto): string =>
   [student.firstName, student.secondName, student.thirdName, student.fourthName]
     .filter(Boolean)
@@ -47,7 +50,7 @@ type SelectStudentsPopupProps = {
   /** Classrooms picked in the الصف field — each becomes an accordion. */
   classrooms: ClassroomOption[];
   value: string[];
-  onConfirm: (selectedIds: string[]) => void;
+  onConfirm: (selected: SelectedStudent[]) => void;
 };
 
 export default function SelectStudentsPopup({
@@ -106,6 +109,28 @@ export default function SelectStudentsPopup({
 
   const toggleStudent = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
+
+  // Flat id → student lookup across all loaded classrooms, to resolve the picked ids.
+  const studentsById = useMemo(() => {
+    const map = new Map<string, StudentDto>();
+    Object.values(studentsByClassroom).forEach((list) =>
+      list.forEach((student) => map.set(student.id, student))
+    );
+    return map;
+  }, [studentsByClassroom]);
+
+  const handleConfirm = () => {
+    const picked: SelectedStudent[] = selected.map((id) => {
+      const student = studentsById.get(id);
+      return {
+        id,
+        name: student ? studentName(student) : '',
+        avatar: student?.profilePicture ?? null,
+      };
+    });
+    onConfirm(picked);
+    onClose();
+  };
 
   return (
     <Modal
@@ -208,14 +233,7 @@ export default function SelectStudentsPopup({
           <Button variant="outline" className="flex-1" onClick={onClose}>
             {t('common.cancel')}
           </Button>
-          <Button
-            variant="primary"
-            className="flex-1"
-            onClick={() => {
-              onConfirm(selected);
-              onClose();
-            }}
-          >
+          <Button variant="primary" className="flex-1" onClick={handleConfirm}>
             {t('eLearning.selectStudents.confirm')}
           </Button>
         </div>
