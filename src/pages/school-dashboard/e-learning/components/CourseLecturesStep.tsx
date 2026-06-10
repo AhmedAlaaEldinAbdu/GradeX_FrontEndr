@@ -19,6 +19,11 @@ export type Lecture = {
   duration: string;
   video: File | null;
   attachments: File[];
+  /** Existing video shown in edit mode (server-relative URL + name). */
+  videoUrl?: string;
+  videoName?: string;
+  /** Existing attachments shown in edit mode. */
+  existingAttachments?: { fileName: string; fileUrl: string }[];
 };
 
 export type LecturesData = {
@@ -58,7 +63,16 @@ const FILE_FORMATS = [
 ];
 const FILE_ACCEPT = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.ppt,.pptx';
 
-const DURATION_OPTIONS = ['15', '30', '45', '60'].map((v) => ({ value: v, label: v }));
+const DURATION_VALUES = ['15', '30', '45', '60'];
+
+/** Duration options that always include the lecture's current value (e.g. an edit value). */
+const buildDurationOptions = (current: string) => {
+  const values =
+    current && !DURATION_VALUES.includes(current)
+      ? [...DURATION_VALUES, current].sort((a, b) => Number(a) - Number(b))
+      : DURATION_VALUES;
+  return values.map((v) => ({ value: v, label: v }));
+};
 
 type PlatformCourse = {
   id: string;
@@ -194,7 +208,7 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     <CustomSelect
                       value={lecture.duration}
                       onChange={(v) => updateLecture(lecture.id, { duration: v as string })}
-                      options={DURATION_OPTIONS}
+                      options={buildDurationOptions(lecture.duration)}
                       placeholder={t('eLearning.courses.add.lectures.durationPlaceholder')}
                       showSearch={false}
                     />
@@ -210,10 +224,14 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     formatHints={FILE_FORMATS}
                     accept={FILE_ACCEPT}
                     maxSize={10}
+                    fileName={lecture.videoName}
+                    fileUrl={lecture.videoUrl}
                     onChange={(e) =>
                       updateLecture(lecture.id, { video: e.target.files?.[0] ?? null })
                     }
-                    onDelete={() => updateLecture(lecture.id, { video: null })}
+                    onDelete={() =>
+                      updateLecture(lecture.id, { video: null, videoUrl: undefined, videoName: undefined })
+                    }
                   />
                 </div>
 
@@ -227,6 +245,10 @@ export default function CourseLecturesStep({ data, onChange }: CourseLecturesSte
                     formatHints={FILE_FORMATS}
                     accept={FILE_ACCEPT}
                     maxSize={10}
+                    attachments={lecture.existingAttachments?.map((a) => ({
+                      fileName: a.fileName,
+                      filePath: a.fileUrl,
+                    }))}
                     onFilesChange={(files) => updateLecture(lecture.id, { attachments: files })}
                   />
                 </div>
