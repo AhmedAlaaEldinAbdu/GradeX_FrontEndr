@@ -60,7 +60,45 @@ export interface SchoolCourse {
   /** Present on the details endpoint (used to prefill the edit form). */
   materialId?: string | null;
   teacherId?: string | null;
+  teacherFullName?: string | null;
+  schoolBrancheId?: string | null;
   lectureDuration?: number;
+  isCourseForAllStudents?: boolean;
+  gradeId?: string | null;
+  gradeName?: string | null;
+  gradeNameEn?: string | null;
+  courseClassRooms?: CourseClassRoomDto[];
+  courseStudents?: CourseStudentDto[];
+  lectures?: SchoolCourseLectureDto[];
+}
+
+export interface CourseClassRoomDto {
+  classRoomId: string;
+  classRoomName: string;
+  classRoomNameEn: string;
+}
+
+export interface CourseStudentDto {
+  studentId: string;
+  studentFullName: string;
+}
+
+export interface SchoolCourseLectureAttachmentDto {
+  fileName: string;
+  fileUrl: string;
+}
+
+export interface SchoolCourseLectureDto {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  durationInMinutes: number | null;
+  sourceType: number;
+  videoUrl: string | null;
+  videoName: string | null;
+  videoDurationInSeconds: number | null;
+  sortOrder: number;
+  attachments: SchoolCourseLectureAttachmentDto[];
 }
 
 /** The `data` object of the list response. */
@@ -90,10 +128,15 @@ export type SchoolCourseDetailsResponse = SchoolCourseApiEnvelope<SchoolCourse>;
 // ============================================================================
 
 export interface SchoolCourseLecturePayload {
+  /** Existing lecture id — sent on update so the lecture is matched, not recreated. */
+  id?: string;
   nameAr: string;
   nameEn: string;
-  /** Lecture duration in minutes. */
-  duration?: number;
+  durationInMinutes?: number;
+  videoDurationInSeconds?: number;
+  sortOrder?: number;
+  /** Lecture content source (0 = manual upload). */
+  sourceType?: number;
   video?: File | null;
   attachments?: File[];
 }
