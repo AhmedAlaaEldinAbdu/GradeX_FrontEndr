@@ -10,6 +10,7 @@ import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/com
 import PeopleSupportIcon from '@/assets/icons/PeopleSupport.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { fetchRoles, deleteRole as deleteRoleAction } from '@/redux/features/roles/rolesSlice';
 import type { Role } from '@/services/api/types/roles.types';
 
@@ -18,6 +19,8 @@ export default function JobRolesList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const roles = useAppSelector((state) => state.roles.roles);
   const isLoading = useAppSelector((state) => state.roles.isLoading);
@@ -36,10 +39,13 @@ export default function JobRolesList() {
       fetchRoles({
         page,
         limit,
-        filters: searchTerm ? { searchTerm } : undefined,
+        filters: {
+          searchTerm: searchTerm || undefined,
+          schoolBranchesId: schoolBranchId || undefined,
+        },
       })
     );
-  }, [dispatch, page, searchTerm]);
+  }, [dispatch, page, searchTerm, schoolBranchId]);
 
   const hasActiveFilters = !!searchTerm;
   const shouldShowEmptyState = !isLoading && roles.length === 0 && !hasActiveFilters;
@@ -112,7 +118,10 @@ export default function JobRolesList() {
         fetchRoles({
           page,
           limit,
-          filters: searchTerm ? { searchTerm } : undefined,
+          filters: {
+            searchTerm: searchTerm || undefined,
+            schoolBranchesId: schoolBranchId || undefined,
+          },
         })
       );
     } catch (error) {

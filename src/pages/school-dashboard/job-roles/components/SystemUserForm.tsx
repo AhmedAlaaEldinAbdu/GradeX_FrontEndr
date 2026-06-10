@@ -13,6 +13,7 @@ import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { useSystemUserValidations } from '@/validations/system-user-validations';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import {
   assignSchoolRole,
   fetchUsers,
@@ -41,6 +42,7 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
   const dispatch = useAppDispatch();
   const scrollToFirstError = useScrollToFirstError<SystemUserFormValues>();
   const { userNameRules, roleRules } = useSystemUserValidations();
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
@@ -65,9 +67,21 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
   });
 
   useEffect(() => {
-    dispatch(fetchUsers({ page: 1, limit: 1000 }));
-    dispatch(fetchRoles({ page: 1, limit: 1000 }));
-  }, [dispatch]);
+    dispatch(
+      fetchUsers({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchesId: schoolBranchId || undefined },
+      })
+    );
+    dispatch(
+      fetchRoles({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchesId: schoolBranchId || undefined },
+      })
+    );
+  }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
     if (!initialData) return;
@@ -90,6 +104,7 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
         assignSchoolRole({
           userId: values.userName,
           roleIds: values.role,
+          ...(schoolBranchId ? { schoolBrancheId: schoolBranchId } : {}),
         })
       ).unwrap();
       setShowPopupMessage({

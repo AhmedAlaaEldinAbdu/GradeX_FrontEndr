@@ -77,6 +77,8 @@ export const fetchUsers = createAsyncThunk<FetchUsersResponse, FetchUsersPayload
           if (payload.filters.searchTerm) params.Search = payload.filters.searchTerm;
           if (payload.filters.roleId) params.roleId = payload.filters.roleId;
           if (payload.filters.lkCountryId) params.lkCountryId = payload.filters.lkCountryId;
+          if (payload.filters.schoolBranchesId)
+            params.SchoolBranchId = payload.filters.schoolBranchesId;
         }
       }
 

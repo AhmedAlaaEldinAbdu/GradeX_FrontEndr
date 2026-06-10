@@ -10,6 +10,7 @@ import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/com
 import PeopleSupportIcon from '@/assets/icons/PeopleSupport.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import {
   fetchUsers,
   deleteUser,
@@ -29,6 +30,8 @@ export default function SystemUsersList() {
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
+  const schoolBranchId = getCurrentSchoolBranchId();
+
   const users = useAppSelector(selectUsers);
   const isLoading = useAppSelector(selectIsLoading);
   const isDeleting = useAppSelector(selectIsDeleting);
@@ -47,10 +50,11 @@ export default function SystemUsersList() {
         limit: PAGE_SIZE,
         filters: {
           searchTerm: searchTerm || undefined,
+          schoolBranchesId: schoolBranchId || undefined,
         },
       })
     );
-  }, [dispatch, page, searchTerm]);
+  }, [dispatch, page, searchTerm, schoolBranchId]);
 
   const hasActiveFilters = !!searchTerm;
   const shouldShowEmptyState =
@@ -130,6 +134,7 @@ export default function SystemUsersList() {
           limit: PAGE_SIZE,
           filters: {
             searchTerm: searchTerm || undefined,
+            schoolBranchesId: schoolBranchId || undefined,
           },
         })
       );

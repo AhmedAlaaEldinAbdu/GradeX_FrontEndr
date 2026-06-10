@@ -57,6 +57,7 @@ export interface DeleteUserRequest {
 export interface AssignSchoolRoleRequest {
   userId: string;
   roleIds: string[];
+  schoolBrancheId?: string;
 }
 
 // ============================================================================
@@ -83,6 +84,7 @@ export interface UserFilters {
   searchTerm?: string;
   roleId?: string;
   lkCountryId?: string;
+  schoolBranchesId?: string;
 }
 
 // ============================================================================
@@ -97,6 +99,8 @@ export interface UserQueryParams extends UserFilters {
   Search?: string;
   PageNumber?: number;
   PageSize?: number;
+  // Backend query-param spelling (PascalCase, singular) — matches the other list endpoints.
+  SchoolBranchId?: string;
 }
 
 export const UserSortField = {

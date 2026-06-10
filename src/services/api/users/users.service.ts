@@ -33,6 +33,9 @@ export async function getUsers(params?: UserQueryParams): Promise<UserListRespon
   if (params?.pageSize || params?.PageSize) {
     apiParams.PageSize = params.pageSize || params.PageSize || 10;
   }
+  if (params?.SchoolBranchId) {
+    apiParams.SchoolBranchId = params.SchoolBranchId;
+  }
 
   const response: AxiosResponse<
     ApiResponseModel<{

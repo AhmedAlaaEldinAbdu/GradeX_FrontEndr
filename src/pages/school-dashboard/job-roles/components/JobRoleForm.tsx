@@ -15,6 +15,7 @@ import ChevronDownIcon from '@/assets/icons/ChevronDown.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { createRole, updateRole } from '@/redux/features/roles/rolesSlice';
 import { permissionsApiService } from '@/services/api';
 import type {
@@ -407,10 +408,12 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
       return;
     }
 
+    const schoolBrancheId = getCurrentSchoolBranchId();
     const payload = {
       roleName: values.roleName.trim(),
       description: values.description?.trim() || undefined,
       permissions: permissionIds,
+      ...(schoolBrancheId ? { schoolBrancheId } : {}),
     };
 
     try {
