@@ -84,7 +84,10 @@ export default function CourseForm({ mode }: CourseFormProps) {
       stage: currentCourse.gradeId ?? '',
       grades: (currentCourse.courseClassRooms ?? []).map((c) => c.classRoomId),
       audience: currentCourse.isCourseForAllStudents ? 'all' : 'specific',
-      selectedStudents: (currentCourse.courseStudents ?? []).map((s) => s.studentId),
+      selectedStudents: (currentCourse.courseStudents ?? []).map((s) => ({
+        id: s.studentId,
+        name: s.studentFullName,
+      })),
     });
 
     const lectureItems = (currentCourse.lectures ?? [])
@@ -147,7 +150,8 @@ export default function CourseForm({ mode }: CourseFormProps) {
     lectureDuration: basicInfo.lessonDuration ? Number(basicInfo.lessonDuration) : undefined,
     coverImage: basicInfo.coverImage,
     classRoomIds: students.grades,
-    studentIds: students.audience === 'specific' ? students.selectedStudents : [],
+    studentIds:
+      students.audience === 'specific' ? students.selectedStudents.map((s) => s.id) : [],
     isCourseForAllStudents: students.audience === 'all',
     lectures:
       lectures.source === 'manual'
