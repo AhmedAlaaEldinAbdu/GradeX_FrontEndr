@@ -11,8 +11,7 @@ import SearchInput from '@/shared/components/SearchInput';
 import EmptyState from '@/shared/components/EmptyState';
 import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
-import DefaultAvatar from '@gradex/assets/images/profile.png';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import FullReceiptIcon from '@gradex/assets/icons/FullReceipt.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
@@ -116,25 +115,12 @@ export default function ContractsList({ onContractsCountChange }: ContractsListP
       {
         header: 'contracts.table.studentName',
         accessor: (row) => (
-          <div className="flex items-center justify-center gap-2">
-            <CustomImage
-              src={row.studentAvatar || DefaultAvatar}
-              fallbackSrc={DefaultAvatar}
-              alt={row.studentName ?? ''}
-              className="h-9 w-9 flex-shrink-0 rounded-lg object-cover"
-            />
-            <span className="text-sm text-[#646969]">{row.studentName ?? '-'}</span>
-            {row.studentId && (
-              <IconButton
-                variant="blue"
-                ariaLabel={t('common.view')}
-                onClick={() => handleViewStudent(row)}
-                className="h-8 w-8"
-              >
-                <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-4 w-4" />
-              </IconButton>
-            )}
-          </div>
+          <UserAvatarName
+            name={row.studentName}
+            avatarSrc={row.studentAvatar}
+            size="sm"
+            onView={row.studentId ? () => handleViewStudent(row) : undefined}
+          />
         ),
         headerClassName: 'min-w-[260px] text-center',
       },

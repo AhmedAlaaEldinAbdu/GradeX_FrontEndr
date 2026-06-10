@@ -8,7 +8,7 @@ import PageHeader from '@/shared/components/PageHeader';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import PlusIcon from '@gradex/assets/icons/Plus.svg';
+import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
 import SchoolPurpleIcon from '@gradex/assets/icons/SchoolPurple.svg';
 import TeachersNewBlueIcon from '@gradex/assets/icons/TeachersNewBlue.svg';
 import FilesTealIcon from '@gradex/assets/icons/FilesTeal.svg';
@@ -105,10 +105,11 @@ export default function ClassroomDetailsPage() {
           title={classroomTitle || 'grades.classroomDetails'}
           actions={[
             {
-              label: 'grades.addClassroom',
+              label: '',
               to: '/classrooms/add-classroom',
-              imgSrc: PlusIcon,
-              imgClassName: 'h-6 w-6',
+              className: 'h-10 w-10 !rounded-full !p-0',
+              imgSrc: WhitePlusIcon,
+              imgClassName: 'h-5 w-5',
             },
           ]}
         />

@@ -18,8 +18,7 @@ import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchSchoolStages } from '@/redux/features/lookups';
 import type { Teacher } from '@/types/teachers';
 import CustomImage from '@/shared/components/CustomImage';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import ProfileImage from '@gradex/assets/images/profile.png';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import WhatsAppIcon from '@gradex/assets/icons/WhatsApp.svg';
 import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
 
@@ -124,37 +123,15 @@ export default function TeachersList() {
     {
       header: 'teachers.teacherName',
       accessor: (row) => (
-        <div className="flex items-center justify-center gap-3">
-          <CustomImage
-            src={row.pictureProfilePath || ProfileImage}
-            alt={row.fullName}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = ProfileImage;
-            }}
-            className="h-10 w-10 shrink-0 rounded-lg object-cover"
-          />
-          <span
-            className="w-[150px] truncate text-start text-sm font-normal text-[#646969]"
-            title={row.fullName}
-          >
-            {row.fullName}
-          </span>
-          <IconButton
-            variant="blue"
-            ariaLabel={t('jobAnnouncement.viewApplicants')}
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/teaching-staff/teachers/${row.id}`);
-            }}
-            className="h-10 w-10 shrink-0"
-          >
-            <CustomImage
-              src={EyeStyledIcon}
-              alt={t('jobAnnouncement.viewApplicants')}
-              className="h-6 w-6"
-            />
-          </IconButton>
-        </div>
+        <UserAvatarName
+          name={row.fullName}
+          avatarSrc={row.pictureProfilePath}
+          viewLabel={t('jobAnnouncement.viewApplicants')}
+          onView={(e) => {
+            e.stopPropagation();
+            navigate(`/teaching-staff/teachers/${row.id}`);
+          }}
+        />
       ),
       headerClassName: 'min-w-[15rem]',
     },
