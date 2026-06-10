@@ -79,6 +79,33 @@ export default function CourseForm({ mode }: CourseFormProps) {
       coverImage: null,
       coverImageUrl: currentCourse.coverImage ?? undefined,
     });
+
+    setStudents({
+      stage: currentCourse.gradeId ?? '',
+      grades: (currentCourse.courseClassRooms ?? []).map((c) => c.classRoomId),
+      audience: currentCourse.isCourseForAllStudents ? 'all' : 'specific',
+      selectedStudents: (currentCourse.courseStudents ?? []).map((s) => s.studentId),
+    });
+
+    const lectureItems = (currentCourse.lectures ?? [])
+      .slice()
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((lecture) => ({
+        id: lecture.id,
+        nameAr: lecture.nameAr ?? '',
+        nameEn: lecture.nameEn ?? '',
+        duration: lecture.durationInMinutes != null ? String(lecture.durationInMinutes) : '',
+        video: null,
+        videoUrl: lecture.videoUrl ?? undefined,
+        videoName: lecture.videoName ?? undefined,
+        attachments: [],
+        existingAttachments: lecture.attachments ?? [],
+      }));
+    setLectures({
+      source: 'manual',
+      items: lectureItems.length ? lectureItems : INITIAL_LECTURES_DATA.items,
+      selectedCourseId: '',
+    });
   }, [isEdit, currentCourse, id]);
 
   const breadcrumbItems = [
@@ -124,10 +151,14 @@ export default function CourseForm({ mode }: CourseFormProps) {
     isCourseForAllStudents: students.audience === 'all',
     lectures:
       lectures.source === 'manual'
-        ? lectures.items.map((lecture) => ({
+        ? lectures.items.map((lecture, index) => ({
+            // Temp client ids (newLecture) start with "lec-"; omit so the API creates them.
+            id: lecture.id.startsWith('lec-') ? undefined : lecture.id,
             nameAr: lecture.nameAr,
             nameEn: lecture.nameEn,
-            duration: lecture.duration ? Number(lecture.duration) : undefined,
+            durationInMinutes: lecture.duration ? Number(lecture.duration) : undefined,
+            sortOrder: index,
+            sourceType: 0,
             video: lecture.video,
             attachments: lecture.attachments,
           }))
