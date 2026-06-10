@@ -74,9 +74,8 @@ type CourseBasicInfoStepProps = {
 };
 
 export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoStepProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const isArabic = i18n.language === 'ar';
   const schoolBranchId = getCurrentSchoolBranchId();
 
   const materials = useAppSelector((s) => s.subjects.subjects);
