@@ -1703,6 +1703,7 @@
     "subtitle": "Manage academic grades",
     "addGrade": "Add Grade",
     "addClassroom": "Add Classroom",
+    "noClassrooms": "No classrooms",
     "editClassroom": "Edit Classroom",
     "addGradeSubtitle": "Add new grade(s) to the system",
     "editGrade": "Edit Grade",

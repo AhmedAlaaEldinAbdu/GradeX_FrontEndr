@@ -1703,6 +1703,7 @@
     "subtitle": "Gérer les niveaux scolaires",
     "addGrade": "Ajouter un niveau",
     "addClassroom": "Ajouter une classe",
+    "noClassrooms": "Aucune classe",
     "editClassroom": "Modifier la classe",
     "addGradeSubtitle": "Ajouter de nouveaux niveaux au système",
     "editGrade": "Modifier le niveau",

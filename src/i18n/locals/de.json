@@ -1703,6 +1703,7 @@
     "subtitle": "Klassenstufen verwalten",
     "addGrade": "Klassenstufe hinzufügen",
     "addClassroom": "Klassenzimmer hinzufügen",
+    "noClassrooms": "Keine Klassenzimmer",
     "editClassroom": "Klassenzimmer bearbeiten",
     "addGradeSubtitle": "Neue Klassenstufe(n) zum System hinzufügen",
     "editGrade": "Klassenstufe bearbeiten",

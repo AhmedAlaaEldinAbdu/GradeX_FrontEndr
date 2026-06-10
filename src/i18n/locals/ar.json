@@ -1703,6 +1703,7 @@
     "subtitle": "إدارة الصفوف الدراسية",
     "addGrade": "إضافة صف دراسي",
     "addClassroom": "إضافة فصل",
+    "noClassrooms": "لا يوجد فصول",
     "editClassroom": "تعديل الفصل",
     "addGradeSubtitle": "إضافة صف/صفوف دراسية جديدة للنظام",
     "editGrade": "تعديل صف دراسي",
