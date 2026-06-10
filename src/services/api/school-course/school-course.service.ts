@@ -49,10 +49,18 @@ const buildSchoolCourseFormData = (
   // Lectures are an array of complex DTOs — serialize each field with bracket
   // notation so the list can be rebuilt server-side.
   (data.lectures ?? []).forEach((lecture, index) => {
+    if (lecture.id) fd.append(`Lectures[${index}].Id`, lecture.id);
     fd.append(`Lectures[${index}].NameAr`, lecture.nameAr);
     fd.append(`Lectures[${index}].NameEn`, lecture.nameEn);
-    if (lecture.duration != null) {
-      fd.append(`Lectures[${index}].Duration`, String(lecture.duration));
+    if (lecture.durationInMinutes != null) {
+      fd.append(`Lectures[${index}].DurationInMinutes`, String(lecture.durationInMinutes));
+    }
+    if (lecture.videoDurationInSeconds != null) {
+      fd.append(`Lectures[${index}].VideoDurationInSeconds`, String(lecture.videoDurationInSeconds));
+    }
+    fd.append(`Lectures[${index}].SortOrder`, String(lecture.sortOrder ?? index));
+    if (lecture.sourceType != null) {
+      fd.append(`Lectures[${index}].SourceType`, String(lecture.sourceType));
     }
     if (lecture.video) fd.append(`Lectures[${index}].Video`, lecture.video);
     (lecture.attachments ?? []).forEach((file) =>
