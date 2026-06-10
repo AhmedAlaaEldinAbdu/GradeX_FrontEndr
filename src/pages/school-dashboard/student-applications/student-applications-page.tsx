@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchDashboardMetrics } from '@/redux/features/control-panel/controlPanelSlice';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import MetricCard from '@/shared/components/MetricCard';
@@ -13,18 +15,25 @@ import DocumentEditIcon from '@gradex/assets/icons/DocumentEdit.svg';
 
 const StudentApplicationsPage: React.FC = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const dashboardMetrics = useAppSelector((state) => state.controlPanel.dashboardMetrics);
+  const applicationsPagination = useAppSelector((state) => state.studentApplications.pagination);
+
+  useEffect(() => {
+    dispatch(fetchDashboardMetrics());
+  }, [dispatch]);
 
   const breadcrumbItems = [
     { label: t('sidebar.studentManagement') },
     { label: t('studentApplications.title') },
   ];
 
-  // Mock stats — replace with Redux selectors when API exposes counts
   const stats = {
-    total: 500,
-    accepted: 3,
-    notPassed: 4,
-    underEdit: 12,
+    total: applicationsPagination.totalItems,
+    accepted: dashboardMetrics?.totalStudentApplications.totalAcceptance ?? 0,
+    notPassed: dashboardMetrics?.totalStudentApplications.totalRejection ?? 0,
+    underEdit: dashboardMetrics?.totalStudentApplications.totalMissingData ?? 0,
     interviews: 12,
   };
 
