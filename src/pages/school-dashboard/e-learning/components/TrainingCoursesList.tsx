@@ -7,14 +7,24 @@ import Loading from '@/shared/components/Loading';
 import SearchInput from '@/shared/components/SearchInput';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
+import DeletePopup from '@/shared/popups/DeletePopup';
+import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import { fetchSchoolCourses } from '@/redux/features/school-course/schoolCourseSlice';
+import {
+  fetchSchoolCourses,
+  deleteSchoolCourse,
+} from '@/redux/features/school-course/schoolCourseSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
-import { SchoolCourseStatus, type SchoolCourse } from '@/services/api/types/school-course.types';
+import {
+  SchoolCourseStatus,
+  type SchoolCourse,
+  type SchoolCourseQueryParams,
+} from '@/services/api/types/school-course.types';
 import CourseCard, { type CourseItem, type CourseStatus } from './CourseCard';
 import BookOpenBadgeIcon from '@gradex/assets/icons/BookOpenBadge.svg';
+import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
 
 const STATUS_FROM_API: Record<number, CourseStatus> = {
@@ -56,6 +66,7 @@ export default function TrainingCoursesList() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
   const isArabic = i18n.language === 'ar';
   const schoolBranchId = getCurrentSchoolBranchId();
 
@@ -63,26 +74,31 @@ export default function TrainingCoursesList() {
   const [subject, setSubject] = useState('');
   const [grade, setGrade] = useState('');
   const [status, setStatus] = useState('');
+  const [pendingDelete, setPendingDelete] = useState<CourseItem | null>(null);
 
   const courses = useAppSelector((s) => s.schoolCourses.courses);
   const isLoading = useAppSelector((s) => s.schoolCourses.isLoading);
+  const isDeleting = useAppSelector((s) => s.schoolCourses.isDeleting);
   const materials = useAppSelector((s) => s.subjects.subjects);
   const classrooms = useAppSelector((s) => s.classrooms.classrooms);
 
+  const queryParams: SchoolCourseQueryParams = useMemo(
+    () => ({
+      schoolBranchId: schoolBranchId || undefined,
+      PageNumber: 1,
+      PageSize: 10,
+      Search: search || undefined,
+      MaterialId: subject || undefined,
+      ClassRoomId: grade || undefined,
+      Status: status ? (Number(status) as SchoolCourseStatus) : undefined,
+    }),
+    [schoolBranchId, search, subject, grade, status]
+  );
+
   // Fetch courses whenever the branch or any server-side filter changes.
   useEffect(() => {
-    dispatch(
-      fetchSchoolCourses({
-        schoolBranchId: schoolBranchId || undefined,
-        PageNumber: 1,
-        PageSize: 10,
-        Search: search || undefined,
-        MaterialId: subject || undefined,
-        ClassRoomId: grade || undefined,
-        Status: status ? (Number(status) as SchoolCourseStatus) : undefined,
-      })
-    );
-  }, [dispatch, schoolBranchId, search, subject, grade, status]);
+    dispatch(fetchSchoolCourses(queryParams));
+  }, [dispatch, queryParams]);
 
   // Load the filter option sources (materials + classrooms) once per branch.
   useEffect(() => {
@@ -119,8 +135,17 @@ export default function TrainingCoursesList() {
     setStatus('');
   };
 
-  // Delete endpoint is not available yet — wired once it's provided.
-  const handleDelete = () => {};
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return;
+    try {
+      await dispatch(deleteSchoolCourse(pendingDelete.id)).unwrap();
+      setPendingDelete(null);
+      // Refetch so the summary counts + list stay in sync.
+      dispatch(fetchSchoolCourses(queryParams));
+    } catch (error) {
+      showToast({ message: (error as string) || t('common.errorOccurred'), type: 'error' });
+    }
+  };
 
   const handleEdit = (course: CourseItem) => navigate(`/lms/courses/${course.id}/edit`);
 
@@ -193,11 +218,21 @@ export default function TrainingCoursesList() {
               key={course.id}
               course={course}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={setPendingDelete}
             />
           ))}
         </div>
       )}
+
+      <DeletePopup
+        open={!!pendingDelete}
+        message="eLearning.courses.confirmDelete"
+        itemName={pendingDelete?.title ?? ''}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setPendingDelete(null)}
+        iconSrc={BigTrashIcon}
+        isProcessing={isDeleting}
+      />
     </div>
   );
 }
