@@ -1,14 +1,52 @@
 /**
  * Backend error-message helpers.
  *
- * Thunks reject (via `rejectWithValue(getErrorMessage(error))`) with the backend
- * `message` string, so `.unwrap()` throws that string. These helpers extract that
- * message from whatever a `catch` block receives so UI can surface the real
- * backend reason instead of a generic fallback.
+ * Thunks reject (via `rejectWithValue(...)`) with one of a few shapes:
+ *   - the backend `message` string (from `getErrorMessage`)
+ *   - an object carrying `{ message }`
+ *   - an object carrying `{ validationErrors: [...] }`
+ * The `res` object surfaced in `!isSuccess` branches likewise exposes both
+ * `message` and `validationErrors`. These helpers extract a human-readable
+ * message from any of those shapes so UI can surface the real backend reason
+ * instead of a generic fallback.
  */
 
+/** A single backend validation-error entry (shapes vary across endpoints). */
+type ValidationErrorLike = {
+  errorMessage?: unknown;
+  message?: unknown;
+  propertyName?: unknown;
+};
+
+/** Join the messages from a `validationErrors` array into one string. */
+function extractValidationErrors(value: unknown): string {
+  if (!Array.isArray(value)) {
+    return '';
+  }
+
+  const messages = value
+    .map((entry) => {
+      if (typeof entry === 'string') {
+        return entry;
+      }
+      if (entry && typeof entry === 'object') {
+        const item = entry as ValidationErrorLike;
+        if (typeof item.errorMessage === 'string') {
+          return item.errorMessage;
+        }
+        if (typeof item.message === 'string') {
+          return item.message;
+        }
+      }
+      return '';
+    })
+    .filter((message) => message.trim().length > 0);
+
+  return Array.from(new Set(messages)).join('\n');
+}
+
 /**
- * Extract the backend-supplied message from a caught error.
+ * Extract the backend-supplied message from a caught error or response object.
  * Returns an empty string when no usable message is present.
  */
 export function getBackendMessage(error: unknown): string {
@@ -16,10 +54,22 @@ export function getBackendMessage(error: unknown): string {
     return error;
   }
 
-  if (error && typeof error === 'object' && 'message' in error) {
-    const message = (error as { message?: unknown }).message;
-    if (typeof message === 'string') {
-      return message;
+  if (Array.isArray(error)) {
+    return extractValidationErrors(error);
+  }
+
+  if (error && typeof error === 'object') {
+    const obj = error as { message?: unknown; validationErrors?: unknown };
+
+    // Prefer a top-level message when present and non-empty.
+    if (typeof obj.message === 'string' && obj.message.trim().length > 0) {
+      return obj.message;
+    }
+
+    // Fall back to messages collected from validationErrors.
+    const validationMessage = extractValidationErrors(obj.validationErrors);
+    if (validationMessage) {
+      return validationMessage;
     }
   }
 

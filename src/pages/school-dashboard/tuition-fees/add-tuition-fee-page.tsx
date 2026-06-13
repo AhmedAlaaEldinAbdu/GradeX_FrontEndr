@@ -10,6 +10,7 @@ import AddEditTuitionFeeForm, {
 } from './components/AddEditTuitionFeeForm';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
+import { resolveErrorMessage } from '@/lib/http';
 import { createTuitionFees } from '@/redux/features/tuition-fees/tuitionFeesSlice';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
@@ -82,21 +83,12 @@ export default function AddTuitionFeePage() {
                   isRaw: false,
                 });
               } else {
-                setShowPopupMessage({
-                  show: true,
-                  type: 'error',
-                  message: res?.message || 'common.errorOccurred',
-                  isRaw: Boolean(res?.message),
-                });
+                const { message, isRaw } = resolveErrorMessage(res);
+                setShowPopupMessage({ show: true, type: 'error', message, isRaw });
               }
             } catch (error) {
-              const backendMessage = typeof error === 'string' ? error : '';
-              setShowPopupMessage({
-                show: true,
-                type: 'error',
-                message: backendMessage || 'common.errorOccurred',
-                isRaw: Boolean(backendMessage),
-              });
+              const { message, isRaw } = resolveErrorMessage(error);
+              setShowPopupMessage({ show: true, type: 'error', message, isRaw });
             }
           }}
         />
