@@ -68,6 +68,8 @@ export interface SpecialColumn {
   startDayIndex?: number; // First day to show colored column (default 1 = الأحد) - used when days array is not provided
   endDayIndex?: number; // Last day to show colored column (default 5 = الخميس) - used when days array is not provided
   days?: number[]; // Specific days to show (takes precedence over startDayIndex/endDayIndex)
+  startTime?: string; // Actual activity start time "HH:mm:ss" within its period (drives proportional width)
+  endTime?: string; // Actual activity end time "HH:mm:ss" within its period
 }
 
 // Context menu action for lesson actions
@@ -139,6 +141,42 @@ const DEFAULT_SPECIAL_COLUMNS: SpecialColumn[] = [
     endDayIndex: 5,
   },
 ];
+
+const parseTimeToMinutes = (time: string): number => {
+  const [h, m] = time.split(':');
+  return parseInt(h, 10) * 60 + parseInt(m, 10);
+};
+
+const getSpecialColumnLayout = (
+  sc: SpecialColumn,
+  slot: PeriodSlot | undefined
+): { offset: number; width: number } => {
+  if (!slot || !sc.startTime || !sc.endTime) {
+    return { offset: 0, width: 1 };
+  }
+  const periodStart = slot.startHour * 60 + slot.startMin;
+  const periodEnd = slot.endHour * 60 + slot.endMin;
+  const periodDuration = periodEnd - periodStart;
+  if (periodDuration <= 0) {
+    return { offset: 0, width: 1 };
+  }
+  const start = parseTimeToMinutes(sc.startTime);
+  const end = parseTimeToMinutes(sc.endTime);
+  if (Number.isNaN(start) || Number.isNaN(end) || end <= start) {
+    return { offset: 0, width: 1 };
+  }
+  const clampedStart = Math.max(periodStart, Math.min(start, periodEnd));
+  const clampedEnd = Math.max(clampedStart, Math.min(end, periodEnd));
+  const offset = (clampedStart - periodStart) / periodDuration;
+  let width = (clampedEnd - clampedStart) / periodDuration;
+  if (width <= 0) {
+    return { offset: 0, width: 1 };
+  }
+  if (offset + width > 1) {
+    width = 1 - offset;
+  }
+  return { offset, width };
+};
 
 export default function WeeklyScheduleCalendar({
   lessons = [],
@@ -216,6 +254,9 @@ export default function WeeklyScheduleCalendar({
       const specialCol = specialColumns.find((sc) => sc.columnIndex === idx);
       // Use special column label if available, otherwise use the period number
       const label = specialCol ? specialCol.label : slot.label;
+      // The header always shows the full period span (e.g. 10 - 11). It must not
+      // shrink to an activity's own time — the activity's real time is reflected
+      // only by its proportional block inside the cell, not by the column header.
       const startTime = formatTime(slot.startHour, slot.startMin);
       const endTime = formatTime(slot.endHour, slot.endMin);
       return {
@@ -757,18 +798,115 @@ export default function WeeklyScheduleCalendar({
                         ? 'rounded-b-lg'
                         : '';
 
+                    const slot = PERIOD_TIME_SLOTS[periodIndex];
+                    const { offset, width } = getSpecialColumnLayout(specialCol, slot);
+
+                    if (offset <= 0 && width >= 1) {
+                      return (
+                        <div
+                          key={periodIndex}
+                          className={`flex min-h-[100px] items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
+                          style={{ marginBottom: isLastRow ? 0 : undefined }}
+                        >
+                          {isMiddleRow && (
+                            <span
+                              className={`text-xs font-bold ${specialCol.textColor || 'text-gray-700'}`}
+                            >
+                              {specialCol.label}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    const periodStartTime = slot ? formatTime(slot.startHour, slot.startMin) : '';
+                    const periodEndTime = slot ? formatTime(slot.endHour, slot.endMin) : '';
+                    const [activityStartH, activityStartM] = (specialCol.startTime ?? '')
+                      .split(':')
+                      .map(Number);
+                    const [activityEndH, activityEndM] = (specialCol.endTime ?? '')
+                      .split(':')
+                      .map(Number);
+                    const activityStartTime = specialCol.startTime
+                      ? formatTime(activityStartH, activityStartM)
+                      : periodStartTime;
+                    const activityEndTime = specialCol.endTime
+                      ? formatTime(activityEndH, activityEndM)
+                      : periodEndTime;
+
+                    const leftWidthPct = offset * 100;
+                    const rightWidthPct = Math.max(0, 1 - offset - width) * 100;
+
+                    const renderGap = (
+                      widthPct: number,
+                      gapStart: string,
+                      gapEnd: string,
+                      gapKey: string
+                    ) => {
+                      if (widthPct <= 0) return null;
+                      return (
+                        <div
+                          key={gapKey}
+                          style={{ width: `${widthPct}%` }}
+                          className={`group relative min-h-[100px] flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
+                            isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
+                          }`}
+                        >
+                          {onEmptyCellClick && isWorkingDay(dayIndex) && (
+                            <button
+                              onClick={() =>
+                                onEmptyCellClick(dayIndex, periodIndex, gapStart, gapEnd)
+                              }
+                              className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
+                            >
+                              <div className="flex h-7 w-7 items-center justify-center">
+                                <CustomImage
+                                  src={GreenPlusCircleIcon}
+                                  alt="add"
+                                  className="h-6 w-6"
+                                />
+                              </div>
+                            </button>
+                          )}
+                        </div>
+                      );
+                    };
+
                     return (
+                      // `items-stretch` (not items-start) lets the coloured block's
+                      // margin-box fill the cell height, so its `-mt-2` bridge meets
+                      // the row above — keeping multi-day activities connected.
                       <div
                         key={periodIndex}
-                        className={`flex min-h-[100px] items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
-                        style={{ marginBottom: isLastRow ? 0 : undefined }}
+                        className="flex min-h-[100px] items-stretch"
+                        style={{ gap: '0px' }}
                       >
-                        {isMiddleRow && (
-                          <span
-                            className={`text-xs font-bold ${specialCol.textColor || 'text-gray-700'}`}
-                          >
-                            {specialCol.label}
-                          </span>
+                        {renderGap(
+                          leftWidthPct,
+                          periodStartTime,
+                          activityStartTime,
+                          `${periodIndex}-gap-l`
+                        )}
+                        <div
+                          className={`flex min-h-[100px] flex-shrink-0 items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
+                          style={{
+                            width: `${width * 100}%`,
+                            marginBottom: isLastRow ? 0 : undefined,
+                          }}
+                        >
+                          {isMiddleRow && (
+                            <span
+                              className={`text-xs font-bold ${specialCol.textColor || 'text-gray-700'}`}
+                            >
+                              {specialCol.label}
+                            </span>
+                          )}
+                        </div>
+                        {renderGap(
+                          rightWidthPct,
+                          activityEndTime,
+                          periodEndTime,
+                          `${periodIndex}-gap-r`
                         )}
                       </div>
                     );
@@ -844,84 +982,125 @@ export default function WeeklyScheduleCalendar({
                     const fullCells = Math.floor(span);
                     const fractionalPart = span - fullCells;
 
-                    let widthStyle: string | undefined = undefined;
+                    const startOffset =
+                      lessonStartingHere.startOffset && lessonStartingHere.startOffset > 0
+                        ? lessonStartingHere.startOffset
+                        : 0;
+
+                    const slot = PERIOD_TIME_SLOTS[periodIndex];
+                    const periodStartTime = slot
+                      ? formatTime(slot.startHour, slot.startMin)
+                      : '00:00';
+                    const periodEndTime = slot ? formatTime(slot.endHour, slot.endMin) : '00:00';
+
+                    // Interactive empty slot used to fill the part of a period a
+                    // short lesson doesn't occupy (before and/or after it).
+                    const renderLessonGap = (
+                      widthFraction: number,
+                      gapStart: string,
+                      gapEnd: string,
+                      gapKey: string
+                    ) => {
+                      if (widthFraction <= 0) return null;
+                      return (
+                        <div
+                          key={gapKey}
+                          style={{ width: `${widthFraction * 100}%` }}
+                          className={`group relative flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
+                            isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
+                          }`}
+                        >
+                          {onEmptyCellClick && isWorkingDay(dayIndex) && (
+                            <button
+                              onClick={() =>
+                                onEmptyCellClick(dayIndex, periodIndex, gapStart, gapEnd)
+                              }
+                              className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
+                            >
+                              <div className="flex h-7 w-7 items-center justify-center">
+                                <CustomImage
+                                  src={GreenPlusCircleIcon}
+                                  alt="add"
+                                  className="h-6 w-6"
+                                />
+                              </div>
+                            </button>
+                          )}
+                        </div>
+                      );
+                    };
+
                     if (span > 1) {
                       const totalCells = fullCells + (fractionalPart > 0 ? fractionalPart : 0);
                       const gapCount = fullCells - 1 + (fractionalPart > 0 ? 1 : 0);
-                      widthStyle = `calc(${totalCells * 100}% + ${gapCount * 8}px)`;
-                    }
+                      const widthStyle = `calc(${totalCells * 100}% + ${gapCount * 8}px)`;
 
-                    // If there is a start offset, we need to render the empty space before the lesson as an interactive cell
-                    if (lessonStartingHere.startOffset && lessonStartingHere.startOffset > 0) {
-                      const offsetPercent = lessonStartingHere.startOffset;
-
-                      // Calculate times for the gap
-                      const slot = PERIOD_TIME_SLOTS[periodIndex];
-                      let gapStartTime = '00:00';
-                      let gapEndTime = '00:00';
-
-                      if (slot) {
-                        gapStartTime = formatTime(slot.startHour, slot.startMin);
-                        // Gap ends when lesson starts
-                        gapEndTime = lessonStartingHere.startTime;
+                      if (startOffset > 0) {
+                        return (
+                          <div
+                            key={periodIndex}
+                            className="flex min-h-[100px]"
+                            style={{ gap: '0px' }}
+                          >
+                            {renderLessonGap(
+                              startOffset,
+                              periodStartTime,
+                              lessonStartingHere.startTime,
+                              `${periodIndex}-loffset`
+                            )}
+                            <div
+                              className="relative z-10 flex-shrink-0 p-0.5"
+                              style={{ width: widthStyle }}
+                            >
+                              <LessonCard lesson={lessonStartingHere} />
+                            </div>
+                          </div>
+                        );
                       }
 
                       return (
                         <div
                           key={periodIndex}
-                          className="flex min-h-[100px]"
-                          style={{ gap: '0px' }}
+                          className="relative z-10 min-h-[100px] p-0.5"
+                          style={{ width: widthStyle }}
                         >
-                          {' '}
-                          {/* Zero gap inside the shared cell container */}
-                          {/* Empty Gap Slot */}
-                          <div
-                            style={{ width: `${offsetPercent * 100}%` }}
-                            className={`group relative flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
-                              isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
-                            }`}
-                          >
-                            {onEmptyCellClick && isWorkingDay(dayIndex) && (
-                              <button
-                                onClick={() =>
-                                  onEmptyCellClick(dayIndex, periodIndex, gapStartTime, gapEndTime)
-                                }
-                                className="absolute inset-0 flex items-center justify-center bg-[#5FA8960D] opacity-0 transition-opacity group-hover:opacity-100"
-                              >
-                                <div className="flex h-7 w-7 items-center justify-center">
-                                  <CustomImage
-                                    src={GreenPlusCircleIcon}
-                                    alt="add"
-                                    className="h-6 w-6"
-                                  />
-                                </div>
-                              </button>
-                            )}
-                          </div>
-                          {/* Lesson Card */}
-                          <div
-                            className="relative z-10 flex-shrink-0 p-0.5"
-                            style={{
-                              width: widthStyle || `${(1 - offsetPercent) * 100}%`,
-                              // If span > 1, widthStyle is absolute relative to cell, but we are in flex.
-                              // However, widthStyle uses % which is relative to parent.
-                              // If parent is the flex container (1 cell wide), 233% width is correct.
-                              // But we need to ensure it doesn't shrink.
-                            }}
-                          >
-                            <LessonCard lesson={lessonStartingHere} />
-                          </div>
+                          <LessonCard lesson={lessonStartingHere} />
+                        </div>
+                      );
+                    }
+
+                    const lessonWidth = Math.min(span, Math.max(0, 1 - startOffset));
+                    const trailing = Math.max(0, 1 - startOffset - lessonWidth);
+
+                    // Lesson fills the whole cell exactly → simple full-width card.
+                    if (startOffset <= 0 && trailing <= 0) {
+                      return (
+                        <div key={periodIndex} className="relative z-10 min-h-[100px] p-0.5">
+                          <LessonCard lesson={lessonStartingHere} />
                         </div>
                       );
                     }
 
                     return (
-                      <div
-                        key={periodIndex}
-                        className="relative z-10 min-h-[100px] p-0.5"
-                        style={{ width: widthStyle }}
-                      >
-                        <LessonCard lesson={lessonStartingHere} />
+                      <div key={periodIndex} className="flex min-h-[100px]" style={{ gap: '0px' }}>
+                        {renderLessonGap(
+                          startOffset,
+                          periodStartTime,
+                          lessonStartingHere.startTime,
+                          `${periodIndex}-loffset`
+                        )}
+                        <div
+                          className="relative z-10 flex-shrink-0 p-0.5"
+                          style={{ width: `${lessonWidth * 100}%` }}
+                        >
+                          <LessonCard lesson={lessonStartingHere} />
+                        </div>
+                        {renderLessonGap(
+                          trailing,
+                          lessonStartingHere.endTime,
+                          periodEndTime,
+                          `${periodIndex}-ltrailing`
+                        )}
                       </div>
                     );
                   }

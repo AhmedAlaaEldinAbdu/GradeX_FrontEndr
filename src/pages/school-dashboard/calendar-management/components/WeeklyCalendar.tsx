@@ -249,12 +249,14 @@ const findApplicableLessonForSlot = (
   // Calculate duration in minutes
   const duration = calculateDuration(mostRecentLesson.startTime, mostRecentLesson.endTime);
 
-  // colSpan is the lesson duration relative to one period cell (any custom duration).
+  // colSpan is the lesson duration relative to one period cell (any custom
+  // duration). It may be < 1 for lessons shorter than a period (e.g. a 30-min
+  // lesson in a 60-min slot → 0.5) so the card only occupies its real time.
   const slot = periodSlots[periodIndex];
   const slotDurationMinutes = slot
     ? slot.endHour * 60 + slot.endMin - (slot.startHour * 60 + slot.startMin)
     : 45;
-  const colSpan = Math.max(1, duration / slotDurationMinutes);
+  const colSpan = duration > 0 && slotDurationMinutes > 0 ? duration / slotDurationMinutes : 1;
 
   // Calculate start offset for lessons not starting at period boundaries
   let startOffset = 0;
@@ -517,6 +519,8 @@ const transformTimedSchedulesToSpecialColumns = (
       type: type === 'break' ? 'custom' : type,
       ...colors,
       days: applicableDays, // Use days array for proper non-contiguous support
+      startTime: schedule.startTime, // Real activity time → proportional width within the period
+      endTime: schedule.endTime,
     } as SpecialColumn;
   });
 };
