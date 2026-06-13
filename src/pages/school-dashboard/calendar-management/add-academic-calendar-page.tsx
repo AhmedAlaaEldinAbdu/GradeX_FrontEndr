@@ -20,6 +20,7 @@ import type {
   CreateAcademicCalendarRequest,
 } from '@/services/api/types/academic-calendar.types';
 import { tokenManager } from '@gradex/lib/auth/token-manager';
+import { resolveErrorMessage } from '@/lib/http';
 
 const normalizeDateToApi = (value: string) => {
   if (!value) return value;
@@ -103,6 +104,7 @@ export default function AddAcademicCalendarPage() {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
 
   const breadcrumbItems = [
@@ -149,7 +151,8 @@ export default function AddAcademicCalendarPage() {
                 setShowPopupMessage({
                   show: true,
                   type: 'error',
-                  message: t('common.errorOccurred'),
+                  message: res?.message || 'common.errorOccurred',
+                  isMessageRaw: Boolean(res?.message),
                 });
                 return;
               }
@@ -161,10 +164,12 @@ export default function AddAcademicCalendarPage() {
               });
             } catch (error) {
               console.error('Failed to add academic calendar:', error);
+              const { message, isRaw } = resolveErrorMessage(error);
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: t('common.errorOccurred'),
+                message,
+                isMessageRaw: isRaw,
               });
             }
           }}
@@ -176,6 +181,7 @@ export default function AddAcademicCalendarPage() {
         type={showPopupMessage.type}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isMessageRaw}
         onClose={() => {
           setShowPopupMessage({ show: false, type: 'success', message: '' });
           if (showPopupMessage.type === 'success') {

@@ -19,6 +19,7 @@ import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { AddSubjectSchema, type AddSubjectProps } from '@/validations/subjects-validations';
 import { MATERIAL_LEVELS } from '@/constants';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function AddSubject() {
@@ -90,7 +91,7 @@ export default function AddSubject() {
         message: t('subjects.subjectsAddedSuccessfully'),
       });
     } catch (error) {
-      const errorMessage = typeof error === 'string' ? error : t('common.errorOccurred');
+      const errorMessage = getBackendMessage(error) || t('common.errorOccurred');
       setShowPopupMessage({
         show: true,
         type: 'error',

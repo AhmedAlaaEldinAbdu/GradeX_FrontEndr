@@ -14,6 +14,7 @@ import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { useSystemUserValidations } from '@/validations/system-user-validations';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { resolveErrorMessage } from '@/lib/http';
 import {
   assignSchoolRole,
   fetchUsers,
@@ -118,17 +119,11 @@ export default function SystemUserForm({ mode, initialData }: SystemUserFormProp
         isRaw: true,
       });
     } catch (error) {
-      const rawMessage =
-        typeof error === 'string'
-          ? error
-          : typeof error === 'object' && error && 'message' in error
-            ? String((error as { message: unknown }).message)
-            : null;
-      const isRaw = Boolean(rawMessage) && rawMessage !== 'common.errorOccurred';
+      const { message, isRaw } = resolveErrorMessage(error);
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: isRaw ? (rawMessage as string) : t('common.errorOccurred'),
+        message: message || t('common.errorOccurred'),
         isRaw,
       });
     }

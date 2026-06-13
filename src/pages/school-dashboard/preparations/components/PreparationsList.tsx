@@ -21,6 +21,7 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import CustomSelect from '@/shared/components/CustomSelect';
 import { tokenManager } from '@/lib/auth/token-manager';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 // import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 // import CustomImage from '@/shared/components/CustomImage';
 
@@ -275,11 +276,9 @@ export default function PreparationsList() {
         type: 'success',
       });
     } catch (error: unknown) {
-      const message = typeof error === 'string' ? error : t('common.errorOccurred');
       showToast({
-        message,
+        message: getBackendMessage(error) || t('common.errorOccurred'),
         type: 'error',
-        isRaw: typeof error === 'string',
       });
     }
   };

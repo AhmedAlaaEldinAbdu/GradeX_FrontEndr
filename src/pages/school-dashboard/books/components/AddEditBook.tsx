@@ -17,6 +17,7 @@ import { addBook, fetchBookById, fetchBooks, updateBook } from '@/redux/features
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import type { FlattenedBook } from '@/types/books';
 import { AddBookSchema, type AddBookProps } from '@/validations/books-validations';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
@@ -271,7 +272,7 @@ export default function AddEditBook() {
         setImageFile(null);
       }
     } catch (error) {
-      const errorMessage = typeof error === 'string' ? error : t('common.errorOccurred');
+      const errorMessage = getBackendMessage(error) || t('common.errorOccurred');
       setShowPopupMessage({ show: true, type: 'error', message: errorMessage });
     }
   };

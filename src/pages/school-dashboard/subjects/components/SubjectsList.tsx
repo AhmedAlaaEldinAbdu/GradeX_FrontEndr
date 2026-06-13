@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import {
@@ -230,12 +231,11 @@ export default function SubjectsList() {
       setShowDeletePopup(false);
     } catch (error) {
       setShowDeletePopup(false);
-      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
-      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
+      const backendMsg = getBackendMessage(error);
       showToast({
-        message: errorMessage,
+        message: backendMsg || 'common.errorOccurred',
         type: 'error',
-        isRaw: isApiError,
+        isRaw: Boolean(backendMsg),
       });
     }
   };

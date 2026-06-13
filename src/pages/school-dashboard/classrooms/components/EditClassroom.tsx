@@ -20,6 +20,7 @@ import FileUpload from '@/shared/components/FileUpload';
 import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import { EditClassroomSchema, type EditClassroomProps } from '@/validations/classrooms-validations';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { getBackendMessage } from '@/lib/http';
 
 export default function EditClassroom() {
   const { t, i18n } = useTranslation();
@@ -137,10 +138,11 @@ export default function EditClassroom() {
               message: t('grades.gradeUpdatedSuccessfully'),
             });
           } else {
+            const msg = getBackendMessage(res) || t('common.errorOccurred');
             setShowPopupMessage({
               show: true,
               type: 'error',
-              message: t('common.errorOccurred'),
+              message: msg,
             });
           }
         });
@@ -148,7 +150,7 @@ export default function EditClassroom() {
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: error.message || t('common.errorOccurred'),
+        message: getBackendMessage(error) || t('common.errorOccurred'),
       });
     }
   };
@@ -245,9 +247,7 @@ export default function EditClassroom() {
                         : []
                     }
                     placeholder={
-                      isLoadingEducationalStages
-                        ? t('common.loading')
-                        : t('common.selectAnOption')
+                      isLoadingEducationalStages ? t('common.loading') : t('common.selectAnOption')
                     }
                     disabled={true}
                     error={!!errors.educationalStage}

@@ -13,6 +13,7 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import { fetchTeachers, deleteTeacher as deleteTeacherAction } from '@/redux/features/teachers';
+import { getBackendMessage } from '@/lib/http';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchSchoolStages } from '@/redux/features/lookups';
@@ -393,12 +394,10 @@ export default function TeachersList() {
         });
     } catch (error) {
       setShowDeletePopup(false);
-      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
-      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
       showToast({
-        message: errorMessage,
+        message: getBackendMessage(error) || 'common.errorOccurred',
         type: 'error',
-        isRaw: isApiError,
+        isRaw: !!getBackendMessage(error),
       });
     }
   };

@@ -29,6 +29,7 @@ import type {
   UpdateAcademicCalendarRequest,
 } from '@/services/api/types/academic-calendar.types';
 import { getCurrentSchoolBranchId } from '@gradex/lib/auth/token-manager';
+import { resolveErrorMessage } from '@/lib/http';
 
 type DayKey = AcademicCalendarScheduleItem['days'][number];
 
@@ -219,6 +220,7 @@ export default function EditAcademicCalendarPage() {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
 
   const { currentCalendar, isLoading } = useAppSelector((state) => state.academicCalendar);
@@ -293,7 +295,8 @@ export default function EditAcademicCalendarPage() {
                   setShowPopupMessage({
                     show: true,
                     type: 'error',
-                    message: t('common.errorOccurred'),
+                    message: res?.message || 'common.errorOccurred',
+                    isMessageRaw: Boolean(res?.message),
                   });
                   return;
                 }
@@ -305,10 +308,12 @@ export default function EditAcademicCalendarPage() {
                 });
               } catch (error) {
                 console.error('Failed to update academic calendar:', error);
+                const { message, isRaw } = resolveErrorMessage(error);
                 setShowPopupMessage({
                   show: true,
                   type: 'error',
-                  message: t('common.errorOccurred'),
+                  message,
+                  isMessageRaw: isRaw,
                 });
               }
             }}
@@ -325,6 +330,7 @@ export default function EditAcademicCalendarPage() {
         type={showPopupMessage.type}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isMessageRaw}
         onClose={() => {
           setShowPopupMessage({ show: false, type: 'success', message: '' });
           if (showPopupMessage.type === 'success') {

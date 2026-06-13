@@ -17,6 +17,7 @@ import { fetchBooks, deleteBook as deleteBookAction } from '@/redux/features/boo
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import MetricCard from '@/shared/components/MetricCard';
 import { getBookStatusBadgeColor } from '@/shared/components/SharedBadges';
 import type { FlattenedBook, BookStatus } from '@/types/books';
@@ -347,9 +348,9 @@ export default function BooksList() {
         message: 'books.bookDeletedSuccessfully',
         type: 'success',
       });
-    } catch {
+    } catch (error) {
       showToast({
-        message: 'common.errorOccurred',
+        message: getBackendMessage(error) || t('common.errorOccurred'),
         type: 'error',
       });
     }

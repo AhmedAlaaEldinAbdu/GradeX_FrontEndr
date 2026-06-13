@@ -51,6 +51,7 @@ import { PopupMessage } from '@/shared/popups/popups';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { getBackendMessage } from '@/lib/http';
 
 const TEACHER_GENDER_OPTIONS = [
   { value: 'MALE', labelKey: 'jobAnnouncement.form.genderMale' },
@@ -741,7 +742,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: t('common.errorOccurred'),
+                message: res?.message || t('common.errorOccurred'),
               });
             }
           });
@@ -761,16 +762,16 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: t('common.errorOccurred'),
+                message: res?.message || t('common.errorOccurred'),
               });
             }
           });
       }
-    } catch {
+    } catch (error) {
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: t('common.errorOccurred'),
+        message: getBackendMessage(error) || t('common.errorOccurred'),
       });
     }
   };

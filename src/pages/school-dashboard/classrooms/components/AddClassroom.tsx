@@ -21,6 +21,7 @@ import { getAcademicSystems } from '@/redux/features/academic-system/academicSys
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import CustomImage from '@/shared/components/CustomImage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { getBackendMessage } from '@/lib/http';
 
 export default function AddClassroom() {
   const { t, i18n } = useTranslation();
@@ -128,10 +129,11 @@ export default function AddClassroom() {
               message: t('grades.gradesAddedSuccessfully'),
             });
           } else {
+            const msg = getBackendMessage(res) || t('common.errorOccurred');
             setShowPopupMessage({
               show: true,
               type: 'error',
-              message: t('common.errorOccurred'),
+              message: msg,
             });
           }
         });
@@ -139,7 +141,7 @@ export default function AddClassroom() {
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: error?.message || t('common.errorOccurred'),
+        message: getBackendMessage(error) || t('common.errorOccurred'),
       });
     }
   };

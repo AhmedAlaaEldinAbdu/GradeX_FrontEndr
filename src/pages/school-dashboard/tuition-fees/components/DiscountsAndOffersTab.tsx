@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth';
 import { useToast } from '@/shared/context/ToastContext';
 import { formatValidationErrors } from '@/lib/utils/error-utils';
+import { resolveErrorMessage, getBackendMessage } from '@/lib/http';
 import { deleteOffer, fetchOffers, updateOffer } from '@/redux/features/offers/offersSlice';
 import type { OfferDto } from '@/services/api/types/offer.types';
 import type { DiscountOfferFormValues } from './AddEditDiscountOfferForm';
@@ -229,15 +230,18 @@ export default function DiscountsAndOffersTab() {
                   })
                 );
               } catch (e) {
-                const formatted = formatValidationErrors(
-                  (e as any)?.validationErrors,
-                  t('common.errorOccurred')
-                );
+                const validationErrors = (e as any)?.validationErrors;
+                const { message, isRaw } = validationErrors
+                  ? {
+                      message: formatValidationErrors(validationErrors, t('common.errorOccurred')),
+                      isRaw: true,
+                    }
+                  : resolveErrorMessage(e);
                 setShowPopupMessage({
                   show: true,
                   type: 'error',
-                  message: formatted,
-                  isRaw: true,
+                  message,
+                  isRaw,
                 });
               }
             }}
@@ -358,8 +362,8 @@ export default function DiscountsAndOffersTab() {
             showToast({ message: t('common.error'), type: 'error' });
           }
         });
-    } catch {
-      showToast({ message: t('common.error'), type: 'error' });
+    } catch (error) {
+      showToast({ message: getBackendMessage(error) || t('common.error'), type: 'error' });
       setIsDeletePopupOpen(false);
     }
   };

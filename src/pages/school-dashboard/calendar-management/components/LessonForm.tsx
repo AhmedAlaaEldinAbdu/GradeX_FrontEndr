@@ -27,6 +27,7 @@ import { createLesson, updateLessonWithAttachments } from '@/redux/features/less
 import { useLanguage } from '@/hooks/useLanguage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { tokenManager } from '@/lib/auth/token-manager';
+import { resolveErrorMessage } from '@/lib/http';
 
 // Types
 import type { Book } from '@/types/books';
@@ -139,6 +140,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
 
   const [sendTo, setSendTo] = useState<'all' | 'specific'>(
@@ -404,10 +406,12 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
       });
     } catch (error) {
       console.error('Failed to save lesson:', error);
+      const { message, isRaw } = resolveErrorMessage(error);
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: t('common.errorOccurred'),
+        message,
+        isMessageRaw: isRaw,
       });
     }
   };
@@ -946,6 +950,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         type={showPopupMessage.type}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isMessageRaw}
         onClose={() => {
           setShowPopupMessage({ show: false, type: 'success', message: '' });
           if (showPopupMessage.type === 'success') {

@@ -35,6 +35,7 @@ import {
 import type { TaskStudentAttachment } from '@/types/taskStudents';
 import Loading from '@/shared/components/Loading';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { resolveErrorMessage } from '@/lib/http';
 
 type TaskCorrectionFormMode = 'create' | 'edit';
 
@@ -109,6 +110,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
 
   const currentTaskStudent = useAppSelector((state) => state.taskStudents.currentTaskStudent);
@@ -347,10 +349,12 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
             : 'tasksManagement.messages.addCorrectionSuccess',
       });
     } catch (error) {
+      const { message, isRaw } = resolveErrorMessage(error);
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: typeof error === 'string' ? error : 'common.errorOccurred',
+        message,
+        isMessageRaw: isRaw,
       });
     }
   };
@@ -571,6 +575,7 @@ export default function AddEditTaskCorrectionForm({ mode }: AddEditTaskCorrectio
         open={showPopupMessage.show}
         type={showPopupMessage.type}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isMessageRaw}
         iconSrc={BigSuccessIcon}
         autoClose={true}
         onClose={() => setShowPopupMessage((current) => ({ ...current, show: false }))}

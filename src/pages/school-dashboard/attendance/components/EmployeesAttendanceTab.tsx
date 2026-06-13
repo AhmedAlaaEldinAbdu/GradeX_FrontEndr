@@ -6,6 +6,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import AttendanceConfirmPopup from '@/pages/school-dashboard/attendance/popups/AttendanceConfirmPopup';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import HistoryIcon from '@gradex/assets/icons/History.svg';
@@ -313,12 +314,9 @@ export default function EmployeesAttendanceTab({
       setPopupOpen(false);
     } catch (error) {
       setPopupOpen(false);
-      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
-      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
       showToast({
-        message: errorMessage,
+        message: getBackendMessage(error) || 'common.errorOccurred',
         type: 'error',
-        isRaw: isApiError,
       });
     }
   };

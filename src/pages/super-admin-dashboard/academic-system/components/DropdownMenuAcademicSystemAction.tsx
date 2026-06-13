@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import IconButton from '@/shared/components/IconButton';
 import { deleteAcademicSystem } from '@/redux/features/academic-system/academicSystemSlice';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
@@ -49,7 +50,7 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
         setShowDeletePopup(false);
       }
     } catch (error) {
-      showToast({ message: t('common.errorOccurred'), type: 'error' });
+      showToast({ message: getBackendMessage(error) || t('common.errorOccurred'), type: 'error' });
       setShowDeletePopup(false);
     } finally {
       setIsProcessing(false);
@@ -59,12 +60,7 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
   return (
     <div className="relative inline-block text-left">
       <div className="flex items-center justify-center gap-2">
-        <IconButton
-          status="edit"
-          variant="success"
-          onClick={() => handleEdit()}
-          ariaLabel="Edit"
-        />
+        <IconButton status="edit" variant="success" onClick={() => handleEdit()} ariaLabel="Edit" />
         <IconButton
           status="delete"
           variant="danger"

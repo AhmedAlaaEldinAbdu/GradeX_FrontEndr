@@ -21,6 +21,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import Loading from '@/shared/components/Loading';
 import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import {
   EditTeacherPlacementSchema,
   type EditTeacherPlacementProps,
@@ -298,13 +299,7 @@ export default function EditTeacherPlacementForm({
       showToast({ message: t('common.successEdit'), type: 'success' });
       navigate(`/teaching-staff/teachers/${teacherId}?tab=educational-stages`);
     } catch (error) {
-      const errorMessage =
-        typeof error === 'string'
-          ? error
-          : error instanceof Error
-            ? error.message
-            : t('common.errorOccurred');
-      showToast({ message: errorMessage, type: 'error' });
+      showToast({ message: getBackendMessage(error) || t('common.errorOccurred'), type: 'error' });
     }
   };
 

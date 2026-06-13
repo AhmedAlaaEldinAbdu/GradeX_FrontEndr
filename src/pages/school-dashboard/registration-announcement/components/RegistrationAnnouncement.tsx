@@ -8,6 +8,7 @@ import type { RegistrationAnnouncementDto } from '@/services/api/registration-an
 import type { GradeDto } from '@/services/api/types/grades.types';
 import useLanguage from '@/hooks/useLanguage';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
@@ -149,7 +150,7 @@ export default function RegistrationAnnouncement() {
     } catch (error) {
       console.error('Failed to delete announcement:', error);
       showToast({
-        message: t('common.errorOccurred'),
+        message: getBackendMessage(error) || t('common.errorOccurred'),
         type: 'error',
       });
     } finally {

@@ -22,6 +22,7 @@ import AddOfficialHolidayForm from './AddOfficialHolidayForm';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
+import { getBackendMessage } from '@/lib/http';
 
 const AddHolidayForm = () => {
   const { t } = useTranslation();
@@ -32,6 +33,7 @@ const AddHolidayForm = () => {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
 
   // Use custom holiday form hook
@@ -105,13 +107,15 @@ const AddHolidayForm = () => {
           show: true,
           type: 'error',
           message: result.errors?.[0] || t('common.errorOccurred'),
+          isMessageRaw: Boolean(result.errors?.[0]),
         });
       }
     } catch (error: any) {
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: error || t('common.errorOccurred'),
+        message: getBackendMessage(error) || t('common.errorOccurred'),
+        isMessageRaw: Boolean(getBackendMessage(error)),
       });
     }
   };
@@ -135,13 +139,15 @@ const AddHolidayForm = () => {
           show: true,
           type: 'error',
           message: result.errors?.[0] || t('common.errorOccurred'),
+          isMessageRaw: Boolean(result.errors?.[0]),
         });
       }
     } catch (error: any) {
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: error || t('common.errorOccurred'),
+        message: getBackendMessage(error) || t('common.errorOccurred'),
+        isMessageRaw: Boolean(getBackendMessage(error)),
       });
     }
   };
@@ -240,6 +246,7 @@ const AddHolidayForm = () => {
           open={showPopupMessage.show}
           type={showPopupMessage.type}
           message={showPopupMessage.message}
+          isMessageRaw={showPopupMessage.isMessageRaw}
           iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
           autoClose={true}
           onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}

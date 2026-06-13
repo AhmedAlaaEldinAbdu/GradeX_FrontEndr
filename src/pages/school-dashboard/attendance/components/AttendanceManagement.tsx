@@ -29,6 +29,7 @@ import type { StudentAttendanceDto } from '@/types/studentAttendance';
 import { StudentAttendanceStatus } from '@/types/studentAttendance';
 import { formatTime } from '@/shared/common/common';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import useLanguage from '@/hooks/useLanguage';
 
 export default function AttendanceManagement() {
@@ -255,12 +256,9 @@ export default function AttendanceManagement() {
       setPopupOpen(false);
     } catch (error) {
       setPopupOpen(false);
-      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
-      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
       showToast({
-        message: errorMessage,
+        message: getBackendMessage(error) || 'common.errorOccurred',
         type: 'error',
-        isRaw: isApiError,
       });
     }
   };

@@ -29,6 +29,7 @@ import {
   deleteSchoolTask as deleteSchoolTaskAction,
   fetchSchoolTasks,
 } from '@/redux/features/school-tasks/schoolTasksSlice';
+import { getBackendMessage } from '@/lib/http';
 import type { SchoolTask, SchoolTaskType } from '@/types/schoolTasks';
 
 type CorrectionStatusKey = 'corrected' | 'notCorrected';
@@ -243,9 +244,9 @@ export default function TasksManagement() {
         isRaw: true,
         type: 'success',
       });
-    } catch {
+    } catch (error) {
       showToast({
-        message: 'common.errorOccurred',
+        message: getBackendMessage(error) || t('common.errorOccurred'),
         type: 'error',
       });
     }
@@ -299,7 +300,9 @@ export default function TasksManagement() {
     {
       header: 'tasksManagement.table.taskType',
       accessor: (row) => (
-        <span className={getTaskTypeBadgeColor(row.taskType)}>{getTaskTypeLabel(row.taskType)}</span>
+        <span className={getTaskTypeBadgeColor(row.taskType)}>
+          {getTaskTypeLabel(row.taskType)}
+        </span>
       ),
       headerClassName: 'min-w-[180px]',
       className: 'text-center',

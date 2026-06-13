@@ -23,6 +23,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import Input from '@/shared/components/Input';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import { getCurrentSchoolBranchId } from '@/lib/auth';
+import { getBackendMessage } from '@/lib/http';
 
 export default function StudentManagement() {
   const { t, i18n } = useTranslation();
@@ -69,9 +70,7 @@ export default function StudentManagement() {
 
   useEffect(() => {
     if (!schoolBranchId) return;
-    dispatch(
-      fetchParentsByBranch({ schoolBranchId, pageIndex: 1, pageSize: 1000 })
-    );
+    dispatch(fetchParentsByBranch({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -177,7 +176,7 @@ export default function StudentManagement() {
       );
     } catch (error) {
       showToast({
-        message: 'common.errorOccurred',
+        message: getBackendMessage(error) || 'common.errorOccurred',
         type: 'error',
       });
     } finally {
@@ -197,7 +196,7 @@ export default function StudentManagement() {
       });
     } catch (error) {
       showToast({
-        message: 'common.errorOccurred',
+        message: getBackendMessage(error) || 'common.errorOccurred',
         type: 'error',
       });
     }
@@ -375,9 +374,7 @@ export default function StudentManagement() {
                 }))
               : []
           }
-          placeholder={
-            isLoadingParents ? t('common.loading') : t('studentManagement.createdBy')
-          }
+          placeholder={isLoadingParents ? t('common.loading') : t('studentManagement.createdBy')}
           disabled={isLoadingParents}
           maxHeight="200px"
         />

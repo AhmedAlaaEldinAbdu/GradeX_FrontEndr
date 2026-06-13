@@ -32,6 +32,7 @@ import FileUpload, { type FileUploadRef } from '@/shared/components/FileUpload';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import Loading from '@/shared/components/Loading';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -256,11 +257,9 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       }
     } catch (err: unknown) {
       console.error(err);
-      const message = typeof err === 'string' ? err : t('common.errorOccurred');
       showToast({
-        message,
+        message: getBackendMessage(err) || t('common.errorOccurred'),
         type: 'error',
-        isRaw: typeof err === 'string',
       });
     }
   };

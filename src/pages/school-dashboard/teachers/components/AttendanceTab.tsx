@@ -27,6 +27,7 @@ import {
   clearAttendanceFilters,
 } from '@/redux/features/teachers/teachersSlice';
 import { teacherAttendanceApiService } from '@/services/api/teacher-attendance/teacher-attendance.service';
+import { getBackendMessage } from '@/lib/http';
 import type { TeacherAttendanceDetailRecord } from '@/types/teacherAttendanceDetail';
 import { AttendanceStatus } from '@/types/teacherAttendance';
 import { formatTime, formatDateDisplay } from '@/shared/common/common';
@@ -345,12 +346,10 @@ export default function AttendanceTab({
       );
     } catch (error) {
       setShowRecordAttendancePopup(false);
-      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
-      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
       showToast({
-        message: errorMessage,
+        message: getBackendMessage(error) || 'common.errorOccurred',
         type: 'error',
-        isRaw: isApiError,
+        isRaw: !!getBackendMessage(error),
       });
     }
   };

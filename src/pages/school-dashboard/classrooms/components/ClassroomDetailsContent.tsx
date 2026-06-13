@@ -6,6 +6,7 @@ import Loading from '@/shared/components/Loading';
 import EmptyState from '@/shared/components/EmptyState';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { deleteClassroom } from '@/redux/features/classrooms/classroomsSlice';
+import { getBackendMessage } from '@/lib/http';
 import MathIcon from '@gradex/assets/icons/Math.svg';
 import ProgressSummaryCard from '../../../../shared/components/ProgressSummaryCard';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
@@ -67,7 +68,7 @@ export default function ClassroomDetailsContent({ currentLang }: ClassroomDetail
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: t('common.errorOccurred'),
+        message: getBackendMessage(error) || t('common.errorOccurred'),
       });
     }
   };

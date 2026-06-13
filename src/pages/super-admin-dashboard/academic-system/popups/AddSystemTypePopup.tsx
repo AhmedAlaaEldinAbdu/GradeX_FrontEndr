@@ -10,6 +10,7 @@ import {
   getAcademicSubSystems,
 } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import {
   AcademicSubsystemSchema,
   type AcademicSubsystemForm,
@@ -84,14 +85,15 @@ export default function AddSystemTypePopup({ open, onConfirm, onCancel }: AddSys
           onConfirm?.(true);
         } else if (!res.isSuccess) {
           showToast({
-            message: 'common.errorOccurred',
+            message: res?.message || 'common.errorOccurred',
             type: 'error',
+            isRaw: Boolean(res?.message),
           });
         }
       })
-      .catch(() => {
+      .catch((error) => {
         showToast({
-          message: 'common.errorOccurred',
+          message: getBackendMessage(error) || 'common.errorOccurred',
           type: 'error',
         });
       });
@@ -100,7 +102,7 @@ export default function AddSystemTypePopup({ open, onConfirm, onCancel }: AddSys
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
+    <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
       <div
         ref={popupRef}
         className={`relative w-[520px] transform rounded-2xl bg-white p-6 py-7 text-center shadow-lg transition-all duration-300 ease-out ${

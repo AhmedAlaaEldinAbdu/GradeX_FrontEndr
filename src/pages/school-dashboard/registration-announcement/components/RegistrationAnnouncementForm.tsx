@@ -20,6 +20,7 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { resolveErrorMessage } from '@/lib/http';
 
 interface RegistrationAnnouncementFormProps {
   initialValues?: Partial<RegistrationAnnouncementProps>;
@@ -27,9 +28,7 @@ interface RegistrationAnnouncementFormProps {
   registrationId?: string;
 }
 
-const normalizeGradeIds = (
-  gradeIds: unknown
-): RegistrationAnnouncementProps['gradeIds'] => {
+const normalizeGradeIds = (gradeIds: unknown): RegistrationAnnouncementProps['gradeIds'] => {
   if (!Array.isArray(gradeIds)) return [];
 
   return gradeIds
@@ -66,6 +65,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
 
   const grades = useAppSelector((state) => state.grades.grades);
@@ -147,11 +147,12 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
         });
       }
     } catch (error: unknown) {
-      const errorMessage = (error as any)?.response?.data?.message || t('common.errorOccurred');
+      const { message, isRaw } = resolveErrorMessage(error);
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: errorMessage,
+        message,
+        isMessageRaw: isRaw,
       });
     } finally {
       setIsSubmitting(false);
@@ -166,7 +167,11 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
 
   return (
     <Card className="p-6">
-      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} noValidate className="space-y-6">
+      <form
+        onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)}
+        noValidate
+        className="space-y-6"
+      >
         {/* Educational Stages (Multi Select) */}
         <FormField
           label={t('registrationAnnouncement.educationalStagesLabel')}
@@ -275,6 +280,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
         open={showPopupMessage.show}
         type={showPopupMessage.type}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isMessageRaw}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={true}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}

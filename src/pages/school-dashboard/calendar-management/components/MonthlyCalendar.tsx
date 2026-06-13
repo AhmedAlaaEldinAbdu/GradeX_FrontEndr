@@ -44,7 +44,7 @@ import type {
   MonthlyEventEntity,
 } from '@/services/api/types/monthly-calendar.types';
 import type { MonthlyEventFormValues } from '@/validations/monthly-calendar-validations';
-import { getErrorMessage } from '@/lib/http';
+import { getErrorMessage, getBackendMessage } from '@/lib/http';
 import { MonthlyCalendarDuration } from '@/shared/enums/enums';
 import Loading from '@/shared/components/Loading';
 
@@ -478,10 +478,12 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
             });
           }
         }
-      } catch (error: any) {
-        const message =
-          error?.message || (typeof error === 'string' ? error : t('common.errorOccurred'));
-        showToast({ message, type: 'error', isRaw: true });
+      } catch (error) {
+        showToast({
+          message: getBackendMessage(error) || t('common.errorOccurred'),
+          type: 'error',
+          isRaw: true,
+        });
       }
     },
     [dispatch, editorMode, editingEventId, fetchEvents, handleCloseEditor, showToast, t]
@@ -503,11 +505,13 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         const errorMessage = res.successMessage || t('common.errorOccurred');
         showToast({ message: errorMessage, type: 'error', isRaw: true });
       }
-    } catch (error: any) {
+    } catch (error) {
       setEventIdPendingDelete(null);
-      const message =
-        error?.message || (typeof error === 'string' ? error : t('common.errorOccurred'));
-      showToast({ message, type: 'error', isRaw: true });
+      showToast({
+        message: getBackendMessage(error) || t('common.errorOccurred'),
+        type: 'error',
+        isRaw: true,
+      });
     }
   }, [dispatch, eventIdPendingDelete, fetchEvents, showToast, t]);
 

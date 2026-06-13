@@ -23,6 +23,7 @@ import { EditSubjectSchema, type EditSubjectProps } from '@/validations/subjects
 import { MATERIAL_LEVELS } from '@/constants';
 import Loading from '@/shared/components/Loading';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function EditSubject() {
@@ -135,7 +136,7 @@ export default function EditSubject() {
         message: t('subjects.subjectUpdatedSuccessfully'),
       });
     } catch (error) {
-      const errorMessage = typeof error === 'string' ? error : t('common.errorOccurred');
+      const errorMessage = getBackendMessage(error) || t('common.errorOccurred');
       setShowPopupMessage({
         show: true,
         type: 'error',

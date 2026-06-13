@@ -16,6 +16,7 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { resolveErrorMessage } from '@/lib/http';
 import { createRole, updateRole } from '@/redux/features/roles/rolesSlice';
 import { permissionsApiService } from '@/services/api';
 import type {
@@ -433,17 +434,11 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
         isRaw: true,
       });
     } catch (error) {
-      const rawMessage =
-        typeof error === 'string'
-          ? error
-          : typeof error === 'object' && error && 'message' in error
-            ? String((error as { message: unknown }).message)
-            : null;
-      const isRaw = Boolean(rawMessage) && rawMessage !== 'common.errorOccurred';
+      const { message, isRaw } = resolveErrorMessage(error);
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: isRaw ? (rawMessage as string) : t('common.errorOccurred'),
+        message: message || t('common.errorOccurred'),
         isRaw,
       });
     }

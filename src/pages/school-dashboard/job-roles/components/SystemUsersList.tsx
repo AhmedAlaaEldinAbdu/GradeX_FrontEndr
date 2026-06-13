@@ -11,6 +11,7 @@ import PeopleSupportIcon from '@/assets/icons/PeopleSupport.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import {
   fetchUsers,
   deleteUser,
@@ -139,9 +140,11 @@ export default function SystemUsersList() {
         })
       );
     } catch (error) {
-      const errorMessage = typeof error === 'string' ? error : 'common.errorOccurred';
-      const isApiError = typeof error === 'string' && error !== 'common.errorOccurred';
-      showToast({ message: errorMessage, type: 'error', isRaw: isApiError });
+      showToast({
+        message: getBackendMessage(error) || 'common.errorOccurred',
+        type: 'error',
+        isRaw: !!getBackendMessage(error),
+      });
     } finally {
       setShowDeletePopup(false);
       setSelectedUserId(null);

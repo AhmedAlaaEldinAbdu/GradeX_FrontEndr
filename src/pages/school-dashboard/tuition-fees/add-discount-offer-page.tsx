@@ -10,6 +10,7 @@ import { tokenManager } from '@/lib/auth';
 import { createOffer, fetchOffers } from '@/redux/features/offers/offersSlice';
 import { useToast } from '@/shared/context/ToastContext';
 import { formatValidationErrors } from '@/lib/utils/error-utils';
+import { resolveErrorMessage } from '@/lib/http';
 import AddEditDiscountOfferForm, {
   type DiscountOfferFormValues,
 } from './components/AddEditDiscountOfferForm';
@@ -75,11 +76,12 @@ export default function AddDiscountOfferPage() {
                           isRaw: false,
                         });
                       } else {
+                        const { message, isRaw } = resolveErrorMessage(res?.message);
                         setShowPopupMessage({
                           show: true,
                           type: 'error',
-                          message: 'common.error',
-                          isRaw: false,
+                          message,
+                          isRaw,
                         });
                       }
                     })
@@ -113,7 +115,11 @@ export default function AddDiscountOfferPage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={showPopupMessage.type === 'success' ? '/financial-management/fees?tab=discounts' : undefined}
+        navigateAfterClose={
+          showPopupMessage.type === 'success'
+            ? '/financial-management/fees?tab=discounts'
+            : undefined
+        }
       />
     </div>
   );

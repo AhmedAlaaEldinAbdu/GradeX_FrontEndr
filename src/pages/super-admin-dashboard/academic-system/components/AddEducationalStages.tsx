@@ -34,6 +34,7 @@ export default function AddEducationalStages() {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
   const academicSubSystems = useAppSelector((state) => state.academicSubSystems.academicSubSystems);
   const isLoadingSubSystems = useAppSelector((state) => state.academicSubSystems.isLoading);
@@ -84,7 +85,8 @@ export default function AddEducationalStages() {
           setShowPopupMessage({
             show: true,
             type: 'error',
-            message: errorMessage || t('common.errorOccurred'),
+            message: errorMessage || res?.message || t('common.errorOccurred'),
+            isMessageRaw: Boolean(errorMessage || res?.message),
           });
         }
       });
@@ -111,7 +113,11 @@ export default function AddEducationalStages() {
             </button>
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
+        <form
+          onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+          noValidate={true}
+          className="flex flex-col gap-8"
+        >
           {numOfStages.map((_, index) => (
             <div
               key={`add-stage-${index + 1}`}
@@ -256,6 +262,7 @@ export default function AddEducationalStages() {
           open={showPopupMessage.show}
           type={showPopupMessage.type}
           message={showPopupMessage.message}
+          isMessageRaw={showPopupMessage.isMessageRaw}
           iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
           autoClose={true}
           onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}

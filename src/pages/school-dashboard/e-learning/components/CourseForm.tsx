@@ -10,6 +10,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import {
   createSchoolCourse,
   updateSchoolCourse,
@@ -150,8 +151,7 @@ export default function CourseForm({ mode }: CourseFormProps) {
     lectureDuration: basicInfo.lessonDuration ? Number(basicInfo.lessonDuration) : undefined,
     coverImage: basicInfo.coverImage,
     classRoomIds: students.grades,
-    studentIds:
-      students.audience === 'specific' ? students.selectedStudents.map((s) => s.id) : [],
+    studentIds: students.audience === 'specific' ? students.selectedStudents.map((s) => s.id) : [],
     isCourseForAllStudents: students.audience === 'all',
     lectures:
       lectures.source === 'manual'
@@ -183,7 +183,7 @@ export default function CourseForm({ mode }: CourseFormProps) {
       }
       navigate('/lms/courses');
     } catch (error) {
-      showToast({ message: (error as string) || t('common.errorOccurred'), type: 'error' });
+      showToast({ message: getBackendMessage(error) || t('common.errorOccurred'), type: 'error' });
     }
   };
 

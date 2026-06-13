@@ -16,6 +16,9 @@ export {
   isNotFoundError,
 } from './axios-client';
 
+// Backend error-message helpers
+export { getBackendMessage, resolveErrorMessage } from './backend-message';
+
 // Axios types
 export type { AxiosInstance, AxiosRequestConfig, AxiosError } from './axios-client';
 

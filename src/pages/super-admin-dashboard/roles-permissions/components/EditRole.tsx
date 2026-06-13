@@ -22,6 +22,7 @@ import {
   clearError,
 } from '@gradex/redux/features/roles';
 import { extractErrorMessage } from '@/lib/utils';
+import { getBackendMessage } from '@/lib/http';
 import { permissionsApiService } from '@gradex/services/api/permissions/permissions.service';
 import type { PermissionGroup } from '@gradex/services/api/types/permissions.types';
 import { useToast } from '@/shared/context/ToastContext';
@@ -192,7 +193,7 @@ export default function EditRole() {
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: (error as { message?: string })?.message || t('common.errorOccurred'),
+        message: getBackendMessage(error) || t('common.errorOccurred'),
       });
     }
   };

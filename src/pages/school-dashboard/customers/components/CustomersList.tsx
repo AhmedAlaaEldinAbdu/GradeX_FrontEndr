@@ -13,6 +13,7 @@ import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdow
 import DeletePopup from '@/shared/popups/DeletePopup';
 import EmptyState from '@/shared/components/EmptyState';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import type { CustomerDto } from '@/services/api/types/customer.types';
 import { getCurrentSchoolBranchId } from '@gradex/lib/auth/token-manager';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
@@ -76,8 +77,7 @@ export default function CustomersList() {
       setPendingDeleteId(null);
       showToast({ message: t('customers.customerDeletedSuccessfully'), type: 'success' });
     } catch (error: unknown) {
-      const message = typeof error === 'string' ? error : t('common.errorOccurred');
-      showToast({ message, type: 'error', isRaw: typeof error === 'string' });
+      showToast({ message: getBackendMessage(error) || t('common.errorOccurred'), type: 'error' });
     }
   };
 

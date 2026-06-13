@@ -12,6 +12,7 @@ import Input from '@/shared/components/Input';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { tokenManager } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import {
   deleteAcademicCalendar,
   fetchAcademicCalendars,
@@ -243,9 +244,9 @@ export default function AcademicCalendarList() {
         message: 'academicCalendar.toast.deleteSuccess',
         type: 'success',
       });
-    } catch {
+    } catch (error) {
       showToast({
-        message: 'common.errorOccurred',
+        message: getBackendMessage(error) || t('common.errorOccurred'),
         type: 'error',
       });
     }

@@ -40,6 +40,7 @@ export default function EditAcademicSystem() {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -137,7 +138,8 @@ export default function EditAcademicSystem() {
           setShowPopupMessage({
             show: true,
             type: 'error',
-            message: errorMessage || t('common.errorOccurred'),
+            message: errorMessage || res?.message || t('common.errorOccurred'),
+            isMessageRaw: Boolean(errorMessage || res?.message),
           });
         }
       });
@@ -155,7 +157,11 @@ export default function EditAcademicSystem() {
             <Loading />
           </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
+          <form
+            onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+            noValidate={true}
+            className="flex flex-col gap-8"
+          >
             <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
               <div className="flex">
                 <div className="flex flex-grow flex-col gap-5 md:flex-row">
@@ -322,6 +328,7 @@ export default function EditAcademicSystem() {
           open={showPopupMessage.show}
           type={showPopupMessage.type}
           message={showPopupMessage.message}
+          isMessageRaw={showPopupMessage.isMessageRaw}
           iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
           autoClose={true}
           onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}

@@ -13,6 +13,7 @@ import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getBackendMessage } from '@/lib/http';
 import {
   fetchJobAdvertisments,
   deleteJobAdvertisment,
@@ -206,7 +207,7 @@ export default function JobAnnouncementsList() {
           })
         ).unwrap();
       } catch (error) {
-        showToast({ type: 'error', message: 'common.errorOccurred' });
+        showToast({ type: 'error', message: getBackendMessage(error) || 'common.errorOccurred' });
       }
     };
 
@@ -768,7 +769,7 @@ export default function JobAnnouncementsList() {
             });
           } else {
             showToast({
-              message: 'common.errorOccurred',
+              message: res?.message || 'common.errorOccurred',
               type: 'error',
             });
           }
@@ -777,7 +778,7 @@ export default function JobAnnouncementsList() {
     } catch (error) {
       showToast({
         type: 'error',
-        message: 'common.errorOccurred',
+        message: getBackendMessage(error) || 'common.errorOccurred',
       });
       return;
     }
@@ -802,7 +803,7 @@ export default function JobAnnouncementsList() {
     } catch (error) {
       showToast({
         type: 'error',
-        message: 'common.errorOccurred',
+        message: getBackendMessage(error) || 'common.errorOccurred',
       });
     }
   };

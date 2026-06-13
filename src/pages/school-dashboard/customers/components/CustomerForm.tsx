@@ -19,6 +19,7 @@ import { CustomerTypeEnum } from '@/services/api/types/customer.types';
 import { searchStudentsByName } from '@/redux/features/students/studentsSlice';
 import type { StudentDto } from '@/services/api/types/students.types';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import { customerSchema, type CustomerFormValues } from '@/validations/customers-validations';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import Card from '@/shared/components/Card';
@@ -300,8 +301,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
       }
       navigate('/financial-management/customers');
     } catch (error: unknown) {
-      const message = typeof error === 'string' ? error : t('common.errorOccurred');
-      showToast({ message, type: 'error', isRaw: typeof error === 'string' });
+      showToast({ message: getBackendMessage(error) || t('common.errorOccurred'), type: 'error' });
     }
   };
 

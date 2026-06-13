@@ -22,6 +22,7 @@ import {
   fetchTuitionFees,
 } from '@/redux/features/tuition-fees/tuitionFeesSlice';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 
 type PaymentMethodFilter = 'all' | string;
 
@@ -326,9 +327,9 @@ export default function TuitionFeesTab({ onAdd }: TuitionFeesListProps) {
             setIsDeletePopupOpen(false);
           }
         });
-    } catch {
+    } catch (error) {
       showToast({
-        message: 'common.errorOccurred',
+        message: getBackendMessage(error) || t('common.errorOccurred'),
         type: 'error',
       });
       setIsDeletePopupOpen(false);

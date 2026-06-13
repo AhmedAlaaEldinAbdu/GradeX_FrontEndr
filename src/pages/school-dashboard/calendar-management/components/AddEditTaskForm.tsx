@@ -27,6 +27,7 @@ import {
 } from '@/redux/features/school-tasks/schoolTasksSlice';
 import { tokenManager } from '@/lib/auth/token-manager';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { resolveErrorMessage } from '@/lib/http';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { AddSchoolTaskSchema, EditSchoolTaskSchema } from '@/validations/school-tasks-validations';
 import { SchoolTaskType, type SchoolTask } from '@/types/schoolTasks';
@@ -122,6 +123,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
   const fileUploadRef = useRef<FileUploadRef>(null);
 
@@ -341,10 +343,12 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
             : 'tasksManagement.messages.editSuccess',
       });
     } catch (error) {
+      const { message, isRaw } = resolveErrorMessage(error);
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: typeof error === 'string' ? error : 'common.errorOccurred',
+        message,
+        isMessageRaw: isRaw,
       });
     }
   };
@@ -757,6 +761,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
         open={showPopupMessage.show}
         type={showPopupMessage.type}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isMessageRaw}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={true}
         onClose={() => setShowPopupMessage((current) => ({ ...current, show: false }))}

@@ -20,6 +20,7 @@ import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import SuccessPlacementPopup from '../popups/SuccessPlacementPopup';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 
 interface BookEntry {
   id: string;
@@ -296,8 +297,7 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
 
       setShowSuccessPopup(true);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('common.errorOccurred');
-      showToast({ message: errorMessage, type: 'error' });
+      showToast({ message: getBackendMessage(error) || t('common.errorOccurred'), type: 'error' });
     } finally {
       setIsSubmitting(false);
     }

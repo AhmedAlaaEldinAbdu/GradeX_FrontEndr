@@ -31,6 +31,7 @@ import type { ApplicationsJobAdvertisement } from '@/services/api/types/applicat
 import type { InterviewFormProps } from '@/validations/interviews-validations';
 import { useNavigate } from 'react-router-dom';
 import Button from '@/shared/components/Button';
+import { getBackendMessage } from '@/lib/http';
 
 type JobApplicantsTableProps = {
   jobAdvertisementId: string;
@@ -180,7 +181,7 @@ const JobApplicantsTable = ({
         fetchApplicants();
         return true;
       } catch (error) {
-        showToast({ message: 'common.errorOccurred', type: 'error' });
+        showToast({ message: getBackendMessage(error) || 'common.errorOccurred', type: 'error' });
         return false;
       } finally {
         setIsProcessing(false);
@@ -251,7 +252,7 @@ const JobApplicantsTable = ({
       debugger;
       const response = await dispatch(createInterview(payload as any)).unwrap();
       if (!response?.isSuccess) {
-        showToast({ message: 'common.errorOccurred', type: 'error' });
+        showToast({ message: response?.message || 'common.errorOccurred', type: 'error' });
         return;
       }
 
@@ -262,7 +263,7 @@ const JobApplicantsTable = ({
       setSchedulePopupOpen(false);
       setSelectedApplicant(null);
     } catch (error) {
-      showToast({ message: 'common.errorOccurred', type: 'error' });
+      showToast({ message: getBackendMessage(error) || 'common.errorOccurred', type: 'error' });
     } finally {
       setIsProcessing(false);
     }
@@ -627,18 +628,12 @@ const JobApplicantsTable = ({
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.qualification',
-      accessor: (row) => (
-        <span>{getQualificationLabel(row)}</span>
-      ),
+      accessor: (row) => <span>{getQualificationLabel(row)}</span>,
       headerClassName: 'min-w-[160px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.experience',
-      accessor: (row) => (
-        <span>
-          {(row.experienceYears || 0).toLocaleString(numberLocale)}
-        </span>
-      ),
+      accessor: (row) => <span>{(row.experienceYears || 0).toLocaleString(numberLocale)}</span>,
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },

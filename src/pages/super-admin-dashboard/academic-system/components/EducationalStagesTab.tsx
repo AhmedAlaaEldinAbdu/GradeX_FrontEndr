@@ -5,6 +5,7 @@ import PopupMessage from '@/shared/popups/PopupMessage';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import { useToast } from '@/shared/context/ToastContext';
+import { getBackendMessage } from '@/lib/http';
 import EmptyState from '@/shared/components/EmptyState';
 import Card from '@/shared/components/Card';
 import AcademicIcon from '@gradex/assets/icons/Academic.svg';
@@ -261,9 +262,9 @@ export default function EducationalStagesTab() {
           setShowDeletePopup(false);
         }
       })
-      .catch(() => {
+      .catch((error) => {
         showToast({
-          message: 'common.errorOccurred',
+          message: getBackendMessage(error) || 'common.errorOccurred',
           type: 'error',
         });
         setShowDeletePopup(false);
