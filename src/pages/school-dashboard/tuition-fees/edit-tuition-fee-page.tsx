@@ -18,6 +18,9 @@ import {
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
+const isServerId = (value?: string): boolean =>
+  !!value && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+
 export default function EditTuitionFeePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -33,8 +36,7 @@ export default function EditTuitionFeePage() {
 
   const { tuitionFeesDetails } = useAppSelector((state) => state.tuitionFees);
 
-  const schoolBranchId =
-    tokenManager.getUserData()?.schoolBranchId ?? '';
+  const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
     { label: t('sidebar.financialAffairs') },
@@ -108,7 +110,7 @@ export default function EditTuitionFeePage() {
               tuitionAmount: Number(values.tuitionAmount || 0),
               gradeId: values.educationalStageId,
               installmentPlansDto: values.installmentPlans.map((p) => ({
-                id: p.id,
+                id: isServerId(p.id) ? p.id : undefined,
                 installmentsCount: p.rows.length,
                 distributionType: p.dueMode === 'equal' ? 1 : 2,
                 installmentDto: p.rows.map((r) => {
@@ -124,7 +126,7 @@ export default function EditTuitionFeePage() {
                 nameEn: s.nameEn,
               })),
               tuitionFeesPaidServicesDto: values.paidServices.map((s) => ({
-                id: s.id,
+                id: isServerId(s.id) ? s.id : undefined,
                 nameAr: s.nameAr,
                 nameEn: s.nameEn,
                 amount: Number(s.amount || 0),
@@ -145,16 +147,17 @@ export default function EditTuitionFeePage() {
                 setShowPopupMessage({
                   show: true,
                   type: 'error',
-                  message: 'common.errorOccurred',
-                  isRaw: false,
+                  message: res?.message || 'common.errorOccurred',
+                  isRaw: Boolean(res?.message),
                 });
               }
-            } catch {
+            } catch (error) {
+              const backendMessage = typeof error === 'string' ? error : '';
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: 'common.errorOccurred',
-                isRaw: false,
+                message: backendMessage || 'common.errorOccurred',
+                isRaw: Boolean(backendMessage),
               });
             }
           }}
@@ -169,7 +172,9 @@ export default function EditTuitionFeePage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={showPopupMessage.type === 'success' ? '/financial-management/fees' : undefined}
+        navigateAfterClose={
+          showPopupMessage.type === 'success' ? '/financial-management/fees' : undefined
+        }
       />
     </div>
   );
