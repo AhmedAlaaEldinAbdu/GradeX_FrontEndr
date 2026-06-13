@@ -21,14 +21,7 @@ const AcademicSystemPage: React.FC = () => {
                   imgClassName: `w-[24px] h-[24px]`,
                 },
               ]
-            : [
-                {
-                  label: 'academicSystem.addEducationalStages',
-                  to: '/academic-system/add-educational-stages',
-                  imgSrc: PlusIcon,
-                  imgClassName: `w-[24px] h-[24px]`,
-                },
-              ]
+            : []
         }
       />
 
