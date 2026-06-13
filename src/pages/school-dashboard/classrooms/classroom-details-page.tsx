@@ -53,11 +53,11 @@ export default function ClassroomDetailsPage() {
   const classroomTitle = gradeDetails?.gradeName;
   const responsibleTeacherName = (gradeDetails as ClassroomWithTeacherName | undefined)
     ?.teacherName;
-  const totalStudents = classrooms.reduce(
-    (total, classroom) => total + (classroom.studentNumber || 0),
-    0
-  );
-  const classroomProgress = Math.max(0, Math.min(100, totalStudents));
+  const averageStudentPercentage = classrooms.length
+    ? classrooms.reduce((total, classroom) => total + (classroom.studentPercentage || 0), 0) /
+      classrooms.length
+    : 0;
+  const classroomProgress = Math.max(0, Math.min(100, Math.round(averageStudentPercentage)));
   const classroomSummaryItems = [
     {
       icon: SchoolPurpleIcon,
