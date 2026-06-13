@@ -70,6 +70,7 @@
       "title": "Учебные курсы",
       "viewAll": "Показать все",
       "emptyDescription": "Курсы ещё не добавлены.",
+      "confirmDelete": "Вы уверены, что хотите удалить курс",
       "progress": "Прогресс",
       "lessonsUnit": "урок.",
       "searchPlaceholder": "Поиск по названию курса",

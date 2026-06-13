@@ -70,6 +70,7 @@
       "title": "Training Courses",
       "viewAll": "View All",
       "emptyDescription": "No courses have been added yet.",
+      "confirmDelete": "Are you sure you want to delete the course",
       "progress": "Progress",
       "lessonsUnit": "lessons",
       "searchPlaceholder": "Search for a course name",

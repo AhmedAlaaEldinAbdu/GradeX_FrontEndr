@@ -70,6 +70,7 @@
       "title": "Schulungskurse",
       "viewAll": "Alle anzeigen",
       "emptyDescription": "Es wurden noch keine Kurse hinzugefügt.",
+      "confirmDelete": "Möchten Sie den Kurs wirklich löschen",
       "progress": "Fortschritt",
       "lessonsUnit": "Lektionen",
       "searchPlaceholder": "Nach Kursnamen suchen",

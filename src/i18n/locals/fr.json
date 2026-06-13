@@ -70,6 +70,7 @@
       "title": "Cours de formation",
       "viewAll": "Tout afficher",
       "emptyDescription": "Aucun cours n'a encore été ajouté.",
+      "confirmDelete": "Voulez-vous vraiment supprimer le cours",
       "progress": "Progression",
       "lessonsUnit": "leçons",
       "searchPlaceholder": "Rechercher un nom de cours",

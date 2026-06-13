@@ -70,6 +70,7 @@
       "title": "الدورات التدريبية",
       "viewAll": "عرض الكل",
       "emptyDescription": "لم يتم إضافة أي كورسات حتى الآن.",
+      "confirmDelete": "هل أنت متأكد من حذف الدورة التدريبية",
       "progress": "التقدم",
       "lessonsUnit": "درس",
       "searchPlaceholder": "ابحث عن اسم الدورة",
