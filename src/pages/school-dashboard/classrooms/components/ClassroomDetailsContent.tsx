@@ -111,7 +111,9 @@ export default function ClassroomDetailsContent({ currentLang }: ClassroomDetail
       <Card className="rounded-3xl border border-[#E6E6E6] p-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {classrooms.map((classroom) => {
-            const title = currentLang === 'ar' ? classroom.name : classroom.nameEn;
+            const name = currentLang === 'ar' ? classroom.name : classroom.nameEn;
+            const alias = currentLang === 'ar' ? classroom.alias : classroom.aliasEn;
+            const title = alias ? `${name} (${alias})` : name;
             const subtitle = `${classroom.studentNumber || 0} ${t('grades.studentPlural')}`;
             const progress =
               maxStudentCount > 0
@@ -124,7 +126,6 @@ export default function ClassroomDetailsContent({ currentLang }: ClassroomDetail
                 key={classroom.id}
                 title={title}
                 subtitle={subtitle}
-                meta={classroom.alias || classroom.aliasEn || undefined}
                 imageSrc={imageSrc}
                 imageAlt={title}
                 progress={progress}
