@@ -157,13 +157,13 @@ export default function ClassroomsList() {
             <Card key={stage.id} className="rounded-3xl border border-[#E6E6E6] p-4">
               <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
                 <div className="text-base font-medium text-black-900">{stage.title}</div>
-                <span className="text-sm font-normal text-[#646969]">
+                {/* <span className="text-sm font-normal text-[#646969]">
                   {stage.grades.reduce(
                     (accumulator, grade) => accumulator + (grade.classroomCount || 0),
                     0
                   )}{' '}
                   {t('grades.studentPlural')}
-                </span>
+                </span> */}
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
