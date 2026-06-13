@@ -93,8 +93,6 @@ interface SidebarProps {
 interface MenuSubItem {
   key: string;
   path: string;
-  // Hidden from the sidebar until the feature is implemented
-  comingSoon?: boolean;
 }
 
 type MenuBadge = { type: 'count'; value: string | number } | { type: 'tag'; value: string };
@@ -105,8 +103,6 @@ interface MenuItem {
   path?: string;
   badge?: MenuBadge;
   subItems?: MenuSubItem[];
-  // Hidden from the sidebar until the feature is implemented
-  comingSoon?: boolean;
 }
 
 interface MenuSection {
@@ -184,7 +180,6 @@ const getSuperAdminSections = (): MenuSection[] => [
         key: 'reports',
         icon: renderIcon(ReportsIcon, 'Reports'),
         path: '/reports',
-        comingSoon: true,
       },
       { key: 'tickets', icon: renderIcon(TicketsIcon, 'Tickets'), path: '/tickets' },
       {
@@ -197,7 +192,6 @@ const getSuperAdminSections = (): MenuSection[] => [
         key: 'settings',
         icon: renderIcon(SettingsIcon, 'Settings'),
         path: '/settings',
-        comingSoon: true,
       },
     ],
   },
@@ -228,10 +222,10 @@ const getSchoolAdminSections = (): MenuSection[] => [
         badge: { type: 'tag', value: 'LMS' },
         subItems: [
           { key: 'overview', path: '/lms/overview' },
-          { key: 'liveClasses', path: '/lms/live-classes', comingSoon: true },
+          { key: 'liveClasses', path: '/lms/live-classes' },
           { key: 'onlineExams', path: '/lms/online-exams' },
           { key: 'trainingCourses', path: '/lms/courses' },
-          { key: 'questionBank', path: '/lms/question-bank', comingSoon: true },
+          { key: 'questionBank', path: '/lms/question-bank' },
           { key: 'assignments', path: '/calendar/tasks' },
           { key: 'lessonPreparation', path: '/calendar/preparations' },
         ],
@@ -249,7 +243,6 @@ const getSchoolAdminSections = (): MenuSection[] => [
         key: 'examResults',
         icon: renderIcon(NotesIcon, 'Exam Results'),
         path: '/exam-results',
-        comingSoon: true,
       },
     ],
   },
@@ -272,12 +265,10 @@ const getSchoolAdminSections = (): MenuSection[] => [
         icon: renderIcon(ReportApprovedIcon, 'Requests'),
         path: '/requests',
         badge: { type: 'count', value: 1 },
-        comingSoon: true,
       },
       {
         key: 'busManagement',
         icon: renderIcon(BusIcon, 'School Transport'),
-        comingSoon: true,
         subItems: [
           { key: 'buses', path: '/bus-management/bus' },
           { key: 'drivers', path: '/bus-management/drivers' },
@@ -307,7 +298,6 @@ const getSchoolAdminSections = (): MenuSection[] => [
         icon: renderIcon(LedgerIcon, 'Admin Requests'),
         path: '/admin-requests',
         badge: { type: 'count', value: 1 },
-        comingSoon: true,
       },
     ],
   },
@@ -334,13 +324,11 @@ const getSchoolAdminSections = (): MenuSection[] => [
         key: 'studio',
         icon: renderIcon(ImageIcon, 'Studio'),
         path: '/studio',
-        comingSoon: true,
       },
       {
         key: 'reports',
         icon: renderIcon(AnalyticsIcon, 'Reports'),
         path: '/reports',
-        comingSoon: true,
       },
     ],
   },
@@ -351,41 +339,26 @@ const getSchoolAdminSections = (): MenuSection[] => [
         key: 'settings',
         icon: renderIcon(SettingsIcon, 'Settings'),
         subItems: [
-          { key: 'schoolData', path: '/settings/school-data', comingSoon: true },
+          { key: 'schoolData', path: '/settings/school-data' },
           { key: 'jobRoles', path: '/settings/job-roles' },
-          { key: 'paymentChannels', path: '/settings/payment-channels', comingSoon: true },
-          { key: 'holidaysSettings', path: '/settings/holidays', comingSoon: true },
-          { key: 'siteSettings', path: '/settings/site', comingSoon: true },
-          { key: 'notifications', path: '/settings/notifications', comingSoon: true },
+          { key: 'paymentChannels', path: '/settings/payment-channels' },
+          { key: 'holidaysSettings', path: '/settings/holidays' },
+          { key: 'siteSettings', path: '/settings/site' },
+          { key: 'notifications', path: '/settings/notifications' },
         ],
       },
     ],
   },
 ];
 
-const stripComingSoon = (sections: MenuSection[]): MenuSection[] =>
-  sections
-    .map((section) => ({
-      ...section,
-      items: section.items
-        .filter((item) => !item.comingSoon)
-        .map((item) =>
-          item.subItems
-            ? { ...item, subItems: item.subItems.filter((sub) => !sub.comingSoon) }
-            : item
-        )
-        .filter((item) => item.path || (item.subItems && item.subItems.length > 0)),
-    }))
-    .filter((section) => section.items.length > 0);
-
 const getSectionsForDashboard = (dashboardType: UserRoleType): MenuSection[] => {
   switch (dashboardType) {
     case UserRole.SUPER_ADMIN:
-      return stripComingSoon(getSuperAdminSections());
+      return getSuperAdminSections();
     case UserRole.SCHOOL_ADMIN:
-      return stripComingSoon(getSchoolAdminSections());
+      return getSchoolAdminSections();
     default:
-      return stripComingSoon(getSchoolAdminSections());
+      return getSchoolAdminSections();
   }
 };
 
@@ -631,6 +604,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const { isRTL } = useLanguage();
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
   // Shared cached fetch — Header consumes the same hook so the network call is deduped.
   // The locals are kept named so the (currently commented) JSX block that displays them
   // stays compatible if it's restored.
