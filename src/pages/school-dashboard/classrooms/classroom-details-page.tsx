@@ -106,7 +106,7 @@ export default function ClassroomDetailsPage() {
           actions={[
             {
               label: '',
-              to: '/classrooms/add-classroom',
+              to: id ? `/classrooms/add-classroom?gradeId=${id}` : '/classrooms/add-classroom',
               className: 'h-10 w-10 !rounded-full !p-0',
               imgSrc: WhitePlusIcon,
               imgClassName: 'h-5 w-5',
