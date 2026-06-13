@@ -19,6 +19,7 @@ const StudentApplicationsPage: React.FC = () => {
 
   const dashboardMetrics = useAppSelector((state) => state.controlPanel.dashboardMetrics);
   const applicationsPagination = useAppSelector((state) => state.studentApplications.pagination);
+  const interviewsPagination = useAppSelector((state) => state.studentInterviews.pagination);
 
   useEffect(() => {
     dispatch(fetchDashboardMetrics());
@@ -34,7 +35,7 @@ const StudentApplicationsPage: React.FC = () => {
     accepted: dashboardMetrics?.totalStudentApplications.totalAcceptance ?? 0,
     notPassed: dashboardMetrics?.totalStudentApplications.totalRejection ?? 0,
     underEdit: dashboardMetrics?.totalStudentApplications.totalMissingData ?? 0,
-    interviews: 12,
+    interviews: interviewsPagination.totalItems,
   };
 
   return (
