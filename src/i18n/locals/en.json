@@ -741,6 +741,7 @@
     "enterValue": "Enter value",
     "copied": "Copied",
     "comingSoon": "Coming soon...",
+    "noAccessPermission": "You do not have permission to access",
     "copyAdditionLink": "Copy Addition Link",
     "active": "Active",
     "inactive": "Inactive",

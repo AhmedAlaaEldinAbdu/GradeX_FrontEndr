@@ -741,6 +741,7 @@
     "enterValue": "Saisir une valeur",
     "copied": "Copié",
     "comingSoon": "Bientôt disponible...",
+    "noAccessPermission": "Vous n'avez pas l'autorisation d'accéder",
     "copyAdditionLink": "Copier le lien d'ajout",
     "active": "Actif",
     "inactive": "Inactif",

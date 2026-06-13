@@ -741,6 +741,7 @@
     "enterValue": "Введите значение",
     "copied": "Скопировано",
     "comingSoon": "Скоро...",
+    "noAccessPermission": "У вас нет прав доступа",
     "copyAdditionLink": "Скопировать ссылку",
     "active": "Активный",
     "inactive": "Неактивный",

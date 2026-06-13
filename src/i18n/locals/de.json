@@ -741,6 +741,7 @@
     "enterValue": "Wert eingeben",
     "copied": "Kopiert",
     "comingSoon": "Demnächst verfügbar...",
+    "noAccessPermission": "Sie haben keine Zugriffsberechtigung",
     "copyAdditionLink": "Hinzufügen-Link kopieren",
     "active": "Aktiv",
     "inactive": "Inaktiv",
