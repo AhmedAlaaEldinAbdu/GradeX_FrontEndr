@@ -766,11 +766,12 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
             }
           });
       }
-    } catch {
+    } catch (error) {
+      const backendMessage = typeof error === 'string' ? error : '';
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: t('common.errorOccurred'),
+        message: backendMessage || 'common.errorOccurred',
       });
     }
   };
