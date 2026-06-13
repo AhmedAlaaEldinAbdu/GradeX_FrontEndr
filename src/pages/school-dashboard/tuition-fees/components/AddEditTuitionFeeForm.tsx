@@ -237,11 +237,29 @@ export default function AddEditTuitionFeeForm({
     }));
   };
 
+  const isIncludedRowComplete = (row: ServiceRow) =>
+    row.nameAr.trim() !== '' && row.nameEn.trim() !== '';
+  const isIncludedComplete = values.includedServices.every(isIncludedRowComplete);
+
+  const isPaidRowComplete = (row: PaidServiceRow) =>
+    row.nameAr.trim() !== '' && row.nameEn.trim() !== '' && row.amount.trim() !== '';
+  const isPaidComplete = values.paidServices.every(isPaidRowComplete);
+
+  const isPlanComplete = (plan: InstallmentPlan) =>
+    plan.rows.every(
+      (row) =>
+        row.dueDate.trim() !== '' && (plan.dueMode === 'equal' || row.percentage.trim() !== '')
+    );
+  const isPlansComplete = values.installmentPlans.every(isPlanComplete);
+
   const addIncluded = () =>
-    setValues((prev) => ({
-      ...prev,
-      includedServices: [...prev.includedServices, createServiceRow()],
-    }));
+    setValues((prev) => {
+      if (!prev.includedServices.every(isIncludedRowComplete)) return prev;
+      return {
+        ...prev,
+        includedServices: [...prev.includedServices, createServiceRow()],
+      };
+    });
   const removeIncluded = (id: string) =>
     setValues((prev) => ({
       ...prev,
@@ -252,10 +270,13 @@ export default function AddEditTuitionFeeForm({
     }));
 
   const addPaid = () =>
-    setValues((prev) => ({
-      ...prev,
-      paidServices: [...prev.paidServices, createPaidServiceRow()],
-    }));
+    setValues((prev) => {
+      if (!prev.paidServices.every(isPaidRowComplete)) return prev;
+      return {
+        ...prev,
+        paidServices: [...prev.paidServices, createPaidServiceRow()],
+      };
+    });
   const removePaid = (id: string) =>
     setValues((prev) => ({
       ...prev,
@@ -266,10 +287,13 @@ export default function AddEditTuitionFeeForm({
     }));
 
   const addPlan = () =>
-    setValues((prev) => ({
-      ...prev,
-      installmentPlans: [...prev.installmentPlans, createInstallmentPlan()],
-    }));
+    setValues((prev) => {
+      if (!prev.installmentPlans.every(isPlanComplete)) return prev;
+      return {
+        ...prev,
+        installmentPlans: [...prev.installmentPlans, createInstallmentPlan()],
+      };
+    });
   const removePlan = (id: string) =>
     setValues((prev) => ({
       ...prev,
@@ -362,7 +386,12 @@ export default function AddEditTuitionFeeForm({
       <Card className="rounded-2xl" padding="lg">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-2xl font-medium text-black-700">{t('fees.servicesIncluded')}</h3>
-          <button type="button" onClick={addIncluded} className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={addIncluded}
+            disabled={!isIncludedComplete}
+            className="flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <CustomImage src={GreenPlusIcon} className="h-8 w-8" alt="Add" />
           </button>
         </div>
@@ -407,7 +436,12 @@ export default function AddEditTuitionFeeForm({
       <Card className="rounded-2xl" padding="lg">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-2xl font-medium text-black-700">{t('fees.paidServices')}</h3>
-          <button type="button" onClick={addPaid} className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={addPaid}
+            disabled={!isPaidComplete}
+            className="flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <CustomImage src={GreenPlusIcon} className="h-8 w-8" alt="Add" />
           </button>
         </div>
@@ -501,7 +535,12 @@ export default function AddEditTuitionFeeForm({
           <h3 className="text-2xl font-medium text-black-700">
             {t('fees.tuition.form.installmentsTitle')}
           </h3>
-          <button type="button" onClick={addPlan}>
+          <button
+            type="button"
+            onClick={addPlan}
+            disabled={!isPlansComplete}
+            className="disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <CustomImage src={GreenPlusIcon} className="h-8 w-8" alt="Add" />
           </button>
         </div>
