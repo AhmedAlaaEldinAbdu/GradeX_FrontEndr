@@ -194,8 +194,6 @@ export default function AddEditTuitionFeeForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [didAutoSelectPaymentMethods, setDidAutoSelectPaymentMethods] = useState(false);
 
-  const hasEqualInstallmentPlan = values.installmentPlans.some((p) => p.dueMode === 'equal');
-
   useEffect(() => {
     if (formKey === undefined) return;
     setValues(buildInitialValues(initialValues));
@@ -268,14 +266,10 @@ export default function AddEditTuitionFeeForm({
     }));
 
   const addPlan = () =>
-    setValues((prev) => {
-      // When using equal payments, only one plan is allowed.
-      if (prev.installmentPlans.some((p) => p.dueMode === 'equal')) return prev;
-      return {
-        ...prev,
-        installmentPlans: [...prev.installmentPlans, createInstallmentPlan()],
-      };
-    });
+    setValues((prev) => ({
+      ...prev,
+      installmentPlans: [...prev.installmentPlans, createInstallmentPlan()],
+    }));
   const removePlan = (id: string) =>
     setValues((prev) => ({
       ...prev,
@@ -507,7 +501,7 @@ export default function AddEditTuitionFeeForm({
           <h3 className="text-2xl font-medium text-black-700">
             {t('fees.tuition.form.installmentsTitle')}
           </h3>
-          <button type="button" onClick={addPlan} disabled={hasEqualInstallmentPlan}>
+          <button type="button" onClick={addPlan}>
             <CustomImage src={GreenPlusIcon} className="h-8 w-8" alt="Add" />
           </button>
         </div>
