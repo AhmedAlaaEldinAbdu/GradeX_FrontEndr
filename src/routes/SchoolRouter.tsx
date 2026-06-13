@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { UserRole } from '@gradex/constants';
 import ProtectedRoute from './ProtectedRoutes';
 import MainLayout from '@gradex/shared/layout/MainLayout';
@@ -86,6 +87,7 @@ import EditCustomerPage from '@/pages/school-dashboard/customers/edit-customer-p
 import CustomerDetailsPage from '@/pages/school-dashboard/customers/customer-details-page';
 
 const SchoolRouter: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <Routes>
       <Route
@@ -164,8 +166,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">نتائج الاختبارات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.examResults')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -177,8 +179,10 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">المراحل التعليمية</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {t('sidebar.educationalStages')}
+                </h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -786,8 +790,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">إدارة الحافلات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.buses')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -799,8 +803,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">السائقين</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.drivers')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -812,8 +816,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الإشعارات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.notifications')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -825,8 +829,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">التقارير</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.reports')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -838,8 +842,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الإعدادات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.settings')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -851,8 +855,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الاستوديو</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.studio')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -864,8 +868,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">بيانات المدرسة</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.schoolData')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -927,8 +931,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">قنوات الدفع</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.paymentChannels')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -940,8 +944,10 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">إعدادات الإجازات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {t('sidebar.holidaysSettings')}
+                </h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -953,8 +959,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">إعدادات الموقع</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.siteSettings')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -966,8 +972,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الإشعارات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.notifications')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -989,8 +995,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الحصص المباشرة</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.liveClasses')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -1082,8 +1088,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">بنك الأسئلة</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.questionBank')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -1095,8 +1101,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الطلبات</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.requests')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
@@ -1108,8 +1114,8 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">الطلبات الإدارية</h2>
-                <p className="mt-4 text-gray-600">قريباً...</p>
+                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.adminRequests')}</h2>
+                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
               </div>
             </MainLayout>
           </ProtectedRoute>
