@@ -26,8 +26,7 @@ export default function AddTuitionFeePage() {
     isRaw: boolean;
   }>({ show: false, type: 'success', message: '', isRaw: false });
 
-  const schoolBranchId =
-    tokenManager.getUserData()?.schoolBranchId ?? '';
+  const schoolBranchId = tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const breadcrumbItems = [
     { label: t('sidebar.financialAffairs') },
@@ -51,11 +50,12 @@ export default function AddTuitionFeePage() {
               tuitionAmount: Number(values.tuitionAmount || 0),
               gradeId: values.educationalStageId,
               installmentPlansDto: values.installmentPlans.map((p) => ({
-                id: undefined,
                 installmentsCount: p.rows.length,
                 distributionType: p.dueMode === 'equal' ? 1 : 2,
                 installmentDto: p.rows.map((r) => {
-                  const dueDate = r.dueDate.includes('T') ? r.dueDate : `${r.dueDate}T00:00:00.000Z`;
+                  const dueDate = r.dueDate.includes('T')
+                    ? r.dueDate
+                    : `${r.dueDate}T00:00:00.000Z`;
                   if (p.dueMode === 'equal') return { dueDate };
                   return { dueDate, percentage: Number(r.percentage || 0) };
                 }),
@@ -65,7 +65,6 @@ export default function AddTuitionFeePage() {
                 nameEn: s.nameEn,
               })),
               tuitionFeesPaidServicesDto: values.paidServices.map((s) => ({
-                id: undefined,
                 nameAr: s.nameAr,
                 nameEn: s.nameEn,
                 amount: Number(s.amount || 0),
@@ -86,16 +85,17 @@ export default function AddTuitionFeePage() {
                 setShowPopupMessage({
                   show: true,
                   type: 'error',
-                  message: 'common.errorOccurred',
-                  isRaw: false,
+                  message: res?.message || 'common.errorOccurred',
+                  isRaw: Boolean(res?.message),
                 });
               }
-            } catch {
+            } catch (error) {
+              const backendMessage = typeof error === 'string' ? error : '';
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: 'common.errorOccurred',
-                isRaw: false,
+                message: backendMessage || 'common.errorOccurred',
+                isRaw: Boolean(backendMessage),
               });
             }
           }}
@@ -110,7 +110,9 @@ export default function AddTuitionFeePage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={showPopupMessage.type === 'success' ? '/financial-management/fees' : undefined}
+        navigateAfterClose={
+          showPopupMessage.type === 'success' ? '/financial-management/fees' : undefined
+        }
       />
     </div>
   );
