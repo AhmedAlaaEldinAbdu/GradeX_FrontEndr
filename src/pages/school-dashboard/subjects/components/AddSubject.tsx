@@ -19,7 +19,7 @@ import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { AddSubjectSchema, type AddSubjectProps } from '@/validations/subjects-validations';
 import { MATERIAL_LEVELS } from '@/constants';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import { getBackendMessage } from '@/lib/http';
+import { resolveErrorMessage } from '@/lib/http';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function AddSubject() {
@@ -33,6 +33,7 @@ export default function AddSubject() {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
 
   const existingSubjects = useAppSelector((state) => state.subjects.subjects);
@@ -91,11 +92,12 @@ export default function AddSubject() {
         message: t('subjects.subjectsAddedSuccessfully'),
       });
     } catch (error) {
-      const errorMessage = getBackendMessage(error) || t('common.errorOccurred');
+      const { message, isRaw } = resolveErrorMessage(error);
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: errorMessage,
+        message,
+        isMessageRaw: isRaw,
       });
     }
   };
@@ -308,8 +310,9 @@ export default function AddSubject() {
         open={showPopupMessage.show}
         type={showPopupMessage.type}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isMessageRaw}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-        autoClose={true}
+        autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
         navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />

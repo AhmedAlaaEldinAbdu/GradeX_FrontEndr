@@ -410,6 +410,25 @@ export function getErrorMessage(error: unknown): string {
       const data = axiosError.response.data;
 
       if (typeof data === 'object' && data !== null) {
+        // Prefer specific validation-error details over a generic top-level
+        // message (e.g. "Validation failed") so the real reason is surfaced.
+        if ('validationErrors' in data && Array.isArray(data.validationErrors)) {
+          const details = data.validationErrors
+            .map((entry: unknown) => {
+              if (typeof entry === 'string') return entry;
+              if (entry && typeof entry === 'object') {
+                const item = entry as { errorMessage?: unknown; message?: unknown };
+                if (typeof item.errorMessage === 'string') return item.errorMessage;
+                if (typeof item.message === 'string') return item.message;
+              }
+              return '';
+            })
+            .filter((message: string) => message.trim().length > 0);
+          const unique = Array.from(new Set(details));
+          if (unique.length > 0) {
+            return unique.join('\n');
+          }
+        }
         if ('message' in data && typeof data.message === 'string') {
           return data.message;
         }

@@ -23,7 +23,7 @@ import { EditSubjectSchema, type EditSubjectProps } from '@/validations/subjects
 import { MATERIAL_LEVELS } from '@/constants';
 import Loading from '@/shared/components/Loading';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import { getBackendMessage } from '@/lib/http';
+import { resolveErrorMessage } from '@/lib/http';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
 export default function EditSubject() {
@@ -38,6 +38,7 @@ export default function EditSubject() {
     show: boolean;
     type: 'success' | 'error';
     message: string;
+    isMessageRaw?: boolean;
   }>({ show: false, type: 'success', message: '' });
 
   const currentSubject = useAppSelector((state) => state.subjects.currentSubject);
@@ -136,11 +137,12 @@ export default function EditSubject() {
         message: t('subjects.subjectUpdatedSuccessfully'),
       });
     } catch (error) {
-      const errorMessage = getBackendMessage(error) || t('common.errorOccurred');
+      const { message, isRaw } = resolveErrorMessage(error);
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: errorMessage,
+        message,
+        isMessageRaw: isRaw,
       });
     }
   };
@@ -351,8 +353,9 @@ export default function EditSubject() {
         open={showPopupMessage.show}
         type={showPopupMessage.type}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isMessageRaw}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-        autoClose={true}
+        autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
         navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
       />
