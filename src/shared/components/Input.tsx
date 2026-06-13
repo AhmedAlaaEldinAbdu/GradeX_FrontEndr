@@ -110,7 +110,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             value={value}
             placeholder={placeholder}
             onClick={() => {
-              if ((isTimeInput || isDateInput) && !hidePicker) {
+              if (isDateInput && !hidePicker) {
                 openPicker();
               }
             }}
