@@ -38,11 +38,6 @@ export default function ClassroomDetailsContent({ currentLang }: ClassroomDetail
   const isDeleting = useAppSelector((state) => state.classrooms.isDeleting);
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
-  const maxStudentCount = classrooms.reduce(
-    (maximum, classroom) => Math.max(maximum, classroom.studentNumber || 0),
-    0
-  );
-
   const handleDeleteConfirm = async () => {
     if (!classroomPendingDelete) {
       return;
@@ -115,10 +110,7 @@ export default function ClassroomDetailsContent({ currentLang }: ClassroomDetail
             const alias = currentLang === 'ar' ? classroom.alias : classroom.aliasEn;
             const title = alias ? `${name} (${alias})` : name;
             const subtitle = `${classroom.studentNumber || 0} ${t('grades.studentPlural')}`;
-            const progress =
-              maxStudentCount > 0
-                ? Math.round(((classroom.studentNumber || 0) / maxStudentCount) * 100)
-                : 0;
+            const progress = classroom.studentPercentage || 0;
             const imageSrc = classroom.imagePath ? `${baseUrl}/${classroom.imagePath}` : undefined;
 
             return (
