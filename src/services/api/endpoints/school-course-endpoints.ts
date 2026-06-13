@@ -6,6 +6,7 @@ export const SchoolCourseEndpoints = {
   // PUT takes the id as a query parameter (mirrors the Material/Subject endpoint).
   update: (id: string) => `${SchoolCourse}?Id=${id}`,
   getById: (id: string) => `${SchoolCourse}/${id}`,
+  delete: (id: string) => `${SchoolCourse}/${id}`,
 };
 
 export default SchoolCourseEndpoints;

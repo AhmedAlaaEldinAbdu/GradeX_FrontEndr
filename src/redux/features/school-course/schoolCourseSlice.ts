@@ -37,6 +37,7 @@ export interface SchoolCourseState {
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
+  isDeleting: boolean;
 
   // Error
   error: string | null;
@@ -58,6 +59,7 @@ const initialState: SchoolCourseState = {
   isLoading: false,
   isCreating: false,
   isUpdating: false,
+  isDeleting: false,
   error: null,
   isInitialized: false,
 };
@@ -114,6 +116,21 @@ export const updateSchoolCourse = createAsyncThunk<SchoolCourse, UpdateSchoolCou
         return rejectWithValue(response.message || 'Failed to update course');
       }
       return response.data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const deleteSchoolCourse = createAsyncThunk<string, string>(
+  'schoolCourses/delete',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await schoolCourseApiService.deleteSchoolCourse(id);
+      if (!response.isSuccess) {
+        return rejectWithValue(response.message || 'Failed to delete course');
+      }
+      return id;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -209,6 +226,21 @@ const schoolCourseSlice = createSlice({
       })
       .addCase(updateSchoolCourse.rejected, (state, action) => {
         state.isUpdating = false;
+        state.error = action.payload as string;
+      });
+
+    // Delete
+    builder
+      .addCase(deleteSchoolCourse.pending, (state) => {
+        state.isDeleting = true;
+        state.error = null;
+      })
+      .addCase(deleteSchoolCourse.fulfilled, (state, action: PayloadAction<string>) => {
+        state.isDeleting = false;
+        state.courses = state.courses.filter((c) => c.id !== action.payload);
+      })
+      .addCase(deleteSchoolCourse.rejected, (state, action) => {
+        state.isDeleting = false;
         state.error = action.payload as string;
       });
   },

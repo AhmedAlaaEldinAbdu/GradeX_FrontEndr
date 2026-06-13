@@ -12,6 +12,7 @@ import type {
   SchoolCourseQueryParams,
   SchoolCoursesListResponse,
   SchoolCourseDetailsResponse,
+  SchoolCourseApiEnvelope,
 } from '../types/school-course.types';
 
 /**
@@ -151,11 +152,24 @@ export async function updateSchoolCourse(
   return response.data;
 }
 
+/**
+ * DELETE /api/SchoolCourse/{Id} — remove a course.
+ */
+export async function deleteSchoolCourse(
+  id: string
+): Promise<SchoolCourseApiEnvelope<unknown>> {
+  const response: AxiosResponse<SchoolCourseApiEnvelope<unknown>> = await axiosClient.delete(
+    SchoolCourseEndpoints.delete(id)
+  );
+  return response.data;
+}
+
 export const schoolCourseApiService = {
   getSchoolCourses,
   getSchoolCourseById,
   createSchoolCourse,
   updateSchoolCourse,
+  deleteSchoolCourse,
 };
 
 export default schoolCourseApiService;
