@@ -28,6 +28,7 @@ import { Button, Loading } from '@/shared/components/components';
 import CustomImage from '@/shared/components/CustomImage';
 import { selectIsUpdatingAcademicSystem } from '@/redux/features/academic-system';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { resolveErrorMessage } from '@/lib/http';
 
 export default function EditAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -46,9 +47,6 @@ export default function EditAcademicSystem() {
 
   const academicSystem = useAppSelector((state) => {
     return state.academicSystems.academicSystemDetails;
-  });
-  const academicErrors = useAppSelector((state) => {
-    return state.academicSystems.validationErrors;
   });
   const countries = useAppSelector((state) => {
     return state.lookups.countries;
@@ -132,16 +130,13 @@ export default function EditAcademicSystem() {
             message: t('academicSystem.systemEditedSuccessfully'),
           });
         } else {
-          const firstError = academicErrors?.[0];
-          const errorMessage =
-            typeof firstError === 'string' ? firstError : (firstError?.errorMessage ?? '');
-          setShowPopupMessage({
-            show: true,
-            type: 'error',
-            message: errorMessage || res?.message || t('common.errorOccurred'),
-            isMessageRaw: Boolean(errorMessage || res?.message),
-          });
+          const { message, isRaw } = resolveErrorMessage(res);
+          setShowPopupMessage({ show: true, type: 'error', message, isMessageRaw: isRaw });
         }
+      })
+      .catch((error) => {
+        const { message, isRaw } = resolveErrorMessage(error);
+        setShowPopupMessage({ show: true, type: 'error', message, isMessageRaw: isRaw });
       });
   };
 
@@ -330,7 +325,7 @@ export default function EditAcademicSystem() {
           message={showPopupMessage.message}
           isMessageRaw={showPopupMessage.isMessageRaw}
           iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-          autoClose={true}
+          autoClose={showPopupMessage.type === 'success'}
           onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
           navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
         />

@@ -27,6 +27,7 @@ import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { resolveErrorMessage } from '@/lib/http';
 
 export default function AddAcademicSystem() {
   const { t, i18n } = useTranslation();
@@ -54,10 +55,6 @@ export default function AddAcademicSystem() {
   });
   const isLoadingSubSystems = useAppSelector((state) => {
     return state.academicSubSystems.isLoading;
-  });
-
-  const academicErrors = useAppSelector((state) => {
-    return state.academicSystems.validationErrors;
   });
 
   const isCreating = useAppSelector(selectIsCreatingAcademicSystem);
@@ -98,16 +95,13 @@ export default function AddAcademicSystem() {
             message: t('academicSystem.academicSystemAddedSuccessfully'),
           });
         } else {
-          const firstError = academicErrors?.[0];
-          const errorMessage =
-            typeof firstError === 'string' ? firstError : (firstError?.errorMessage ?? '');
-          setShowPopupMessage({
-            show: true,
-            type: 'error',
-            message: errorMessage || res?.message || t('common.errorOccurred'),
-            isMessageRaw: Boolean(errorMessage || res?.message),
-          });
+          const { message, isRaw } = resolveErrorMessage(res);
+          setShowPopupMessage({ show: true, type: 'error', message, isMessageRaw: isRaw });
         }
+      })
+      .catch((error) => {
+        const { message, isRaw } = resolveErrorMessage(error);
+        setShowPopupMessage({ show: true, type: 'error', message, isMessageRaw: isRaw });
       });
   };
 
@@ -335,7 +329,7 @@ export default function AddAcademicSystem() {
           message={showPopupMessage.message}
           isMessageRaw={showPopupMessage.isMessageRaw}
           iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-          autoClose={true}
+          autoClose={showPopupMessage.type === 'success'}
           onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
           navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
         />

@@ -23,6 +23,7 @@ import type { UpdateEducationalStageRequest } from '@/services/api/types/educati
 import CustomSelect from '@/shared/components/CustomSelect';
 import { Button } from '@/shared/components/components';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { resolveErrorMessage } from '@/lib/http';
 
 export default function EditEducationalStages() {
   const { t, i18n } = useTranslation();
@@ -42,7 +43,6 @@ export default function EditEducationalStages() {
   const educationalStageDetails = useAppSelector(
     (state) => state.educationalStages.educationalStageDetails
   );
-  const stagesErrors = useAppSelector((state) => state.educationalStages.validationErrors);
 
   const {
     control,
@@ -109,16 +109,13 @@ export default function EditEducationalStages() {
             message: t('academicSystem.educationalStageEditedSuccessfully'),
           });
         } else {
-          const firstError = stagesErrors?.[0];
-          const errorMessage =
-            typeof firstError === 'string' ? firstError : (firstError?.errorMessage ?? '');
-          setShowPopupMessage({
-            show: true,
-            type: 'error',
-            message: errorMessage || res?.message || t('common.errorOccurred'),
-            isMessageRaw: Boolean(errorMessage || res?.message),
-          });
+          const { message, isRaw } = resolveErrorMessage(res);
+          setShowPopupMessage({ show: true, type: 'error', message, isMessageRaw: isRaw });
         }
+      })
+      .catch((error) => {
+        const { message, isRaw } = resolveErrorMessage(error);
+        setShowPopupMessage({ show: true, type: 'error', message, isMessageRaw: isRaw });
       });
   };
 
@@ -255,7 +252,7 @@ export default function EditEducationalStages() {
           message={showPopupMessage.message}
           isMessageRaw={showPopupMessage.isMessageRaw}
           iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
-          autoClose={true}
+          autoClose={showPopupMessage.type === 'success'}
           onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
           navigateAfterClose={showPopupMessage.type === 'success' ? -1 : undefined}
         />
