@@ -75,14 +75,19 @@ const RequestsPage: React.FC = () => {
         />
       </div>
 
-      <div className="mb-4 flex items-start gap-3">
-        <Tabs items={tabs} defaultValue="messages" searchParamKey="tab" className="flex-1" />
+      <div className="relative mb-4">
+        <Tabs
+          items={tabs}
+          defaultValue="messages"
+          searchParamKey="tab"
+          listClassName="flex w-full mb-5"
+        />
 
         <button
           type="button"
           aria-label={t('common.add')}
           title={t('common.add')}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
+          className="absolute end-0 top-0 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
         >
           <CustomImage src={WhitePlusIcon} alt={t('common.add')} className="h-5 w-5" />
         </button>

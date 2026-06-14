@@ -229,7 +229,7 @@ const MessageRequestsTable: React.FC = () => {
   };
 
   return (
-    <Card>
+    <Card className="rounded-2xl" padding="lg">
       <DataTable
         data={pageData}
         columns={columns}
