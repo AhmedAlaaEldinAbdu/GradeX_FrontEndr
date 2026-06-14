@@ -87,6 +87,7 @@ import AddCustomerPage from '@/pages/school-dashboard/customers/add-customer-pag
 import EditCustomerPage from '@/pages/school-dashboard/customers/edit-customer-page';
 import CustomerDetailsPage from '@/pages/school-dashboard/customers/customer-details-page';
 import RequestsPage from '@/pages/school-dashboard/requests/requests-page';
+import ViewMessagePage from '@/pages/school-dashboard/requests/view-message-page';
 
 const SchoolRouter: React.FC = () => {
   const { t } = useTranslation();
@@ -1113,6 +1114,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <RequestsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/requests/view-message/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <ViewMessagePage />
             </MainLayout>
           </ProtectedRoute>
         }
