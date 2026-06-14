@@ -1258,6 +1258,8 @@
     "requestStatus": "Request Status",
     "sentFrom": "Sent From",
     "sentTo": "Sent To",
+    "messageContent": "Message Content",
+    "messageDate": "Message Date",
     "comingSoon": "This section will be added soon",
     "tabs": {
       "applications": "Applications",

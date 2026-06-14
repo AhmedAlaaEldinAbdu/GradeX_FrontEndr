@@ -1258,6 +1258,8 @@
     "requestStatus": "Статус заявки",
     "sentFrom": "Отправитель",
     "sentTo": "Получатель",
+    "messageContent": "Содержание сообщения",
+    "messageDate": "Дата сообщения",
     "comingSoon": "Этот раздел скоро появится",
     "tabs": {
       "applications": "Заявки на поступление",
