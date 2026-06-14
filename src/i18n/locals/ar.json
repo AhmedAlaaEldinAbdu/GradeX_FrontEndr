@@ -94,8 +94,16 @@
         "subject": "اسم المادة"
       },
       "actions": {
+        "view": "عرض الدورة",
         "edit": "تعديل الدورة",
         "delete": "حذف الدورة"
+      },
+      "details": {
+        "date": "التاريخ",
+        "subjectName": "اسم المادة",
+        "description": "الوصف",
+        "grade": "الصف الدراسي",
+        "perLessonDuration": "دقيقة لكل درس"
       },
       "edit": {
         "title": "تعديل الدورة التدريبية"

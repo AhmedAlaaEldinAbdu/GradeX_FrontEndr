@@ -94,8 +94,16 @@
         "subject": "Nom de la matière"
       },
       "actions": {
+        "view": "Voir le cours",
         "edit": "Modifier le cours",
         "delete": "Supprimer le cours"
+      },
+      "details": {
+        "date": "Date",
+        "subjectName": "Nom de la matière",
+        "description": "Description",
+        "grade": "Classe",
+        "perLessonDuration": "min par leçon"
       },
       "edit": {
         "title": "Modifier le cours de formation"
