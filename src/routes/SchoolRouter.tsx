@@ -85,6 +85,7 @@ import CustomersPage from '@/pages/school-dashboard/customers/customers-page';
 import AddCustomerPage from '@/pages/school-dashboard/customers/add-customer-page';
 import EditCustomerPage from '@/pages/school-dashboard/customers/edit-customer-page';
 import CustomerDetailsPage from '@/pages/school-dashboard/customers/customer-details-page';
+import RequestsPage from '@/pages/school-dashboard/requests/requests-page';
 
 const SchoolRouter: React.FC = () => {
   const { t } = useTranslation();
@@ -1100,10 +1101,7 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.requests')}</h2>
-                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
-              </div>
+              <RequestsPage />
             </MainLayout>
           </ProtectedRoute>
         }
