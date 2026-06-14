@@ -76,12 +76,13 @@ const RequestsPage: React.FC = () => {
       </div>
 
       <div className="mb-4 flex items-start gap-3">
+        <Tabs items={tabs} defaultValue="messages" searchParamKey="tab" className="flex-1" />
+
         <CustomImage
           src={GreenPlusCircleIcon}
           alt={t('common.add')}
           className="h-10 w-10 shrink-0 cursor-pointer"
         />
-        <Tabs items={tabs} defaultValue="messages" searchParamKey="tab" className="flex-1" />
       </div>
     </div>
   );
