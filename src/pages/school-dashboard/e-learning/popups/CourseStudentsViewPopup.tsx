@@ -52,7 +52,7 @@ export default function CourseStudentsViewPopup({
                 key={student.studentId}
                 name={student.studentFullName}
                 align="between"
-                onView={() => navigate(`/students/${student.studentId}`)}
+                onView={() => navigate(`/students/student-details/${student.studentId}`)}
               />
             ))
           )}

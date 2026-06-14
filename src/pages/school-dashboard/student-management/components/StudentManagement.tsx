@@ -230,7 +230,7 @@ export default function StudentManagement() {
           avatarSrc={row.profilePicture}
           onView={(e) => {
             e.stopPropagation();
-            navigate(`/students/${row.id}`, { state: { from: 'studentsRecord' } });
+            navigate(`/students/student-details/${row.id}`, { state: { from: 'studentsRecord' } });
           }}
         />
       ),

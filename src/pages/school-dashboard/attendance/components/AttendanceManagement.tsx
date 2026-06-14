@@ -315,7 +315,7 @@ export default function AttendanceManagement() {
           align="start"
           onView={(e) => {
             e.stopPropagation();
-            navigate(`/students/${row.studentId}?tab=attendance`, {
+            navigate(`/students/student-details/${row.studentId}?tab=attendance`, {
               state: { from: 'attendance' },
             });
           }}

@@ -80,7 +80,7 @@ export default function ContractsList({ onContractsCountChange }: ContractsListP
 
   const handleViewStudent = (row: ContractListItem) => {
     if (!row.studentId) return;
-    navigate(`/students/${row.studentId}`, { state: { from: 'contracts' } });
+    navigate(`/students/student-details/${row.studentId}`, { state: { from: 'contracts' } });
   };
 
   const handleViewContract = (row: ContractListItem) => {
