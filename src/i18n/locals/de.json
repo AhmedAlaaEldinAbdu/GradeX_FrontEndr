@@ -1239,6 +1239,43 @@
     "approved": "Genehmigt",
     "rejected": "Abgelehnt"
   },
+  "requests": {
+    "title": "Anträge",
+    "pendingCount": "Ausstehende Anträge",
+    "acceptedCount": "Angenommene Anträge",
+    "rejectedCount": "Abgelehnte Anträge",
+    "totalCount": "Anträge insgesamt",
+    "searchPlaceholder": "Nach Schülernamen suchen",
+    "requestPreview": "Antragsvorschau",
+    "requestStatus": "Antragsstatus",
+    "sentFrom": "Gesendet von",
+    "sentTo": "Gesendet an",
+    "comingSoon": "Dieser Bereich wird bald hinzugefügt",
+    "tabs": {
+      "applications": "Anmeldeanträge",
+      "earlyLeave": "Antrag auf frühes Verlassen",
+      "messages": "Nachrichten",
+      "reminder": "Erinnerung",
+      "addDelegate": "Bevollmächtigten hinzufügen",
+      "contractAuthentication": "Antrag auf Vertragsbeglaubigung"
+    },
+    "filters": {
+      "sentFrom": "Gesendet von",
+      "sentTo": "Gesendet an",
+      "status": "Antragsstatus",
+      "date": "Datum"
+    },
+    "status": {
+      "sent": "Gesendet",
+      "viewed": "Angesehen",
+      "replied": "Beantwortet",
+      "pending": "Ausstehend"
+    },
+    "actions": {
+      "sendReply": "Antwort senden",
+      "view": "Ansehen"
+    }
+  },
   "studentManagement": {
     "title": "Schülerverwaltung",
     "students": "Schüler",

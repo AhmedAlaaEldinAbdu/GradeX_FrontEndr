@@ -1239,6 +1239,43 @@
     "approved": "موافقة",
     "rejected": "مرفوض"
   },
+  "requests": {
+    "title": "الطلبات",
+    "pendingCount": "طلبات قيد الانتظار",
+    "acceptedCount": "طلبات مقبولة",
+    "rejectedCount": "طلبات مرفوضة",
+    "totalCount": "إجمالي الطلبات",
+    "searchPlaceholder": "ابحث عن اسم الطالب",
+    "requestPreview": "معاينة الطلب",
+    "requestStatus": "حالة الطلب",
+    "sentFrom": "مرسل من",
+    "sentTo": "مرسل إلي",
+    "comingSoon": "سيتم إضافة هذا القسم قريبًا",
+    "tabs": {
+      "applications": "طلبات التقديم",
+      "earlyLeave": "طلب خروج مبكر",
+      "messages": "الرسائل",
+      "reminder": "تذكير",
+      "addDelegate": "إضافة مفوض",
+      "contractAuthentication": "طلب توثيق عقد"
+    },
+    "filters": {
+      "sentFrom": "مرسلة من",
+      "sentTo": "مرسلة إلي",
+      "status": "حالة الطلب",
+      "date": "التاريخ"
+    },
+    "status": {
+      "sent": "تم إرسال",
+      "viewed": "تم الإطلاع",
+      "replied": "تم الرد",
+      "pending": "قيد الانتظار"
+    },
+    "actions": {
+      "sendReply": "إرسال رد",
+      "view": "إطلاع"
+    }
+  },
   "studentManagement": {
     "title": "إدارة الطلاب",
     "students": "الطلاب",

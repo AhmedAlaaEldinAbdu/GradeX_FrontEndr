@@ -1239,6 +1239,43 @@
     "approved": "Approved",
     "rejected": "Rejected"
   },
+  "requests": {
+    "title": "Requests",
+    "pendingCount": "Pending Requests",
+    "acceptedCount": "Accepted Requests",
+    "rejectedCount": "Rejected Requests",
+    "totalCount": "Total Requests",
+    "searchPlaceholder": "Search by student name",
+    "requestPreview": "Request Preview",
+    "requestStatus": "Request Status",
+    "sentFrom": "Sent From",
+    "sentTo": "Sent To",
+    "comingSoon": "This section will be added soon",
+    "tabs": {
+      "applications": "Applications",
+      "earlyLeave": "Early Leave Request",
+      "messages": "Messages",
+      "reminder": "Reminder",
+      "addDelegate": "Add Delegate",
+      "contractAuthentication": "Contract Authentication Request"
+    },
+    "filters": {
+      "sentFrom": "Sent From",
+      "sentTo": "Sent To",
+      "status": "Request Status",
+      "date": "Date"
+    },
+    "status": {
+      "sent": "Sent",
+      "viewed": "Viewed",
+      "replied": "Replied",
+      "pending": "Pending"
+    },
+    "actions": {
+      "sendReply": "Send Reply",
+      "view": "View"
+    }
+  },
   "studentManagement": {
     "title": "Student Management",
     "students": "Students",

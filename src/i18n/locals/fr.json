@@ -1239,6 +1239,43 @@
     "approved": "Approuvé",
     "rejected": "Rejeté"
   },
+  "requests": {
+    "title": "Demandes",
+    "pendingCount": "Demandes en attente",
+    "acceptedCount": "Demandes acceptées",
+    "rejectedCount": "Demandes refusées",
+    "totalCount": "Total des demandes",
+    "searchPlaceholder": "Rechercher par nom d'élève",
+    "requestPreview": "Aperçu de la demande",
+    "requestStatus": "Statut de la demande",
+    "sentFrom": "Envoyé par",
+    "sentTo": "Envoyé à",
+    "comingSoon": "Cette section sera bientôt ajoutée",
+    "tabs": {
+      "applications": "Demandes d'inscription",
+      "earlyLeave": "Demande de sortie anticipée",
+      "messages": "Messages",
+      "reminder": "Rappel",
+      "addDelegate": "Ajouter un délégué",
+      "contractAuthentication": "Demande d'authentification de contrat"
+    },
+    "filters": {
+      "sentFrom": "Envoyé par",
+      "sentTo": "Envoyé à",
+      "status": "Statut de la demande",
+      "date": "Date"
+    },
+    "status": {
+      "sent": "Envoyé",
+      "viewed": "Consulté",
+      "replied": "Répondu",
+      "pending": "En attente"
+    },
+    "actions": {
+      "sendReply": "Envoyer une réponse",
+      "view": "Consulter"
+    }
+  },
   "studentManagement": {
     "title": "Gestion des élèves",
     "students": "Élèves",

@@ -1239,6 +1239,43 @@
     "approved": "Одобрено",
     "rejected": "Отклонено"
   },
+  "requests": {
+    "title": "Заявки",
+    "pendingCount": "Ожидающие заявки",
+    "acceptedCount": "Принятые заявки",
+    "rejectedCount": "Отклонённые заявки",
+    "totalCount": "Всего заявок",
+    "searchPlaceholder": "Поиск по имени ученика",
+    "requestPreview": "Просмотр заявки",
+    "requestStatus": "Статус заявки",
+    "sentFrom": "Отправитель",
+    "sentTo": "Получатель",
+    "comingSoon": "Этот раздел скоро появится",
+    "tabs": {
+      "applications": "Заявки на поступление",
+      "earlyLeave": "Заявка на ранний уход",
+      "messages": "Сообщения",
+      "reminder": "Напоминание",
+      "addDelegate": "Добавить представителя",
+      "contractAuthentication": "Заявка на заверение договора"
+    },
+    "filters": {
+      "sentFrom": "Отправитель",
+      "sentTo": "Получатель",
+      "status": "Статус заявки",
+      "date": "Дата"
+    },
+    "status": {
+      "sent": "Отправлено",
+      "viewed": "Просмотрено",
+      "replied": "Отвечено",
+      "pending": "В ожидании"
+    },
+    "actions": {
+      "sendReply": "Отправить ответ",
+      "view": "Просмотр"
+    }
+  },
   "studentManagement": {
     "title": "Управление учениками",
     "students": "Ученики",
