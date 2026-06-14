@@ -37,7 +37,7 @@ const STATUS_LABEL_KEYS: Record<StudentRequestStatus, string> = {
   [StudentRequestStatus.Pending]: 'requests.status.pending',
 };
 
-const MessageRequestsTable: React.FC = () => {
+const MessageRequestsTab: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -300,4 +300,4 @@ const MessageRequestsTable: React.FC = () => {
   );
 };
 
-export default MessageRequestsTable;
+export default MessageRequestsTab;

@@ -13,7 +13,7 @@ import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
-import MessageRequestsTable from './components/MessageRequestsTable';
+import MessageRequestsTab from './components/MessageRequestsTab';
 import { MOCK_REQUESTS_STATS } from './requests.mock';
 
 const ComingSoon: React.FC = () => <NotFoundMessage message="requests.comingSoon" />;
@@ -31,7 +31,7 @@ const RequestsPage: React.FC = () => {
   const tabs: TabItem[] = [
     { id: 'applications', label: t('requests.tabs.applications'), content: <ComingSoon /> },
     { id: 'early-leave', label: t('requests.tabs.earlyLeave'), content: <ComingSoon /> },
-    { id: 'messages', label: t('requests.tabs.messages'), content: <MessageRequestsTable /> },
+    { id: 'messages', label: t('requests.tabs.messages'), content: <MessageRequestsTab /> },
     { id: 'reminder', label: t('requests.tabs.reminder'), content: <ComingSoon /> },
     { id: 'add-delegate', label: t('requests.tabs.addDelegate'), content: <ComingSoon /> },
     {
