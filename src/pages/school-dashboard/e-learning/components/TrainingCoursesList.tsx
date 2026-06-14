@@ -147,6 +147,8 @@ export default function TrainingCoursesList() {
     }
   };
 
+  const handleView = (course: CourseItem) => navigate(`/lms/courses/${course.id}`);
+
   const handleEdit = (course: CourseItem) => navigate(`/lms/courses/${course.id}/edit`);
 
   const selectClass = 'min-w-[160px]';
@@ -217,6 +219,7 @@ export default function TrainingCoursesList() {
             <CourseCard
               key={course.id}
               course={course}
+              onView={handleView}
               onEdit={handleEdit}
               onDelete={setPendingDelete}
             />
