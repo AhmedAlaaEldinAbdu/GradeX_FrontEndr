@@ -1282,6 +1282,25 @@
     "actions": {
       "sendReply": "Antwort senden",
       "view": "Ansehen"
+    },
+    "earlyLeave": {
+      "detailsTitle": "Antrag auf frühzeitiges Verlassen",
+      "studentName": "Schülername",
+      "time": "Uhrzeit",
+      "duration": "Dauer des frühzeitigen Verlassens",
+      "date": "Datum",
+      "requestDate": "Antragsdatum",
+      "stage": "Bildungsstufe",
+      "classroom": "Klasse",
+      "status": {
+        "pending": "Ausstehend",
+        "accepted": "Angenommen",
+        "rejected": "Abgelehnt"
+      },
+      "acceptConfirm": "Möchten Sie den Antrag annehmen?",
+      "rejectConfirm": "Möchten Sie den Antrag ablehnen?",
+      "confirm": "Bestätigen",
+      "reject": "Ablehnen"
     }
   },
   "studentManagement": {

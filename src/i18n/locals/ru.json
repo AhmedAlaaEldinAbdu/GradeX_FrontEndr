@@ -1282,6 +1282,25 @@
     "actions": {
       "sendReply": "Отправить ответ",
       "view": "Просмотр"
+    },
+    "earlyLeave": {
+      "detailsTitle": "Запрос на ранний уход",
+      "studentName": "Имя студента",
+      "time": "Время",
+      "duration": "Длительность раннего ухода",
+      "date": "Дата",
+      "requestDate": "Дата запроса",
+      "stage": "Учебный этап",
+      "classroom": "Класс",
+      "status": {
+        "pending": "Ожидает",
+        "accepted": "Принят",
+        "rejected": "Отклонён"
+      },
+      "acceptConfirm": "Принять запрос?",
+      "rejectConfirm": "Отклонить запрос?",
+      "confirm": "Подтвердить",
+      "reject": "Отклонить"
     }
   },
   "studentManagement": {

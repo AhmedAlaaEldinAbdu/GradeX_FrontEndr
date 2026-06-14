@@ -1282,6 +1282,25 @@
     "actions": {
       "sendReply": "Envoyer une réponse",
       "view": "Consulter"
+    },
+    "earlyLeave": {
+      "detailsTitle": "Demande de sortie anticipée",
+      "studentName": "Nom de l'étudiant",
+      "time": "Heure",
+      "duration": "Durée de sortie anticipée",
+      "date": "Date",
+      "requestDate": "Date de la demande",
+      "stage": "Niveau d'études",
+      "classroom": "Classe",
+      "status": {
+        "pending": "En attente",
+        "accepted": "Acceptée",
+        "rejected": "Refusée"
+      },
+      "acceptConfirm": "Voulez-vous accepter la demande ?",
+      "rejectConfirm": "Voulez-vous refuser la demande ?",
+      "confirm": "Confirmer",
+      "reject": "Refuser"
     }
   },
   "studentManagement": {

@@ -1282,6 +1282,25 @@
     "actions": {
       "sendReply": "Send Reply",
       "view": "View"
+    },
+    "earlyLeave": {
+      "detailsTitle": "Early Departure Request",
+      "studentName": "Student Name",
+      "time": "Time",
+      "duration": "Early Leave Duration",
+      "date": "Date",
+      "requestDate": "Request Date",
+      "stage": "Educational Stage",
+      "classroom": "Class",
+      "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "acceptConfirm": "Do you want to accept the request?",
+      "rejectConfirm": "Do you want to reject the request?",
+      "confirm": "Confirm",
+      "reject": "Reject"
     }
   },
   "studentManagement": {

@@ -1282,6 +1282,25 @@
     "actions": {
       "sendReply": "إرسال رد",
       "view": "إطلاع"
+    },
+    "earlyLeave": {
+      "detailsTitle": "طلب إنصراف مبكر",
+      "studentName": "اسم الطالب",
+      "time": "الوقت",
+      "duration": "مدة الخروج المبكر",
+      "date": "التاريخ",
+      "requestDate": "تاريخ الطلب",
+      "stage": "المرحلة الدراسية",
+      "classroom": "الفصل الدراسي",
+      "status": {
+        "pending": "قيد الانتظار",
+        "accepted": "مقبول",
+        "rejected": "مرفوض"
+      },
+      "acceptConfirm": "هل تريد قبول طلب الموظف؟",
+      "rejectConfirm": "هل تريد رفض طلب الموظف؟",
+      "confirm": "تأكيد",
+      "reject": "رفض"
     }
   },
   "studentManagement": {
