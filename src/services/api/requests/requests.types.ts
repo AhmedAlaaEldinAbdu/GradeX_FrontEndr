@@ -36,6 +36,30 @@ export interface StudentRequestDto {
   created: string;
 }
 
+/** Status of an early-leave (طلب خروج مبكر) request. */
+export const EarlyLeaveStatus = {
+  Pending: 1, // قيد الانتظار
+  Accepted: 2, // مقبول
+  Rejected: 3, // مرفوض
+} as const;
+
+export type EarlyLeaveStatus = (typeof EarlyLeaveStatus)[keyof typeof EarlyLeaveStatus];
+
+export interface EarlyLeaveRequestDto {
+  id: string;
+  studentName: string;
+  studentAvatarPath: string | null;
+  /** Departure time, e.g. "2:00 مساءا". */
+  time: string;
+  /** Early-leave duration, e.g. "ساعتين". */
+  duration: string;
+  /** Request date, e.g. "1/1/2020". */
+  date: string;
+  stage: string;
+  classroom: string;
+  status: EarlyLeaveStatus;
+}
+
 export interface StudentRequestsListResponse {
   requestDtos: StudentRequestDto[];
   pageIndex: number;

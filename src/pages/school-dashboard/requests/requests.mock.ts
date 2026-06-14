@@ -7,8 +7,13 @@
 import type {
   StudentRequestDto,
   StudentRequestsStats,
+  EarlyLeaveRequestDto,
 } from '@/services/api/requests/requests.types';
-import { StudentRequestStatus, StudentRequestType } from '@/services/api/requests/requests.types';
+import {
+  StudentRequestStatus,
+  StudentRequestType,
+  EarlyLeaveStatus,
+} from '@/services/api/requests/requests.types';
 
 export const MOCK_REQUESTS_STATS: StudentRequestsStats = {
   pending: 12,
@@ -16,6 +21,29 @@ export const MOCK_REQUESTS_STATS: StudentRequestsStats = {
   rejected: 55,
   total: 87,
 };
+
+const EARLY_LEAVE_STATUSES = [
+  EarlyLeaveStatus.Pending,
+  EarlyLeaveStatus.Accepted,
+  EarlyLeaveStatus.Pending,
+  EarlyLeaveStatus.Pending,
+  EarlyLeaveStatus.Accepted,
+  EarlyLeaveStatus.Rejected,
+];
+
+export const MOCK_EARLY_LEAVE_REQUESTS: EarlyLeaveRequestDto[] = EARLY_LEAVE_STATUSES.map(
+  (status, index) => ({
+    id: String(index + 1),
+    studentName: 'أحمد معتز حسن',
+    studentAvatarPath: null,
+    time: '2:00 مساءا',
+    duration: 'ساعتين',
+    date: '1/1/2020',
+    stage: 'المرحلة الأعدادية',
+    classroom: '1/1 ع',
+    status,
+  })
+);
 
 export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
   {
