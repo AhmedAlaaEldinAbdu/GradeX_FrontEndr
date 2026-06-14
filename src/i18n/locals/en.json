@@ -1284,6 +1284,22 @@
     "actions": {
       "sendReply": "Send Reply",
       "view": "View"
+    },
+    "popup": {
+      "title": "Message",
+      "studentName": "Student Name",
+      "educationalStage": "Educational Stage",
+      "classroom": "Classroom",
+      "markViewed": "Viewed"
+    },
+    "viewMessage": {
+      "title": "View Message",
+      "messageTitle": "Message Content",
+      "sendDate": "Send Date",
+      "classroom": "Classroom",
+      "replyLabel": "Reply Content",
+      "replyPlaceholder": "Enter the reply!",
+      "submit": "Add"
     }
   },
   "studentManagement": {
@@ -1942,7 +1958,7 @@
       "educationalQualifications": "Educational Qualifications",
       "university": "University",
       "degree": "Degree",
-      "subject": "Subject",
+      "subject": "Subject Name",
       "graduationYear": "Graduation Year",
       "trainingCourses": "Training Courses",
       "courseName": "Course Name",
@@ -1987,7 +2003,6 @@
       "educationalStage": "Grade",
       "searchStageOrClassroom": "Search for educational stage or classroom name",
       "classrooms": "Classrooms",
-      "subject": "Subject Name",
       "bookName": "Book Name",
       "bookFor": "Book for",
       "addClassroom": "Add Classroom",
@@ -2821,9 +2836,9 @@
         "secondary": "Secondary"
       },
       "lessonDurationOptions": {
-        "60": "1 hour",
+        "30": "30 minutes",
         "45": "45 minutes",
-        "30": "30 minutes"
+        "60": "1 hour"
       },
       "schoolDaySchedulesTitle": "School day schedule",
       "daysLabel": "School days",

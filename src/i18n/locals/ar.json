@@ -1284,6 +1284,22 @@
     "actions": {
       "sendReply": "إرسال رد",
       "view": "إطلاع"
+    },
+    "popup": {
+      "title": "رسالة",
+      "studentName": "اسم الطالب",
+      "educationalStage": "المرحلة الدراسية",
+      "classroom": "الصف الدراسي",
+      "markViewed": "تم الإطلاع"
+    },
+    "viewMessage": {
+      "title": "عرض رسالة",
+      "messageTitle": "محتوي رسالة",
+      "sendDate": "التاريخ الإرسال",
+      "classroom": "الفصل الدراسي",
+      "replyLabel": "محتوي الرد",
+      "replyPlaceholder": "أدخل محتوي الردا!",
+      "submit": "إضافة"
     }
   },
   "studentManagement": {
@@ -1942,7 +1958,7 @@
       "educationalQualifications": "المؤهلات الدراسية",
       "university": "الجامعة",
       "degree": "المؤهل الدراسي",
-      "subject": "المادة",
+      "subject": "اسم المادة",
       "graduationYear": "سنة التخرج",
       "trainingCourses": "الدورات التدريبية",
       "courseName": "اسم الدورة",
@@ -1987,7 +2003,6 @@
       "educationalStage": "الصف الدراسي",
       "searchStageOrClassroom": "ابحث عن اسم المرحلة الدراسية أو الصف الدراسي",
       "classrooms": "الصفوف الدراسية",
-      "subject": "اسم المادة",
       "bookName": "اسم الكتاب",
       "bookFor": "اسم الكتاب لمادة",
       "addClassroom": "اضافة صف",
@@ -2828,9 +2843,9 @@
         "secondary": "المرحلة الثانوية"
       },
       "lessonDurationOptions": {
-        "60": "ساعة",
+        "30": "٣٠ دقيقة",
         "45": "٤٥ دقيقة",
-        "30": "٣٠ دقيقة"
+        "60": "ساعة"
       },
       "schoolDaySchedulesTitle": "مواعيد اليوم الدراسي",
       "daysLabel": "الأيام الدراسية",

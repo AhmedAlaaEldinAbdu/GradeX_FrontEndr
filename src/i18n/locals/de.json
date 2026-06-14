@@ -1284,6 +1284,22 @@
     "actions": {
       "sendReply": "Antwort senden",
       "view": "Ansehen"
+    },
+    "popup": {
+      "title": "Nachricht",
+      "studentName": "Name des Schülers",
+      "educationalStage": "Bildungsstufe",
+      "classroom": "Klassenzimmer",
+      "markViewed": "Gesehen"
+    },
+    "viewMessage": {
+      "title": "Nachricht anzeigen",
+      "messageTitle": "Nachrichteninhalt",
+      "sendDate": "Sendedatum",
+      "classroom": "Klassenzimmer",
+      "replyLabel": "Antwortinhalt",
+      "replyPlaceholder": "Antwort eingeben!",
+      "submit": "Hinzufügen"
     }
   },
   "studentManagement": {
@@ -1942,7 +1958,7 @@
       "educationalQualifications": "Bildungsqualifikationen",
       "university": "Universität",
       "degree": "Abschluss",
-      "subject": "Fach",
+      "subject": "Fachname",
       "graduationYear": "Abschlussjahr",
       "trainingCourses": "Schulungen",
       "courseName": "Kursname",
@@ -1987,7 +2003,6 @@
       "educationalStage": "Klassenstufe",
       "searchStageOrClassroom": "Nach Bildungsstufe oder Klassenzimmername suchen",
       "classrooms": "Klassenzimmer",
-      "subject": "Fachname",
       "bookName": "Buchname",
       "bookFor": "Buch für",
       "addClassroom": "Klassenzimmer hinzufügen",
@@ -2821,9 +2836,9 @@
         "secondary": "Oberschule"
       },
       "lessonDurationOptions": {
-        "60": "1 Stunde",
+        "30": "30 Minuten",
         "45": "45 Minuten",
-        "30": "30 Minuten"
+        "60": "1 Stunde"
       },
       "schoolDaySchedulesTitle": "Schultagsplan",
       "daysLabel": "Schultage",

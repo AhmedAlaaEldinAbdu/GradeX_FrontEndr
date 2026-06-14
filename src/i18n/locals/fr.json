@@ -1284,6 +1284,22 @@
     "actions": {
       "sendReply": "Envoyer une réponse",
       "view": "Consulter"
+    },
+    "popup": {
+      "title": "Message",
+      "studentName": "Nom de l'élève",
+      "educationalStage": "Niveau scolaire",
+      "classroom": "Classe",
+      "markViewed": "Consulté"
+    },
+    "viewMessage": {
+      "title": "Voir le message",
+      "messageTitle": "Contenu du message",
+      "sendDate": "Date d'envoi",
+      "classroom": "Classe",
+      "replyLabel": "Contenu de la réponse",
+      "replyPlaceholder": "Saisissez la réponse !",
+      "submit": "Ajouter"
     }
   },
   "studentManagement": {
@@ -1942,7 +1958,7 @@
       "educationalQualifications": "Qualifications académiques",
       "university": "Université",
       "degree": "Diplôme",
-      "subject": "Matière",
+      "subject": "Nom de la matière",
       "graduationYear": "Année d'obtention du diplôme",
       "trainingCourses": "Formations",
       "courseName": "Nom du cours",
@@ -1987,7 +2003,6 @@
       "educationalStage": "Niveau",
       "searchStageOrClassroom": "Rechercher un nom de niveau scolaire ou de classe",
       "classrooms": "Classes",
-      "subject": "Nom de la matière",
       "bookName": "Nom du livre",
       "bookFor": "Livre pour",
       "addClassroom": "Ajouter une classe",
@@ -2821,9 +2836,9 @@
         "secondary": "Secondaire"
       },
       "lessonDurationOptions": {
-        "60": "1 heure",
+        "30": "30 minutes",
         "45": "45 minutes",
-        "30": "30 minutes"
+        "60": "1 heure"
       },
       "schoolDaySchedulesTitle": "Horaire de la journée scolaire",
       "daysLabel": "Jours d'école",

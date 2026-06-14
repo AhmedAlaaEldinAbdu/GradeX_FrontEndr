@@ -1284,6 +1284,22 @@
     "actions": {
       "sendReply": "Отправить ответ",
       "view": "Просмотр"
+    },
+    "popup": {
+      "title": "Сообщение",
+      "studentName": "Имя ученика",
+      "educationalStage": "Уровень образования",
+      "classroom": "Класс",
+      "markViewed": "Просмотрено"
+    },
+    "viewMessage": {
+      "title": "Просмотр сообщения",
+      "messageTitle": "Содержание сообщения",
+      "sendDate": "Дата отправки",
+      "classroom": "Класс",
+      "replyLabel": "Содержание ответа",
+      "replyPlaceholder": "Введите ответ!",
+      "submit": "Добавить"
     }
   },
   "studentManagement": {
@@ -1942,7 +1958,7 @@
       "educationalQualifications": "Образовательные квалификации",
       "university": "Университет",
       "degree": "Степень",
-      "subject": "Предмет",
+      "subject": "Название предмета",
       "graduationYear": "Год выпуска",
       "trainingCourses": "Учебные курсы",
       "courseName": "Название курса",
@@ -1987,7 +2003,6 @@
       "educationalStage": "Класс",
       "searchStageOrClassroom": "Поиск по названию ступени или кабинета",
       "classrooms": "Кабинеты",
-      "subject": "Название предмета",
       "bookName": "Название книги",
       "bookFor": "Книга для",
       "addClassroom": "Добавить кабинет",
@@ -2821,9 +2836,9 @@
         "secondary": "Старшая"
       },
       "lessonDurationOptions": {
-        "60": "1 час",
+        "30": "30 минут",
         "45": "45 минут",
-        "30": "30 минут"
+        "60": "1 час"
       },
       "schoolDaySchedulesTitle": "Расписание учебного дня",
       "daysLabel": "Учебные дни",
