@@ -218,19 +218,29 @@ export default function WeeklyScheduleCalendar({
   // so it should not be considered for spanning logic either.
   const visibleLessons = useMemo(() => {
     return lessons.filter((lesson) => {
-      // Check if there is a special column at this lesson's start position
+      // A lesson is hidden only when it truly collides with a special column.
       const isBlockedBySpecialCol = specialColumns.some((sc) => {
         if (sc.columnIndex !== lesson.periodIndex) return false;
 
-        // Check if special column applies to this day
-        // Handle potential type mismatch (string vs number) in days array
-        if (sc.days && sc.days.length > 0) {
-          return sc.days.some((d) => Number(d) === Number(lesson.dayIndex));
+        // Check if the special column applies to this lesson's day.
+        // Handle potential type mismatch (string vs number) in days array.
+        const appliesToDay =
+          sc.days && sc.days.length > 0
+            ? sc.days.some((d) => Number(d) === Number(lesson.dayIndex))
+            : lesson.dayIndex >= (sc.startDayIndex ?? 1) &&
+              lesson.dayIndex <= (sc.endDayIndex ?? 5);
+
+        if (!appliesToDay) return false;
+
+        if (sc.startTime && sc.endTime) {
+          const activityStart = parseTimeToMinutes(sc.startTime);
+          const activityEnd = parseTimeToMinutes(sc.endTime);
+          const lessonStart = parseTimeToMinutes(lesson.startTime);
+          const lessonEnd = parseTimeToMinutes(lesson.endTime);
+          return lessonStart < activityEnd && activityStart < lessonEnd;
         }
 
-        const startDay = sc.startDayIndex ?? 1;
-        const endDay = sc.endDayIndex ?? 5;
-        return lesson.dayIndex >= startDay && lesson.dayIndex <= endDay;
+        return true;
       });
 
       return !isBlockedBySpecialCol;
@@ -819,35 +829,28 @@ export default function WeeklyScheduleCalendar({
                       );
                     }
 
-                    const periodStartTime = slot ? formatTime(slot.startHour, slot.startMin) : '';
                     const periodEndTime = slot ? formatTime(slot.endHour, slot.endMin) : '';
-                    const [activityStartH, activityStartM] = (specialCol.startTime ?? '')
-                      .split(':')
-                      .map(Number);
-                    const [activityEndH, activityEndM] = (specialCol.endTime ?? '')
-                      .split(':')
-                      .map(Number);
-                    const activityStartTime = specialCol.startTime
-                      ? formatTime(activityStartH, activityStartM)
-                      : periodStartTime;
-                    const activityEndTime = specialCol.endTime
-                      ? formatTime(activityEndH, activityEndM)
-                      : periodEndTime;
+                    const slotStartMinutes = slot ? slot.startHour * 60 + slot.startMin : 0;
+                    const slotDurationMinutes = slot
+                      ? slot.endHour * 60 + slot.endMin - slotStartMinutes
+                      : 60;
 
-                    const leftWidthPct = offset * 100;
-                    const rightWidthPct = Math.max(0, 1 - offset - width) * 100;
+                    const fractionToTime = (fraction: number) => {
+                      const mins = Math.round(slotStartMinutes + fraction * slotDurationMinutes);
+                      return formatTime(Math.floor(mins / 60), mins % 60);
+                    };
 
                     const renderGap = (
-                      widthPct: number,
+                      widthFraction: number,
                       gapStart: string,
                       gapEnd: string,
                       gapKey: string
                     ) => {
-                      if (widthPct <= 0) return null;
+                      if (widthFraction <= 0.0001) return null;
                       return (
                         <div
                           key={gapKey}
-                          style={{ width: `${widthPct}%` }}
+                          style={{ width: `${widthFraction * 100}%` }}
                           className={`group relative min-h-[100px] flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
                             isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
                           }`}
@@ -872,42 +875,92 @@ export default function WeeklyScheduleCalendar({
                       );
                     };
 
+                    // The coloured activity block. `items-stretch` on the wrapper
+                    // lets its `-mt-2` bridge meet the row above so multi-day
+                    // activities stay visually connected.
+                    const activitySegment = (
+                      <div
+                        key={`${periodIndex}-activity`}
+                        className={`flex min-h-[100px] flex-shrink-0 items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
+                        style={{
+                          width: `${width * 100}%`,
+                          marginBottom: isLastRow ? 0 : undefined,
+                        }}
+                      >
+                        {isMiddleRow && (
+                          <span
+                            className={`text-xs font-bold ${specialCol.textColor || 'text-gray-700'}`}
+                          >
+                            {specialCol.label}
+                          </span>
+                        )}
+                      </div>
+                    );
+
+                    const lessonInCell = getLessonStartingAtCell(dayIndex, periodIndex);
+                    const lessonOffset =
+                      lessonInCell?.startOffset && lessonInCell.startOffset > 0
+                        ? lessonInCell.startOffset
+                        : 0;
+                    const lessonWidth = lessonInCell
+                      ? Math.min(Math.max(lessonInCell.colSpan ?? 1, 0), 1 - lessonOffset)
+                      : 0;
+
+                    type CellSegment = { start: number; end: number; node: React.ReactNode };
+                    const segments: CellSegment[] = [
+                      { start: offset, end: offset + width, node: activitySegment },
+                    ];
+                    if (lessonInCell && lessonWidth > 0) {
+                      segments.push({
+                        start: lessonOffset,
+                        end: lessonOffset + lessonWidth,
+                        node: (
+                          <div
+                            key={`${periodIndex}-lesson`}
+                            className="relative z-10 flex-shrink-0 p-0.5"
+                            style={{ width: `${lessonWidth * 100}%` }}
+                          >
+                            <LessonCard lesson={lessonInCell} />
+                          </div>
+                        ),
+                      });
+                    }
+                    segments.sort((a, b) => a.start - b.start);
+
+                    const cellChildren: React.ReactNode[] = [];
+                    let cursor = 0;
+                    segments.forEach((seg, segIdx) => {
+                      if (seg.start > cursor + 0.0001) {
+                        cellChildren.push(
+                          renderGap(
+                            seg.start - cursor,
+                            fractionToTime(cursor),
+                            fractionToTime(seg.start),
+                            `${periodIndex}-gap-${segIdx}`
+                          )
+                        );
+                      }
+                      cellChildren.push(seg.node);
+                      cursor = Math.max(cursor, seg.end);
+                    });
+                    if (cursor < 1 - 0.0001) {
+                      cellChildren.push(
+                        renderGap(
+                          1 - cursor,
+                          fractionToTime(cursor),
+                          periodEndTime,
+                          `${periodIndex}-gap-end`
+                        )
+                      );
+                    }
+
                     return (
-                      // `items-stretch` (not items-start) lets the coloured block's
-                      // margin-box fill the cell height, so its `-mt-2` bridge meets
-                      // the row above — keeping multi-day activities connected.
                       <div
                         key={periodIndex}
                         className="flex min-h-[100px] items-stretch"
                         style={{ gap: '0px' }}
                       >
-                        {renderGap(
-                          leftWidthPct,
-                          periodStartTime,
-                          activityStartTime,
-                          `${periodIndex}-gap-l`
-                        )}
-                        <div
-                          className={`flex min-h-[100px] flex-shrink-0 items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
-                          style={{
-                            width: `${width * 100}%`,
-                            marginBottom: isLastRow ? 0 : undefined,
-                          }}
-                        >
-                          {isMiddleRow && (
-                            <span
-                              className={`text-xs font-bold ${specialCol.textColor || 'text-gray-700'}`}
-                            >
-                              {specialCol.label}
-                            </span>
-                          )}
-                        </div>
-                        {renderGap(
-                          rightWidthPct,
-                          activityEndTime,
-                          periodEndTime,
-                          `${periodIndex}-gap-r`
-                        )}
+                        {cellChildren}
                       </div>
                     );
                   }
