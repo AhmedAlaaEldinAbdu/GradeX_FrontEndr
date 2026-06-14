@@ -178,7 +178,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<LessonFormData>({
     defaultValues: {
-      lessonType: normalizedInitialData?.lessonType || '',
+      lessonType: normalizedInitialData?.lessonType || 'in-person',
       materialId: normalizedInitialData?.materialId || '',
       teacherId: normalizedInitialData?.teacherId || '',
       gradeId: normalizedInitialData?.gradeId || gradeIdParam || '',
@@ -317,7 +317,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   useEffect(() => {
     if (normalizedInitialData) {
       reset({
-        lessonType: normalizedInitialData.lessonType || '',
+        lessonType: normalizedInitialData.lessonType || 'in-person',
         materialId: normalizedInitialData.materialId,
         teacherId: normalizedInitialData.teacherId,
         gradeId: normalizedInitialData.gradeId,
