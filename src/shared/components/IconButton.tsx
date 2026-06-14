@@ -4,7 +4,7 @@ import EditIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 
-type Variant = 'danger' | 'success' | 'blue' | 'yellow' | 'default';
+type Variant = 'danger' | 'success' | 'blue' | 'darkBlue' | 'yellow' | 'default';
 
 type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   status?: 'add' | 'edit' | 'delete';
@@ -18,6 +18,7 @@ const variantClasses: Record<Variant, string> = {
   danger: 'bg-red-100 text-red-600 hover:bg-red-200',
   success: 'bg-[#30B97E1A] text-green-600 hover:bg-green-200',
   blue: 'bg-blue-100 text-blue-600 hover:bg-blue-300',
+  darkBlue: 'bg-[#0909B1]/10 text-[#0909B1] hover:bg-[#0909B1]/20',
   yellow: 'bg-yellow-100 text-yellow-600 hover:bg-yellow-300',
   default: 'bg-gray-50 text-gray-700 hover:bg-gray-100',
 };
