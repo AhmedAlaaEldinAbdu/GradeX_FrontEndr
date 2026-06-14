@@ -51,6 +51,7 @@ export type EarlyLeaveStatus = (typeof EarlyLeaveStatus)[keyof typeof EarlyLeave
 
 export interface EarlyLeaveRequestDto {
   id: string;
+  studentId: string;
   studentName: string;
   studentAvatarPath: string | null;
   /** Departure time, e.g. "2:00 مساءا". */

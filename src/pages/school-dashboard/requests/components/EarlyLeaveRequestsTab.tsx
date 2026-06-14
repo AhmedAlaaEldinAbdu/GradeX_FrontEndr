@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@/shared/components/Card';
@@ -28,6 +29,7 @@ type ConfirmState = { type: 'accept' | 'reject'; request: EarlyLeaveRequestDto }
 
 const EarlyLeaveRequestsTab: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // TODO(backend): swap mock state for a redux slice + service once the API exists.
   const [data, setData] = useState<EarlyLeaveRequestDto[]>(MOCK_EARLY_LEAVE_REQUESTS);
@@ -108,7 +110,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
           name={row.studentName}
           avatarSrc={row.studentAvatarPath}
           align="center"
-          onView={() => setDetailsRequest(row)}
+          onView={() => navigate(`/students/student-details/${row.studentId}`)}
         />
       ),
       headerClassName: 'min-w-[240px] text-center',

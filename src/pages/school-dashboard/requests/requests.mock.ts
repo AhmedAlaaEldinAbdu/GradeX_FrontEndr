@@ -34,6 +34,7 @@ const EARLY_LEAVE_STATUSES = [
 export const MOCK_EARLY_LEAVE_REQUESTS: EarlyLeaveRequestDto[] = EARLY_LEAVE_STATUSES.map(
   (status, index) => ({
     id: String(index + 1),
+    studentId: String(index + 1),
     studentName: 'أحمد معتز حسن',
     studentAvatarPath: null,
     time: '2:00 مساءا',
