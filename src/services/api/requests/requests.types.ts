@@ -35,6 +35,9 @@ export interface StudentRequestDto {
   status: StudentRequestStatus;
   type: StudentRequestType;
   created: string;
+  studentName?: string;
+  educationalStage?: string;
+  classrooms?: string[];
 }
 
 export interface StudentRequestsListResponse {
