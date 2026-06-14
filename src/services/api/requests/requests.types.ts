@@ -31,6 +31,7 @@ export interface StudentRequestDto {
   senderAvatarPath: string | null;
   recipientName: string;
   recipientAvatarPath: string | null;
+  messageContent: string;
   status: StudentRequestStatus;
   type: StudentRequestType;
   created: string;

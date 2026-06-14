@@ -16,6 +16,11 @@ import { MOCK_MESSAGE_REQUESTS } from '../requests.mock';
 
 const PAGE_SIZE = 10;
 
+const formatRequestDate = (value: string) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-GB');
+};
+
 const STATUS_BADGE_CLASSES: Record<StudentRequestStatus, string> = {
   [StudentRequestStatus.Sent]: 'bg-purple-100 text-purple-700',
   [StudentRequestStatus.Viewed]: 'bg-blue-100 text-blue-700',
@@ -128,6 +133,18 @@ const MessageRequestsTable: React.FC = () => {
         />
       ),
       headerClassName: 'min-w-[220px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'requests.messageContent',
+      accessor: (row) => <span className="text-gray-600">{row.messageContent}</span>,
+      headerClassName: 'min-w-[160px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'requests.messageDate',
+      accessor: (row) => <span className="text-gray-600">{formatRequestDate(row.created)}</span>,
+      headerClassName: 'min-w-[140px] text-center',
       className: 'text-center',
     },
     {
