@@ -94,8 +94,16 @@
         "subject": "Fachname"
       },
       "actions": {
+        "view": "Kurs anzeigen",
         "edit": "Kurs bearbeiten",
         "delete": "Kurs löschen"
+      },
+      "details": {
+        "date": "Datum",
+        "subjectName": "Fachname",
+        "description": "Beschreibung",
+        "grade": "Klasse",
+        "perLessonDuration": "Min. pro Lektion"
       },
       "edit": {
         "title": "Schulungskurs bearbeiten"

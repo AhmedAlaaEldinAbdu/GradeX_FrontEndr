@@ -94,8 +94,16 @@
         "subject": "Subject"
       },
       "actions": {
+        "view": "View Course",
         "edit": "Edit Course",
         "delete": "Delete Course"
+      },
+      "details": {
+        "date": "Date",
+        "subjectName": "Subject Name",
+        "description": "Description",
+        "grade": "Class",
+        "perLessonDuration": "min per lesson"
       },
       "edit": {
         "title": "Edit Training Course"

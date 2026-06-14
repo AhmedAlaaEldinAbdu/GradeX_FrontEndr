@@ -15,6 +15,7 @@ import ExamReviewPage from '@/pages/school-dashboard/e-learning/exam-review-page
 import TrainingCoursesPage from '@/pages/school-dashboard/e-learning/training-courses-page';
 import AddTrainingCoursePage from '@/pages/school-dashboard/e-learning/add-training-course-page';
 import EditTrainingCoursePage from '@/pages/school-dashboard/e-learning/edit-training-course-page';
+import CourseDetailsPage from '@/pages/school-dashboard/e-learning/course-details-page';
 import StudentManagementPage from '@/pages/school-dashboard/student-management/student-management-page';
 import StudentDetailsPage from '@/pages/school-dashboard/student-management/student-details-page';
 import StudentInterviewsPage from '@/pages/school-dashboard/student-interviews/student-interviews-page';
@@ -1079,6 +1080,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <EditTrainingCoursePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/courses/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <CourseDetailsPage />
             </MainLayout>
           </ProtectedRoute>
         }

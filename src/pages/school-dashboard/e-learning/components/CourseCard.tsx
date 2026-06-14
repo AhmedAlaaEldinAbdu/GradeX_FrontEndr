@@ -7,6 +7,7 @@ import PeopleOutlineIcon from '@gradex/assets/icons/PeopleOutline.svg';
 import BookIcon from '@gradex/assets/icons/Book.svg';
 import CalendarIcon from '@gradex/assets/icons/calendar.svg';
 import DocumentEditOutlineIcon from '@gradex/assets/icons/DocumentEditOutline.svg';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import LearningCover from '@gradex/assets/images/Learning.png';
@@ -61,16 +62,23 @@ function CourseInfoBox({ icon, text }: { icon: string; text: string }) {
 
 type CourseCardProps = {
   course: CourseItem;
+  onView?: (course: CourseItem) => void;
   onEdit?: (course: CourseItem) => void;
   onDelete?: (course: CourseItem) => void;
 };
 
-export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
+export default function CourseCard({ course, onView, onEdit, onDelete }: CourseCardProps) {
   const { t } = useTranslation();
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
   const progress = Math.min(100, Math.max(0, course.progress));
 
   const actions: Action[] = [
+    {
+      id: 'view',
+      label: t('eLearning.courses.actions.view'),
+      icon: EyeStyledIcon,
+      onClick: () => onView?.(course),
+    },
     {
       id: 'edit',
       label: t('eLearning.courses.actions.edit'),
