@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@/shared/components/Card';
@@ -13,6 +14,7 @@ import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import type { StudentRequestDto } from '@/services/api/requests/requests.types';
 import { StudentRequestStatus } from '@/services/api/requests/requests.types';
 import { MOCK_MESSAGE_REQUESTS } from '../requests.mock';
+import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 
 const PAGE_SIZE = 10;
 
@@ -37,16 +39,20 @@ const STATUS_LABEL_KEYS: Record<StudentRequestStatus, string> = {
 
 const MessageRequestsTable: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSender, setSelectedSender] = useState('');
   const [selectedRecipient, setSelectedRecipient] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedRequest, setSelectedRequest] = useState<StudentRequestDto | null>(null);
+
+  const [requests, setRequests] = useState<StudentRequestDto[]>(MOCK_MESSAGE_REQUESTS);
 
   // TODO(backend): swap this mock filtering for a redux thunk + service call.
   const filteredData = useMemo(() => {
-    return MOCK_MESSAGE_REQUESTS.filter((row) => {
+    return requests.filter((row) => {
       const matchesSearch =
         !searchTerm ||
         row.senderName.includes(searchTerm) ||
@@ -56,7 +62,15 @@ const MessageRequestsTable: React.FC = () => {
       const matchesStatus = !selectedStatus || row.status === Number(selectedStatus);
       return matchesSearch && matchesSender && matchesRecipient && matchesStatus;
     });
-  }, [searchTerm, selectedSender, selectedRecipient, selectedStatus]);
+  }, [requests, searchTerm, selectedSender, selectedRecipient, selectedStatus]);
+
+  const handleMarkViewed = (request: StudentRequestDto) => {
+    setRequests((prev) =>
+      prev.map((row) =>
+        row.id === request.id ? { ...row, status: StudentRequestStatus.Viewed } : row
+      )
+    );
+  };
 
   const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
   const pageData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -99,9 +113,14 @@ const MessageRequestsTable: React.FC = () => {
     },
     {
       header: 'requests.requestPreview',
-      accessor: () => (
+      accessor: (row) => (
         <div className="flex justify-center">
-          <IconButton variant="blue" ariaLabel={t('common.view')} className="h-10 w-10">
+          <IconButton
+            variant="blue"
+            ariaLabel={t('common.view')}
+            className="h-10 w-10"
+            onClick={() => setSelectedRequest(row)}
+          >
             <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-6 w-6" />
           </IconButton>
         </div>
@@ -153,7 +172,14 @@ const MessageRequestsTable: React.FC = () => {
         const isView = row.status === StudentRequestStatus.Viewed;
         return (
           <div className="flex items-center justify-center">
-            <Button variant="outline" size="sm" className="!rounded-2xl px-6">
+            <Button
+              variant="outline"
+              size="sm"
+              className="!rounded-2xl px-6"
+              onClick={() =>
+                isView ? setSelectedRequest(row) : navigate(`/requests/view-message/${row.id}`)
+              }
+            >
               {isView ? t('requests.actions.view') : t('requests.actions.sendReply')}
             </Button>
           </div>
@@ -262,6 +288,13 @@ const MessageRequestsTable: React.FC = () => {
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
         t={t}
+      />
+
+      <MessageDetailsPopup
+        isOpen={Boolean(selectedRequest)}
+        onClose={() => setSelectedRequest(null)}
+        request={selectedRequest}
+        onMarkViewed={handleMarkViewed}
       />
     </Card>
   );
