@@ -7,7 +7,7 @@ import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
-import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
+import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
 import ClockYellowIcon from '@gradex/assets/icons/ClockYellow.svg';
 import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
 import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
@@ -78,11 +78,14 @@ const RequestsPage: React.FC = () => {
       <div className="mb-4 flex items-start gap-3">
         <Tabs items={tabs} defaultValue="messages" searchParamKey="tab" className="flex-1" />
 
-        <CustomImage
-          src={GreenPlusCircleIcon}
-          alt={t('common.add')}
-          className="h-10 w-10 shrink-0 cursor-pointer"
-        />
+        <button
+          type="button"
+          aria-label={t('common.add')}
+          title={t('common.add')}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
+        >
+          <CustomImage src={WhitePlusIcon} alt={t('common.add')} className="h-5 w-5" />
+        </button>
       </div>
     </div>
   );
