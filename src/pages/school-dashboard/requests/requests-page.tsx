@@ -8,12 +8,12 @@ import CustomImage from '@/shared/components/CustomImage';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
-import ClockYellowIcon from '@gradex/assets/icons/ClockYellow.svg';
-import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
-import XmarkCircleIcon from '@gradex/assets/icons/XmarkCircle.svg';
-import OrdersGreenIcon from '@gradex/assets/icons/OrdersGreen.svg';
+import ClockYellowBoldIcon from '@gradex/assets/icons/ClockYellowBold.svg';
+import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
+import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
+import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
-import MessageRequestsTable from './components/MessageRequestsTable';
+import MessageRequestsTab from './components/MessageRequestsTab';
 import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
 import { MOCK_REQUESTS_STATS } from './requests.mock';
 
@@ -36,7 +36,7 @@ const RequestsPage: React.FC = () => {
       label: t('requests.tabs.earlyLeave'),
       content: <EarlyLeaveRequestsTab />,
     },
-    { id: 'messages', label: t('requests.tabs.messages'), content: <MessageRequestsTable /> },
+    { id: 'messages', label: t('requests.tabs.messages'), content: <MessageRequestsTab /> },
     { id: 'reminder', label: t('requests.tabs.reminder'), content: <ComingSoon /> },
     { id: 'add-delegate', label: t('requests.tabs.addDelegate'), content: <ComingSoon /> },
     {
@@ -50,33 +50,33 @@ const RequestsPage: React.FC = () => {
     <div>
       <Breadcrumb items={breadcrumbItems} />
 
-      <PageHeader title="requests.title" />
+      <PageHeader title="requests.title" hasHeaderControls={true} />
 
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
-          title={t('requests.pendingCount')}
-          value={stats.pending}
-          icon={<CustomImage src={ClockYellowIcon} alt="" className="h-5 w-5" />}
-          iconClassName="bg-[#FDF6E0]"
+          title={t('requests.totalCount')}
+          value={stats.total}
+          icon={<CustomImage src={TaskBlueIcon} alt="" className="h-5 w-5" />}
+          iconClassName="bg-[#E7F2FB]"
+        />
+        <MetricCard
+          title={t('requests.rejectedCount')}
+          value={stats.rejected}
+          icon={<CustomImage src={XmarkCircleRedIcon} alt="" className="h-5 w-5" />}
+          iconClassName="bg-[#FCE8E8]"
         />
         <MetricCard
           title={t('requests.acceptedCount')}
           value={stats.acceptedPercentage}
           percentage
-          icon={<CustomImage src={CheckmarkCircleIcon} alt="" className="h-5 w-5" />}
+          icon={<CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#E8F4EE]"
         />
         <MetricCard
-          title={t('requests.rejectedCount')}
-          value={stats.rejected}
-          icon={<CustomImage src={XmarkCircleIcon} alt="" className="h-5 w-5" />}
-          iconClassName="bg-[#FCE8E8]"
-        />
-        <MetricCard
-          title={t('requests.totalCount')}
-          value={stats.total}
-          icon={<CustomImage src={OrdersGreenIcon} alt="" className="h-5 w-5" />}
-          iconClassName="bg-[#E7F2FB]"
+          title={t('requests.pendingCount')}
+          value={stats.pending}
+          icon={<CustomImage src={ClockYellowBoldIcon} alt="" className="h-5 w-5" />}
+          iconClassName="bg-[#FDF6E0]"
         />
       </div>
 
