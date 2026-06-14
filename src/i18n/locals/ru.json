@@ -1297,8 +1297,8 @@
         "accepted": "Принят",
         "rejected": "Отклонён"
       },
-      "acceptConfirm": "Принять запрос?",
-      "rejectConfirm": "Отклонить запрос?",
+      "acceptConfirm": "Принять запрос студента?",
+      "rejectConfirm": "Отклонить запрос студента?",
       "confirm": "Подтвердить",
       "reject": "Отклонить"
     }

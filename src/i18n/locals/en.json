@@ -1297,8 +1297,8 @@
         "accepted": "Accepted",
         "rejected": "Rejected"
       },
-      "acceptConfirm": "Do you want to accept the request?",
-      "rejectConfirm": "Do you want to reject the request?",
+      "acceptConfirm": "Do you want to accept the student's request?",
+      "rejectConfirm": "Do you want to reject the student's request?",
       "confirm": "Confirm",
       "reject": "Reject"
     }

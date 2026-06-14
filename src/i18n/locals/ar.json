@@ -1297,8 +1297,8 @@
         "accepted": "مقبول",
         "rejected": "مرفوض"
       },
-      "acceptConfirm": "هل تريد قبول طلب الموظف؟",
-      "rejectConfirm": "هل تريد رفض طلب الموظف؟",
+      "acceptConfirm": "هل تريد قبول طلب الطالب؟",
+      "rejectConfirm": "هل تريد رفض طلب الطالب؟",
       "confirm": "تأكيد",
       "reject": "رفض"
     }
