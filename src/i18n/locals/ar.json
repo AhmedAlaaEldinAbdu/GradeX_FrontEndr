@@ -1275,6 +1275,10 @@
       "status": "حالة الطلب",
       "date": "التاريخ"
     },
+    "participants": {
+      "recipientsTitle": "المستلمون",
+      "sendersTitle": "المرسلون"
+    },
     "status": {
       "sent": "تم إرسال",
       "viewed": "تم الإطلاع",

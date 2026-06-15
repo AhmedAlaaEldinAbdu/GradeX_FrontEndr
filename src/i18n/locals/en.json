@@ -1275,6 +1275,10 @@
       "status": "Request Status",
       "date": "Date"
     },
+    "participants": {
+      "recipientsTitle": "Recipients",
+      "sendersTitle": "Senders"
+    },
     "status": {
       "sent": "Sent",
       "viewed": "Viewed",
