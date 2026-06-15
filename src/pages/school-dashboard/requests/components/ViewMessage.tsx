@@ -94,7 +94,7 @@ const ViewMessage: React.FC = () => {
           </div>
 
           {request.educationalStage ? (
-            <DetailRow label={t('requests.popup.educationalStage')}>
+            <DetailRow label={t('requests.popup.grade')}>
               <span className="text-sm font-normal text-[#646969]">{request.educationalStage}</span>
             </DetailRow>
           ) : null}
