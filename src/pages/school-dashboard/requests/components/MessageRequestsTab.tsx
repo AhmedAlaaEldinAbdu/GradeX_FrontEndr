@@ -11,13 +11,19 @@ import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
-import type { StudentRequestDto } from '@/services/api/requests/requests.types';
+import type { StudentRequestDto, RequestParticipant } from '@/services/api/requests/requests.types';
 import {
   StudentRequestStatus,
   RequestParticipantRole,
 } from '@/services/api/requests/requests.types';
 import { MOCK_MESSAGE_REQUESTS } from '../requests.mock';
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
+import ParticipantsPopup from '../popups/ParticipantsPopup';
+
+type ParticipantsView = {
+  title: string;
+  participants: RequestParticipant[];
+};
 
 const PAGE_SIZE = 10;
 
@@ -60,8 +66,56 @@ const MessageRequestsTab: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [page, setPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState<StudentRequestDto | null>(null);
+  const [participantsView, setParticipantsView] = useState<ParticipantsView | null>(null);
 
   const [requests, setRequests] = useState<StudentRequestDto[]>(MOCK_MESSAGE_REQUESTS);
+
+  const handleViewParticipant = (participant: RequestParticipant) => {
+    const path = getParticipantProfilePath(participant.role, participant.id);
+    if (path) navigate(path);
+  };
+
+  const renderParticipantCell = (
+    participants: RequestParticipant[] | undefined,
+    single: { name: string; avatarPath: string | null; role?: RequestParticipantRole; id?: string },
+    title: string
+  ) => {
+    const isGroup = Boolean(participants && participants.length > 1);
+    const display = isGroup ? participants![0] : single;
+    const path = getParticipantProfilePath(display.role, display.id);
+    const extraCount = isGroup ? participants!.length - 1 : 0;
+
+    const onEye = isGroup
+      ? () => setParticipantsView({ title, participants: participants! })
+      : path
+        ? () => navigate(path)
+        : null;
+
+    return (
+      <div className="flex w-full items-center gap-2">
+        <div className="flex min-w-0 flex-1">
+          <UserAvatarName name={display.name} avatarSrc={display.avatarPath} align="start" />
+        </div>
+
+        {onEye ? (
+          <IconButton
+            variant="blue"
+            ariaLabel={t('common.view')}
+            className="h-10 w-10 shrink-0"
+            onClick={onEye}
+          >
+            <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-6 w-6" />
+          </IconButton>
+        ) : (
+          <span className="h-10 w-10 shrink-0" aria-hidden="true" />
+        )}
+
+        <span className="w-9 shrink-0 text-center text-sm font-medium text-green-600">
+          {extraCount > 0 ? `${extraCount}+` : ''}
+        </span>
+      </div>
+    );
+  };
 
   // TODO(backend): swap this mock filtering for a redux thunk + service call.
   const filteredData = useMemo(() => {
@@ -149,33 +203,33 @@ const MessageRequestsTab: React.FC = () => {
     },
     {
       header: 'requests.sentFrom',
-      accessor: (row) => {
-        const path = getParticipantProfilePath(row.senderRole, row.senderId);
-        return (
-          <UserAvatarName
-            name={row.senderName}
-            avatarSrc={row.senderAvatarPath}
-            align="center"
-            onView={path ? () => navigate(path) : undefined}
-          />
-        );
-      },
+      accessor: (row) =>
+        renderParticipantCell(
+          row.senderParticipants,
+          {
+            name: row.senderName,
+            avatarPath: row.senderAvatarPath,
+            role: row.senderRole,
+            id: row.senderId,
+          },
+          t('requests.participants.sendersTitle')
+        ),
       headerClassName: 'min-w-[220px] text-center',
       className: 'text-center',
     },
     {
       header: 'requests.sentTo',
-      accessor: (row) => {
-        const path = getParticipantProfilePath(row.recipientRole, row.recipientId);
-        return (
-          <UserAvatarName
-            name={row.recipientName}
-            avatarSrc={row.recipientAvatarPath}
-            align="center"
-            onView={path ? () => navigate(path) : undefined}
-          />
-        );
-      },
+      accessor: (row) =>
+        renderParticipantCell(
+          row.recipientParticipants,
+          {
+            name: row.recipientName,
+            avatarPath: row.recipientAvatarPath,
+            role: row.recipientRole,
+            id: row.recipientId,
+          },
+          t('requests.participants.recipientsTitle')
+        ),
       headerClassName: 'min-w-[220px] text-center',
       className: 'text-center',
     },
@@ -320,6 +374,14 @@ const MessageRequestsTab: React.FC = () => {
         onClose={() => setSelectedRequest(null)}
         request={selectedRequest}
         onMarkViewed={handleMarkViewed}
+      />
+
+      <ParticipantsPopup
+        isOpen={Boolean(participantsView)}
+        onClose={() => setParticipantsView(null)}
+        title={participantsView?.title ?? ''}
+        participants={participantsView?.participants ?? []}
+        onViewParticipant={handleViewParticipant}
       />
     </Card>
   );
