@@ -1288,9 +1288,27 @@
     "popup": {
       "title": "Message",
       "studentName": "Student Name",
-      "educationalStage": "Educational Stage",
+      "grade": "Grades",
       "classroom": "Classroom",
       "markViewed": "Viewed"
+    },
+    "addMessage": {
+      "title": "Add Message",
+      "gradeLabel": "Grades",
+      "gradePlaceholder": "Select grades",
+      "classroomLabel": "Classroom",
+      "classroomPlaceholder": "Select classrooms",
+      "directedToLabel": "Directed To",
+      "allClassrooms": "All classroom students",
+      "selectedStudents": "Selected students",
+      "contentLabel": "Reply Content",
+      "contentPlaceholder": "Enter the reply!",
+      "next": "Next",
+      "addedSuccessfully": "Message added successfully",
+      "selectStudentsTitle": "Select Students",
+      "studentSearchPlaceholder": "Search by student name",
+      "confirmSelection": "Select",
+      "studentsSummary": "+{{count}} students"
     },
     "viewMessage": {
       "title": "View Message",

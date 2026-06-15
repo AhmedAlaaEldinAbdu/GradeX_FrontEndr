@@ -1288,9 +1288,27 @@
     "popup": {
       "title": "رسالة",
       "studentName": "اسم الطالب",
-      "educationalStage": "المرحلة الدراسية",
-      "classroom": "الصف الدراسي",
+      "grade": "الصفوف الدراسية",
+      "classroom": "الفصل الدراسي",
       "markViewed": "تم الإطلاع"
+    },
+    "addMessage": {
+      "title": "إضافة رسالة",
+      "gradeLabel": "الصفوف الدراسية",
+      "gradePlaceholder": "اختر الصفوف الدراسية",
+      "classroomLabel": "الفصل الدراسي",
+      "classroomPlaceholder": "اختر الفصول الدراسية",
+      "directedToLabel": "الأختبار موجه إلي",
+      "allClassrooms": "جميع طلاب الفصول",
+      "selectedStudents": "تحديد طلاب",
+      "contentLabel": "محتوي الرد",
+      "contentPlaceholder": "أدخل محتوي الردا!",
+      "next": "التالي",
+      "addedSuccessfully": "تم إضافة الرسالة بنجاح",
+      "selectStudentsTitle": "تحديد الطلاب",
+      "studentSearchPlaceholder": "ابحث بسهولة عن اسم الطالب",
+      "confirmSelection": "تحديد",
+      "studentsSummary": "{{count}}+ طالب"
     },
     "viewMessage": {
       "title": "عرض رسالة",
