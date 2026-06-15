@@ -46,6 +46,43 @@ export const MOCK_EARLY_LEAVE_REQUESTS: EarlyLeaveRequestDto[] = EARLY_LEAVE_STA
   })
 );
 
+export const MOCK_GRADE_OPTIONS = [
+  { value: '1', label: 'الصف الأول' },
+  { value: '2', label: 'الصف الثاني' },
+  { value: '3', label: 'الصف الثالث' },
+];
+
+export const MOCK_CLASSROOM_OPTIONS = [
+  { value: '1', label: '1/2 ع' },
+  { value: '2', label: '2/2 ع' },
+  { value: '3', label: '3/2 ع' },
+];
+
+export interface MockStudentOption {
+  id: string;
+  name: string;
+  avatarPath: string | null;
+}
+
+export interface MockClassroomGroup {
+  id: string;
+  name: string;
+  students: MockStudentOption[];
+}
+
+const buildStudents = (classroomId: string): MockStudentOption[] =>
+  ['علي محمد', 'أحمد حسن', 'محمود سامي', 'يوسف خالد', 'عمر طارق'].map((name, index) => ({
+    id: `${classroomId}-${index + 1}`,
+    name,
+    avatarPath: null,
+  }));
+
+export const MOCK_CLASSROOM_GROUPS: MockClassroomGroup[] = [
+  { id: '1', name: 'صف 1/2 ع', students: buildStudents('1') },
+  { id: '2', name: 'صف 2/2 ع', students: buildStudents('2') },
+  { id: '3', name: 'صف 3/2 ع', students: buildStudents('3') },
+];
+
 export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
   {
     id: '1',
@@ -55,7 +92,7 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
     recipientAvatarPath: null,
     messageContent: 'محتوي الرسالة',
     studentName: 'أحمد حسن ابراهيم',
-    educationalStage: 'المرحلة الأعدادية',
+    educationalStage: 'الصف الأول الإعدادي',
     classrooms: ['1/1 أعدادي', '2/1 أعدادي'],
     status: StudentRequestStatus.Replied,
     type: StudentRequestType.Messages,
@@ -69,7 +106,7 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
     recipientAvatarPath: null,
     messageContent: 'محتوي الرسالة',
     studentName: 'أحمد حسن ابراهيم',
-    educationalStage: 'المرحلة الأعدادية',
+    educationalStage: 'الصف الأول الإعدادي',
     classrooms: ['1/1 أعدادي', '2/1 أعدادي'],
     status: StudentRequestStatus.Sent,
     type: StudentRequestType.Messages,
@@ -83,7 +120,7 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
     recipientAvatarPath: null,
     messageContent: 'محتوي الرسالة',
     studentName: 'أحمد حسن ابراهيم',
-    educationalStage: 'المرحلة الأعدادية',
+    educationalStage: 'الصف الأول الإعدادي',
     classrooms: ['1/1 أعدادي', '2/1 أعدادي'],
     status: StudentRequestStatus.Sent,
     type: StudentRequestType.Messages,
@@ -97,7 +134,7 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
     recipientAvatarPath: null,
     messageContent: 'محتوي الرسالة',
     studentName: 'أحمد حسن ابراهيم',
-    educationalStage: 'المرحلة الأعدادية',
+    educationalStage: 'الصف الأول الإعدادي',
     classrooms: ['1/1 أعدادي', '2/1 أعدادي'],
     status: StudentRequestStatus.Viewed,
     type: StudentRequestType.Messages,
@@ -111,7 +148,7 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
     recipientAvatarPath: null,
     messageContent: 'محتوي الرسالة',
     studentName: 'أحمد حسن ابراهيم',
-    educationalStage: 'المرحلة الأعدادية',
+    educationalStage: 'الصف الأول الإعدادي',
     classrooms: ['1/1 أعدادي', '2/1 أعدادي'],
     status: StudentRequestStatus.Replied,
     type: StudentRequestType.Messages,
@@ -125,7 +162,7 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
     recipientAvatarPath: null,
     messageContent: 'محتوي الرسالة',
     studentName: 'أحمد حسن ابراهيم',
-    educationalStage: 'المرحلة الأعدادية',
+    educationalStage: 'الصف الأول الإعدادي',
     classrooms: ['1/1 أعدادي', '2/1 أعدادي'],
     status: StudentRequestStatus.Pending,
     type: StudentRequestType.Messages,
@@ -139,7 +176,7 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
     recipientAvatarPath: null,
     messageContent: 'محتوي الرسالة',
     studentName: 'أحمد حسن ابراهيم',
-    educationalStage: 'المرحلة الأعدادية',
+    educationalStage: 'الصف الأول الإعدادي',
     classrooms: ['1/1 أعدادي', '2/1 أعدادي'],
     status: StudentRequestStatus.Pending,
     type: StudentRequestType.Messages,
