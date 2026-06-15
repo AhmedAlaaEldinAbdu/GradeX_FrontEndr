@@ -12,14 +12,24 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
 import type { StudentRequestDto } from '@/services/api/requests/requests.types';
-import { StudentRequestStatus } from '@/services/api/requests/requests.types';
+import {
+  StudentRequestStatus,
+  RequestParticipantRole,
+} from '@/services/api/requests/requests.types';
 import { MOCK_MESSAGE_REQUESTS } from '../requests.mock';
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 
 const PAGE_SIZE = 10;
 
-const SCHOOL_NAME = 'المدرسة';
-const isSchool = (name: string) => name === SCHOOL_NAME;
+const getParticipantProfilePath = (
+  role: RequestParticipantRole | undefined,
+  id: string | undefined
+): string | null => {
+  if (!id) return null;
+  if (role === RequestParticipantRole.Student) return `/students/student-details/${id}`;
+  if (role === RequestParticipantRole.Teacher) return `/teaching-staff/teachers/${id}`;
+  return null;
+};
 
 const formatRequestDate = (value: string) => {
   const date = new Date(value);
@@ -139,27 +149,33 @@ const MessageRequestsTab: React.FC = () => {
     },
     {
       header: 'requests.sentFrom',
-      accessor: (row) => (
-        <UserAvatarName
-          name={row.senderName}
-          avatarSrc={row.senderAvatarPath}
-          align="center"
-          onView={isSchool(row.senderName) ? undefined : () => setSelectedRequest(row)}
-        />
-      ),
+      accessor: (row) => {
+        const path = getParticipantProfilePath(row.senderRole, row.senderId);
+        return (
+          <UserAvatarName
+            name={row.senderName}
+            avatarSrc={row.senderAvatarPath}
+            align="center"
+            onView={path ? () => navigate(path) : undefined}
+          />
+        );
+      },
       headerClassName: 'min-w-[220px] text-center',
       className: 'text-center',
     },
     {
       header: 'requests.sentTo',
-      accessor: (row) => (
-        <UserAvatarName
-          name={row.recipientName}
-          avatarSrc={row.recipientAvatarPath}
-          align="center"
-          onView={isSchool(row.recipientName) ? undefined : () => setSelectedRequest(row)}
-        />
-      ),
+      accessor: (row) => {
+        const path = getParticipantProfilePath(row.recipientRole, row.recipientId);
+        return (
+          <UserAvatarName
+            name={row.recipientName}
+            avatarSrc={row.recipientAvatarPath}
+            align="center"
+            onView={path ? () => navigate(path) : undefined}
+          />
+        );
+      },
       headerClassName: 'min-w-[220px] text-center',
       className: 'text-center',
     },

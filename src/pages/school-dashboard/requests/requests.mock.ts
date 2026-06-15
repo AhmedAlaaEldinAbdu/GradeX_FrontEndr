@@ -13,6 +13,7 @@ import {
   StudentRequestStatus,
   StudentRequestType,
   EarlyLeaveStatus,
+  RequestParticipantRole,
 } from '@/services/api/requests/requests.types';
 
 export const MOCK_REQUESTS_STATS: StudentRequestsStats = {
@@ -83,7 +84,22 @@ export const MOCK_CLASSROOM_GROUPS: MockClassroomGroup[] = [
   { id: '3', name: 'صف 3/2 ع', students: buildStudents('3') },
 ];
 
-export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
+const PARTICIPANTS: Record<string, { role: RequestParticipantRole; id?: string }> = {
+  المدرسة: { role: RequestParticipantRole.School },
+  'أحمد معتز حسن': {
+    role: RequestParticipantRole.Student,
+    id: '9896e349-39b1-44ac-3071-08de93a9d827',
+  },
+  'أ/ أحمد معتز': {
+    role: RequestParticipantRole.Teacher,
+    id: '2f17ff30-cb54-4203-acfc-08de2d2e68e4',
+  },
+};
+
+const resolveParticipant = (name: string) =>
+  PARTICIPANTS[name] ?? { role: RequestParticipantRole.School };
+
+const BASE_MESSAGE_REQUESTS: StudentRequestDto[] = [
   {
     id: '1',
     senderName: 'أحمد معتز حسن',
@@ -183,3 +199,15 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = [
     created: '2026-06-07T12:00:00Z',
   },
 ];
+
+export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = BASE_MESSAGE_REQUESTS.map((request) => {
+  const sender = resolveParticipant(request.senderName);
+  const recipient = resolveParticipant(request.recipientName);
+  return {
+    ...request,
+    senderRole: sender.role,
+    senderId: sender.id,
+    recipientRole: recipient.role,
+    recipientId: recipient.id,
+  };
+});

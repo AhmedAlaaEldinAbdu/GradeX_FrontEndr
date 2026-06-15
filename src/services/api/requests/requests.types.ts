@@ -25,12 +25,25 @@ export const StudentRequestType = {
 
 export type StudentRequestType = (typeof StudentRequestType)[keyof typeof StudentRequestType];
 
+export const RequestParticipantRole = {
+  School: 'school',
+  Student: 'student',
+  Teacher: 'teacher',
+} as const;
+
+export type RequestParticipantRole =
+  (typeof RequestParticipantRole)[keyof typeof RequestParticipantRole];
+
 export interface StudentRequestDto {
   id: string;
   senderName: string;
   senderAvatarPath: string | null;
+  senderId?: string;
+  senderRole?: RequestParticipantRole;
   recipientName: string;
   recipientAvatarPath: string | null;
+  recipientId?: string;
+  recipientRole?: RequestParticipantRole;
   messageContent: string;
   status: StudentRequestStatus;
   type: StudentRequestType;
