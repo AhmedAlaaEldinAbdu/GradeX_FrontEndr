@@ -34,16 +34,25 @@ export const RequestParticipantRole = {
 export type RequestParticipantRole =
   (typeof RequestParticipantRole)[keyof typeof RequestParticipantRole];
 
+export interface RequestParticipant {
+  id?: string;
+  name: string;
+  avatarPath: string | null;
+  role: RequestParticipantRole;
+}
+
 export interface StudentRequestDto {
   id: string;
   senderName: string;
   senderAvatarPath: string | null;
   senderId?: string;
   senderRole?: RequestParticipantRole;
+  senderParticipants?: RequestParticipant[];
   recipientName: string;
   recipientAvatarPath: string | null;
   recipientId?: string;
   recipientRole?: RequestParticipantRole;
+  recipientParticipants?: RequestParticipant[];
   messageContent: string;
   status: StudentRequestStatus;
   type: StudentRequestType;
