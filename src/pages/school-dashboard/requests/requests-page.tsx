@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
@@ -21,6 +22,7 @@ const ComingSoon: React.FC = () => <NotFoundMessage message="requests.comingSoon
 
 const RequestsPage: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const stats = MOCK_REQUESTS_STATS;
 
@@ -92,6 +94,7 @@ const RequestsPage: React.FC = () => {
           type="button"
           aria-label={t('common.add')}
           title={t('common.add')}
+          onClick={() => navigate('/requests/add-message')}
           className="absolute end-0 top-0 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
         >
           <CustomImage src={WhitePlusIcon} alt={t('common.add')} className="h-5 w-5" />

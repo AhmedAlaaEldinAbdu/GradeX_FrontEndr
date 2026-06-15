@@ -18,6 +18,9 @@ import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 
 const PAGE_SIZE = 10;
 
+const SCHOOL_NAME = 'المدرسة';
+const isSchool = (name: string) => name === SCHOOL_NAME;
+
 const formatRequestDate = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-GB');
@@ -137,7 +140,12 @@ const MessageRequestsTab: React.FC = () => {
     {
       header: 'requests.sentFrom',
       accessor: (row) => (
-        <UserAvatarName name={row.senderName} avatarSrc={row.senderAvatarPath} align="center" />
+        <UserAvatarName
+          name={row.senderName}
+          avatarSrc={row.senderAvatarPath}
+          align="center"
+          onView={isSchool(row.senderName) ? undefined : () => setSelectedRequest(row)}
+        />
       ),
       headerClassName: 'min-w-[220px] text-center',
       className: 'text-center',
@@ -149,6 +157,7 @@ const MessageRequestsTab: React.FC = () => {
           name={row.recipientName}
           avatarSrc={row.recipientAvatarPath}
           align="center"
+          onView={isSchool(row.recipientName) ? undefined : () => setSelectedRequest(row)}
         />
       ),
       headerClassName: 'min-w-[220px] text-center',
