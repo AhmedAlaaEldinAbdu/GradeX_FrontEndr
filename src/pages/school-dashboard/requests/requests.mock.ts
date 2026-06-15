@@ -8,6 +8,7 @@ import type {
   StudentRequestDto,
   StudentRequestsStats,
   EarlyLeaveRequestDto,
+  RequestParticipant,
 } from '@/services/api/requests/requests.types';
 import {
   StudentRequestStatus,
@@ -98,6 +99,15 @@ const PARTICIPANTS: Record<string, { role: RequestParticipantRole; id?: string }
 
 const resolveParticipant = (name: string) =>
   PARTICIPANTS[name] ?? { role: RequestParticipantRole.School };
+
+const STUDENT_GROUP: RequestParticipant[] = Array.from({ length: 25 }, (_, index) => ({
+  id: index === 0 ? '9896e349-39b1-44ac-3071-08de93a9d827' : `student-${String(index + 1)}`,
+  name: index === 0 ? 'أحمد معتز حسن' : `طالب ${String(index + 1)}`,
+  avatarPath: null,
+  role: RequestParticipantRole.Student,
+}));
+
+const GROUP_RECIPIENT_REQUEST_IDS = ['3', '5'];
 
 const BASE_MESSAGE_REQUESTS: StudentRequestDto[] = [
   {
@@ -203,11 +213,14 @@ const BASE_MESSAGE_REQUESTS: StudentRequestDto[] = [
 export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = BASE_MESSAGE_REQUESTS.map((request) => {
   const sender = resolveParticipant(request.senderName);
   const recipient = resolveParticipant(request.recipientName);
+  const isGroupRecipient = GROUP_RECIPIENT_REQUEST_IDS.includes(request.id);
   return {
     ...request,
     senderRole: sender.role,
     senderId: sender.id,
+    recipientName: isGroupRecipient ? STUDENT_GROUP[0].name : request.recipientName,
     recipientRole: recipient.role,
     recipientId: recipient.id,
+    recipientParticipants: isGroupRecipient ? STUDENT_GROUP : undefined,
   };
 });
