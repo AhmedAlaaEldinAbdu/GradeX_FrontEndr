@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import Modal from '@/shared/popups/Modal';
 import UserAvatarName from '@/shared/components/UserAvatarName';
+import DefaultAvatar from '@gradex/assets/images/profile.png';
 
 import type { RequestParticipant } from '@/services/api/requests/requests.types';
 import { RequestParticipantRole } from '@/services/api/requests/requests.types';
@@ -36,7 +37,8 @@ const ParticipantsPopup: React.FC<ParticipantsPopupProps> = ({
             >
               <UserAvatarName
                 name={participant.name}
-                avatarSrc={participant.avatarPath}
+                avatarSrc={participant.avatarPath || DefaultAvatar}
+                fallbackSrc={DefaultAvatar}
                 align="start"
                 viewLabel={t('common.view')}
                 onView={canView ? () => onViewParticipant(participant) : undefined}
