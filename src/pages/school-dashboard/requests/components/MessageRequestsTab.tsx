@@ -129,6 +129,7 @@ const MessageRequestsTab: React.FC = () => {
           type: StudentRequestType.Messages,
           created: message.createdAt,
           isFromStudent: message.sendertype === MessageSenderType.Student,
+          studentId: firstStudent?.studentId ?? message.studentId,
         };
       },
     [schoolLabel]
@@ -340,7 +341,7 @@ const MessageRequestsTab: React.FC = () => {
               size="sm"
               className="!rounded-2xl px-6"
               disabled={!canReply}
-              onClick={() => navigate(`/requests/view-message/${row.id}`)}
+              onClick={() => navigate(`/requests/view-message/${row.studentId ?? row.id}`)}
             >
               {t('requests.actions.sendReply')}
             </Button>
