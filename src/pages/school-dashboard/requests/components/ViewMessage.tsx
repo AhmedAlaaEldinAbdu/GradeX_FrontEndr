@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -7,8 +7,12 @@ import Button from '@/shared/components/Button';
 import TextArea from '@/shared/components/TextArea';
 import Loading from '@/shared/components/Loading';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
+import PopupMessage from '@/shared/popups/PopupMessage';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
+import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 
 import { schoolMessageApiService } from '@/services/api/requests/school-message.service';
+import { getErrorMessage } from '@/lib/http';
 import type { StudentMessageDto } from '@/services/api/requests/requests.types';
 
 const formatRequestDate = (value: string) => {
@@ -37,30 +41,33 @@ const ViewMessage: React.FC = () => {
   const [message, setMessage] = useState<StudentMessageDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [reply, setReply] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [popup, setPopup] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({ show: false, type: 'success', message: '' });
 
-  useEffect(() => {
+  const loadMessage = useCallback(async () => {
     if (!id) {
       setIsLoading(false);
       return;
     }
-    let isActive = true;
-    const loadMessage = async () => {
-      setIsLoading(true);
-      try {
-        const messages = await schoolMessageApiService.getMessageByStudentId(id);
-        if (isActive) setMessage(messages[0] ?? null);
-      } catch (error) {
-        console.error('Failed to fetch student message:', error);
-        if (isActive) setMessage(null);
-      } finally {
-        if (isActive) setIsLoading(false);
-      }
-    };
-    loadMessage();
-    return () => {
-      isActive = false;
-    };
+    setIsLoading(true);
+    try {
+      const messages = await schoolMessageApiService.getMessageByStudentId(id);
+      setMessage(messages[0] ?? null);
+    } catch (error) {
+      console.error('Failed to fetch student message:', error);
+      setMessage(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    loadMessage();
+  }, [loadMessage]);
 
   if (isLoading) {
     return (
@@ -80,8 +87,21 @@ const ViewMessage: React.FC = () => {
     : message.classroomNameEN || message.classroomNameAr;
   const hasReply = Boolean(message.messageReply && message.messageReply.trim());
 
-  const handleSubmit = () => {
-    navigate('/requests?tab=messages');
+  const handleSubmit = async () => {
+    if (!message || !reply.trim()) return;
+    setIsSubmitting(true);
+    try {
+      await schoolMessageApiService.replyToSchoolMessage(message.id, reply.trim());
+      setPopup({
+        show: true,
+        type: 'success',
+        message: t('requests.viewMessage.replySuccess'),
+      });
+    } catch (error) {
+      setPopup({ show: true, type: 'error', message: getErrorMessage(error) });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -155,16 +175,39 @@ const ViewMessage: React.FC = () => {
 
           {!hasReply ? (
             <div className="flex w-full items-center justify-end gap-4">
-              <Button variant="outline" onClick={() => navigate('/requests?tab=messages')}>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/requests?tab=messages')}
+                disabled={isSubmitting}
+              >
                 {t('common.cancel')}
               </Button>
-              <Button variant="primary" onClick={handleSubmit} disabled={!reply.trim()}>
-                {t('requests.viewMessage.submit')}
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                disabled={!reply.trim() || isSubmitting}
+              >
+                {isSubmitting ? t('common.saving') : t('requests.viewMessage.submit')}
               </Button>
             </div>
           ) : null}
         </div>
       </Card>
+
+      <PopupMessage
+        open={popup.show}
+        type={popup.type}
+        iconSrc={popup.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
+        message={popup.message}
+        onClose={() => {
+          const wasSuccess = popup.type === 'success';
+          setPopup({ show: false, type: 'success', message: '' });
+          if (wasSuccess) {
+            setReply('');
+            loadMessage();
+          }
+        }}
+      />
     </div>
   );
 };
