@@ -166,9 +166,19 @@ const AddMessage: React.FC = () => {
   }, [classroomItems, selectedClassrooms]);
 
   const hasGrade = Boolean(grades && grades.length > 0);
+  const hasClassroom = Boolean(selectedClassrooms && selectedClassrooms.length > 0);
+
+  // Reset back to "all" if the user clears classrooms after picking students.
+  useEffect(() => {
+    if (!hasClassroom && directedTo === 'selected') {
+      setDirectedTo('all');
+      setSelectedStudents([]);
+      setStudentsError(undefined);
+    }
+  }, [hasClassroom, directedTo]);
 
   const handleSelectedRadio = () => {
-    if (!hasGrade) return;
+    if (!hasClassroom) return;
     setIsStudentsPopupOpen(true);
   };
 
@@ -302,7 +312,7 @@ const AddMessage: React.FC = () => {
                 </label>
                 <label
                   className={`flex items-center gap-2 text-sm font-normal text-[#646969] ${
-                    !hasGrade ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                    !hasClassroom ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                   }`}
                 >
                   <span>{t('requests.addMessage.selectedStudents')}</span>
@@ -312,7 +322,7 @@ const AddMessage: React.FC = () => {
                     value="selected"
                     checked={directedTo === 'selected'}
                     onChange={handleSelectedRadio}
-                    disabled={!hasGrade}
+                    disabled={!hasClassroom}
                     className="h-4 w-4 accent-[#00512E]"
                   />
                 </label>
@@ -322,21 +332,27 @@ const AddMessage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsStudentsPopupOpen(true)}
-                  className="mt-4 flex items-center gap-3"
+                  className="mt-4 flex items-center justify-end gap-3"
                 >
                   <CustomImage
                     src={selectedStudents[0].avatarPath || DefaultAvatar}
                     fallbackSrc={DefaultAvatar}
                     alt={selectedStudents[0].name}
-                    className="h-11 w-11 rounded-lg border border-[#DDE0E0] object-cover"
+                    className="h-[52px] w-[52px] rounded-lg border border-[#E6E6E6] object-cover"
                   />
-                  <span className="text-base font-medium text-[#00512E]">
-                    {selectedStudents[0].name}
-                    {selectedStudents.length > 1
-                      ? ` ${t('requests.addMessage.studentsSummary', {
-                          count: selectedStudents.length - 1,
-                        })}`
-                      : ''}
+                  <span className="flex items-center gap-3 text-xl/[34px] font-normal opacity-95">
+                    <span className="text-[#4D4D4D]">
+                      <bdi>{selectedStudents[0].name}</bdi>
+                    </span>
+                    {selectedStudents.length > 1 ? (
+                      <span className="text-[#00512E]">
+                        <bdi>
+                          {t('requests.addMessage.studentsSummary', {
+                            count: selectedStudents.length - 1,
+                          })}
+                        </bdi>
+                      </span>
+                    ) : null}
                   </span>
                 </button>
               ) : null}
