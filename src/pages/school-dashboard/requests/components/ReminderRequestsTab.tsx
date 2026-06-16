@@ -9,7 +9,6 @@ import IconButton from '@/shared/components/IconButton';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
 import type { StudentRequestDto } from '@/services/api/requests/requests.types';
@@ -29,8 +28,8 @@ const formatRequestDate = (value: string) => {
 
 const STATUS_BADGE_CLASSES: Record<StudentRequestStatus, string> = {
   [StudentRequestStatus.Sent]: 'bg-purple-100 text-purple-700',
-  [StudentRequestStatus.Viewed]: 'bg-blue-100 text-blue-700',
-  [StudentRequestStatus.Replied]: 'bg-green-100 text-green-700',
+  [StudentRequestStatus.Viewed]: 'bg-green-100 text-green-700',
+  [StudentRequestStatus.Replied]: 'bg-blue-100 text-blue-700',
   [StudentRequestStatus.Pending]: 'bg-orange-100 text-orange-700',
 };
 
@@ -129,9 +128,7 @@ const ReminderRequestsTab: React.FC = () => {
           name={row.studentName ?? ''}
           align="center"
           onView={
-            row.studentId
-              ? () => navigate(`/students/student-details/${row.studentId}`)
-              : undefined
+            row.studentId ? () => navigate(`/students/student-details/${row.studentId}`) : undefined
           }
         />
       ),
@@ -181,18 +178,17 @@ const ReminderRequestsTab: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        const isView = row.status === StudentRequestStatus.Viewed;
+        const isViewed = row.status === StudentRequestStatus.Viewed;
         return (
           <div className="flex items-center justify-center">
             <Button
               variant="outline"
               size="sm"
               className="!rounded-2xl px-6"
-              onClick={() =>
-                isView ? setSelectedRequest(row) : navigate(`/requests/view-message/${row.id}`)
-              }
+              disabled={isViewed}
+              onClick={() => navigate(`/requests/view-message/${row.id}`)}
             >
-              {isView ? t('requests.actions.view') : t('requests.actions.sendReply')}
+              {t('requests.actions.sendReply')}
             </Button>
           </div>
         );
