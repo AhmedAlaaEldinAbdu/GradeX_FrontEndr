@@ -55,6 +55,7 @@ const AddMessage: React.FC = () => {
   });
 
   const grades = useWatch({ control, name: 'grades' });
+  const selectedClassrooms = useWatch({ control, name: 'classrooms' });
 
   const [directedTo, setDirectedTo] = useState<DirectedTo>('all');
   const [isStudentsPopupOpen, setIsStudentsPopupOpen] = useState(false);
@@ -156,10 +157,13 @@ const AddMessage: React.FC = () => {
     [classroomItems, currentLang]
   );
 
-  const classroomChoices = useMemo(
-    () => classroomItems.map((classroom) => ({ id: classroom.id, name: classroom.name })),
-    [classroomItems]
-  );
+  const classroomChoices = useMemo(() => {
+    const source =
+      selectedClassrooms && selectedClassrooms.length > 0
+        ? classroomItems.filter((classroom) => selectedClassrooms.includes(classroom.id))
+        : classroomItems;
+    return source.map((classroom) => ({ id: classroom.id, name: classroom.name }));
+  }, [classroomItems, selectedClassrooms]);
 
   const hasGrade = Boolean(grades && grades.length > 0);
 
@@ -373,7 +377,7 @@ const AddMessage: React.FC = () => {
                 {t('common.cancel')}
               </Button>
               <Button type="submit" variant="primary" disabled={isSubmitting}>
-                {t('requests.addMessage.next')}
+                {isSubmitting ? t('common.saving') : t('common.add')}
               </Button>
             </div>
           </div>
@@ -384,6 +388,7 @@ const AddMessage: React.FC = () => {
         isOpen={isStudentsPopupOpen}
         onClose={() => setIsStudentsPopupOpen(false)}
         classrooms={classroomChoices}
+        isLoading={isLoadingClassrooms}
         selectedIds={selectedStudents.map((student) => student.id)}
         onConfirm={handleConfirmStudents}
       />
