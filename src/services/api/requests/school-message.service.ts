@@ -11,6 +11,8 @@ import type {
   CreateSchoolMessageRequest,
   SchoolMessagesListResponse,
   SchoolMessagesQueryParams,
+  StudentMessageDto,
+  StudentMessagesResponse,
 } from './requests.types';
 
 /**
@@ -52,9 +54,24 @@ export async function getAllSchoolMessages(
   };
 }
 
+/**
+ * Get the messages exchanged with a single student (used by the reply view).
+ */
+export async function getMessageByStudentId(studentId: string): Promise<StudentMessageDto[]> {
+  const SchoolBranchId = getCurrentSchoolBranchId();
+  const response: AxiosResponse<ApiResponseModel<StudentMessagesResponse>> = await axiosClient.get(
+    SchoolMessageEndpoints.getByStudentId,
+    { params: { StudentId: studentId, SchoolBranchId } }
+  );
+
+  const data = response.data.data ?? response.data.value;
+  return data?.messages ?? [];
+}
+
 export const schoolMessageApiService = {
   createSchoolMessage,
   getAllSchoolMessages,
+  getMessageByStudentId,
 };
 
 export default schoolMessageApiService;

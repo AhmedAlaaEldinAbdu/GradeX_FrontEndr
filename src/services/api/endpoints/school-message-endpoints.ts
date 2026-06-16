@@ -4,4 +4,5 @@ export const SchoolMessageEndpoints = {
   base: SchoolMessage,
   create: SchoolMessage,
   getAll: `${SchoolMessage}/GetAll`,
+  getByStudentId: `${SchoolMessage}/GetMessageByStudentId`,
 };

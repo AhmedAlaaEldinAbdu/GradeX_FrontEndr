@@ -127,6 +127,29 @@ export interface SchoolMessagesListResponse {
   pageSize: number;
 }
 
+/** A single message as returned by GetMessageByStudentId. */
+export interface StudentMessageDto {
+  id: string;
+  message: string;
+  createdAt: string;
+  messageStatus: MessageStatus;
+  schoolBranchesId: string;
+  messageReply: string | null;
+  sender: string;
+  reciver: string;
+  studentId: string;
+  gradeId: string | null;
+  gradeNameAr: string | null;
+  gradeNameEN: string | null;
+  classroomId: string | null;
+  classroomNameAr: string | null;
+  classroomNameEN: string | null;
+}
+
+export interface StudentMessagesResponse {
+  messages: StudentMessageDto[];
+}
+
 export interface SchoolMessagesQueryParams {
   PageNumber?: number;
   PageSize?: number;
