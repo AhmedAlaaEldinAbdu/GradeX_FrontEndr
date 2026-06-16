@@ -11,6 +11,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { useAppDispatch } from '@/hooks/useRedux';
 import { useAddMessageValidations } from '@/validations/requests-validations';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
@@ -20,6 +21,8 @@ import { EducationalStagesApiService } from '@/services/api/educational-stages/e
 import type { EducationalStageResponse } from '@/services/api/types/educational-stages.types';
 import { classroomApiService } from '@/services/api/classrooms/classrooms.service';
 import type { Classroom } from '@/services/api/types/classrooms.types';
+import { SendType } from '@/services/api/requests/requests.types';
+import { createSchoolMessage } from '@/redux/features/school-messages/schoolMessagesSlice';
 
 import { type MockStudentOption } from '../requests.mock';
 import SelectStudentsPopup from '../popups/SelectStudentsPopup';
@@ -35,6 +38,7 @@ interface AddMessageFormValues {
 const AddMessage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const currentLang = i18n.language;
   const scrollToFirstError = useScrollToFirstError<AddMessageFormValues>();
   const { gradesRules, classroomsRules, contentRules, validateStudents } =
@@ -170,7 +174,7 @@ const AddMessage: React.FC = () => {
     if (students.length > 0) setStudentsError(undefined);
   };
 
-  const onValid = (values: AddMessageFormValues) => {
+  const onValid = async (values: AddMessageFormValues) => {
     const studentsResult = validateStudents(directedTo, selectedStudents.length);
     if (studentsResult !== true) {
       setStudentsError(studentsResult);
@@ -178,13 +182,32 @@ const AddMessage: React.FC = () => {
       return;
     }
 
-    // TODO(backend): replace with a redux thunk + requests service call.
-    void values;
-    setShowPopupMessage({
-      show: true,
-      type: 'success',
-      message: t('requests.addMessage.addedSuccessfully'),
-    });
+    const sendType =
+      directedTo === 'selected' ? SendType.SelectedStudents : SendType.AllClassroomStudents;
+
+    try {
+      await dispatch(
+        createSchoolMessage({
+          message: values.content.trim(),
+          sendType,
+          students: directedTo === 'selected' ? selectedStudents.map((student) => student.id) : [],
+          classrooms: values.classrooms,
+          grades: values.grades,
+        })
+      ).unwrap();
+
+      setShowPopupMessage({
+        show: true,
+        type: 'success',
+        message: t('requests.addMessage.addedSuccessfully'),
+      });
+    } catch (error) {
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: typeof error === 'string' ? error : t('common.errorOccurred'),
+      });
+    }
   };
 
   return (
