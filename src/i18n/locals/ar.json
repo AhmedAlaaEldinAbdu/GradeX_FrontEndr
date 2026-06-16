@@ -1318,7 +1318,7 @@
       "selectStudentsTitle": "تحديد الطلاب",
       "studentSearchPlaceholder": "ابحث بسهولة عن اسم الطالب",
       "confirmSelection": "تحديد",
-      "studentsSummary": "{{count}}+ طالب",
+      "studentsSummary": "+{{count}} طالب",
       "validation": {
         "gradesRequired": "يرجى اختيار صف دراسي واحد على الأقل",
         "classroomsRequired": "يرجى اختيار فصل دراسي واحد على الأقل",
