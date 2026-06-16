@@ -1313,7 +1313,13 @@
       "selectStudentsTitle": "Select Students",
       "studentSearchPlaceholder": "Search by student name",
       "confirmSelection": "Select",
-      "studentsSummary": "+{{count}} students"
+      "studentsSummary": "+{{count}} students",
+      "validation": {
+        "gradesRequired": "Please select at least one grade",
+        "classroomsRequired": "Please select at least one classroom",
+        "contentRequired": "Please enter the reply content",
+        "studentsRequired": "Please select at least one student"
+      }
     },
     "viewMessage": {
       "title": "View Message",
