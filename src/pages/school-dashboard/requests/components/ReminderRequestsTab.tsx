@@ -10,6 +10,7 @@ import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
 import type { StudentRequestDto } from '@/services/api/requests/requests.types';
 import {
@@ -109,12 +110,12 @@ const ReminderRequestsTab: React.FC = () => {
       accessor: (row) => (
         <div className="flex justify-center">
           <IconButton
-            variant="blue"
+            variant="darkBlue"
             ariaLabel={t('common.view')}
             className="h-10 w-10"
             onClick={() => setSelectedRequest(row)}
           >
-            <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-6 w-6" />
+            <CustomImage src={EyeDarkBlueIcon} alt={t('common.view')} className="h-6 w-6" />
           </IconButton>
         </div>
       ),
