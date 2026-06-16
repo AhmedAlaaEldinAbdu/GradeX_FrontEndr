@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,12 +11,20 @@ import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
-import type { StudentRequestDto, RequestParticipant } from '@/services/api/requests/requests.types';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchSchoolMessages } from '@/redux/features/school-messages/schoolMessagesSlice';
+import type {
+  StudentRequestDto,
+  RequestParticipant,
+  SchoolMessageDto,
+} from '@/services/api/requests/requests.types';
 import {
   StudentRequestStatus,
+  StudentRequestType,
   RequestParticipantRole,
+  MessageStatus,
+  SendType,
 } from '@/services/api/requests/requests.types';
-import { MOCK_MESSAGE_REQUESTS } from '../requests.mock';
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 import ParticipantsPopup from '../popups/ParticipantsPopup';
 
@@ -26,6 +34,13 @@ type ParticipantsView = {
 };
 
 const PAGE_SIZE = 10;
+
+const MESSAGE_STATUS_TO_REQUEST_STATUS: Record<MessageStatus, StudentRequestStatus> = {
+  [MessageStatus.Pending]: StudentRequestStatus.Pending,
+  [MessageStatus.Sent]: StudentRequestStatus.Sent,
+  [MessageStatus.Viewed]: StudentRequestStatus.Viewed,
+  [MessageStatus.Replied]: StudentRequestStatus.Replied,
+};
 
 const getParticipantProfilePath = (
   role: RequestParticipantRole | undefined,
@@ -59,16 +74,76 @@ const STATUS_LABEL_KEYS: Record<StudentRequestStatus, string> = {
 const MessageRequestsTab: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const { messages, isLoading, totalItems, totalPages } = useAppSelector(
+    (state) => state.schoolMessages
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSender, setSelectedSender] = useState('');
-  const [selectedRecipient, setSelectedRecipient] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [page, setPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState<StudentRequestDto | null>(null);
   const [participantsView, setParticipantsView] = useState<ParticipantsView | null>(null);
 
-  const [requests, setRequests] = useState<StudentRequestDto[]>(MOCK_MESSAGE_REQUESTS);
+  const schoolLabel = t('requests.schoolLabel');
+
+  const mapMessageToRequest = useMemo(
+    () =>
+      (message: SchoolMessageDto): StudentRequestDto => {
+        const isSchoolRecipient = message.recivertype === SendType.School;
+        const participants: RequestParticipant[] = message.students.map((student) => ({
+          id: student.studentId,
+          name: student.studentName ?? '',
+          avatarPath: student.studentimage,
+          role: RequestParticipantRole.Student,
+        }));
+        const firstStudent = message.students[0];
+
+        return {
+          id: message.messageId,
+          senderName: schoolLabel,
+          senderAvatarPath: null,
+          senderRole: RequestParticipantRole.School,
+          recipientName: isSchoolRecipient ? schoolLabel : (firstStudent?.studentName ?? ''),
+          recipientAvatarPath: isSchoolRecipient ? null : (firstStudent?.studentimage ?? null),
+          recipientRole: isSchoolRecipient
+            ? RequestParticipantRole.School
+            : RequestParticipantRole.Student,
+          recipientId: isSchoolRecipient ? undefined : firstStudent?.studentId,
+          recipientParticipants: isSchoolRecipient ? undefined : participants,
+          messageContent: message.message,
+          status: MESSAGE_STATUS_TO_REQUEST_STATUS[message.messageStatus],
+          type: StudentRequestType.Messages,
+          created: message.createdAt,
+        };
+      },
+    [schoolLabel]
+  );
+
+  // Fetch from the backend on page / search change (debounced search).
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      dispatch(
+        fetchSchoolMessages({
+          PageIndex: page,
+          PageSize: PAGE_SIZE,
+          Search: searchTerm.trim() || undefined,
+        })
+      );
+    }, 350);
+    return () => clearTimeout(handle);
+  }, [dispatch, page, searchTerm]);
+
+  const requests = useMemo(
+    () => messages.map(mapMessageToRequest),
+    [messages, mapMessageToRequest]
+  );
+
+  const pageData = useMemo(() => {
+    if (!selectedStatus) return requests;
+    return requests.filter((row) => row.status === Number(selectedStatus));
+  }, [requests, selectedStatus]);
 
   const handleViewParticipant = (participant: RequestParticipant) => {
     const path = getParticipantProfilePath(participant.role, participant.id);
@@ -82,6 +157,15 @@ const MessageRequestsTab: React.FC = () => {
   ) => {
     const isGroup = Boolean(participants && participants.length > 1);
     const display = isGroup ? participants![0] : single;
+
+    if (!isGroup && display.role === RequestParticipantRole.School) {
+      return (
+        <div className="flex w-full items-center justify-center">
+          <span className="text-sm font-medium text-[#0E1F1F]">{display.name}</span>
+        </div>
+      );
+    }
+
     const path = getParticipantProfilePath(display.role, display.id);
     const extraCount = isGroup ? participants!.length - 1 : 0;
 
@@ -116,48 +200,6 @@ const MessageRequestsTab: React.FC = () => {
       </div>
     );
   };
-
-  // TODO(backend): swap this mock filtering for a redux thunk + service call.
-  const filteredData = useMemo(() => {
-    return requests.filter((row) => {
-      const matchesSearch =
-        !searchTerm ||
-        row.senderName.includes(searchTerm) ||
-        row.recipientName.includes(searchTerm);
-      const matchesSender = !selectedSender || row.senderName === selectedSender;
-      const matchesRecipient = !selectedRecipient || row.recipientName === selectedRecipient;
-      const matchesStatus = !selectedStatus || row.status === Number(selectedStatus);
-      return matchesSearch && matchesSender && matchesRecipient && matchesStatus;
-    });
-  }, [requests, searchTerm, selectedSender, selectedRecipient, selectedStatus]);
-
-  const handleMarkViewed = (request: StudentRequestDto) => {
-    setRequests((prev) =>
-      prev.map((row) =>
-        row.id === request.id ? { ...row, status: StudentRequestStatus.Viewed } : row
-      )
-    );
-  };
-
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const pageData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  const senderOptions = useMemo(
-    () =>
-      Array.from(new Set(MOCK_MESSAGE_REQUESTS.map((r) => r.senderName))).map((name) => ({
-        value: name,
-        label: name,
-      })),
-    []
-  );
-  const recipientOptions = useMemo(
-    () =>
-      Array.from(new Set(MOCK_MESSAGE_REQUESTS.map((r) => r.recipientName))).map((name) => ({
-        value: name,
-        label: name,
-      })),
-    []
-  );
 
   const getStatusBadge = (status: StudentRequestStatus) => (
     <span
@@ -283,42 +325,6 @@ const MessageRequestsTab: React.FC = () => {
     },
     {
       type: 'custom',
-      name: 'sender-filter',
-      value: selectedSender,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedSender}
-          onChange={(value) => {
-            setSelectedSender(Array.isArray(value) ? (value[0] ?? '') : (value as string));
-            setPage(1);
-          }}
-          options={senderOptions}
-          placeholder={t('requests.filters.sentFrom')}
-        />
-      ),
-    },
-    {
-      type: 'custom',
-      name: 'recipient-filter',
-      value: selectedRecipient,
-      onChange: () => {},
-      width: '20%',
-      customComponent: (
-        <CustomSelect
-          value={selectedRecipient}
-          onChange={(value) => {
-            setSelectedRecipient(Array.isArray(value) ? (value[0] ?? '') : (value as string));
-            setPage(1);
-          }}
-          options={recipientOptions}
-          placeholder={t('requests.filters.sentTo')}
-        />
-      ),
-    },
-    {
-      type: 'custom',
       name: 'status-filter',
       value: selectedStatus,
       onChange: () => {},
@@ -328,7 +334,6 @@ const MessageRequestsTab: React.FC = () => {
           value={selectedStatus}
           onChange={(value) => {
             setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : (value as string));
-            setPage(1);
           }}
           options={[
             { value: StudentRequestStatus.Sent.toString(), label: t('requests.status.sent') },
@@ -344,8 +349,6 @@ const MessageRequestsTab: React.FC = () => {
 
   const handleResetFilters = () => {
     setSearchTerm('');
-    setSelectedSender('');
-    setSelectedRecipient('');
     setSelectedStatus('');
     setPage(1);
   };
@@ -358,10 +361,11 @@ const MessageRequestsTab: React.FC = () => {
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
+        isLoading={isLoading}
         pagination={{
           page,
           limit: PAGE_SIZE,
-          total: filteredData.length,
+          total: totalItems,
           totalPages,
         }}
         onPageChange={setPage}
@@ -373,7 +377,7 @@ const MessageRequestsTab: React.FC = () => {
         isOpen={Boolean(selectedRequest)}
         onClose={() => setSelectedRequest(null)}
         request={selectedRequest}
-        onMarkViewed={handleMarkViewed}
+        onMarkViewed={() => undefined}
       />
 
       <ParticipantsPopup
