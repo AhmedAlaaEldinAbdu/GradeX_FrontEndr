@@ -1254,6 +1254,7 @@
     "rejectedCount": "Rejected Requests",
     "totalCount": "Total Requests",
     "searchPlaceholder": "Search by student name",
+    "schoolLabel": "School",
     "requestPreview": "Request Preview",
     "requestStatus": "Request Status",
     "sentFrom": "Sent From",

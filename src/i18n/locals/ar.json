@@ -1254,6 +1254,7 @@
     "rejectedCount": "طلبات مرفوضة",
     "totalCount": "إجمالي الطلبات",
     "searchPlaceholder": "ابحث عن اسم الطالب",
+    "schoolLabel": "المدرسة",
     "requestPreview": "معاينة الطلب",
     "requestStatus": "حالة الطلب",
     "sentFrom": "مرسل من",
