@@ -23,6 +23,7 @@ import {
   StudentRequestType,
   RequestParticipantRole,
   MessageStatus,
+  MessageSenderType,
   SendType,
 } from '@/services/api/requests/requests.types';
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
@@ -116,6 +117,7 @@ const MessageRequestsTab: React.FC = () => {
           status: MESSAGE_STATUS_TO_REQUEST_STATUS[message.messageStatus],
           type: StudentRequestType.Messages,
           created: message.createdAt,
+          isFromStudent: message.sendertype === MessageSenderType.Student,
         };
       },
     [schoolLabel]
@@ -194,8 +196,8 @@ const MessageRequestsTab: React.FC = () => {
           <span className="h-10 w-10 shrink-0" aria-hidden="true" />
         )}
 
-        <span className="w-9 shrink-0 text-center text-sm font-medium text-green-600">
-          {extraCount > 0 ? `${extraCount}+` : ''}
+        <span className="w-9 shrink-0 text-center text-lg/[31px] font-normal text-[#00512E]">
+          <bdi>{extraCount > 0 ? `${extraCount}+` : ''}</bdi>
         </span>
       </div>
     );
@@ -290,18 +292,17 @@ const MessageRequestsTab: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        const isView = row.status === StudentRequestStatus.Viewed;
+        const canReply = row.status === StudentRequestStatus.Pending && Boolean(row.isFromStudent);
         return (
           <div className="flex items-center justify-center">
             <Button
               variant="outline"
               size="sm"
               className="!rounded-2xl px-6"
-              onClick={() =>
-                isView ? setSelectedRequest(row) : navigate(`/requests/view-message/${row.id}`)
-              }
+              disabled={!canReply}
+              onClick={() => navigate(`/requests/view-message/${row.id}`)}
             >
-              {isView ? t('requests.actions.view') : t('requests.actions.sendReply')}
+              {t('requests.actions.sendReply')}
             </Button>
           </div>
         );
