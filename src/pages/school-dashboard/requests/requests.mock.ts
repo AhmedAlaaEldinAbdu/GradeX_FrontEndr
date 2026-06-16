@@ -224,3 +224,46 @@ export const MOCK_MESSAGE_REQUESTS: StudentRequestDto[] = BASE_MESSAGE_REQUESTS.
     recipientParticipants: isGroupRecipient ? STUDENT_GROUP : undefined,
   };
 });
+
+const REMINDER_STATUSES = [
+  StudentRequestStatus.Pending,
+  StudentRequestStatus.Viewed,
+  StudentRequestStatus.Pending,
+  StudentRequestStatus.Pending,
+  StudentRequestStatus.Viewed,
+  StudentRequestStatus.Pending,
+];
+
+const REMINDER_RECIPIENTS = [
+  'أحمد معتز حسن',
+  'أحمد معتز حسن',
+  'أحمد معتز حسن',
+  'المدرسة',
+  'المدرسة',
+  'المدرسة',
+];
+
+export const MOCK_REMINDER_REQUESTS: StudentRequestDto[] = REMINDER_STATUSES.map(
+  (status, index) => {
+    const recipientName = REMINDER_RECIPIENTS[index];
+    const recipient = resolveParticipant(recipientName);
+    return {
+      id: String(index + 1),
+      senderName: 'المدرسة',
+      senderAvatarPath: null,
+      senderRole: RequestParticipantRole.School,
+      recipientName,
+      recipientAvatarPath: null,
+      recipientRole: recipient.role,
+      recipientId: recipient.id,
+      messageContent: 'معاد دوا الطالب',
+      studentName: 'أحمد معتز حسن',
+      studentId: '9896e349-39b1-44ac-3071-08de93a9d827',
+      educationalStage: 'المرحلة الأعدادية',
+      classrooms: ['1/1 ع'],
+      status,
+      type: StudentRequestType.Reminder,
+      created: '2020-01-01T00:00:00Z',
+    };
+  }
+);
