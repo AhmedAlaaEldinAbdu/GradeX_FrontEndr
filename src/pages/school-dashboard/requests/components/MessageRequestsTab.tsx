@@ -89,6 +89,8 @@ const MessageRequestsTab: React.FC = () => {
   );
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSender, setSelectedSender] = useState('');
+  const [selectedRecipient, setSelectedRecipient] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
@@ -149,9 +151,39 @@ const MessageRequestsTab: React.FC = () => {
     return () => clearTimeout(handle);
   }, [dispatch, page, searchTerm, selectedStatus, selectedDate]);
 
-  const pageData = useMemo(
+  const requests = useMemo(
     () => messages.map(mapMessageToRequest),
     [messages, mapMessageToRequest]
+  );
+
+  // Sender / recipient filters are not exposed by the API, so we filter the
+  // fetched page client-side.
+  const pageData = useMemo(
+    () =>
+      requests.filter((row) => {
+        const matchesSender = !selectedSender || row.senderName === selectedSender;
+        const matchesRecipient = !selectedRecipient || row.recipientName === selectedRecipient;
+        return matchesSender && matchesRecipient;
+      }),
+    [requests, selectedSender, selectedRecipient]
+  );
+
+  const senderOptions = useMemo(
+    () =>
+      Array.from(new Set(requests.map((row) => row.senderName).filter(Boolean))).map((name) => ({
+        value: name,
+        label: name,
+      })),
+    [requests]
+  );
+
+  const recipientOptions = useMemo(
+    () =>
+      Array.from(new Set(requests.map((row) => row.recipientName).filter(Boolean))).map((name) => ({
+        value: name,
+        label: name,
+      })),
+    [requests]
   );
 
   const handleViewParticipant = (participant: RequestParticipant) => {
@@ -333,6 +365,42 @@ const MessageRequestsTab: React.FC = () => {
     },
     {
       type: 'custom',
+      name: 'sender-filter',
+      value: selectedSender,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={selectedSender}
+          onChange={(value) => {
+            setSelectedSender(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setPage(1);
+          }}
+          options={senderOptions}
+          placeholder={t('requests.filters.sentFrom')}
+        />
+      ),
+    },
+    {
+      type: 'custom',
+      name: 'recipient-filter',
+      value: selectedRecipient,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={selectedRecipient}
+          onChange={(value) => {
+            setSelectedRecipient(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setPage(1);
+          }}
+          options={recipientOptions}
+          placeholder={t('requests.filters.sentTo')}
+        />
+      ),
+    },
+    {
+      type: 'custom',
       name: 'status-filter',
       value: selectedStatus,
       onChange: () => {},
@@ -377,6 +445,8 @@ const MessageRequestsTab: React.FC = () => {
 
   const handleResetFilters = () => {
     setSearchTerm('');
+    setSelectedSender('');
+    setSelectedRecipient('');
     setSelectedStatus('');
     setSelectedDate('');
     setPage(1);
