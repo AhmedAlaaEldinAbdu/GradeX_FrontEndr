@@ -79,6 +79,52 @@ export interface CreateSchoolMessageRequest {
   grades: string[];
 }
 
+export const MessageStatus = {
+  Pending: 1,
+  Sent: 2,
+  Viewed: 3,
+  Replied: 4,
+} as const;
+
+export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus];
+
+export interface SchoolMessageStudentDto {
+  studentId: string;
+  studentName: string | null;
+  studentimage: string | null;
+}
+
+export interface SchoolMessageDto {
+  messageId: string;
+  message: string;
+  createdAt: string;
+  messageStatus: MessageStatus;
+  schoolBranchesId: string;
+  messageReply: string | null;
+  sendertype: number;
+  recivertype: SendType;
+  studentId: string;
+  studentName: string | null;
+  studentimage: string | null;
+  students: SchoolMessageStudentDto[];
+  grades: string[];
+  classrooms: string[];
+}
+
+export interface SchoolMessagesListResponse {
+  messages: SchoolMessageDto[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface SchoolMessagesQueryParams {
+  PageIndex?: number;
+  PageSize?: number;
+  Search?: string;
+}
+
 /** Status of an early-leave (طلب خروج مبكر) request. */
 export const EarlyLeaveStatus = {
   Pending: 1, // قيد الانتظار
