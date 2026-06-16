@@ -1285,6 +1285,10 @@
       "sendReply": "Envoyer une réponse",
       "view": "Consulter"
     },
+    "reminder": {
+      "detailsTitle": "Rappel",
+      "content": "Contenu du rappel"
+    },
     "popup": {
       "title": "Message",
       "studentName": "Nom de l'élève",
