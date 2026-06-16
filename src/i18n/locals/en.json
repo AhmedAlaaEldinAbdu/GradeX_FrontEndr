@@ -1302,6 +1302,7 @@
       "gradePlaceholder": "Select grades",
       "classroomLabel": "Classroom",
       "classroomPlaceholder": "Select classrooms",
+      "selectGradeFirst": "Please select a grade first",
       "directedToLabel": "Directed To",
       "allClassrooms": "All classroom students",
       "selectedStudents": "Selected students",

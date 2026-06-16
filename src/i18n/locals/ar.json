@@ -1302,6 +1302,7 @@
       "gradePlaceholder": "اختر الصفوف الدراسية",
       "classroomLabel": "الفصل الدراسي",
       "classroomPlaceholder": "اختر الفصول الدراسية",
+      "selectGradeFirst": "يرجى اختيار الصف الدراسي أولاً",
       "directedToLabel": "الأختبار موجه إلي",
       "allClassrooms": "جميع طلاب الفصول",
       "selectedStudents": "تحديد طلاب",
