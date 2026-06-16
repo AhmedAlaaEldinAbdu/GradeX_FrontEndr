@@ -58,6 +58,7 @@ export interface StudentRequestDto {
   type: StudentRequestType;
   created: string;
   studentName?: string;
+  studentId?: string;
   educationalStage?: string;
   classrooms?: string[];
 }
