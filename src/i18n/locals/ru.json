@@ -1303,7 +1303,8 @@
       "classroom": "Класс",
       "replyLabel": "Содержание ответа",
       "replyPlaceholder": "Введите ответ!",
-      "submit": "Добавить"
+      "submit": "Добавить",
+      "replySuccess": "Ответ успешно отправлен"
     },
     "earlyLeave": {
       "detailsTitle": "Запрос на ранний уход",

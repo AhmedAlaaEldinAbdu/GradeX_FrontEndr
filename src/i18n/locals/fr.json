@@ -1303,7 +1303,8 @@
       "classroom": "Classe",
       "replyLabel": "Contenu de la réponse",
       "replyPlaceholder": "Saisissez la réponse !",
-      "submit": "Ajouter"
+      "submit": "Ajouter",
+      "replySuccess": "Réponse envoyée avec succès"
     },
     "earlyLeave": {
       "detailsTitle": "Demande de sortie anticipée",

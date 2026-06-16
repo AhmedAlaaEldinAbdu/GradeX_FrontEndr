@@ -1333,7 +1333,8 @@
       "classroom": "Classroom",
       "replyLabel": "Reply Content",
       "replyPlaceholder": "Enter the reply!",
-      "submit": "Add"
+      "submit": "Add",
+      "replySuccess": "Reply sent successfully"
     },
     "earlyLeave": {
       "detailsTitle": "Early Departure Request",

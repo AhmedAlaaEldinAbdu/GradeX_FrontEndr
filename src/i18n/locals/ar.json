@@ -1333,7 +1333,8 @@
       "classroom": "الفصل الدراسي",
       "replyLabel": "محتوي الرد",
       "replyPlaceholder": "أدخل محتوي الردا!",
-      "submit": "إضافة"
+      "submit": "إضافة",
+      "replySuccess": "تم إرسال الرد بنجاح"
     },
     "earlyLeave": {
       "detailsTitle": "طلب إنصراف مبكر",
