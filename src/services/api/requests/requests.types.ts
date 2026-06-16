@@ -57,6 +57,7 @@ export interface StudentRequestDto {
   status: StudentRequestStatus;
   type: StudentRequestType;
   created: string;
+  isFromStudent?: boolean;
   studentName?: string;
   studentId?: string;
   educationalStage?: string;
@@ -87,6 +88,13 @@ export const MessageStatus = {
 } as const;
 
 export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus];
+
+export const MessageSenderType = {
+  School: 1,
+  Student: 2,
+} as const;
+
+export type MessageSenderType = (typeof MessageSenderType)[keyof typeof MessageSenderType];
 
 export interface SchoolMessageStudentDto {
   studentId: string;
