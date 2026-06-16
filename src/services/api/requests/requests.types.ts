@@ -62,6 +62,22 @@ export interface StudentRequestDto {
   classrooms?: string[];
 }
 
+export const SendType = {
+  SelectedStudents: 1,
+  AllClassroomStudents: 2,
+  School: 3,
+} as const;
+
+export type SendType = (typeof SendType)[keyof typeof SendType];
+
+export interface CreateSchoolMessageRequest {
+  message: string;
+  sendType: SendType;
+  students: string[];
+  classrooms: string[];
+  grades: string[];
+}
+
 /** Status of an early-leave (طلب خروج مبكر) request. */
 export const EarlyLeaveStatus = {
   Pending: 1, // قيد الانتظار
