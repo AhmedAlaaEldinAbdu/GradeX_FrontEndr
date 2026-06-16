@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import Modal from '@/shared/popups/Modal';
 import Button from '@/shared/components/Button';
+import Loading from '@/shared/components/Loading';
 import SearchInput from '@/shared/components/SearchInput';
 import CustomImage from '@/shared/components/CustomImage';
 import { studentsApiService } from '@/services/api/students/students.service';
@@ -19,6 +20,7 @@ interface SelectStudentsPopupProps {
   isOpen: boolean;
   onClose: () => void;
   classrooms: ClassroomOption[];
+  isLoading?: boolean;
   selectedIds: string[];
   onConfirm: (students: MockStudentOption[]) => void;
 }
@@ -32,6 +34,7 @@ const SelectStudentsPopup: React.FC<SelectStudentsPopupProps> = ({
   isOpen,
   onClose,
   classrooms,
+  isLoading = false,
   selectedIds,
   onConfirm,
 }) => {
@@ -45,17 +48,21 @@ const SelectStudentsPopup: React.FC<SelectStudentsPopupProps> = ({
   const [loadingClassroom, setLoadingClassroom] = useState<Record<string, boolean>>({});
   const fetchedRef = useRef<Set<string>>(new Set());
 
-  // Re-sync local selection whenever the popup is (re)opened; expand every classroom.
+  // Re-sync local selection whenever the popup is (re)opened.
   useEffect(() => {
     if (isOpen) {
       setChecked(selectedIds);
       setSearch('');
       setStudentSearch({});
-      setExpanded(Object.fromEntries(classrooms.map((classroom) => [classroom.id, true])));
     } else {
       fetchedRef.current = new Set();
     }
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setExpanded(Object.fromEntries(classrooms.map((classroom) => [classroom.id, true])));
+  }, [isOpen, classrooms]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -118,102 +125,110 @@ const SelectStudentsPopup: React.FC<SelectStudentsPopupProps> = ({
       size="md"
     >
       <div className="flex flex-col gap-4">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          placeholder={t('requests.searchPlaceholder')}
-        />
+        {isLoading ? (
+          <div className="flex min-h-[200px] items-center justify-center">
+            <Loading />
+          </div>
+        ) : (
+          <>
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder={t('requests.searchPlaceholder')}
+            />
 
-        <div className="flex max-h-[45vh] flex-col gap-3 overflow-y-auto">
-          {visibleClassrooms.length === 0 ? (
-            <p className="py-6 text-center text-sm font-normal text-[#646969]">
-              {t('common.noDataFound')}
-            </p>
-          ) : (
-            visibleClassrooms.map((classroom) => {
-              const isExpanded = Boolean(expanded[classroom.id]);
-              const term = (studentSearch[classroom.id] ?? '').trim();
-              const all = studentsByClassroom[classroom.id] ?? [];
-              const students = term
-                ? all.filter((student) => studentName(student).includes(term))
-                : all;
-              const isLoading = loadingClassroom[classroom.id];
+            <div className="flex max-h-[45vh] flex-col gap-3 overflow-y-auto">
+              {visibleClassrooms.length === 0 ? (
+                <p className="py-6 text-center text-sm font-normal text-[#646969]">
+                  {t('common.noDataFound')}
+                </p>
+              ) : (
+                visibleClassrooms.map((classroom) => {
+                  const isExpanded = Boolean(expanded[classroom.id]);
+                  const term = (studentSearch[classroom.id] ?? '').trim();
+                  const all = studentsByClassroom[classroom.id] ?? [];
+                  const students = term
+                    ? all.filter((student) => studentName(student).includes(term))
+                    : all;
+                  const isLoading = loadingClassroom[classroom.id];
 
-              return (
-                <div key={classroom.id} className="rounded-2xl border border-[#DDE0E0]">
-                  <button
-                    type="button"
-                    onClick={() => toggleGroup(classroom.id)}
-                    className="flex w-full items-center justify-between gap-2 px-4 py-3.5"
-                  >
-                    <span className="text-sm font-normal text-[#0E1F1F]">{classroom.name}</span>
-                    <CustomImage
-                      src={isExpanded ? ChevronUpIcon : ChevronDownIcon}
-                      alt=""
-                      className="h-4 w-4"
-                    />
-                  </button>
+                  return (
+                    <div key={classroom.id} className="rounded-2xl border border-[#DDE0E0]">
+                      <button
+                        type="button"
+                        onClick={() => toggleGroup(classroom.id)}
+                        className="flex w-full items-center justify-between gap-2 px-4 py-3.5"
+                      >
+                        <span className="text-sm font-normal text-[#0E1F1F]">{classroom.name}</span>
+                        <CustomImage
+                          src={isExpanded ? ChevronUpIcon : ChevronDownIcon}
+                          alt=""
+                          className="h-4 w-4"
+                        />
+                      </button>
 
-                  {isExpanded ? (
-                    <div className="flex flex-col gap-2 px-4 pb-4">
-                      <SearchInput
-                        value={studentSearch[classroom.id] ?? ''}
-                        onChange={(value) =>
-                          setStudentSearch((prev) => ({ ...prev, [classroom.id]: value }))
-                        }
-                        placeholder={t('requests.addMessage.studentSearchPlaceholder')}
-                      />
+                      {isExpanded ? (
+                        <div className="flex flex-col gap-2 px-4 pb-4">
+                          <SearchInput
+                            value={studentSearch[classroom.id] ?? ''}
+                            onChange={(value) =>
+                              setStudentSearch((prev) => ({ ...prev, [classroom.id]: value }))
+                            }
+                            placeholder={t('requests.addMessage.studentSearchPlaceholder')}
+                          />
 
-                      {isLoading ? (
-                        <p className="py-3 text-center text-sm text-[#646969]">
-                          {t('common.loading')}
-                        </p>
-                      ) : students.length === 0 ? (
-                        <p className="py-3 text-center text-sm text-[#646969]">
-                          {t('common.noDataFound')}
-                        </p>
-                      ) : (
-                        <div className="flex flex-col">
-                          {students.map((student) => (
-                            <label
-                              key={student.id}
-                              className="flex cursor-pointer items-center justify-start gap-2 py-2 text-sm font-normal text-[#646969]"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={checked.includes(student.id)}
-                                onChange={() => toggleStudent(student.id)}
-                                className="h-4 w-4 accent-[#00512E]"
-                              />
-                              <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg border border-[#DDE0E0]">
-                                <CustomImage
-                                  src={student.profilePicture || DefaultAvatar}
-                                  fallbackSrc={DefaultAvatar}
-                                  alt=""
-                                  className="h-full w-full object-cover"
-                                />
-                              </div>
-                              <span>{studentName(student)}</span>
-                            </label>
-                          ))}
+                          {isLoading ? (
+                            <p className="py-3 text-center text-sm text-[#646969]">
+                              {t('common.loading')}
+                            </p>
+                          ) : students.length === 0 ? (
+                            <p className="py-3 text-center text-sm text-[#646969]">
+                              {t('common.noDataFound')}
+                            </p>
+                          ) : (
+                            <div className="flex flex-col">
+                              {students.map((student) => (
+                                <label
+                                  key={student.id}
+                                  className="flex cursor-pointer items-center justify-start gap-2 py-2 text-sm font-normal text-[#646969]"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={checked.includes(student.id)}
+                                    onChange={() => toggleStudent(student.id)}
+                                    className="h-4 w-4 accent-[#00512E]"
+                                  />
+                                  <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg border border-[#DDE0E0]">
+                                    <CustomImage
+                                      src={student.profilePicture || DefaultAvatar}
+                                      fallbackSrc={DefaultAvatar}
+                                      alt=""
+                                      className="h-full w-full object-cover"
+                                    />
+                                  </div>
+                                  <span>{studentName(student)}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      ) : null}
                     </div>
-                  ) : null}
-                </div>
-              );
-            })
-          )}
-        </div>
+                  );
+                })
+              )}
+            </div>
 
-        <div className="flex items-center justify-end gap-4 pt-2">
-          <Button type="button" variant="outline" onClick={onClose}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="button" variant="primary" onClick={handleConfirm}>
-            {t('requests.addMessage.confirmSelection')}
-          </Button>
-        </div>
+            <div className="flex items-center justify-end gap-4 pt-2">
+              <Button type="button" variant="outline" onClick={onClose}>
+                {t('common.cancel')}
+              </Button>
+              <Button type="button" variant="primary" onClick={handleConfirm}>
+                {t('requests.addMessage.confirmSelection')}
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </Modal>
   );
