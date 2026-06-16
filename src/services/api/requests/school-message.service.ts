@@ -45,7 +45,7 @@ export async function getAllSchoolMessages(
 
   return {
     messages: [],
-    pageIndex: params?.PageIndex ?? 1,
+    pageIndex: params?.PageNumber ?? 1,
     totalPages: 0,
     totalItems: 0,
     pageSize: params?.PageSize ?? 10,

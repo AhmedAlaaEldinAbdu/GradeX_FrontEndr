@@ -43,6 +43,13 @@ const MESSAGE_STATUS_TO_REQUEST_STATUS: Record<MessageStatus, StudentRequestStat
   [MessageStatus.Replied]: StudentRequestStatus.Replied,
 };
 
+const REQUEST_STATUS_TO_MESSAGE_STATUS: Record<StudentRequestStatus, MessageStatus> = {
+  [StudentRequestStatus.Pending]: MessageStatus.Pending,
+  [StudentRequestStatus.Sent]: MessageStatus.Sent,
+  [StudentRequestStatus.Viewed]: MessageStatus.Viewed,
+  [StudentRequestStatus.Replied]: MessageStatus.Replied,
+};
+
 const getParticipantProfilePath = (
   role: RequestParticipantRole | undefined,
   id: string | undefined
@@ -83,6 +90,7 @@ const MessageRequestsTab: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState<StudentRequestDto | null>(null);
   const [participantsView, setParticipantsView] = useState<ParticipantsView | null>(null);
@@ -123,29 +131,28 @@ const MessageRequestsTab: React.FC = () => {
     [schoolLabel]
   );
 
-  // Fetch from the backend on page / search change (debounced search).
+  // Fetch from the backend on page / filter change (debounced search).
   useEffect(() => {
     const handle = setTimeout(() => {
       dispatch(
         fetchSchoolMessages({
-          PageIndex: page,
+          PageNumber: page,
           PageSize: PAGE_SIZE,
-          Search: searchTerm.trim() || undefined,
+          SearchStudentName: searchTerm.trim() || undefined,
+          MessageStatus: selectedStatus
+            ? REQUEST_STATUS_TO_MESSAGE_STATUS[Number(selectedStatus) as StudentRequestStatus]
+            : undefined,
+          Date: selectedDate || undefined,
         })
       );
     }, 350);
     return () => clearTimeout(handle);
-  }, [dispatch, page, searchTerm]);
+  }, [dispatch, page, searchTerm, selectedStatus, selectedDate]);
 
-  const requests = useMemo(
+  const pageData = useMemo(
     () => messages.map(mapMessageToRequest),
     [messages, mapMessageToRequest]
   );
-
-  const pageData = useMemo(() => {
-    if (!selectedStatus) return requests;
-    return requests.filter((row) => row.status === Number(selectedStatus));
-  }, [requests, selectedStatus]);
 
   const handleViewParticipant = (participant: RequestParticipant) => {
     const path = getParticipantProfilePath(participant.role, participant.id);
@@ -335,6 +342,7 @@ const MessageRequestsTab: React.FC = () => {
           value={selectedStatus}
           onChange={(value) => {
             setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setPage(1);
           }}
           options={[
             { value: StudentRequestStatus.Sent.toString(), label: t('requests.status.sent') },
@@ -346,11 +354,31 @@ const MessageRequestsTab: React.FC = () => {
         />
       ),
     },
+    {
+      type: 'custom',
+      name: 'date-filter',
+      value: selectedDate,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(event) => {
+            setSelectedDate(event.target.value);
+            setPage(1);
+          }}
+          placeholder={t('requests.filters.date')}
+          className="h-[42px] w-full rounded-xl border border-[#DDE0E0] bg-white px-4 text-sm text-[#646969] focus:border-[#00512E] focus:outline-none"
+        />
+      ),
+    },
   ];
 
   const handleResetFilters = () => {
     setSearchTerm('');
     setSelectedStatus('');
+    setSelectedDate('');
     setPage(1);
   };
 

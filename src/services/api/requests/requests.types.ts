@@ -128,9 +128,11 @@ export interface SchoolMessagesListResponse {
 }
 
 export interface SchoolMessagesQueryParams {
-  PageIndex?: number;
+  PageNumber?: number;
   PageSize?: number;
-  Search?: string;
+  SearchStudentName?: string;
+  MessageStatus?: MessageStatus;
+  Date?: string;
 }
 
 /** Status of an early-leave (طلب خروج مبكر) request. */
