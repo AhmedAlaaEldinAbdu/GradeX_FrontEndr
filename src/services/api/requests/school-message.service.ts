@@ -55,6 +55,25 @@ export async function getAllSchoolMessages(
 }
 
 /**
+ * Reply to a school message (multipart PUT to /SchoolMessage).
+ */
+export async function replyToSchoolMessage(
+  messageId: string,
+  messageReply: string
+): Promise<ApiResponseModel<null>> {
+  const formData = new FormData();
+  formData.append('MessageId', messageId);
+  formData.append('messageReply', messageReply);
+
+  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
+    SchoolMessageEndpoints.base,
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+  return response.data;
+}
+
+/**
  * Get the messages exchanged with a single student (used by the reply view).
  */
 export async function getMessageByStudentId(studentId: string): Promise<StudentMessageDto[]> {
@@ -72,6 +91,7 @@ export const schoolMessageApiService = {
   createSchoolMessage,
   getAllSchoolMessages,
   getMessageByStudentId,
+  replyToSchoolMessage,
 };
 
 export default schoolMessageApiService;
