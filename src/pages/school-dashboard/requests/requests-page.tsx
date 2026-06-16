@@ -16,6 +16,7 @@ import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
 import MessageRequestsTab from './components/MessageRequestsTab';
 import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
+import ReminderRequestsTab from './components/ReminderRequestsTab';
 import { MOCK_REQUESTS_STATS } from './requests.mock';
 
 const ComingSoon: React.FC = () => <NotFoundMessage message="requests.comingSoon" />;
@@ -39,7 +40,7 @@ const RequestsPage: React.FC = () => {
       content: <EarlyLeaveRequestsTab />,
     },
     { id: 'messages', label: t('requests.tabs.messages'), content: <MessageRequestsTab /> },
-    { id: 'reminder', label: t('requests.tabs.reminder'), content: <ComingSoon /> },
+    { id: 'reminder', label: t('requests.tabs.reminder'), content: <ReminderRequestsTab /> },
     { id: 'add-delegate', label: t('requests.tabs.addDelegate'), content: <ComingSoon /> },
     {
       id: 'contract-authentication',

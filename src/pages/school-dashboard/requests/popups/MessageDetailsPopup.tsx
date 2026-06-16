@@ -53,6 +53,8 @@ export interface MessageDetailsPopupProps {
   onClose: () => void;
   request: StudentRequestDto | null;
   onMarkViewed?: (request: StudentRequestDto) => void;
+  /** Translation key for the popup title (defaults to the message title). */
+  titleKey?: string;
 }
 
 const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
@@ -60,6 +62,7 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
   onClose,
   request,
   onMarkViewed,
+  titleKey = 'requests.popup.title',
 }) => {
   const { t } = useTranslation();
 
@@ -68,7 +71,7 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('requests.popup.title')} size="md">
+    <Modal isOpen={isOpen} onClose={onClose} title={t(titleKey)} size="md">
       <div className="space-y-6">
         <DetailRow label={t('requests.requestStatus')}>
           <span

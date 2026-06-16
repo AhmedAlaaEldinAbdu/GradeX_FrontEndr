@@ -1289,6 +1289,10 @@
       "sendReply": "إرسال رد",
       "view": "إطلاع"
     },
+    "reminder": {
+      "detailsTitle": "تذكير",
+      "content": "محتوي التذكير"
+    },
     "popup": {
       "title": "رسالة",
       "studentName": "اسم الطالب",

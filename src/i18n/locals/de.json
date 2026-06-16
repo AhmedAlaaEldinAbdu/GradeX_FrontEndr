@@ -1285,6 +1285,10 @@
       "sendReply": "Antwort senden",
       "view": "Ansehen"
     },
+    "reminder": {
+      "detailsTitle": "Erinnerung",
+      "content": "Erinnerungsinhalt"
+    },
     "popup": {
       "title": "Nachricht",
       "studentName": "Name des Schülers",
