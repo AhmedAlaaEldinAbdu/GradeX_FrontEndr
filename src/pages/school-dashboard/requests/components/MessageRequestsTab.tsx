@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@/shared/components/Card';
 import CustomSelect from '@/shared/components/CustomSelect';
+import Input from '@/shared/components/Input';
 import IconButton from '@/shared/components/IconButton';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
@@ -429,7 +430,7 @@ const MessageRequestsTab: React.FC = () => {
       onChange: () => {},
       width: '20%',
       customComponent: (
-        <input
+        <Input
           type="date"
           value={selectedDate}
           onChange={(event) => {
@@ -437,7 +438,6 @@ const MessageRequestsTab: React.FC = () => {
             setPage(1);
           }}
           placeholder={t('requests.filters.date')}
-          className="h-[42px] w-full rounded-xl border border-[#DDE0E0] bg-white px-4 text-sm text-[#646969] focus:border-[#00512E] focus:outline-none"
         />
       ),
     },
