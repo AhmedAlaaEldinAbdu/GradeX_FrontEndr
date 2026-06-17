@@ -261,7 +261,10 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         <ApplicationStatusBanner status={effectiveStatus} interviewDate={effectiveInterviewDate} />
 
         {/* Parent Information Section */}
-        <ApplicationParentInfo parentInfo={data.parentInfo} />
+        <ApplicationParentInfo
+          parentInfo={data.parentInfo}
+          nationalityName={data.nationalityName}
+        />
 
         {/* Child Information Section */}
         <ApplicationChildInfo data={data} />

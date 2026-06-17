@@ -61,6 +61,7 @@ export type RelationshipType = (typeof RelationshipType)[keyof typeof Relationsh
 export interface ParentInfo {
   parentId: string;
   email: string;
+  phoneNumber: string | null;
   lkCountryId: string;
   lkCountryName: string | null;
   cityId: string | null;
@@ -111,5 +112,7 @@ export interface StudentApplicationDetailDto {
   lastEducationCertificatePath: string | null;
   interviewDate?: string | null;
   classroomid?: string | null;
+  nationalityId?: string | null;
+  nationalityName?: string | null;
   parentInfo: ParentInfo;
 }

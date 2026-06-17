@@ -4,9 +4,13 @@ import type { ParentInfo } from '@/services/api/student-applications/student-app
 
 interface ApplicationParentInfoProps {
   parentInfo: ParentInfo;
+  nationalityName?: string | null;
 }
 
-const ApplicationParentInfo: React.FC<ApplicationParentInfoProps> = ({ parentInfo }) => {
+const ApplicationParentInfo: React.FC<ApplicationParentInfoProps> = ({
+  parentInfo,
+  nationalityName,
+}) => {
   const { t } = useTranslation();
 
   if (!parentInfo) return null;
@@ -26,7 +30,7 @@ const ApplicationParentInfo: React.FC<ApplicationParentInfoProps> = ({ parentInf
               {t('studentApplications.details.phone')}:
             </span>
             <span className="text-gray-600" dir="ltr">
-              -
+              {parentInfo.phoneNumber || '-'}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -48,7 +52,7 @@ const ApplicationParentInfo: React.FC<ApplicationParentInfoProps> = ({ parentInf
             <span className="font-bold text-gray-800">
               {t('studentApplications.details.nationality')}:
             </span>
-            <span className="text-gray-600">-</span>
+            <span className="text-gray-600">{nationalityName || '-'}</span>
           </div>
         </div>
         {/* Row 3: Address (full width) */}
