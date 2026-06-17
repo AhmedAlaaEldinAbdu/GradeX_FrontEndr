@@ -1,7 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { gradeApiService } from '@/services/api/grades/grades.service';
 import { getErrorMessage } from '@/lib/http';
-import type { GradeDto, GradeQueryParams } from '@/services/api/types/grades.types';
+import type {
+  GradeDetailsDto,
+  GradeDto,
+  GradeQueryParams,
+} from '@/services/api/types/grades.types';
 
 // ============================================================================
 // Types
@@ -11,6 +15,9 @@ export interface GradesState {
   grades: GradeDto[];
   isLoading: boolean;
   error: string | null;
+  currentGrade: GradeDetailsDto | null;
+  currentGradeLoading: boolean;
+  currentGradeError: string | null;
 }
 
 // ============================================================================
@@ -58,6 +65,17 @@ export const fetchGrades = createAsyncThunk<GradeDto[], string | GradeQueryParam
   }
 );
 
+export const fetchGradeById = createAsyncThunk<GradeDetailsDto, string>(
+  'grades/fetchById',
+  async (id, { rejectWithValue }) => {
+    try {
+      return await gradeApiService.getGradeById(id);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 // ============================================================================
 // Slice
 // ============================================================================
@@ -66,6 +84,9 @@ const initialState: GradesState = {
   grades: [],
   isLoading: false,
   error: null,
+  currentGrade: null,
+  currentGradeLoading: false,
+  currentGradeError: null,
 };
 
 const gradesSlice = createSlice({
@@ -85,6 +106,18 @@ const gradesSlice = createSlice({
       .addCase(fetchGrades.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchGradeById.pending, (state) => {
+        state.currentGradeLoading = true;
+        state.currentGradeError = null;
+      })
+      .addCase(fetchGradeById.fulfilled, (state, action) => {
+        state.currentGradeLoading = false;
+        state.currentGrade = action.payload;
+      })
+      .addCase(fetchGradeById.rejected, (state, action) => {
+        state.currentGradeLoading = false;
+        state.currentGradeError = action.payload as string;
       });
   },
 });
