@@ -88,6 +88,21 @@ export interface EarlyLeaveRequestDto {
   status: EarlyLeaveStatus;
 }
 
+/** A delegate-assignment (إضافة مفوض) request row. */
+export interface DelegateRequestDto {
+  id: string;
+  studentId: string;
+  studentName: string;
+  studentAvatarPath: string | null;
+  delegateName: string;
+  delegateAvatarPath: string | null;
+  mobile: string;
+  whatsapp: string;
+  email: string;
+  stage: string;
+  classroom: string;
+}
+
 export interface StudentRequestsListResponse {
   requestDtos: StudentRequestDto[];
   pageIndex: number;
