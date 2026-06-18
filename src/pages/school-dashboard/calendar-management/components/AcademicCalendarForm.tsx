@@ -65,6 +65,7 @@ function ScheduleSection({
   startLabel,
   endLabel,
   showHeader = true,
+  errors,
 }: {
   title?: string;
   items: AcademicCalendarScheduleItem[];
@@ -77,6 +78,7 @@ function ScheduleSection({
   startLabel: string;
   endLabel: string;
   showHeader?: boolean;
+  errors?: Record<string, string>;
 }) {
   return (
     <div className="space-y-5">
@@ -115,7 +117,7 @@ function ScheduleSection({
                     onChange={(e) => onChange(item.id, { startTime: e.target.value })}
                   />
                 </FormField>
-                <FormField label={endLabel} required>
+                <FormField label={endLabel} required error={errors?.[item.id]}>
                   <Input
                     type="time"
                     value={item.endTime}
@@ -206,6 +208,36 @@ export default function AcademicCalendarForm({
     breakfastSchedules: initialValues?.breakfastSchedules ?? [createEmptySchedule()],
   });
 
+  const dateError = useMemo(() => {
+    if (!values.studyStartDate || !values.studyEndDate) return '';
+    return new Date(values.studyStartDate) > new Date(values.studyEndDate)
+      ? 'academicCalendar.form.errors.endDateBeforeStart'
+      : '';
+  }, [values.studyStartDate, values.studyEndDate]);
+
+  const scheduleErrors = useMemo(() => {
+    const map: Record<string, string> = {};
+    const allItems = [
+      ...values.schoolDaySchedules,
+      ...values.breakBetweenClassesSchedules,
+      ...values.morningLineSchedules,
+      ...values.breakfastSchedules,
+    ];
+    for (const item of allItems) {
+      if (item.startTime && item.endTime && item.startTime > item.endTime) {
+        map[item.id] = 'academicCalendar.form.errors.endTimeBeforeStart';
+      }
+    }
+    return map;
+  }, [
+    values.schoolDaySchedules,
+    values.breakBetweenClassesSchedules,
+    values.morningLineSchedules,
+    values.breakfastSchedules,
+  ]);
+
+  const hasValidationErrors = Boolean(dateError) || Object.keys(scheduleErrors).length > 0;
+
   const submitLabel = isSubmitting
     ? t('common.saving')
     : mode === 'add'
@@ -274,6 +306,7 @@ export default function AcademicCalendarForm({
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
+    if (hasValidationErrors) return;
     setIsSubmitting(true);
     try {
       await onSubmit?.(values);
@@ -309,7 +342,11 @@ export default function AcademicCalendarForm({
               />
             </FormField>
 
-            <FormField label={t('academicCalendar.form.studyEndDateLabel')} required>
+            <FormField
+              label={t('academicCalendar.form.studyEndDateLabel')}
+              required
+              error={dateError}
+            >
               <Input
                 type="date"
                 value={values.studyEndDate}
@@ -348,6 +385,7 @@ export default function AcademicCalendarForm({
             daysPlaceholder={t('academicCalendar.form.chooseDaysPlaceholder')}
             startLabel={t('academicCalendar.form.schoolDayStartLabel')}
             endLabel={t('academicCalendar.form.schoolDayEndLabel')}
+            errors={scheduleErrors}
           />
         </div>
 
@@ -383,7 +421,11 @@ export default function AcademicCalendarForm({
                   }
                 />
               </FormField>
-              <FormField label={t('academicCalendar.form.breakEndLabel')} required>
+              <FormField
+                label={t('academicCalendar.form.breakEndLabel')}
+                required
+                error={scheduleErrors[values.breakBetweenClassesSchedules[0]?.id ?? '']}
+              >
                 <Input
                   type="time"
                   value={values.breakBetweenClassesSchedules[0]?.endTime ?? ''}
@@ -430,7 +472,11 @@ export default function AcademicCalendarForm({
                   }
                 />
               </FormField>
-              <FormField label={t('academicCalendar.form.morningLineEndLabel')} required>
+              <FormField
+                label={t('academicCalendar.form.morningLineEndLabel')}
+                required
+                error={scheduleErrors[values.morningLineSchedules[0]?.id ?? '']}
+              >
                 <Input
                   type="time"
                   value={values.morningLineSchedules[0]?.endTime ?? ''}
@@ -473,7 +519,11 @@ export default function AcademicCalendarForm({
                   }
                 />
               </FormField>
-              <FormField label={t('academicCalendar.form.breakfastEndLabel')} required>
+              <FormField
+                label={t('academicCalendar.form.breakfastEndLabel')}
+                required
+                error={scheduleErrors[values.breakfastSchedules[0]?.id ?? '']}
+              >
                 <Input
                   type="time"
                   value={values.breakfastSchedules[0]?.endTime ?? ''}
@@ -489,7 +539,11 @@ export default function AcademicCalendarForm({
         </div>
 
         <div className="flex flex-row-reverse gap-3 pt-4">
-          <Button onClick={handleSubmit} variant="primary" disabled={isSubmitting}>
+          <Button
+            onClick={handleSubmit}
+            variant="primary"
+            disabled={isSubmitting || hasValidationErrors}
+          >
             {submitLabel}
           </Button>
           <Button onClick={onCancel} variant="outline" type="button">
