@@ -2890,7 +2890,11 @@
       "breakfastTitle": "Завтрак",
       "breakfastLabel": "Расписание завтрака",
       "breakfastStartLabel": "Начало завтрака",
-      "breakfastEndLabel": "Конец завтрака"
+      "breakfastEndLabel": "Конец завтрака",
+      "errors": {
+        "endDateBeforeStart": "Дата окончания обучения не может быть раньше даты начала",
+        "endTimeBeforeStart": "Время окончания не может быть раньше времени начала"
+      }
     }
   },
   "tasksManagement": {

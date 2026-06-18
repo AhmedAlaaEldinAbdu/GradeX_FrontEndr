@@ -2890,7 +2890,11 @@
       "breakfastTitle": "Frühstück",
       "breakfastLabel": "Frühstücksplan",
       "breakfastStartLabel": "Frühstücksbeginn",
-      "breakfastEndLabel": "Frühstücksende"
+      "breakfastEndLabel": "Frühstücksende",
+      "errors": {
+        "endDateBeforeStart": "Das Enddatum des Studiums darf nicht vor dem Startdatum liegen",
+        "endTimeBeforeStart": "Die Endzeit darf nicht vor der Startzeit liegen"
+      }
     }
   },
   "tasksManagement": {

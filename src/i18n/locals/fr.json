@@ -2890,7 +2890,11 @@
       "breakfastTitle": "Petit-déjeuner",
       "breakfastLabel": "Horaire du petit-déjeuner",
       "breakfastStartLabel": "Début du petit-déjeuner",
-      "breakfastEndLabel": "Fin du petit-déjeuner"
+      "breakfastEndLabel": "Fin du petit-déjeuner",
+      "errors": {
+        "endDateBeforeStart": "La date de fin des études ne peut pas être antérieure à la date de début",
+        "endTimeBeforeStart": "L'heure de fin ne peut pas être antérieure à l'heure de début"
+      }
     }
   },
   "tasksManagement": {

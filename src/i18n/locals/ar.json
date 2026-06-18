@@ -2927,7 +2927,11 @@
       "breakfastTitle": "موعد الفطور",
       "breakfastLabel": "موعد الفطور",
       "breakfastStartLabel": "بداية وقت الفطور",
-      "breakfastEndLabel": "نهاية وقت الفطور"
+      "breakfastEndLabel": "نهاية وقت الفطور",
+      "errors": {
+        "endDateBeforeStart": "لا يمكن أن يكون تاريخ نهاية الدراسة قبل تاريخ البداية",
+        "endTimeBeforeStart": "لا يمكن أن يكون وقت النهاية قبل وقت البداية"
+      }
     }
   },
   "tasksManagement": {

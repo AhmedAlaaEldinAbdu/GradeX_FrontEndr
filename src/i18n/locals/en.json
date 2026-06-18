@@ -2920,7 +2920,11 @@
       "breakfastTitle": "Breakfast",
       "breakfastLabel": "Breakfast schedule",
       "breakfastStartLabel": "Breakfast start",
-      "breakfastEndLabel": "Breakfast end"
+      "breakfastEndLabel": "Breakfast end",
+      "errors": {
+        "endDateBeforeStart": "Study end date cannot be earlier than the start date",
+        "endTimeBeforeStart": "End time cannot be earlier than the start time"
+      }
     }
   },
   "tasksManagement": {
