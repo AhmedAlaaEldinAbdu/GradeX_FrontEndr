@@ -50,6 +50,7 @@ export default function BooksList() {
   const { showToast } = useToast();
 
   const flattenedBooks = useAppSelector((state) => state.books.flattenedBooks);
+  const stats = useAppSelector((state) => state.books.stats);
   const pagination = useAppSelector((state) => state.books.pagination);
   const isLoading = useAppSelector((state) => state.books.isLoading);
   const isDeleting = useAppSelector((state) => state.books.isDeleting);
@@ -117,8 +118,8 @@ export default function BooksList() {
   const shouldShowContent = isLoading || flattenedBooks.length > 0 || hasActiveFilters;
 
   const metrics = {
-    availableBooks: flattenedBooks.reduce((sum, book) => sum + (book.remainingQuantity ?? 0), 0),
-    soldBooks: flattenedBooks.reduce((sum, book) => sum + (book.soldQuantity ?? 0), 0),
+    availableBooks: stats.availableBooks,
+    soldBooks: stats.soldBooks,
   };
 
   const getStatusLabel = (status: BookStatus) => {

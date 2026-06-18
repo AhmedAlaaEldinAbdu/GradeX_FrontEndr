@@ -49,6 +49,12 @@ export interface BooksState {
     totalPages: number;
   };
 
+  stats: {
+    availableBooks: number;
+    soldBooks: number;
+    totalBooks: number;
+  };
+
   // Filters
   filters: BookFilters;
 
@@ -75,6 +81,11 @@ export interface FetchBooksPayload {
 export interface FetchBooksResponse {
   bookGrades: BookGrade[];
   flattenedBooks: FlattenedBook[];
+  stats: {
+    availableBooks: number;
+    soldBooks: number;
+    totalBooks: number;
+  };
   meta: {
     total: number;
     page: number;
@@ -99,6 +110,12 @@ const initialState: BooksState = {
     limit: 10,
     total: 0,
     totalPages: 0,
+  },
+
+  stats: {
+    availableBooks: 0,
+    soldBooks: 0,
+    totalBooks: 0,
   },
 
   // Filters
@@ -148,6 +165,11 @@ export const fetchBooks = createAsyncThunk<FetchBooksResponse, FetchBooksPayload
         return {
           bookGrades: [],
           flattenedBooks: [],
+          stats: {
+            availableBooks: 0,
+            soldBooks: 0,
+            totalBooks: 0,
+          },
           meta: {
             total: 0,
             page: 1,
@@ -162,6 +184,11 @@ export const fetchBooks = createAsyncThunk<FetchBooksResponse, FetchBooksPayload
       return {
         bookGrades: response.data.bookGradeDto || [],
         flattenedBooks,
+        stats: {
+          availableBooks: response.data.availableBooks || 0,
+          soldBooks: response.data.soldBooks || 0,
+          totalBooks: response.data.totalBooks || 0,
+        },
         meta: {
           total: response.data.totalItems || 0,
           page: response.data.pageIndex || 1,
@@ -285,6 +312,7 @@ const booksSlice = createSlice({
         state.isLoading = false;
         state.bookGrades = action.payload.bookGrades;
         state.flattenedBooks = action.payload.flattenedBooks;
+        state.stats = action.payload.stats;
         state.pagination = {
           page: action.payload.meta.page,
           limit: action.payload.meta.limit,

@@ -56,6 +56,9 @@ export interface BookGradeDetailResponse {
 
 export interface BookListData {
   bookGradeDto: BookGrade[];
+  availableBooks: number;
+  soldBooks: number;
+  totalBooks: number;
   pageIndex: number;
   totalPages: number;
   totalItems: number;
