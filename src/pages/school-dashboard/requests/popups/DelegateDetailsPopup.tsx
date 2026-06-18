@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
 import type { DelegateRequestDto } from '@/services/api/requests/requests.types';

@@ -8,7 +8,6 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import WhatsAppIcon from '@gradex/assets/icons/WhatsApp.svg';
 import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
 import PhoneGreenIcon from '@gradex/assets/icons/PhoneGreen.svg';
