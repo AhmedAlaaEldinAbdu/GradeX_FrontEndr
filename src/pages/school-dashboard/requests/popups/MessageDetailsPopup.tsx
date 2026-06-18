@@ -9,7 +9,10 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
 import type { StudentRequestDto } from '@/services/api/requests/requests.types';
-import { StudentRequestStatus } from '@/services/api/requests/requests.types';
+import {
+  StudentRequestStatus,
+  RequestParticipantRole,
+} from '@/services/api/requests/requests.types';
 
 const STATUS_BADGE_CLASSES: Record<StudentRequestStatus, string> = {
   [StudentRequestStatus.Sent]: 'bg-purple-100 text-purple-700',
@@ -69,6 +72,10 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
   if (!request) {
     return null;
   }
+
+  const canMarkViewed =
+    request.recipientRole === RequestParticipantRole.School &&
+    request.status === StudentRequestStatus.Pending;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t(titleKey)} size="md">
@@ -136,20 +143,22 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
           <span className="text-sm font-normal text-[#646969]">{request.messageContent}</span>
         </DetailRow>
 
-        <div className="flex items-center justify-end gap-3 pt-2">
-          <Button variant="outline" onClick={onClose}>
-            {t('common.cancel')}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => {
-              onMarkViewed?.(request);
-              onClose();
-            }}
-          >
-            {t('requests.popup.markViewed')}
-          </Button>
-        </div>
+        {canMarkViewed ? (
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button variant="outline" onClick={onClose}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                onMarkViewed?.(request);
+                onClose();
+              }}
+            >
+              {t('requests.popup.markViewed')}
+            </Button>
+          </div>
+        ) : null}
       </div>
     </Modal>
   );

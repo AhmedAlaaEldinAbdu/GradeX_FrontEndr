@@ -57,10 +57,105 @@ export interface StudentRequestDto {
   status: StudentRequestStatus;
   type: StudentRequestType;
   created: string;
+  isFromStudent?: boolean;
   studentName?: string;
   studentId?: string;
   educationalStage?: string;
   classrooms?: string[];
+}
+
+export const SendType = {
+  SelectedStudents: 1,
+  AllClassroomStudents: 2,
+  School: 3,
+} as const;
+
+export type SendType = (typeof SendType)[keyof typeof SendType];
+
+export interface CreateSchoolMessageRequest {
+  message: string;
+  sendType: SendType;
+  students: string[];
+  classrooms: string[];
+  grades: string[];
+}
+
+export const MessageStatus = {
+  Pending: 1,
+  Sent: 2,
+  Viewed: 3,
+  Replied: 4,
+} as const;
+
+export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus];
+
+export const MessageSenderType = {
+  School: 1,
+  Student: 2,
+} as const;
+
+export type MessageSenderType = (typeof MessageSenderType)[keyof typeof MessageSenderType];
+
+export interface SchoolMessageStudentDto {
+  studentId: string;
+  studentName: string | null;
+  studentimage: string | null;
+}
+
+export interface SchoolMessageDto {
+  messageId: string;
+  message: string;
+  createdAt: string;
+  messageStatus: MessageStatus;
+  schoolBranchesId: string;
+  messageReply: string | null;
+  sendertype: number;
+  recivertype: SendType;
+  studentId: string;
+  studentName: string | null;
+  studentimage: string | null;
+  students: SchoolMessageStudentDto[];
+  grades: string[];
+  classrooms: string[];
+}
+
+export interface SchoolMessagesListResponse {
+  messages: SchoolMessageDto[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+/** A single message as returned by GetMessageByStudentId. */
+export interface StudentMessageDto {
+  id: string;
+  message: string;
+  createdAt: string;
+  messageStatus: MessageStatus;
+  schoolBranchesId: string;
+  messageReply: string | null;
+  sender: string;
+  reciver: string;
+  studentId: string;
+  gradeId: string | null;
+  gradeNameAr: string | null;
+  gradeNameEN: string | null;
+  classroomId: string | null;
+  classroomNameAr: string | null;
+  classroomNameEN: string | null;
+}
+
+export interface StudentMessagesResponse {
+  messages: StudentMessageDto[];
+}
+
+export interface SchoolMessagesQueryParams {
+  PageNumber?: number;
+  PageSize?: number;
+  SearchStudentName?: string;
+  MessageStatus?: MessageStatus;
+  Date?: string;
 }
 
 /** Status of an early-leave (طلب خروج مبكر) request. */

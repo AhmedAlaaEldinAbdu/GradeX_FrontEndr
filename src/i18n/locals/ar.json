@@ -1254,6 +1254,7 @@
     "rejectedCount": "طلبات مرفوضة",
     "totalCount": "إجمالي الطلبات",
     "searchPlaceholder": "ابحث عن اسم الطالب",
+    "schoolLabel": "المدرسة",
     "requestPreview": "معاينة الطلب",
     "requestStatus": "حالة الطلب",
     "sentFrom": "مرسل من",
@@ -1314,6 +1315,7 @@
       "gradePlaceholder": "اختر الصفوف الدراسية",
       "classroomLabel": "الفصل الدراسي",
       "classroomPlaceholder": "اختر الفصول الدراسية",
+      "selectGradeFirst": "يرجى اختيار الصف الدراسي أولاً",
       "directedToLabel": "الأختبار موجه إلي",
       "allClassrooms": "جميع طلاب الفصول",
       "selectedStudents": "تحديد طلاب",
@@ -1324,7 +1326,13 @@
       "selectStudentsTitle": "تحديد الطلاب",
       "studentSearchPlaceholder": "ابحث بسهولة عن اسم الطالب",
       "confirmSelection": "تحديد",
-      "studentsSummary": "{{count}}+ طالب"
+      "studentsSummary": "+{{count}} طالب",
+      "validation": {
+        "gradesRequired": "يرجى اختيار صف دراسي واحد على الأقل",
+        "classroomsRequired": "يرجى اختيار فصل دراسي واحد على الأقل",
+        "contentRequired": "يرجى إدخال محتوى الرد",
+        "studentsRequired": "يرجى اختيار طالب واحد على الأقل"
+      }
     },
     "viewMessage": {
       "title": "عرض رسالة",
@@ -1333,7 +1341,8 @@
       "classroom": "الفصل الدراسي",
       "replyLabel": "محتوي الرد",
       "replyPlaceholder": "أدخل محتوي الردا!",
-      "submit": "إضافة"
+      "submit": "إضافة",
+      "replySuccess": "تم إرسال الرد بنجاح"
     },
     "earlyLeave": {
       "detailsTitle": "طلب إنصراف مبكر",

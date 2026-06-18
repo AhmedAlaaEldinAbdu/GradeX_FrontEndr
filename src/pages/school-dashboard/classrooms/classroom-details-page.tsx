@@ -7,6 +7,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import PageHeader from '@/shared/components/PageHeader';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchGradeById } from '@/redux/features/grades/gradesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
 import SchoolPurpleIcon from '@gradex/assets/icons/SchoolPurple.svg';
@@ -31,6 +32,7 @@ export default function ClassroomDetailsPage() {
   const schoolBranchId = getCurrentSchoolBranchId();
 
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
+  const grade = useAppSelector((state) => state.grades.currentGrade);
 
   useEffect(() => {
     if (!id) {
@@ -49,8 +51,17 @@ export default function ClassroomDetailsPage() {
     );
   }, [dispatch, id, schoolBranchId]);
 
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    dispatch(fetchGradeById(id));
+  }, [dispatch, id]);
+
   const gradeDetails = classrooms[0];
-  const classroomTitle = gradeDetails?.gradeName;
+  const gradeName = grade ? (currentLang === 'ar' ? grade.nameAr : grade.nameEn) : undefined;
+  const classroomTitle = gradeName || gradeDetails?.gradeName;
   const responsibleTeacherName = (gradeDetails as ClassroomWithTeacherName | undefined)
     ?.teacherName;
   const MAX_CLASSROOMS = 8;

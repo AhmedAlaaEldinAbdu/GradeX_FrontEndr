@@ -39,6 +39,7 @@ import studentDelegationReducer from '../features/student-delegation/studentDele
 import dailyReportReducer from '../features/daily-report/dailyReportSlice';
 import parentReducer from '../features/parent/parentSlice';
 import schoolCoursesReducer from '../features/school-course/schoolCourseSlice';
+import schoolMessagesReducer from '../features/school-messages/schoolMessagesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -82,6 +83,7 @@ export const store = configureStore({
     dailyReport: dailyReportReducer,
     parent: parentReducer,
     schoolCourses: schoolCoursesReducer,
+    schoolMessages: schoolMessagesReducer,
   },
 });
 

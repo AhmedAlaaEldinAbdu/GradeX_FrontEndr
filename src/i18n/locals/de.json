@@ -1311,7 +1311,8 @@
       "classroom": "Klassenzimmer",
       "replyLabel": "Antwortinhalt",
       "replyPlaceholder": "Antwort eingeben!",
-      "submit": "Hinzufügen"
+      "submit": "Hinzufügen",
+      "replySuccess": "Antwort erfolgreich gesendet"
     },
     "earlyLeave": {
       "detailsTitle": "Antrag auf frühzeitiges Verlassen",

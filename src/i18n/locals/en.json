@@ -1254,6 +1254,7 @@
     "rejectedCount": "Rejected Requests",
     "totalCount": "Total Requests",
     "searchPlaceholder": "Search by student name",
+    "schoolLabel": "School",
     "requestPreview": "Request Preview",
     "requestStatus": "Request Status",
     "sentFrom": "Sent From",
@@ -1314,6 +1315,7 @@
       "gradePlaceholder": "Select grades",
       "classroomLabel": "Classroom",
       "classroomPlaceholder": "Select classrooms",
+      "selectGradeFirst": "Please select a grade first",
       "directedToLabel": "Directed To",
       "allClassrooms": "All classroom students",
       "selectedStudents": "Selected students",
@@ -1324,7 +1326,13 @@
       "selectStudentsTitle": "Select Students",
       "studentSearchPlaceholder": "Search by student name",
       "confirmSelection": "Select",
-      "studentsSummary": "+{{count}} students"
+      "studentsSummary": "+{{count}} students",
+      "validation": {
+        "gradesRequired": "Please select at least one grade",
+        "classroomsRequired": "Please select at least one classroom",
+        "contentRequired": "Please enter the reply content",
+        "studentsRequired": "Please select at least one student"
+      }
     },
     "viewMessage": {
       "title": "View Message",
@@ -1333,7 +1341,8 @@
       "classroom": "Classroom",
       "replyLabel": "Reply Content",
       "replyPlaceholder": "Enter the reply!",
-      "submit": "Add"
+      "submit": "Add",
+      "replySuccess": "Reply sent successfully"
     },
     "earlyLeave": {
       "detailsTitle": "Early Departure Request",
