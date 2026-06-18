@@ -8,6 +8,7 @@ import type {
   StudentRequestDto,
   StudentRequestsStats,
   EarlyLeaveRequestDto,
+  DelegateRequestDto,
   RequestParticipant,
 } from '@/services/api/requests/requests.types';
 import {
@@ -47,6 +48,20 @@ export const MOCK_EARLY_LEAVE_REQUESTS: EarlyLeaveRequestDto[] = EARLY_LEAVE_STA
     status,
   })
 );
+
+export const MOCK_DELEGATE_REQUESTS: DelegateRequestDto[] = Array.from({ length: 6 }, (_, index) => ({
+  id: String(index + 1),
+  studentId: String(index + 1),
+  studentName: 'أحمد معتز حسن',
+  studentAvatarPath: null,
+  delegateName: 'أحمد محمد ابراهيم',
+  delegateAvatarPath: null,
+  mobile: '+55 2323 5465',
+  whatsapp: '+55 2323 5465',
+  email: 'Ahmed@gmail.com',
+  stage: 'المرحلة الأعدادية',
+  classroom: '1/1 ع',
+}));
 
 export const MOCK_GRADE_OPTIONS = [
   { value: '1', label: 'الصف الأول' },
