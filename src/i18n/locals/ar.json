@@ -1293,6 +1293,14 @@
       "detailsTitle": "تذكير",
       "content": "محتوي التذكير"
     },
+    "delegate": {
+      "detailsTitle": "اسم المفوض",
+      "delegateName": "اسم المفوض",
+      "contactInfo": "بيانات التواصل",
+      "mobile": "رقم الجوال",
+      "whatsapp": "رقم الواتس أب",
+      "email": "البريد الإلكتروني"
+    },
     "popup": {
       "title": "رسالة",
       "studentName": "اسم الطالب",

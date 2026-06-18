@@ -1289,6 +1289,14 @@
       "detailsTitle": "Напоминание",
       "content": "Содержание напоминания"
     },
+    "delegate": {
+      "detailsTitle": "Имя представителя",
+      "delegateName": "Имя представителя",
+      "contactInfo": "Контактные данные",
+      "mobile": "Номер телефона",
+      "whatsapp": "Номер WhatsApp",
+      "email": "Эл. почта"
+    },
     "popup": {
       "title": "Сообщение",
       "studentName": "Имя ученика",

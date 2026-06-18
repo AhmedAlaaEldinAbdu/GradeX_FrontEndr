@@ -1293,6 +1293,14 @@
       "detailsTitle": "Reminder",
       "content": "Reminder Content"
     },
+    "delegate": {
+      "detailsTitle": "Delegate Name",
+      "delegateName": "Delegate Name",
+      "contactInfo": "Contact Info",
+      "mobile": "Mobile Number",
+      "whatsapp": "WhatsApp Number",
+      "email": "Email"
+    },
     "popup": {
       "title": "Message",
       "studentName": "Student Name",

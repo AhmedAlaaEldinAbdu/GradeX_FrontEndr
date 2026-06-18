@@ -1289,6 +1289,14 @@
       "detailsTitle": "Erinnerung",
       "content": "Erinnerungsinhalt"
     },
+    "delegate": {
+      "detailsTitle": "Name des Bevollmächtigten",
+      "delegateName": "Name des Bevollmächtigten",
+      "contactInfo": "Kontaktdaten",
+      "mobile": "Mobilnummer",
+      "whatsapp": "WhatsApp-Nummer",
+      "email": "E-Mail"
+    },
     "popup": {
       "title": "Nachricht",
       "studentName": "Name des Schülers",

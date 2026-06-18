@@ -1289,6 +1289,14 @@
       "detailsTitle": "Rappel",
       "content": "Contenu du rappel"
     },
+    "delegate": {
+      "detailsTitle": "Nom du délégué",
+      "delegateName": "Nom du délégué",
+      "contactInfo": "Coordonnées",
+      "mobile": "Numéro de mobile",
+      "whatsapp": "Numéro WhatsApp",
+      "email": "E-mail"
+    },
     "popup": {
       "title": "Message",
       "studentName": "Nom de l'élève",
