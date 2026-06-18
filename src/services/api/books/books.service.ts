@@ -41,6 +41,9 @@ export async function getBooks(params?: BookQueryParams): Promise<BookListRespon
     return {
       data: {
         bookGradeDto: [],
+        availableBooks: 0,
+        soldBooks: 0,
+        totalBooks: 0,
         totalItems: 0,
         totalPages: 0,
         pageIndex: params?.PageIndex || 1,
