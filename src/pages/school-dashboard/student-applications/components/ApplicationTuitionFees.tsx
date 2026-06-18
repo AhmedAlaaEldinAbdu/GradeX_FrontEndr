@@ -11,6 +11,15 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
 
   if (!data) return null;
 
+  const paidServicesTotal = (data.paidServices ?? []).reduce(
+    (sum, service) => sum + (service?.amount ?? 0),
+    0
+  );
+  const grandTotal = (data.tuitionAmount || 0) + paidServicesTotal;
+
+  const originalTotal =
+    data.total && data.total !== data.tuitionAmount ? data.total + paidServicesTotal : null;
+
   return (
     <div className="mb-8 rounded-2xl border border-gray-200 p-6">
       <h2 className="mb-4 text-start text-lg font-bold text-gray-900">
@@ -71,11 +80,11 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
         </span>
         <div className="flex items-center gap-3" dir="ltr">
           <span className="text-xl font-bold text-green-600">
-            {(data.tuitionAmount || 0).toLocaleString()} {t('common.currencyRiyal')}
+            {grandTotal.toLocaleString()} {t('common.currencyRiyal')}
           </span>
-          {data.total && data.tuitionAmount !== data.total ? (
+          {originalTotal ? (
             <span className="text-base text-gray-400 line-through">
-              {(data.total || 0).toLocaleString()} {t('common.currencyRiyal')}
+              {originalTotal.toLocaleString()} {t('common.currencyRiyal')}
             </span>
           ) : null}
         </div>
