@@ -31,13 +31,8 @@ export type AcademicCalendarFormValues = {
   lessonDuration: string;
 
   schoolDaySchedules: AcademicCalendarScheduleItem[];
-  breakBetweenClassesMode: 'year' | 'custom';
   breakBetweenClassesSchedules: AcademicCalendarScheduleItem[];
-
-  morningLineMode: 'year' | 'custom';
   morningLineSchedules: AcademicCalendarScheduleItem[];
-
-  breakfastMode: 'year' | 'custom';
   breakfastSchedules: AcademicCalendarScheduleItem[];
 };
 
@@ -202,15 +197,12 @@ export default function AcademicCalendarForm({
 
     schoolDaySchedules: initialValues?.schoolDaySchedules ?? [createEmptySchedule()],
 
-    breakBetweenClassesMode: initialValues?.breakBetweenClassesMode ?? 'custom',
     breakBetweenClassesSchedules: initialValues?.breakBetweenClassesSchedules ?? [
       createEmptySchedule(),
     ],
 
-    morningLineMode: initialValues?.morningLineMode ?? 'custom',
     morningLineSchedules: initialValues?.morningLineSchedules ?? [createEmptySchedule()],
 
-    breakfastMode: initialValues?.breakfastMode ?? 'custom',
     breakfastSchedules: initialValues?.breakfastSchedules ?? [createEmptySchedule()],
   });
 
@@ -365,93 +357,48 @@ export default function AcademicCalendarForm({
               <h3 className="text-base font-medium text-gray-900">
                 {t('academicCalendar.form.breakBetweenClassesTitle')}
               </h3>
-              {values.breakBetweenClassesMode === 'custom' ? (
-                <button type="button" onClick={() => addSchedule('breakBetweenClassesSchedules')}>
-                  <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
-                </button>
-              ) : (
-                ''
-              )}
             </div>
 
             <div className="flex items-center gap-3">
-              <FormField label={t('academicCalendar.form.breakBetweenClassesLabel')} required>
-                <div className="flex items-center gap-6 text-sm">
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      checked={values.breakBetweenClassesMode === 'year'}
-                      onChange={() => patch({ breakBetweenClassesMode: 'year' })}
-                      value={'year'}
-                    />
-                    <span className="text-sm font-normal text-[#3A3A3A]">
-                      {t('academicCalendar.form.yearMode')}
-                    </span>
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      checked={values.breakBetweenClassesMode === 'custom'}
-                      onChange={() => patch({ breakBetweenClassesMode: 'custom' })}
-                      value={'custom'}
-                    />
-                    <span className="text-sm font-normal text-[#3A3A3A]">
-                      {t('academicCalendar.form.customMode')}
-                    </span>
-                  </label>
-                </div>
+              <FormField label={t('academicCalendar.form.breakBetweenClassesLabel')}>
+                <span className="text-sm font-normal text-[#3A3A3A]">
+                  {t('academicCalendar.form.yearMode')}
+                </span>
               </FormField>
             </div>
 
-            {values.breakBetweenClassesMode === 'custom' ? (
-              <ScheduleSection
-                showHeader={false}
-                items={values.breakBetweenClassesSchedules}
-                onAdd={() => addSchedule('breakBetweenClassesSchedules')}
-                onRemove={(id) => removeSchedule('breakBetweenClassesSchedules', id)}
-                onChange={(id, itemPatch) =>
-                  updateSchedule('breakBetweenClassesSchedules', id, itemPatch)
-                }
-                dayOptions={dayOptions}
-                daysLabel={t('academicCalendar.form.daysLabel')}
-                daysPlaceholder={t('academicCalendar.form.chooseDaysPlaceholder')}
-                startLabel={t('academicCalendar.form.breakStartLabel')}
-                endLabel={t('academicCalendar.form.breakEndLabel')}
-              />
-            ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField label={t('academicCalendar.form.breakStartLabel')} required>
-                  <Input
-                    type="time"
-                    value={values.breakBetweenClassesSchedules[0]?.startTime ?? ''}
-                    onChange={(e) =>
-                      updateSchedule(
-                        'breakBetweenClassesSchedules',
-                        values.breakBetweenClassesSchedules[0].id,
-                        {
-                          startTime: e.target.value,
-                        }
-                      )
-                    }
-                  />
-                </FormField>
-                <FormField label={t('academicCalendar.form.breakEndLabel')} required>
-                  <Input
-                    type="time"
-                    value={values.breakBetweenClassesSchedules[0]?.endTime ?? ''}
-                    onChange={(e) =>
-                      updateSchedule(
-                        'breakBetweenClassesSchedules',
-                        values.breakBetweenClassesSchedules[0].id,
-                        {
-                          endTime: e.target.value,
-                        }
-                      )
-                    }
-                  />
-                </FormField>
-              </div>
-            )}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField label={t('academicCalendar.form.breakStartLabel')} required>
+                <Input
+                  type="time"
+                  value={values.breakBetweenClassesSchedules[0]?.startTime ?? ''}
+                  onChange={(e) =>
+                    updateSchedule(
+                      'breakBetweenClassesSchedules',
+                      values.breakBetweenClassesSchedules[0].id,
+                      {
+                        startTime: e.target.value,
+                      }
+                    )
+                  }
+                />
+              </FormField>
+              <FormField label={t('academicCalendar.form.breakEndLabel')} required>
+                <Input
+                  type="time"
+                  value={values.breakBetweenClassesSchedules[0]?.endTime ?? ''}
+                  onChange={(e) =>
+                    updateSchedule(
+                      'breakBetweenClassesSchedules',
+                      values.breakBetweenClassesSchedules[0].id,
+                      {
+                        endTime: e.target.value,
+                      }
+                    )
+                  }
+                />
+              </FormField>
+            </div>
           </div>
         </div>
 
@@ -461,81 +408,40 @@ export default function AcademicCalendarForm({
               <h3 className="text-base font-medium text-gray-900">
                 {t('academicCalendar.form.morningLineTitle')}
               </h3>
-              {values.morningLineMode === 'custom' && (
-                <button type="button" onClick={() => addSchedule('morningLineSchedules')}>
-                  <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
-                </button>
-              )}
             </div>
 
             <div className="flex items-center gap-3">
-              <FormField label={t('academicCalendar.form.morningLineLabel')} required>
-                <div className="flex items-center gap-6 text-sm">
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      checked={values.morningLineMode === 'year'}
-                      onChange={() => patch({ morningLineMode: 'year' })}
-                      value={'year'}
-                    />
-                    <span className="text-sm font-normal text-[#3A3A3A]">
-                      {t('academicCalendar.form.yearMode')}
-                    </span>
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      checked={values.morningLineMode === 'custom'}
-                      onChange={() => patch({ morningLineMode: 'custom' })}
-                      value={'custom'}
-                    />
-                    <span className="text-sm font-normal text-[#3A3A3A]">
-                      {t('academicCalendar.form.customMode')}
-                    </span>
-                  </label>
-                </div>
+              <FormField label={t('academicCalendar.form.morningLineLabel')}>
+                <span className="text-sm font-normal text-[#3A3A3A]">
+                  {t('academicCalendar.form.yearMode')}
+                </span>
               </FormField>
             </div>
 
-            {values.morningLineMode === 'custom' ? (
-              <ScheduleSection
-                showHeader={false}
-                items={values.morningLineSchedules}
-                onAdd={() => addSchedule('morningLineSchedules')}
-                onRemove={(id) => removeSchedule('morningLineSchedules', id)}
-                onChange={(id, itemPatch) => updateSchedule('morningLineSchedules', id, itemPatch)}
-                dayOptions={dayOptions}
-                daysLabel={t('academicCalendar.form.daysLabel')}
-                daysPlaceholder={t('academicCalendar.form.chooseDaysPlaceholder')}
-                startLabel={t('academicCalendar.form.morningLineStartLabel')}
-                endLabel={t('academicCalendar.form.morningLineEndLabel')}
-              />
-            ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField label={t('academicCalendar.form.morningLineStartLabel')} required>
-                  <Input
-                    type="time"
-                    value={values.morningLineSchedules[0]?.startTime ?? ''}
-                    onChange={(e) =>
-                      updateSchedule('morningLineSchedules', values.morningLineSchedules[0].id, {
-                        startTime: e.target.value,
-                      })
-                    }
-                  />
-                </FormField>
-                <FormField label={t('academicCalendar.form.morningLineEndLabel')} required>
-                  <Input
-                    type="time"
-                    value={values.morningLineSchedules[0]?.endTime ?? ''}
-                    onChange={(e) =>
-                      updateSchedule('morningLineSchedules', values.morningLineSchedules[0].id, {
-                        endTime: e.target.value,
-                      })
-                    }
-                  />
-                </FormField>
-              </div>
-            )}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField label={t('academicCalendar.form.morningLineStartLabel')} required>
+                <Input
+                  type="time"
+                  value={values.morningLineSchedules[0]?.startTime ?? ''}
+                  onChange={(e) =>
+                    updateSchedule('morningLineSchedules', values.morningLineSchedules[0].id, {
+                      startTime: e.target.value,
+                    })
+                  }
+                />
+              </FormField>
+              <FormField label={t('academicCalendar.form.morningLineEndLabel')} required>
+                <Input
+                  type="time"
+                  value={values.morningLineSchedules[0]?.endTime ?? ''}
+                  onChange={(e) =>
+                    updateSchedule('morningLineSchedules', values.morningLineSchedules[0].id, {
+                      endTime: e.target.value,
+                    })
+                  }
+                />
+              </FormField>
+            </div>
           </div>
         </div>
 
@@ -545,81 +451,40 @@ export default function AcademicCalendarForm({
               <h3 className="text-base font-medium text-gray-900">
                 {t('academicCalendar.form.breakfastTitle')}
               </h3>
-              {values.breakfastMode === 'custom' && (
-                <button type="button" onClick={() => addSchedule('breakfastSchedules')}>
-                  <CustomImage src={GreenPlusIcon} className="h-7 w-7" alt="Plus" />
-                </button>
-              )}
             </div>
 
             <div className="flex items-center gap-3">
-              <FormField label={t('academicCalendar.form.breakfastLabel')} required>
-                <div className="flex items-center gap-6 text-sm">
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      checked={values.breakfastMode === 'year'}
-                      onChange={() => patch({ breakfastMode: 'year' })}
-                      value={'year'}
-                    />
-                    <span className="text-sm font-normal text-[#3A3A3A]">
-                      {t('academicCalendar.form.yearMode')}
-                    </span>
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      checked={values.breakfastMode === 'custom'}
-                      onChange={() => patch({ breakfastMode: 'custom' })}
-                      value={'custom'}
-                    />
-                    <span className="text-sm font-normal text-[#3A3A3A]">
-                      {t('academicCalendar.form.customMode')}
-                    </span>
-                  </label>
-                </div>
+              <FormField label={t('academicCalendar.form.breakfastLabel')}>
+                <span className="text-sm font-normal text-[#3A3A3A]">
+                  {t('academicCalendar.form.yearMode')}
+                </span>
               </FormField>
             </div>
 
-            {values.breakfastMode === 'custom' ? (
-              <ScheduleSection
-                showHeader={false}
-                items={values.breakfastSchedules}
-                onAdd={() => addSchedule('breakfastSchedules')}
-                onRemove={(id) => removeSchedule('breakfastSchedules', id)}
-                onChange={(id, itemPatch) => updateSchedule('breakfastSchedules', id, itemPatch)}
-                dayOptions={dayOptions}
-                daysLabel={t('academicCalendar.form.daysLabel')}
-                daysPlaceholder={t('academicCalendar.form.chooseDaysPlaceholder')}
-                startLabel={t('academicCalendar.form.breakfastStartLabel')}
-                endLabel={t('academicCalendar.form.breakfastEndLabel')}
-              />
-            ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FormField label={t('academicCalendar.form.breakfastStartLabel')} required>
-                  <Input
-                    type="time"
-                    value={values.breakfastSchedules[0]?.startTime ?? ''}
-                    onChange={(e) =>
-                      updateSchedule('breakfastSchedules', values.breakfastSchedules[0].id, {
-                        startTime: e.target.value,
-                      })
-                    }
-                  />
-                </FormField>
-                <FormField label={t('academicCalendar.form.breakfastEndLabel')} required>
-                  <Input
-                    type="time"
-                    value={values.breakfastSchedules[0]?.endTime ?? ''}
-                    onChange={(e) =>
-                      updateSchedule('breakfastSchedules', values.breakfastSchedules[0].id, {
-                        endTime: e.target.value,
-                      })
-                    }
-                  />
-                </FormField>
-              </div>
-            )}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField label={t('academicCalendar.form.breakfastStartLabel')} required>
+                <Input
+                  type="time"
+                  value={values.breakfastSchedules[0]?.startTime ?? ''}
+                  onChange={(e) =>
+                    updateSchedule('breakfastSchedules', values.breakfastSchedules[0].id, {
+                      startTime: e.target.value,
+                    })
+                  }
+                />
+              </FormField>
+              <FormField label={t('academicCalendar.form.breakfastEndLabel')} required>
+                <Input
+                  type="time"
+                  value={values.breakfastSchedules[0]?.endTime ?? ''}
+                  onChange={(e) =>
+                    updateSchedule('breakfastSchedules', values.breakfastSchedules[0].id, {
+                      endTime: e.target.value,
+                    })
+                  }
+                />
+              </FormField>
+            </div>
           </div>
         </div>
 

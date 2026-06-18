@@ -70,30 +70,20 @@ const toDaysEnumKeys = (days: number[]): DayKey[] => {
 };
 
 const mapTimedGroup = (
-  mode: 'year' | 'custom',
   items: AcademicCalendarScheduleItem[],
   allSchoolDays: number[]
 ): AcademicCalendarTimedSchedule[] => {
   const list = items?.length ? items : [{ id: '0', days: [], startTime: '', endTime: '' }];
+  const first = list[0];
 
-  if (mode === 'year') {
-    const first = list[0];
-    return [
-      {
-        timePeriodScope: 1,
-        startTime: first.startTime,
-        endTime: first.endTime,
-        days: allSchoolDays,
-      },
-    ];
-  }
-
-  return list.map((item) => ({
-    timePeriodScope: 2,
-    startTime: item.startTime,
-    endTime: item.endTime,
-    days: toDaysEnumValues(item.days || []).map(Number),
-  }));
+  return [
+    {
+      timePeriodScope: 1,
+      startTime: first.startTime,
+      endTime: first.endTime,
+      days: allSchoolDays,
+    },
+  ];
 };
 
 const mapFormValuesToCreateRequest = (
@@ -119,13 +109,9 @@ const mapFormValuesToCreateRequest = (
     weeksCount: values.weeksCount === '' ? 0 : Number(values.weeksCount),
     lessonDuration: Number(values.lessonDuration || 0),
     daySchedules,
-    breaks: mapTimedGroup(
-      values.breakBetweenClassesMode,
-      values.breakBetweenClassesSchedules,
-      allSchoolDays
-    ),
-    assemblies: mapTimedGroup(values.morningLineMode, values.morningLineSchedules, allSchoolDays),
-    breakfasts: mapTimedGroup(values.breakfastMode, values.breakfastSchedules, allSchoolDays),
+    breaks: mapTimedGroup(values.breakBetweenClassesSchedules, allSchoolDays),
+    assemblies: mapTimedGroup(values.morningLineSchedules, allSchoolDays),
+    breakfasts: mapTimedGroup(values.breakfastSchedules, allSchoolDays),
   };
 };
 
@@ -162,25 +148,15 @@ const mapApiEntityToFormInitialValues = (
   const mapTimed = (items: AcademicCalendarTimedSchedule[] | undefined) => {
     const list = items || [];
     if (list.length === 0) {
-      return {
-        mode: 'custom' as const,
-        items: [{ id: createId(), days: [], startTime: '', endTime: '' }],
-      };
+      return [{ id: createId(), days: [], startTime: '', endTime: '' }];
     }
 
-    const inferredMode: 'year' | 'custom' = list.some((x) => x.timePeriodScope === 1)
-      ? 'year'
-      : 'custom';
-
-    return {
-      mode: inferredMode,
-      items: list.map((item) => ({
-        id: createId(),
-        days: toDaysEnumKeys(item.days || []),
-        startTime: normalizeTimeForInput(item.startTime),
-        endTime: normalizeTimeForInput(item.endTime),
-      })),
-    };
+    return list.map((item) => ({
+      id: createId(),
+      days: toDaysEnumKeys(item.days || []),
+      startTime: normalizeTimeForInput(item.startTime),
+      endTime: normalizeTimeForInput(item.endTime),
+    }));
   };
 
   const breaks = mapTimed(entity.breaks);
@@ -196,14 +172,9 @@ const mapApiEntityToFormInitialValues = (
 
     schoolDaySchedules: mapDaySchedules(entity.daySchedules),
 
-    breakBetweenClassesMode: breaks.mode,
-    breakBetweenClassesSchedules: breaks.items,
-
-    morningLineMode: assemblies.mode,
-    morningLineSchedules: assemblies.items,
-
-    breakfastMode: breakfasts.mode,
-    breakfastSchedules: breakfasts.items,
+    breakBetweenClassesSchedules: breaks,
+    morningLineSchedules: assemblies,
+    breakfastSchedules: breakfasts,
   };
 };
 

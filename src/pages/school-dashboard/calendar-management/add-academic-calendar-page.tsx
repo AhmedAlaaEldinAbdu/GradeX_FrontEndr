@@ -28,30 +28,20 @@ const normalizeDateToApi = (value: string) => {
 };
 
 const mapTimedGroup = (
-  mode: 'year' | 'custom',
   items: AcademicCalendarScheduleItem[],
   allSchoolDays: number[]
 ): AcademicCalendarTimedSchedule[] => {
   const list = items?.length ? items : [{ id: '0', days: [], startTime: '', endTime: '' }];
+  const first = list[0];
 
-  if (mode === 'year') {
-    const first = list[0];
-    return [
-      {
-        timePeriodScope: 1,
-        startTime: first.startTime,
-        endTime: first.endTime,
-        days: allSchoolDays,
-      },
-    ];
-  }
-
-  return list.map((item) => ({
-    timePeriodScope: 2,
-    startTime: item.startTime,
-    endTime: item.endTime,
-    days: toDaysEnumValues(item.days || []).map(Number),
-  }));
+  return [
+    {
+      timePeriodScope: 1,
+      startTime: first.startTime,
+      endTime: first.endTime,
+      days: allSchoolDays,
+    },
+  ];
 };
 
 const mapFormValuesToCreateRequests = (
@@ -80,13 +70,9 @@ const mapFormValuesToCreateRequests = (
       weeksCount: values.weeksCount === '' ? 0 : Number(values.weeksCount),
       lessonDuration: Number(values.lessonDuration || 0),
       daySchedules,
-      breaks: mapTimedGroup(
-        values.breakBetweenClassesMode,
-        values.breakBetweenClassesSchedules,
-        allSchoolDays
-      ),
-      assemblies: mapTimedGroup(values.morningLineMode, values.morningLineSchedules, allSchoolDays),
-      breakfasts: mapTimedGroup(values.breakfastMode, values.breakfastSchedules, allSchoolDays),
+      breaks: mapTimedGroup(values.breakBetweenClassesSchedules, allSchoolDays),
+      assemblies: mapTimedGroup(values.morningLineSchedules, allSchoolDays),
+      breakfasts: mapTimedGroup(values.breakfastSchedules, allSchoolDays),
     },
   ];
 };
