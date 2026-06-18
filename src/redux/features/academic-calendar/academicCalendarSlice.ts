@@ -190,6 +190,8 @@ export interface FetchWeeklyCalendarPayload {
   startDate?: string;
   endDate?: string;
   gradeId?: string;
+  weekStart?: string;
+  weekEnd?: string;
 }
 
 /**
@@ -247,12 +249,13 @@ export const fetchAcademicCalendarsForWeek = createAsyncThunk<
       )
     );
 
-    // Step 4: Keep only calendars active for the current date
-    const now = new Date();
+    const rangeStart = payload.weekStart ? new Date(payload.weekStart) : new Date();
+    const rangeEnd = payload.weekEnd ? new Date(payload.weekEnd) : rangeStart;
+
     const activeCalendars = detailedCalendars.filter((calendar) => {
       const studyStart = new Date(calendar.studyStartDate);
       const studyEnd = new Date(calendar.studyEndDate);
-      return now >= studyStart && now <= studyEnd;
+      return studyStart <= rangeEnd && studyEnd >= rangeStart;
     });
 
     return activeCalendars;

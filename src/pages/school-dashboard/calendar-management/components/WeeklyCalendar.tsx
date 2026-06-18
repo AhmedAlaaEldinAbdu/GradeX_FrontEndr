@@ -32,9 +32,10 @@ import {
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import type { Lesson } from '@/services/api/types/lessons.types';
 import type { MonthlyCalendarEvent } from '@/services/api/types/monthly-calendar.types';
-import type {
-  AcademicCalendarEntity,
-  AcademicCalendarTimedSchedule,
+import {
+  AcademicCalendarTimePeriodScope,
+  type AcademicCalendarEntity,
+  type AcademicCalendarTimedSchedule,
 } from '@/services/api/types/academic-calendar.types';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
@@ -479,12 +480,17 @@ const getWorkingDaysFromSchedules = (
   return Array.from(allDays).sort((a, b) => a - b);
 };
 
-const getApplicableDays = (scheduleDays: number[], workingDays: number[]): number[] => {
-  if (scheduleDays && scheduleDays.length > 0) {
-    return scheduleDays.map(mapApiDayToCalendarIndex).sort((a, b) => a - b);
+const getApplicableDays = (
+  schedule: AcademicCalendarTimedSchedule,
+  workingDays: number[]
+): number[] => {
+  const isWholeYear = schedule.timePeriodScope === AcademicCalendarTimePeriodScope.YEAR;
+
+  if (isWholeYear || !schedule.days || schedule.days.length === 0) {
+    return workingDays;
   }
 
-  return workingDays;
+  return schedule.days.map(mapApiDayToCalendarIndex).sort((a, b) => a - b);
 };
 
 /**
@@ -511,7 +517,7 @@ const transformTimedSchedulesToSpecialColumns = (
     const periodIndex = getPeriodIndexFromTime(hours, minutes, periodSlots);
 
     // Get applicable days for this schedule
-    const applicableDays = getApplicableDays(schedule.days, workingDays);
+    const applicableDays = getApplicableDays(schedule, workingDays);
 
     return {
       columnIndex: periodIndex,
@@ -799,10 +805,14 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
       return;
     }
 
+    const weekEnd = addDays(currentWeekStart, 6);
+
     dispatch(
       fetchAcademicCalendarsForWeek({
         schoolBranchId,
         gradeId: stage,
+        weekStart: currentWeekStart.toISOString(),
+        weekEnd: weekEnd.toISOString(),
       })
     );
   }, [dispatch, currentWeekStart, schoolBranchId, stage, grade]);
