@@ -33,21 +33,15 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
             return;
           }
 
-          const formatDateTime = (dateString: string) => {
+          const formatDate = (dateString: string) => {
             if (!dateString) return '';
-            try {
-              // Extract "YYYY-MM-DDThh:mm" safely
-              const formatted = new Date(dateString).toISOString().slice(0, 16);
-              return formatted;
-            } catch {
-              return '';
-            }
+            return dateString.slice(0, 10);
           };
 
           const values = {
             gradeIds: announcement.gradeIds || [],
-            startDate: formatDateTime(announcement.startDate),
-            endDate: formatDateTime(announcement.endDate),
+            startDate: formatDate(announcement.startDate),
+            endDate: formatDate(announcement.endDate),
           };
 
           setInitialValues(values);
