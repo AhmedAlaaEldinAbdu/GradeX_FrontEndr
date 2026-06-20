@@ -9,12 +9,14 @@ import type {
   StudentRequestsStats,
   EarlyLeaveRequestDto,
   DelegateRequestDto,
+  ContractAuthRequestDto,
   RequestParticipant,
 } from '@/services/api/requests/requests.types';
 import {
   StudentRequestStatus,
   StudentRequestType,
   EarlyLeaveStatus,
+  ContractAuthStatus,
   RequestParticipantRole,
 } from '@/services/api/requests/requests.types';
 
@@ -62,6 +64,27 @@ export const MOCK_DELEGATE_REQUESTS: DelegateRequestDto[] = Array.from({ length:
   stage: 'المرحلة الأعدادية',
   classroom: '1/1 ع',
 }));
+
+const CONTRACT_AUTH_STATUSES = [
+  ContractAuthStatus.Authenticated,
+  ContractAuthStatus.Authenticated,
+  ContractAuthStatus.Authenticated,
+  ContractAuthStatus.Pending,
+  ContractAuthStatus.Pending,
+  ContractAuthStatus.Pending,
+];
+
+export const MOCK_CONTRACT_AUTH_REQUESTS: ContractAuthRequestDto[] = CONTRACT_AUTH_STATUSES.map(
+  (status, index) => ({
+    id: String(index + 1),
+    studentId: String(index + 1),
+    studentName: 'أحمد معتز حسن',
+    studentAvatarPath: null,
+    date: '1/1/2020',
+    status,
+    contractUrl: null,
+  })
+);
 
 export const MOCK_GRADE_OPTIONS = [
   { value: '1', label: 'الصف الأول' },
