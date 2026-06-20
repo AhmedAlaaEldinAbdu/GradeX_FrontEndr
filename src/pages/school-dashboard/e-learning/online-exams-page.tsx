@@ -40,7 +40,8 @@ export default function OnlineExamsPage() {
             onClick: () => setIsCreateOpen(true),
             variant: 'primary',
             imgSrc: PlusIcon,
-            imgClassName: 'w-6 h-6',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />

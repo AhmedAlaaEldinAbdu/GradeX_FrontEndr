@@ -28,7 +28,8 @@ export default function InvoicesPage() {
             to: '/financial-management/invoices/issue',
             variant: 'primary',
             imgSrc: PlusIcon,
-            imgClassName: 'w-[20px] h-[20px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />

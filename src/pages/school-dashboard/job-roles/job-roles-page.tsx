@@ -30,7 +30,8 @@ export default function JobRolesPage() {
                   label: 'rolesManagement.addRole',
                   to: '/settings/job-roles/add-role',
                   imgSrc: PlusIcon,
-                  imgClassName: 'w-[24px] h-[24px]',
+                  imgClassName: 'w-10 h-10',
+                  circle: true,
                 },
               ]
             : [
@@ -38,7 +39,8 @@ export default function JobRolesPage() {
                   label: 'rolesManagement.addUser',
                   to: '/settings/job-roles/add-user',
                   imgSrc: PlusIcon,
-                  imgClassName: 'w-[24px] h-[24px]',
+                  imgClassName: 'w-10 h-10',
+                  circle: true,
                 },
               ]
         }

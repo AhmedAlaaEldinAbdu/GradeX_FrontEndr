@@ -28,7 +28,8 @@ export default function CustomersPage() {
             onClick: () => navigate('/financial-management/customers/add-client'),
             variant: 'primary',
             imgSrc: PlusIcon,
-            imgClassName: 'w-4 h-4',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />

@@ -186,7 +186,8 @@ export default function EmployeesAttendancePage() {
             label: 'attendance.addAttendanceSchedule',
             onClick: () => setIsSchedulePopupOpen(true),
             imgSrc: PlusIcon,
-            imgClassName: 'w-[20px] h-[20px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />

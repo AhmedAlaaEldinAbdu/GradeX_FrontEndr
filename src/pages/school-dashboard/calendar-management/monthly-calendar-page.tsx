@@ -30,7 +30,8 @@ export default function MonthlyCalendarPage() {
             label: 'monthlyCalendar.addEventButton',
             onClick: handleAddButtonClick,
             imgSrc: PlusIcon,
-            imgClassName: 'w-[24px] h-[24px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
         hasHeaderControls={true}

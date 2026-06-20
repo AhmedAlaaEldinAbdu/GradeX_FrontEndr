@@ -156,7 +156,8 @@ export default function TeacherDetailsPage() {
             label: 'teachers.details.addClassroom',
             onClick: () => navigate(`/teachers/${id}/add-placement`),
             imgSrc: PlusIcon,
-            imgClassName: 'w-[24px] h-[24px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]
       : activeTab === 'attendance'
@@ -165,7 +166,8 @@ export default function TeacherDetailsPage() {
               label: 'teachers.details.recordAttendance',
               onClick: () => setShowRecordAttendancePopup(true),
               imgSrc: PlusIcon,
-              imgClassName: 'w-[24px] h-[24px]',
+              imgClassName: 'w-10 h-10',
+              circle: true,
             },
           ]
         : [];

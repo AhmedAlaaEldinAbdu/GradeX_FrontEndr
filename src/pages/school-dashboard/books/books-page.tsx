@@ -26,7 +26,8 @@ export default function BooksPage() {
             label: 'books.addBook',
             to: '/books/add',
             imgSrc: PlusIcon,
-            imgClassName: 'w-[24px] h-[24px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
         hasHeaderControls={true}

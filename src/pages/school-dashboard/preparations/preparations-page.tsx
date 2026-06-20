@@ -13,7 +13,8 @@ export default function PreparationsPage() {
             to: '/calendar/preparations/add-preparation',
             variant: 'primary',
             imgSrc: PlusIcon,
-            imgClassName: 'w-[20px] h-[20px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
         hasHeaderControls={true}

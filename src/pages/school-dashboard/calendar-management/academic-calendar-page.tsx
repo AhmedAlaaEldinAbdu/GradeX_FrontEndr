@@ -24,7 +24,8 @@ export default function AcademicCalendarPage() {
             label: 'academicCalendar.addCalendarButton',
             to: '/calendar/academic/add-academic-calendar',
             imgSrc: PlusIcon,
-            imgClassName: 'w-[24px] h-[24px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
         hasHeaderControls={true}

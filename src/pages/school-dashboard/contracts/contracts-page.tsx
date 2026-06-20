@@ -23,14 +23,16 @@ export default function ContractsPage() {
         to: '/financial-management/contracts/edit-contract',
         variant: 'outline' as const,
         imgSrc: EditGreenIcon,
-        imgClassName: 'h-5 w-5',
+        imgClassName: 'w-10 h-10',
+        circle: true,
       }
     : {
         label: 'contracts.addAction',
         to: '/financial-management/contracts/add-contract',
         variant: 'primary' as const,
         imgSrc: PlusIcon,
-        imgClassName: 'h-5 w-5',
+        imgClassName: 'w-10 h-10',
+        circle: true,
       };
 
   return (

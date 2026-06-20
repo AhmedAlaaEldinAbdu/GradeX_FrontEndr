@@ -26,7 +26,8 @@ export default function ClassroomsPage() {
             label: 'grades.addClassroom',
             to: '/classrooms/add-classroom',
             imgSrc: PlusIcon,
-            imgClassName: 'w-[24px] h-[24px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />

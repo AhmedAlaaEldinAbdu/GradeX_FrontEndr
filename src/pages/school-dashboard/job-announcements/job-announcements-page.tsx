@@ -195,7 +195,8 @@ export default function JobAnnouncementsPage() {
             label: 'jobAnnouncement.addAnnouncement',
             to: '/job-announcements/add-job-announcements',
             imgSrc: PlusIcon,
-            imgClassName: 'w-[24px] h-[24px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />

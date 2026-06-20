@@ -26,7 +26,8 @@ const RegistrationAnnouncementPage: React.FC = () => {
           {
             label: t('registrationAnnouncement.addAnnouncement'),
             imgSrc: PlusIcon,
-            imgClassName: 'w-[24px] h-[24px]',
+            imgClassName: 'w-10 h-10',
+            circle: true,
             to: '/registration-announcement/add-registration-announcement',
           },
         ]}
