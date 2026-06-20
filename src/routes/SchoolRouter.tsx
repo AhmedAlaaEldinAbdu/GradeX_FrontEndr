@@ -73,8 +73,7 @@ import EditContractPage from '@/pages/school-dashboard/contracts/edit-contract-p
 import EditTuitionFeePage from '@/pages/school-dashboard/tuition-fees/edit-tuition-fee-page';
 import AddDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/add-discount-offer-page';
 import EditDiscountOfferPage from '@/pages/school-dashboard/tuition-fees/edit-discount-offer-page';
-import StudentApplicationsPage from '@/pages/school-dashboard/student-applications/student-applications-page';
-import StudentApplicationDetailsPage from '@/pages/school-dashboard/student-applications/student-application-details-page';
+import StudentApplicationDetailsPage from '@/pages/school-dashboard/requests/student-application-details-page';
 import PreparationsPage from '@/pages/school-dashboard/preparations/preparations-page';
 import AddPreparationPage from '@/pages/school-dashboard/preparations/add-preparation-page';
 import EditPreparationPage from '@/pages/school-dashboard/preparations/edit-preparation-page';
@@ -608,17 +607,7 @@ const SchoolRouter: React.FC = () => {
         }
       />
       <Route
-        path="/student-applications"
-        element={
-          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
-            <MainLayout>
-              <StudentApplicationsPage />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/student-applications/:id"
+        path="/requests/student-applications-details/:id"
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>

@@ -255,7 +255,6 @@ const getSchoolAdminSections = (): MenuSection[] => [
         subItems: [
           { key: 'students', path: '/students-record' },
           { key: 'studentAttendance', path: '/students/attendance' },
-          { key: 'studentApplications', path: '/student-applications' },
           { key: 'registrationAnnouncement', path: '/registration-announcement' },
           { key: 'interviews', path: '/student-interviews' },
         ],
