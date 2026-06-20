@@ -1302,6 +1302,14 @@
       "whatsapp": "رقم الواتس أب",
       "email": "البريد الإلكتروني"
     },
+    "contractAuth": {
+      "authDate": "تاريخ التوثيق",
+      "contract": "العقد",
+      "status": {
+        "pending": "قيد انتظار التوثيق",
+        "authenticated": "موثق"
+      }
+    },
     "popup": {
       "title": "رسالة",
       "studentName": "اسم الطالب",

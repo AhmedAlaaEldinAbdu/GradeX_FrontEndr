@@ -1297,6 +1297,14 @@
       "whatsapp": "Numéro WhatsApp",
       "email": "E-mail"
     },
+    "contractAuth": {
+      "authDate": "Date d'authentification",
+      "contract": "Contrat",
+      "status": {
+        "pending": "En attente d'authentification",
+        "authenticated": "Authentifié"
+      }
+    },
     "popup": {
       "title": "Message",
       "studentName": "Nom de l'élève",

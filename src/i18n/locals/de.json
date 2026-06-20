@@ -1297,6 +1297,14 @@
       "whatsapp": "WhatsApp-Nummer",
       "email": "E-Mail"
     },
+    "contractAuth": {
+      "authDate": "Beglaubigungsdatum",
+      "contract": "Vertrag",
+      "status": {
+        "pending": "Beglaubigung ausstehend",
+        "authenticated": "Beglaubigt"
+      }
+    },
     "popup": {
       "title": "Nachricht",
       "studentName": "Name des Schülers",

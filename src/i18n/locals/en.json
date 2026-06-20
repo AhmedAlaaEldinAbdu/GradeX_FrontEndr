@@ -1302,6 +1302,14 @@
       "whatsapp": "WhatsApp Number",
       "email": "Email"
     },
+    "contractAuth": {
+      "authDate": "Authentication Date",
+      "contract": "Contract",
+      "status": {
+        "pending": "Pending Authentication",
+        "authenticated": "Authenticated"
+      }
+    },
     "popup": {
       "title": "Message",
       "studentName": "Student Name",

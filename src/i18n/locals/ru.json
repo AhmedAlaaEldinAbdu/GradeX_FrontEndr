@@ -1297,6 +1297,14 @@
       "whatsapp": "Номер WhatsApp",
       "email": "Эл. почта"
     },
+    "contractAuth": {
+      "authDate": "Дата удостоверения",
+      "contract": "Договор",
+      "status": {
+        "pending": "Ожидает удостоверения",
+        "authenticated": "Удостоверён"
+      }
+    },
     "popup": {
       "title": "Сообщение",
       "studentName": "Имя ученика",
