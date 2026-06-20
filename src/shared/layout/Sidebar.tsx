@@ -584,7 +584,9 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
                       className={cn(
                         'flex-1 truncate',
                         textAlignClass,
-                        !isSubActive && 'opacity-80 group-hover:text-white group-hover:opacity-100'
+                        isSubActive
+                          ? 'font-bold'
+                          : 'opacity-80 group-hover:text-white group-hover:opacity-100'
                       )}
                     >
                       {t(`sidebar.${sub.key}`)}
@@ -773,7 +775,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             className={cn(
               'truncate',
               textAlignClass,
-              active ? 'text-white' : 'text-[#8FA89A] opacity-80 group-hover:text-white group-hover:opacity-100'
+              active
+                ? 'font-bold text-white'
+                : 'text-[#8FA89A] opacity-80 group-hover:text-white group-hover:opacity-100'
             )}
           >
             {t(`sidebar.${item.key}`)}
@@ -903,7 +907,9 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                       className={cn(
                         'flex-1 truncate',
                         textAlignClass,
-                        !isSubActive && 'opacity-80 group-hover:text-white group-hover:opacity-100'
+                        isSubActive
+                          ? 'font-bold'
+                          : 'opacity-80 group-hover:text-white group-hover:opacity-100'
                       )}
                     >
                       {t(`sidebar.${sub.key}`)}
