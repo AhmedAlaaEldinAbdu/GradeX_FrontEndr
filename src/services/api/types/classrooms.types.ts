@@ -13,12 +13,16 @@ export interface Classroom {
   nameEn: string;
   alias: string | null;
   aliasEn: string | null;
-  studentNumber: number;
-  studentPercentage: number;
+  maxStudentNumber: number;
   note: string | null;
   noteEn: string | null;
   imagePath: string | null;
   creationDate: string;
+  foundStudentNumber: number;
+  studentPercentage: number;
+  teacherNumber: number;
+  materialNumber: number;
+  bookNumber: number;
 }
 
 export interface ClassroomListData {
