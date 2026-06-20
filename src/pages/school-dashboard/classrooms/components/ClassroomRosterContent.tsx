@@ -48,7 +48,7 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
     : undefined;
   const classroomName = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
   const classroomNote = currentLang === 'ar' ? currentClassroom?.note : currentClassroom?.noteEn;
-  const occupancyRate = Math.max(0, Math.min(100, currentClassroom?.studentNumber || 0));
+  const occupancyRate = Math.max(0, Math.min(100, currentClassroom?.studentPercentage || 0));
   const attendanceRate = Math.max(0, Math.min(100, occupancyRate + 5));
   const formattedCreationDate = currentClassroom?.creationDate
     ? new Intl.DateTimeFormat(currentLang === 'ar' ? 'ar-EG' : 'en-GB').format(
@@ -71,7 +71,7 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
     },
     {
       label: t('classrooms.details.studentsCount'),
-      value: currentClassroom?.studentNumber ?? 0,
+      value: currentClassroom?.foundStudentNumber ?? 0,
     },
     {
       label: t('classrooms.details.creationDate'),

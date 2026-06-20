@@ -109,7 +109,7 @@ export default function ClassroomDetailsContent({ currentLang }: ClassroomDetail
             const name = currentLang === 'ar' ? classroom.name : classroom.nameEn;
             const alias = currentLang === 'ar' ? classroom.alias : classroom.aliasEn;
             const title = alias ? `${name} (${alias})` : name;
-            const subtitle = `${classroom.studentNumber || 0} ${t('grades.studentPlural')}`;
+            const subtitle = `${classroom.foundStudentNumber || 0} ${t('grades.studentPlural')}`;
             const progress = classroom.studentPercentage || 0;
             const imageSrc = classroom.imagePath ? `${baseUrl}/${classroom.imagePath}` : undefined;
 

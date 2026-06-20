@@ -69,6 +69,12 @@ export default function ClassroomDetailsPage() {
     0,
     Math.min(100, Math.round((classrooms.length / MAX_CLASSROOMS) * 100))
   );
+  const totalTeachers = classrooms.reduce((sum, classroom) => sum + (classroom.teacherNumber || 0), 0);
+  const totalMaterials = classrooms.reduce(
+    (sum, classroom) => sum + (classroom.materialNumber || 0),
+    0
+  );
+  const totalBooks = classrooms.reduce((sum, classroom) => sum + (classroom.bookNumber || 0), 0);
   const classroomSummaryItems = [
     {
       icon: SchoolPurpleIcon,
@@ -80,21 +86,21 @@ export default function ClassroomDetailsPage() {
     {
       icon: TeachersNewBlueIcon,
       alt: t('classrooms.details.teacher'),
-      value: 0,
+      value: totalTeachers,
       label: t('classrooms.details.teacher'),
       iconClassName: 'bg-[#DDF1FF]',
     },
     {
       icon: FilesTealIcon,
       alt: t('classrooms.details.studyMaterials'),
-      value: 0,
+      value: totalMaterials,
       label: t('classrooms.details.studyMaterials'),
       iconClassName: 'bg-[#D9F5F7]',
     },
     {
       icon: BookYellowIcon,
       alt: t('classrooms.details.studyBooks'),
-      value: 0,
+      value: totalBooks,
       label: t('classrooms.details.studyBooks'),
       iconClassName: 'bg-[#FFF6D8]',
     },
