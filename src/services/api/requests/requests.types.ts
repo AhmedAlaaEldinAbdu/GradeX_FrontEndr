@@ -198,6 +198,26 @@ export interface DelegateRequestDto {
   classroom: string;
 }
 
+/** Status of a contract-authentication (طلب توثيق عقد) request. */
+export const ContractAuthStatus = {
+  Pending: 1, // قيد انتظار التوثيق
+  Authenticated: 2, // موثق
+} as const;
+
+export type ContractAuthStatus = (typeof ContractAuthStatus)[keyof typeof ContractAuthStatus];
+
+export interface ContractAuthRequestDto {
+  id: string;
+  studentId: string;
+  studentName: string;
+  studentAvatarPath: string | null;
+  /** Authentication date, e.g. "1/1/2020". */
+  date: string;
+  status: ContractAuthStatus;
+  /** Server path/URL of the contract PDF. */
+  contractUrl: string | null;
+}
+
 export interface StudentRequestsListResponse {
   requestDtos: StudentRequestDto[];
   pageIndex: number;
