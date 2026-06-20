@@ -90,7 +90,7 @@ export default function EditClassroom() {
         aliasEn: currentClassroom.aliasEn || '',
         note: currentClassroom.note || '',
         noteEn: currentClassroom.noteEn || '',
-        maxStudents: currentClassroom.studentNumber,
+        maxStudents: currentClassroom.maxStudentNumber,
       });
 
       if (currentClassroom.imagePath) {
