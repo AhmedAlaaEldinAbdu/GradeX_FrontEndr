@@ -4,7 +4,7 @@ import type { DelegateRequestDto } from '@/services/api/requests/requests.types'
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="flex items-center justify-start gap-2">
       <span className="text-sm font-medium text-[#0E1F1F]">{label}:</span>
       <span dir="ltr" className="text-sm font-normal text-[#646969]">
         {value}
