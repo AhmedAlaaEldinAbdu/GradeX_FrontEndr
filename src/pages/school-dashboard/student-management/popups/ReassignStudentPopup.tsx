@@ -104,7 +104,7 @@ export default function ReassignStudentPopup({
         {selectedClassroom && (
           <div className="mb-6 text-start text-sm text-gray-600">
             <span>{t('studentApplications.modals.studentsInClass')}</span>{' '}
-            <span className="font-semibold">{selectedClassroom.studentNumber}</span>
+            <span className="font-semibold">{selectedClassroom.foundStudentNumber}</span>
           </div>
         )}
 
