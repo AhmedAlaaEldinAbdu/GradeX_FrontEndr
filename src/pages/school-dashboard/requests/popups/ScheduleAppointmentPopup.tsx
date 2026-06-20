@@ -7,13 +7,13 @@ import { FaRegCalendarAlt } from 'react-icons/fa';
 import CustomImage from '@/shared/components/CustomImage';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
 
-interface ScheduleAppointmentModalProps {
+interface ScheduleAppointmentPopupProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (date: string, time: string) => void;
 }
 
-const ScheduleAppointmentModal: React.FC<ScheduleAppointmentModalProps> = ({
+const ScheduleAppointmentPopup: React.FC<ScheduleAppointmentPopupProps> = ({
   isOpen,
   onClose,
   onConfirm,
@@ -109,4 +109,4 @@ const ScheduleAppointmentModal: React.FC<ScheduleAppointmentModalProps> = ({
   );
 };
 
-export default ScheduleAppointmentModal;
+export default ScheduleAppointmentPopup;
