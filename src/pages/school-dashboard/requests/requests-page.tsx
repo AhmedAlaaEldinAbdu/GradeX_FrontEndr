@@ -18,6 +18,7 @@ import MessageRequestsTab from './components/MessageRequestsTab';
 import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
 import ReminderRequestsTab from './components/ReminderRequestsTab';
 import AddDelegateRequestsTab from './components/AddDelegateRequestsTab';
+import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
 import { MOCK_REQUESTS_STATS } from './requests.mock';
 
 const ComingSoon: React.FC = () => <NotFoundMessage message="requests.comingSoon" />;
@@ -50,7 +51,7 @@ const RequestsPage: React.FC = () => {
     {
       id: 'contract-authentication',
       label: t('requests.tabs.contractAuthentication'),
-      content: <ComingSoon />,
+      content: <ContractAuthRequestsTab />,
     },
   ];
 
