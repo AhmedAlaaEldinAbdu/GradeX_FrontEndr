@@ -44,19 +44,19 @@ import SidebarEllipseGlow from '@/assets/sidebar-pattern/ellipse-glow.svg';
 const ICON_FILTER_WHITE: React.CSSProperties = {
   filter: 'brightness(0) saturate(100%) invert(1)',
 };
-// Approximates #8FA89A (var(--ink-mute)) for inactive icons.
-const ICON_FILTER_MUTE: React.CSSProperties = {
-  filter:
-    'brightness(0) saturate(100%) invert(67%) sepia(11%) saturate(414%) hue-rotate(94deg) brightness(94%) contrast(89%)',
-  opacity: 0.8,
-};
-const MUTED_OPACITY: React.CSSProperties = { opacity: 0.8 };
+
+// Class-based equivalents of the icon filters above, so a row can flip its icon
+// to white on hover via `group-hover:` (inline styles can't be hover-overridden).
+// Keep these as full literal strings — Tailwind only generates classes it can see.
+const ICON_FILTER_WHITE_CLASS = '[filter:brightness(0)_saturate(100%)_invert(1)]';
+const ICON_FILTER_MUTE_CLASS =
+  '[filter:brightness(0)_saturate(100%)_invert(67%)_sepia(11%)_saturate(414%)_hue-rotate(94deg)_brightness(94%)_contrast(89%)]';
+const ICON_GROUP_HOVER_WHITE = 'group-hover:[filter:brightness(0)_saturate(100%)_invert(1)]';
 
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(' ');
 
 const SIDEBAR_FONT = "font-['IBM_Plex_Sans_Arabic',sans-serif]";
-const MUTED_TEXT = 'text-[#8FA89A] opacity-80';
 const SIDEBAR_COLLAPSE_STORAGE_KEY = 'gradex.sidebar.collapsed';
 const ACTIVE_ROW_BG_RTL =
   'bg-[linear-gradient(90deg,rgba(35,114,71,0.53)_0%,rgba(18,52,34,0.85)_92.788%)]';
@@ -391,9 +391,11 @@ const Chevron: React.FC<{ expanded: boolean; isRTL: boolean; active: boolean }> 
       aria-hidden
       className={cn(
         'h-[9px] w-[5px] shrink-0 object-contain transition-transform duration-200',
-        rotationClass
+        rotationClass,
+        active
+          ? ICON_FILTER_WHITE_CLASS
+          : cn('opacity-80', ICON_GROUP_HOVER_WHITE, 'group-hover:opacity-100')
       )}
-      style={active ? ICON_FILTER_WHITE : MUTED_OPACITY}
     />
   );
 };
@@ -525,7 +527,7 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
           cancelClose();
           onToggle();
         }}
-        className={`flex w-full items-center justify-center py-3 transition-colors ${
+        className={`group flex w-full items-center justify-center py-3 transition-colors ${
           isActive || isOpen ? '' : 'hover:bg-white/[0.03]'
         }`}
       >
@@ -563,7 +565,7 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
                     to={sub.path}
                     onClick={onClose}
                     className={cn(
-                      'box-border flex min-h-[28px] items-center gap-[8px] rounded-[8px] px-[16px] py-[1px] text-[11px] font-medium transition-colors',
+                      'group box-border flex min-h-[28px] items-center gap-[8px] rounded-[8px] px-[16px] py-[1px] text-[11px] font-medium transition-colors',
                       'flex-row',
                       isSubActive
                         ? 'bg-[rgba(0,224,127,0.08)] text-white'
@@ -573,14 +575,16 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
                     <span
                       className={cn(
                         'h-[5px] w-[5px] flex-shrink-0 rounded-full',
-                        isSubActive ? 'bg-white' : 'bg-[#8FA89A] opacity-80'
+                        isSubActive
+                          ? 'bg-white'
+                          : 'bg-[#8FA89A] opacity-80 group-hover:bg-white group-hover:opacity-100'
                       )}
                     />
                     <span
                       className={cn(
                         'flex-1 truncate',
                         textAlignClass,
-                        !isSubActive && 'opacity-80'
+                        !isSubActive && 'opacity-80 group-hover:text-white group-hover:opacity-100'
                       )}
                     >
                       {t(`sidebar.${sub.key}`)}
@@ -734,7 +738,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const menuItemsAlignClass = isRTL ? 'items-start' : 'items-end';
   const getMainItemClass = (active: boolean) =>
     cn(
-      'relative box-border flex h-[32px] w-[199px] shrink-0 items-center justify-between rounded-[8px] border-0 px-[12px] py-[4px] text-start text-[12px] font-medium outline-none transition-colors',
+      'group relative box-border flex h-[32px] w-[199px] shrink-0 items-center justify-between rounded-[8px] border-0 px-[12px] py-[4px] text-start text-[12px] font-medium outline-none transition-colors',
       rowDirectionClass,
       active
         ? `${activeBorderClass} border-solid border-white ${activeBgClass} text-white`
@@ -756,12 +760,22 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       >
         <div className={cn('flex min-w-0 items-center gap-[8px]', rowDirectionClass)}>
           <span
-            className="grid h-4 w-4 flex-shrink-0 place-items-center"
-            style={active ? ICON_FILTER_WHITE : ICON_FILTER_MUTE}
+            className={cn(
+              'grid h-4 w-4 flex-shrink-0 place-items-center',
+              active
+                ? ICON_FILTER_WHITE_CLASS
+                : cn(ICON_FILTER_MUTE_CLASS, 'opacity-80', ICON_GROUP_HOVER_WHITE, 'group-hover:opacity-100')
+            )}
           >
             {item.icon}
           </span>
-          <span className={cn('truncate', textAlignClass, active ? 'text-white' : MUTED_TEXT)}>
+          <span
+            className={cn(
+              'truncate',
+              textAlignClass,
+              active ? 'text-white' : 'text-[#8FA89A] opacity-80 group-hover:text-white group-hover:opacity-100'
+            )}
+          >
             {t(`sidebar.${item.key}`)}
           </span>
         </div>
@@ -791,8 +805,12 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
     const iconCell = (
       <span
-        className="grid h-6 w-6 place-items-center"
-        style={isActive ? ICON_FILTER_WHITE : ICON_FILTER_MUTE}
+        className={cn(
+          'grid h-6 w-6 place-items-center',
+          isActive
+            ? ICON_FILTER_WHITE_CLASS
+            : cn(ICON_FILTER_MUTE_CLASS, 'opacity-80', ICON_GROUP_HOVER_WHITE, 'group-hover:opacity-100')
+        )}
       >
         {item.icon}
       </span>
@@ -804,7 +822,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           key={item.key}
           to={item.path!}
           title={t(`sidebar.${item.key}`)}
-          className={`flex w-full items-center justify-center py-3 transition-colors ${
+          className={`group flex w-full items-center justify-center py-3 transition-colors ${
             isActive ? '' : 'hover:bg-white/[0.03]'
           }`}
         >
@@ -866,7 +884,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                     key={sub.path}
                     to={sub.path}
                     className={cn(
-                      'box-border flex h-[28px] w-[199px] cursor-pointer select-none items-center gap-[8px] rounded-[8px] px-[16px] py-[1px] text-[11px] font-medium transition-colors',
+                      'group box-border flex h-[28px] w-[199px] cursor-pointer select-none items-center gap-[8px] rounded-[8px] px-[16px] py-[1px] text-[11px] font-medium transition-colors',
                       rowDirectionClass,
                       isSubActive
                         ? 'bg-[rgba(0,224,127,0.08)] text-white'
@@ -876,14 +894,16 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                     <span
                       className={cn(
                         'h-[5px] w-[5px] flex-shrink-0 rounded-full',
-                        isSubActive ? 'bg-white' : 'bg-[#8FA89A] opacity-80'
+                        isSubActive
+                          ? 'bg-white'
+                          : 'bg-[#8FA89A] opacity-80 group-hover:bg-white group-hover:opacity-100'
                       )}
                     />
                     <span
                       className={cn(
                         'flex-1 truncate',
                         textAlignClass,
-                        !isSubActive && 'opacity-80'
+                        !isSubActive && 'opacity-80 group-hover:text-white group-hover:opacity-100'
                       )}
                     >
                       {t(`sidebar.${sub.key}`)}
