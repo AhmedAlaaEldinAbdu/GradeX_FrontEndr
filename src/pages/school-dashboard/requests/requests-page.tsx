@@ -7,7 +7,6 @@ import PageHeader from '@/shared/components/PageHeader';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
-import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
 import ClockYellowBoldIcon from '@gradex/assets/icons/ClockYellowBold.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
@@ -19,9 +18,8 @@ import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
 import ReminderRequestsTab from './components/ReminderRequestsTab';
 import AddDelegateRequestsTab from './components/AddDelegateRequestsTab';
 import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
+import ApplicationsTab from './components/ApplicationsTab';
 import { MOCK_REQUESTS_STATS } from './requests.mock';
-
-const ComingSoon: React.FC = () => <NotFoundMessage message="requests.comingSoon" />;
 
 const RequestsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -30,12 +28,12 @@ const RequestsPage: React.FC = () => {
   const stats = MOCK_REQUESTS_STATS;
 
   const breadcrumbItems = [
-    { label: t('sidebar.studentManagement') },
+    { label: t('sidebar.studentAffairs') },
     { label: t('requests.title') },
   ];
 
   const tabs: TabItem[] = [
-    { id: 'applications', label: t('requests.tabs.applications'), content: <ComingSoon /> },
+    { id: 'applications', label: t('requests.tabs.applications'), content: <ApplicationsTab /> },
     {
       id: 'early-leave',
       label: t('requests.tabs.earlyLeave'),
