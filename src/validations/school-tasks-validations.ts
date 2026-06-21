@@ -40,6 +40,8 @@ const baseSchoolTaskSchema = {
     .typeError('tasksManagement.validation.assignmentTypeRequired'),
   attachment: mixed<File[]>().optional(),
   studentIds: array(string().required()).optional(),
+  startPageNumber: number().optional(),
+  endPageNumber: number().optional(),
 };
 
 export const AddSchoolTaskSchema = object(baseSchoolTaskSchema);
