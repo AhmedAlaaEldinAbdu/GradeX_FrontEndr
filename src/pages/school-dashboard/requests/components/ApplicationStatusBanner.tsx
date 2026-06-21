@@ -5,14 +5,21 @@ import { StudentApplicationStatus } from '@/services/api/student-applications/st
 interface ApplicationStatusBannerProps {
   status: StudentApplicationStatus;
   interviewDate?: string | null;
+  editRequest?: string | null;
 }
 
 const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
   status,
   interviewDate,
+  editRequest,
 }) => {
   const { t } = useTranslation();
   const [showBorder] = useState(false);
+
+  const editRequestTooltip =
+    status === StudentApplicationStatus.EditRequest && editRequest?.trim()
+      ? editRequest.trim()
+      : null;
 
   // Check if this is the "appointment scheduled" case (default with interviewDate)
   const isAppointmentScheduled =
@@ -93,11 +100,39 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
         <h2 className="text-lg font-bold text-gray-900">
           {t('studentApplications.details.studentEvaluation')}
         </h2>
-        <span
-          className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium ${content.badgeClassName}`}
-        >
-          {content.text}
-        </span>
+        {editRequestTooltip ? (
+          <span className="group relative inline-flex">
+            <span
+              className={`inline-flex cursor-help items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium ${content.badgeClassName}`}
+            >
+              {content.text}
+              <svg
+                className="h-3.5 w-3.5 opacity-70"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </span>
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute end-0 top-full z-10 mt-2 hidden w-64 whitespace-pre-wrap rounded-lg bg-gray-900 px-3 py-2 text-start text-xs font-normal leading-relaxed text-white shadow-lg group-hover:block"
+            >
+              {editRequestTooltip}
+            </span>
+          </span>
+        ) : (
+          <span
+            className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium ${content.badgeClassName}`}
+          >
+            {content.text}
+          </span>
+        )}
       </div>
 
       {/* Appointment date row — ONLY for "تحديد موعد" (appointment scheduled) status */}
