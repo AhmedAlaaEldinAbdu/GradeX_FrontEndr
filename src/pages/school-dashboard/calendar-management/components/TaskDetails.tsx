@@ -8,9 +8,8 @@ import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/com
 import IconButton from '@/shared/components/IconButton';
 import Loading from '@/shared/components/Loading';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
+import UserAvatarName from '@/shared/components/UserAvatarName';
 import ViewModeFileDisplay from '@/shared/components/ViewModeFileDisplay';
-import DefaultAvatar from '@gradex/assets/images/profile.png';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 import {
   fetchSchoolTaskById,
@@ -236,27 +235,11 @@ export default function TaskDetails() {
     {
       header: 'tasksManagement.detailsPage.submissionsTable.studentName',
       accessor: (row) => (
-        <div className="flex w-full items-center justify-evenly gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 overflow-hidden rounded-xl border border-gray-200 bg-white">
-              <CustomImage
-                src={row.avatar}
-                fallbackSrc={DefaultAvatar}
-                alt={row.studentName}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <span>{row.studentName}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => handleOpenCorrectionPreview(row.id)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 shadow-md transition-colors hover:bg-blue-200"
-            aria-label={t('actions.view')}
-          >
-            <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
-          </button>
-        </div>
+        <UserAvatarName
+          name={row.studentName}
+          avatarSrc={row.avatar}
+          onView={() => handleOpenCorrectionPreview(row.id)}
+        />
       ),
       headerClassName: 'min-w-[320px]',
     },
