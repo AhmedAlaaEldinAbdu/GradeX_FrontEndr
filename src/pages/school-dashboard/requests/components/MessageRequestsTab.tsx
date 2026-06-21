@@ -26,7 +26,6 @@ import {
   RequestParticipantRole,
   MessageStatus,
   MessageSenderType,
-  SendType,
 } from '@/services/api/requests/requests.types';
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 import ParticipantsPopup from '../popups/ParticipantsPopup';
@@ -104,8 +103,7 @@ const MessageRequestsTab: React.FC = () => {
   const mapMessageToRequest = useMemo(
     () =>
       (message: SchoolMessageDto): StudentRequestDto => {
-        const isSchoolRecipient = message.recivertype === SendType.School;
-        const recipientStudents: RequestParticipant[] = message.students.length
+        const conversationStudents: RequestParticipant[] = message.students.length
           ? message.students.map((student) => ({
               id: student.studentId,
               name: student.studentName ?? '',
@@ -122,25 +120,45 @@ const MessageRequestsTab: React.FC = () => {
                 },
               ]
             : [];
-        const firstStudent = recipientStudents[0];
+        const firstStudent = conversationStudents[0];
+
+        const schoolEndpoint = {
+          name: schoolLabel,
+          avatarPath: null as string | null,
+          role: RequestParticipantRole.School,
+          id: undefined as string | undefined,
+          participants: undefined as RequestParticipant[] | undefined,
+        };
+        const studentEndpoint = {
+          name: firstStudent?.name ?? '',
+          avatarPath: firstStudent?.avatarPath ?? null,
+          role: RequestParticipantRole.Student,
+          id: firstStudent?.id,
+          participants: conversationStudents,
+        };
+
+        const isFromStudent = message.sendertype === MessageSenderType.Student;
+        const isToStudent = message.recivertype === MessageSenderType.Student;
+        const sender = isFromStudent ? studentEndpoint : schoolEndpoint;
+        const recipient = isToStudent ? studentEndpoint : schoolEndpoint;
 
         return {
           id: message.messageId,
-          senderName: schoolLabel,
-          senderAvatarPath: null,
-          senderRole: RequestParticipantRole.School,
-          recipientName: isSchoolRecipient ? schoolLabel : (firstStudent?.name ?? ''),
-          recipientAvatarPath: isSchoolRecipient ? null : (firstStudent?.avatarPath ?? null),
-          recipientRole: isSchoolRecipient
-            ? RequestParticipantRole.School
-            : RequestParticipantRole.Student,
-          recipientId: isSchoolRecipient ? undefined : firstStudent?.id,
-          recipientParticipants: isSchoolRecipient ? undefined : recipientStudents,
+          senderName: sender.name,
+          senderAvatarPath: sender.avatarPath,
+          senderRole: sender.role,
+          senderId: sender.id,
+          senderParticipants: sender.participants,
+          recipientName: recipient.name,
+          recipientAvatarPath: recipient.avatarPath,
+          recipientRole: recipient.role,
+          recipientId: recipient.id,
+          recipientParticipants: recipient.participants,
           messageContent: message.message,
           status: MESSAGE_STATUS_TO_REQUEST_STATUS[message.messageStatus],
           type: StudentRequestType.Messages,
           created: message.createdAt,
-          isFromStudent: message.sendertype === MessageSenderType.Student,
+          isFromStudent,
           studentId: firstStudent?.id ?? message.studentId,
         };
       },
