@@ -551,7 +551,6 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <FormField
               label={t('tasksManagement.form.startPage')}
-              required
               error={errors.startPageNumber?.message}
             >
               <Controller
@@ -572,7 +571,6 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
             </FormField>
             <FormField
               label={t('tasksManagement.form.endPage')}
-              required
               error={errors.endPageNumber?.message}
             >
               <Controller
