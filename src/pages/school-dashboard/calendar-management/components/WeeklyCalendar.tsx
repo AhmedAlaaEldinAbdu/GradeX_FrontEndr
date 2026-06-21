@@ -546,52 +546,48 @@ const transformAcademicCalendarToSpecialColumns = (
   }
 
   const allSpecialColumns: SpecialColumn[] = [];
-  const usedColumnIndices = new Set<number>();
+  const usedKeys = new Set<string>();
+
+  const addColumns = (cols: SpecialColumn[]) => {
+    for (const col of cols) {
+      const key = `${col.columnIndex}|${col.type}|${col.startTime ?? ''}|${col.endTime ?? ''}`;
+      if (!usedKeys.has(key)) {
+        allSpecialColumns.push(col);
+        usedKeys.add(key);
+      }
+    }
+  };
 
   for (const calendar of calendars) {
     const workingDays = getWorkingDaysFromSchedules(calendar.daySchedules);
 
-    const breakfastColumns = transformTimedSchedulesToSpecialColumns(
-      calendar.breakfasts || [],
-      'breakfast',
-      t,
-      workingDays,
-      periodSlots
+    addColumns(
+      transformTimedSchedulesToSpecialColumns(
+        calendar.breakfasts || [],
+        'breakfast',
+        t,
+        workingDays,
+        periodSlots
+      )
     );
-    for (const col of breakfastColumns) {
-      if (!usedColumnIndices.has(col.columnIndex)) {
-        allSpecialColumns.push(col);
-        usedColumnIndices.add(col.columnIndex);
-      }
-    }
-
-    const breakColumns = transformTimedSchedulesToSpecialColumns(
-      calendar.breaks || [],
-      'break',
-      t,
-      workingDays,
-      periodSlots
+    addColumns(
+      transformTimedSchedulesToSpecialColumns(
+        calendar.breaks || [],
+        'break',
+        t,
+        workingDays,
+        periodSlots
+      )
     );
-    for (const col of breakColumns) {
-      if (!usedColumnIndices.has(col.columnIndex)) {
-        allSpecialColumns.push(col);
-        usedColumnIndices.add(col.columnIndex);
-      }
-    }
-
-    const assemblyColumns = transformTimedSchedulesToSpecialColumns(
-      calendar.assemblies || [],
-      'assembly',
-      t,
-      workingDays,
-      periodSlots
+    addColumns(
+      transformTimedSchedulesToSpecialColumns(
+        calendar.assemblies || [],
+        'assembly',
+        t,
+        workingDays,
+        periodSlots
+      )
     );
-    for (const col of assemblyColumns) {
-      if (!usedColumnIndices.has(col.columnIndex)) {
-        allSpecialColumns.push(col);
-        usedColumnIndices.add(col.columnIndex);
-      }
-    }
   }
 
   return allSpecialColumns.sort((a, b) => a.columnIndex - b.columnIndex);
