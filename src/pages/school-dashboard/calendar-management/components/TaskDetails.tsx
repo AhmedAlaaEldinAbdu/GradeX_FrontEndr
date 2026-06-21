@@ -129,6 +129,7 @@ export default function TaskDetails() {
   const isArabic = i18n.language === 'ar';
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
   const currentSchoolTask = useAppSelector((state) => state.schoolTasks.currentSchoolTask);
   const taskStatuses = useAppSelector((state) => state.schoolTasks.taskStatuses);
@@ -161,10 +162,10 @@ export default function TaskDetails() {
     () =>
       (task?.attachmentUrls || []).map((filePath, index) => ({
         id: `${task?.id || 'task'}-attachment-${index}`,
-        filePath,
+        filePath: `${baseUrl}/${filePath.replace(/^\/+/, '')}`,
         fileName: getFileNameFromPath(filePath),
       })),
-    [task?.attachmentUrls, task?.id]
+    [baseUrl, task?.attachmentUrls, task?.id]
   );
 
   const submissions = useMemo(
