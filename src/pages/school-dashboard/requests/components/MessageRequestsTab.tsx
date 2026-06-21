@@ -105,32 +105,43 @@ const MessageRequestsTab: React.FC = () => {
     () =>
       (message: SchoolMessageDto): StudentRequestDto => {
         const isSchoolRecipient = message.recivertype === SendType.School;
-        const participants: RequestParticipant[] = message.students.map((student) => ({
-          id: student.studentId,
-          name: student.studentName ?? '',
-          avatarPath: student.studentimage,
-          role: RequestParticipantRole.Student,
-        }));
-        const firstStudent = message.students[0];
+        const recipientStudents: RequestParticipant[] = message.students.length
+          ? message.students.map((student) => ({
+              id: student.studentId,
+              name: student.studentName ?? '',
+              avatarPath: student.studentimage,
+              role: RequestParticipantRole.Student,
+            }))
+          : message.studentName
+            ? [
+                {
+                  id: message.studentId,
+                  name: message.studentName,
+                  avatarPath: message.studentimage,
+                  role: RequestParticipantRole.Student,
+                },
+              ]
+            : [];
+        const firstStudent = recipientStudents[0];
 
         return {
           id: message.messageId,
           senderName: schoolLabel,
           senderAvatarPath: null,
           senderRole: RequestParticipantRole.School,
-          recipientName: isSchoolRecipient ? schoolLabel : (firstStudent?.studentName ?? ''),
-          recipientAvatarPath: isSchoolRecipient ? null : (firstStudent?.studentimage ?? null),
+          recipientName: isSchoolRecipient ? schoolLabel : (firstStudent?.name ?? ''),
+          recipientAvatarPath: isSchoolRecipient ? null : (firstStudent?.avatarPath ?? null),
           recipientRole: isSchoolRecipient
             ? RequestParticipantRole.School
             : RequestParticipantRole.Student,
-          recipientId: isSchoolRecipient ? undefined : firstStudent?.studentId,
-          recipientParticipants: isSchoolRecipient ? undefined : participants,
+          recipientId: isSchoolRecipient ? undefined : firstStudent?.id,
+          recipientParticipants: isSchoolRecipient ? undefined : recipientStudents,
           messageContent: message.message,
           status: MESSAGE_STATUS_TO_REQUEST_STATUS[message.messageStatus],
           type: StudentRequestType.Messages,
           created: message.createdAt,
           isFromStudent: message.sendertype === MessageSenderType.Student,
-          studentId: firstStudent?.studentId ?? message.studentId,
+          studentId: firstStudent?.id ?? message.studentId,
         };
       },
     [schoolLabel]
