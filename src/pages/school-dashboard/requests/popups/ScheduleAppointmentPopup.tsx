@@ -11,12 +11,14 @@ interface ScheduleAppointmentPopupProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (date: string, time: string) => void;
+  isProcessing?: boolean;
 }
 
 const ScheduleAppointmentPopup: React.FC<ScheduleAppointmentPopupProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  isProcessing = false,
 }) => {
   const { t } = useTranslation();
   const [date, setDate] = useState('');
@@ -25,6 +27,8 @@ const ScheduleAppointmentPopup: React.FC<ScheduleAppointmentPopupProps> = ({
   const [timeError, setTimeError] = useState('');
 
   const handleConfirm = () => {
+    if (isProcessing) return;
+
     let hasError = false;
     if (!date.trim()) {
       setDateError(t('common.validation.required'));
@@ -37,13 +41,10 @@ const ScheduleAppointmentPopup: React.FC<ScheduleAppointmentPopupProps> = ({
     if (hasError) return;
 
     onConfirm(date, time);
-    setDate('');
-    setTime('');
-    setDateError('');
-    setTimeError('');
   };
 
   const handleClose = () => {
+    if (isProcessing) return;
     setDate('');
     setTime('');
     setDateError('');
@@ -97,10 +98,10 @@ const ScheduleAppointmentPopup: React.FC<ScheduleAppointmentPopupProps> = ({
 
         {/* Action buttons */}
         <div className="flex w-full gap-3">
-          <Button variant="outline" fullWidth onClick={handleClose}>
+          <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
             {t('common.cancel')}
           </Button>
-          <Button variant="success" fullWidth onClick={handleConfirm}>
+          <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
             {t('studentApplications.modals.schedule')}
           </Button>
         </div>

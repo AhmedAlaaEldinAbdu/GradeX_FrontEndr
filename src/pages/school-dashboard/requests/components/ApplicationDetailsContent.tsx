@@ -313,8 +313,13 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
       />
       <ScheduleAppointmentPopup
         isOpen={isScheduleModalOpen}
-        onClose={() => setScheduleModalOpen(false)}
+        onClose={() => {
+          if (!isProcessing) {
+            setScheduleModalOpen(false);
+          }
+        }}
         onConfirm={handleScheduleConfirm}
+        isProcessing={isProcessing}
       />
       <HousingPopup
         isOpen={isHousingPopupOpen}
