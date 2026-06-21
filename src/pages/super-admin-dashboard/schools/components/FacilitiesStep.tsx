@@ -14,7 +14,7 @@ import {
 } from '@gradex/redux/features/lookups';
 import i18n from '@/i18n';
 import AddFacilityDetailsPopup from '../popups/AddFacilityDetailsPopup';
-import ViewModeFileDisplay from './ViewModeFileDisplay';
+import ViewModeFileDisplay from '@gradex/shared/components/ViewModeFileDisplay';
 
 interface FacilitiesStepProps {
   onCertificateUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;

@@ -9,7 +9,7 @@ import Button from '@gradex/shared/components/Button';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import MapLocationModal from '@gradex/shared/components/MapLocationModal';
 import AddressBranch from './AddressBranch';
-import ViewModeFileDisplay from './ViewModeFileDisplay';
+import ViewModeFileDisplay from '@gradex/shared/components/ViewModeFileDisplay';
 import type { SchoolFormData } from '../types/school.types';
 import type { ExistingImageAttachment } from '../utils/school-form.transformer';
 import {
