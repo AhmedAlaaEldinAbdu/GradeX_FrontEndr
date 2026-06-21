@@ -5,10 +5,10 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
-import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import IconButton from '@/shared/components/IconButton';
 import Loading from '@/shared/components/Loading';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
+import ViewModeFileDisplay from '@/shared/components/ViewModeFileDisplay';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
@@ -116,11 +116,6 @@ const getTaskTypeLabel = (taskType: SchoolTaskType, t: (key: string) => string) 
   return labelKey ? t(labelKey) : `${t('tasksManagement.table.taskType')} ${taskType}`;
 };
 
-const getFileNameFromPath = (filePath: string) => {
-  const parts = filePath.split('/');
-  return parts[parts.length - 1] || filePath;
-};
-
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -158,15 +153,7 @@ export default function TaskDetails() {
     return currentSchoolTask;
   }, [currentSchoolTask, id]);
 
-  const attachments = useMemo(
-    () =>
-      (task?.attachmentUrls || []).map((filePath, index) => ({
-        id: `${task?.id || 'task'}-attachment-${index}`,
-        filePath: `${baseUrl}/${filePath.replace(/^\/+/, '')}`,
-        fileName: getFileNameFromPath(filePath),
-      })),
-    [baseUrl, task?.attachmentUrls, task?.id]
-  );
+  const attachmentUrls = task?.attachmentUrls || [];
 
   const submissions = useMemo(
     () => taskStatuses.filter((submission) => getSubmissionId(submission)),
@@ -426,21 +413,12 @@ export default function TaskDetails() {
               {t('tasksManagement.detailsPage.attachmentsSectionTitle')}
             </h2>
 
-            {attachments.length === 0 ? (
+            {attachmentUrls.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
                 {t('tasksManagement.detailsPage.noAttachments')}
               </div>
             ) : (
-              <div className="space-y-3">
-                {attachments.map((attachment) => (
-                  <ExistingFileDisplay
-                    key={attachment.id}
-                    filePath={attachment.filePath}
-                    fileName={attachment.fileName}
-                    className="mb-0"
-                  />
-                ))}
-              </div>
+              <ViewModeFileDisplay files={attachmentUrls} baseUrl={baseUrl} />
             )}
           </section>
         </div>
