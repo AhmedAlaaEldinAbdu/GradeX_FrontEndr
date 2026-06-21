@@ -415,6 +415,24 @@ export function getErrorMessage(error: unknown): string {
         }
         if ('error' in data && typeof data.error === 'object' && data.error !== null) {
           const errorObj = data.error as Record<string, unknown>;
+
+          // Prefer the most specific message from the validation details, if present
+          if (Array.isArray(errorObj.details)) {
+            const detailMessage = errorObj.details
+              .map((detail) =>
+                detail && typeof detail === 'object' && 'message' in detail
+                  ? (detail as { message?: unknown }).message
+                  : undefined
+              )
+              .find(
+                (message): message is string => typeof message === 'string' && message.length > 0
+              );
+
+            if (detailMessage) {
+              return detailMessage;
+            }
+          }
+
           if ('message' in errorObj && typeof errorObj.message === 'string') {
             return errorObj.message;
           }

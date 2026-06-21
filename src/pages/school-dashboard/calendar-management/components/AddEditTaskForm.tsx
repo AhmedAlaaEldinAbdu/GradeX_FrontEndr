@@ -344,7 +344,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: typeof error === 'string' ? error : 'common.errorOccurred',
+        message: typeof error === 'string' && error.trim() ? error : t('common.errorOccurred'),
       });
     }
   };
@@ -701,9 +701,9 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
             <FileUpload
               ref={fileUploadRef}
               label=""
-              accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+              accept=".pdf,.png,.jpg,.jpeg,.gif,.svg,.pdf"
               uploadText={t('tasksManagement.form.uploadAttachment')}
-              formatHints={['GIF', 'SVG', 'JPG', 'PNG']}
+              formatHints={['GIF', 'SVG', 'JPG', 'PNG', 'PDF']}
               multiple
               attachmentUrls={
                 mode === 'edit' ? (currentSchoolTask || initialTask)?.attachmentUrls : undefined
@@ -755,6 +755,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
         open={showPopupMessage.show}
         type={showPopupMessage.type}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.type === 'error'}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={true}
         onClose={() => setShowPopupMessage((current) => ({ ...current, show: false }))}
