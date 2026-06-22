@@ -16,17 +16,17 @@ type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<Variant, string> = {
   danger: 'bg-red-100 text-red-600 hover:bg-red-200',
-  success: 'bg-[#30B97E1A] text-green-600 hover:bg-green-200',
-  blue: 'bg-blue-100 text-blue-600 hover:bg-blue-300',
+  success: 'bg-[#30B97E]/10 text-green-600 hover:bg-green-200',
+  blue: 'bg-[#E6F3FE] text-blue-600 hover:bg-blue-300',
   darkBlue: 'bg-[#0909B1]/10 text-[#0909B1] hover:bg-[#0909B1]/20',
-  yellow: 'bg-yellow-100 text-yellow-600 hover:bg-yellow-300',
+  yellow: 'bg-[#FEF8E6] text-yellow-600 hover:bg-yellow-300',
   default: 'bg-gray-50 text-gray-700 hover:bg-gray-100',
 };
 
 const IconButton: React.FC<IconButtonProps> = ({
   status,
   variant = 'default',
-  className = '',
+  className = 'h-[40px] w-[40px]',
   imgClassName = 'h-4 w-4',
   ariaLabel,
   disabled,
@@ -58,7 +58,7 @@ const IconButton: React.FC<IconButtonProps> = ({
     <button
       type={type}
       aria-label={ariaLabel}
-      className={`rounded-full p-2 shadow-md transition-colors ${defaultVariant || variantClasses[variant]} ${disabledClasses} ${className}`}
+      className={`flex items-center justify-center rounded-full p-2 shadow-md transition-colors ${defaultVariant || variantClasses[variant]} ${disabledClasses} ${className}`}
       disabled={disabled}
       {...rest}
     >
