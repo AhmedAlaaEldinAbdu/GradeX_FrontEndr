@@ -110,7 +110,7 @@ export interface SchoolMessageDto {
   schoolBranchesId: string;
   messageReply: string | null;
   sendertype: number;
-  recivertype: SendType;
+  recivertype: number;
   studentId: string;
   studentName: string | null;
   studentimage: string | null;

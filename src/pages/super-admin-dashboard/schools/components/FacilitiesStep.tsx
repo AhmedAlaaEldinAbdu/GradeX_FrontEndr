@@ -14,7 +14,7 @@ import {
 } from '@gradex/redux/features/lookups';
 import i18n from '@/i18n';
 import AddFacilityDetailsPopup from '../popups/AddFacilityDetailsPopup';
-import ViewModeFileDisplay from './ViewModeFileDisplay';
+import ViewModeFileDisplay from '@gradex/shared/components/ViewModeFileDisplay';
 
 interface FacilitiesStepProps {
   onCertificateUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -25,6 +25,10 @@ interface FacilitiesStepProps {
   certificateError?: string;
   readOnly?: boolean;
   showValidationErrors?: boolean;
+  onSchoolImageUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSchoolImageDelete?: (index?: number) => void;
+  schoolImageFileNames?: string[];
+  schoolImageFiles?: File[];
 }
 
 /**
@@ -40,6 +44,10 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   certificateError,
   readOnly = false,
   showValidationErrors = false,
+  onSchoolImageUpload,
+  onSchoolImageDelete,
+  schoolImageFileNames,
+  schoolImageFiles,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
@@ -416,6 +424,33 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
           </div>
         </FormField>
       </div>
+
+      {/* School Images Upload (Optional) */}
+      {!readOnly ? (
+        <div className="space-y-4 rounded-lg border border-gray-200 p-4">
+          <FormField label={t('schools.schoolImages')} optional>
+            <FileUpload
+              label=""
+              accept="image/*"
+              formatHints={['JPG', 'JPEG', 'PNG', 'SVG', 'WEBP']}
+              onChange={onSchoolImageUpload || (() => {})}
+              onDelete={onSchoolImageDelete}
+              fileNames={schoolImageFileNames || []}
+              files={schoolImageFiles || []}
+              uploadText={t('schools.uploadMedia')}
+              multiple={true}
+            />
+          </FormField>
+        </div>
+      ) : (
+        <>
+          {schoolImageFileNames && schoolImageFileNames.length > 0 && (
+            <div className="space-y-4 rounded-lg border border-gray-200 p-4">
+              <ViewModeFileDisplay files={schoolImageFileNames} label={t('schools.images')} />
+            </div>
+          )}
+        </>
+      )}
 
       {/* Certificates Upload Section - Multiple Files */}
       {!readOnly ? (

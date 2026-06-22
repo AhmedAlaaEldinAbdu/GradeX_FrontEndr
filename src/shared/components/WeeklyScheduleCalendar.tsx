@@ -758,8 +758,7 @@ export default function WeeklyScheduleCalendar({
                   const isEventStart = isEventStartCell(dayIndex, periodIndex);
                   const isLessonSpan = isLessonSpanCell(dayIndex, periodIndex);
 
-                  // Find if this column is a special column and if it should be shown for this day
-                  const specialCol = specialColumns.find((sc) => {
+                  const cellSpecialCols = specialColumns.filter((sc) => {
                     if (sc.columnIndex !== periodIndex) return false;
 
                     // If days array is provided, check if this day is in the array
@@ -779,50 +778,65 @@ export default function WeeklyScheduleCalendar({
                   // For special columns (breakfast, garden, etc.), use seamless styling
                   // Use negative margin to connect cells vertically
                   // These appear ON TOP of any full-row event
-                  if (specialCol) {
-                    // Get the applicable days for this special column
-                    const applicableDays =
-                      specialCol.days && specialCol.days.length > 0
-                        ? [...specialCol.days].sort((a, b) => a - b)
-                        : Array.from(
-                            {
-                              length:
-                                (specialCol.endDayIndex ?? 5) - (specialCol.startDayIndex ?? 1) + 1,
-                            },
-                            (_, i) => (specialCol.startDayIndex ?? 1) + i
-                          );
-
-                    const dayPositionInList = applicableDays.indexOf(dayIndex);
-                    const isFirstRow = dayPositionInList === 0;
-                    const isLastRow = dayPositionInList === applicableDays.length - 1;
-                    // Calculate middle position for showing label
-                    const middlePosition = Math.floor(applicableDays.length / 2);
-                    const isMiddleRow = dayPositionInList === middlePosition;
-
-                    // Add padding to compensate for gap, and extend height
-                    const marginClass = isFirstRow ? '' : '-mt-2';
-                    const paddingClass = isFirstRow ? '' : 'pt-2';
-                    const roundedClass = isFirstRow
-                      ? 'rounded-t-lg'
-                      : isLastRow
-                        ? 'rounded-b-lg'
-                        : '';
-
+                  if (cellSpecialCols.length > 0) {
                     const slot = PERIOD_TIME_SLOTS[periodIndex];
-                    const { offset, width } = getSpecialColumnLayout(specialCol, slot);
 
-                    if (offset <= 0 && width >= 1) {
+                    const activities = cellSpecialCols.map((sc) => {
+                      const applicableDays =
+                        sc.days && sc.days.length > 0
+                          ? [...sc.days].sort((a, b) => a - b)
+                          : Array.from(
+                              {
+                                length: (sc.endDayIndex ?? 5) - (sc.startDayIndex ?? 1) + 1,
+                              },
+                              (_, i) => (sc.startDayIndex ?? 1) + i
+                            );
+
+                      const dayPositionInList = applicableDays.indexOf(dayIndex);
+                      const isFirstRow = dayPositionInList === 0;
+                      const isLastRow = dayPositionInList === applicableDays.length - 1;
+                      const middlePosition = Math.floor(applicableDays.length / 2);
+                      const isMiddleRow = dayPositionInList === middlePosition;
+
+                      const marginClass = isFirstRow ? '' : '-mt-2';
+                      const paddingClass = isFirstRow ? '' : 'pt-2';
+                      const roundedClass = isFirstRow
+                        ? 'rounded-t-lg'
+                        : isLastRow
+                          ? 'rounded-b-lg'
+                          : '';
+
+                      const { offset, width } = getSpecialColumnLayout(sc, slot);
+
+                      return {
+                        sc,
+                        offset,
+                        width,
+                        isLastRow,
+                        isMiddleRow,
+                        marginClass,
+                        paddingClass,
+                        roundedClass,
+                      };
+                    });
+
+                    if (
+                      activities.length === 1 &&
+                      activities[0].offset <= 0 &&
+                      activities[0].width >= 1
+                    ) {
+                      const a = activities[0];
                       return (
                         <div
                           key={periodIndex}
-                          className={`flex min-h-[100px] items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
-                          style={{ marginBottom: isLastRow ? 0 : undefined }}
+                          className={`flex min-h-[100px] items-center justify-center ${a.sc.bgColor || 'bg-gray-100'} ${a.roundedClass} ${a.marginClass} ${a.paddingClass}`}
+                          style={{ marginBottom: a.isLastRow ? 0 : undefined }}
                         >
-                          {isMiddleRow && (
+                          {a.isMiddleRow && (
                             <span
-                              className={`text-xs font-bold ${specialCol.textColor || 'text-gray-700'}`}
+                              className={`text-xs font-bold ${a.sc.textColor || 'text-gray-700'}`}
                             >
-                              {specialCol.label}
+                              {a.sc.label}
                             </span>
                           )}
                         </div>
@@ -875,27 +889,35 @@ export default function WeeklyScheduleCalendar({
                       );
                     };
 
-                    // The coloured activity block. `items-stretch` on the wrapper
-                    // lets its `-mt-2` bridge meet the row above so multi-day
-                    // activities stay visually connected.
-                    const activitySegment = (
-                      <div
-                        key={`${periodIndex}-activity`}
-                        className={`flex min-h-[100px] flex-shrink-0 items-center justify-center ${specialCol.bgColor || 'bg-gray-100'} ${roundedClass} ${marginClass} ${paddingClass}`}
-                        style={{
-                          width: `${width * 100}%`,
-                          marginBottom: isLastRow ? 0 : undefined,
-                        }}
-                      >
-                        {isMiddleRow && (
-                          <span
-                            className={`text-xs font-bold ${specialCol.textColor || 'text-gray-700'}`}
+                    type CellSegment = { start: number; end: number; node: React.ReactNode };
+
+                    // One coloured block per activity, positioned by its real time
+                    // within the period. `items-stretch` on the wrapper lets each
+                    // `-mt-2` bridge meet the row above for multi-day activities.
+                    const segments: CellSegment[] = activities
+                      .filter((a) => a.width > 0)
+                      .map((a, aIdx) => ({
+                        start: a.offset,
+                        end: a.offset + a.width,
+                        node: (
+                          <div
+                            key={`${periodIndex}-activity-${aIdx}`}
+                            className={`flex min-h-[100px] flex-shrink-0 items-center justify-center ${a.sc.bgColor || 'bg-gray-100'} ${a.roundedClass} ${a.marginClass} ${a.paddingClass}`}
+                            style={{
+                              width: `${a.width * 100}%`,
+                              marginBottom: a.isLastRow ? 0 : undefined,
+                            }}
                           >
-                            {specialCol.label}
-                          </span>
-                        )}
-                      </div>
-                    );
+                            {a.isMiddleRow && (
+                              <span
+                                className={`text-xs font-bold ${a.sc.textColor || 'text-gray-700'}`}
+                              >
+                                {a.sc.label}
+                              </span>
+                            )}
+                          </div>
+                        ),
+                      }));
 
                     const lessonInCell = getLessonStartingAtCell(dayIndex, periodIndex);
                     const lessonOffset =
@@ -905,11 +927,6 @@ export default function WeeklyScheduleCalendar({
                     const lessonWidth = lessonInCell
                       ? Math.min(Math.max(lessonInCell.colSpan ?? 1, 0), 1 - lessonOffset)
                       : 0;
-
-                    type CellSegment = { start: number; end: number; node: React.ReactNode };
-                    const segments: CellSegment[] = [
-                      { start: offset, end: offset + width, node: activitySegment },
-                    ];
                     if (lessonInCell && lessonWidth > 0) {
                       segments.push({
                         start: lessonOffset,
@@ -925,6 +942,7 @@ export default function WeeklyScheduleCalendar({
                         ),
                       });
                     }
+
                     segments.sort((a, b) => a.start - b.start);
 
                     const cellChildren: React.ReactNode[] = [];

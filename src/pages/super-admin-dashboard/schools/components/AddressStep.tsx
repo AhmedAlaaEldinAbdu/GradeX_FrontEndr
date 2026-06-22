@@ -9,7 +9,6 @@ import Button from '@gradex/shared/components/Button';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import MapLocationModal from '@gradex/shared/components/MapLocationModal';
 import AddressBranch from './AddressBranch';
-import ViewModeFileDisplay from './ViewModeFileDisplay';
 import type { SchoolFormData } from '../types/school.types';
 import type { ExistingImageAttachment } from '../utils/school-form.transformer';
 import {
@@ -38,10 +37,6 @@ interface BranchData {
 
 interface AddressStepProps {
   readOnly?: boolean;
-  onSchoolImageUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSchoolImageDelete?: (index?: number) => void;
-  schoolImageFileNames?: string[];
-  schoolImageFiles?: File[];
   onLogoUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onLogoDelete?: () => void;
   logoFileName?: string;
@@ -85,10 +80,6 @@ interface AddressStepProps {
  */
 const AddressStep: React.FC<AddressStepProps> = ({
   readOnly = false,
-  onSchoolImageUpload,
-  onSchoolImageDelete,
-  schoolImageFileNames,
-  schoolImageFiles,
   onLogoUpload,
   onLogoDelete,
   logoFileName,
@@ -428,33 +419,6 @@ const AddressStep: React.FC<AddressStepProps> = ({
           </FormField>
         </div>
       ) : null}
-
-      {/* School Images Upload (Optional) */}
-      {!readOnly ? (
-        <div className="space-y-4 rounded-lg border border-gray-200 p-4">
-          <FormField label={t('schools.schoolImages')} optional>
-            <FileUpload
-              label=""
-              accept="image/*"
-              formatHints={['JPG', 'JPEG', 'PNG', 'SVG', 'WEBP']}
-              onChange={onSchoolImageUpload || (() => {})}
-              onDelete={onSchoolImageDelete}
-              fileNames={schoolImageFileNames || []}
-              files={schoolImageFiles || []}
-              uploadText={t('schools.uploadMedia')}
-              multiple={true}
-            />
-          </FormField>
-        </div>
-      ) : (
-        <>
-          {schoolImageFileNames && schoolImageFileNames.length > 0 && (
-            <div className="space-y-4 rounded-lg border border-gray-200 p-4">
-              <ViewModeFileDisplay files={schoolImageFileNames} label={t('schools.images')} />
-            </div>
-          )}
-        </>
-      )}
 
       {/* Has Branches Toggle */}
       {/* <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

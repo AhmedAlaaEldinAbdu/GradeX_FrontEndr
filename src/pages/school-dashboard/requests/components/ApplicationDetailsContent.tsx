@@ -258,7 +258,11 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         </div>
 
         {/* Application Status Section */}
-        <ApplicationStatusBanner status={effectiveStatus} interviewDate={effectiveInterviewDate} />
+        <ApplicationStatusBanner
+          status={effectiveStatus}
+          interviewDate={effectiveInterviewDate}
+          editRequest={data.editRequest}
+        />
 
         {/* Parent Information Section */}
         <ApplicationParentInfo
@@ -309,8 +313,13 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
       />
       <ScheduleAppointmentPopup
         isOpen={isScheduleModalOpen}
-        onClose={() => setScheduleModalOpen(false)}
+        onClose={() => {
+          if (!isProcessing) {
+            setScheduleModalOpen(false);
+          }
+        }}
         onConfirm={handleScheduleConfirm}
+        isProcessing={isProcessing}
       />
       <HousingPopup
         isOpen={isHousingPopupOpen}

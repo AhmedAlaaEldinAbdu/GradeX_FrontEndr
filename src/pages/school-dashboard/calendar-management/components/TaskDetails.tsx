@@ -5,12 +5,11 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
-import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import IconButton from '@/shared/components/IconButton';
 import Loading from '@/shared/components/Loading';
 import NotFoundMessage from '@/shared/components/NotFoundMessage';
-import DefaultAvatar from '@gradex/assets/images/profile.png';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import UserAvatarName from '@/shared/components/UserAvatarName';
+import ViewModeFileDisplay from '@/shared/components/ViewModeFileDisplay';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 import {
   fetchSchoolTaskById,
@@ -116,11 +115,6 @@ const getTaskTypeLabel = (taskType: SchoolTaskType, t: (key: string) => string) 
   return labelKey ? t(labelKey) : `${t('tasksManagement.table.taskType')} ${taskType}`;
 };
 
-const getFileNameFromPath = (filePath: string) => {
-  const parts = filePath.split('/');
-  return parts[parts.length - 1] || filePath;
-};
-
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -129,6 +123,7 @@ export default function TaskDetails() {
   const isArabic = i18n.language === 'ar';
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
   const currentSchoolTask = useAppSelector((state) => state.schoolTasks.currentSchoolTask);
   const taskStatuses = useAppSelector((state) => state.schoolTasks.taskStatuses);
@@ -157,15 +152,7 @@ export default function TaskDetails() {
     return currentSchoolTask;
   }, [currentSchoolTask, id]);
 
-  const attachments = useMemo(
-    () =>
-      (task?.attachmentUrls || []).map((filePath, index) => ({
-        id: `${task?.id || 'task'}-attachment-${index}`,
-        filePath,
-        fileName: getFileNameFromPath(filePath),
-      })),
-    [task?.attachmentUrls, task?.id]
-  );
+  const attachmentUrls = task?.attachmentUrls || [];
 
   const submissions = useMemo(
     () => taskStatuses.filter((submission) => getSubmissionId(submission)),
@@ -248,27 +235,11 @@ export default function TaskDetails() {
     {
       header: 'tasksManagement.detailsPage.submissionsTable.studentName',
       accessor: (row) => (
-        <div className="flex w-full items-center justify-evenly gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 overflow-hidden rounded-xl border border-gray-200 bg-white">
-              <CustomImage
-                src={row.avatar}
-                fallbackSrc={DefaultAvatar}
-                alt={row.studentName}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <span>{row.studentName}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => handleOpenCorrectionPreview(row.id)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 shadow-md transition-colors hover:bg-blue-200"
-            aria-label={t('actions.view')}
-          >
-            <CustomImage src={EyeStyledIcon} alt={t('actions.view')} className="h-5 w-5" />
-          </button>
-        </div>
+        <UserAvatarName
+          name={row.studentName}
+          avatarSrc={row.avatar}
+          onView={() => handleOpenCorrectionPreview(row.id)}
+        />
       ),
       headerClassName: 'min-w-[320px]',
     },
@@ -425,21 +396,12 @@ export default function TaskDetails() {
               {t('tasksManagement.detailsPage.attachmentsSectionTitle')}
             </h2>
 
-            {attachments.length === 0 ? (
+            {attachmentUrls.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
                 {t('tasksManagement.detailsPage.noAttachments')}
               </div>
             ) : (
-              <div className="space-y-3">
-                {attachments.map((attachment) => (
-                  <ExistingFileDisplay
-                    key={attachment.id}
-                    filePath={attachment.filePath}
-                    fileName={attachment.fileName}
-                    className="mb-0"
-                  />
-                ))}
-              </div>
+              <ViewModeFileDisplay files={attachmentUrls} baseUrl={baseUrl} />
             )}
           </section>
         </div>

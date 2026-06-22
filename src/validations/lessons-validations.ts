@@ -5,9 +5,6 @@ export const useLessonValidations = () => {
 
   const validateStartTime = (value: string) => {
     if (!value) return true;
-    if (value < '08:30') {
-      return t('lesson.validation.startTimeMin');
-    }
     return true;
   };
 

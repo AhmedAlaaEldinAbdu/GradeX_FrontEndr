@@ -401,13 +401,6 @@ const SchoolForm = ({
               readOnly={mode === 'view'}
               initialBranches={branches}
               onBranchesChange={setBranches}
-              onSchoolImageUpload={handleFileUpload('image')}
-              onSchoolImageDelete={handleSchoolImageDelete}
-              schoolImageFileNames={[
-                ...schoolImageFiles.map((a) => a.attachmentFile),
-                ...getFileNames('image'),
-              ]}
-              schoolImageFiles={files.image}
               onLogoUpload={handleFileUpload('logo')}
               onLogoDelete={() => {
                 handleFileDelete('logo')();
@@ -430,6 +423,13 @@ const SchoolForm = ({
               certificateError={fileErrors.certificate}
               readOnly={mode === 'view'}
               showValidationErrors={showValidationErrors}
+              onSchoolImageUpload={handleFileUpload('image')}
+              onSchoolImageDelete={handleSchoolImageDelete}
+              schoolImageFileNames={[
+                ...schoolImageFiles.map((a) => a.attachmentFile),
+                ...getFileNames('image'),
+              ]}
+              schoolImageFiles={files.image}
             />
           )}
 

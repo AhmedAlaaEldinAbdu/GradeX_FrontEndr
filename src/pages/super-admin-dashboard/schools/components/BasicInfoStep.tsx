@@ -9,7 +9,7 @@ import calendarIcon from '@gradex/assets/icons/calendar.svg';
 import FormField from '@gradex/shared/components/FormField';
 import FileUpload from '@gradex/shared/components/FileUpload';
 import CustomCheckbox from '@gradex/shared/components/CustomCheckbox';
-import ViewModeFileDisplay from './ViewModeFileDisplay';
+import ViewModeFileDisplay from '@gradex/shared/components/ViewModeFileDisplay';
 import type { SchoolFormData } from '../types/school.types';
 import {
   fetchCountries,
