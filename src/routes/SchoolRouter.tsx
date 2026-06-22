@@ -89,6 +89,7 @@ import RequestsPage from '@/pages/school-dashboard/requests/requests-page';
 import ViewMessagePage from '@/pages/school-dashboard/requests/view-message-page';
 import AddMessagePage from '@/pages/school-dashboard/requests/add-message-page';
 import AdminRequestsPage from '@/pages/school-dashboard/admin-requests/admin-requests-page';
+import JobApplicationDetailsPage from '@/pages/school-dashboard/admin-requests/job-application-details-page';
 
 const SchoolRouter: React.FC = () => {
   const { t } = useTranslation();
@@ -1135,6 +1136,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AdminRequestsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-requests/job-application/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <JobApplicationDetailsPage />
             </MainLayout>
           </ProtectedRoute>
         }
