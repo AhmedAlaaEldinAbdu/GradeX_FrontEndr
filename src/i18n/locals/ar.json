@@ -1247,6 +1247,25 @@
     "approved": "موافقة",
     "rejected": "مرفوض"
   },
+  "adminRequests": {
+    "title": "الطلبات الإدارية",
+    "totalCount": "إجمالي الطلبات",
+    "rejectedCount": "طلبات مرفوضة",
+    "acceptedCount": "طلبات مقبولة",
+    "pendingCount": "طلبات قيد الانتظار",
+    "empty": "لم يتم إضافة أي طلب حتى الآن.",
+    "tabs": {
+      "jobApplication": "طلب تقديم علي وظيفة",
+      "applicationArchive": "طلب تقديم (الإرشيف)",
+      "scheduleInterview": "تحديد موعد مقابلة",
+      "earlyLeave": "طلب خروج مبكر",
+      "leave": "طلب اجازة",
+      "contractAuthentication": "طلب توثيق عقد",
+      "messages": "الرسائل",
+      "notes": "ملاحظات",
+      "teacherNotes": "ملاحظات للمعلمين"
+    }
+  },
   "requests": {
     "title": "الطلبات",
     "pendingCount": "طلبات قيد الانتظار",

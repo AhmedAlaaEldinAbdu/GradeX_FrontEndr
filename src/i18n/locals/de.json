@@ -1247,6 +1247,25 @@
     "approved": "Genehmigt",
     "rejected": "Abgelehnt"
   },
+  "adminRequests": {
+    "title": "Verwaltungsanträge",
+    "totalCount": "Anträge insgesamt",
+    "rejectedCount": "Abgelehnte Anträge",
+    "acceptedCount": "Angenommene Anträge",
+    "pendingCount": "Ausstehende Anträge",
+    "empty": "Es wurden noch keine Anträge hinzugefügt.",
+    "tabs": {
+      "jobApplication": "Stellenbewerbung",
+      "applicationArchive": "Bewerbung (Archiv)",
+      "scheduleInterview": "Vorstellungsgespräch planen",
+      "earlyLeave": "Antrag auf vorzeitiges Verlassen",
+      "leave": "Urlaubsantrag",
+      "contractAuthentication": "Vertragsbeglaubigung",
+      "messages": "Nachrichten",
+      "notes": "Notizen",
+      "teacherNotes": "Notizen für Lehrer"
+    }
+  },
   "requests": {
     "title": "Anträge",
     "pendingCount": "Ausstehende Anträge",

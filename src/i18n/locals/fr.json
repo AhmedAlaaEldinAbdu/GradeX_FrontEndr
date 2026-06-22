@@ -1247,6 +1247,25 @@
     "approved": "Approuvé",
     "rejected": "Rejeté"
   },
+  "adminRequests": {
+    "title": "Demandes administratives",
+    "totalCount": "Total des demandes",
+    "rejectedCount": "Demandes rejetées",
+    "acceptedCount": "Demandes acceptées",
+    "pendingCount": "Demandes en attente",
+    "empty": "Aucune demande n'a encore été ajoutée.",
+    "tabs": {
+      "jobApplication": "Candidature à un poste",
+      "applicationArchive": "Candidature (Archive)",
+      "scheduleInterview": "Planifier un entretien",
+      "earlyLeave": "Demande de sortie anticipée",
+      "leave": "Demande de congé",
+      "contractAuthentication": "Authentification de contrat",
+      "messages": "Messages",
+      "notes": "Notes",
+      "teacherNotes": "Notes pour les enseignants"
+    }
+  },
   "requests": {
     "title": "Demandes",
     "pendingCount": "Demandes en attente",

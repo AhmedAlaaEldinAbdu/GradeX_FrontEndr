@@ -1247,6 +1247,25 @@
     "approved": "Одобрено",
     "rejected": "Отклонено"
   },
+  "adminRequests": {
+    "title": "Административные заявки",
+    "totalCount": "Всего заявок",
+    "rejectedCount": "Отклонённые заявки",
+    "acceptedCount": "Принятые заявки",
+    "pendingCount": "Заявки в ожидании",
+    "empty": "Заявки ещё не добавлены.",
+    "tabs": {
+      "jobApplication": "Заявка на вакансию",
+      "applicationArchive": "Заявка (Архив)",
+      "scheduleInterview": "Назначить собеседование",
+      "earlyLeave": "Заявка на ранний уход",
+      "leave": "Заявка на отпуск",
+      "contractAuthentication": "Заверение договора",
+      "messages": "Сообщения",
+      "notes": "Заметки",
+      "teacherNotes": "Заметки для учителей"
+    }
+  },
   "requests": {
     "title": "Заявки",
     "pendingCount": "Ожидающие заявки",

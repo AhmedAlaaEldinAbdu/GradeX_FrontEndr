@@ -1247,6 +1247,25 @@
     "approved": "Approved",
     "rejected": "Rejected"
   },
+  "adminRequests": {
+    "title": "Admin Requests",
+    "totalCount": "Total Requests",
+    "rejectedCount": "Rejected Requests",
+    "acceptedCount": "Accepted Requests",
+    "pendingCount": "Pending Requests",
+    "empty": "No requests have been added yet.",
+    "tabs": {
+      "jobApplication": "Job Application",
+      "applicationArchive": "Application (Archive)",
+      "scheduleInterview": "Schedule Interview",
+      "earlyLeave": "Early Leave Request",
+      "leave": "Leave Request",
+      "contractAuthentication": "Contract Authentication",
+      "messages": "Messages",
+      "notes": "Notes",
+      "teacherNotes": "Teacher Notes"
+    }
+  },
   "requests": {
     "title": "Requests",
     "pendingCount": "Pending Requests",
