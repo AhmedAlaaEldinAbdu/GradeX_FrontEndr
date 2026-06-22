@@ -13,8 +13,8 @@ import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
-// TODO: replace with real stats from the admin-requests API once available.
-const STATS = { total: 0, rejected: 0, accepted: 0, pending: 0 };
+import JobApplicationsTab from './components/JobApplicationsTab';
+import { MOCK_ADMIN_REQUESTS_STATS } from './admin-requests.mock';
 
 /**
  * Placeholder tab body shown until each tab's real UI/data is wired up.
@@ -28,13 +28,19 @@ const TabPlaceholder: React.FC = () => (
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
 
+  const stats = MOCK_ADMIN_REQUESTS_STATS;
+
   const breadcrumbItems = [
     { label: t('sidebar.humanResources') },
     { label: t('sidebar.adminRequests') },
   ];
 
   const tabs: TabItem[] = [
-    { id: 'job-application', label: t('adminRequests.tabs.jobApplication'), content: <TabPlaceholder /> },
+    {
+      id: 'job-application',
+      label: t('adminRequests.tabs.jobApplication'),
+      content: <JobApplicationsTab />,
+    },
     {
       id: 'application-archive',
       label: t('adminRequests.tabs.applicationArchive'),
@@ -54,7 +60,11 @@ const AdminRequestsPage: React.FC = () => {
     },
     { id: 'messages', label: t('adminRequests.tabs.messages'), content: <TabPlaceholder /> },
     { id: 'notes', label: t('adminRequests.tabs.notes'), content: <TabPlaceholder /> },
-    { id: 'teacher-notes', label: t('adminRequests.tabs.teacherNotes'), content: <TabPlaceholder /> },
+    {
+      id: 'teacher-notes',
+      label: t('adminRequests.tabs.teacherNotes'),
+      content: <TabPlaceholder />,
+    },
   ];
 
   return (
@@ -66,25 +76,26 @@ const AdminRequestsPage: React.FC = () => {
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title={t('adminRequests.totalCount')}
-          value={STATS.total}
+          value={stats.total}
           icon={<CustomImage src={TaskBlueIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#E7F2FB]"
         />
         <MetricCard
           title={t('adminRequests.rejectedCount')}
-          value={STATS.rejected}
+          value={stats.rejected}
           icon={<CustomImage src={XmarkCircleRedIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#FCE8E8]"
         />
         <MetricCard
           title={t('adminRequests.acceptedCount')}
-          value={STATS.accepted}
+          value={stats.acceptedPercentage}
+          percentage
           icon={<CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#E8F4EE]"
         />
         <MetricCard
           title={t('adminRequests.pendingCount')}
-          value={STATS.pending}
+          value={stats.pending}
           icon={<CustomImage src={ClockYellowBoldIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#FDF6E0]"
         />

@@ -1,0 +1,296 @@
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+
+import Button from '@/shared/components/Button';
+import CustomImage from '@/shared/components/CustomImage';
+import { useToast } from '@/shared/context/ToastContext';
+
+import WorkGreenIcon from '@gradex/assets/icons/WorkGreen.svg';
+import PdfIcon from '@gradex/assets/icons/Pdf.svg';
+import DownloadIcon from '@gradex/assets/icons/Download.svg';
+import DefaultAvatar from '@gradex/assets/images/profile.png';
+
+import { WorkType, JobApplicationStatus, type JobApplicationDto } from '../admin-requests.types';
+import ScheduleInterviewPopup from '../popups/ScheduleInterviewPopup';
+import ArchiveConfirmPopup from '../popups/ArchiveConfirmPopup';
+
+interface JobApplicationDetailsContentProps {
+  application: JobApplicationDto;
+}
+
+const InfoRow: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
+  <div className="flex items-start gap-2 text-base">
+    <span className="text-[#646969]">{label}:</span>
+    <span className="font-medium text-[#0E1F1F]">{value}</span>
+  </div>
+);
+
+const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div className="rounded-2xl border border-[#E6E6E6] bg-white p-6">
+    <h2 className="mb-5 text-start text-lg font-semibold text-[#0E1F1F]">{title}</h2>
+    {children}
+  </div>
+);
+
+const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> = ({
+  application,
+}) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  const [isScheduleOpen, setScheduleOpen] = useState(false);
+  const [isArchiveOpen, setArchiveOpen] = useState(false);
+
+  const workTypeLabel =
+    application.workType === WorkType.Full
+      ? t('adminRequests.workType.full')
+      : t('adminRequests.workType.part');
+
+  const isAccepted = application.status === JobApplicationStatus.Accepted;
+  const isArchived = application.status === JobApplicationStatus.Archived;
+  const actionsDisabled = isAccepted || isArchived;
+
+  const handleAccept = () => {
+    showToast({ message: t('adminRequests.jobApplication.toasts.accepted'), type: 'success' });
+    navigate('/admin-requests');
+  };
+
+  const handleScheduleConfirm = () => {
+    setScheduleOpen(false);
+    showToast({ message: t('adminRequests.jobApplication.toasts.scheduled'), type: 'success' });
+  };
+
+  const handleArchiveConfirm = () => {
+    setArchiveOpen(false);
+    showToast({ message: t('adminRequests.jobApplication.toasts.archived'), type: 'success' });
+    navigate('/admin-requests');
+  };
+
+  return (
+    <>
+      {/* Header: title + actions */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-lg font-medium text-black-900">
+          {t('adminRequests.jobApplication.detailsTitle')}
+        </h1>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="success" onClick={handleAccept} disabled={actionsDisabled}>
+            {t('adminRequests.jobApplication.actions.accept')}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setScheduleOpen(true)}
+            disabled={actionsDisabled}
+          >
+            {t('adminRequests.jobApplication.actions.schedule')}
+          </Button>
+          <Button variant="outline" onClick={() => setArchiveOpen(true)} disabled={actionsDisabled}>
+            {t('adminRequests.jobApplication.actions.archive')}
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-5">
+        {/* Announcement card */}
+        <div className="flex items-center justify-between rounded-2xl border border-[#E6E6E6] bg-white p-6">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E8F4EE]">
+              <CustomImage src={WorkGreenIcon} alt="" className="h-6 w-6" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-base font-semibold text-green-500">
+                {application.announcementName}
+              </span>
+              <span className="text-start text-sm text-[#646969]">{workTypeLabel}</span>
+            </div>
+          </div>
+          <span className="inline-flex items-center rounded-full bg-green-100 px-4 py-1 text-sm font-medium text-green-700">
+            {t('adminRequests.jobApplication.status.active')}
+          </span>
+        </div>
+
+        {/* Applicant card */}
+        <div className="flex items-center gap-5 rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-6">
+          <CustomImage
+            src={application.applicantAvatarPath || DefaultAvatar}
+            fallbackSrc={DefaultAvatar}
+            alt={application.applicantName}
+            className="h-[94px] w-[94px] shrink-0 rounded-full object-cover"
+          />
+          <div className="flex flex-col gap-1 text-start">
+            <p className="text-lg font-medium text-[#0E1F1F]">{application.applicantName}</p>
+            <p className="text-sm font-normal text-[#646969]">{application.role}</p>
+          </div>
+        </div>
+
+        {/* Personal data */}
+        <Section title={t('adminRequests.jobApplication.sections.personal')}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.phone')}
+              value={application.phone}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.email')}
+              value={application.email}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.maritalStatus')}
+              value={application.maritalStatus}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.nationality')}
+              value={application.nationality}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.country')}
+              value={application.country}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.residenceCountry')}
+              value={application.residenceCountry}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.nationalId')}
+              value={application.nationalId}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.birthDate')}
+              value={application.birthDate}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.idType')}
+              value={application.idType}
+            />
+            <div className="md:col-span-2">
+              <InfoRow
+                label={t('adminRequests.jobApplication.fields.address')}
+                value={application.address}
+              />
+            </div>
+          </div>
+        </Section>
+
+        {/* Education */}
+        <Section title={t('adminRequests.jobApplication.sections.education')}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.university')}
+              value={application.university}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.subject')}
+              value={application.subject}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.qualification')}
+              value={application.qualification}
+            />
+            <InfoRow
+              label={t('adminRequests.jobApplication.fields.graduationYear')}
+              value={application.graduationYear}
+            />
+          </div>
+        </Section>
+
+        {/* Training courses */}
+        <Section title={t('adminRequests.jobApplication.sections.training')}>
+          <div className="flex flex-col gap-4">
+            {application.courses.map((course, index) => (
+              <div key={index} className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <InfoRow
+                  label={t('adminRequests.jobApplication.fields.courseName')}
+                  value={course.name}
+                />
+                <InfoRow
+                  label={t('adminRequests.jobApplication.fields.courseDuration')}
+                  value={course.duration}
+                />
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* Work experience */}
+        <Section title={t('adminRequests.jobApplication.sections.experience')}>
+          <InfoRow
+            label={t('adminRequests.jobApplication.fields.experienceYears')}
+            value={`${application.experienceYears} ${t('adminRequests.jobApplication.fields.yearsUnit')}`}
+          />
+          <p className="mb-2 mt-5 text-start text-sm text-[#646969]">
+            {t('adminRequests.jobApplication.fields.previousExperience')}:
+          </p>
+          <ul className="flex flex-col items-start gap-2">
+            {application.previousExperiences.map((experience, index) => (
+              <li key={index} className="text-base text-[#0E1F1F]">
+                {experience.title} ({experience.period})
+              </li>
+            ))}
+          </ul>
+        </Section>
+
+        {/* Languages */}
+        <Section title={t('adminRequests.jobApplication.sections.languages')}>
+          <p className="mb-2 text-start text-sm text-[#646969]">
+            {t('adminRequests.jobApplication.fields.languagesLevels')}:
+          </p>
+          <ul className="flex flex-col items-start gap-2">
+            {application.languages.map((language, index) => (
+              <li key={index} className="text-base text-[#0E1F1F]">
+                {language.name}: {language.level}
+              </li>
+            ))}
+          </ul>
+        </Section>
+
+        {/* Attachments */}
+        <Section title={t('adminRequests.jobApplication.sections.attachments')}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {application.attachments.map((attachment) => (
+              <div
+                key={attachment.id}
+                className="flex items-center justify-between rounded-xl border border-[#E6E6E6] p-4"
+              >
+                <div className="flex w-full items-center gap-3">
+                  <CustomImage src={PdfIcon} alt="" className="h-9 w-9" />
+                  <div className="flex w-full flex-col">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium text-[#0E1F1F]">{attachment.name}</span>
+                      <button
+                        type="button"
+                        aria-label={t('common.download')}
+                        onClick={() =>
+                          attachment.url && window.open(attachment.url, '_blank', 'noopener')
+                        }
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E7F2FB] transition-opacity hover:opacity-80"
+                      >
+                        <CustomImage src={DownloadIcon} alt="" className="h-5 w-5" />
+                      </button>
+                    </div>
+                    <span className="text-start text-xs text-[#646969]">{attachment.size}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </div>
+
+      <ScheduleInterviewPopup
+        isOpen={isScheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        onConfirm={handleScheduleConfirm}
+      />
+
+      <ArchiveConfirmPopup
+        open={isArchiveOpen}
+        onConfirm={handleArchiveConfirm}
+        onCancel={() => setArchiveOpen(false)}
+      />
+    </>
+  );
+};
+
+export default JobApplicationDetailsContent;
