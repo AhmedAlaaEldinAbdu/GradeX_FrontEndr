@@ -57,7 +57,7 @@ export default function UserAvatarName({
           className={`${sizeClasses.avatar} shrink-0 rounded-lg object-cover`}
         />
       ) : (
-        ''
+        <div className={`${sizeClasses.avatar} shrink-0 rounded-lg object-cover`}></div>
       )}
       {name ? (
         <span
