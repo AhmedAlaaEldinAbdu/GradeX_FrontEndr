@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
@@ -24,13 +24,14 @@ import { MOCK_REQUESTS_STATS } from './requests.mock';
 const RequestsPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const stats = MOCK_REQUESTS_STATS;
 
-  const breadcrumbItems = [
-    { label: t('sidebar.studentAffairs') },
-    { label: t('requests.title') },
-  ];
+  // Get current tab from URL, default to 'applications'
+  const currentTab = searchParams.get('tab') || 'applications';
+
+  const breadcrumbItems = [{ label: t('sidebar.studentAffairs') }, { label: t('requests.title') }];
 
   const tabs: TabItem[] = [
     { id: 'applications', label: t('requests.tabs.applications'), content: <ApplicationsTab /> },
@@ -95,15 +96,17 @@ const RequestsPage: React.FC = () => {
           listClassName="flex w-full mb-5"
         />
 
-        <button
-          type="button"
-          aria-label={t('common.add')}
-          title={t('common.add')}
-          onClick={() => navigate('/requests/add-message')}
-          className="absolute end-0 top-0 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
-        >
-          <CustomImage src={WhitePlusIcon} alt={t('common.add')} className="h-5 w-5" />
-        </button>
+        {currentTab === 'messages' && (
+          <button
+            type="button"
+            aria-label={t('common.add')}
+            title={t('common.add')}
+            onClick={() => navigate('/requests/add-message')}
+            className="absolute end-0 top-0 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
+          >
+            <CustomImage src={WhitePlusIcon} alt={t('common.add')} className="h-5 w-5" />
+          </button>
+        )}
       </div>
     </div>
   );
