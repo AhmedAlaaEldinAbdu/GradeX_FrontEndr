@@ -1254,6 +1254,96 @@
     "acceptedCount": "طلبات مقبولة",
     "pendingCount": "طلبات قيد الانتظار",
     "empty": "لم يتم إضافة أي طلب حتى الآن.",
+    "searchPlaceholder": "ابحث عن اسم المعلم",
+    "filters": {
+      "announcement": "اسم الإعلان",
+      "workType": "نوع الدوام",
+      "qualification": "المؤهل الدراسي",
+      "experience": "سنوات الخبرة",
+      "nationality": "الجنسية"
+    },
+    "workType": {
+      "full": "دوام كامل",
+      "part": "دوام جزئي"
+    },
+    "jobApplication": {
+      "detailsTitle": "معاينة طلب التقديم",
+      "columns": {
+        "announcement": "اسم الإعلان",
+        "applicantName": "اسم مقدم الطلب",
+        "cv": "السيرة الذاتية",
+        "workType": "نوع الدوام",
+        "qualification": "المؤهل الدراسي",
+        "experienceYears": "سنوات الخبرة الوظيفيه",
+        "country": "الدولة",
+        "nationality": "الجنسية",
+        "address": "العنوان",
+        "contact": "بيانات التواصل"
+      },
+      "actions": {
+        "archive": "ارشيف",
+        "schedule": "تحديد موعد",
+        "accept": "قبول"
+      },
+      "status": {
+        "active": "نشط",
+        "accepted": "مقبول",
+        "archived": "مؤرشف",
+        "interviewScheduled": "تم تحديد موعد"
+      },
+      "sections": {
+        "personal": "البيانات الشخصية",
+        "education": "المؤهلات الدراسية",
+        "training": "الدوارات التدريبية",
+        "experience": "الخبرات الوظيفية",
+        "languages": "اللغات",
+        "attachments": "المرفقات"
+      },
+      "fields": {
+        "phone": "رقم الهاتف",
+        "email": "البريد الإلكتروني",
+        "maritalStatus": "الحالة الإجتماعية",
+        "nationality": "الجنسية",
+        "country": "دولة",
+        "residenceCountry": "دولة الإقامة",
+        "nationalId": "رقم الهوية",
+        "birthDate": "تاريخ الميلاد",
+        "idType": "نوع الهوية",
+        "address": "العنوان",
+        "university": "الجامعة",
+        "subject": "المادة",
+        "qualification": "المؤهل الدراسي",
+        "graduationYear": "سنة التخرج",
+        "courseName": "اسم الدورة",
+        "courseDuration": "المدة",
+        "experienceYears": "سنوات الخبرة",
+        "yearsUnit": "سنوات",
+        "previousExperience": "الخبرات السابقة (أحدث أولًا)",
+        "languagesLevels": "اللغات ومستوى كل لغة"
+      },
+      "schedulePopup": {
+        "title": "تحديد موعد",
+        "interviewType": "نوع المقابلة",
+        "interviewTypePlaceholder": "اختر نوع المقابلة",
+        "online": "مقابلة اونلاين",
+        "onsite": "مقابلة حضورية",
+        "date": "تاريخ موعد",
+        "datePlaceholder": "اختر التاريخ اليوم",
+        "time": "الوقت",
+        "timePlaceholder": "اختر وقت للمقابلة",
+        "confirm": "تحديد"
+      },
+      "archivePopup": {
+        "title": "هل أنت متأكد من وضع المعلم في الإرشيف ؟",
+        "subtitle": "سيتم نقله لجدول الإرشيف",
+        "confirm": "تأكيد"
+      },
+      "toasts": {
+        "scheduled": "تم تحديد موعد المقابلة بنجاح",
+        "archived": "تم نقل المعلم إلي جدول الإرشيف بنجاح",
+        "accepted": "تم قبول الطلب بنجاح"
+      }
+    },
     "tabs": {
       "jobApplication": "طلب تقديم علي وظيفة",
       "applicationArchive": "طلب تقديم (الإرشيف)",

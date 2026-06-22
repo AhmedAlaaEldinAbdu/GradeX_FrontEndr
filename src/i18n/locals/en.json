@@ -1254,6 +1254,96 @@
     "acceptedCount": "Accepted Requests",
     "pendingCount": "Pending Requests",
     "empty": "No requests have been added yet.",
+    "searchPlaceholder": "Search by teacher name",
+    "filters": {
+      "announcement": "Announcement name",
+      "workType": "Work type",
+      "qualification": "Qualification",
+      "experience": "Years of experience",
+      "nationality": "Nationality"
+    },
+    "workType": {
+      "full": "Full time",
+      "part": "Part time"
+    },
+    "jobApplication": {
+      "detailsTitle": "Application Preview",
+      "columns": {
+        "announcement": "Announcement name",
+        "applicantName": "Applicant name",
+        "cv": "CV",
+        "workType": "Work type",
+        "qualification": "Qualification",
+        "experienceYears": "Years of experience",
+        "country": "Country",
+        "nationality": "Nationality",
+        "address": "Address",
+        "contact": "Contact details"
+      },
+      "actions": {
+        "archive": "Archive",
+        "schedule": "Schedule interview",
+        "accept": "Accept"
+      },
+      "status": {
+        "active": "Active",
+        "accepted": "Accepted",
+        "archived": "Archived",
+        "interviewScheduled": "Interview scheduled"
+      },
+      "sections": {
+        "personal": "Personal data",
+        "education": "Qualifications",
+        "training": "Training courses",
+        "experience": "Work experience",
+        "languages": "Languages",
+        "attachments": "Attachments"
+      },
+      "fields": {
+        "phone": "Phone number",
+        "email": "Email",
+        "maritalStatus": "Marital status",
+        "nationality": "Nationality",
+        "country": "Country",
+        "residenceCountry": "Country of residence",
+        "nationalId": "ID number",
+        "birthDate": "Date of birth",
+        "idType": "ID type",
+        "address": "Address",
+        "university": "University",
+        "subject": "Subject",
+        "qualification": "Qualification",
+        "graduationYear": "Graduation year",
+        "courseName": "Course name",
+        "courseDuration": "Duration",
+        "experienceYears": "Years of experience",
+        "yearsUnit": "years",
+        "previousExperience": "Previous experience (most recent first)",
+        "languagesLevels": "Languages and level of each"
+      },
+      "schedulePopup": {
+        "title": "Schedule interview",
+        "interviewType": "Interview type",
+        "interviewTypePlaceholder": "Select interview type",
+        "online": "Online interview",
+        "onsite": "On-site interview",
+        "date": "Appointment date",
+        "datePlaceholder": "Select date",
+        "time": "Time",
+        "timePlaceholder": "Select interview time",
+        "confirm": "Schedule"
+      },
+      "archivePopup": {
+        "title": "Are you sure you want to archive the teacher?",
+        "subtitle": "They will be moved to the archive list",
+        "confirm": "Confirm"
+      },
+      "toasts": {
+        "scheduled": "Interview scheduled successfully",
+        "archived": "Teacher moved to the archive list successfully",
+        "accepted": "Application accepted successfully"
+      }
+    },
     "tabs": {
       "jobApplication": "Job Application",
       "applicationArchive": "Application (Archive)",
