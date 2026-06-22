@@ -90,7 +90,7 @@ const RequestsPage: React.FC = () => {
       <div className="relative mb-4">
         <Tabs
           items={tabs}
-          defaultValue="messages"
+          defaultValue="applications"
           searchParamKey="tab"
           listClassName="flex w-full mb-5"
         />
