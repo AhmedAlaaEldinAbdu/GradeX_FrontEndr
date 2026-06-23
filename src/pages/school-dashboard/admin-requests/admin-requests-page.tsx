@@ -14,6 +14,7 @@ import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
 import JobApplicationsTab from './components/JobApplicationsTab';
+import MessagesTab from './components/MessagesTab';
 import { MOCK_ADMIN_REQUESTS_STATS } from './admin-requests.mock';
 
 /**
@@ -58,7 +59,7 @@ const AdminRequestsPage: React.FC = () => {
       label: t('adminRequests.tabs.contractAuthentication'),
       content: <TabPlaceholder />,
     },
-    { id: 'messages', label: t('adminRequests.tabs.messages'), content: <TabPlaceholder /> },
+    { id: 'messages', label: t('adminRequests.tabs.messages'), content: <MessagesTab /> },
     { id: 'notes', label: t('adminRequests.tabs.notes'), content: <TabPlaceholder /> },
     {
       id: 'teacher-notes',

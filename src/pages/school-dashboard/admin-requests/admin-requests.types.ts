@@ -109,3 +109,28 @@ export interface AdminRequestsStats {
   rejected: number;
   total: number;
 }
+
+export const AdminMessageStatus = {
+  Pending: 0,
+  Viewed: 1,
+} as const;
+
+export type AdminMessageStatus = (typeof AdminMessageStatus)[keyof typeof AdminMessageStatus];
+
+export interface AdminMessageParty {
+  name: string;
+  avatarPath: string | null;
+  profilePath: string | null;
+  isSchool?: boolean;
+}
+
+export interface AdminMessageDto {
+  id: string;
+  sender: AdminMessageParty;
+  recipient: AdminMessageParty;
+  status: AdminMessageStatus;
+  stage: string | null;
+  classroom: string | null;
+  sentDate: string;
+  messageContent: string;
+}

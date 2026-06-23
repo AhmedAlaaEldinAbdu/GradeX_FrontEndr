@@ -7,8 +7,10 @@
 import {
   WorkType,
   JobApplicationStatus,
+  AdminMessageStatus,
   type AdminRequestsStats,
   type JobApplicationDto,
+  type AdminMessageDto,
 } from './admin-requests.types';
 
 export const MOCK_ADMIN_REQUESTS_STATS: AdminRequestsStats = {
@@ -84,3 +86,43 @@ export const MOCK_JOB_APPLICATIONS: JobApplicationDto[] = Array.from({ length: 6
 
 export const findJobApplicationById = (id: string): JobApplicationDto | undefined =>
   MOCK_JOB_APPLICATIONS.find((application) => application.id === id);
+
+// ── Messages (الرسائل) ─────────────────────────────────────
+const SENDER_NAME = 'أحمد معتز حسن';
+const SCHOOL_NAME = 'المدرسة';
+const MESSAGE_CONTENT = 'طلب نقل من الفصل';
+
+const MESSAGE_TO_STUDENT = [true, false, true, false, false, false];
+const MESSAGE_STATUSES = [
+  AdminMessageStatus.Pending,
+  AdminMessageStatus.Viewed,
+  AdminMessageStatus.Pending,
+  AdminMessageStatus.Pending,
+  AdminMessageStatus.Viewed,
+  AdminMessageStatus.Pending,
+];
+
+export const MOCK_ADMIN_MESSAGES: AdminMessageDto[] = Array.from({ length: 6 }, (_, index) => {
+  const id = String(index + 1);
+  const toStudent = MESSAGE_TO_STUDENT[index];
+  return {
+    id,
+    sender: {
+      name: SENDER_NAME,
+      avatarPath: null,
+      profilePath: `/teaching-staff/teachers/${id}`,
+    },
+    recipient: toStudent
+      ? {
+          name: SENDER_NAME,
+          avatarPath: null,
+          profilePath: `/students/student-details/${id}`,
+        }
+      : { name: SCHOOL_NAME, avatarPath: null, profilePath: null, isSchool: true },
+    status: MESSAGE_STATUSES[index],
+    stage: toStudent ? 'المرحلة الأعدادية' : null,
+    classroom: toStudent ? 'ع 1/1' : null,
+    sentDate: '2020-01-01',
+    messageContent: MESSAGE_CONTENT,
+  };
+});
