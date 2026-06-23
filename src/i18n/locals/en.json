@@ -1344,6 +1344,34 @@
         "accepted": "Application accepted successfully"
       }
     },
+    "messages": {
+      "detailsTitle": "Message Preview",
+      "searchPlaceholder": "Search by employee name",
+      "columns": {
+        "preview": "Request Preview",
+        "sentFrom": "Sent From",
+        "sentTo": "Sent To",
+        "status": "Request Status",
+        "stage": "Educational Stage",
+        "classroom": "Classroom",
+        "sentDate": "Sent Date",
+        "content": "Message Content"
+      },
+      "status": {
+        "pending": "Pending",
+        "viewed": "Viewed"
+      },
+      "actions": {
+        "markViewed": "Mark as Viewed"
+      },
+      "filters": {
+        "status": "Request Status",
+        "date": "Date"
+      },
+      "toasts": {
+        "markedViewed": "Message status updated successfully"
+      }
+    },
     "tabs": {
       "jobApplication": "Job Application",
       "applicationArchive": "Application (Archive)",

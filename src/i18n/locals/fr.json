@@ -1254,6 +1254,34 @@
     "acceptedCount": "Demandes acceptées",
     "pendingCount": "Demandes en attente",
     "empty": "Aucune demande n'a encore été ajoutée.",
+    "messages": {
+      "detailsTitle": "Aperçu du message",
+      "searchPlaceholder": "Rechercher par nom d'employé",
+      "columns": {
+        "preview": "Aperçu de la demande",
+        "sentFrom": "Envoyé par",
+        "sentTo": "Envoyé à",
+        "status": "Statut de la demande",
+        "stage": "Niveau scolaire",
+        "classroom": "Classe",
+        "sentDate": "Date d'envoi",
+        "content": "Contenu du message"
+      },
+      "status": {
+        "pending": "En attente",
+        "viewed": "Consulté"
+      },
+      "actions": {
+        "markViewed": "Marquer comme consulté"
+      },
+      "filters": {
+        "status": "Statut de la demande",
+        "date": "Date"
+      },
+      "toasts": {
+        "markedViewed": "Statut du message mis à jour avec succès"
+      }
+    },
     "tabs": {
       "jobApplication": "Candidature à un poste",
       "applicationArchive": "Candidature (Archive)",

@@ -1344,6 +1344,34 @@
         "accepted": "تم قبول الطلب بنجاح"
       }
     },
+    "messages": {
+      "detailsTitle": "معاينة الرسالة",
+      "searchPlaceholder": "ابحث عن اسم الموظف",
+      "columns": {
+        "preview": "معاينة الطلب",
+        "sentFrom": "مرسل من",
+        "sentTo": "مرسل إلي",
+        "status": "حالة الطلب",
+        "stage": "المرحلة الدراسية",
+        "classroom": "الفصل الدراسي",
+        "sentDate": "تاريخ الإرسال",
+        "content": "محتوي الرسالة"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "viewed": "تم الإطلاع"
+      },
+      "actions": {
+        "markViewed": "تم الإطلاع"
+      },
+      "filters": {
+        "status": "حالة الطلب",
+        "date": "التاريخ"
+      },
+      "toasts": {
+        "markedViewed": "تم تحديث حالة الرسالة بنجاح"
+      }
+    },
     "tabs": {
       "jobApplication": "طلب تقديم علي وظيفة",
       "applicationArchive": "طلب تقديم (الإرشيف)",

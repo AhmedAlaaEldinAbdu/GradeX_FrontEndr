@@ -1254,6 +1254,34 @@
     "acceptedCount": "Принятые заявки",
     "pendingCount": "Заявки в ожидании",
     "empty": "Заявки ещё не добавлены.",
+    "messages": {
+      "detailsTitle": "Просмотр сообщения",
+      "searchPlaceholder": "Поиск по имени сотрудника",
+      "columns": {
+        "preview": "Просмотр запроса",
+        "sentFrom": "Отправитель",
+        "sentTo": "Получатель",
+        "status": "Статус запроса",
+        "stage": "Уровень образования",
+        "classroom": "Класс",
+        "sentDate": "Дата отправки",
+        "content": "Содержание сообщения"
+      },
+      "status": {
+        "pending": "В ожидании",
+        "viewed": "Просмотрено"
+      },
+      "actions": {
+        "markViewed": "Отметить как просмотренное"
+      },
+      "filters": {
+        "status": "Статус запроса",
+        "date": "Дата"
+      },
+      "toasts": {
+        "markedViewed": "Статус сообщения успешно обновлён"
+      }
+    },
     "tabs": {
       "jobApplication": "Заявка на вакансию",
       "applicationArchive": "Заявка (Архив)",

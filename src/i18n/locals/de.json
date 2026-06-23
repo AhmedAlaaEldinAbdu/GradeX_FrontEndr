@@ -1254,6 +1254,34 @@
     "acceptedCount": "Angenommene Anträge",
     "pendingCount": "Ausstehende Anträge",
     "empty": "Es wurden noch keine Anträge hinzugefügt.",
+    "messages": {
+      "detailsTitle": "Nachrichtenvorschau",
+      "searchPlaceholder": "Nach Mitarbeitername suchen",
+      "columns": {
+        "preview": "Antragsvorschau",
+        "sentFrom": "Gesendet von",
+        "sentTo": "Gesendet an",
+        "status": "Antragsstatus",
+        "stage": "Bildungsstufe",
+        "classroom": "Klasse",
+        "sentDate": "Sendedatum",
+        "content": "Nachrichteninhalt"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "viewed": "Angesehen"
+      },
+      "actions": {
+        "markViewed": "Als angesehen markieren"
+      },
+      "filters": {
+        "status": "Antragsstatus",
+        "date": "Datum"
+      },
+      "toasts": {
+        "markedViewed": "Nachrichtenstatus erfolgreich aktualisiert"
+      }
+    },
     "tabs": {
       "jobApplication": "Stellenbewerbung",
       "applicationArchive": "Bewerbung (Archiv)",
