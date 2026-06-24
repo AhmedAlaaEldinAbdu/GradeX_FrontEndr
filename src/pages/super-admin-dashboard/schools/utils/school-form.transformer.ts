@@ -11,6 +11,8 @@ interface FileAttachments {
   certificate: File[];
   logo?: File[];
   existingLogo?: string; // existing logo URL (edit mode)
+  existingLicensePaths?: string[];
+  existingCertificatePaths?: string[];
 }
 
 export type { ExistingImageAttachment };
@@ -126,11 +128,23 @@ function appendBasicInformation(formData: FormData, schoolData: SchoolFormData):
 }
 
 function appendLicenseAttachments(formData: FormData, files: FileAttachments): void {
-  if (!files.license || files.license.length === 0) return;
+  let index = 0;
 
-  files.license.forEach((file, index) => {
+  (files.existingLicensePaths || []).forEach((path) => {
+    if (!path) return;
+    formData.append(`LicensesAttachments[${index}].attachmentFile`, path);
+    formData.append(
+      `LicensesAttachments[${index}].attachmentName`,
+      path.split('/').pop() || 'License'
+    );
+    index++;
+  });
+
+  // Append newly uploaded license files
+  (files.license || []).forEach((file) => {
     formData.append(`LicensesAttachments[${index}].attachmentFile`, file);
     formData.append(`LicensesAttachments[${index}].attachmentName`, file.name || 'School Logo');
+    index++;
   });
 }
 
@@ -182,9 +196,13 @@ function appendFacilities(
   // Append regular facilities
   if (schoolData.facilities?.length) {
     schoolData.facilities.forEach((facilityId) => {
-      formData.append(`Facilities[${facilityIndex}].id`, facilityId);
-
       const facilityDetail = schoolData.facilityDetails?.[facilityId];
+
+      formData.append(
+        `Facilities[${facilityIndex}].id`,
+        facilityDetail?.oldFacilityId || facilityId
+      );
+
       if (facilityDetail) {
         if (facilityDetail.arabicName) {
           formData.append(`Facilities[${facilityIndex}].arabicName`, facilityDetail.arabicName);
@@ -224,11 +242,16 @@ function appendFacilities(
     const englishName = schoolData.otherFacilityNameEn?.trim() || '';
 
     if (arabicName && englishName) {
+      const otherFacilityDetail = schoolData.facilityDetails?.['other'];
+
+      if (otherFacilityDetail?.oldFacilityId) {
+        formData.append(`Facilities[${facilityIndex}].id`, otherFacilityDetail.oldFacilityId);
+      }
+
       formData.append(`Facilities[${facilityIndex}].arabicName`, arabicName);
       formData.append(`Facilities[${facilityIndex}].englishName`, englishName);
 
       // Append "Other" facility details if available
-      const otherFacilityDetail = schoolData.facilityDetails?.['other'];
       if (otherFacilityDetail) {
         formData.append(
           `Facilities[${facilityIndex}].description`,
@@ -256,9 +279,16 @@ function appendFacilities(
     }
   }
 
-  // Append certificate files
-  if (files.certificate && files.certificate.length > 0) {
-    appendFacilityCertificates(formData, files.certificate);
+  // Append certificate files (surviving existing certificates + newly uploaded)
+  const hasNewCertificates = files.certificate && files.certificate.length > 0;
+  const hasExistingCertificates =
+    files.existingCertificatePaths && files.existingCertificatePaths.length > 0;
+  if (hasNewCertificates || hasExistingCertificates) {
+    appendFacilityCertificates(
+      formData,
+      files.certificate || [],
+      files.existingCertificatePaths || []
+    );
   }
 }
 
@@ -390,13 +420,18 @@ function appendBranchData(formData: FormData, branch: BranchData, index: number)
   });
 }
 
+// The .NET empty/default GUID. The backend may send this when no value is set; it must
+// not be treated as a real selection (otherwise it gets re-sent on save).
+const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
+
+const isMeaningfulId = (value: unknown): value is string =>
+  typeof value === 'string' && value.trim().length > 0 && value.trim() !== EMPTY_GUID;
+
 function extractAcademicSystemIds(academicSystemIds: unknown): string[] {
   if (Array.isArray(academicSystemIds)) {
-    return academicSystemIds.filter(
-      (value) => typeof value === 'string' && value.trim().length > 0
-    );
+    return academicSystemIds.filter(isMeaningfulId);
   }
-  if (typeof academicSystemIds === 'string' && academicSystemIds.trim().length > 0) {
+  if (isMeaningfulId(academicSystemIds)) {
     return [academicSystemIds];
   }
   return [];
@@ -406,16 +441,34 @@ function formatFoundingDate(date?: string): string {
   return date ? new Date(date).toISOString() : new Date().toISOString();
 }
 
-function appendFacilityCertificates(formData: FormData, certificates: File[]): void {
-  if (!certificates || certificates.length === 0) return;
+function appendFacilityCertificates(
+  formData: FormData,
+  certificates: File[],
+  existingPaths: string[] = []
+): void {
+  let index = 0;
 
-  certificates.forEach((certificate, index) => {
+  // Re-send surviving existing certificates (edit mode) so the backend keeps them
+  existingPaths.forEach((path) => {
+    if (!path) return;
+    const prefix = `facilities[0].licensesAttachmentFacilitiesDto[${index}]`;
+    formData.append(`${prefix}.attachmentFile`, path);
+    formData.append(
+      `${prefix}.attachmentName`,
+      path.split('/').pop() || `Facility Certificate ${index + 1}`
+    );
+    index++;
+  });
+
+  // Append newly uploaded certificate files
+  (certificates || []).forEach((certificate) => {
     const prefix = `facilities[0].licensesAttachmentFacilitiesDto[${index}]`;
     formData.append(`${prefix}.attachmentFile`, certificate);
     formData.append(
       `${prefix}.attachmentName`,
       certificate.name || `Facility Certificate ${index + 1}`
     );
+    index++;
   });
 }
 
@@ -618,8 +671,8 @@ export function transformBackendSchoolToForm(
     (data as any).subSystemId ??
     (data as any).SubSystemId;
   const subSystemIds = Array.isArray(subSystemIdsRaw)
-    ? subSystemIdsRaw.filter((value) => typeof value === 'string' && value.trim().length > 0)
-    : typeof subSystemIdsRaw === 'string' && subSystemIdsRaw.trim().length > 0
+    ? subSystemIdsRaw.filter(isMeaningfulId)
+    : isMeaningfulId(subSystemIdsRaw)
       ? [subSystemIdsRaw]
       : [];
 
@@ -668,6 +721,7 @@ export function transformBackendSchoolToForm(
       description: string;
       imageUrl?: string;
       oldFacilitiesFilePath?: string[];
+      oldFacilityId?: string;
     }
   > = {};
 
@@ -690,6 +744,10 @@ export function transformBackendSchoolToForm(
     }
 
     if (matchedLookupFacility) {
+      if (facilityDetails[matchedLookupFacility.id]) {
+        return;
+      }
+
       // This facility matches a lookup facility by name
       // Use the lookup facility ID for the form
       facilities.push(matchedLookupFacility.id);
@@ -697,6 +755,8 @@ export function transformBackendSchoolToForm(
       // Store complete facility details for display using the lookup ID
       facilityDetails[matchedLookupFacility.id] = {
         id: matchedLookupFacility.id,
+
+        oldFacilityId: facility.id,
         arabicName: facility.arabicName,
         englishName: facility.englishName,
         description: facility.description || '',
@@ -718,6 +778,8 @@ export function transformBackendSchoolToForm(
       // Store details under 'other' key
       facilityDetails['other'] = {
         id: 'other',
+
+        oldFacilityId: facility.id,
         arabicName: facility.arabicName,
         englishName: facility.englishName,
         description: facility.description || '',
