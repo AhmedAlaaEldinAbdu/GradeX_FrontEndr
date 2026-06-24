@@ -23,6 +23,7 @@ export * from './control-panel/control-panel.service';
 export * from './student-delegation/student-delegation.service';
 export * from './daily-report/daily-report.service';
 export * from './parent/parent.service';
+export * from './teacher-requests/teacher-requests.service';
 
 // Types
 export * from './types/auth.types';
