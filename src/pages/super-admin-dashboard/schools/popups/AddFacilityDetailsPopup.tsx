@@ -105,6 +105,9 @@ export default function AddFacilityDetailsPopup({
   const handleSubmit = () => {
     const facilityDetails: FacilityDetails = {
       id: facilityId,
+      oldFacilityId: existingDetails?.oldFacilityId,
+      arabicName: existingDetails?.arabicName,
+      englishName: existingDetails?.englishName,
       description,
       imageFile: imageFile,
       imageUrl: existingDetails?.imageUrl || null,
@@ -117,7 +120,7 @@ export default function AddFacilityDetailsPopup({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
+    <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
       <div
         ref={popupRef}
         className={`relative max-h-[90vh] w-[500px] transform overflow-y-auto rounded-2xl bg-white p-8 shadow-lg transition-all duration-300 ease-out ${
