@@ -217,18 +217,6 @@ function appendFacilities(
         } else if (facilityDetail.imageUrl) {
           formData.append(`Facilities[${facilityIndex}].imageUrl`, facilityDetail.imageUrl);
         }
-
-        if (
-          facilityDetail.oldFacilitiesFilePath &&
-          facilityDetail.oldFacilitiesFilePath.length > 0
-        ) {
-          facilityDetail.oldFacilitiesFilePath.forEach((path: string, pathIndex: number) => {
-            formData.append(
-              `Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`,
-              path
-            );
-          });
-        }
       }
 
       facilityIndex++;
@@ -262,18 +250,6 @@ function appendFacilities(
           formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageFile);
         } else if (otherFacilityDetail.imageUrl) {
           formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageUrl);
-        }
-
-        if (
-          otherFacilityDetail.oldFacilitiesFilePath &&
-          otherFacilityDetail.oldFacilitiesFilePath.length > 0
-        ) {
-          otherFacilityDetail.oldFacilitiesFilePath.forEach((path: string, pathIndex: number) => {
-            formData.append(
-              `Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`,
-              path
-            );
-          });
         }
       }
     }
@@ -446,29 +422,22 @@ function appendFacilityCertificates(
   certificates: File[],
   existingPaths: string[] = []
 ): void {
-  let index = 0;
-
-  // Re-send surviving existing certificates (edit mode) so the backend keeps them
+  let oldIndex = 0;
   existingPaths.forEach((path) => {
     if (!path) return;
-    const prefix = `facilities[0].licensesAttachmentFacilitiesDto[${index}]`;
-    formData.append(`${prefix}.attachmentFile`, path);
-    formData.append(
-      `${prefix}.attachmentName`,
-      path.split('/').pop() || `Facility Certificate ${index + 1}`
-    );
-    index++;
+    formData.append(`Facilities[0].oldFacilitiesFilePath[${oldIndex}]`, path);
+    oldIndex++;
   });
 
-  // Append newly uploaded certificate files
+  let newIndex = 0;
   (certificates || []).forEach((certificate) => {
-    const prefix = `facilities[0].licensesAttachmentFacilitiesDto[${index}]`;
+    const prefix = `facilities[0].licensesAttachmentFacilitiesDto[${newIndex}]`;
     formData.append(`${prefix}.attachmentFile`, certificate);
     formData.append(
       `${prefix}.attachmentName`,
-      certificate.name || `Facility Certificate ${index + 1}`
+      certificate.name || `Facility Certificate ${newIndex + 1}`
     );
-    index++;
+    newIndex++;
   });
 }
 
