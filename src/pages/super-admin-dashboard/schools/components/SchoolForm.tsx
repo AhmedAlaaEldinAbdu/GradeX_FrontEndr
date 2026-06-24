@@ -254,6 +254,8 @@ const SchoolForm = ({
         }
 
         setCurrentStep((prev) => prev + 1);
+      } else {
+        scrollToFirstError(form.formState.errors);
       }
     }
   };
@@ -430,6 +432,7 @@ const SchoolForm = ({
     const filesValid = mode === 'edit' ? true : validateFiles();
     if (!isValid || !filesValid) {
       console.error('Form validation failed');
+      scrollToFirstError(form.formState.errors);
       return;
     }
     form.handleSubmit(onFormSubmit, scrollToFirstError)(e);
