@@ -40,6 +40,7 @@ import dailyReportReducer from '../features/daily-report/dailyReportSlice';
 import parentReducer from '../features/parent/parentSlice';
 import schoolCoursesReducer from '../features/school-course/schoolCourseSlice';
 import schoolMessagesReducer from '../features/school-messages/schoolMessagesSlice';
+import teacherRequestsReducer from '../features/teacher-requests/teacherRequestsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -84,6 +85,7 @@ export const store = configureStore({
     parent: parentReducer,
     schoolCourses: schoolCoursesReducer,
     schoolMessages: schoolMessagesReducer,
+    teacherRequests: teacherRequestsReducer,
   },
 });
 
