@@ -23,12 +23,16 @@ interface FacilitiesStepProps {
   certificateFileNames?: string[];
   certificateFiles?: File[];
   certificateError?: string;
+  existingCertificateFiles?: string[];
+  onExistingCertificateDelete?: (index: number) => void;
   readOnly?: boolean;
   showValidationErrors?: boolean;
   onSchoolImageUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSchoolImageDelete?: (index?: number) => void;
   schoolImageFileNames?: string[];
   schoolImageFiles?: File[];
+  existingSchoolImages?: string[];
+  onExistingSchoolImageDelete?: (index: number) => void;
 }
 
 /**
@@ -42,12 +46,16 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
   certificateFileNames,
   certificateFiles = [],
   certificateError,
+  existingCertificateFiles = [],
+  onExistingCertificateDelete,
   readOnly = false,
   showValidationErrors = false,
   onSchoolImageUpload,
   onSchoolImageDelete,
   schoolImageFileNames,
   schoolImageFiles,
+  existingSchoolImages = [],
+  onExistingSchoolImageDelete,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
@@ -440,6 +448,15 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               uploadText={t('schools.uploadMedia')}
               multiple={true}
             />
+
+            {existingSchoolImages.length > 0 && (
+              <div className="mt-3">
+                <ViewModeFileDisplay
+                  files={existingSchoolImages}
+                  onDelete={onExistingSchoolImageDelete}
+                />
+              </div>
+            )}
           </FormField>
         </div>
       ) : (
@@ -482,6 +499,15 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
               multiple={true}
               error={!!certificateError && certificateTouched}
             />
+
+            {existingCertificateFiles.length > 0 && (
+              <div className="mt-3">
+                <ViewModeFileDisplay
+                  files={existingCertificateFiles}
+                  onDelete={onExistingCertificateDelete}
+                />
+              </div>
+            )}
           </FormField>
         </div>
       ) : (
