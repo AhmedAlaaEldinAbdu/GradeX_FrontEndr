@@ -18,10 +18,13 @@ import {
   transformSchoolFormBackend,
   type ExistingImageAttachment,
 } from '../utils/school-form.transformer';
+import { fetchExistingFileAsUpload } from '../utils/existing-file-upload';
 import { logFormData } from '@/shared/common/common';
 import {
   createSchoolWithFormData,
+  updateSchoolWithFormData,
   selectIsCreating,
+  selectIsUpdating,
   selectValidationErrors,
 } from '@gradex/redux/features/schools';
 import { useToast } from '@/shared/context/ToastContext';
@@ -102,10 +105,15 @@ const SchoolForm = ({
   const [schoolImageFiles, setSchoolImageFiles] = useState<ExistingImageAttachment[]>([]);
   const [existingLogo, setExistingLogo] = useState<string>('');
 
+  const [existingLicenseFiles, setExistingLicenseFiles] = useState<string[]>([]);
+  const [existingCertificateFiles, setExistingCertificateFiles] = useState<string[]>([]);
+
   // Ref to prevent accidental submission immediately after navigation
   const justNavigatedToStep4Ref = useRef(false);
 
   const isCreating = useSelector(selectIsCreating);
+  const isUpdating = useSelector(selectIsUpdating);
+  const isSubmitting = isCreating || isUpdating;
   const validationErrors = useSelector(selectValidationErrors);
 
   // Initialize branches from initialData when in edit/view mode
@@ -124,7 +132,17 @@ const SchoolForm = ({
       setSchoolImageFiles([]);
     }
     setExistingLogo(initialData?.logoFile || '');
+    setExistingLicenseFiles(initialData?.licenseFiles || []);
+    setExistingCertificateFiles(initialData?.certificateFiles || []);
   }, [initialData]);
+
+  const handleExistingLicenseDelete = (index: number) => {
+    setExistingLicenseFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleExistingCertificateDelete = (index: number) => {
+    setExistingCertificateFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // Show validation errors in toast when they occur
   useEffect(() => {
@@ -218,7 +236,7 @@ const SchoolForm = ({
 
       // For step 1, also validate logo file (only logo, not certificate)
       let filesValid = true;
-      if (currentStep === 1) {
+      if (currentStep === 1 && mode !== 'edit') {
         filesValid = validateFiles(1); // Only validate files for step 1
       }
 
@@ -256,11 +274,90 @@ const SchoolForm = ({
    */
   const onFormSubmit = async (data: SchoolFormData) => {
     try {
+      // Defaults (add mode): send new uploads + keep existing files as stored paths.
+      let submitData = data;
+      let submitFiles = {
+        ...files,
+        existingLogo: existingLogo || undefined,
+        existingLicensePaths: existingLicenseFiles,
+        existingCertificatePaths: existingCertificateFiles,
+      };
+      let submitBranches = branches;
+      let submitSchoolImages = schoolImageFiles;
+
+      if (mode === 'edit') {
+        const [licenseFromExisting, certificateFromExisting] = await Promise.all([
+          Promise.all(existingLicenseFiles.map((p) => fetchExistingFileAsUpload(p))),
+          Promise.all(existingCertificateFiles.map((p) => fetchExistingFileAsUpload(p))),
+        ]);
+
+        const schoolImageUploads: File[] = [];
+        const keptSchoolImages: ExistingImageAttachment[] = [];
+        await Promise.all(
+          schoolImageFiles.map(async (a) => {
+            const file = await fetchExistingFileAsUpload(a.attachmentFile);
+            if (file) schoolImageUploads.push(file);
+            else keptSchoolImages.push(a);
+          })
+        );
+
+        submitFiles = {
+          ...files,
+          image: [...files.image, ...schoolImageUploads],
+          license: [...files.license, ...licenseFromExisting.filter((f): f is File => f !== null)],
+          certificate: [
+            ...files.certificate,
+            ...certificateFromExisting.filter((f): f is File => f !== null),
+          ],
+          // logo stays a path; only keep paths whose re-upload failed.
+          existingLogo: existingLogo || undefined,
+          existingLicensePaths: existingLicenseFiles.filter((_, i) => !licenseFromExisting[i]),
+          existingCertificatePaths: existingCertificateFiles.filter(
+            (_, i) => !certificateFromExisting[i]
+          ),
+        };
+        submitSchoolImages = keptSchoolImages;
+
+        // Additional branches: same treatment for their images.
+        submitBranches = await Promise.all(
+          branches.map(async (b) => {
+            const branchUploads: File[] = [];
+            const keptBranchImages: ExistingImageAttachment[] = [];
+            await Promise.all(
+              (b.existingSchoolImages || []).map(async (a) => {
+                const file = await fetchExistingFileAsUpload(a.attachmentFile);
+                if (file) branchUploads.push(file);
+                else keptBranchImages.push(a);
+              })
+            );
+            return {
+              ...b,
+              schoolImageFiles: [...(b.schoolImageFiles || []), ...branchUploads],
+              existingSchoolImages: keptBranchImages,
+            };
+          })
+        );
+
+        // Facility images: re-fetch into imageFile when no new image was picked.
+        if (data.facilityDetails) {
+          const entries = await Promise.all(
+            Object.entries(data.facilityDetails).map(async ([key, detail]) => {
+              if (!detail.imageFile && detail.imageUrl) {
+                const file = await fetchExistingFileAsUpload(detail.imageUrl);
+                if (file) return [key, { ...detail, imageFile: file }] as const;
+              }
+              return [key, detail] as const;
+            })
+          );
+          submitData = { ...data, facilityDetails: Object.fromEntries(entries) };
+        }
+      }
+
       const backendFormData = transformSchoolFormBackend(
-        data,
-        { ...files, existingLogo: existingLogo || undefined },
-        branches,
-        schoolImageFiles
+        submitData,
+        submitFiles,
+        submitBranches,
+        submitSchoolImages
       );
 
       if (import.meta.env.DEV) {
@@ -279,44 +376,26 @@ const SchoolForm = ({
           });
         }
       } else if (mode === 'edit' && schoolId) {
-        console.log('Update school:', schoolId, backendFormData);
-        setShowPopupMessage({
-          show: true,
-          type: 'success',
-          message: t('schools.schoolUpdated'),
-        });
+        const resultAction = await dispatch(
+          updateSchoolWithFormData({ id: schoolId, formData: backendFormData })
+        );
+
+        if (updateSchoolWithFormData.fulfilled.match(resultAction)) {
+          // Success - show popup
+          setShowPopupMessage({
+            show: true,
+            type: 'success',
+            message: t('schools.schoolUpdated'),
+          });
+        }
       }
     } catch (error) {
       console.error('Error submitting form:', error);
     }
   };
 
-  const handleSchoolImageDelete = (index?: number) => {
-    const existingCount = schoolImageFiles.length;
-    const newCount = files.image?.length || 0;
-
-    if (index === undefined) {
-      setSchoolImageFiles([]);
-      // clear newly added images
-      if (newCount > 0) {
-        // delete all new files
-        // handleFileDelete without index clears all
-        handleFileDelete('image')();
-      }
-      return;
-    }
-
-    // Delete from existing (backend) list
-    if (index < existingCount) {
-      setSchoolImageFiles((prev) => prev.filter((_, i) => i !== index));
-      return;
-    }
-
-    // Delete from newly uploaded files
-    const newIndex = index - existingCount;
-    if (newIndex >= 0 && newIndex < newCount) {
-      handleFileDelete('image', newIndex)();
-    }
+  const handleExistingSchoolImageDelete = (index: number) => {
+    setSchoolImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -346,7 +425,9 @@ const SchoolForm = ({
       'otherFacilityNameEn',
     ]);
     const isValid = await validateCurrentStep(4);
-    const filesValid = validateFiles();
+    // In edit mode the license/certificate files already exist on the server,
+    // so re-uploading them is optional and should not block submission.
+    const filesValid = mode === 'edit' ? true : validateFiles();
     if (!isValid || !filesValid) {
       console.error('Form validation failed');
       return;
@@ -382,12 +463,12 @@ const SchoolForm = ({
               onLogoUpload={handleFileUpload('license')}
               onLogoDelete={(index?: number) => handleFileDelete('license', index)()}
               licenseFileNames={
-                mode === 'view'
-                  ? initialData?.licenseFiles || []
-                  : [...(initialData?.licenseFiles || []), ...getFileNames('license')]
+                mode === 'view' ? initialData?.licenseFiles || [] : getFileNames('license')
               }
               licenseFiles={files.license}
               licenseError={fileErrors.license}
+              existingLicenseFiles={mode === 'edit' ? existingLicenseFiles : []}
+              onExistingLicenseDelete={handleExistingLicenseDelete}
               readOnly={mode === 'view'}
               showRejectedLabel={showRejectedLabel}
               showPendingLabel={showPendingLabel}
@@ -415,21 +496,22 @@ const SchoolForm = ({
               onCertificateUpload={handleFileUpload('certificate')}
               onCertificateDelete={(index?: number) => handleFileDelete('certificate', index)()}
               certificateFileNames={
-                mode === 'view'
-                  ? initialData?.certificateFiles || []
-                  : [...(initialData?.certificateFiles || []), ...getFileNames('certificate')]
+                mode === 'view' ? initialData?.certificateFiles || [] : getFileNames('certificate')
               }
               certificateFiles={files.certificate}
               certificateError={fileErrors.certificate}
+              existingCertificateFiles={mode === 'edit' ? existingCertificateFiles : []}
+              onExistingCertificateDelete={handleExistingCertificateDelete}
               readOnly={mode === 'view'}
               showValidationErrors={showValidationErrors}
               onSchoolImageUpload={handleFileUpload('image')}
-              onSchoolImageDelete={handleSchoolImageDelete}
-              schoolImageFileNames={[
-                ...schoolImageFiles.map((a) => a.attachmentFile),
-                ...getFileNames('image'),
-              ]}
+              onSchoolImageDelete={(index?: number) => handleFileDelete('image', index)()}
+              schoolImageFileNames={getFileNames('image')}
               schoolImageFiles={files.image}
+              existingSchoolImages={
+                mode === 'edit' ? schoolImageFiles.map((a) => a.attachmentFile) : []
+              }
+              onExistingSchoolImageDelete={handleExistingSchoolImageDelete}
             />
           )}
 
@@ -470,8 +552,13 @@ const SchoolForm = ({
                       {t('common.next')}
                     </Button>
                   ) : (
-                    <Button key="save-button" type="submit" variant="primary" disabled={isCreating}>
-                      {isCreating ? t('common.saving') : t('common.save')}
+                    <Button
+                      key="save-button"
+                      type="submit"
+                      variant="primary"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? t('common.saving') : t('common.save')}
                     </Button>
                   )}
                 </>
