@@ -146,8 +146,6 @@ export async function updateSchool(
     throw error;
   }
 
-  // The envelope may be { value: school } or { value: { data: school } } depending on the
-  // endpoint, so unwrap defensively to always return the school object.
   const envelope = response.data.value as unknown as SchoolDetail & { data?: SchoolDetail };
   return envelope?.data ?? envelope;
 }
