@@ -288,10 +288,9 @@ const SchoolForm = ({
       let submitSchoolImages = schoolImageFiles;
 
       if (mode === 'edit') {
-        const [licenseFromExisting, certificateFromExisting] = await Promise.all([
-          Promise.all(existingLicenseFiles.map((p) => fetchExistingFileAsUpload(p))),
-          Promise.all(existingCertificateFiles.map((p) => fetchExistingFileAsUpload(p))),
-        ]);
+        const licenseFromExisting = await Promise.all(
+          existingLicenseFiles.map((p) => fetchExistingFileAsUpload(p))
+        );
 
         const schoolImageUploads: File[] = [];
         const keptSchoolImages: ExistingImageAttachment[] = [];
@@ -307,16 +306,11 @@ const SchoolForm = ({
           ...files,
           image: [...files.image, ...schoolImageUploads],
           license: [...files.license, ...licenseFromExisting.filter((f): f is File => f !== null)],
-          certificate: [
-            ...files.certificate,
-            ...certificateFromExisting.filter((f): f is File => f !== null),
-          ],
+
           // logo stays a path; only keep paths whose re-upload failed.
           existingLogo: existingLogo || undefined,
           existingLicensePaths: existingLicenseFiles.filter((_, i) => !licenseFromExisting[i]),
-          existingCertificatePaths: existingCertificateFiles.filter(
-            (_, i) => !certificateFromExisting[i]
-          ),
+          existingCertificatePaths: existingCertificateFiles,
         };
         submitSchoolImages = keptSchoolImages;
 
