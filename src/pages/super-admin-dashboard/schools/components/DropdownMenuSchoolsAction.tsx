@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import FilesIcon from '@gradex/assets/icons/Files.svg';
+import EditIcon from '@gradex/assets/icons/Edit.svg';
 import CheckmarkCircleIcon from '@gradex/assets/icons/CheckmarkCircle.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +30,7 @@ export default function DropdownMenuSchoolsAction({
 }: ActionProps) {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [showEditRequestPopup, setShowEditRequestPopup] = useState(false);
   const [showRejectPopup, setShowRejectPopup] = useState(false);
@@ -132,6 +135,14 @@ export default function DropdownMenuSchoolsAction({
   };
 
   const actions = [
+    {
+      id: 'editSchool',
+      visible: [1],
+      label: t('actions.edit'),
+      icon: EditIcon,
+      color: 'text-green-600 hover:bg-green-100',
+      onClick: () => navigate(`/schools/edit-school/${id}`),
+    },
     {
       id: 'edit',
       visible: [2, 3],
