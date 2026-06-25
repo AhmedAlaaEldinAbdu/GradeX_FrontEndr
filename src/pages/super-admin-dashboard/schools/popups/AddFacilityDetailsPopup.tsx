@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { FacilityDetails } from '../types/school.types';
 import FormField from '@/shared/components/FormField';
 import TextArea from '@/shared/components/TextArea';
+import { buildFileUrl } from '../utils/existing-file-upload';
 
 interface AddFacilityDetailsPopupProps {
   open: boolean;
@@ -36,6 +37,7 @@ export default function AddFacilityDetailsPopup({
   const [hasExistingImage, setHasExistingImage] = useState<boolean>(
     !!(existingDetails?.imageFile || existingDetails?.imageUrl)
   );
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
 
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -69,6 +71,24 @@ export default function AddFacilityDetailsPopup({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, handleClose]);
 
+  useEffect(() => {
+    const isPdf = (name?: string) => name?.toLowerCase().endsWith('.pdf') || false;
+
+    if (imageFile && !isPdf(imageFile.name)) {
+      const objectUrl = URL.createObjectURL(imageFile);
+      setPreviewUrl(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    }
+
+    // Existing image URL (no new file selected)
+    if (!imageFile && existingDetails?.imageUrl && !isPdf(existingDetails.imageUrl)) {
+      setPreviewUrl(buildFileUrl(existingDetails.imageUrl));
+      return;
+    }
+
+    setPreviewUrl(undefined);
+  }, [imageFile, existingDetails?.imageUrl]);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -89,10 +109,7 @@ export default function AddFacilityDetailsPopup({
       const url = URL.createObjectURL(imageFile);
       window.open(url, '_blank');
     } else if (existingDetails?.imageUrl && isPdfFile(existingDetails.imageUrl)) {
-      const url = existingDetails.imageUrl.startsWith('http')
-        ? existingDetails.imageUrl
-        : `http://gradexpro.runasp.net/${existingDetails.imageUrl}`;
-      window.open(url, '_blank');
+      window.open(buildFileUrl(existingDetails.imageUrl), '_blank');
     }
   };
 
@@ -213,15 +230,11 @@ export default function AddFacilityDetailsPopup({
             {/* File Preview Section - Show when image exists */}
             {hasExistingImage && imageFileName && (
               <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4">
-                {/* Image Preview in View Mode */}
-                {readOnly && existingDetails?.imageUrl && !isPdfFile(existingDetails.imageUrl) && (
+                {/* Image Preview - Show the actual image in both view and add/edit modes */}
+                {previewUrl && (
                   <div className="mb-3">
                     <CustomImage
-                      src={
-                        existingDetails.imageUrl.startsWith('http')
-                          ? existingDetails.imageUrl
-                          : `http://gradexpro.runasp.net/${existingDetails.imageUrl}`
-                      }
+                      src={previewUrl}
                       alt={imageFileName}
                       className="h-48 w-full rounded-lg object-cover"
                       onError={(e) => {
