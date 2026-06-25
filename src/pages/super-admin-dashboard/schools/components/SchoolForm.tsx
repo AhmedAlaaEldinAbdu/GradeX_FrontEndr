@@ -27,6 +27,7 @@ import {
   selectIsUpdating,
   selectValidationErrors,
 } from '@gradex/redux/features/schools';
+import { selectFacilities } from '@gradex/redux/features/lookups';
 import { useToast } from '@/shared/context/ToastContext';
 import type { ValidationErrorResponse } from '@/services/api/config';
 import LocationFillGreenIcon from '@gradex/assets/icons/LocationFillGreen.svg';
@@ -115,6 +116,7 @@ const SchoolForm = ({
   const isUpdating = useSelector(selectIsUpdating);
   const isSubmitting = isCreating || isUpdating;
   const validationErrors = useSelector(selectValidationErrors);
+  const lookupFacilities = useSelector(selectFacilities);
 
   // Initialize branches from initialData when in edit/view mode
   useEffect(() => {
@@ -353,7 +355,8 @@ const SchoolForm = ({
         submitData,
         submitFiles,
         submitBranches,
-        submitSchoolImages
+        submitSchoolImages,
+        lookupFacilities
       );
 
       if (import.meta.env.DEV) {

@@ -82,7 +82,8 @@ export function transformSchoolFormBackend(
   formData: SchoolFormData,
   files: FileAttachments,
   branches?: BranchData[],
-  existingSchoolImageFiles?: ExistingImageAttachment[]
+  existingSchoolImageFiles?: ExistingImageAttachment[],
+  lookupFacilities?: Array<{ id: string; arabicName: string; englishName: string }>
 ): FormData {
   const backendFormData = new FormData();
 
@@ -92,7 +93,7 @@ export function transformSchoolFormBackend(
   appendContactInformation(backendFormData, formData);
   appendAddressAndBranches(backendFormData, formData, branches, files, existingSchoolImageFiles);
   appendApplicationFeatures(backendFormData, formData);
-  appendFacilities(backendFormData, formData, files);
+  appendFacilities(backendFormData, formData, files, lookupFacilities);
 
   return backendFormData;
 }
@@ -189,7 +190,8 @@ function appendApplicationFeatures(formData: FormData, schoolData: SchoolFormDat
 function appendFacilities(
   formData: FormData,
   schoolData: SchoolFormData,
-  files: FileAttachments
+  files: FileAttachments,
+  lookupFacilities?: Array<{ id: string; arabicName: string; englishName: string }>
 ): void {
   let facilityIndex = 0;
 
@@ -197,19 +199,25 @@ function appendFacilities(
   if (schoolData.facilities?.length) {
     schoolData.facilities.forEach((facilityId) => {
       const facilityDetail = schoolData.facilityDetails?.[facilityId];
+      const lookup = lookupFacilities?.find((f) => f.id === facilityId);
 
-      formData.append(
-        `Facilities[${facilityIndex}].id`,
-        facilityDetail?.oldFacilityId || facilityId
-      );
+      const isExisting = !!facilityDetail?.oldFacilityId;
+
+      if (isExisting) {
+        formData.append(`Facilities[${facilityIndex}].id`, facilityDetail!.oldFacilityId!);
+      }
+
+      const arabicName = facilityDetail?.arabicName || lookup?.arabicName;
+      const englishName = facilityDetail?.englishName || lookup?.englishName;
+
+      if (arabicName) {
+        formData.append(`Facilities[${facilityIndex}].arabicName`, arabicName);
+      }
+      if (englishName) {
+        formData.append(`Facilities[${facilityIndex}].englishName`, englishName);
+      }
 
       if (facilityDetail) {
-        if (facilityDetail.arabicName) {
-          formData.append(`Facilities[${facilityIndex}].arabicName`, facilityDetail.arabicName);
-        }
-        if (facilityDetail.englishName) {
-          formData.append(`Facilities[${facilityIndex}].englishName`, facilityDetail.englishName);
-        }
         formData.append(`Facilities[${facilityIndex}].description`, facilityDetail.description);
 
         if (facilityDetail.imageFile) {
