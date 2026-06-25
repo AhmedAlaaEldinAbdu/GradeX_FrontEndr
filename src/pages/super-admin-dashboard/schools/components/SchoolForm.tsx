@@ -480,11 +480,10 @@ const SchoolForm = ({
               initialBranches={branches}
               onBranchesChange={setBranches}
               onLogoUpload={handleFileUpload('logo')}
-              onLogoDelete={() => {
-                handleFileDelete('logo')();
-                setExistingLogo('');
-              }}
-              logoFileName={existingLogo || files.logo?.[0]?.name}
+              onLogoDelete={() => handleFileDelete('logo')()}
+              logoFileName={files.logo?.[0]?.name}
+              existingLogo={existingLogo}
+              onExistingLogoDelete={() => setExistingLogo('')}
             />
           )}
 

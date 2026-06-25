@@ -7,6 +7,7 @@ import Input from '@gradex/shared/components/Input';
 import FormField from '@gradex/shared/components/FormField';
 import Button from '@gradex/shared/components/Button';
 import FileUpload from '@gradex/shared/components/FileUpload';
+import ViewModeFileDisplay from '@gradex/shared/components/ViewModeFileDisplay';
 import MapLocationModal from '@gradex/shared/components/MapLocationModal';
 import AddressBranch from './AddressBranch';
 import type { SchoolFormData } from '../types/school.types';
@@ -40,6 +41,8 @@ interface AddressStepProps {
   onLogoUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onLogoDelete?: () => void;
   logoFileName?: string;
+  existingLogo?: string;
+  onExistingLogoDelete?: () => void;
   initialBranches?: Array<{
     country: string;
     region: string;
@@ -83,6 +86,8 @@ const AddressStep: React.FC<AddressStepProps> = ({
   onLogoUpload,
   onLogoDelete,
   logoFileName,
+  existingLogo,
+  onExistingLogoDelete,
   initialBranches,
   onBranchesChange,
 }) => {
@@ -417,6 +422,21 @@ const AddressStep: React.FC<AddressStepProps> = ({
               multiple={false}
             />
           </FormField>
+
+          {/* Existing logo stored on the server */}
+          {existingLogo && (
+            <ViewModeFileDisplay
+              files={[existingLogo]}
+              onDelete={onExistingLogoDelete ? () => onExistingLogoDelete() : undefined}
+            />
+          )}
+        </div>
+      ) : existingLogo ? (
+        <div className="space-y-4 rounded-lg border border-gray-200 p-4">
+          <ViewModeFileDisplay
+            files={[existingLogo]}
+            label={t('schools.branchLogo') || 'شعار الفرع الرئيسي'}
+          />
         </div>
       ) : null}
 
