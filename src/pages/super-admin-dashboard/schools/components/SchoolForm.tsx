@@ -505,7 +505,11 @@ const SchoolForm = ({
               showValidationErrors={showValidationErrors}
               onSchoolImageUpload={handleFileUpload('image')}
               onSchoolImageDelete={(index?: number) => handleFileDelete('image', index)()}
-              schoolImageFileNames={getFileNames('image')}
+              schoolImageFileNames={
+                mode === 'view'
+                  ? schoolImageFiles.map((a) => a.attachmentFile)
+                  : getFileNames('image')
+              }
               schoolImageFiles={files.image}
               existingSchoolImages={
                 mode === 'edit' ? schoolImageFiles.map((a) => a.attachmentFile) : []
