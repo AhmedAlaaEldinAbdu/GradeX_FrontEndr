@@ -19,6 +19,7 @@ import type {
   TeacherNoteDto,
   TeacherNotesQueryParams,
   PaginatedList,
+  PaginationMeta,
 } from '@/services/api/types/teacher-requests.types';
 
 // ============================================================================
@@ -110,14 +111,16 @@ const initialState: TeacherRequestsState = {
 // Helpers
 // ============================================================================
 
+const buildPagination = (meta?: Partial<PaginationMeta> | null): PaginationState => ({
+  page: meta?.pageIndex ?? defaultPagination.page,
+  limit: meta?.pageSize ?? defaultPagination.limit,
+  total: meta?.totalItems ?? 0,
+  totalPages: meta?.totalPages ?? 0,
+});
+
 const toListResult = <T>(data?: PaginatedList<T> | null): ListResult<T> => ({
   items: data?.items ?? [],
-  pagination: {
-    page: data?.pageIndex ?? defaultPagination.page,
-    limit: data?.pageSize ?? defaultPagination.limit,
-    total: data?.totalItems ?? 0,
-    totalPages: data?.totalPages ?? 0,
-  },
+  pagination: buildPagination(data),
 });
 
 // ============================================================================
@@ -142,7 +145,11 @@ export const fetchJobApplications = createAsyncThunk<
 >('teacherRequests/fetchJobApplications', async (params, { rejectWithValue }) => {
   try {
     const response = await teacherRequestsApiService.getJobApplications(params || undefined);
-    return toListResult(response.data);
+    const data = response.data;
+    return {
+      items: data?.teacherRequestsApplyJobAdvertisments ?? [],
+      pagination: buildPagination(data),
+    };
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }

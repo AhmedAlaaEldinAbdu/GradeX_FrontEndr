@@ -91,10 +91,36 @@ export interface TeacherRequestsSummaryDto {
   [key: string]: unknown;
 }
 
-export interface JobApplicationRequestDto {
+/** Lookup item embedded in job-application responses (countries, qualifications). */
+export interface JobAdvertisementLookupItem {
   id: string;
-  // TODO(api): replace with the real job-application fields.
-  [key: string]: unknown;
+  nameAr: string | null;
+  nameEn: string | null;
+}
+
+/** A single row from `GET /TeacherRequests/apply-job-advertisment`. */
+export interface JobApplicationRequestDto {
+  applicationJobAdvertismentId: string;
+  jobAdvertismentId: string;
+  jobAdvertismentNameAr: string | null;
+  jobAdvertismentNameEn: string | null;
+  teacherId: string;
+  teacherFullName: string;
+  teacherEmail: string;
+  teacherPhoneNumber: string;
+  yearsExperience: number;
+  resumeFile: string | null;
+  workShedule: TeacherWorkSchedule;
+  address: string | null;
+  lkCountryId: string | null;
+  lkCountryNameAr: string | null;
+  lkCountryNameEn: string | null;
+  nationalityId: string | null;
+  nationalityNameAr: string | null;
+  nationalityNameEn: string | null;
+  nationality: number | null;
+  jobAdvertisementCountries: JobAdvertisementLookupItem[];
+  jobAdvertisementQualifications: JobAdvertisementLookupItem[];
 }
 
 export interface EarlyLeaveRequestDto {
@@ -119,20 +145,29 @@ export interface TeacherNoteDto {
 // Paginated list wrapper
 // ============================================================================
 
-/**
- * Generic paginated payload. The actual inner array key is confirmed once the
- * API responses are provided; until then list items are exposed under `items`.
- */
-export interface PaginatedList<T> {
-  items: T[];
+/** Shared pagination metadata returned alongside every list payload. */
+export interface PaginationMeta {
   pageIndex: number;
   pageSize: number;
   totalItems: number;
   totalPages: number;
 }
 
+/**
+ * Generic paginated payload for endpoints whose response schema is not yet
+ * provided; list items are exposed under `items` until confirmed.
+ */
+export interface PaginatedList<T> extends PaginationMeta {
+  items: T[];
+}
+
+/** Payload of `GET /TeacherRequests/apply-job-advertisment`. */
+export interface JobApplicationsListData extends PaginationMeta {
+  teacherRequestsApplyJobAdvertisments: JobApplicationRequestDto[];
+}
+
 export type TeacherRequestsSummaryResponse = ApiResponseModel<TeacherRequestsSummaryDto>;
-export type JobApplicationsListResponse = ApiResponseModel<PaginatedList<JobApplicationRequestDto>>;
+export type JobApplicationsListResponse = ApiResponseModel<JobApplicationsListData>;
 export type JobApplicationResponse = ApiResponseModel<JobApplicationRequestDto>;
 export type EarlyLeavesListResponse = ApiResponseModel<PaginatedList<EarlyLeaveRequestDto>>;
 export type EarlyLeaveResponse = ApiResponseModel<EarlyLeaveRequestDto>;
