@@ -1264,7 +1264,8 @@
     },
     "workType": {
       "full": "Full time",
-      "part": "Part time"
+      "part": "Part time",
+      "both": "Both"
     },
     "jobApplication": {
       "detailsTitle": "Application Preview",
@@ -1336,6 +1337,10 @@
       "archivePopup": {
         "title": "Are you sure you want to archive the teacher?",
         "subtitle": "They will be moved to the archive list",
+        "confirm": "Confirm"
+      },
+      "acceptPopup": {
+        "title": "Do you want to accept the employee's request?",
         "confirm": "Confirm"
       },
       "toasts": {

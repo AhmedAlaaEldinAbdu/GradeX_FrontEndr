@@ -1264,7 +1264,8 @@
     },
     "workType": {
       "full": "دوام كامل",
-      "part": "دوام جزئي"
+      "part": "دوام جزئي",
+      "both": "كلاهما"
     },
     "jobApplication": {
       "detailsTitle": "معاينة طلب التقديم",
@@ -1336,6 +1337,10 @@
       "archivePopup": {
         "title": "هل أنت متأكد من وضع المعلم في الإرشيف ؟",
         "subtitle": "سيتم نقله لجدول الإرشيف",
+        "confirm": "تأكيد"
+      },
+      "acceptPopup": {
+        "title": "هل تريد قبول طلب الموظف؟",
         "confirm": "تأكيد"
       },
       "toasts": {
