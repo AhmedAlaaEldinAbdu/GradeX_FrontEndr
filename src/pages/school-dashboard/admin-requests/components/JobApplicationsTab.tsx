@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import { useToast } from '@/shared/context/ToastContext';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
@@ -18,18 +19,28 @@ import ClockBlueIcon from '@gradex/assets/icons/ClockBlue.svg';
 import CheckGreenIcon from '@gradex/assets/icons/CheckGreen.svg';
 
 import { WorkType, JobApplicationStatus, type JobApplicationDto } from '../admin-requests.types';
-import { MOCK_JOB_APPLICATIONS } from '../admin-requests.mock';
+import { fetchJobApplications } from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
+import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
+import type {
+  JobApplicationsQueryParams,
+  TeacherWorkSchedule,
+} from '@/services/api/types/teacher-requests.types';
+import { mapJobApplication } from '../admin-requests.mappers';
 import ScheduleInterviewPopup from '../popups/ScheduleInterviewPopup';
 import ArchiveConfirmPopup from '../popups/ArchiveConfirmPopup';
+import AcceptConfirmPopup from '../popups/AcceptConfirmPopup';
 
 const PAGE_SIZE = 10;
 
 const WORK_TYPE_BADGE: Record<WorkType, string> = {
+  [WorkType.Both]: 'bg-violet-100 text-violet-700',
   [WorkType.Full]: 'bg-green-100 text-green-700',
   [WorkType.Part]: 'bg-blue-100 text-blue-700',
 };
 
 const WORK_TYPE_LABEL: Record<WorkType, string> = {
+  [WorkType.Both]: 'adminRequests.workType.both',
   [WorkType.Full]: 'adminRequests.workType.full',
   [WorkType.Part]: 'adminRequests.workType.part',
 };
@@ -38,8 +49,12 @@ const JobApplicationsTab: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const dispatch = useAppDispatch();
 
-  const [applications, setApplications] = useState<JobApplicationDto[]>(MOCK_JOB_APPLICATIONS);
+  const { jobApplications, jobApplicationsPagination, isJobApplicationsLoading } = useAppSelector(
+    (state) => state.teacherRequests
+  );
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedWorkType, setSelectedWorkType] = useState('');
   const [selectedQualification, setSelectedQualification] = useState('');
@@ -49,95 +64,104 @@ const JobApplicationsTab: React.FC = () => {
 
   const [scheduleTarget, setScheduleTarget] = useState<JobApplicationDto | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<JobApplicationDto | null>(null);
+  const [acceptTarget, setAcceptTarget] = useState<JobApplicationDto | null>(null);
+
+  // Server-side fetch: re-run whenever paging or filters change, and after actions.
+  const loadApplications = useCallback(() => {
+    const params: JobApplicationsQueryParams = {
+      PageNumber: page,
+      PageSize: PAGE_SIZE,
+      TeacherName: searchTerm || undefined,
+      WorkShedule: selectedWorkType ? (Number(selectedWorkType) as TeacherWorkSchedule) : undefined,
+      YearsExperience: selectedExperience ? Number(selectedExperience) : undefined,
+      // TODO(api): QualificationId/NationalityId expect lookup IDs — switch these
+      // filter options to lookup-based values once lookups are wired.
+      QualificationId: selectedQualification || undefined,
+      NationalityId: selectedNationality || undefined,
+    };
+    dispatch(fetchJobApplications(params));
+  }, [
+    dispatch,
+    page,
+    searchTerm,
+    selectedWorkType,
+    selectedQualification,
+    selectedExperience,
+    selectedNationality,
+  ]);
+
+  useEffect(() => {
+    loadApplications();
+  }, [loadApplications]);
+
+  const data = useMemo(() => jobApplications.map(mapJobApplication), [jobApplications]);
 
   const qualificationOptions = useMemo(
     () =>
-      Array.from(new Set(applications.map((row) => row.qualification))).map((value) => ({
+      Array.from(new Set(data.map((row) => row.qualification).filter(Boolean))).map((value) => ({
         value,
         label: value,
       })),
-    [applications]
+    [data]
   );
 
   const experienceOptions = useMemo(
     () =>
-      Array.from(new Set(applications.map((row) => row.experienceYears)))
+      Array.from(new Set(data.map((row) => row.experienceYears)))
         .sort((a, b) => a - b)
         .map((value) => ({ value: String(value), label: String(value) })),
-    [applications]
+    [data]
   );
 
   const nationalityOptions = useMemo(
     () =>
-      Array.from(new Set(applications.map((row) => row.nationality))).map((value) => ({
+      Array.from(new Set(data.map((row) => row.nationality).filter(Boolean))).map((value) => ({
         value,
         label: value,
       })),
-    [applications]
+    [data]
   );
 
-  const filteredData = useMemo(
-    () =>
-      applications.filter((row) => {
-        const matchesSearch = !searchTerm || row.applicantName.includes(searchTerm);
-        const matchesWorkType = !selectedWorkType || row.workType === Number(selectedWorkType);
-        const matchesQualification =
-          !selectedQualification || row.qualification === selectedQualification;
-        const matchesExperience =
-          !selectedExperience || row.experienceYears === Number(selectedExperience);
-        const matchesNationality = !selectedNationality || row.nationality === selectedNationality;
-        return (
-          matchesSearch &&
-          matchesWorkType &&
-          matchesQualification &&
-          matchesExperience &&
-          matchesNationality
-        );
-      }),
-    [
-      applications,
-      searchTerm,
-      selectedWorkType,
-      selectedQualification,
-      selectedExperience,
-      selectedNationality,
-    ]
-  );
+  const updateStatus = async (id: string, applicationStatus: number, successKey: string) => {
+    try {
+      await dispatch(
+        editApplicationsJobAdvertisementStatus({
+          applicationsJobAdvertisementId: id,
+          applicationStatus,
+        })
+      ).unwrap();
+      showToast({ message: t(successKey), type: 'success' });
+      loadApplications();
+      return true;
+    } catch {
+      showToast({ message: t('common.error'), type: 'error' });
+      return false;
+    }
+  };
 
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const pageData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  const handleAccept = (row: JobApplicationDto) => {
-    setApplications((prev) =>
-      prev.map((item) =>
-        item.id === row.id ? { ...item, status: JobApplicationStatus.Accepted } : item
-      )
+  const handleAcceptConfirm = async () => {
+    if (!acceptTarget) return;
+    const success = await updateStatus(
+      acceptTarget.id,
+      JOB_APPLICATION_STATUS.ACCEPT,
+      'adminRequests.jobApplication.toasts.accepted'
     );
-    showToast({ message: t('adminRequests.jobApplication.toasts.accepted'), type: 'success' });
+    if (success) setAcceptTarget(null);
   };
 
   const handleScheduleConfirm = () => {
-    if (!scheduleTarget) return;
-    setApplications((prev) =>
-      prev.map((item) =>
-        item.id === scheduleTarget.id
-          ? { ...item, status: JobApplicationStatus.InterviewScheduled }
-          : item
-      )
-    );
     setScheduleTarget(null);
     showToast({ message: t('adminRequests.jobApplication.toasts.scheduled'), type: 'success' });
   };
 
-  const handleArchiveConfirm = () => {
+  const handleArchiveConfirm = async () => {
     if (!archiveTarget) return;
-    setApplications((prev) =>
-      prev.map((item) =>
-        item.id === archiveTarget.id ? { ...item, status: JobApplicationStatus.Archived } : item
-      )
+    const success = await updateStatus(
+      archiveTarget.id,
+      JOB_APPLICATION_STATUS.ARCHIVED,
+      'adminRequests.jobApplication.toasts.archived'
     );
-    setArchiveTarget(null);
-    showToast({ message: t('adminRequests.jobApplication.toasts.archived'), type: 'success' });
+    if (success) setArchiveTarget(null);
   };
 
   const columns: DataTableColumn<JobApplicationDto>[] = [
@@ -271,7 +295,7 @@ const JobApplicationsTab: React.FC = () => {
               variant="success"
               ariaLabel={t('adminRequests.jobApplication.actions.accept')}
               imgClassName="h-5 w-5"
-              onClick={() => handleAccept(row)}
+              onClick={() => setAcceptTarget(row)}
             >
               <CustomImage src={CheckGreenIcon} alt="" className="h-5 w-5" />
             </IconButton>
@@ -316,7 +340,7 @@ const JobApplicationsTab: React.FC = () => {
       name: 'work-type-filter',
       value: selectedWorkType,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedWorkType}
@@ -338,7 +362,7 @@ const JobApplicationsTab: React.FC = () => {
       name: 'qualification-filter',
       value: selectedQualification,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedQualification}
@@ -357,7 +381,7 @@ const JobApplicationsTab: React.FC = () => {
       name: 'experience-filter',
       value: selectedExperience,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedExperience}
@@ -376,7 +400,7 @@ const JobApplicationsTab: React.FC = () => {
       name: 'nationality-filter',
       value: selectedNationality,
       onChange: () => {},
-      width: '15%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedNationality}
@@ -404,15 +428,21 @@ const JobApplicationsTab: React.FC = () => {
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={pageData}
+        data={data}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
-        pagination={{ page, limit: PAGE_SIZE, total: filteredData.length, totalPages }}
+        pagination={{
+          page: jobApplicationsPagination.page,
+          limit: jobApplicationsPagination.limit,
+          total: jobApplicationsPagination.total,
+          totalPages: jobApplicationsPagination.totalPages,
+        }}
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
         emptyMessage="adminRequests.empty"
+        isLoading={isJobApplicationsLoading}
         t={t}
       />
 
@@ -426,6 +456,12 @@ const JobApplicationsTab: React.FC = () => {
         open={Boolean(archiveTarget)}
         onConfirm={handleArchiveConfirm}
         onCancel={() => setArchiveTarget(null)}
+      />
+
+      <AcceptConfirmPopup
+        open={Boolean(acceptTarget)}
+        onConfirm={handleAcceptConfirm}
+        onCancel={() => setAcceptTarget(null)}
       />
     </Card>
   );
