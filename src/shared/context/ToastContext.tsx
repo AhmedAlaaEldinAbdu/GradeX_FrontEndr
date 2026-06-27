@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useRef } from 'react';
 import type { ReactNode } from 'react';
 import ToastMessage from '@/shared/components/ToastMessage';
 import { useTranslation } from 'react-i18next';
@@ -25,21 +25,22 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const isRTL = i18n.language === 'ar';
 
   const [toast, setToast] = useState<ToastData | null>(null);
-  const [timeoutId, setTimeoutId] = useState<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
-  const showToast = (data: ToastData) => {
-    if (timeoutId) clearTimeout(timeoutId);
+  const showToast = useCallback((data: ToastData) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     setToast(data);
 
     const duration = data.duration ?? 3000;
 
-    const id = setTimeout(() => setToast(null), duration);
-    setTimeoutId(id);
-  };
+    timeoutRef.current = setTimeout(() => setToast(null), duration);
+  }, []);
+
+  const contextValue = useMemo(() => ({ showToast }), [showToast]);
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       {toast && (
         <ToastMessage

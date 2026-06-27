@@ -106,19 +106,48 @@ export async function createSchool(data: CreateSchoolRequest | FormData): Promis
     throw error;
   }
 
-  return response.data.value.data;
+  const envelope = response.data.value as unknown as SchoolDetail & { data?: SchoolDetail };
+  return envelope?.data ?? envelope;
 }
 
 /**
  * Update an existing school
+ * Accepts either a JSON payload or multipart FormData (the edit form sends FormData).
  */
-export async function updateSchool(id: string, data: UpdateSchoolRequest): Promise<SchoolDetail> {
-  const response: AxiosResponse<ApiSuccessResponse<SchoolDetailResponse>> = await axiosClient.put(
+export async function updateSchool(
+  id: string,
+  data: UpdateSchoolRequest | FormData
+): Promise<SchoolDetail> {
+  const response: AxiosResponse<ApiResponseModel<SchoolDetailResponse>> = await axiosClient.put(
     SchoolsEndpoints.editSchool(id),
-    data
+    data,
+    {
+      headers:
+        data instanceof FormData
+          ? {
+              'Content-Type': 'multipart/form-data',
+            }
+          : undefined,
+    }
   );
 
-  return response.data.data.data;
+  // Check if the response indicates validation errors
+  if (
+    !response.data.isSuccess &&
+    response.data.validationErrors &&
+    response.data.validationErrors.length > 0
+  ) {
+    const error = new Error('Validation failed') as Error & {
+      validationErrors: typeof response.data.validationErrors;
+      isValidationError: boolean;
+    };
+    error.validationErrors = response.data.validationErrors;
+    error.isValidationError = true;
+    throw error;
+  }
+
+  const envelope = response.data.value as unknown as SchoolDetail & { data?: SchoolDetail };
+  return envelope?.data ?? envelope;
 }
 
 /**

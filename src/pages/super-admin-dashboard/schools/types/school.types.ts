@@ -12,6 +12,7 @@ export interface FacilityDetails {
   imageUrl?: string | null;
   imageFile?: File | null;
   oldFacilitiesFilePath?: string[];
+  oldFacilityId?: string;
 }
 
 // School form data types

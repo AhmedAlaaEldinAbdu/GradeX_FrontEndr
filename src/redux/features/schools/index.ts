@@ -16,6 +16,7 @@ export {
   createSchool,
   createSchoolWithFormData,
   updateSchool,
+  updateSchoolWithFormData,
   deleteSchool,
   restoreSchool,
   updateSchoolStatus,

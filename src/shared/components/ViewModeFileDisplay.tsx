@@ -8,6 +8,7 @@ interface ViewModeFileDisplayProps {
   /** Optional label. When provided the list is wrapped in a FormField; otherwise the bare list is rendered. */
   label?: string;
   baseUrl?: string;
+  onDelete?: (index: number) => void;
 }
 
 /**
@@ -19,6 +20,7 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
   files,
   label,
   baseUrl = 'http://gradexpro.runasp.net/',
+  onDelete,
 }) => {
   const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -161,49 +163,70 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
                 </div>
               </div>
 
-              {/* View Button for Images */}
-              {isImage && (
-                <button
-                  type="button"
-                  onClick={() => handleImageClick(fileName)}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-green-300 bg-white text-green-600 transition-colors hover:bg-green-50"
-                  title={t('common.view')}
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                {/* View Button for Images */}
+                {isImage && (
+                  <button
+                    type="button"
+                    onClick={() => handleImageClick(fileName)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-green-300 bg-white text-green-600 transition-colors hover:bg-green-50"
+                    title={t('common.view')}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  </button>
+                )}
 
-              {/* View Button for PDFs - Opens in new tab */}
-              {isPdfFile(fileName) && (
-                <button
-                  type="button"
-                  onClick={() => handlePdfClick(fileName)}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
-                  title={t('common.view')}
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                    />
-                  </svg>
-                </button>
-              )}
+                {/* View Button for PDFs - Opens in new tab */}
+                {isPdfFile(fileName) && (
+                  <button
+                    type="button"
+                    onClick={() => handlePdfClick(fileName)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
+                    title={t('common.view')}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Delete Button (edit mode) */}
+                {onDelete && (
+                  <button
+                    type="button"
+                    onClick={() => onDelete(index)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-red-300 bg-white text-red-600 transition-colors hover:bg-red-50"
+                    title={t('common.delete')}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Complete Progress Bar (100%) */}

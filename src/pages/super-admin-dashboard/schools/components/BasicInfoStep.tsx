@@ -33,6 +33,8 @@ interface BasicInfoStepProps {
   licenseFileNames?: string[];
   licenseFiles?: File[];
   licenseError?: string;
+  existingLicenseFiles?: string[];
+  onExistingLicenseDelete?: (index: number) => void;
   readOnly?: boolean;
   showRejectedLabel?: boolean;
   showPendingLabel?: boolean;
@@ -49,6 +51,8 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   licenseFileNames: licenseFileNames,
   licenseFiles = [],
   licenseError: licenseError,
+  existingLicenseFiles = [],
+  onExistingLicenseDelete,
   readOnly = false,
   showRejectedLabel = false,
   showPendingLabel = false,
@@ -411,6 +415,14 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               multiple={true}
               error={!!licenseError}
             />
+            {existingLicenseFiles.length > 0 && (
+              <div className="mt-3">
+                <ViewModeFileDisplay
+                  files={existingLicenseFiles}
+                  onDelete={onExistingLicenseDelete}
+                />
+              </div>
+            )}
             {licenseError && (
               <p className="mt-1 text-right text-xs text-red-600">{t(licenseError)}</p>
             )}

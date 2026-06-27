@@ -325,6 +325,29 @@ export const updateSchool = createAsyncThunk<
   }
 });
 
+export const updateSchoolWithFormData = createAsyncThunk<
+  SchoolDetail,
+  { id: string; formData: FormData }
+>('schools/updateSchoolWithFormData', async ({ id, formData }, { rejectWithValue }) => {
+  try {
+    const school = await schoolsApiService.updateSchool(id, formData);
+    return school;
+  } catch (error) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'isValidationError' in error &&
+      error.isValidationError
+    ) {
+      return rejectWithValue({
+        message: getErrorMessage(error),
+        validationErrors: (error as unknown as { validationErrors: unknown }).validationErrors,
+      });
+    }
+    return rejectWithValue({ message: getErrorMessage(error), validationErrors: null });
+  }
+});
+
 export const deleteSchool = createAsyncThunk<string, string>(
   'schools/deleteSchool',
   async (id, { rejectWithValue }) => {
@@ -672,6 +695,42 @@ const schoolsSlice = createSlice({
       .addCase(updateSchool.rejected, (state, action) => {
         state.isUpdating = false;
         state.error = action.payload as string;
+      });
+
+    // Handle updateSchoolWithFormData (multipart edit)
+    builder
+      .addCase(updateSchoolWithFormData.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+        state.validationErrors = null;
+      })
+      .addCase(updateSchoolWithFormData.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        // Guard against an envelope that doesn't carry the full school object, so the
+        // success flow (popup + cleared loading state) never breaks on a 200 response.
+        const updated = action.payload;
+        if (updated?.id) {
+          const index = state.schools.findIndex((s) => s.id === updated.id);
+          if (index !== -1) {
+            state.schools[index] = updated;
+          }
+          if (state.currentSchool?.id === updated.id) {
+            state.currentSchool = updated;
+          }
+        }
+        state.error = null;
+      })
+      .addCase(updateSchoolWithFormData.rejected, (state, action) => {
+        state.isUpdating = false;
+        const payload = action.payload as
+          | { message: string; validationErrors: unknown }
+          | undefined;
+        if (payload) {
+          state.error = payload.message;
+          state.validationErrors = payload.validationErrors as Record<string, string> | null;
+        } else {
+          state.error = 'An error occurred';
+        }
       });
 
     builder

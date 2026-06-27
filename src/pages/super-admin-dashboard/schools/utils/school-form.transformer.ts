@@ -11,6 +11,8 @@ interface FileAttachments {
   certificate: File[];
   logo?: File[];
   existingLogo?: string; // existing logo URL (edit mode)
+  existingLicensePaths?: string[];
+  existingCertificatePaths?: string[];
 }
 
 export type { ExistingImageAttachment };
@@ -80,7 +82,8 @@ export function transformSchoolFormBackend(
   formData: SchoolFormData,
   files: FileAttachments,
   branches?: BranchData[],
-  existingSchoolImageFiles?: ExistingImageAttachment[]
+  existingSchoolImageFiles?: ExistingImageAttachment[],
+  lookupFacilities?: Array<{ id: string; arabicName: string; englishName: string }>
 ): FormData {
   const backendFormData = new FormData();
 
@@ -90,7 +93,7 @@ export function transformSchoolFormBackend(
   appendContactInformation(backendFormData, formData);
   appendAddressAndBranches(backendFormData, formData, branches, files, existingSchoolImageFiles);
   appendApplicationFeatures(backendFormData, formData);
-  appendFacilities(backendFormData, formData, files);
+  appendFacilities(backendFormData, formData, files, lookupFacilities);
 
   return backendFormData;
 }
@@ -126,11 +129,23 @@ function appendBasicInformation(formData: FormData, schoolData: SchoolFormData):
 }
 
 function appendLicenseAttachments(formData: FormData, files: FileAttachments): void {
-  if (!files.license || files.license.length === 0) return;
+  let index = 0;
 
-  files.license.forEach((file, index) => {
+  (files.existingLicensePaths || []).forEach((path) => {
+    if (!path) return;
+    formData.append(`LicensesAttachments[${index}].attachmentFile`, path);
+    formData.append(
+      `LicensesAttachments[${index}].attachmentName`,
+      path.split('/').pop() || 'License'
+    );
+    index++;
+  });
+
+  // Append newly uploaded license files
+  (files.license || []).forEach((file) => {
     formData.append(`LicensesAttachments[${index}].attachmentFile`, file);
     formData.append(`LicensesAttachments[${index}].attachmentName`, file.name || 'School Logo');
+    index++;
   });
 }
 
@@ -175,41 +190,40 @@ function appendApplicationFeatures(formData: FormData, schoolData: SchoolFormDat
 function appendFacilities(
   formData: FormData,
   schoolData: SchoolFormData,
-  files: FileAttachments
+  files: FileAttachments,
+  lookupFacilities?: Array<{ id: string; arabicName: string; englishName: string }>
 ): void {
   let facilityIndex = 0;
 
   // Append regular facilities
   if (schoolData.facilities?.length) {
     schoolData.facilities.forEach((facilityId) => {
-      formData.append(`Facilities[${facilityIndex}].id`, facilityId);
-
       const facilityDetail = schoolData.facilityDetails?.[facilityId];
+      const lookup = lookupFacilities?.find((f) => f.id === facilityId);
+
+      const isExisting = !!facilityDetail?.oldFacilityId;
+
+      if (isExisting) {
+        formData.append(`Facilities[${facilityIndex}].id`, facilityDetail!.oldFacilityId!);
+      }
+
+      const arabicName = facilityDetail?.arabicName || lookup?.arabicName;
+      const englishName = facilityDetail?.englishName || lookup?.englishName;
+
+      if (arabicName) {
+        formData.append(`Facilities[${facilityIndex}].arabicName`, arabicName);
+      }
+      if (englishName) {
+        formData.append(`Facilities[${facilityIndex}].englishName`, englishName);
+      }
+
       if (facilityDetail) {
-        if (facilityDetail.arabicName) {
-          formData.append(`Facilities[${facilityIndex}].arabicName`, facilityDetail.arabicName);
-        }
-        if (facilityDetail.englishName) {
-          formData.append(`Facilities[${facilityIndex}].englishName`, facilityDetail.englishName);
-        }
         formData.append(`Facilities[${facilityIndex}].description`, facilityDetail.description);
 
         if (facilityDetail.imageFile) {
           formData.append(`Facilities[${facilityIndex}].imageUrl`, facilityDetail.imageFile);
         } else if (facilityDetail.imageUrl) {
           formData.append(`Facilities[${facilityIndex}].imageUrl`, facilityDetail.imageUrl);
-        }
-
-        if (
-          facilityDetail.oldFacilitiesFilePath &&
-          facilityDetail.oldFacilitiesFilePath.length > 0
-        ) {
-          facilityDetail.oldFacilitiesFilePath.forEach((path: string, pathIndex: number) => {
-            formData.append(
-              `Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`,
-              path
-            );
-          });
         }
       }
 
@@ -224,11 +238,16 @@ function appendFacilities(
     const englishName = schoolData.otherFacilityNameEn?.trim() || '';
 
     if (arabicName && englishName) {
+      const otherFacilityDetail = schoolData.facilityDetails?.['other'];
+
+      if (otherFacilityDetail?.oldFacilityId) {
+        formData.append(`Facilities[${facilityIndex}].id`, otherFacilityDetail.oldFacilityId);
+      }
+
       formData.append(`Facilities[${facilityIndex}].arabicName`, arabicName);
       formData.append(`Facilities[${facilityIndex}].englishName`, englishName);
 
       // Append "Other" facility details if available
-      const otherFacilityDetail = schoolData.facilityDetails?.['other'];
       if (otherFacilityDetail) {
         formData.append(
           `Facilities[${facilityIndex}].description`,
@@ -240,25 +259,20 @@ function appendFacilities(
         } else if (otherFacilityDetail.imageUrl) {
           formData.append(`Facilities[${facilityIndex}].imageUrl`, otherFacilityDetail.imageUrl);
         }
-
-        if (
-          otherFacilityDetail.oldFacilitiesFilePath &&
-          otherFacilityDetail.oldFacilitiesFilePath.length > 0
-        ) {
-          otherFacilityDetail.oldFacilitiesFilePath.forEach((path: string, pathIndex: number) => {
-            formData.append(
-              `Facilities[${facilityIndex}].oldFacilitiesFilePath[${pathIndex}]`,
-              path
-            );
-          });
-        }
       }
     }
   }
 
-  // Append certificate files
-  if (files.certificate && files.certificate.length > 0) {
-    appendFacilityCertificates(formData, files.certificate);
+  // Append certificate files (surviving existing certificates + newly uploaded)
+  const hasNewCertificates = files.certificate && files.certificate.length > 0;
+  const hasExistingCertificates =
+    files.existingCertificatePaths && files.existingCertificatePaths.length > 0;
+  if (hasNewCertificates || hasExistingCertificates) {
+    appendFacilityCertificates(
+      formData,
+      files.certificate || [],
+      files.existingCertificatePaths || []
+    );
   }
 }
 
@@ -390,13 +404,18 @@ function appendBranchData(formData: FormData, branch: BranchData, index: number)
   });
 }
 
+// The .NET empty/default GUID. The backend may send this when no value is set; it must
+// not be treated as a real selection (otherwise it gets re-sent on save).
+const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
+
+const isMeaningfulId = (value: unknown): value is string =>
+  typeof value === 'string' && value.trim().length > 0 && value.trim() !== EMPTY_GUID;
+
 function extractAcademicSystemIds(academicSystemIds: unknown): string[] {
   if (Array.isArray(academicSystemIds)) {
-    return academicSystemIds.filter(
-      (value) => typeof value === 'string' && value.trim().length > 0
-    );
+    return academicSystemIds.filter(isMeaningfulId);
   }
-  if (typeof academicSystemIds === 'string' && academicSystemIds.trim().length > 0) {
+  if (isMeaningfulId(academicSystemIds)) {
     return [academicSystemIds];
   }
   return [];
@@ -406,16 +425,27 @@ function formatFoundingDate(date?: string): string {
   return date ? new Date(date).toISOString() : new Date().toISOString();
 }
 
-function appendFacilityCertificates(formData: FormData, certificates: File[]): void {
-  if (!certificates || certificates.length === 0) return;
+function appendFacilityCertificates(
+  formData: FormData,
+  certificates: File[],
+  existingPaths: string[] = []
+): void {
+  let oldIndex = 0;
+  existingPaths.forEach((path) => {
+    if (!path) return;
+    formData.append(`Facilities[0].oldFacilitiesFilePath[${oldIndex}]`, path);
+    oldIndex++;
+  });
 
-  certificates.forEach((certificate, index) => {
-    const prefix = `facilities[0].licensesAttachmentFacilitiesDto[${index}]`;
+  let newIndex = 0;
+  (certificates || []).forEach((certificate) => {
+    const prefix = `facilities[0].licensesAttachmentFacilitiesDto[${newIndex}]`;
     formData.append(`${prefix}.attachmentFile`, certificate);
     formData.append(
       `${prefix}.attachmentName`,
-      certificate.name || `Facility Certificate ${index + 1}`
+      certificate.name || `Facility Certificate ${newIndex + 1}`
     );
+    newIndex++;
   });
 }
 
@@ -618,8 +648,8 @@ export function transformBackendSchoolToForm(
     (data as any).subSystemId ??
     (data as any).SubSystemId;
   const subSystemIds = Array.isArray(subSystemIdsRaw)
-    ? subSystemIdsRaw.filter((value) => typeof value === 'string' && value.trim().length > 0)
-    : typeof subSystemIdsRaw === 'string' && subSystemIdsRaw.trim().length > 0
+    ? subSystemIdsRaw.filter(isMeaningfulId)
+    : isMeaningfulId(subSystemIdsRaw)
       ? [subSystemIdsRaw]
       : [];
 
@@ -668,6 +698,7 @@ export function transformBackendSchoolToForm(
       description: string;
       imageUrl?: string;
       oldFacilitiesFilePath?: string[];
+      oldFacilityId?: string;
     }
   > = {};
 
@@ -690,6 +721,10 @@ export function transformBackendSchoolToForm(
     }
 
     if (matchedLookupFacility) {
+      if (facilityDetails[matchedLookupFacility.id]) {
+        return;
+      }
+
       // This facility matches a lookup facility by name
       // Use the lookup facility ID for the form
       facilities.push(matchedLookupFacility.id);
@@ -697,6 +732,8 @@ export function transformBackendSchoolToForm(
       // Store complete facility details for display using the lookup ID
       facilityDetails[matchedLookupFacility.id] = {
         id: matchedLookupFacility.id,
+
+        oldFacilityId: facility.id,
         arabicName: facility.arabicName,
         englishName: facility.englishName,
         description: facility.description || '',
@@ -718,6 +755,8 @@ export function transformBackendSchoolToForm(
       // Store details under 'other' key
       facilityDetails['other'] = {
         id: 'other',
+
+        oldFacilityId: facility.id,
         arabicName: facility.arabicName,
         englishName: facility.englishName,
         description: facility.description || '',
