@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import { useToast } from '@/shared/context/ToastContext';
+import { useAppDispatch } from '@/hooks/useRedux';
 
 import WorkGreenIcon from '@gradex/assets/icons/WorkGreen.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
@@ -12,8 +13,11 @@ import DownloadIcon from '@gradex/assets/icons/Download.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 
 import { WorkType, JobApplicationStatus, type JobApplicationDto } from '../admin-requests.types';
+import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
+import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
 import ScheduleInterviewPopup from '../popups/ScheduleInterviewPopup';
 import ArchiveConfirmPopup from '../popups/ArchiveConfirmPopup';
+import AcceptConfirmPopup from '../popups/AcceptConfirmPopup';
 
 interface JobApplicationDetailsContentProps {
   application: JobApplicationDto;
@@ -39,22 +43,51 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const dispatch = useAppDispatch();
 
   const [isScheduleOpen, setScheduleOpen] = useState(false);
   const [isArchiveOpen, setArchiveOpen] = useState(false);
+  const [isAcceptOpen, setAcceptOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const workTypeLabel =
+  const workTypeLabel = t(
     application.workType === WorkType.Full
-      ? t('adminRequests.workType.full')
-      : t('adminRequests.workType.part');
+      ? 'adminRequests.workType.full'
+      : application.workType === WorkType.Part
+        ? 'adminRequests.workType.part'
+        : 'adminRequests.workType.both'
+  );
 
   const isAccepted = application.status === JobApplicationStatus.Accepted;
   const isArchived = application.status === JobApplicationStatus.Archived;
   const actionsDisabled = isAccepted || isArchived;
 
-  const handleAccept = () => {
-    showToast({ message: t('adminRequests.jobApplication.toasts.accepted'), type: 'success' });
-    navigate('/admin-requests');
+  const updateStatus = async (applicationStatus: number, successKey: string) => {
+    try {
+      setIsProcessing(true);
+      await dispatch(
+        editApplicationsJobAdvertisementStatus({
+          applicationsJobAdvertisementId: application.id,
+          applicationStatus,
+        })
+      ).unwrap();
+      showToast({ message: t(successKey), type: 'success' });
+      navigate('/admin-requests');
+      return true;
+    } catch {
+      showToast({ message: t('common.error'), type: 'error' });
+      return false;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleAcceptConfirm = async () => {
+    const success = await updateStatus(
+      JOB_APPLICATION_STATUS.ACCEPT,
+      'adminRequests.jobApplication.toasts.accepted'
+    );
+    if (success) setAcceptOpen(false);
   };
 
   const handleScheduleConfirm = () => {
@@ -62,10 +95,12 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
     showToast({ message: t('adminRequests.jobApplication.toasts.scheduled'), type: 'success' });
   };
 
-  const handleArchiveConfirm = () => {
-    setArchiveOpen(false);
-    showToast({ message: t('adminRequests.jobApplication.toasts.archived'), type: 'success' });
-    navigate('/admin-requests');
+  const handleArchiveConfirm = async () => {
+    const success = await updateStatus(
+      JOB_APPLICATION_STATUS.ARCHIVED,
+      'adminRequests.jobApplication.toasts.archived'
+    );
+    if (success) setArchiveOpen(false);
   };
 
   return (
@@ -76,17 +111,25 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           {t('adminRequests.jobApplication.detailsTitle')}
         </h1>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="success" onClick={handleAccept} disabled={actionsDisabled}>
+          <Button
+            variant="success"
+            onClick={() => setAcceptOpen(true)}
+            disabled={actionsDisabled || isProcessing}
+          >
             {t('adminRequests.jobApplication.actions.accept')}
           </Button>
           <Button
             variant="outline"
             onClick={() => setScheduleOpen(true)}
-            disabled={actionsDisabled}
+            disabled={actionsDisabled || isProcessing}
           >
             {t('adminRequests.jobApplication.actions.schedule')}
           </Button>
-          <Button variant="outline" onClick={() => setArchiveOpen(true)} disabled={actionsDisabled}>
+          <Button
+            variant="outline"
+            onClick={() => setArchiveOpen(true)}
+            disabled={actionsDisabled || isProcessing}
+          >
             {t('adminRequests.jobApplication.actions.archive')}
           </Button>
         </div>
@@ -286,8 +329,16 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
 
       <ArchiveConfirmPopup
         open={isArchiveOpen}
+        isProcessing={isProcessing}
         onConfirm={handleArchiveConfirm}
         onCancel={() => setArchiveOpen(false)}
+      />
+
+      <AcceptConfirmPopup
+        open={isAcceptOpen}
+        isProcessing={isProcessing}
+        onConfirm={handleAcceptConfirm}
+        onCancel={() => setAcceptOpen(false)}
       />
     </>
   );
