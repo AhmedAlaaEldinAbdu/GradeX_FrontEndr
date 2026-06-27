@@ -5,9 +5,11 @@
  * mock data once the API is available.
  */
 
+// Aligned with the API `workShedule` values (see JobAdvertismentWorkShedule).
 export const WorkType = {
-  Full: 0,
-  Part: 1,
+  Both: 0,
+  Full: 1,
+  Part: 2,
 } as const;
 
 export type WorkType = (typeof WorkType)[keyof typeof WorkType];
