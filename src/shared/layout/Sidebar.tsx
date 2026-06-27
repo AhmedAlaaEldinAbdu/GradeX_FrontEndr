@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSchoolBranchName } from '@/hooks/useSchoolBranchName';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchTeacherRequestsSummary } from '@/redux/features/teacher-requests/teacherRequestsSlice';
 import { UserRole, type UserRoleType } from '@gradex/constants';
 import CustomImage from '@/shared/components/CustomImage';
 
@@ -361,6 +363,22 @@ const getSectionsForDashboard = (dashboardType: UserRoleType): MenuSection[] => 
   }
 };
 
+/**
+ * Read the pending-requests count from the (placeholder) TeacherRequests summary.
+ * TODO(api): confirm the field name once the summary response schema is provided.
+ */
+const getPendingRequestsCount = (summary: Record<string, unknown> | null): number => {
+  if (!summary) return 0;
+  const candidate =
+    summary.pending ??
+    summary.pendingCount ??
+    summary.pendingRequests ??
+    summary.waitingCount ??
+    summary.underReviewCount;
+  const parsed = Number(candidate);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
 /* Chevron — uses the SideArrow.svg asset, rotated to match direction
    and expand/collapse state. SideArrow's native shape points LEFT (<),
    so rotations are computed relative to that:
@@ -608,7 +626,16 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+  const adminRequestsSummary = useAppSelector((state) => state.teacherRequests.summary);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Pull the admin-requests summary so the sidebar badge can show the pending count.
+  useEffect(() => {
+    if (dashboardType !== UserRole.SUPER_ADMIN) {
+      dispatch(fetchTeacherRequestsSummary());
+    }
+  }, [dispatch, dashboardType]);
 
   // Shared cached fetch — Header consumes the same hook so the network call is deduped.
   // The locals are kept named so the (currently commented) JSX block that displays them
@@ -695,9 +722,28 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     setFlyoutKey(null);
   }, [location.pathname, isCollapsed]);
 
-  const sections: MenuSection[] = customMenuItems
+  const pendingRequestsCount = getPendingRequestsCount(
+    adminRequestsSummary as Record<string, unknown> | null
+  );
+
+  const baseSections: MenuSection[] = customMenuItems
     ? [{ items: customMenuItems }]
     : getSectionsForDashboard(dashboardType);
+
+  // Override the static admin-requests badge with the live pending count
+  // (hidden when there are none).
+  const sections: MenuSection[] = baseSections.map((section) => ({
+    ...section,
+    items: section.items.map((item) =>
+      item.key === 'adminRequests'
+        ? {
+            ...item,
+            badge:
+              pendingRequestsCount > 0 ? { type: 'count', value: pendingRequestsCount } : undefined,
+          }
+        : item
+    ),
+  }));
 
   const flatItems = sections.flatMap((s) => s.items);
   const firstTitledIdx = sections.findIndex((s) => !!s.titleKey);
@@ -765,7 +811,12 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
               'grid h-4 w-4 flex-shrink-0 place-items-center',
               active
                 ? ICON_FILTER_WHITE_CLASS
-                : cn(ICON_FILTER_MUTE_CLASS, 'opacity-80', ICON_GROUP_HOVER_WHITE, 'group-hover:opacity-100')
+                : cn(
+                    ICON_FILTER_MUTE_CLASS,
+                    'opacity-80',
+                    ICON_GROUP_HOVER_WHITE,
+                    'group-hover:opacity-100'
+                  )
             )}
           >
             {item.icon}
@@ -812,7 +863,12 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           'grid h-6 w-6 place-items-center',
           isActive
             ? ICON_FILTER_WHITE_CLASS
-            : cn(ICON_FILTER_MUTE_CLASS, 'opacity-80', ICON_GROUP_HOVER_WHITE, 'group-hover:opacity-100')
+            : cn(
+                ICON_FILTER_MUTE_CLASS,
+                'opacity-80',
+                ICON_GROUP_HOVER_WHITE,
+                'group-hover:opacity-100'
+              )
         )}
       >
         {item.icon}
