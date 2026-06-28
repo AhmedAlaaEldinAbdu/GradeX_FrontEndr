@@ -1852,6 +1852,49 @@
   "notifications": {
     "title": "الإشعارات",
     "noNotificationsMessage": "لم يتم إضافة أي إشعار حتى الآن. جميع الإشعارات المستقبلية ستظهر هنا حتى تكون على اطلاع دائم بالأحداث والتحديثات.",
+    "emptyStateDescription": "لم يتم إضافة أي إشعار حتى الآن. يمكنك البدء بإضافة الإشعارات لتنظيم الإدارة بشكل أفضل.",
+    "stats": {
+      "total": "إجمالي الإشعارات",
+      "employees": "إشعارات الموظفين",
+      "parents": "إشعارات أولياء الأمور",
+      "drivers": "إشعارات السائقين"
+    },
+    "tabs": {
+      "drivers": "السائقين",
+      "employees": "الموظفين",
+      "parents": "أولياء الأمور"
+    },
+    "searchEmployeeName": "ابحث عن اسم المعلم",
+    "searchDriverName": "ابحث عن اسم السائق",
+    "searchParentName": "ابحث عن اسم ولي الأمر",
+    "dateFilter": "التاريخ",
+    "educationalStageFilter": "المرحلة التعليمية",
+    "classroomFilter": "الصف الدراسي",
+    "noAttachment": "لا يوجد",
+    "table": {
+      "employeeName": "اسم الموظف",
+      "driverName": "اسم السائق",
+      "parentName": "اسم ولي الأمر",
+      "messageSubject": "موضوع الرسالة",
+      "educationalStage": "المرحلة التعليمية",
+      "classrooms": "الصفوف الدراسية"
+    },
+    "mock": {
+      "employeeName": "أحمد معتز حسن",
+      "driverName": "محمد سالم",
+      "parentName": "أحمد معتز حسن",
+      "subject": "نود إعلامكم بمتابعة المستوى الدراسي...",
+      "primaryStage": "المرحلة الابتدائية",
+      "secondaryStage": "المرحلة الثانوية",
+      "preparatoryStage": "المرحلة الإعدادية",
+      "kindergartenStage": "رياض الأطفال",
+      "classrooms": {
+        "oneOne": "ع 1/1",
+        "twoOne": "ع 2/1",
+        "oneThree": "ع 1/3",
+        "twoTwo": "ع 2/2"
+      }
+    },
     "markAsRead": "وضع علامة مقروء",
     "markAsUnread": "وضع علامة غير مقروء",
     "deleteNotification": "حذف الإشعار",

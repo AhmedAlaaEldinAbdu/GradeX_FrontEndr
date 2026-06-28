@@ -1727,6 +1727,49 @@
   "notifications": {
     "title": "Уведомления",
     "noNotificationsMessage": "Уведомления ещё не добавлены. Все будущие уведомления появятся здесь, чтобы вы были в курсе событий и обновлений.",
+    "emptyStateDescription": "Уведомления ещё не добавлены. Вы можете начать добавлять уведомления, чтобы лучше организовать администрирование.",
+    "stats": {
+      "total": "Всего уведомлений",
+      "employees": "Уведомления сотрудников",
+      "parents": "Уведомления родителей",
+      "drivers": "Уведомления водителей"
+    },
+    "tabs": {
+      "drivers": "Водители",
+      "employees": "Сотрудники",
+      "parents": "Родители"
+    },
+    "searchEmployeeName": "Поиск по имени учителя",
+    "searchDriverName": "Поиск по имени водителя",
+    "searchParentName": "Поиск по имени родителя",
+    "dateFilter": "Дата",
+    "educationalStageFilter": "Учебный уровень",
+    "classroomFilter": "Класс",
+    "noAttachment": "Нет",
+    "table": {
+      "employeeName": "Имя сотрудника",
+      "driverName": "Имя водителя",
+      "parentName": "Имя родителя",
+      "messageSubject": "Тема сообщения",
+      "educationalStage": "Учебный уровень",
+      "classrooms": "Классы"
+    },
+    "mock": {
+      "employeeName": "Ahmed Moataz Hassan",
+      "driverName": "Mohamed Salem",
+      "parentName": "Ahmed Moataz Hassan",
+      "subject": "Хотим сообщить вам о контроле учебного уровня...",
+      "primaryStage": "Начальная школа",
+      "secondaryStage": "Средняя школа",
+      "preparatoryStage": "Подготовительный этап",
+      "kindergartenStage": "Детский сад",
+      "classrooms": {
+        "oneOne": "Класс 1/1",
+        "twoOne": "Класс 2/1",
+        "oneThree": "Класс 1/3",
+        "twoTwo": "Класс 2/2"
+      }
+    },
     "markAsRead": "Отметить как прочитанное",
     "markAsUnread": "Отметить как непрочитанное",
     "deleteNotification": "Удалить уведомление",

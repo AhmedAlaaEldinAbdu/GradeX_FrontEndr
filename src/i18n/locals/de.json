@@ -1727,6 +1727,49 @@
   "notifications": {
     "title": "Benachrichtigungen",
     "noNotificationsMessage": "Es wurden noch keine Benachrichtigungen hinzugefügt. Alle zukünftigen Benachrichtigungen erscheinen hier, damit Sie über Ereignisse und Aktualisierungen informiert bleiben.",
+    "emptyStateDescription": "Es wurden noch keine Benachrichtigungen hinzugefügt. Sie können Benachrichtigungen hinzufügen, um die Verwaltung besser zu organisieren.",
+    "stats": {
+      "total": "Benachrichtigungen gesamt",
+      "employees": "Mitarbeiter-Benachrichtigungen",
+      "parents": "Eltern-Benachrichtigungen",
+      "drivers": "Fahrer-Benachrichtigungen"
+    },
+    "tabs": {
+      "drivers": "Fahrer",
+      "employees": "Mitarbeiter",
+      "parents": "Eltern"
+    },
+    "searchEmployeeName": "Nach Lehrernamen suchen",
+    "searchDriverName": "Nach Fahrernamen suchen",
+    "searchParentName": "Nach Elternnamen suchen",
+    "dateFilter": "Datum",
+    "educationalStageFilter": "Bildungsstufe",
+    "classroomFilter": "Klasse",
+    "noAttachment": "Keine",
+    "table": {
+      "employeeName": "Mitarbeitername",
+      "driverName": "Fahrername",
+      "parentName": "Elternname",
+      "messageSubject": "Nachrichtenbetreff",
+      "educationalStage": "Bildungsstufe",
+      "classrooms": "Klassen"
+    },
+    "mock": {
+      "employeeName": "Ahmed Moataz Hassan",
+      "driverName": "Mohamed Salem",
+      "parentName": "Ahmed Moataz Hassan",
+      "subject": "Wir möchten Sie über die Nachverfolgung des Lernstands informieren...",
+      "primaryStage": "Grundschule",
+      "secondaryStage": "Sekundarstufe",
+      "preparatoryStage": "Mittelstufe",
+      "kindergartenStage": "Kindergarten",
+      "classrooms": {
+        "oneOne": "Klasse 1/1",
+        "twoOne": "Klasse 2/1",
+        "oneThree": "Klasse 1/3",
+        "twoTwo": "Klasse 2/2"
+      }
+    },
     "markAsRead": "Als gelesen markieren",
     "markAsUnread": "Als ungelesen markieren",
     "deleteNotification": "Benachrichtigung löschen",

@@ -1727,6 +1727,49 @@
   "notifications": {
     "title": "Notifications",
     "noNotificationsMessage": "Aucune notification n'a encore été ajoutée. Toutes les futures notifications apparaîtront ici afin de rester informé des événements et des mises à jour.",
+    "emptyStateDescription": "Aucune notification n'a encore été ajoutée. Vous pouvez commencer à ajouter des notifications pour mieux organiser l'administration.",
+    "stats": {
+      "total": "Total des notifications",
+      "employees": "Notifications des employés",
+      "parents": "Notifications des parents",
+      "drivers": "Notifications des chauffeurs"
+    },
+    "tabs": {
+      "drivers": "Chauffeurs",
+      "employees": "Employés",
+      "parents": "Parents"
+    },
+    "searchEmployeeName": "Rechercher par nom d'enseignant",
+    "searchDriverName": "Rechercher par nom de chauffeur",
+    "searchParentName": "Rechercher par nom de parent",
+    "dateFilter": "Date",
+    "educationalStageFilter": "Niveau scolaire",
+    "classroomFilter": "Classe",
+    "noAttachment": "Aucun",
+    "table": {
+      "employeeName": "Nom de l'employé",
+      "driverName": "Nom du chauffeur",
+      "parentName": "Nom du parent",
+      "messageSubject": "Objet du message",
+      "educationalStage": "Niveau scolaire",
+      "classrooms": "Classes"
+    },
+    "mock": {
+      "employeeName": "Ahmed Moataz Hassan",
+      "driverName": "Mohamed Salem",
+      "parentName": "Ahmed Moataz Hassan",
+      "subject": "Nous souhaitons vous informer du suivi du niveau scolaire...",
+      "primaryStage": "Primaire",
+      "secondaryStage": "Secondaire",
+      "preparatoryStage": "Collège",
+      "kindergartenStage": "Maternelle",
+      "classrooms": {
+        "oneOne": "Classe 1/1",
+        "twoOne": "Classe 2/1",
+        "oneThree": "Classe 1/3",
+        "twoTwo": "Classe 2/2"
+      }
+    },
     "markAsRead": "Marquer comme lue",
     "markAsUnread": "Marquer comme non lue",
     "deleteNotification": "Supprimer la notification",

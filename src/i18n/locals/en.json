@@ -1852,6 +1852,49 @@
   "notifications": {
     "title": "Notifications",
     "noNotificationsMessage": "No notifications have been added yet. All future notifications will appear here so you can stay informed about events and updates.",
+    "emptyStateDescription": "No notifications have been added yet. You can start adding notifications to better organize administration.",
+    "stats": {
+      "total": "Total Notifications",
+      "employees": "Employee Notifications",
+      "parents": "Parent Notifications",
+      "drivers": "Driver Notifications"
+    },
+    "tabs": {
+      "drivers": "Drivers",
+      "employees": "Employees",
+      "parents": "Parents"
+    },
+    "searchEmployeeName": "Search by teacher name",
+    "searchDriverName": "Search by driver name",
+    "searchParentName": "Search by parent name",
+    "dateFilter": "Date",
+    "educationalStageFilter": "Educational stage",
+    "classroomFilter": "Classroom",
+    "noAttachment": "None",
+    "table": {
+      "employeeName": "Employee Name",
+      "driverName": "Driver Name",
+      "parentName": "Parent Name",
+      "messageSubject": "Message Subject",
+      "educationalStage": "Educational Stage",
+      "classrooms": "Classrooms"
+    },
+    "mock": {
+      "employeeName": "Ahmed Moataz Hassan",
+      "driverName": "Mohamed Salem",
+      "parentName": "Ahmed Moataz Hassan",
+      "subject": "We would like to inform you about following up the academic level...",
+      "primaryStage": "Primary Stage",
+      "secondaryStage": "Secondary Stage",
+      "preparatoryStage": "Preparatory Stage",
+      "kindergartenStage": "Kindergarten",
+      "classrooms": {
+        "oneOne": "Prep 1/1",
+        "twoOne": "Prep 2/1",
+        "oneThree": "Prep 1/3",
+        "twoTwo": "Prep 2/2"
+      }
+    },
     "markAsRead": "Mark as read",
     "markAsUnread": "Mark as unread",
     "deleteNotification": "Delete notification",
