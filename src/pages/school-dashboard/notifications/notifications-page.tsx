@@ -1,9 +1,17 @@
+import { useSearchParams } from 'react-router-dom';
+
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
-import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import Notifications from './components/Notifications';
 
 export default function NotificationsPage() {
+  const [searchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab');
+  const addNotificationPath =
+    activeTab === 'parents'
+      ? '/settings/notifications/parents/add'
+      : '/settings/notifications/employees/add';
+
   const breadcrumbItems = [
     { label: 'sidebar.systemSettings' },
     { label: 'sidebar.settings' },
@@ -19,8 +27,7 @@ export default function NotificationsPage() {
         actions={[
           {
             label: 'notifications.addNotification',
-            onClick: () => undefined,
-            imgSrc: PlusIcon,
+            to: addNotificationPath,
             imgClassName: 'w-10 h-10',
             circle: true,
           },
