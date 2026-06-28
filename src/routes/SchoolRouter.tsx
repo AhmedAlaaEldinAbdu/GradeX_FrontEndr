@@ -91,6 +91,8 @@ import AddMessagePage from '@/pages/school-dashboard/requests/add-message-page';
 import AdminRequestsPage from '@/pages/school-dashboard/admin-requests/admin-requests-page';
 import JobApplicationDetailsPage from '@/pages/school-dashboard/admin-requests/job-application-details-page';
 import SchoolNotificationsPage from '@/pages/school-dashboard/notifications/notifications-page';
+import AddEmployeesNotificationPage from '@/pages/school-dashboard/notifications/add-employees-notification-page';
+import AddParentsNotificationPage from '@/pages/school-dashboard/notifications/add-parents-notification-page';
 
 const SchoolRouter: React.FC = () => {
   const { t } = useTranslation();
@@ -968,6 +970,26 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <SchoolNotificationsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/notifications/employees/add"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddEmployeesNotificationPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/notifications/parents/add"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddParentsNotificationPage />
             </MainLayout>
           </ProtectedRoute>
         }
