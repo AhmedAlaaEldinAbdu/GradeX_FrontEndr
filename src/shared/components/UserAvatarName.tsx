@@ -14,6 +14,7 @@ interface UserAvatarNameProps {
   fallbackSrc?: string;
   onView?: MouseEventHandler<HTMLButtonElement>;
   viewLabel?: string;
+  viewCount?: number;
   size?: UserAvatarNameSize;
   align?: UserAvatarNameAlign;
   className?: string;
@@ -39,6 +40,7 @@ export default function UserAvatarName({
   fallbackSrc = DefaultAvatar,
   onView,
   viewLabel,
+  viewCount,
   size = 'md',
   align = 'center',
   className = '',
@@ -46,6 +48,7 @@ export default function UserAvatarName({
   const { t } = useTranslation();
   const sizeClasses = SIZE_CLASSES[size];
   const label = viewLabel ?? t('common.view');
+  const hasViewCount = viewCount !== undefined && viewCount !== null;
 
   return (
     <div className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${className}`}>
@@ -61,11 +64,17 @@ export default function UserAvatarName({
           title={name ?? ''}
         >
           {name?.trim() ? name : '-'}
+
+          {hasViewCount && (
+            <span className="mx-2 shrink-0 text-start text-base font-medium text-[#087B48]">
+              <bdi>+{viewCount}</bdi>
+            </span>
+          )}
         </span>
       ) : (
         ''
       )}
-      {onView && (
+      {onView && !hasViewCount && (
         <IconButton
           variant="blue"
           ariaLabel={label}
