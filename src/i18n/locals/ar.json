@@ -1864,10 +1864,12 @@
       "employees": "الموظفين",
       "parents": "أولياء الأمور"
     },
-    "searchEmployeeName": "ابحث عن اسم المعلم",
-    "searchDriverName": "ابحث عن اسم السائق",
-    "searchParentName": "ابحث عن اسم ولي الأمر",
-    "dateFilter": "التاريخ",
+      "searchEmployeeName": "ابحث عن اسم المعلم",
+      "searchDriverName": "ابحث عن اسم السائق",
+      "searchParentName": "ابحث عن اسم ولي الأمر",
+      "employeeNames": "أسماء الموظفين",
+      "parentNames": "أسماء أولياء الأمور",
+      "dateFilter": "التاريخ",
     "educationalStageFilter": "المرحلة التعليمية",
     "classroomFilter": "الصف الدراسي",
     "noAttachment": "لا يوجد",
@@ -1879,9 +1881,12 @@
       "educationalStage": "المرحلة التعليمية",
       "classrooms": "الصفوف الدراسية"
     },
-    "mock": {
-      "employeeName": "أحمد معتز حسن",
-      "driverName": "محمد سالم",
+      "mock": {
+        "employeeName": "أحمد معتز حسن",
+        "employeeNameTwo": "محمد عصام",
+        "employeeNameThree": "أحمد زهراني",
+        "employeeNameFour": "صالح علي",
+        "driverName": "محمد سالم",
       "parentName": "أحمد معتز حسن",
       "subject": "نود إعلامكم بمتابعة المستوى الدراسي...",
       "primaryStage": "المرحلة الابتدائية",
@@ -1921,10 +1926,12 @@
     "city": "مدينة",
     "recipientNames": "أسماء المرسلين",
     "selectAll": "الكل",
-    "employees": "موظفين",
-    "chooseNames": "اختر الأسماء",
-    "notificationSubject": "موضوع الإشعار",
-    "enterSubject": "الموضوع",
+      "employees": "موظفين",
+      "chooseNames": "اختر الأسماء",
+      "notificationSubject": "موضوع الإشعار",
+      "notificationSubjectAr": "موضوع الإشعار (باللغة العربية)",
+      "notificationSubjectEn": "موضوع الإشعار (باللغة الإنجليزية)",
+      "enterSubject": "الموضوع",
     "notificationContent": "موضوع الإشعار",
     "enterContent": "الموضوع",
     "optional": "اختياري",
@@ -1934,10 +1941,12 @@
     "editNotification": "تعديل الإشعار",
     "validation": {
       "sentToRequired": "مرسلة إلي مطلوبة",
-      "recipientTypeRequired": "نوع المرسل إليه مطلوب",
-      "recipientNamesRequired": "أسماء المرسلين مطلوبة",
-      "dateRequired": "التاريخ مطلوب",
-      "contentRequired": "موضوع الإشعار مطلوب"
+        "recipientTypeRequired": "نوع المرسل إليه مطلوب",
+        "recipientNamesRequired": "أسماء المرسلين مطلوبة",
+        "dateRequired": "التاريخ مطلوب",
+        "subjectArRequired": "موضوع الإشعار باللغة العربية مطلوب",
+        "subjectEnRequired": "موضوع الإشعار باللغة الإنجليزية مطلوب",
+        "contentRequired": "موضوع الإشعار مطلوب"
     }
   },
   "officialHolidays": {

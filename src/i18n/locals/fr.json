@@ -1739,10 +1739,12 @@
       "employees": "Employés",
       "parents": "Parents"
     },
-    "searchEmployeeName": "Rechercher par nom d'enseignant",
-    "searchDriverName": "Rechercher par nom de chauffeur",
-    "searchParentName": "Rechercher par nom de parent",
-    "dateFilter": "Date",
+      "searchEmployeeName": "Rechercher par nom d'enseignant",
+      "searchDriverName": "Rechercher par nom de chauffeur",
+      "searchParentName": "Rechercher par nom de parent",
+      "employeeNames": "Noms des employés",
+      "parentNames": "Noms des parents",
+      "dateFilter": "Date",
     "educationalStageFilter": "Niveau scolaire",
     "classroomFilter": "Classe",
     "noAttachment": "Aucun",
@@ -1754,9 +1756,12 @@
       "educationalStage": "Niveau scolaire",
       "classrooms": "Classes"
     },
-    "mock": {
-      "employeeName": "Ahmed Moataz Hassan",
-      "driverName": "Mohamed Salem",
+      "mock": {
+        "employeeName": "Ahmed Moataz Hassan",
+        "employeeNameTwo": "Mohamed Essam",
+        "employeeNameThree": "Ahmed Zahrani",
+        "employeeNameFour": "Saleh Ali",
+        "driverName": "Mohamed Salem",
       "parentName": "Ahmed Moataz Hassan",
       "subject": "Nous souhaitons vous informer du suivi du niveau scolaire...",
       "primaryStage": "Primaire",
@@ -1796,10 +1801,12 @@
     "city": "Ville",
     "recipientNames": "Noms des destinataires",
     "selectAll": "Tous",
-    "employees": "Employés",
-    "chooseNames": "Choisir des noms",
-    "notificationSubject": "Objet de la notification",
-    "enterSubject": "Objet",
+      "employees": "Employés",
+      "chooseNames": "Choisir des noms",
+      "notificationSubject": "Objet de la notification",
+      "notificationSubjectAr": "Objet de la notification (arabe)",
+      "notificationSubjectEn": "Objet de la notification (anglais)",
+      "enterSubject": "Objet",
     "notificationContent": "Contenu de la notification",
     "enterContent": "Contenu",
     "optional": "Optionnel",
@@ -1809,10 +1816,12 @@
     "editNotification": "Modifier la notification",
     "validation": {
       "sentToRequired": "Le destinataire est requis",
-      "recipientTypeRequired": "Le type de destinataire est requis",
-      "recipientNamesRequired": "Les noms des destinataires sont requis",
-      "dateRequired": "La date est requise",
-      "contentRequired": "Le contenu de la notification est requis"
+        "recipientTypeRequired": "Le type de destinataire est requis",
+        "recipientNamesRequired": "Les noms des destinataires sont requis",
+        "dateRequired": "La date est requise",
+        "subjectArRequired": "L'objet de la notification en arabe est requis",
+        "subjectEnRequired": "L'objet de la notification en anglais est requis",
+        "contentRequired": "Le contenu de la notification est requis"
     }
   },
   "officialHolidays": {

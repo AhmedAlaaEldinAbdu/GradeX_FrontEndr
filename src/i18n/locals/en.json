@@ -1864,10 +1864,12 @@
       "employees": "Employees",
       "parents": "Parents"
     },
-    "searchEmployeeName": "Search by teacher name",
-    "searchDriverName": "Search by driver name",
-    "searchParentName": "Search by parent name",
-    "dateFilter": "Date",
+      "searchEmployeeName": "Search by teacher name",
+      "searchDriverName": "Search by driver name",
+      "searchParentName": "Search by parent name",
+      "employeeNames": "Employee names",
+      "parentNames": "Parent names",
+      "dateFilter": "Date",
     "educationalStageFilter": "Educational stage",
     "classroomFilter": "Classroom",
     "noAttachment": "None",
@@ -1879,9 +1881,12 @@
       "educationalStage": "Educational Stage",
       "classrooms": "Classrooms"
     },
-    "mock": {
-      "employeeName": "Ahmed Moataz Hassan",
-      "driverName": "Mohamed Salem",
+      "mock": {
+        "employeeName": "Ahmed Moataz Hassan",
+        "employeeNameTwo": "Mohamed Essam",
+        "employeeNameThree": "Ahmed Zahrani",
+        "employeeNameFour": "Saleh Ali",
+        "driverName": "Mohamed Salem",
       "parentName": "Ahmed Moataz Hassan",
       "subject": "We would like to inform you about following up the academic level...",
       "primaryStage": "Primary Stage",
@@ -1921,10 +1926,12 @@
     "city": "City",
     "recipientNames": "Recipient Names",
     "selectAll": "All",
-    "employees": "Employees",
-    "chooseNames": "Choose names",
-    "notificationSubject": "Notification Subject",
-    "enterSubject": "Subject",
+      "employees": "Employees",
+      "chooseNames": "Choose names",
+      "notificationSubject": "Notification Subject",
+      "notificationSubjectAr": "Notification subject (Arabic)",
+      "notificationSubjectEn": "Notification subject (English)",
+      "enterSubject": "Subject",
     "notificationContent": "Notification Content",
     "enterContent": "Content",
     "optional": "Optional",
@@ -1934,10 +1941,12 @@
     "editNotification": "Edit Notification",
     "validation": {
       "sentToRequired": "Sent to is required",
-      "recipientTypeRequired": "Recipient type is required",
-      "recipientNamesRequired": "Recipient names are required",
-      "dateRequired": "Date is required",
-      "contentRequired": "Notification content is required"
+        "recipientTypeRequired": "Recipient type is required",
+        "recipientNamesRequired": "Recipient names are required",
+        "dateRequired": "Date is required",
+        "subjectArRequired": "Arabic notification subject is required",
+        "subjectEnRequired": "English notification subject is required",
+        "contentRequired": "Notification content is required"
     }
   },
   "officialHolidays": {

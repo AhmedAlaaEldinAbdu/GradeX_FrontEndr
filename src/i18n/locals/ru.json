@@ -1739,10 +1739,12 @@
       "employees": "Сотрудники",
       "parents": "Родители"
     },
-    "searchEmployeeName": "Поиск по имени учителя",
-    "searchDriverName": "Поиск по имени водителя",
-    "searchParentName": "Поиск по имени родителя",
-    "dateFilter": "Дата",
+      "searchEmployeeName": "Поиск по имени учителя",
+      "searchDriverName": "Поиск по имени водителя",
+      "searchParentName": "Поиск по имени родителя",
+      "employeeNames": "Имена сотрудников",
+      "parentNames": "Имена родителей",
+      "dateFilter": "Дата",
     "educationalStageFilter": "Учебный уровень",
     "classroomFilter": "Класс",
     "noAttachment": "Нет",
@@ -1754,9 +1756,12 @@
       "educationalStage": "Учебный уровень",
       "classrooms": "Классы"
     },
-    "mock": {
-      "employeeName": "Ahmed Moataz Hassan",
-      "driverName": "Mohamed Salem",
+      "mock": {
+        "employeeName": "Ahmed Moataz Hassan",
+        "employeeNameTwo": "Mohamed Essam",
+        "employeeNameThree": "Ahmed Zahrani",
+        "employeeNameFour": "Saleh Ali",
+        "driverName": "Mohamed Salem",
       "parentName": "Ahmed Moataz Hassan",
       "subject": "Хотим сообщить вам о контроле учебного уровня...",
       "primaryStage": "Начальная школа",
@@ -1796,10 +1801,12 @@
     "city": "Город",
     "recipientNames": "Имена получателей",
     "selectAll": "Все",
-    "employees": "Сотрудники",
-    "chooseNames": "Выбрать имена",
-    "notificationSubject": "Тема уведомления",
-    "enterSubject": "Тема",
+      "employees": "Сотрудники",
+      "chooseNames": "Выбрать имена",
+      "notificationSubject": "Тема уведомления",
+      "notificationSubjectAr": "Тема уведомления (арабский)",
+      "notificationSubjectEn": "Тема уведомления (английский)",
+      "enterSubject": "Тема",
     "notificationContent": "Содержание уведомления",
     "enterContent": "Содержание",
     "optional": "Необязательно",
@@ -1809,10 +1816,12 @@
     "editNotification": "Изменить уведомление",
     "validation": {
       "sentToRequired": "Получатель обязателен",
-      "recipientTypeRequired": "Тип получателя обязателен",
-      "recipientNamesRequired": "Имена получателей обязательны",
-      "dateRequired": "Дата обязательна",
-      "contentRequired": "Содержание уведомления обязательно"
+        "recipientTypeRequired": "Тип получателя обязателен",
+        "recipientNamesRequired": "Имена получателей обязательны",
+        "dateRequired": "Дата обязательна",
+        "subjectArRequired": "Тема уведомления на арабском обязательна",
+        "subjectEnRequired": "Тема уведомления на английском обязательна",
+        "contentRequired": "Содержание уведомления обязательно"
     }
   },
   "officialHolidays": {
