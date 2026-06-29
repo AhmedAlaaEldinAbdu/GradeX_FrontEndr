@@ -129,10 +129,20 @@ export interface EarlyLeaveRequestDto {
   [key: string]: unknown;
 }
 
+/** A single row from `GET /TeacherRequests/teacher-request-messages`. */
 export interface TeacherMessageDto {
   id: string;
-  // TODO(api): replace with the real message fields.
-  [key: string]: unknown;
+  schoolBranchId: string;
+  schoolBranchNameAr: string;
+  schoolBranchNameEn: string;
+  teacherId: string;
+  teacherName: string;
+  grades: unknown[]; // TODO(api): define grade type if needed
+  classrooms: unknown[]; // TODO(api): define classroom type if needed
+  receivers: unknown[]; // TODO(api): define receiver type if needed
+  message: string;
+  createdAt: string;
+  sendType: number;
 }
 
 export interface TeacherNoteDto {
@@ -166,12 +176,17 @@ export interface JobApplicationsListData extends PaginationMeta {
   teacherRequestsApplyJobAdvertisments: JobApplicationRequestDto[];
 }
 
+/** Payload of `GET /TeacherRequests/teacher-request-messages`. */
+export interface TeacherMessagesListData extends PaginationMeta {
+  teacherRequestMessages: TeacherMessageDto[];
+}
+
 export type TeacherRequestsSummaryResponse = ApiResponseModel<TeacherRequestsSummaryDto>;
 export type JobApplicationsListResponse = ApiResponseModel<JobApplicationsListData>;
 export type JobApplicationResponse = ApiResponseModel<JobApplicationRequestDto>;
 export type EarlyLeavesListResponse = ApiResponseModel<PaginatedList<EarlyLeaveRequestDto>>;
 export type EarlyLeaveResponse = ApiResponseModel<EarlyLeaveRequestDto>;
-export type TeacherMessagesListResponse = ApiResponseModel<PaginatedList<TeacherMessageDto>>;
+export type TeacherMessagesListResponse = ApiResponseModel<TeacherMessagesListData>;
 export type TeacherMessageResponse = ApiResponseModel<TeacherMessageDto>;
 export type TeacherNotesListResponse = ApiResponseModel<PaginatedList<TeacherNoteDto>>;
 export type TeacherNoteResponse = ApiResponseModel<TeacherNoteDto>;
