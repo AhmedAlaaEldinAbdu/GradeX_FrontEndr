@@ -113,8 +113,10 @@ export interface AdminRequestsStats {
 }
 
 export const AdminMessageStatus = {
-  Pending: 0,
-  Viewed: 1,
+  Pending: 1,
+  Sent: 2,
+  Viewed: 3,
+  Replied: 4,
 } as const;
 
 export type AdminMessageStatus = (typeof AdminMessageStatus)[keyof typeof AdminMessageStatus];
