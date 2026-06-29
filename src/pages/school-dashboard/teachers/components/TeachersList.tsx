@@ -70,11 +70,12 @@ export default function TeachersList() {
         page: pagination.page,
         limit: pagination.limit,
         filters: {
-          searchName: searchTerm || undefined,
+          SearchTerm: searchTerm || undefined,
           subjectId: selectedSubject || undefined,
           educationalStageId: selectedEducationalStage || undefined,
           classroomId: selectedClassroom || undefined,
           schoolBranchId: schoolBranchId || undefined,
+          Language: currentLang || undefined,
         },
       })
     );
@@ -95,11 +96,12 @@ export default function TeachersList() {
         page,
         limit: pagination.limit,
         filters: {
-          searchName: searchTerm || undefined,
+          SearchTerm: searchTerm || undefined,
           subjectId: selectedSubject || undefined,
           educationalStageId: selectedEducationalStage || undefined,
           classroomId: selectedClassroom || undefined,
           schoolBranchesId: schoolBranchId || undefined,
+          Language: currentLang || undefined,
         },
       })
     );
@@ -374,11 +376,12 @@ export default function TeachersList() {
                 page: pagination.page,
                 limit: pagination.limit,
                 filters: {
-                  searchName: searchTerm || undefined,
+                  SearchTerm: searchTerm || undefined,
                   subjectId: selectedSubject || undefined,
                   educationalStageId: selectedEducationalStage || undefined,
                   classroomId: selectedClassroom || undefined,
                   schoolBranchesId: schoolBranchId || undefined,
+                  Language: currentLang || undefined,
                 },
               })
             );
