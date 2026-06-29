@@ -42,30 +42,30 @@ const AdminRequestsPage: React.FC = () => {
       label: t('adminRequests.tabs.jobApplication'),
       content: <JobApplicationsTab />,
     },
-    {
-      id: 'application-archive',
-      label: t('adminRequests.tabs.applicationArchive'),
-      content: <TabPlaceholder />,
-    },
-    {
-      id: 'schedule-interview',
-      label: t('adminRequests.tabs.scheduleInterview'),
-      content: <TabPlaceholder />,
-    },
-    { id: 'early-leave', label: t('adminRequests.tabs.earlyLeave'), content: <TabPlaceholder /> },
-    { id: 'leave', label: t('adminRequests.tabs.leave'), content: <TabPlaceholder /> },
-    {
-      id: 'contract-authentication',
-      label: t('adminRequests.tabs.contractAuthentication'),
-      content: <TabPlaceholder />,
-    },
+    // {
+    //   id: 'application-archive',
+    //   label: t('adminRequests.tabs.applicationArchive'),
+    //   content: <TabPlaceholder />,
+    // },
+    // {
+    //   id: 'schedule-interview',
+    //   label: t('adminRequests.tabs.scheduleInterview'),
+    //   content: <TabPlaceholder />,
+    // },
+    // { id: 'early-leave', label: t('adminRequests.tabs.earlyLeave'), content: <TabPlaceholder /> },
+    // { id: 'leave', label: t('adminRequests.tabs.leave'), content: <TabPlaceholder /> },
+    // {
+    //   id: 'contract-authentication',
+    //   label: t('adminRequests.tabs.contractAuthentication'),
+    //   content: <TabPlaceholder />,
+    // },
     { id: 'messages', label: t('adminRequests.tabs.messages'), content: <MessagesTab /> },
-    { id: 'notes', label: t('adminRequests.tabs.notes'), content: <TabPlaceholder /> },
-    {
-      id: 'teacher-notes',
-      label: t('adminRequests.tabs.teacherNotes'),
-      content: <TabPlaceholder />,
-    },
+    // { id: 'notes', label: t('adminRequests.tabs.notes'), content: <TabPlaceholder /> },
+    // {
+    //   id: 'teacher-notes',
+    //   label: t('adminRequests.tabs.teacherNotes'),
+    //   content: <TabPlaceholder />,
+    // },
   ];
 
   return (
