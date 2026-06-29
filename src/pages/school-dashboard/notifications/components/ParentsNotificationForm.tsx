@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Button from '@/shared/components/Button';
@@ -8,65 +8,198 @@ import FileUpload from '@/shared/components/FileUpload';
 import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import TextArea from '@/shared/components/TextArea';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
+import { studentsApiService } from '@/services/api/students/students.service';
+import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
 
 export type ParentsNotificationFormValues = {
   sentTo: string;
-  parentNames: string[];
+  educationalStages: string[];
+  classrooms: string[];
+  studentIds: string[];
   date: string;
   subjectAr: string;
   subjectEn: string;
+  bodyAr: string;
+  bodyEn: string;
   attachments: File[];
 };
 
 type ParentsNotificationFormProps = {
   mode: 'add' | 'edit';
+  schoolBranchId: string;
   initialValues?: Partial<ParentsNotificationFormValues>;
   onCancel?: () => void;
   onSubmit?: (values: ParentsNotificationFormValues) => void | Promise<void>;
 };
 
 type ParentsNotificationFormErrors = Partial<
-  Record<'sentTo' | 'date' | 'subjectAr' | 'subjectEn', string>
+  Record<
+    | 'sentTo'
+    | 'studentIds'
+    | 'educationalStages'
+    | 'classrooms'
+    | 'date'
+    | 'subjectAr'
+    | 'subjectEn'
+    | 'bodyAr'
+    | 'bodyEn',
+    string
+  >
 >;
 
 export default function ParentsNotificationForm({
   mode,
+  schoolBranchId,
   initialValues,
   onCancel,
   onSubmit,
 }: ParentsNotificationFormProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+  const currentLang = i18n.language as 'ar' | 'en';
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
-  const parentOptions = useMemo<CustomSelectOption[]>(
-    () => [
-      { value: 'all', label: t('notifications.selectAll') },
-      { value: 'ahmed-moataz', label: t('notifications.mock.parentName') },
-      { value: 'mohamed-essam', label: t('notifications.mock.parentNameTwo') },
-      { value: 'ahmed-zahrani', label: t('notifications.mock.parentNameThree') },
-      { value: 'saleh-ali', label: t('notifications.mock.parentNameFour') },
-    ],
-    [t]
-  );
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const isEducationalStagesLoading = useAppSelector((state) => state.educationalStages.isLoading);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
+  const isClassroomsLoading = useAppSelector((state) => state.classrooms.isLoading);
+  const [notificationStudents, setNotificationStudents] = useState<StudentDto[]>([]);
+  const [isNotificationStudentsLoading, setIsNotificationStudentsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!schoolBranchId) return;
+
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchId },
+      })
+    );
+  }, [dispatch, schoolBranchId]);
 
   const [values, setValues] = useState<ParentsNotificationFormValues>({
     sentTo: initialValues?.sentTo ?? 'parents',
-    parentNames: initialValues?.parentNames ?? ['all'],
-    date: initialValues?.date ?? '2025-02-22',
+    educationalStages: initialValues?.educationalStages ?? [],
+    classrooms: initialValues?.classrooms ?? [],
+    studentIds: initialValues?.studentIds ?? [],
+    date: initialValues?.date ?? '',
     subjectAr: initialValues?.subjectAr ?? '',
     subjectEn: initialValues?.subjectEn ?? '',
+    bodyAr: initialValues?.bodyAr ?? '',
+    bodyEn: initialValues?.bodyEn ?? '',
     attachments: initialValues?.attachments ?? [],
   });
+
+  const hasSelectedEducationalStages = values.educationalStages.length > 0;
+  const hasSelectedClassrooms = values.classrooms.length > 0;
+
+  const educationalStageOptions = useMemo<CustomSelectOption[]>(
+    () =>
+      educationalStages
+        .map((stage) => ({
+          value: stage.id,
+          label:
+            (currentLang === 'ar' ? stage.nameAr : stage.nameEn) || stage.nameAr || stage.nameEn,
+        }))
+        .filter((option) => Boolean(option.value && option.label)),
+    [currentLang, educationalStages]
+  );
+
+  const classroomOptions = useMemo<CustomSelectOption[]>(() => {
+    const selectedStageIds = new Set(values.educationalStages);
+
+    return classrooms
+      .filter((classroom) => selectedStageIds.has(classroom.gradeId))
+      .map((classroom) => ({
+        value: classroom.id,
+        label:
+          (currentLang === 'ar' ? classroom.name : classroom.nameEn) ||
+          classroom.name ||
+          classroom.nameEn,
+      }))
+      .filter((option) => Boolean(option.value && option.label));
+  }, [classrooms, currentLang, values.educationalStages]);
+
+  useEffect(() => {
+    if (!schoolBranchId || !hasSelectedEducationalStages || !hasSelectedClassrooms) {
+      setNotificationStudents([]);
+      setIsNotificationStudentsLoading(false);
+      return;
+    }
+
+    let isActive = true;
+
+    const fetchNotificationStudents = async () => {
+      setIsNotificationStudentsLoading(true);
+
+      try {
+        const responses = await Promise.all(
+          values.classrooms.map((classroomId) =>
+            studentsApiService.getStudents({
+              PageIndex: 1,
+              PageSize: 10000,
+              SchoolBranchId: schoolBranchId,
+              SchoolBrancheId: schoolBranchId,
+              ClassroomId: classroomId,
+            })
+          )
+        );
+
+        if (!isActive) return;
+
+        const studentsById = new Map<string, StudentDto>();
+        responses
+          .flatMap((response) => response.data?.studentDto ?? [])
+          .forEach((student) => {
+            if (student.id) studentsById.set(student.id, student);
+          });
+
+        setNotificationStudents(Array.from(studentsById.values()));
+      } catch {
+        if (isActive) setNotificationStudents([]);
+      } finally {
+        if (isActive) setIsNotificationStudentsLoading(false);
+      }
+    };
+
+    void fetchNotificationStudents();
+
+    return () => {
+      isActive = false;
+    };
+  }, [hasSelectedClassrooms, hasSelectedEducationalStages, schoolBranchId, values.classrooms]);
+
+  const studentOptions = useMemo<CustomSelectOption[]>(
+    () =>
+      notificationStudents
+        .map((student) => ({
+          value: student.id,
+          label: getStudentFullName(student) || student.name,
+        }))
+        .filter((option) => Boolean(option.value && option.label)),
+    [notificationStudents]
+  );
 
   const errors = useMemo<ParentsNotificationFormErrors>(() => {
     if (!submitAttempted) return {};
 
     return {
       sentTo: values.sentTo ? '' : t('notifications.validation.sentToRequired'),
+      educationalStages:
+        values.educationalStages.length > 0
+          ? ''
+          : t('notifications.validation.educationalStageRequired'),
       date: values.date ? '' : t('notifications.validation.dateRequired'),
       subjectAr: values.subjectAr.trim() ? '' : t('notifications.validation.subjectArRequired'),
       subjectEn: values.subjectEn.trim() ? '' : t('notifications.validation.subjectEnRequired'),
+      bodyAr: values.bodyAr.trim() ? '' : t('notifications.validation.bodyArRequired'),
+      bodyEn: values.bodyEn.trim() ? '' : t('notifications.validation.bodyEnRequired'),
     };
   }, [submitAttempted, t, values]);
 
@@ -82,15 +215,43 @@ export default function ParentsNotificationForm({
     setValues((prev) => ({ ...prev, ...partial }));
   };
 
+  const normalizeMultiValue = (value: string | string[]) =>
+    (Array.isArray(value) ? value : [value]).filter(Boolean);
+
+  const handleEducationalStagesChange = (value: string | string[]) => {
+    patch({
+      educationalStages: normalizeMultiValue(value),
+      classrooms: [],
+      studentIds: [],
+    });
+  };
+
+  const handleClassroomsChange = (value: string | string[]) => {
+    patch({
+      classrooms: normalizeMultiValue(value),
+      studentIds: [],
+    });
+  };
+
+  const handleStudentIdsChange = (value: string | string[]) => {
+    patch({ studentIds: normalizeMultiValue(value) });
+  };
+
   const handleSubmit = async () => {
     if (isSubmitting) return;
     setSubmitAttempted(true);
 
     const nextErrors = {
       sentTo: values.sentTo ? '' : t('notifications.validation.sentToRequired'),
+      educationalStages:
+        values.educationalStages.length > 0
+          ? ''
+          : t('notifications.validation.educationalStageRequired'),
       date: values.date ? '' : t('notifications.validation.dateRequired'),
       subjectAr: values.subjectAr.trim() ? '' : t('notifications.validation.subjectArRequired'),
       subjectEn: values.subjectEn.trim() ? '' : t('notifications.validation.subjectEnRequired'),
+      bodyAr: values.bodyAr.trim() ? '' : t('notifications.validation.bodyArRequired'),
+      bodyEn: values.bodyEn.trim() ? '' : t('notifications.validation.bodyEnRequired'),
     };
 
     if (Object.values(nextErrors).some(Boolean)) return;
@@ -120,14 +281,66 @@ export default function ParentsNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.parentNames')}>
+        <FormField
+          label={t('notifications.educationalStageFilter')}
+          required
+          error={errors.educationalStages}
+        >
           <CustomSelect
             isMulti
-            value={values.parentNames}
-            onChange={(value) => patch({ parentNames: Array.isArray(value) ? value : [value] })}
-            options={parentOptions}
-            placeholder={t('notifications.chooseNames')}
-            showSearch={false}
+            value={values.educationalStages}
+            onChange={handleEducationalStagesChange}
+            options={educationalStageOptions}
+            placeholder={
+              isEducationalStagesLoading
+                ? t('common.loading')
+                : t('notifications.educationalStageFilter')
+            }
+            disabled={!schoolBranchId || isEducationalStagesLoading}
+            error={Boolean(errors.educationalStages)}
+          />
+        </FormField>
+
+        <FormField label={t('notifications.classroomFilter')} optional error={errors.classrooms}>
+          <CustomSelect
+            isMulti
+            value={values.classrooms}
+            onChange={handleClassroomsChange}
+            options={classroomOptions}
+            placeholder={
+              !hasSelectedEducationalStages
+                ? t('notifications.selectEducationalStageFirst')
+                : isClassroomsLoading
+                  ? t('common.loading')
+                  : t('notifications.classroomFilter')
+            }
+            disabled={!schoolBranchId || isClassroomsLoading || !hasSelectedEducationalStages}
+            error={Boolean(errors.classrooms)}
+          />
+        </FormField>
+
+        <FormField label={t('notifications.parentNames')} optional error={errors.studentIds}>
+          <CustomSelect
+            isMulti
+            value={values.studentIds}
+            onChange={handleStudentIdsChange}
+            options={studentOptions}
+            placeholder={
+              !hasSelectedEducationalStages
+                ? t('notifications.selectEducationalStageFirst')
+                : !hasSelectedClassrooms
+                  ? t('notifications.selectClassroomFirst')
+                  : isNotificationStudentsLoading
+                    ? t('common.loading')
+                    : t('notifications.chooseNames')
+            }
+            disabled={
+              !schoolBranchId ||
+              !hasSelectedEducationalStages ||
+              !hasSelectedClassrooms ||
+              isNotificationStudentsLoading
+            }
+            error={Boolean(errors.studentIds)}
           />
         </FormField>
 
@@ -166,6 +379,24 @@ export default function ParentsNotificationForm({
           />
         </FormField>
 
+        <FormField label={t('notifications.notificationContentAr')} required error={errors.bodyAr}>
+          <TextArea
+            value={values.bodyAr}
+            onChange={(event) => patch({ bodyAr: event.target.value })}
+            rows={4}
+            placeholder={t('notifications.enterContent')}
+          />
+        </FormField>
+
+        <FormField label={t('notifications.notificationContentEn')} required error={errors.bodyEn}>
+          <TextArea
+            value={values.bodyEn}
+            onChange={(event) => patch({ bodyEn: event.target.value })}
+            rows={4}
+            placeholder={t('notifications.enterContent')}
+          />
+        </FormField>
+
         <FileUpload
           label={t('notifications.attachments')}
           optional
@@ -194,7 +425,11 @@ export default function ParentsNotificationForm({
           <Button
             onClick={handleSubmit}
             variant="primary"
-            disabled={isSubmitting || (submitAttempted && hasValidationErrors)}
+            disabled={
+              isSubmitting ||
+              isNotificationStudentsLoading ||
+              (submitAttempted && hasValidationErrors)
+            }
           >
             {submitLabel}
           </Button>
