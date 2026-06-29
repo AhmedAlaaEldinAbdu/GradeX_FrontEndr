@@ -31,3 +31,25 @@ export const getNotificationRequestErrorMessage = (
 
   return fallbackMessage;
 };
+
+const isNotificationResponseError = (
+  error: unknown
+): error is Partial<SendSchoolNotificationResponse> => {
+  if (!error || typeof error !== 'object') return false;
+
+  return (
+    'validationErrors' in error ||
+    'errors' in error ||
+    'message' in error ||
+    'successMessage' in error ||
+    'isSuccess' in error
+  );
+};
+
+export const getNotificationErrorMessage = (error: unknown, fallbackMessage: string): string => {
+  if (isNotificationResponseError(error)) {
+    return getNotificationResponseErrorMessage(error, fallbackMessage);
+  }
+
+  return getNotificationRequestErrorMessage(error, fallbackMessage);
+};
