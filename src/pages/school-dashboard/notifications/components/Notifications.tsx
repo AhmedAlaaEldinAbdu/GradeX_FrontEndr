@@ -1,15 +1,14 @@
-import { useMemo } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CustomImage from '@/shared/components/CustomImage';
 import MetricCard from '@/shared/components/MetricCard';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
-import BusIcon from '@gradex/assets/icons/Bus.svg';
 import PeopleSolidIcon from '@gradex/assets/icons/PeopleSolid.svg';
 import TeachersYellowIcon from '@gradex/assets/icons/TeachersYellow.svg';
-import { getMockNotifications } from '../notifications.mock';
 import EmployeesTab from './EmployeesTab';
 import ParentsTab from './ParentsTab';
+import type { SchoolNotificationMetrics } from '@/services/api/types/school-notification.types';
 
 function BellIcon({ className = '' }: { className?: string }) {
   return (
@@ -36,35 +35,46 @@ function BellIcon({ className = '' }: { className?: string }) {
 
 export default function Notifications() {
   const { t } = useTranslation();
+  const [notificationMetrics, setNotificationMetrics] = useState<SchoolNotificationMetrics>({
+    totalNotifications: 0,
+    totalTeacherNotifications: 0,
+    totalParentNotifications: 0,
+  });
+
+  const handleMetricsChange = useCallback((metrics: SchoolNotificationMetrics) => {
+    setNotificationMetrics((previousMetrics) => {
+      if (
+        previousMetrics.totalNotifications === metrics.totalNotifications &&
+        previousMetrics.totalTeacherNotifications === metrics.totalTeacherNotifications &&
+        previousMetrics.totalParentNotifications === metrics.totalParentNotifications
+      ) {
+        return previousMetrics;
+      }
+
+      return metrics;
+    });
+  }, []);
 
   const metrics = [
     {
       title: t('notifications.stats.total'),
-      value: 5,
+      value: notificationMetrics.totalNotifications,
       icon: <BellIcon className="h-6 w-6 text-[#0A6FC2]" />,
       iconClassName: 'bg-[#E7F2FB]',
     },
     {
       title: t('notifications.stats.employees'),
-      value: 12,
+      value: notificationMetrics.totalTeacherNotifications,
       icon: <CustomImage src={TeachersYellowIcon} alt="" className="h-6 w-6" />,
       iconClassName: 'bg-[#FDF6E0]',
     },
     {
       title: t('notifications.stats.parents'),
-      value: 3,
+      value: notificationMetrics.totalParentNotifications,
       icon: <CustomImage src={PeopleSolidIcon} alt="" className="h-6 w-6" />,
       iconClassName: 'bg-[#E8F4EE]',
     },
-    {
-      title: t('notifications.stats.drivers'),
-      value: 4,
-      icon: <CustomImage src={BusIcon} alt="" className="h-6 w-6" />,
-      iconClassName: 'bg-[#F2F2F2]',
-    },
   ];
-
-  const mockNotifications = useMemo(() => getMockNotifications(t), [t]);
 
   const tabs: TabItem[] = [
     // {
@@ -75,12 +85,12 @@ export default function Notifications() {
     {
       id: 'employees',
       label: t('notifications.tabs.employees'),
-      content: <EmployeesTab audience="employees" items={mockNotifications.employees} />,
+      content: <EmployeesTab audience="employees" onMetricsChange={handleMetricsChange} />,
     },
     {
       id: 'parents',
       label: t('notifications.tabs.parents'),
-      content: <ParentsTab items={mockNotifications.parents} />,
+      content: <ParentsTab onMetricsChange={handleMetricsChange} />,
     },
   ];
 
