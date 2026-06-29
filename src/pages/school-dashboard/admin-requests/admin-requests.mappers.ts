@@ -6,7 +6,11 @@
  * response schemas are provided, this file is the ONLY place that needs
  * updating — the UI components consume the stable view models.
  */
-import type { JobApplicationRequestDto } from '@/services/api/types/teacher-requests.types';
+import type {
+  JobApplicationRequestDto,
+  TeacherMessageDto,
+} from '@/services/api/types/teacher-requests.types';
+import { type AdminMessageDto, type AdminMessageParty, AdminMessageStatus } from './admin-requests.types';
 import type {
   JobApplicationDto,
   JobApplicationAttachment,
@@ -63,6 +67,65 @@ const mapAttachment = (raw: LooseRecord, index: number): JobApplicationAttachmen
   size: str(firstDefined(raw.size, raw.fileSize)),
   url: (firstDefined(raw.url, raw.path, raw.filePath) as string | undefined) ?? null,
 });
+
+const joinText = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => str(item).trim())
+      .filter(Boolean)
+      .join(' - ');
+  }
+  return str(value).trim();
+};
+
+const REQUEST_PARTY_TYPE_SCHOOL = 1;
+
+const toTeacherProfilePath = (teacherId: unknown): string | null => {
+  const id = str(teacherId).trim();
+  return id ? `/teaching-staff/teachers/${id}` : null;
+};
+
+const mapMessageParty = (
+  dto: TeacherMessageDto,
+  side: 'sender' | 'recipient'
+): AdminMessageParty => {
+  const isSender = side === 'sender';
+  // Based on the provided DTO, the sender is always the teacher and the recipient is the school.
+  // We can make this more robust if the API provides more party information.
+  const isSchool = !isSender;
+
+  return {
+    name: isSender ? dto.teacherName : dto.schoolBranchNameAr,
+    avatarPath: null, // Not available in the DTO
+    profilePath: isSender ? toTeacherProfilePath(dto.teacherId) : null,
+    isSchool,
+  };
+};
+
+const mapAdminMessageStatus = (sendType: number): AdminMessageStatus => {
+  // Mapping sendType to a status. This is a guess and might need adjustment.
+  // 2 could mean "Sent". We'll need to see other values for other statuses.
+  switch (sendType) {
+    case 2:
+      return AdminMessageStatus.Sent;
+    // Add other cases as they become known
+    default:
+      return AdminMessageStatus.Pending;
+  }
+};
+
+export const mapTeacherMessage = (dto: TeacherMessageDto): AdminMessageDto => {
+  return {
+    id: dto.id,
+    sender: mapMessageParty(dto, 'sender'),
+    recipient: mapMessageParty(dto, 'recipient'),
+    status: mapAdminMessageStatus(dto.sendType),
+    stage: joinText(dto.grades) || null,
+    classroom: joinText(dto.classrooms) || null,
+    sentDate: dto.createdAt,
+    messageContent: dto.message,
+  };
+};
 
 /**
  * Map a TeacherRequests job-application DTO to the table/details view model.
