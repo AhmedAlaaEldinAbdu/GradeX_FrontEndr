@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ import IconButton from '@/shared/components/IconButton';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
-import { useToast } from '@/shared/context/ToastContext';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
 import {
@@ -18,19 +18,22 @@ import {
   type AdminMessageDto,
   type AdminMessageParty,
 } from '../admin-requests.types';
-import { MOCK_ADMIN_MESSAGES } from '../admin-requests.mock';
+import {
+  clearCurrentMessage,
+  fetchTeacherMessageById,
+  fetchTeacherMessages,
+} from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import type { TeacherMessagesQueryParams } from '@/services/api/types/teacher-requests.types';
+import { mapTeacherMessage } from '../admin-requests.mappers';
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 
 const PAGE_SIZE = 10;
 
 const STATUS_BADGE_CLASSES: Record<AdminMessageStatus, string> = {
   [AdminMessageStatus.Pending]: 'bg-orange-100 text-orange-700',
+  [AdminMessageStatus.Sent]: 'bg-purple-100 text-purple-700',
   [AdminMessageStatus.Viewed]: 'bg-green-100 text-green-700',
-};
-
-const STATUS_LABEL_KEYS: Record<AdminMessageStatus, string> = {
-  [AdminMessageStatus.Pending]: 'adminRequests.messages.status.pending',
-  [AdminMessageStatus.Viewed]: 'adminRequests.messages.status.viewed',
+  [AdminMessageStatus.Replied]: 'bg-blue-100 text-blue-700',
 };
 
 const formatDate = (value: string) => {
@@ -38,53 +41,127 @@ const formatDate = (value: string) => {
   return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-GB');
 };
 
+const getStatusLabelKey = (status: AdminMessageStatus) => {
+  switch (status) {
+    case AdminMessageStatus.Pending:
+      return 'adminRequests.messages.status.pending';
+    case AdminMessageStatus.Sent:
+      return 'requests.status.sent';
+    case AdminMessageStatus.Viewed:
+      return 'adminRequests.messages.status.viewed';
+    case AdminMessageStatus.Replied:
+      return 'requests.status.replied';
+    default:
+      return 'adminRequests.messages.status.pending';
+  }
+};
+
+const getPartyName = (party: AdminMessageParty, schoolLabel: string) =>
+  party.isSchool ? party.name || schoolLabel : party.name || '-';
+
+const mergeMessageDetails = (
+  summary: AdminMessageDto | null,
+  details: AdminMessageDto | null
+): AdminMessageDto | null => {
+  if (!summary) return details;
+  if (!details) return summary;
+
+  return {
+    ...summary,
+    ...details,
+    sender: { ...summary.sender, ...details.sender },
+    recipient: { ...summary.recipient, ...details.recipient },
+    stage: details.stage ?? summary.stage,
+    classroom: details.classroom ?? summary.classroom,
+    sentDate: details.sentDate || summary.sentDate,
+    messageContent: details.messageContent || summary.messageContent,
+  };
+};
+
 const MessagesTab: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const dispatch = useAppDispatch();
 
-  const [messages, setMessages] = useState<AdminMessageDto[]>(MOCK_ADMIN_MESSAGES);
+  const { messages, currentMessage, messagesPagination, isMessagesLoading, isDetailsLoading } =
+    useAppSelector((state) => state.teacherRequests);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
-  const [selectedMessage, setSelectedMessage] = useState<AdminMessageDto | null>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+  const [selectedMessageSummary, setSelectedMessageSummary] = useState<AdminMessageDto | null>(
+    null
+  );
+
+  const schoolLabel = t('requests.schoolLabel');
+
+  const loadMessages = useCallback(() => {
+    const params: TeacherMessagesQueryParams = {
+      PageNumber: page,
+      PageSize: PAGE_SIZE,
+      SearchTeacherName: searchTerm.trim() || undefined,
+      Date: selectedDate || undefined,
+    };
+    dispatch(fetchTeacherMessages(params));
+  }, [dispatch, page, searchTerm, selectedDate]);
+
+  useEffect(() => {
+    loadMessages();
+  }, [loadMessages]);
+
+  const data = useMemo(() => messages.map(mapTeacherMessage), [messages]);
 
   const filteredData = useMemo(
     () =>
-      messages.filter((row) => {
-        const matchesSearch = !searchTerm || row.sender.name.includes(searchTerm);
+      data.filter((row) => {
         const matchesStatus = !selectedStatus || row.status === Number(selectedStatus);
-        const matchesDate = !selectedDate || row.sentDate === selectedDate;
-        return matchesSearch && matchesStatus && matchesDate;
+        return matchesStatus;
       }),
-    [messages, searchTerm, selectedStatus, selectedDate]
+    [data, selectedStatus]
   );
 
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const pageData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const selectedMessageDetails = useMemo(() => {
+    if (!selectedMessageId || !currentMessage) {
+      return null;
+    }
 
-  const handleMarkViewed = (row: AdminMessageDto) => {
-    setMessages((prev) =>
-      prev.map((item) =>
-        item.id === row.id ? { ...item, status: AdminMessageStatus.Viewed } : item
-      )
-    );
-    showToast({ message: t('adminRequests.messages.toasts.markedViewed'), type: 'success' });
+    const mappedMessage = mapTeacherMessage(currentMessage);
+    return mappedMessage.id === selectedMessageId ? mappedMessage : null;
+  }, [currentMessage, selectedMessageId]);
+
+  const selectedMessage = useMemo(
+    () => mergeMessageDetails(selectedMessageSummary, selectedMessageDetails),
+    [selectedMessageSummary, selectedMessageDetails]
+  );
+
+  const handleOpenMessage = (row: AdminMessageDto) => {
+    setSelectedMessageId(row.id);
+    setSelectedMessageSummary(row);
+    dispatch(fetchTeacherMessageById(row.id));
+  };
+
+  const handleCloseMessage = () => {
+    setSelectedMessageId(null);
+    setSelectedMessageSummary(null);
+    dispatch(clearCurrentMessage());
   };
 
   const renderPartyCell = (party: AdminMessageParty) => {
     if (party.isSchool) {
       return (
         <div className="flex w-full items-center justify-center">
-          <span className="text-sm font-medium text-[#0E1F1F]">{party.name}</span>
+          <span className="text-sm font-medium text-[#0E1F1F]">
+            {getPartyName(party, schoolLabel)}
+          </span>
         </div>
       );
     }
 
     return (
       <UserAvatarName
-        name={party.name}
+        name={getPartyName(party, schoolLabel)}
         avatarSrc={party.avatarPath}
         align="between"
         onView={party.profilePath ? () => navigate(party.profilePath as string) : undefined}
@@ -111,7 +188,7 @@ const MessagesTab: React.FC = () => {
             variant="darkBlue"
             ariaLabel={t('common.view')}
             className="h-10 w-10"
-            onClick={() => setSelectedMessage(row)}
+            onClick={() => handleOpenMessage(row)}
           >
             <CustomImage src={EyeDarkBlueIcon} alt={t('common.view')} className="h-6 w-6" />
           </IconButton>
@@ -138,7 +215,7 @@ const MessagesTab: React.FC = () => {
         <span
           className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${STATUS_BADGE_CLASSES[row.status]}`}
         >
-          {t(STATUS_LABEL_KEYS[row.status])}
+          {t(getStatusLabelKey(row.status))}
         </span>
       ),
       headerClassName: 'min-w-[150px] text-center',
@@ -171,22 +248,24 @@ const MessagesTab: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        const canMarkViewed = row.status === AdminMessageStatus.Pending;
+        const canMarkViewed = row.status === AdminMessageStatus.Sent;
         return (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center gap-2">
             <Button
               variant="outline"
               size="sm"
               className="!rounded-2xl px-6"
               disabled={!canMarkViewed}
-              onClick={() => handleMarkViewed(row)}
+              onClick={() => {
+                // handleMarkViewed(row);
+              }}
             >
               {t('adminRequests.messages.actions.markViewed')}
             </Button>
           </div>
         );
       },
-      headerClassName: 'min-w-[140px] text-center',
+      headerClassName: 'min-w-[240px] text-center',
       className: 'text-center',
     },
   ];
@@ -222,8 +301,16 @@ const MessagesTab: React.FC = () => {
               label: t('adminRequests.messages.status.pending'),
             },
             {
+              value: String(AdminMessageStatus.Sent),
+              label: t('requests.status.sent'),
+            },
+            {
               value: String(AdminMessageStatus.Viewed),
               label: t('adminRequests.messages.status.viewed'),
+            },
+            {
+              value: String(AdminMessageStatus.Replied),
+              label: t('requests.status.replied'),
             },
           ]}
           placeholder={t('adminRequests.messages.filters.status')}
@@ -261,23 +348,29 @@ const MessagesTab: React.FC = () => {
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={pageData}
+        data={filteredData}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
-        pagination={{ page, limit: PAGE_SIZE, total: filteredData.length, totalPages }}
+        pagination={{
+          page: messagesPagination.page,
+          limit: messagesPagination.limit,
+          total: messagesPagination.total,
+          totalPages: messagesPagination.totalPages,
+        }}
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
         emptyMessage="adminRequests.empty"
+        isLoading={isMessagesLoading}
         t={t}
       />
 
       <MessageDetailsPopup
-        isOpen={Boolean(selectedMessage)}
-        onClose={() => setSelectedMessage(null)}
+        isOpen={Boolean(selectedMessageId)}
+        onClose={handleCloseMessage}
         message={selectedMessage}
-        onMarkViewed={handleMarkViewed}
+        isLoading={isDetailsLoading && !selectedMessageDetails}
       />
     </Card>
   );
