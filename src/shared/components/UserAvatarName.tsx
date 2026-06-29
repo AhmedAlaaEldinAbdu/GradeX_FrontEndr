@@ -74,14 +74,14 @@ export default function UserAvatarName({
       ) : (
         ''
       )}
-      {onView && !hasViewCount && (
+      {onView && (
         <IconButton
           variant="blue"
           ariaLabel={label}
-          onClick={onView}
-          className={`${sizeClasses.button} shrink-0`}
+          onClick={!hasViewCount ? onView : undefined}
+          className={`${sizeClasses.button} shrink-0 ${hasViewCount ? 'invisible' : ''}`}
         >
-          <CustomImage src={EyeStyledIcon} alt={label} className={sizeClasses.icon} />
+          <CustomImage src={EyeStyledIcon} alt={label} className={`${sizeClasses.icon} `} />
         </IconButton>
       )}
     </div>
