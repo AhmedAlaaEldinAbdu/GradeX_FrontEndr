@@ -9,11 +9,14 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import { schoolNotificationApiService } from '@/services/api/school-notification/school-notification.service';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import {
+  fetchSchoolNotifications,
+  resetSchoolNotifications,
+} from '@/redux/features/schoolNotificationsSlice';
 import {
   SchoolNotificationTarget,
   type SchoolNotificationItem,
-  type SchoolNotificationMetrics,
   type SchoolNotificationRecipient,
 } from '@/services/api/types/school-notification.types';
 import type { Audience } from '../notifications.mock';
@@ -21,7 +24,6 @@ import type { Audience } from '../notifications.mock';
 interface EmployeesTabProps {
   audience: Audience;
   items?: unknown[];
-  onMetricsChange?: (metrics: SchoolNotificationMetrics) => void;
 }
 
 const PAGE_SIZE = 10;
@@ -94,81 +96,34 @@ const getRecipientCount = (row: SchoolNotificationItem, audience: Audience) => {
   return row.totalTeachers ?? row.teachers?.length ?? 0;
 };
 
-export default function EmployeesTab({ audience, onMetricsChange }: EmployeesTabProps) {
+export default function EmployeesTab({ audience }: EmployeesTabProps) {
   const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
   const schoolBranchId = getCurrentSchoolBranchId() || '';
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
-  const [notifications, setNotifications] = useState<SchoolNotificationItem[]>([]);
-  const [pagination, setPagination] = useState({
-    pageIndex: 1,
-    totalPages: 0,
-    totalItems: 0,
-    pageSize: PAGE_SIZE,
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    items: notifications,
+    pagination,
+    isLoading,
+  } = useAppSelector((state) => state.schoolNotifications.employeeNotifications);
 
   useEffect(() => {
     if (!schoolBranchId) {
-      setNotifications([]);
-      setPagination({
-        pageIndex: 1,
-        totalPages: 0,
-        totalItems: 0,
-        pageSize: PAGE_SIZE,
-      });
+      dispatch(resetSchoolNotifications());
       return;
     }
 
-    let isActive = true;
-
-    const fetchEmployeeNotifications = async () => {
-      setIsLoading(true);
-
-      try {
-        const response = await schoolNotificationApiService.getSchoolNotifications({
-          SchoolBranchId: schoolBranchId,
-          Target: SchoolNotificationTarget.Employees,
-          PageIndex: page,
-          PageSize: PAGE_SIZE,
-        });
-
-        if (!isActive) return;
-
-        setNotifications(response.data?.items ?? []);
-        onMetricsChange?.({
-          totalNotifications: response.data?.totalNotifications ?? 0,
-          totalTeacherNotifications: response.data?.totalTeacherNotifications ?? 0,
-          totalParentNotifications: response.data?.totalParentNotifications ?? 0,
-        });
-        setPagination({
-          pageIndex: response.data?.pageIndex ?? page,
-          totalPages: response.data?.totalPages ?? 0,
-          totalItems: response.data?.totalItems ?? 0,
-          pageSize: response.data?.pageSize ?? PAGE_SIZE,
-        });
-      } catch {
-        if (!isActive) return;
-
-        setNotifications([]);
-        setPagination({
-          pageIndex: page,
-          totalPages: 0,
-          totalItems: 0,
-          pageSize: PAGE_SIZE,
-        });
-      } finally {
-        if (isActive) setIsLoading(false);
-      }
-    };
-
-    void fetchEmployeeNotifications();
-
-    return () => {
-      isActive = false;
-    };
-  }, [onMetricsChange, page, schoolBranchId]);
+    dispatch(
+      fetchSchoolNotifications({
+        SchoolBranchId: schoolBranchId,
+        Target: SchoolNotificationTarget.Employees,
+        PageIndex: page,
+        PageSize: PAGE_SIZE,
+      })
+    );
+  }, [dispatch, page, schoolBranchId]);
 
   useEffect(() => {
     if (

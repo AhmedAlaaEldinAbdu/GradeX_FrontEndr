@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CustomImage from '@/shared/components/CustomImage';
@@ -8,7 +7,7 @@ import PeopleSolidIcon from '@gradex/assets/icons/PeopleSolid.svg';
 import TeachersYellowIcon from '@gradex/assets/icons/TeachersYellow.svg';
 import EmployeesTab from './EmployeesTab';
 import ParentsTab from './ParentsTab';
-import type { SchoolNotificationMetrics } from '@/services/api/types/school-notification.types';
+import { useAppSelector } from '@/hooks/useRedux';
 
 function BellIcon({ className = '' }: { className?: string }) {
   return (
@@ -35,25 +34,7 @@ function BellIcon({ className = '' }: { className?: string }) {
 
 export default function Notifications() {
   const { t } = useTranslation();
-  const [notificationMetrics, setNotificationMetrics] = useState<SchoolNotificationMetrics>({
-    totalNotifications: 0,
-    totalTeacherNotifications: 0,
-    totalParentNotifications: 0,
-  });
-
-  const handleMetricsChange = useCallback((metrics: SchoolNotificationMetrics) => {
-    setNotificationMetrics((previousMetrics) => {
-      if (
-        previousMetrics.totalNotifications === metrics.totalNotifications &&
-        previousMetrics.totalTeacherNotifications === metrics.totalTeacherNotifications &&
-        previousMetrics.totalParentNotifications === metrics.totalParentNotifications
-      ) {
-        return previousMetrics;
-      }
-
-      return metrics;
-    });
-  }, []);
+  const notificationMetrics = useAppSelector((state) => state.schoolNotifications.metrics);
 
   const metrics = [
     {
@@ -85,12 +66,12 @@ export default function Notifications() {
     {
       id: 'employees',
       label: t('notifications.tabs.employees'),
-      content: <EmployeesTab audience="employees" onMetricsChange={handleMetricsChange} />,
+      content: <EmployeesTab audience="employees" />,
     },
     {
       id: 'parents',
       label: t('notifications.tabs.parents'),
-      content: <ParentsTab onMetricsChange={handleMetricsChange} />,
+      content: <ParentsTab />,
     },
   ];
 
