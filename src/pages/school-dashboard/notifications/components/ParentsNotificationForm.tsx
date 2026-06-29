@@ -11,8 +11,11 @@ import TextArea from '@/shared/components/TextArea';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
-import { studentsApiService } from '@/services/api/students/students.service';
-import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
+import {
+  clearNotificationStudents,
+  fetchNotificationStudents,
+} from '@/redux/features/schoolNotificationsSlice';
+import { getStudentFullName } from '@/services/api/types/students.types';
 
 export type ParentsNotificationFormValues = {
   sentTo: string;
@@ -67,8 +70,12 @@ export default function ParentsNotificationForm({
   const isEducationalStagesLoading = useAppSelector((state) => state.educationalStages.isLoading);
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
   const isClassroomsLoading = useAppSelector((state) => state.classrooms.isLoading);
-  const [notificationStudents, setNotificationStudents] = useState<StudentDto[]>([]);
-  const [isNotificationStudentsLoading, setIsNotificationStudentsLoading] = useState(false);
+  const notificationStudents = useAppSelector(
+    (state) => state.schoolNotifications.notificationStudents
+  );
+  const isNotificationStudentsLoading = useAppSelector(
+    (state) => state.schoolNotifications.isLoadingNotificationStudents
+  );
 
   useEffect(() => {
     if (!schoolBranchId) return;
@@ -128,52 +135,18 @@ export default function ParentsNotificationForm({
 
   useEffect(() => {
     if (!schoolBranchId || !hasSelectedEducationalStages || !hasSelectedClassrooms) {
-      setNotificationStudents([]);
-      setIsNotificationStudentsLoading(false);
+      dispatch(clearNotificationStudents());
       return;
     }
 
-    let isActive = true;
-
-    const fetchNotificationStudents = async () => {
-      setIsNotificationStudentsLoading(true);
-
-      try {
-        const responses = await Promise.all(
-          values.classrooms.map((classroomId) =>
-            studentsApiService.getStudents({
-              PageIndex: 1,
-              PageSize: 10000,
-              SchoolBranchId: schoolBranchId,
-              SchoolBrancheId: schoolBranchId,
-              ClassroomId: classroomId,
-            })
-          )
-        );
-
-        if (!isActive) return;
-
-        const studentsById = new Map<string, StudentDto>();
-        responses
-          .flatMap((response) => response.data?.studentDto ?? [])
-          .forEach((student) => {
-            if (student.id) studentsById.set(student.id, student);
-          });
-
-        setNotificationStudents(Array.from(studentsById.values()));
-      } catch {
-        if (isActive) setNotificationStudents([]);
-      } finally {
-        if (isActive) setIsNotificationStudentsLoading(false);
-      }
-    };
-
-    void fetchNotificationStudents();
-
-    return () => {
-      isActive = false;
-    };
-  }, [hasSelectedClassrooms, hasSelectedEducationalStages, schoolBranchId, values.classrooms]);
+    dispatch(fetchNotificationStudents({ schoolBranchId, classroomIds: values.classrooms }));
+  }, [
+    dispatch,
+    hasSelectedClassrooms,
+    hasSelectedEducationalStages,
+    schoolBranchId,
+    values.classrooms,
+  ]);
 
   const studentOptions = useMemo<CustomSelectOption[]>(
     () =>

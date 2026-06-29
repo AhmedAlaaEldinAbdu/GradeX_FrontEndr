@@ -9,16 +9,15 @@ import PageHeader from '@/shared/components/PageHeader';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import ParentsNotificationForm from './components/ParentsNotificationForm';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import { schoolNotificationApiService } from '@/services/api/school-notification/school-notification.service';
 import { SchoolNotificationTarget } from '@/services/api/types/school-notification.types';
-import {
-  getNotificationRequestErrorMessage,
-  getNotificationResponseErrorMessage,
-} from './utils/notification-error-message';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { sendSchoolNotification } from '@/redux/features/schoolNotificationsSlice';
+import { getNotificationErrorMessage } from './utils/notification-error-message';
 
 export default function AddParentsNotificationPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const schoolBranchId = getCurrentSchoolBranchId() || '';
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;
@@ -55,28 +54,20 @@ export default function AddParentsNotificationPage() {
             }
 
             try {
-              const response = await schoolNotificationApiService.sendSchoolNotification({
-                schoolBranchId,
-                targets: SchoolNotificationTarget.Parents,
-                titleAr: values.subjectAr.trim(),
-                titleEn: values.subjectEn.trim(),
-                bodyAr: values.bodyAr.trim(),
-                bodyEn: values.bodyEn.trim(),
-                gradeIds: values.educationalStages,
-                classroomIds: values.classrooms,
-                studentIds: values.studentIds,
-                attachments: values.attachments,
-              });
-
-              if (response?.isSuccess === false) {
-                setShowPopupMessage({
-                  show: true,
-                  type: 'error',
-                  message: getNotificationResponseErrorMessage(response, t('common.errorOccurred')),
-                  isRaw: true,
-                });
-                return;
-              }
+              await dispatch(
+                sendSchoolNotification({
+                  schoolBranchId,
+                  targets: SchoolNotificationTarget.Parents,
+                  titleAr: values.subjectAr.trim(),
+                  titleEn: values.subjectEn.trim(),
+                  bodyAr: values.bodyAr.trim(),
+                  bodyEn: values.bodyEn.trim(),
+                  gradeIds: values.educationalStages,
+                  classroomIds: values.classrooms,
+                  studentIds: values.studentIds,
+                  attachments: values.attachments,
+                })
+              ).unwrap();
 
               setShowPopupMessage({
                 show: true,
@@ -88,7 +79,7 @@ export default function AddParentsNotificationPage() {
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: getNotificationRequestErrorMessage(error, t('common.errorOccurred')),
+                message: getNotificationErrorMessage(error, t('common.errorOccurred')),
                 isRaw: true,
               });
             }
