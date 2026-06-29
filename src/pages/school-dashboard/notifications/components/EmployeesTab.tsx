@@ -1,24 +1,31 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
-import IconButton from '@/shared/components/IconButton';
 import UserAvatarName from '@/shared/components/UserAvatarName';
-import NotificationsMutedIcon from '@gradex/assets/icons/NotificationsMuted.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
-import type { Audience, NotificationItem } from '../notifications.mock';
-import { useNavigate } from 'react-router-dom';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { schoolNotificationApiService } from '@/services/api/school-notification/school-notification.service';
+import {
+  SchoolNotificationTarget,
+  type SchoolNotificationItem,
+  type SchoolNotificationMetrics,
+  type SchoolNotificationRecipient,
+} from '@/services/api/types/school-notification.types';
+import type { Audience } from '../notifications.mock';
 
 interface EmployeesTabProps {
   audience: Audience;
-  items: NotificationItem[];
+  items?: unknown[];
+  onMetricsChange?: (metrics: SchoolNotificationMetrics) => void;
 }
 
-const PAGE_SIZE = 7;
+const PAGE_SIZE = 10;
+const FILE_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/api\/?$/, '');
 
 const RECIPIENT_HEADER_KEYS: Record<Audience, string> = {
   drivers: 'notifications.table.driverName',
@@ -35,67 +42,192 @@ const SEARCH_PLACEHOLDER_KEYS: Record<Audience, string> = {
 const getSingleValue = (value: string | string[]) =>
   Array.isArray(value) ? (value[0] ?? '') : value;
 
-function EmptyNotifications() {
-  const { t } = useTranslation();
+const getDateKey = (value: string) => value.split('T')[0] ?? '';
 
-  return (
-    <Card
-      padding="none"
-      className="flex min-h-[360px] items-center justify-center rounded-3xl px-6 py-12"
-    >
-      <div className="flex max-w-xl flex-col items-center text-center">
-        <CustomImage
-          src={NotificationsMutedIcon}
-          alt=""
-          className="mb-7 h-[150px] w-[150px] mix-blend-luminosity"
-        />
-        <p className="max-w-[34rem] text-center text-base font-normal leading-7 text-[#3A3A3A]">
-          {t('notifications.emptyStateDescription')}
-        </p>
-      </div>
-    </Card>
+const getDateFromKey = (dateKey: string) => {
+  const [year, month, day] = dateKey.split('-').map(Number);
+
+  if (!year || !month || !day) {
+    return null;
+  }
+
+  return new Date(year, month - 1, day);
+};
+
+const formatNotificationDate = (value: string, language: string) => {
+  const dateKey = getDateKey(value);
+  const date = getDateFromKey(dateKey);
+
+  if (!date) {
+    return '-';
+  }
+
+  return new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB').format(date);
+};
+
+const getUniqueDateOptions = (items: SchoolNotificationItem[], language: string) =>
+  Array.from(new Set(items.map((item) => getDateKey(item.created)).filter(Boolean))).map(
+    (dateKey) => ({
+      value: dateKey,
+      label: formatNotificationDate(dateKey, language),
+    })
   );
-}
 
-export default function EmployeesTab({ audience, items }: EmployeesTabProps) {
-  const { t } = useTranslation();
+const resolveFileUrl = (path?: string | null) => {
+  if (!path) return null;
+  return /^https?:\/\//i.test(path) ? path : `${FILE_BASE_URL}/${path.replace(/^\/+/, '')}`;
+};
+
+const getLocalizedText = (arValue: string, enValue: string, language: string) =>
+  (language === 'ar' ? arValue : enValue) || arValue || enValue || '-';
+
+const getRecipients = (
+  row: SchoolNotificationItem,
+  audience: Audience
+): SchoolNotificationRecipient[] => {
+  if (audience === 'parents') return row.parents ?? [];
+  return row.teachers ?? [];
+};
+
+const getRecipientCount = (row: SchoolNotificationItem, audience: Audience) => {
+  if (audience === 'parents') return row.totalParents ?? row.parents?.length ?? 0;
+  return row.totalTeachers ?? row.teachers?.length ?? 0;
+};
+
+export default function EmployeesTab({ audience, onMetricsChange }: EmployeesTabProps) {
+  const { t, i18n } = useTranslation();
+  const schoolBranchId = getCurrentSchoolBranchId() || '';
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
-  const navigate = useNavigate();
+  const [notifications, setNotifications] = useState<SchoolNotificationItem[]>([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 1,
+    totalPages: 0,
+    totalItems: 0,
+    pageSize: PAGE_SIZE,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!schoolBranchId) {
+      setNotifications([]);
+      setPagination({
+        pageIndex: 1,
+        totalPages: 0,
+        totalItems: 0,
+        pageSize: PAGE_SIZE,
+      });
+      return;
+    }
+
+    let isActive = true;
+
+    const fetchEmployeeNotifications = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await schoolNotificationApiService.getSchoolNotifications({
+          SchoolBranchId: schoolBranchId,
+          Target: SchoolNotificationTarget.Employees,
+          PageIndex: page,
+          PageSize: PAGE_SIZE,
+        });
+
+        if (!isActive) return;
+
+        setNotifications(response.data?.items ?? []);
+        onMetricsChange?.({
+          totalNotifications: response.data?.totalNotifications ?? 0,
+          totalTeacherNotifications: response.data?.totalTeacherNotifications ?? 0,
+          totalParentNotifications: response.data?.totalParentNotifications ?? 0,
+        });
+        setPagination({
+          pageIndex: response.data?.pageIndex ?? page,
+          totalPages: response.data?.totalPages ?? 0,
+          totalItems: response.data?.totalItems ?? 0,
+          pageSize: response.data?.pageSize ?? PAGE_SIZE,
+        });
+      } catch {
+        if (!isActive) return;
+
+        setNotifications([]);
+        setPagination({
+          pageIndex: page,
+          totalPages: 0,
+          totalItems: 0,
+          pageSize: PAGE_SIZE,
+        });
+      } finally {
+        if (isActive) setIsLoading(false);
+      }
+    };
+
+    void fetchEmployeeNotifications();
+
+    return () => {
+      isActive = false;
+    };
+  }, [onMetricsChange, page, schoolBranchId]);
+
+  useEffect(() => {
+    if (
+      selectedDate &&
+      notifications.length > 0 &&
+      notifications.every((item) => getDateKey(item.created) !== selectedDate)
+    ) {
+      setSelectedDate('');
+    }
+  }, [notifications, selectedDate]);
 
   const filteredData = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    return items.filter((item) => {
+    return notifications.filter((item) => {
+      const recipientText = getRecipients(item, audience)
+        .map((recipient) => recipient.fullName)
+        .join(' ')
+        .toLowerCase();
+      const title = getLocalizedText(item.titleAr, item.titleEn, i18n.language).toLowerCase();
+      const body = getLocalizedText(item.bodyAr, item.bodyEn, i18n.language).toLowerCase();
       const matchesSearch =
         !normalizedSearch ||
-        item.recipientName.toLowerCase().includes(normalizedSearch) ||
-        item.subject.toLowerCase().includes(normalizedSearch);
-      const matchesDate = !selectedDate || item.date === selectedDate;
+        recipientText.includes(normalizedSearch) ||
+        title.includes(normalizedSearch) ||
+        body.includes(normalizedSearch);
+      const matchesDate = !selectedDate || getDateKey(item.created) === selectedDate;
 
       return matchesSearch && matchesDate;
     });
-  }, [items, searchTerm, selectedDate]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const pageData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  }, [audience, i18n.language, notifications, searchTerm, selectedDate]);
 
   const dateOptions = useMemo(
-    () =>
-      Array.from(new Set(items.map((item) => item.date))).map((date) => ({
-        value: date,
-        label: date,
-      })),
-    [items]
+    () => getUniqueDateOptions(notifications, i18n.language),
+    [i18n.language, notifications]
   );
 
-  const columns: DataTableColumn<NotificationItem>[] = [
+  const hasActiveClientFilter = Boolean(searchTerm.trim() || selectedDate);
+  const tableData = hasActiveClientFilter ? filteredData : notifications;
+  const tablePagination = hasActiveClientFilter
+    ? {
+        page: 1,
+        limit: PAGE_SIZE,
+        total: tableData.length,
+        totalPages: Math.max(1, Math.ceil(tableData.length / PAGE_SIZE)),
+      }
+    : {
+        page: pagination.pageIndex,
+        limit: pagination.pageSize || PAGE_SIZE,
+        total: pagination.totalItems,
+        totalPages: Math.max(1, pagination.totalPages),
+      };
+
+  const columns: DataTableColumn<SchoolNotificationItem>[] = [
     {
       header: '#',
       accessor: (_row, index) => (
         <span className="font-medium text-gray-500">
-          {(index ?? 0) + 1 + (page - 1) * PAGE_SIZE}
+          {(index ?? 0) + 1 + (pagination.pageIndex - 1) * (pagination.pageSize || PAGE_SIZE)}
         </span>
       ),
       headerClassName: 'w-[60px] text-center',
@@ -103,68 +235,56 @@ export default function EmployeesTab({ audience, items }: EmployeesTabProps) {
     },
     {
       header: RECIPIENT_HEADER_KEYS[audience],
-      accessor: (row) => (
-        <UserAvatarName
-          name={row.recipientName}
-          avatarSrc={ProfileImage}
-          align="center"
-          className="min-w-[220px]"
-          viewCount={row.viewerCount}
-          onView={(e) => {
-            e.stopPropagation();
-            navigate(`/teaching-staff/teachers/${row.id}`);
-          }}
-        />
-      ),
+      accessor: (row) => {
+        const recipients = getRecipients(row, audience);
+        const recipientCount = getRecipientCount(row, audience);
+        const additionalNamesCount = recipientCount > 1 ? recipientCount - 1 : undefined;
+        const firstRecipient = recipients[0];
+
+        return (
+          <UserAvatarName
+            name={firstRecipient?.fullName ?? '-'}
+            avatarSrc={resolveFileUrl(firstRecipient?.imagePath) ?? ProfileImage}
+            align="center"
+            className="min-w-[220px]"
+            viewCount={additionalNamesCount}
+          />
+        );
+      },
       headerClassName: 'min-w-[240px] text-center',
       className: 'text-center',
     },
     {
       header: 'notifications.table.messageSubject',
       accessor: (row) => (
-        <span className="block max-w-[260px] truncate text-base text-[#646969]">{row.subject}</span>
+        <span className="block max-w-[260px] truncate text-base text-[#646969]">
+          {getLocalizedText(row.titleAr, row.titleEn, i18n.language)}
+        </span>
       ),
       headerClassName: 'min-w-[280px] text-center',
       className: 'text-center',
     },
     {
       header: 'notifications.date',
-      accessor: (row) => <span className="text-[#646969]">{row.date}</span>,
+      accessor: (row) => (
+        <span className="text-[#646969]">{formatNotificationDate(row.created, i18n.language)}</span>
+      ),
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
       header: 'notifications.attachments',
       accessor: (row) =>
-        row.hasAttachment ? (
-          <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-8" />
+        row.attachments?.length ? (
+          <CustomImage
+            src={PdfIcon}
+            alt={row.attachments.map((attachment) => attachment.fileName).join(', ')}
+            className="h-10 w-8"
+          />
         ) : (
           <span className="text-base text-[#646969]">{t('notifications.noAttachment')}</span>
         ),
       headerClassName: 'min-w-[140px] text-center',
-      className: 'text-center',
-    },
-    {
-      header: 'common.actions',
-      accessor: () => (
-        <div className="flex items-center justify-center gap-4">
-          <IconButton
-            status="edit"
-            variant="success"
-            ariaLabel={t('actions.edit')}
-            className="h-11 w-11 shadow-none"
-            imgClassName="h-5 w-5"
-          />
-          <IconButton
-            status="delete"
-            variant="danger"
-            ariaLabel={t('actions.delete')}
-            className="h-11 w-11 shadow-none"
-            imgClassName="h-5 w-5"
-          />
-        </div>
-      ),
-      headerClassName: 'min-w-[170px] text-center',
       className: 'text-center',
     },
   ];
@@ -208,21 +328,18 @@ export default function EmployeesTab({ audience, items }: EmployeesTabProps) {
     setPage(1);
   };
 
-  if (items.length === 0) {
-    return <EmptyNotifications />;
-  }
-
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={pageData}
+        data={tableData}
         columns={columns}
         keyExtractor={(row) => `${audience}-${row.id}`}
         filters={filterConfigs}
         showFilters={true}
-        pagination={{ page, limit: PAGE_SIZE, total: filteredData.length, totalPages }}
+        pagination={tablePagination}
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
+        isLoading={isLoading}
         emptyMessage={t('notifications.emptyStateDescription')}
         t={t}
       />

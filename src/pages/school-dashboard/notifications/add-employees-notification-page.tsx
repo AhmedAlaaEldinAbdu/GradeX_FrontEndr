@@ -9,6 +9,12 @@ import PageHeader from '@/shared/components/PageHeader';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import EmployeesNotificationForm from './components/EmployeesNotificationForm';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { schoolNotificationApiService } from '@/services/api/school-notification/school-notification.service';
+import { SchoolNotificationTarget } from '@/services/api/types/school-notification.types';
+import {
+  getNotificationRequestErrorMessage,
+  getNotificationResponseErrorMessage,
+} from './utils/notification-error-message';
 
 export default function AddEmployeesNotificationPage() {
   const { t } = useTranslation();
@@ -18,7 +24,8 @@ export default function AddEmployeesNotificationPage() {
     show: boolean;
     type: 'success' | 'error';
     message: string;
-  }>({ show: false, type: 'success', message: '' });
+    isRaw: boolean;
+  }>({ show: false, type: 'success', message: '', isRaw: false });
 
   const breadcrumbItems = [
     { label: t('sidebar.systemSettings') },
@@ -36,12 +43,53 @@ export default function AddEmployeesNotificationPage() {
           mode="add"
           schoolBranchId={schoolBranchId}
           onCancel={() => navigate('/settings/notifications?tab=employees')}
-          onSubmit={async () => {
-            setShowPopupMessage({
-              show: true,
-              type: 'success',
-              message: t('notifications.notificationSent'),
-            });
+          onSubmit={async (values) => {
+            if (!schoolBranchId) {
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: 'common.errorOccurred',
+                isRaw: false,
+              });
+              return;
+            }
+
+            try {
+              const response = await schoolNotificationApiService.sendSchoolNotification({
+                schoolBranchId,
+                targets: SchoolNotificationTarget.Employees,
+                titleAr: values.subjectAr.trim(),
+                titleEn: values.subjectEn.trim(),
+                bodyAr: values.bodyAr.trim(),
+                bodyEn: values.bodyEn.trim(),
+                teacherUserIds: values.employeeNames,
+                attachments: values.attachments,
+              });
+
+              if (response?.isSuccess === false) {
+                setShowPopupMessage({
+                  show: true,
+                  type: 'error',
+                  message: getNotificationResponseErrorMessage(response, t('common.errorOccurred')),
+                  isRaw: true,
+                });
+                return;
+              }
+
+              setShowPopupMessage({
+                show: true,
+                type: 'success',
+                message: 'notifications.notificationSent',
+                isRaw: false,
+              });
+            } catch (error) {
+              setShowPopupMessage({
+                show: true,
+                type: 'error',
+                message: getNotificationRequestErrorMessage(error, t('common.errorOccurred')),
+                isRaw: true,
+              });
+            }
           }}
         />
       </div>
@@ -51,8 +99,9 @@ export default function AddEmployeesNotificationPage() {
         type={showPopupMessage.type}
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         message={showPopupMessage.message}
+        isMessageRaw={showPopupMessage.isRaw}
         onClose={() => {
-          setShowPopupMessage({ show: false, type: 'success', message: '' });
+          setShowPopupMessage({ show: false, type: 'success', message: '', isRaw: false });
           if (showPopupMessage.type === 'success') {
             navigate('/settings/notifications?tab=employees');
           }

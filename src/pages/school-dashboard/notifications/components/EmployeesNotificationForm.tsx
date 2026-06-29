@@ -9,18 +9,16 @@ import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import TextArea from '@/shared/components/TextArea';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
-import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 
 export type EmployeesNotificationFormValues = {
   sentTo: string;
   employeeNames: string[];
-  educationalStages: string[];
-  classrooms: string[];
   date: string;
   subjectAr: string;
   subjectEn: string;
+  bodyAr: string;
+  bodyEn: string;
   attachments: File[];
 };
 
@@ -33,7 +31,10 @@ type EmployeesNotificationFormProps = {
 };
 
 type EmployeesNotificationFormErrors = Partial<
-  Record<'sentTo' | 'educationalStages' | 'date' | 'subjectAr' | 'subjectEn', string>
+  Record<
+    'sentTo' | 'employeeNames' | 'date' | 'subjectAr' | 'subjectEn' | 'bodyAr' | 'bodyEn',
+    string
+  >
 >;
 
 export default function EmployeesNotificationForm({
@@ -43,30 +44,17 @@ export default function EmployeesNotificationForm({
   onCancel,
   onSubmit,
 }: EmployeesNotificationFormProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const currentLang = i18n.language as 'ar' | 'en';
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const teachers = useAppSelector((state) => state.teachers.teachers);
   const isEmployeesLoading = useAppSelector((state) => state.teachers.isLoading);
-  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
-  const isEducationalStagesLoading = useAppSelector((state) => state.educationalStages.isLoading);
-  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
-  const isClassroomsLoading = useAppSelector((state) => state.classrooms.isLoading);
 
   useEffect(() => {
     if (!schoolBranchId) return;
 
-    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
-    dispatch(
-      fetchClassrooms({
-        page: 1,
-        limit: 10000,
-        filters: { schoolBranchId },
-      })
-    );
     dispatch(
       fetchTeachers({
         page: 1,
@@ -80,47 +68,21 @@ export default function EmployeesNotificationForm({
     () =>
       teachers
         .map((teacher) => ({
-          value: teacher.id,
+          value: teacher.userId,
           label: teacher.fullName,
         }))
         .filter((option) => Boolean(option.value && option.label)),
     [teachers]
   );
 
-  const educationalStageOptions = useMemo<CustomSelectOption[]>(
-    () =>
-      educationalStages
-        .map((stage) => ({
-          value: stage.id,
-          label:
-            (currentLang === 'ar' ? stage.nameAr : stage.nameEn) || stage.nameAr || stage.nameEn,
-        }))
-        .filter((option) => Boolean(option.value && option.label)),
-    [currentLang, educationalStages]
-  );
-
-  const classroomOptions = useMemo<CustomSelectOption[]>(
-    () =>
-      classrooms
-        .map((classroom) => ({
-          value: classroom.id,
-          label:
-            (currentLang === 'ar' ? classroom.name : classroom.nameEn) ||
-            classroom.name ||
-            classroom.nameEn,
-        }))
-        .filter((option) => Boolean(option.value && option.label)),
-    [classrooms, currentLang]
-  );
-
   const [values, setValues] = useState<EmployeesNotificationFormValues>({
     sentTo: initialValues?.sentTo ?? 'employees',
     employeeNames: initialValues?.employeeNames ?? [],
-    educationalStages: initialValues?.educationalStages ?? [],
-    classrooms: initialValues?.classrooms ?? [],
     date: initialValues?.date ?? '',
     subjectAr: initialValues?.subjectAr ?? '',
     subjectEn: initialValues?.subjectEn ?? '',
+    bodyAr: initialValues?.bodyAr ?? '',
+    bodyEn: initialValues?.bodyEn ?? '',
     attachments: initialValues?.attachments ?? [],
   });
 
@@ -129,10 +91,13 @@ export default function EmployeesNotificationForm({
 
     return {
       sentTo: values.sentTo ? '' : t('notifications.validation.sentToRequired'),
-      educationalStages: values.educationalStages.length > 0 ? '' : t('common.validation.required'),
+      employeeNames:
+        values.employeeNames.length > 0 ? '' : t('notifications.validation.recipientNamesRequired'),
       date: values.date ? '' : t('notifications.validation.dateRequired'),
       subjectAr: values.subjectAr.trim() ? '' : t('notifications.validation.subjectArRequired'),
       subjectEn: values.subjectEn.trim() ? '' : t('notifications.validation.subjectEnRequired'),
+      bodyAr: values.bodyAr.trim() ? '' : t('notifications.validation.bodyArRequired'),
+      bodyEn: values.bodyEn.trim() ? '' : t('notifications.validation.bodyEnRequired'),
     };
   }, [submitAttempted, t, values]);
 
@@ -154,10 +119,13 @@ export default function EmployeesNotificationForm({
 
     const nextErrors = {
       sentTo: values.sentTo ? '' : t('notifications.validation.sentToRequired'),
-      educationalStages: values.educationalStages.length > 0 ? '' : t('common.validation.required'),
+      employeeNames:
+        values.employeeNames.length > 0 ? '' : t('notifications.validation.recipientNamesRequired'),
       date: values.date ? '' : t('notifications.validation.dateRequired'),
       subjectAr: values.subjectAr.trim() ? '' : t('notifications.validation.subjectArRequired'),
       subjectEn: values.subjectEn.trim() ? '' : t('notifications.validation.subjectEnRequired'),
+      bodyAr: values.bodyAr.trim() ? '' : t('notifications.validation.bodyArRequired'),
+      bodyEn: values.bodyEn.trim() ? '' : t('notifications.validation.bodyEnRequired'),
     };
 
     if (Object.values(nextErrors).some(Boolean)) return;
@@ -187,7 +155,7 @@ export default function EmployeesNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.employeeNames')} optional>
+        <FormField label={t('notifications.employeeNames')} required error={errors.employeeNames}>
           <CustomSelect
             isMulti
             value={values.employeeNames}
@@ -195,41 +163,7 @@ export default function EmployeesNotificationForm({
             options={employeeOptions}
             placeholder={isEmployeesLoading ? t('common.loading') : t('notifications.chooseNames')}
             disabled={!schoolBranchId || isEmployeesLoading}
-          />
-        </FormField>
-
-        <FormField
-          label={t('notifications.educationalStageFilter')}
-          required
-          error={errors.educationalStages}
-        >
-          <CustomSelect
-            isMulti
-            value={values.educationalStages}
-            onChange={(value) =>
-              patch({ educationalStages: Array.isArray(value) ? value : [value] })
-            }
-            options={educationalStageOptions}
-            placeholder={
-              isEducationalStagesLoading
-                ? t('common.loading')
-                : t('notifications.educationalStageFilter')
-            }
-            disabled={!schoolBranchId || isEducationalStagesLoading}
-            error={Boolean(errors.educationalStages)}
-          />
-        </FormField>
-
-        <FormField label={t('notifications.classroomFilter')} optional>
-          <CustomSelect
-            isMulti
-            value={values.classrooms}
-            onChange={(value) => patch({ classrooms: Array.isArray(value) ? value : [value] })}
-            options={classroomOptions}
-            placeholder={
-              isClassroomsLoading ? t('common.loading') : t('notifications.classroomFilter')
-            }
-            disabled={!schoolBranchId || isClassroomsLoading}
+            error={Boolean(errors.employeeNames)}
           />
         </FormField>
 
@@ -265,6 +199,24 @@ export default function EmployeesNotificationForm({
             onChange={(event) => patch({ subjectEn: event.target.value })}
             rows={3}
             placeholder={t('notifications.enterSubject')}
+          />
+        </FormField>
+
+        <FormField label={t('notifications.notificationContentAr')} required error={errors.bodyAr}>
+          <TextArea
+            value={values.bodyAr}
+            onChange={(event) => patch({ bodyAr: event.target.value })}
+            rows={4}
+            placeholder={t('notifications.enterContent')}
+          />
+        </FormField>
+
+        <FormField label={t('notifications.notificationContentEn')} required error={errors.bodyEn}>
+          <TextArea
+            value={values.bodyEn}
+            onChange={(event) => patch({ bodyEn: event.target.value })}
+            rows={4}
+            placeholder={t('notifications.enterContent')}
           />
         </FormField>
 
