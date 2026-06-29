@@ -70,21 +70,21 @@ export interface TeacherListResponse {
 export interface TeacherQueryParams {
   PageIndex?: number;
   PageSize?: number;
-  SearchName?: string;
+  SearchTerm?: string;
   SubjectId?: string;
   EducationalStageId?: string;
   ClassroomId?: string;
   SchoolBranchId?: string;
-  SchoolBranchesId?: string;
+  Language?: string;
 }
 
 export interface TeacherFilters {
-  searchName?: string;
+  SearchTerm?: string;
   subjectId?: string;
   educationalStageId?: string;
   classroomId?: string;
   schoolBranchId?: string;
   schoolBranchesId?: string;
   SchoolBranchId?: string;
-  SchoolBranchesId?: string;
+  Language?: string;
 }
