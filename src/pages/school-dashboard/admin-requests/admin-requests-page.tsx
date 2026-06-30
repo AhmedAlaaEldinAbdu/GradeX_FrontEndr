@@ -17,15 +17,6 @@ import JobApplicationsTab from './components/JobApplicationsTab';
 import MessagesTab from './components/MessagesTab';
 import { MOCK_ADMIN_REQUESTS_STATS } from './admin-requests.mock';
 
-/**
- * Placeholder tab body shown until each tab's real UI/data is wired up.
- */
-const TabPlaceholder: React.FC = () => (
-  <Card className="rounded-2xl" padding="lg">
-    <NotFoundMessage message="adminRequests.empty" />
-  </Card>
-);
-
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
 
