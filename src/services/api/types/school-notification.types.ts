@@ -77,6 +77,11 @@ export interface SchoolNotificationItem {
 export interface GetSchoolNotificationsRequest {
   SchoolBranchId: string;
   Target: SchoolNotificationTargetValue;
+  SearchName?: string;
+  GradeId?: string;
+  ClassroomId?: string;
+  CreatedFrom?: string;
+  CreatedTo?: string;
   PageIndex?: number;
   PageSize?: number;
 }
