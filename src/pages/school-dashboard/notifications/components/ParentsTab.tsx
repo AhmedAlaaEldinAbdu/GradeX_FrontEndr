@@ -7,7 +7,6 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import Input from '@/shared/components/Input';
 import UserAvatarName from '@/shared/components/UserAvatarName';
-import Modal from '@/shared/popups/Modal';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
@@ -24,6 +23,7 @@ import {
   type SchoolNotificationRecipient,
   type SchoolNotificationRecipientStudent,
 } from '@/services/api/types/school-notification.types';
+import NotificationRecipientsPopup from '../popups/NotificationRecipientsPopup';
 
 const PAGE_SIZE = 10;
 const FILE_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/api\/?$/, '');
@@ -411,29 +411,14 @@ export default function ParentsTab() {
         t={t}
       />
 
-      <Modal
+      <NotificationRecipientsPopup
         isOpen={selectedParents.length > 0}
         onClose={() => setSelectedParents([])}
         title={t('notifications.parentNames')}
-        size="sm"
-      >
-        <div className="flex max-h-[60vh] flex-col divide-y divide-[#F1F1F1] overflow-y-auto">
-          {selectedParents.map((parent, index) => (
-            <div
-              key={parent.id || `${parent.fullName}-${index}`}
-              className="flex items-center justify-between py-3"
-            >
-              <UserAvatarName
-                name={parent.fullName || '-'}
-                avatarSrc={resolveFileUrl(parent.imagePath) ?? ProfileImage}
-                fallbackSrc={ProfileImage}
-                align="start"
-                className="w-full"
-              />
-            </div>
-          ))}
-        </div>
-      </Modal>
+        recipients={selectedParents}
+        isRtl={i18n.language.startsWith('ar') || i18n.dir(i18n.language) === 'rtl'}
+        viewLabel={t('common.view')}
+      />
     </Card>
   );
 }
