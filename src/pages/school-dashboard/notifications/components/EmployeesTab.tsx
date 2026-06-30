@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
+import IconButton from '@/shared/components/IconButton';
 import Input from '@/shared/components/Input';
-import UserAvatarName from '@/shared/components/UserAvatarName';
-import Modal from '@/shared/popups/Modal';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { useLanguage } from '@/hooks/useLanguage';
 import {
   fetchSchoolNotifications,
   resetSchoolNotifications,
@@ -22,6 +23,7 @@ import {
   type SchoolNotificationRecipient,
 } from '@/services/api/types/school-notification.types';
 import type { Audience } from '../notifications.mock';
+import NotificationRecipientsPopup from '../popups/NotificationRecipientsPopup';
 
 interface EmployeesTabProps {
   audience: Audience;
@@ -98,8 +100,60 @@ const getRecipientCount = (row: SchoolNotificationItem, audience: Audience) => {
   return row.totalTeachers ?? row.teachers?.length ?? 0;
 };
 
+type RecipientIdentityProps = {
+  name?: string | null;
+  avatarSrc?: string | null;
+  action?: ReactNode;
+  isRtl: boolean;
+  viewCount?: number;
+  className?: string;
+  widthClassName?: string;
+};
+
+const RecipientIdentity = ({
+  name,
+  avatarSrc,
+  action,
+  isRtl,
+  viewCount,
+  className = '',
+  widthClassName = 'w-[260px]',
+}: RecipientIdentityProps) => {
+  const displayName = name?.trim() || '-';
+  const fallbackAction =
+    viewCount !== undefined && viewCount !== null ? (
+      <span className="shrink-0 text-base font-medium text-[#087B48]">
+        <bdi>+{viewCount}</bdi>
+      </span>
+    ) : null;
+
+  return (
+    <div
+      dir={isRtl ? 'rtl' : 'ltr'}
+      className={`inline-flex max-w-full items-center gap-3 ${widthClassName} ${className}`}
+    >
+      <CustomImage
+        src={avatarSrc || ProfileImage}
+        fallbackSrc={ProfileImage}
+        alt={displayName}
+        className="h-10 w-10 shrink-0 rounded-lg object-cover"
+      />
+      <span
+        className="min-w-0 flex-1 truncate text-start text-sm font-normal text-[#646969]"
+        title={displayName}
+      >
+        {displayName}
+      </span>
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center">
+        {action ?? fallbackAction}
+      </span>
+    </div>
+  );
+};
+
 export default function EmployeesTab({ audience }: EmployeesTabProps) {
   const { t, i18n } = useTranslation();
+  const { isRTL } = useLanguage();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const schoolBranchId = getCurrentSchoolBranchId() || '';
@@ -143,6 +197,7 @@ export default function EmployeesTab({ audience }: EmployeesTabProps) {
   const emptyMessage = hasActiveFilter
     ? t('common.noDataFound')
     : t('notifications.emptyStateDescription');
+  const isRtl = isRTL || i18n.language.startsWith('ar') || i18n.dir(i18n.language) === 'rtl';
 
   const handleViewRecipient = (recipient: SchoolNotificationRecipient) => {
     if (!recipient.id) return;
@@ -158,14 +213,7 @@ export default function EmployeesTab({ audience }: EmployeesTabProps) {
     const firstRecipient = recipients[0];
 
     if (!firstRecipient) {
-      return (
-        <UserAvatarName
-          name="-"
-          avatarSrc={ProfileImage}
-          align="center"
-          className="min-w-[220px]"
-        />
-      );
+      return <RecipientIdentity name="-" avatarSrc={ProfileImage} isRtl={isRtl} />;
     }
 
     if (recipientCount > 1) {
@@ -175,11 +223,10 @@ export default function EmployeesTab({ audience }: EmployeesTabProps) {
           className="mx-auto rounded-lg text-start transition-opacity hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-[#117BD7]/30"
           onClick={() => setSelectedRecipients(recipients)}
         >
-          <UserAvatarName
+          <RecipientIdentity
             name={firstRecipient.fullName}
             avatarSrc={resolveFileUrl(firstRecipient.imagePath) ?? ProfileImage}
-            align="center"
-            className="min-w-[220px]"
+            isRtl={isRtl}
             viewCount={additionalNamesCount}
           />
         </button>
@@ -187,12 +234,20 @@ export default function EmployeesTab({ audience }: EmployeesTabProps) {
     }
 
     return (
-      <UserAvatarName
+      <RecipientIdentity
         name={firstRecipient.fullName}
         avatarSrc={resolveFileUrl(firstRecipient.imagePath) ?? ProfileImage}
-        align="center"
-        className="min-w-[220px]"
-        onView={() => handleViewRecipient(firstRecipient)}
+        isRtl={isRtl}
+        action={
+          <IconButton
+            variant="blue"
+            ariaLabel={t('common.view')}
+            className="h-10 w-10 shrink-0"
+            onClick={() => handleViewRecipient(firstRecipient)}
+          >
+            <CustomImage src={EyeStyledIcon} alt={t('common.view')} className="h-6 w-6" />
+          </IconButton>
+        }
       />
     );
   };
@@ -303,31 +358,16 @@ export default function EmployeesTab({ audience }: EmployeesTabProps) {
         t={t}
       />
 
-      <Modal
+      <NotificationRecipientsPopup
         isOpen={selectedRecipients.length > 0}
         onClose={() => setSelectedRecipients([])}
         title={t(RECIPIENT_LIST_TITLE_KEYS[audience])}
-        size="sm"
-      >
-        <div className="flex max-h-[60vh] flex-col divide-y divide-[#F1F1F1] overflow-y-auto">
-          {selectedRecipients.map((recipient, index) => (
-            <div
-              key={recipient.id || `${recipient.fullName}-${index}`}
-              className="flex items-center justify-between py-3"
-            >
-              <UserAvatarName
-                name={recipient.fullName || '-'}
-                avatarSrc={resolveFileUrl(recipient.imagePath) ?? ProfileImage}
-                fallbackSrc={ProfileImage}
-                align="between"
-                className="w-full"
-                viewLabel={t('common.view')}
-                onView={recipient.id ? () => handleViewRecipient(recipient) : undefined}
-              />
-            </div>
-          ))}
-        </div>
-      </Modal>
+        recipients={selectedRecipients}
+        isRtl={isRtl}
+        showViewAction
+        viewLabel={t('common.view')}
+        onViewRecipient={handleViewRecipient}
+      />
     </Card>
   );
 }
