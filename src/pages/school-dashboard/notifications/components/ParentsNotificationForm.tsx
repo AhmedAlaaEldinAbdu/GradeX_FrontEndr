@@ -9,6 +9,7 @@ import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import TextArea from '@/shared/components/TextArea';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import {
@@ -65,6 +66,7 @@ export default function ParentsNotificationForm({
   const currentLang = i18n.language as 'ar' | 'en';
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const scrollToFirstError = useScrollToFirstError<ParentsNotificationFormValues>();
 
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
   const isEducationalStagesLoading = useAppSelector((state) => state.educationalStages.isLoading);
@@ -227,7 +229,10 @@ export default function ParentsNotificationForm({
       bodyEn: values.bodyEn.trim() ? '' : t('notifications.validation.bodyEnRequired'),
     };
 
-    if (Object.values(nextErrors).some(Boolean)) return;
+    if (Object.values(nextErrors).some(Boolean)) {
+      scrollToFirstError(nextErrors);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -240,7 +245,7 @@ export default function ParentsNotificationForm({
   return (
     <Card>
       <div className="space-y-6">
-        <FormField label={t('notifications.sentTo')} required error={errors.sentTo}>
+        <FormField label={t('notifications.sentTo')} required error={errors.sentTo} name="sentTo">
           <CustomSelect
             value={values.sentTo}
             onChange={(value) => {
@@ -258,6 +263,7 @@ export default function ParentsNotificationForm({
           label={t('notifications.educationalStageFilter')}
           required
           error={errors.educationalStages}
+          name="educationalStages"
         >
           <CustomSelect
             isMulti
@@ -274,7 +280,12 @@ export default function ParentsNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.classroomFilter')} optional error={errors.classrooms}>
+        <FormField
+          label={t('notifications.classroomFilter')}
+          optional
+          error={errors.classrooms}
+          name="classrooms"
+        >
           <CustomSelect
             isMulti
             value={values.classrooms}
@@ -292,7 +303,12 @@ export default function ParentsNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.parentNames')} optional error={errors.studentIds}>
+        <FormField
+          label={t('notifications.parentNames')}
+          optional
+          error={errors.studentIds}
+          name="studentIds"
+        >
           <CustomSelect
             isMulti
             value={values.studentIds}
@@ -317,7 +333,7 @@ export default function ParentsNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.date')} required error={errors.date}>
+        <FormField label={t('notifications.date')} required error={errors.date} name="date">
           <Input
             type="date"
             value={values.date}
@@ -330,6 +346,7 @@ export default function ParentsNotificationForm({
           label={t('notifications.notificationSubjectAr')}
           required
           error={errors.subjectAr}
+          name="subjectAr"
         >
           <TextArea
             value={values.subjectAr}
@@ -343,6 +360,7 @@ export default function ParentsNotificationForm({
           label={t('notifications.notificationSubjectEn')}
           required
           error={errors.subjectEn}
+          name="subjectEn"
         >
           <TextArea
             value={values.subjectEn}
@@ -352,7 +370,12 @@ export default function ParentsNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.notificationContentAr')} required error={errors.bodyAr}>
+        <FormField
+          label={t('notifications.notificationContentAr')}
+          required
+          error={errors.bodyAr}
+          name="bodyAr"
+        >
           <TextArea
             value={values.bodyAr}
             onChange={(event) => patch({ bodyAr: event.target.value })}
@@ -361,7 +384,12 @@ export default function ParentsNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.notificationContentEn')} required error={errors.bodyEn}>
+        <FormField
+          label={t('notifications.notificationContentEn')}
+          required
+          error={errors.bodyEn}
+          name="bodyEn"
+        >
           <TextArea
             value={values.bodyEn}
             onChange={(event) => patch({ bodyEn: event.target.value })}

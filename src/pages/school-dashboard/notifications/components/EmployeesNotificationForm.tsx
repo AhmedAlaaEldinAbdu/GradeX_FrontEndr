@@ -9,6 +9,7 @@ import FormField from '@/shared/components/FormField';
 import Input from '@/shared/components/Input';
 import TextArea from '@/shared/components/TextArea';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 
 export type EmployeesNotificationFormValues = {
@@ -48,6 +49,7 @@ export default function EmployeesNotificationForm({
   const dispatch = useAppDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const scrollToFirstError = useScrollToFirstError<EmployeesNotificationFormValues>();
 
   const teachers = useAppSelector((state) => state.teachers.teachers);
   const isEmployeesLoading = useAppSelector((state) => state.teachers.isLoading);
@@ -128,7 +130,10 @@ export default function EmployeesNotificationForm({
       bodyEn: values.bodyEn.trim() ? '' : t('notifications.validation.bodyEnRequired'),
     };
 
-    if (Object.values(nextErrors).some(Boolean)) return;
+    if (Object.values(nextErrors).some(Boolean)) {
+      scrollToFirstError(nextErrors);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -141,7 +146,7 @@ export default function EmployeesNotificationForm({
   return (
     <Card>
       <div className="space-y-6">
-        <FormField label={t('notifications.sentTo')} required error={errors.sentTo}>
+        <FormField label={t('notifications.sentTo')} required error={errors.sentTo} name="sentTo">
           <CustomSelect
             value={values.sentTo}
             onChange={(value) => {
@@ -155,7 +160,12 @@ export default function EmployeesNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.employeeNames')} required error={errors.employeeNames}>
+        <FormField
+          label={t('notifications.employeeNames')}
+          required
+          error={errors.employeeNames}
+          name="employeeNames"
+        >
           <CustomSelect
             isMulti
             value={values.employeeNames}
@@ -167,7 +177,7 @@ export default function EmployeesNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.date')} required error={errors.date}>
+        <FormField label={t('notifications.date')} required error={errors.date} name="date">
           <Input
             type="date"
             value={values.date}
@@ -180,6 +190,7 @@ export default function EmployeesNotificationForm({
           label={t('notifications.notificationSubjectAr')}
           required
           error={errors.subjectAr}
+          name="subjectAr"
         >
           <TextArea
             value={values.subjectAr}
@@ -193,6 +204,7 @@ export default function EmployeesNotificationForm({
           label={t('notifications.notificationSubjectEn')}
           required
           error={errors.subjectEn}
+          name="subjectEn"
         >
           <TextArea
             value={values.subjectEn}
@@ -202,7 +214,12 @@ export default function EmployeesNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.notificationContentAr')} required error={errors.bodyAr}>
+        <FormField
+          label={t('notifications.notificationContentAr')}
+          required
+          error={errors.bodyAr}
+          name="bodyAr"
+        >
           <TextArea
             value={values.bodyAr}
             onChange={(event) => patch({ bodyAr: event.target.value })}
@@ -211,7 +228,12 @@ export default function EmployeesNotificationForm({
           />
         </FormField>
 
-        <FormField label={t('notifications.notificationContentEn')} required error={errors.bodyEn}>
+        <FormField
+          label={t('notifications.notificationContentEn')}
+          required
+          error={errors.bodyEn}
+          name="bodyEn"
+        >
           <TextArea
             value={values.bodyEn}
             onChange={(event) => patch({ bodyEn: event.target.value })}
