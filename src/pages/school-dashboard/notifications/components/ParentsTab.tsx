@@ -5,11 +5,15 @@ import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
+import Input from '@/shared/components/Input';
 import UserAvatarName from '@/shared/components/UserAvatarName';
+import Modal from '@/shared/popups/Modal';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import ProfileImage from '@gradex/assets/images/profile.png';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import {
   fetchSchoolNotifications,
   resetSchoolNotifications,
@@ -49,6 +53,11 @@ const formatNotificationDate = (value: string, language: string) => {
 
   return new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB').format(date);
 };
+
+const getSelectedDateRange = (dateKey: string) => ({
+  CreatedFrom: `${dateKey}T00:00:00.000Z`,
+  CreatedTo: `${dateKey}T23:59:59.999Z`,
+});
 
 const resolveFileUrl = (path?: string | null) => {
   if (!path) return null;
@@ -97,33 +106,41 @@ const getClassroomLabels = (row: SchoolNotificationItem, language: string) =>
     }))
   ).map((option) => option.label);
 
-const getDateOptions = (items: SchoolNotificationItem[], language: string) =>
-  getUniqueOptions(
-    items.map((item) => {
-      const dateKey = getDateKey(item.created);
-      return {
-        value: dateKey,
-        label: formatNotificationDate(dateKey, language),
-      };
-    })
-  );
-
 export default function ParentsTab() {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const currentLang = i18n.language as 'ar' | 'en';
   const schoolBranchId = getCurrentSchoolBranchId() || '';
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedClassroom, setSelectedClassroom] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedParents, setSelectedParents] = useState<SchoolNotificationRecipient[]>([]);
   const {
     items: notifications,
     pagination,
     isLoading,
   } = useAppSelector((state) => state.schoolNotifications.parentNotifications);
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
 
   useEffect(() => {
+    if (!schoolBranchId) return;
+
+    dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: { schoolBranchId },
+      })
+    );
+  }, [dispatch, schoolBranchId]);
+
+  useEffect(() => {
+    const normalizedSearchTerm = searchTerm.trim();
+
     if (!schoolBranchId) {
       dispatch(resetSchoolNotifications());
       return;
@@ -133,145 +150,99 @@ export default function ParentsTab() {
       fetchSchoolNotifications({
         SchoolBranchId: schoolBranchId,
         Target: SchoolNotificationTarget.Parents,
+        ...(normalizedSearchTerm ? { SearchName: normalizedSearchTerm } : {}),
+        ...(selectedStage ? { GradeId: selectedStage } : {}),
+        ...(selectedClassroom ? { ClassroomId: selectedClassroom } : {}),
+        ...(selectedDate ? getSelectedDateRange(selectedDate) : {}),
         PageIndex: page,
         PageSize: PAGE_SIZE,
       })
     );
-  }, [dispatch, page, schoolBranchId]);
+  }, [dispatch, page, schoolBranchId, searchTerm, selectedClassroom, selectedDate, selectedStage]);
 
   const stageOptions = useMemo(
     () =>
-      getUniqueOptions(
-        notifications.flatMap((notification) =>
-          getParentStudents(notification).map((student) => ({
-            value: student.gradeId,
-            label: getLocalizedText(student.gradeNameAr, student.gradeNameEn, i18n.language),
-          }))
-        )
-      ),
-    [i18n.language, notifications]
+      educationalStages
+        .map((stage) => ({
+          value: stage.id,
+          label:
+            (currentLang === 'ar' ? stage.nameAr : stage.nameEn) || stage.nameAr || stage.nameEn,
+        }))
+        .filter((option) => Boolean(option.value && option.label)),
+    [currentLang, educationalStages]
   );
 
   const classroomOptions = useMemo(
     () =>
-      getUniqueOptions(
-        notifications.flatMap((notification) =>
-          getParentStudents(notification)
-            .filter((student) => !selectedStage || student.gradeId === selectedStage)
-            .map((student) => ({
-              value: student.classroomId,
-              label: getLocalizedText(
-                student.classroomNameAr,
-                student.classroomNameEn,
-                i18n.language
-              ),
-            }))
-        )
-      ),
-    [i18n.language, notifications, selectedStage]
+      classrooms
+        .map((classroom) => ({
+          value: classroom.id,
+          label:
+            (currentLang === 'ar' ? classroom.name : classroom.nameEn) ||
+            classroom.name ||
+            classroom.nameEn,
+        }))
+        .filter((option) => Boolean(option.value && option.label)),
+    [classrooms, currentLang]
   );
 
-  const dateOptions = useMemo(
-    () => getDateOptions(notifications, i18n.language),
-    [i18n.language, notifications]
-  );
-
-  useEffect(() => {
-    if (
-      selectedStage &&
-      notifications.length > 0 &&
-      notifications.every(
-        (notification) =>
-          !getParentStudents(notification).some((student) => student.gradeId === selectedStage)
-      )
-    ) {
-      setSelectedStage('');
-      setSelectedClassroom('');
-    }
-
-    if (
-      selectedClassroom &&
-      notifications.length > 0 &&
-      notifications.every(
-        (notification) =>
-          !getParentStudents(notification).some(
-            (student) => student.classroomId === selectedClassroom
-          )
-      )
-    ) {
-      setSelectedClassroom('');
-    }
-
-    if (
-      selectedDate &&
-      notifications.length > 0 &&
-      notifications.every((notification) => getDateKey(notification.created) !== selectedDate)
-    ) {
-      setSelectedDate('');
-    }
-  }, [notifications, selectedClassroom, selectedDate, selectedStage]);
-
-  const filteredData = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
-
-    return notifications.filter((notification) => {
-      const parentsText = getParents(notification)
-        .map((parent) => parent.fullName)
-        .join(' ')
-        .toLowerCase();
-      const studentsText = getParentStudents(notification)
-        .map((student) => student.studentName)
-        .join(' ')
-        .toLowerCase();
-      const stageText = getStageLabels(notification, i18n.language).join(' ').toLowerCase();
-      const classroomText = getClassroomLabels(notification, i18n.language).join(' ').toLowerCase();
-      const title = getLocalizedText(
-        notification.titleAr,
-        notification.titleEn,
-        i18n.language
-      ).toLowerCase();
-      const body = getLocalizedText(
-        notification.bodyAr,
-        notification.bodyEn,
-        i18n.language
-      ).toLowerCase();
-      const students = getParentStudents(notification);
-
-      const matchesSearch =
-        !normalizedSearch ||
-        parentsText.includes(normalizedSearch) ||
-        studentsText.includes(normalizedSearch) ||
-        stageText.includes(normalizedSearch) ||
-        classroomText.includes(normalizedSearch) ||
-        title.includes(normalizedSearch) ||
-        body.includes(normalizedSearch);
-      const matchesStage =
-        !selectedStage || students.some((student) => student.gradeId === selectedStage);
-      const matchesClassroom =
-        !selectedClassroom || students.some((student) => student.classroomId === selectedClassroom);
-      const matchesDate = !selectedDate || getDateKey(notification.created) === selectedDate;
-
-      return matchesSearch && matchesStage && matchesClassroom && matchesDate;
-    });
-  }, [i18n.language, notifications, searchTerm, selectedClassroom, selectedDate, selectedStage]);
-
-  const hasActiveClientFilter = Boolean(
+  const tablePagination = {
+    page: pagination.pageIndex,
+    limit: pagination.pageSize || PAGE_SIZE,
+    total: pagination.totalItems,
+    totalPages: Math.max(1, pagination.totalPages),
+  };
+  const hasActiveFilter = Boolean(
     searchTerm.trim() || selectedStage || selectedClassroom || selectedDate
   );
-  const tableData = hasActiveClientFilter ? filteredData : notifications;
-  const tablePagination = hasActiveClientFilter
-    ? {
-        page: 1,
-        limit: PAGE_SIZE,
-        total: tableData.length,
-        totalPages: Math.max(1, Math.ceil(tableData.length / PAGE_SIZE)),
-      }
-    : {
-        page: pagination.pageIndex,
-        limit: pagination.pageSize || PAGE_SIZE,
-        total: pagination.totalItems,
-        totalPages: Math.max(1, pagination.totalPages),
-      };
+  const emptyMessage = hasActiveFilter
+    ? t('common.noDataFound')
+    : t('notifications.emptyStateDescription');
+
+  const renderParentCell = (row: SchoolNotificationItem) => {
+    const parents = getParents(row);
+    const parentCount = getParentCount(row);
+    const additionalParentsCount = parentCount > 1 ? parentCount - 1 : undefined;
+    const firstParent = parents[0];
+
+    if (!firstParent) {
+      return (
+        <UserAvatarName
+          name="-"
+          avatarSrc={ProfileImage}
+          align="center"
+          className="min-w-[220px]"
+        />
+      );
+    }
+
+    if (parentCount > 1) {
+      return (
+        <button
+          type="button"
+          className="mx-auto rounded-lg text-start transition-opacity hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-[#117BD7]/30"
+          onClick={() => setSelectedParents(parents)}
+        >
+          <UserAvatarName
+            name={firstParent.fullName}
+            avatarSrc={resolveFileUrl(firstParent.imagePath) ?? ProfileImage}
+            align="center"
+            className="min-w-[220px]"
+            viewCount={additionalParentsCount}
+          />
+        </button>
+      );
+    }
+
+    return (
+      <UserAvatarName
+        name={firstParent.fullName}
+        avatarSrc={resolveFileUrl(firstParent.imagePath) ?? ProfileImage}
+        align="center"
+        className="min-w-[220px]"
+      />
+    );
+  };
 
   const columns: DataTableColumn<SchoolNotificationItem>[] = [
     {
@@ -286,22 +257,7 @@ export default function ParentsTab() {
     },
     {
       header: 'notifications.table.parentName',
-      accessor: (row) => {
-        const parents = getParents(row);
-        const parentCount = getParentCount(row);
-        const additionalParentsCount = parentCount > 1 ? parentCount - 1 : undefined;
-        const firstParent = parents[0];
-
-        return (
-          <UserAvatarName
-            name={firstParent?.fullName ?? '-'}
-            avatarSrc={resolveFileUrl(firstParent?.imagePath) ?? ProfileImage}
-            align="center"
-            className="min-w-[220px]"
-            viewCount={additionalParentsCount}
-          />
-        );
-      },
+      accessor: renderParentCell,
       headerClassName: 'min-w-[240px] text-center',
       className: 'text-center',
     },
@@ -418,15 +374,14 @@ export default function ParentsTab() {
       onChange: () => {},
       width: '15%',
       customComponent: (
-        <CustomSelect
+        <Input
+          type="date"
           value={selectedDate}
-          onChange={(value) => {
-            setSelectedDate(getSingleValue(value));
+          onChange={(event) => {
+            setSelectedDate(event.target.value);
             setPage(1);
           }}
-          options={dateOptions}
           placeholder={t('notifications.dateFilter')}
-          showSearch={false}
         />
       ),
     },
@@ -443,7 +398,7 @@ export default function ParentsTab() {
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={tableData}
+        data={notifications}
         columns={columns}
         keyExtractor={(row) => `parents-${row.id}`}
         filters={filterConfigs}
@@ -452,9 +407,33 @@ export default function ParentsTab() {
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
         isLoading={isLoading}
-        emptyMessage={t('notifications.emptyStateDescription')}
+        emptyMessage={emptyMessage}
         t={t}
       />
+
+      <Modal
+        isOpen={selectedParents.length > 0}
+        onClose={() => setSelectedParents([])}
+        title={t('notifications.parentNames')}
+        size="sm"
+      >
+        <div className="flex max-h-[60vh] flex-col divide-y divide-[#F1F1F1] overflow-y-auto">
+          {selectedParents.map((parent, index) => (
+            <div
+              key={parent.id || `${parent.fullName}-${index}`}
+              className="flex items-center justify-between py-3"
+            >
+              <UserAvatarName
+                name={parent.fullName || '-'}
+                avatarSrc={resolveFileUrl(parent.imagePath) ?? ProfileImage}
+                fallbackSrc={ProfileImage}
+                align="start"
+                className="w-full"
+              />
+            </div>
+          ))}
+        </div>
+      </Modal>
     </Card>
   );
 }
