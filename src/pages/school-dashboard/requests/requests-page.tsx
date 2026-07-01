@@ -14,10 +14,10 @@ import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
 import MessageRequestsTab from './components/MessageRequestsTab';
-import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
-import ReminderRequestsTab from './components/ReminderRequestsTab';
-import AddDelegateRequestsTab from './components/AddDelegateRequestsTab';
-import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
+// import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
+// import ReminderRequestsTab from './components/ReminderRequestsTab';
+// import AddDelegateRequestsTab from './components/AddDelegateRequestsTab';
+// import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
 import ApplicationsTab from './components/ApplicationsTab';
 import { MOCK_REQUESTS_STATS } from './requests.mock';
 
