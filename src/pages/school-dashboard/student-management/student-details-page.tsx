@@ -14,19 +14,29 @@ import ExamsTab from '@/pages/school-dashboard/student-management/components/det
 import PageHeader from '@/shared/components/PageHeader';
 import Loading from '@/shared/components/Loading';
 import ShareIcon from '@gradex/assets/icons/Share.svg';
-import { useAppDispatch } from '@/hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudentByIdSilent } from '@/redux/features/students/studentsSlice';
 import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';
+import HousingPopup from '../requests/popups/HousingPopup';
+import { assignStudentToClassroom } from '@/services/api/students/students.service';
+import { useToast } from '@/shared/context/ToastContext';
 
 export default function StudentDetailsPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const [student, setStudent] = useState<StudentDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [isHousingPopupOpen, setHousingPopupOpen] = useState(false);
+  const [isHousingLoading, setHousingLoading] = useState(false);
+
+  const { currentApplication } = useAppSelector((state) => state.studentApplications);
+  const data = currentApplication;
 
   useEffect(() => {
     if (!id) {
@@ -158,6 +168,11 @@ export default function StudentDetailsPage() {
             imgSrc: ShareIcon,
             imgClassName: 'h-4 w-4',
           },
+          {
+            label: student?.className ? 'studentManagement.reAssignStudent' : 'studentApplications.modals.housingTitle',
+            onClick: () => setHousingPopupOpen(true),
+            variant: 'primary',
+          },
         ]}
       />
 
@@ -167,6 +182,40 @@ export default function StudentDetailsPage() {
         defaultValue="personal-data"
         searchParamKey="tab"
         listClassName="mb-6 flex w-full items-center gap-6"
+      />
+
+      <HousingPopup
+        isOpen={isHousingPopupOpen}
+        onClose={() => setHousingPopupOpen(false)}
+        isLoading={isHousingLoading}
+        gradeId={student?.gradeId ?? data?.gradeId}
+        currentClassName={student?.className}
+        onConfirm={async (classroomId, isDifferent) => {
+          if (!student) return;
+          try {
+            setHousingLoading(true);
+            await assignStudentToClassroom(student.id, classroomId);
+            showToast({
+              message: isDifferent
+                ? t('studentManagement.studentReassignedSuccessfully')
+                : t('studentApplications.modals.housingSuccess'),
+              type: 'success',
+            });
+            setHousingPopupOpen(false);
+            // Refresh student details to reflect the change
+            if (id) dispatch(fetchStudentByIdSilent(id));
+          } catch (error) {
+            console.error('Failed to assign student to classroom:', error);
+            const errorMessage = error instanceof Error ? error.message : t('common.error');
+            showToast({
+              message: errorMessage,
+              type: 'error',
+              isRaw: error instanceof Error && errorMessage !== t('common.error'),
+            });
+          } finally {
+            setHousingLoading(false);
+          }
+        }}
       />
     </div>
   );
