@@ -1,11 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import Input from '@/shared/components/Input';
-import CustomSelect from '@/shared/components/CustomSelect';
+import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import SelectStudentsPopup, { type SelectedStudent } from '../popups/SelectStudentsPopup';
 import type { AIExamBasicInfoProps } from '@/validations/ai-exam-validations';
 import StudentAvatar from '@/assets/images/profile.png';
@@ -19,16 +24,6 @@ const SUBJECT_OPTIONS = [
   { value: 'science', label: 'العلوم' },
   { value: 'arabic', label: 'اللغة العربية' },
 ];
-const STAGE_OPTIONS = [
-  { value: 'primary', label: 'الابتدائية' },
-  { value: 'intermediate', label: 'الأعدادية' },
-  { value: 'secondary', label: 'الثانوية' },
-];
-const GRADE_OPTIONS = [
-  { value: 'grade-1-2', label: 'ع 1/2' },
-  { value: 'grade-2-2', label: 'ع 2/2' },
-  { value: 'grade-3-2', label: 'ع 3/2' },
-];
 const DURATION_VALUES = [15, 30, 45, 60, 90, 120];
 
 const TARGET_AUDIENCE_OPTIONS = [
@@ -36,24 +31,130 @@ const TARGET_AUDIENCE_OPTIONS = [
   { value: 'specific', labelKey: 'eLearning.onlineExams.addAI.fields.specificStudents' },
 ];
 
+const normalizeSelectValue = (value: string | string[]) =>
+  Array.isArray(value) ? (value[0] ?? '') : value;
+const normalizeMultiValue = (value: string | string[]) =>
+  (Array.isArray(value) ? value : [value]).filter(Boolean);
+
 const AIExamBasicInfoStep = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+  const schoolBranchId = getCurrentSchoolBranchId();
+  const isArabic = i18n.language === 'ar';
   const {
     control,
+    setValue,
     formState: { errors },
   } = useFormContext<AIExamBasicInfoProps>();
   const [isStudentsOpen, setIsStudentsOpen] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState<SelectedStudent[]>([]);
 
-  // Classrooms handed to the popup so it can load their students.
+  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
+  const isLoadingAcademicSystems = useAppSelector((state) => state.academicSystems.isLoading);
+  const gradesList = useAppSelector((state) => state.grades.grades);
+  const isLoadingGrades = useAppSelector((state) => state.grades.isLoading);
+  const classroomsList = useAppSelector((state) => state.classrooms.classrooms);
+  const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
+
+  const academicSystem = useWatch({ control, name: 'academicSystem' });
   const grades = useWatch({ control, name: 'grades' });
+  const classrooms = useWatch({ control, name: 'classrooms' });
+  const selectedGradeIds = useMemo(() => (Array.isArray(grades) ? grades : []), [grades]);
+  const selectedClassroomIds = useMemo(
+    () => (Array.isArray(classrooms) ? classrooms : []),
+    [classrooms]
+  );
+  const selectedGradeIdsKey = selectedGradeIds.join('|');
+  const selectedClassroomIdsKey = selectedClassroomIds.join('|');
+
+  useEffect(() => {
+    dispatch(
+      getAcademicSystems({
+        pageIndex: 1,
+        pageSize: 10000,
+        ...(schoolBranchId && { schoolBranchId }),
+      })
+    );
+  }, [dispatch, schoolBranchId]);
+
+  useEffect(() => {
+    if (!academicSystem) return;
+
+    dispatch(
+      fetchGrades({
+        PageIndex: 1,
+        PageSize: 1000,
+        AcdemicsystemId: academicSystem,
+        SchoolBranchId: schoolBranchId,
+      })
+    );
+  }, [academicSystem, dispatch, schoolBranchId]);
+
+  useEffect(() => {
+    if (!academicSystem || selectedGradeIds.length === 0) return;
+
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: {
+          academicSystemId: academicSystem,
+          ...(selectedGradeIds.length === 1 && { gradeId: selectedGradeIds[0] }),
+          ...(schoolBranchId && { schoolBranchId }),
+        },
+      })
+    );
+  }, [academicSystem, dispatch, schoolBranchId, selectedGradeIds, selectedGradeIdsKey]);
+
+  useEffect(() => {
+    setSelectedStudents([]);
+  }, [selectedClassroomIdsKey]);
+
+  const academicSystemOptions = useMemo<CustomSelectOption[]>(
+    () =>
+      academicSystems
+        .map((system) => ({
+          value: system.id,
+          label: (isArabic ? system.nameAr : system.nameEn) || system.nameAr || system.nameEn,
+        }))
+        .filter((option) => Boolean(option.value && option.label)),
+    [academicSystems, isArabic]
+  );
+
+  const gradeOptions = useMemo<CustomSelectOption[]>(
+    () =>
+      gradesList
+        .map((grade) => ({
+          value: grade.id,
+          label: (isArabic ? grade.nameAr : grade.nameEn) || grade.nameAr || grade.nameEn,
+        }))
+        .filter((option) => Boolean(option.value && option.label)),
+    [gradesList, isArabic]
+  );
+
+  const classroomOptions = useMemo<CustomSelectOption[]>(() => {
+    const gradeIds = new Set(selectedGradeIds);
+
+    return classroomsList
+      .filter((classroom) => gradeIds.has(classroom.gradeId))
+      .map((classroom) => ({
+        value: classroom.id,
+        label: (isArabic ? classroom.name : classroom.nameEn) || classroom.name || classroom.nameEn,
+      }))
+      .filter((option) => Boolean(option.value && option.label));
+  }, [classroomsList, isArabic, selectedGradeIds]);
+
+  // Classrooms handed to the popup so it can load their students.
   const selectedClassrooms = useMemo(() => {
-    const ids = Array.isArray(grades) ? grades : [];
-    return GRADE_OPTIONS.filter((option) => ids.includes(option.value)).map((option) => ({
-      id: option.value,
-      name: option.label,
-    }));
-  }, [grades]);
+    const classroomIds = new Set(selectedClassroomIds);
+
+    return classroomsList
+      .filter((classroom) => classroomIds.has(classroom.id))
+      .map((classroom) => ({
+        id: classroom.id,
+        name: (isArabic ? classroom.name : classroom.nameEn) || classroom.name || classroom.nameEn,
+      }));
+  }, [classroomsList, isArabic, selectedClassroomIds]);
 
   const languageOptions = [
     { value: 'ar', label: t('eLearning.onlineExams.addAI.languageOptions.ar') },
@@ -158,7 +259,7 @@ const AIExamBasicInfoStep = () => {
         </FormField>
       </div>
 
-      {/* Subject + stage */}
+      {/* Subject + academic system */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <FormField
           label={t('eLearning.onlineExams.addAI.fields.subject')}
@@ -184,53 +285,108 @@ const AIExamBasicInfoStep = () => {
         </FormField>
 
         <FormField
-          label={t('eLearning.onlineExams.addAI.fields.stage')}
+          label={t('grades.academicSystemLabel')}
           required
-          htmlFor="stage"
-          name="stage"
-          error={errors.stage?.message}
+          htmlFor="academicSystem"
+          name="academicSystem"
+          error={errors.academicSystem?.message}
         >
           <Controller
-            name="stage"
+            name="academicSystem"
             control={control}
             render={({ field }) => (
               <CustomSelect
-                id="stage"
+                id="academicSystem"
                 value={(field.value as string) ?? ''}
-                onChange={(value) => field.onChange(value)}
-                options={STAGE_OPTIONS}
-                placeholder={t('eLearning.onlineExams.addAI.fields.stagePlaceholder')}
-                error={!!errors.stage}
+                onChange={(value) => {
+                  field.onChange(normalizeSelectValue(value));
+                  setValue('grades', [], { shouldDirty: true, shouldValidate: true });
+                  setValue('classrooms', [], { shouldDirty: true, shouldValidate: true });
+                  setSelectedStudents([]);
+                }}
+                options={academicSystemOptions}
+                placeholder={
+                  isLoadingAcademicSystems ? t('common.loading') : t('grades.selectAcademicSystem')
+                }
+                disabled={isLoadingAcademicSystems}
+                error={!!errors.academicSystem}
               />
             )}
           />
         </FormField>
       </div>
 
-      {/* Grade (multi-select, full width) */}
-      <FormField
-        label={t('eLearning.onlineExams.addAI.fields.grade')}
-        required
-        htmlFor="grades"
-        name="grades"
-        error={errors.grades?.message}
-      >
-        <Controller
+      {/* Grades + classrooms */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <FormField
+          label={t('requests.addMessage.gradeLabel')}
+          required
+          htmlFor="grades"
           name="grades"
-          control={control}
-          render={({ field }) => (
-            <CustomSelect
-              id="grades"
-              isMulti
-              value={Array.isArray(field.value) ? field.value : []}
-              onChange={(value) => field.onChange(Array.isArray(value) ? value : [value])}
-              options={GRADE_OPTIONS}
-              placeholder={t('eLearning.onlineExams.addAI.fields.gradePlaceholder')}
-              error={!!errors.grades}
-            />
-          )}
-        />
-      </FormField>
+          error={errors.grades?.message}
+        >
+          <Controller
+            name="grades"
+            control={control}
+            render={({ field }) => (
+              <CustomSelect
+                id="grades"
+                isMulti
+                value={Array.isArray(field.value) ? field.value : []}
+                onChange={(value) => {
+                  field.onChange(normalizeMultiValue(value));
+                  setValue('classrooms', [], { shouldDirty: true, shouldValidate: true });
+                  setSelectedStudents([]);
+                }}
+                options={gradeOptions}
+                placeholder={
+                  !academicSystem
+                    ? t('grades.selectAcademicSystem')
+                    : isLoadingGrades
+                      ? t('common.loading')
+                      : t('requests.addMessage.gradePlaceholder')
+                }
+                disabled={!academicSystem || isLoadingGrades}
+                error={!!errors.grades}
+              />
+            )}
+          />
+        </FormField>
+
+        <FormField
+          label={t('requests.addMessage.classroomLabel')}
+          required
+          htmlFor="classrooms"
+          name="classrooms"
+          error={errors.classrooms?.message}
+        >
+          <Controller
+            name="classrooms"
+            control={control}
+            render={({ field }) => (
+              <CustomSelect
+                id="classrooms"
+                isMulti
+                value={Array.isArray(field.value) ? field.value : []}
+                onChange={(value) => {
+                  field.onChange(normalizeMultiValue(value));
+                  setSelectedStudents([]);
+                }}
+                options={classroomOptions}
+                placeholder={
+                  selectedGradeIds.length === 0
+                    ? t('requests.addMessage.selectGradeFirst')
+                    : isLoadingClassrooms
+                      ? t('common.loading')
+                      : t('requests.addMessage.classroomPlaceholder')
+                }
+                disabled={selectedGradeIds.length === 0 || isLoadingClassrooms}
+                error={!!errors.classrooms}
+              />
+            )}
+          />
+        </FormField>
+      </div>
 
       {/* Target audience (radio group, full width) */}
       <div data-form-field="targetAudience">
