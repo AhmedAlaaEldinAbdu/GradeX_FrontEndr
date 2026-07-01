@@ -77,8 +77,6 @@ const HousingPopup: React.FC<HousingPopupProps> = ({
     fetchClassrooms();
   }, [isOpen, gradeId, currentClassName]);
 
-  const selectedClassroom = classrooms.find((c) => c.id === selectedClassroomId);
-
   const handleConfirm = () => {
     if (!selectedClassroomId) {
       setError(t('common.validation.required'));
