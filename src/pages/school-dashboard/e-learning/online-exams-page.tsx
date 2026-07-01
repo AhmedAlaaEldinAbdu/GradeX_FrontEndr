@@ -12,8 +12,8 @@ import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import TaskIcon from '@gradex/assets/icons/Task.svg';
 import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
-import IdeaIcon from '@gradex/assets/icons/Idea.svg';
-import WritingIcon from '@gradex/assets/icons/Writing.svg';
+// import IdeaIcon from '@gradex/assets/icons/Idea.svg';
+// import WritingIcon from '@gradex/assets/icons/Writing.svg';
 
 export default function OnlineExamsPage() {
   const { t } = useTranslation();
@@ -81,7 +81,7 @@ export default function OnlineExamsPage() {
 
         {/* Exam creation methods */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <ExamCreationCard
+          {/* <ExamCreationCard
             icon={WritingIcon}
             title={t('eLearning.onlineExams.create.manual.title')}
             description={t('eLearning.onlineExams.create.manual.description')}
@@ -92,7 +92,7 @@ export default function OnlineExamsPage() {
             title={t('eLearning.onlineExams.create.questionBank.title')}
             description={t('eLearning.onlineExams.create.questionBank.description')}
             className="bg-[#A353DD]"
-          />
+          /> */}
           <ExamCreationCard
             icon={SparklesIcon}
             title={t('eLearning.onlineExams.create.ai.title')}
