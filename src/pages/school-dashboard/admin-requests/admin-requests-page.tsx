@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Breadcrumb from '@/shared/layout/Breadcrumb';
@@ -10,15 +10,36 @@ import ClockYellowBoldIcon from '@gradex/assets/icons/ClockYellowBold.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { fetchTeacherRequestsSummary } from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import JobApplicationsTab from './components/JobApplicationsTab';
 import MessagesTab from './components/MessagesTab';
-import { MOCK_ADMIN_REQUESTS_STATS } from './admin-requests.mock';
 
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { summary } = useAppSelector((state) => state.teacherRequests);
 
-  const stats = MOCK_ADMIN_REQUESTS_STATS;
+  const schoolBranchId = getCurrentSchoolBranchId();
+
+  useEffect(() => {
+    if (schoolBranchId) {
+      dispatch(fetchTeacherRequestsSummary({ SchoolBranchId: schoolBranchId }));
+    }
+  }, [dispatch, schoolBranchId]);
+
+  const acceptedPercentage = summary?.totalRequests
+    ? Math.round((summary.acceptedRequests / summary.totalRequests) * 100)
+    : 0;
+
+  const stats = {
+    total: summary?.totalRequests ?? 0,
+    rejected: summary?.rejectedRequests ?? 0,
+    acceptedPercentage,
+    pending: summary?.pendingRequests ?? 0,
+  };
 
   const breadcrumbItems = [
     { label: t('sidebar.humanResources') },
