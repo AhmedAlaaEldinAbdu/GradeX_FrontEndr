@@ -5,8 +5,8 @@ import CustomImage from '@/shared/components/CustomImage';
 import ClockIcon from '@gradex/assets/icons/ClockYellow.svg';
 import CheckIcon from '@gradex/assets/icons/CheckLight.svg';
 import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
-import IdeaIcon from '@gradex/assets/icons/Idea.svg';
-import WritingIcon from '@gradex/assets/icons/Writing.svg';
+// import IdeaIcon from '@gradex/assets/icons/Idea.svg';
+// import WritingIcon from '@gradex/assets/icons/Writing.svg';
 
 type ExamMethod = 'ai' | 'questionBank' | 'manual';
 
@@ -18,8 +18,8 @@ type MethodConfig = {
 };
 
 const METHODS: MethodConfig[] = [
-  { key: 'manual', icon: WritingIcon, color: '#00512E', boxClass: 'bg-[#00512E]/[0.12]' },
-  { key: 'questionBank', icon: IdeaIcon, color: '#A353DD', boxClass: 'bg-[#A353DD]/[0.12]' },
+  // { key: 'manual', icon: WritingIcon, color: '#00512E', boxClass: 'bg-[#00512E]/[0.12]' },
+  // { key: 'questionBank', icon: IdeaIcon, color: '#A353DD', boxClass: 'bg-[#A353DD]/[0.12]' },
   { key: 'ai', icon: SparklesIcon, color: '#117BD7', boxClass: 'bg-[#117BD7]/[0.12]' },
 ];
 
