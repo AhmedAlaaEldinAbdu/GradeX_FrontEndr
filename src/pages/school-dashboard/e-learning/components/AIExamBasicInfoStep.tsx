@@ -15,15 +15,19 @@ import SelectStudentsPopup, { type SelectedStudent } from '../popups/SelectStude
 import type { AIExamBasicInfoProps } from '@/validations/ai-exam-validations';
 import StudentAvatar from '@/assets/images/profile.png';
 
-const TOPIC_OPTIONS = [
-  { value: 'multiplying-fractions', label: 'ضرب الكسور' },
-  { value: 'division', label: 'القسمة' },
-];
 const SUBJECT_OPTIONS = [
   { value: 'math', label: 'الرياضيات' },
   { value: 'science', label: 'العلوم' },
   { value: 'arabic', label: 'اللغة العربية' },
 ];
+const EXAM_LANGUAGE_CODES = ['ar', 'en', 'de', 'fr', 'ru'];
+const EXAM_LANGUAGE_LABEL_KEYS: Record<(typeof EXAM_LANGUAGE_CODES)[number], string> = {
+  ar: 'eLearning.onlineExams.addAI.languageOptions.ar',
+  en: 'eLearning.onlineExams.addAI.languageOptions.en',
+  de: 'languageSwitcher.languages.de',
+  fr: 'languageSwitcher.languages.fr',
+  ru: 'languageSwitcher.languages.ru',
+};
 const DURATION_VALUES = [15, 30, 45, 60, 90, 120];
 
 const TARGET_AUDIENCE_OPTIONS = [
@@ -156,10 +160,10 @@ const AIExamBasicInfoStep = () => {
       }));
   }, [classroomsList, isArabic, selectedClassroomIds]);
 
-  const languageOptions = [
-    { value: 'ar', label: t('eLearning.onlineExams.addAI.languageOptions.ar') },
-    { value: 'en', label: t('eLearning.onlineExams.addAI.languageOptions.en') },
-  ];
+  const languageOptions = EXAM_LANGUAGE_CODES.map((code) => ({
+    value: code,
+    label: t(EXAM_LANGUAGE_LABEL_KEYS[code]),
+  }));
   const durationOptions = DURATION_VALUES.map((minutes) => ({
     value: String(minutes),
     label: `${minutes} ${t('eLearning.onlineExams.details.minuteUnit')}`,
@@ -223,13 +227,10 @@ const AIExamBasicInfoStep = () => {
             name="topic"
             control={control}
             render={({ field }) => (
-              <CustomSelect
+              <Input
+                {...field}
                 id="topic"
-                value={(field.value as string) ?? ''}
-                onChange={(value) => field.onChange(value)}
-                options={TOPIC_OPTIONS}
                 placeholder={t('eLearning.onlineExams.addAI.fields.topicPlaceholder')}
-                error={!!errors.topic}
               />
             )}
           />
