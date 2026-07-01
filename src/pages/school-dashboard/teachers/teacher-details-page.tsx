@@ -13,6 +13,8 @@ import EducationalStagesTab from './components/EducationalStagesTab';
 import EducationalStagesTabAttendance from './components/EducationalStagesTabAttendance';
 import LeavesTab from './components/LeavesTab';
 import Loading from '@/shared/components/Loading';
+import { teacherApiService } from '@/services/api/teachers/teachers.service';
+import { getCurrentSchoolBranchId } from '@/lib/auth';
 
 interface LocationState {
   comeFrom?: string;
@@ -26,6 +28,9 @@ export default function TeacherDetailsPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [showRecordAttendancePopup, setShowRecordAttendancePopup] = useState(false);
+  const [hasAssignment, setHasAssignment] = useState<boolean | null>(null);
+  const [firstAssignmentId, setFirstAssignmentId] = useState<string | null>(null);
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   // Check if coming from job-announcements
   const locationState = location.state as LocationState | null;
@@ -42,6 +47,35 @@ export default function TeacherDetailsPage() {
       dispatch(fetchTeacherPersonalData(id));
     }
   }, [dispatch, id]);
+
+  // Fetch assignment list to check if teacher has placement
+  useEffect(() => {
+    if (!id || !schoolBranchId) return;
+    let cancelled = false;
+    teacherApiService
+      .getTeacherAssignmentList({
+        TeacherId: id,
+        SchoolBranchesId: schoolBranchId,
+        PageSize: 1,
+      })
+      .then((data) => {
+        if (cancelled) return;
+        const assignments = data?.teacherAssignmentDto ?? [];
+        setHasAssignment(assignments.length > 0);
+        if (assignments.length > 0) {
+          setFirstAssignmentId(assignments[0].id);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setHasAssignment(false);
+          setFirstAssignmentId(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id, schoolBranchId]);
 
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'personal-data');
 
@@ -149,6 +183,14 @@ export default function TeacherDetailsPage() {
     );
   }
 
+  const handlePlacementClick = () => {
+    if (hasAssignment && firstAssignmentId) {
+      navigate(`/teaching-staff/teachers/${id}/edit-placement/${firstAssignmentId}`);
+    } else {
+      navigate(`/teachers/${id}/add-placement`);
+    }
+  };
+
   const headerActions =
     activeTab === 'educational-stages' && isFromAttendance
       ? [
@@ -170,7 +212,15 @@ export default function TeacherDetailsPage() {
               circle: true,
             },
           ]
-        : [];
+        : activeTab === 'personal-data' && !isFromJobAnnouncements && !isFromCalendarTasks
+          ? [
+              {
+                label: hasAssignment ? 'teachers.placement.editTitle' : 'teachers.placement.title',
+                onClick: handlePlacementClick,
+                variant: 'primary' as const,
+              },
+            ]
+          : [];
 
   return (
     <div>
