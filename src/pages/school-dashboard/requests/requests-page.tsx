@@ -35,23 +35,23 @@ const RequestsPage: React.FC = () => {
 
   const tabs: TabItem[] = [
     { id: 'applications', label: t('requests.tabs.applications'), content: <ApplicationsTab /> },
-    {
-      id: 'early-leave',
-      label: t('requests.tabs.earlyLeave'),
-      content: <EarlyLeaveRequestsTab />,
-    },
+    // {
+    //   id: 'early-leave',
+    //   label: t('requests.tabs.earlyLeave'),
+    //   content: <EarlyLeaveRequestsTab />,
+    // },
     { id: 'messages', label: t('requests.tabs.messages'), content: <MessageRequestsTab /> },
-    { id: 'reminder', label: t('requests.tabs.reminder'), content: <ReminderRequestsTab /> },
-    {
-      id: 'add-delegate',
-      label: t('requests.tabs.addDelegate'),
-      content: <AddDelegateRequestsTab />,
-    },
-    {
-      id: 'contract-authentication',
-      label: t('requests.tabs.contractAuthentication'),
-      content: <ContractAuthRequestsTab />,
-    },
+    // { id: 'reminder', label: t('requests.tabs.reminder'), content: <ReminderRequestsTab /> },
+    // {
+    //   id: 'add-delegate',
+    //   label: t('requests.tabs.addDelegate'),
+    //   content: <AddDelegateRequestsTab />,
+    // },
+    // {
+    //   id: 'contract-authentication',
+    //   label: t('requests.tabs.contractAuthentication'),
+    //   content: <ContractAuthRequestsTab />,
+    // },
   ];
 
   return (
