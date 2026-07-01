@@ -10,7 +10,11 @@ import type {
   JobApplicationRequestDto,
   TeacherMessageDto,
 } from '@/services/api/types/teacher-requests.types';
-import { type AdminMessageDto, type AdminMessageParty, AdminMessageStatus } from './admin-requests.types';
+import {
+  type AdminMessageDto,
+  type AdminMessageParty,
+  AdminMessageStatus,
+} from './admin-requests.types';
 import type {
   JobApplicationDto,
   JobApplicationAttachment,
@@ -77,8 +81,6 @@ const joinText = (value: unknown): string => {
   }
   return str(value).trim();
 };
-
-const REQUEST_PARTY_TYPE_SCHOOL = 1;
 
 const toTeacherProfilePath = (teacherId: unknown): string | null => {
   const id = str(teacherId).trim();

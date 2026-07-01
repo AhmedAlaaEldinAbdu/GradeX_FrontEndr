@@ -18,6 +18,7 @@ export interface TeacherClassroom {
 
 export interface Teacher {
   id: string;
+  userId: string;
   fullName: string;
   lkCountryId: string | null;
   countryName: string | null;

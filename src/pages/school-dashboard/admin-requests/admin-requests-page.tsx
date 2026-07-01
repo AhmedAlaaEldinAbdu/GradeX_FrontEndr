@@ -4,9 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import MetricCard from '@/shared/components/MetricCard';
-import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
-import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import ClockYellowBoldIcon from '@gradex/assets/icons/ClockYellowBold.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
@@ -16,15 +14,6 @@ import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import JobApplicationsTab from './components/JobApplicationsTab';
 import MessagesTab from './components/MessagesTab';
 import { MOCK_ADMIN_REQUESTS_STATS } from './admin-requests.mock';
-
-/**
- * Placeholder tab body shown until each tab's real UI/data is wired up.
- */
-const TabPlaceholder: React.FC = () => (
-  <Card className="rounded-2xl" padding="lg">
-    <NotFoundMessage message="adminRequests.empty" />
-  </Card>
-);
 
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
