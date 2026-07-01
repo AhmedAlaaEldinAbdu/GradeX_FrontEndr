@@ -87,8 +87,10 @@ export interface UpdateEarlyLeaveStatusRequest {
 // ============================================================================
 
 export interface TeacherRequestsSummaryDto {
-  // TODO(api): replace with the real summary fields.
-  [key: string]: unknown;
+  totalRequests: number;
+  acceptedRequests: number;
+  rejectedRequests: number;
+  pendingRequests: number;
 }
 
 /** Lookup item embedded in job-application responses (countries, qualifications). */
