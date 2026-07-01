@@ -126,7 +126,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
             {t('adminRequests.jobApplication.actions.schedule')}
           </Button>
           <Button
-            variant="outline"
+            variant="outlineWarning"
             onClick={() => setArchiveOpen(true)}
             disabled={actionsDisabled || isProcessing}
           >
