@@ -6,11 +6,15 @@ export const AIExamBasicInfoSchema = object({
   topic: string().required('eLearning.onlineExams.addAI.validation.topicRequired'),
   language: string().required('eLearning.onlineExams.addAI.validation.languageRequired'),
   subject: string().required('eLearning.onlineExams.addAI.validation.subjectRequired'),
-  stage: string().required('eLearning.onlineExams.addAI.validation.stageRequired'),
+  academicSystem: string().required('grades.validation.academicSystemRequired'),
   grades: array()
     .of(string().required())
-    .min(1, 'eLearning.onlineExams.addAI.validation.gradeRequired')
-    .required('eLearning.onlineExams.addAI.validation.gradeRequired'),
+    .min(1, 'requests.addMessage.validation.gradesRequired')
+    .required('requests.addMessage.validation.gradesRequired'),
+  classrooms: array()
+    .of(string().required())
+    .min(1, 'requests.addMessage.validation.classroomsRequired')
+    .required('requests.addMessage.validation.classroomsRequired'),
   targetAudience: string().required(
     'eLearning.onlineExams.addAI.validation.targetAudienceRequired'
   ),
