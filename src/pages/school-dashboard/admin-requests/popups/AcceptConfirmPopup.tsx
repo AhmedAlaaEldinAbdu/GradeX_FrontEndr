@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
+import Button from '@/shared/components/Button';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
 
@@ -46,19 +47,22 @@ const AcceptConfirmPopup: React.FC<AcceptConfirmPopupProps> = ({
         </div>
 
         <div className="flex justify-center gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={onCancel}
-            className="flex-grow rounded-2xl border border-green-500 px-5 py-2.5 text-base font-medium text-green-500 transition-colors hover:bg-green-50"
+            disabled={isProcessing}
+            fullWidth
           >
             {t('common.cancel')}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="success"
             onClick={onConfirm}
-            disabled={isProcessing}
-            className="flex-grow rounded-2xl bg-green-800 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-green-900 disabled:cursor-not-allowed disabled:opacity-50"
+            loading={isProcessing}
+            fullWidth
           >
             {t('adminRequests.jobApplication.acceptPopup.confirm')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
