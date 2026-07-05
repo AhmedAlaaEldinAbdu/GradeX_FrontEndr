@@ -3,7 +3,7 @@ import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 
 export type ReviewDifficulty = 'easy' | 'medium' | 'hard';
-export type ReviewQuestionType = 'multipleChoice' | 'trueFalse';
+export type ReviewQuestionType = 'multipleChoice' | 'trueFalse' | 'essay';
 
 export type ReviewAnswer = {
   id: string;
@@ -19,6 +19,7 @@ export type ReviewQuestion = {
   text: string;
   answers: ReviewAnswer[];
   explanation?: string;
+  points?: number;
 };
 
 const DIFFICULTY_BADGE: Record<ReviewDifficulty, string> = {
@@ -95,12 +96,17 @@ export default function ExamReviewQuestionCard({
   const { t } = useTranslation();
 
   const isMultipleChoice = question.questionType === 'multipleChoice';
+  const isEssay = question.questionType === 'essay';
   const typeBadgeClass = isMultipleChoice
     ? 'bg-[#117BD7]/10 text-[#117BD7]'
-    : 'bg-[#A353DD]/10 text-[#A353DD]';
+    : isEssay
+      ? 'bg-[#5B5BD6]/10 text-[#5B5BD6]'
+      : 'bg-[#A353DD]/10 text-[#A353DD]';
   const typeBadgeLabel = isMultipleChoice
     ? t('eLearning.onlineExams.addAI.classifications.multipleChoice')
-    : t('eLearning.onlineExams.addAI.review.trueFalse');
+    : isEssay
+      ? t('eLearning.onlineExams.addAI.review.essay', { defaultValue: 'Essay' })
+      : t('eLearning.onlineExams.addAI.review.trueFalse');
 
   const renderAnswer = (answer: ReviewAnswer) =>
     answer.isCorrect ? (
@@ -108,13 +114,14 @@ export default function ExamReviewQuestionCard({
         key={answer.id}
         className="flex items-center justify-between rounded-[14px] border-[0.5px] border-green-500 bg-[#E9F6EF] px-3 py-3"
       >
+        <span className="text-base font-normal text-[#0E1F1F]">{answer.text}</span>
+
         <div className="flex items-center gap-1.5">
+          <CorrectAnswerIcon />
           <span className="text-sm font-normal text-[#3A3A3A]">
             {t('eLearning.onlineExams.addAI.classifications.correctAnswer')}
           </span>
-          <CorrectAnswerIcon />
         </div>
-        <span className="text-base font-normal text-[#0E1F1F]">{answer.text}</span>
       </div>
     ) : (
       <div
@@ -132,7 +139,7 @@ export default function ExamReviewQuestionCard({
       className={`space-y-6 rounded-2xl border p-6 ${selected ? 'border-[#00512E]/50' : 'border-[#E6E6E6]'}`}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-1 flex-col items-end gap-3">
+        <div className="flex flex-1 flex-col items-start gap-3">
           <div className="flex items-center gap-3">
             <span
               className={`rounded-3xl px-4 py-1 text-sm font-medium ${DIFFICULTY_BADGE[question.difficulty]}`}
@@ -177,9 +184,11 @@ export default function ExamReviewQuestionCard({
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {question.answers.map(renderAnswer)}
-      </div>
+      {question.answers.length > 0 && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {question.answers.map(renderAnswer)}
+        </div>
+      )}
 
       {question.explanation && (
         <div className="flex items-center gap-3">
