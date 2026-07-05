@@ -34,6 +34,7 @@ const EditReviewQuestionForm = ({ question, onSave, onCancel }: EditReviewQuesti
   const [wrongAnswer2, setWrongAnswer2] = useState(initialWrong[1] ?? '');
   const [wrongAnswer3, setWrongAnswer3] = useState(initialWrong[2] ?? '');
   const [explanation, setExplanation] = useState(question.explanation ?? '');
+  const isEssay = questionType === 'essay';
 
   const difficultyOptions = DIFFICULTY_VALUES.map((value) => ({
     value,
@@ -45,12 +46,16 @@ const EditReviewQuestionForm = ({ question, onSave, onCancel }: EditReviewQuesti
       label: t('eLearning.onlineExams.addAI.classifications.multipleChoice'),
     },
     { value: 'trueFalse', label: t('eLearning.onlineExams.addAI.review.trueFalse') },
+    // {
+    //   value: 'essay',
+    //   label: t('eLearning.onlineExams.addAI.review.essay', { defaultValue: 'Essay' }),
+    // },
   ];
 
   const handleSave = () => {
-    const wrongAnswers = [wrongAnswer, wrongAnswer2, wrongAnswer3]
-      .map((answer) => answer.trim())
-      .filter(Boolean);
+    const wrongAnswers = isEssay
+      ? []
+      : [wrongAnswer, wrongAnswer2, wrongAnswer3].map((answer) => answer.trim()).filter(Boolean);
 
     const answers: ReviewAnswer[] = [
       { id: `${question.id}-c`, text: correctAnswer.trim(), isCorrect: true },
@@ -67,6 +72,7 @@ const EditReviewQuestionForm = ({ question, onSave, onCancel }: EditReviewQuesti
       questionType,
       answers,
       explanation: explanation.trim() || undefined,
+      points: question.points,
     });
   };
 
@@ -138,51 +144,55 @@ const EditReviewQuestionForm = ({ question, onSave, onCancel }: EditReviewQuesti
           />
         </FormField>
 
-        <FormField
-          label={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswer')}
-          required
-          htmlFor="editWrongAnswer"
-          name="editWrongAnswer"
-        >
-          <Input
-            id="editWrongAnswer"
-            value={wrongAnswer}
-            onChange={(event) => setWrongAnswer(event.target.value)}
-            placeholder={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswerPlaceholder')}
-          />
-        </FormField>
+        {!isEssay && (
+          <FormField
+            label={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswer')}
+            required
+            htmlFor="editWrongAnswer"
+            name="editWrongAnswer"
+          >
+            <Input
+              id="editWrongAnswer"
+              value={wrongAnswer}
+              onChange={(event) => setWrongAnswer(event.target.value)}
+              placeholder={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswerPlaceholder')}
+            />
+          </FormField>
+        )}
       </div>
 
       {/* Optional wrong answers */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField
-          label={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswer')}
-          optional
-          htmlFor="editWrongAnswer2"
-          name="editWrongAnswer2"
-        >
-          <Input
-            id="editWrongAnswer2"
-            value={wrongAnswer2}
-            onChange={(event) => setWrongAnswer2(event.target.value)}
-            placeholder={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswerPlaceholder')}
-          />
-        </FormField>
+      {!isEssay && (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <FormField
+            label={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswer')}
+            optional
+            htmlFor="editWrongAnswer2"
+            name="editWrongAnswer2"
+          >
+            <Input
+              id="editWrongAnswer2"
+              value={wrongAnswer2}
+              onChange={(event) => setWrongAnswer2(event.target.value)}
+              placeholder={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswerPlaceholder')}
+            />
+          </FormField>
 
-        <FormField
-          label={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswer')}
-          optional
-          htmlFor="editWrongAnswer3"
-          name="editWrongAnswer3"
-        >
-          <Input
-            id="editWrongAnswer3"
-            value={wrongAnswer3}
-            onChange={(event) => setWrongAnswer3(event.target.value)}
-            placeholder={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswerPlaceholder')}
-          />
-        </FormField>
-      </div>
+          <FormField
+            label={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswer')}
+            optional
+            htmlFor="editWrongAnswer3"
+            name="editWrongAnswer3"
+          >
+            <Input
+              id="editWrongAnswer3"
+              value={wrongAnswer3}
+              onChange={(event) => setWrongAnswer3(event.target.value)}
+              placeholder={t('eLearning.onlineExams.addAI.review.editForm.wrongAnswerPlaceholder')}
+            />
+          </FormField>
+        </div>
+      )}
 
       {/* Answer explanation */}
       <FormField

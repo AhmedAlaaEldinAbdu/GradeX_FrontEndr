@@ -25,6 +25,7 @@ export * from './daily-report/daily-report.service';
 export * from './parent/parent.service';
 export * from './teacher-requests/teacher-requests.service';
 export * from './school-notification/school-notification.service';
+export * from './ai-exam/ai-exam.service';
 
 // Types
 export * from './types/auth.types';
@@ -44,6 +45,7 @@ export * from './types/student-delegation.types';
 export * from './types/daily-report.types';
 export * from './types/parent.types';
 export * from './types/school-notification.types';
+export * from './types/ai-exam.types';
 
 // Endpoints
 export * from './endpoints/auth-endpoints';
@@ -63,3 +65,4 @@ export * from './endpoints/student-delegation-endpoints';
 export * from './endpoints/daily-report-endpoints';
 export * from './endpoints/parent-endpoints';
 export * from './endpoints/school-notification-endpoints';
+export * from './endpoints/ai-exam-endpoints';

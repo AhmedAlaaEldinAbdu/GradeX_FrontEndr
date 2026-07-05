@@ -42,6 +42,7 @@ import schoolCoursesReducer from '../features/school-course/schoolCourseSlice';
 import schoolMessagesReducer from '../features/school-messages/schoolMessagesSlice';
 import teacherRequestsReducer from '../features/teacher-requests/teacherRequestsSlice';
 import schoolNotificationsReducer from '../features/schoolNotificationsSlice';
+import aiExamReducer from '../features/ai-exam/aiExamSlice';
 
 export const store = configureStore({
   reducer: {
@@ -88,6 +89,7 @@ export const store = configureStore({
     schoolMessages: schoolMessagesReducer,
     teacherRequests: teacherRequestsReducer,
     schoolNotifications: schoolNotificationsReducer,
+    aiExam: aiExamReducer,
   },
 });
 
