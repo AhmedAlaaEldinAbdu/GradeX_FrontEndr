@@ -18,6 +18,7 @@ export const AIExamBasicInfoSchema = object({
   targetAudience: string().required(
     'eLearning.onlineExams.addAI.validation.targetAudienceRequired'
   ),
+  studentIds: array().of(string().required()).default([]),
   startDate: string().required('eLearning.onlineExams.addAI.validation.startDateRequired'),
   endDate: string().default(''),
   passingGrade: string()
