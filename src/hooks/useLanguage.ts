@@ -1,11 +1,9 @@
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/i18n';
+import { SUPPORTED_LANGUAGES, LANGUAGE_STORAGE_KEY, type SupportedLanguage } from '@/i18n';
 
 export type Language = SupportedLanguage;
 export type Direction = 'rtl' | 'ltr';
-
-const LANGUAGE_STORAGE_KEY = 'gradex-language';
 
 interface UseLanguageReturn {
   currentLanguage: Language;
