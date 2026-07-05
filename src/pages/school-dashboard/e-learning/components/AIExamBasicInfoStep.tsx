@@ -11,15 +11,11 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
+import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import SelectStudentsPopup, { type SelectedStudent } from '../popups/SelectStudentsPopup';
 import type { AIExamBasicInfoProps } from '@/validations/ai-exam-validations';
 import StudentAvatar from '@/assets/images/profile.png';
 
-const SUBJECT_OPTIONS = [
-  { value: 'math', label: 'الرياضيات' },
-  { value: 'science', label: 'العلوم' },
-  { value: 'arabic', label: 'اللغة العربية' },
-];
 const EXAM_LANGUAGE_CODES = ['ar', 'en', 'de', 'fr', 'ru'];
 const EXAM_LANGUAGE_LABEL_KEYS: Record<(typeof EXAM_LANGUAGE_CODES)[number], string> = {
   ar: 'eLearning.onlineExams.addAI.languageOptions.ar',
@@ -59,14 +55,21 @@ const AIExamBasicInfoStep = () => {
   const isLoadingGrades = useAppSelector((state) => state.grades.isLoading);
   const classroomsList = useAppSelector((state) => state.classrooms.classrooms);
   const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
+  const subjects = useAppSelector((state) => state.subjects.subjects);
+  const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
 
   const academicSystem = useWatch({ control, name: 'academicSystem' });
   const grades = useWatch({ control, name: 'grades' });
   const classrooms = useWatch({ control, name: 'classrooms' });
+  const studentIds = useWatch({ control, name: 'studentIds' });
   const selectedGradeIds = useMemo(() => (Array.isArray(grades) ? grades : []), [grades]);
   const selectedClassroomIds = useMemo(
     () => (Array.isArray(classrooms) ? classrooms : []),
     [classrooms]
+  );
+  const selectedStudentIds = useMemo(
+    () => (Array.isArray(studentIds) ? studentIds : []),
+    [studentIds]
   );
   const selectedGradeIdsKey = selectedGradeIds.join('|');
   const selectedClassroomIdsKey = selectedClassroomIds.join('|');
@@ -79,6 +82,15 @@ const AIExamBasicInfoStep = () => {
         ...(schoolBranchId && { schoolBranchId }),
       })
     );
+    if (schoolBranchId) {
+      dispatch(
+        fetchSubjects({
+          page: 1,
+          limit: 10000,
+          filters: { schoolBranchesId: schoolBranchId },
+        })
+      );
+    }
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -112,7 +124,8 @@ const AIExamBasicInfoStep = () => {
 
   useEffect(() => {
     setSelectedStudents([]);
-  }, [selectedClassroomIdsKey]);
+    setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
+  }, [selectedClassroomIdsKey, setValue]);
 
   const academicSystemOptions = useMemo<CustomSelectOption[]>(
     () =>
@@ -147,6 +160,17 @@ const AIExamBasicInfoStep = () => {
       }))
       .filter((option) => Boolean(option.value && option.label));
   }, [classroomsList, isArabic, selectedGradeIds]);
+
+  const subjectOptions = useMemo<CustomSelectOption[]>(
+    () =>
+      subjects
+        .map((subject) => ({
+          value: subject.id,
+          label: (isArabic ? subject.name : subject.nameEn) || subject.name || subject.nameEn || '',
+        }))
+        .filter((option) => Boolean(option.value && option.label)),
+    [isArabic, subjects]
+  );
 
   // Classrooms handed to the popup so it can load their students.
   const selectedClassrooms = useMemo(() => {
@@ -277,8 +301,13 @@ const AIExamBasicInfoStep = () => {
                 id="subject"
                 value={(field.value as string) ?? ''}
                 onChange={(value) => field.onChange(value)}
-                options={SUBJECT_OPTIONS}
-                placeholder={t('eLearning.onlineExams.addAI.fields.subjectPlaceholder')}
+                options={subjectOptions}
+                placeholder={
+                  isLoadingSubjects
+                    ? t('common.loading')
+                    : t('eLearning.onlineExams.addAI.fields.subjectPlaceholder')
+                }
+                disabled={isLoadingSubjects}
                 error={!!errors.subject}
               />
             )}
@@ -303,6 +332,7 @@ const AIExamBasicInfoStep = () => {
                   field.onChange(normalizeSelectValue(value));
                   setValue('grades', [], { shouldDirty: true, shouldValidate: true });
                   setValue('classrooms', [], { shouldDirty: true, shouldValidate: true });
+                  setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
                   setSelectedStudents([]);
                 }}
                 options={academicSystemOptions}
@@ -337,6 +367,7 @@ const AIExamBasicInfoStep = () => {
                 onChange={(value) => {
                   field.onChange(normalizeMultiValue(value));
                   setValue('classrooms', [], { shouldDirty: true, shouldValidate: true });
+                  setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
                   setSelectedStudents([]);
                 }}
                 options={gradeOptions}
@@ -371,6 +402,7 @@ const AIExamBasicInfoStep = () => {
                 value={Array.isArray(field.value) ? field.value : []}
                 onChange={(value) => {
                   field.onChange(normalizeMultiValue(value));
+                  setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
                   setSelectedStudents([]);
                 }}
                 options={classroomOptions}
@@ -411,6 +443,7 @@ const AIExamBasicInfoStep = () => {
                         if (option.value === 'specific') {
                           setIsStudentsOpen(true);
                         } else {
+                          setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
                           setSelectedStudents([]);
                         }
                       }}
@@ -562,8 +595,15 @@ const AIExamBasicInfoStep = () => {
         isOpen={isStudentsOpen}
         onClose={() => setIsStudentsOpen(false)}
         classrooms={selectedClassrooms}
-        value={selectedStudents.map((s) => s.id)}
-        onConfirm={(students) => setSelectedStudents(students)}
+        value={selectedStudentIds}
+        onConfirm={(students) => {
+          setSelectedStudents(students);
+          setValue(
+            'studentIds',
+            students.map((student) => student.id),
+            { shouldDirty: true, shouldValidate: true }
+          );
+        }}
       />
     </div>
   );
