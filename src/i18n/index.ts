@@ -9,7 +9,7 @@ import fr from './locals/fr.json';
 export const SUPPORTED_LANGUAGES = ['ar', 'en', 'ru', 'de', 'fr'] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
-const LANGUAGE_STORAGE_KEY = 'gradex-language';
+export const LANGUAGE_STORAGE_KEY = 'gradex-language';
 
 const getSavedLanguage = (): SupportedLanguage => {
   if (typeof window === 'undefined') return 'ar';
