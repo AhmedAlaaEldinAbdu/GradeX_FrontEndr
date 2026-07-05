@@ -6,6 +6,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } from 'axios';
 import type { ApiResponse } from './types';
 import { logger } from '../utils/logger';
+import { LANGUAGE_STORAGE_KEY } from '@/i18n';
 
 // ============================================================================
 // Configuration
@@ -120,9 +121,10 @@ baseAxiosClient.interceptors.request.use(
       logger.warn(`No auth token found for request: ${config.url}`);
     }
 
-    // Add language header
-    const language = localStorage.getItem('i18nextLng') || 'en';
+    // Add language headers
+    const language = localStorage.getItem(LANGUAGE_STORAGE_KEY) || 'ar';
     config.headers['Accept-Language'] = language;
+    config.headers['lang'] = language;
 
     // Add custom headers
     config.headers['X-Requested-With'] = 'XMLHttpRequest';
@@ -132,7 +134,8 @@ baseAxiosClient.interceptors.request.use(
       logger.info('Base URL', config.baseURL);
       logger.info('Full URL', `${config.baseURL}${config.url}`);
       logger.info('Has Authorization', !!config.headers.Authorization);
-      logger.info('Language', config.headers['Accept-Language']);
+      logger.info('lang', config.headers['Language']);
+      logger.info('Accept-Language', config.headers['Accept-Language']);
 
       if (config.params) {
         logger.info('Query Params', config.params);
