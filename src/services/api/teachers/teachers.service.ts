@@ -50,7 +50,7 @@ export async function getTeachers(params?: TeacherQueryParams): Promise<TeacherL
     }
   );
 
-  if (!response?.data?.data) {
+  if (!response?.data?.data?.teachers) {
     return {
       data: {
         teachers: [],
