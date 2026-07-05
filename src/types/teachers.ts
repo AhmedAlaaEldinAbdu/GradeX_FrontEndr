@@ -16,41 +16,50 @@ export interface TeacherClassroom {
   nameEn: string;
 }
 
+export interface TeacherClassroomAssignment {
+  classroomId: string;
+  classroomName: string;
+}
+
 export interface Teacher {
   id: string;
   userId: string;
   fullName: string;
   lkCountryId: string | null;
   countryName: string | null;
-  appLanguage: number;
-  userType: number;
+  appLanguage?: number;
+  userType?: number;
   email: string;
   countryCode: string | null;
   phoneNumber: string | null;
-  cityId: string | null;
-  cityName: string | null;
-  regionId: string | null;
-  regionName: string | null;
-  districtName: string | null;
-  streetName: string | null;
-  buildingNumber: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  locationUrl: string | null;
-  token: string;
-  phoneNumberConfirmed: boolean;
+  cityId?: string | null;
+  cityName?: string | null;
+  regionId?: string | null;
+  regionName?: string | null;
+  districtName?: string | null;
+  streetName?: string | null;
+  buildingNumber?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  locationUrl?: string | null;
+  token?: string;
+  phoneNumberConfirmed?: boolean;
   pictureProfilePath: string | null;
   job: number;
   berthDate: string | null;
   nationalityId: string | null;
   nationalityName: string | null;
+  materialId?: string | null;
+  materialName?: string | null;
+  gradeId?: string | null;
+  gradeName?: string | null;
   subjectId?: string | null;
   subjectName?: string | null;
   subjectNameAr?: string | null;
   subjectNameEn?: string | null;
   subjects?: TeacherSubject[];
   educationalStages?: TeacherEducationalStage[];
-  classrooms?: TeacherClassroom[];
+  classrooms?: TeacherClassroom[] | TeacherClassroomAssignment[];
 }
 
 export interface TeacherListData {

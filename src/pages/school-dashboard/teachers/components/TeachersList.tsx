@@ -188,6 +188,14 @@ export default function TeachersList() {
     {
       header: 'teachers.subjectName',
       accessor: (row) => {
+        // Check for new API format (materialName) first, then fall back to old formats
+        const materialName = row.materialName;
+        
+        if (materialName) {
+          return <span>{materialName}</span>;
+        }
+
+        // Fallback to old format with subjects array
         const subjectNames =
           row.subjects && row.subjects.length > 0
             ? row.subjects
@@ -210,6 +218,14 @@ export default function TeachersList() {
     {
       header: 'teachers.educationalStages',
       accessor: (row) => {
+        // Check for new API format (gradeName) first, then fall back to old format
+        const gradeName = row.gradeName;
+        
+        if (gradeName) {
+          return <span>{gradeName}</span>;
+        }
+
+        // Fallback to old format with educationalStages array
         const stageNames = (row.educationalStages || [])
           .map((stage) => (currentLang === 'ar' ? stage.nameAr : stage.nameEn))
           .filter(Boolean);
@@ -224,22 +240,38 @@ export default function TeachersList() {
     },
     {
       header: 'teachers.classrooms',
-      accessor: (row) => (
-        <div className="flex flex-wrap gap-1">
-          {row.classrooms && row.classrooms.length > 0 ? (
-            row.classrooms.map((classroom) => (
-              <span
-                key={classroom.id}
-                className="inline-flex rounded-full bg-green-100 px-2 py-1 text-green-500"
-              >
-                {currentLang === 'ar' ? classroom.nameAr : classroom.nameEn || classroom.nameAr}
-              </span>
-            ))
-          ) : (
-            <span className="text-gray-400">-</span>
-          )}
-        </div>
-      ),
+      accessor: (row) => {
+        // Handle both new format (classroomId/classroomName) and old format (id/nameAr/nameEn)
+        const classrooms = row.classrooms;
+        
+        if (!classrooms || classrooms.length === 0) {
+          return (
+            <div className="flex flex-wrap gap-1">
+              <span className="text-gray-400">-</span>
+            </div>
+          );
+        }
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            {classrooms.map((classroom: any, index: number) => {
+              // Check if it's new format (classroomId/classroomName)
+              const classroomId = classroom.classroomId || classroom.id;
+              const classroomName = classroom.classroomName || 
+                (currentLang === 'ar' ? classroom.nameAr : classroom.nameEn || classroom.nameAr);
+              
+              return (
+                <span
+                  key={classroomId || `classroom-${index}`}
+                  className="inline-flex rounded-full bg-green-100 px-2 py-1 text-green-500"
+                >
+                  {classroomName}
+                </span>
+              );
+            })}
+          </div>
+        );
+      },
       headerClassName: 'min-w-[14rem] whitespace-nowrap',
     },
     {
