@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
@@ -23,6 +23,7 @@ const RESULT_VISIBILITY_OPTIONS = [
     labelKey: 'eLearning.onlineExams.addAI.fields.resultAfterEachQuestion',
   },
 ];
+const DEFAULT_RESULT_VISIBILITY = RESULT_VISIBILITY_OPTIONS[0].value;
 
 const DIFFICULTY_SLIDERS = [
   { name: 'difficultyEasy', labelKey: 'eLearning.onlineExams.difficulty.easy', color: '#1A9F58' },
@@ -44,9 +45,20 @@ const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepP
   const [isClassificationsOpen, setIsClassificationsOpen] = useState(false);
   const {
     control,
+    setValue,
     formState: { errors },
   } = useFormContext<AIExamProps>();
   const totalPoints = useWatch({ control, name: 'totalPoints' });
+  const resultVisibility = useWatch({ control, name: 'resultVisibility' });
+
+  useEffect(() => {
+    if (!resultVisibility) {
+      setValue('resultVisibility', DEFAULT_RESULT_VISIBILITY, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+    }
+  }, [resultVisibility, setValue]);
 
   const minuteUnit = t('eLearning.onlineExams.details.minuteUnit');
   const passingGradeMax = Number(totalPoints) || 100;
@@ -178,7 +190,7 @@ const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepP
           render={({ field }) => (
             <div className="flex flex-wrap items-center gap-8 pt-2">
               {RESULT_VISIBILITY_OPTIONS.map((option) => {
-                const isSelected = field.value === option.value;
+                const isSelected = (field.value || DEFAULT_RESULT_VISIBILITY) === option.value;
                 return (
                   <button
                     key={option.value}
