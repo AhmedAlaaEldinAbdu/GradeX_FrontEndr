@@ -6,6 +6,7 @@ import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import WorkGreenIcon from '@gradex/assets/icons/WorkGreen.svg';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
@@ -46,6 +47,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
   const dispatch = useAppDispatch();
 
   const currentLang = (i18n.language || 'en') as 'ar' | 'en';
+  const currentSchoolBranchId = getCurrentSchoolBranchId();
 
   const [isScheduleOpen, setScheduleOpen] = useState(false);
   const [isArchiveOpen, setArchiveOpen] = useState(false);
@@ -407,6 +409,11 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
         isOpen={isScheduleOpen}
         onClose={() => setScheduleOpen(false)}
         onConfirm={handleScheduleConfirm}
+        schoolBranchesId={application.schoolBranchesId || currentSchoolBranchId}
+        jobAdvertisementId={application.jobAdvertismentId}
+        teacherId={application.teacherId}
+        supervisorId={application.supervisorId}
+        isProcessing={isProcessing}
       />
 
       <ArchiveConfirmPopup
