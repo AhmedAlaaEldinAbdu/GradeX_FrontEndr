@@ -316,6 +316,7 @@
         "comingSoon": "Cette étape sera ajoutée prochainement",
         "generateQuestions": "Générer les questions",
         "submit": "Ajouter l'examen",
+        "createdSuccessfully": "Examen ajouté avec succès",
         "addButton": "Ajouter",
         "classifications": {
           "searchPlaceholder": "Rechercher un nom de catégorie",

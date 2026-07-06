@@ -316,6 +316,7 @@
         "comingSoon": "Этот шаг будет добавлен в ближайшее время",
         "generateQuestions": "Сгенерировать вопросы",
         "submit": "Добавить экзамен",
+        "createdSuccessfully": "Экзамен успешно добавлен",
         "addButton": "Добавить",
         "classifications": {
           "searchPlaceholder": "Поиск по названию категории",

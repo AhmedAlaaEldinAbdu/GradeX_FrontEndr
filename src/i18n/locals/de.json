@@ -316,6 +316,7 @@
         "comingSoon": "Dieser Schritt wird bald hinzugefügt",
         "generateQuestions": "Fragen generieren",
         "submit": "Prüfung hinzufügen",
+        "createdSuccessfully": "Prüfung erfolgreich hinzugefügt",
         "addButton": "Hinzufügen",
         "classifications": {
           "searchPlaceholder": "Nach Kategoriename suchen",
