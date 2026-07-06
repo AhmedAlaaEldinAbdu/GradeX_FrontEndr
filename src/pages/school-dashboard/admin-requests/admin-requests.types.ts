@@ -31,20 +31,53 @@ export const InterviewType = {
 export type InterviewType = (typeof InterviewType)[keyof typeof InterviewType];
 
 export interface JobApplicationCourse {
+  id?: string;
   name: string;
+  providerName?: string;
+  startDate?: string;
+  endDate?: string;
+  certificateImage?: string | null;
   duration: string;
 }
 
 export interface JobApplicationExperience {
+  id?: string;
   /** e.g. "مدرس تاريخ – مدرسة النيل الدولية" */
   title: string;
   /** e.g. "2018 – 2024" */
   period: string;
+  teacherLevelNameAr?: string;
+  teacherLevelNameEn?: string;
+  schoolName?: string;
+  startDate?: string;
+  endDate?: string;
+  isPresent?: boolean;
+  attachments?: Array<{ id: string; file: string }>;
 }
 
 export interface JobApplicationLanguage {
+  id?: string;
   name: string;
   level: string;
+  nameAr?: string;
+  nameEn?: string;
+  levelAr?: string;
+  levelEn?: string;
+}
+
+export interface JobApplicationQualification {
+  id: string;
+  lkQualificationId?: string;
+  qualificationNameAr?: string;
+  qualificationNameEn?: string;
+  countryUniversityId?: string;
+  countryUniversityNameAr?: string;
+  countryUniversityNameEn?: string;
+  graduationYear?: number | string;
+  lkUniversityId?: string;
+  universityNameAr?: string;
+  universityNameEn?: string;
+  college?: string;
 }
 
 export interface JobApplicationAttachment {
@@ -99,6 +132,7 @@ export interface JobApplicationDto {
   subject: string;
   /** سنة التخرج */
   graduationYear: string;
+  qualifications: JobApplicationQualification[];
   courses: JobApplicationCourse[];
   previousExperiences: JobApplicationExperience[];
   languages: JobApplicationLanguage[];
