@@ -46,6 +46,7 @@ const QuestionBankBasicInfoStep = () => {
   const { t } = useTranslation();
   const {
     control,
+    setValue,
     formState: { errors },
   } = useFormContext<QuestionBankBasicInfoProps>();
   const [isStudentsOpen, setIsStudentsOpen] = useState(false);
@@ -180,7 +181,11 @@ const QuestionBankBasicInfoStep = () => {
               id="grades"
               isMulti
               value={Array.isArray(field.value) ? field.value : []}
-              onChange={(value) => field.onChange(Array.isArray(value) ? value : [value])}
+              onChange={(value) => {
+                field.onChange(Array.isArray(value) ? value : [value]);
+                setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
+                setSelectedStudents([]);
+              }}
               options={GRADE_OPTIONS}
               placeholder={t('eLearning.onlineExams.addQuestionBank.fields.gradePlaceholder')}
               error={!!errors.grades}
@@ -202,19 +207,27 @@ const QuestionBankBasicInfoStep = () => {
               <div className="flex flex-wrap items-center gap-8">
                 {TARGET_AUDIENCE_OPTIONS.map((option) => {
                   const isSelected = field.value === option.value;
+                  const isSpecificOption = option.value === 'specific';
+                  const isSpecificDisabled = isSpecificOption && selectedClassrooms.length === 0;
+
                   return (
                     <button
                       key={option.value}
                       type="button"
+                      disabled={isSpecificDisabled}
                       onClick={() => {
-                        field.onChange(option.value);
-                        if (option.value === 'specific') {
+                        if (isSpecificDisabled) return;
+
+                        if (isSpecificOption) {
                           setIsStudentsOpen(true);
                         } else {
+                          field.onChange(option.value);
                           setSelectedStudents([]);
                         }
                       }}
-                      className="flex items-center gap-2"
+                      className={`flex items-center gap-2 ${
+                        isSpecificDisabled ? 'cursor-not-allowed opacity-50' : ''
+                      }`}
                     >
                       <span
                         className={`flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
@@ -432,7 +445,13 @@ const QuestionBankBasicInfoStep = () => {
         onClose={() => setIsStudentsOpen(false)}
         classrooms={selectedClassrooms}
         value={selectedStudents.map((s) => s.id)}
-        onConfirm={(students) => setSelectedStudents(students)}
+        requireSelection
+        onConfirm={(students) => {
+          if (students.length === 0) return;
+
+          setSelectedStudents(students);
+          setValue('targetAudience', 'specific', { shouldDirty: true, shouldValidate: true });
+        }}
       />
     </div>
   );
