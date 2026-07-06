@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
@@ -46,8 +46,10 @@ const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepP
     control,
     formState: { errors },
   } = useFormContext<AIExamProps>();
+  const totalPoints = useWatch({ control, name: 'totalPoints' });
 
   const minuteUnit = t('eLearning.onlineExams.details.minuteUnit');
+  const passingGradeMax = Number(totalPoints) || 100;
   const questionCountOptions = QUESTION_COUNT_VALUES.map((n) => ({
     value: String(n),
     label: String(n),
@@ -60,6 +62,10 @@ const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepP
     value: String(minutes),
     label: `${minutes} ${minuteUnit}`,
   }));
+  const difficultyDistributionError =
+    errors.difficultyEasy?.message ||
+    errors.difficultyMedium?.message ||
+    errors.difficultyHard?.message;
 
   return (
     <div className="space-y-8">
@@ -130,7 +136,7 @@ const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepP
                 id="passingGrade"
                 type="number"
                 min={0}
-                max={100}
+                max={passingGradeMax}
                 placeholder={t('eLearning.onlineExams.addAI.fields.passingGradePlaceholder')}
               />
             )}
@@ -197,15 +203,18 @@ const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepP
         <FormErrorMessage message={errors.resultVisibility?.message} />
       </div>
 
-      {/* Difficulty distribution (optional sliders) */}
+      {/* Difficulty distribution */}
       <div>
-        <span className="mb-1 block text-start text-base font-normal text-black-800">
+        <span className="required mb-1 block text-start text-base font-normal text-black-800">
           {t('eLearning.onlineExams.addAI.fields.difficultyDistribution')}
-          <span className="text-sm font-normal text-gray-500"> ({t('schools.optional')}) </span>
         </span>
         <div className="space-y-4 pt-2">
           {DIFFICULTY_SLIDERS.map((slider) => (
-            <div key={slider.name} className="flex items-center gap-4">
+            <div
+              key={slider.name}
+              data-form-field={slider.name}
+              className="flex items-center gap-4"
+            >
               <span className="w-16 text-start text-sm font-normal text-[#3A3A3A]">
                 {t(slider.labelKey)}
               </span>
@@ -217,27 +226,34 @@ const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepP
                   const fillDirection = isRTL ? 'to right' : 'to left';
                   const trackBackground = `linear-gradient(${fillDirection}, ${slider.color} 0%, ${slider.color} ${value}%, #DDE0E0 ${value}%, #DDE0E0 100%)`;
                   return (
-                    <input
-                      type="range"
-                      dir={isRTL ? 'ltr' : 'rtl'}
-                      min={0}
-                      max={100}
-                      value={value}
-                      onChange={(event) => field.onChange(Number(event.target.value))}
-                      className="difficulty-slider flex-1"
-                      style={
-                        {
-                          '--slider-bg': trackBackground,
-                          '--slider-color': slider.color,
-                        } as CSSProperties
-                      }
-                    />
+                    <>
+                      <input
+                        type="range"
+                        dir={isRTL ? 'ltr' : 'rtl'}
+                        min={0}
+                        max={100}
+                        name={field.name}
+                        value={value}
+                        onChange={(event) => field.onChange(Number(event.target.value))}
+                        className="difficulty-slider flex-1"
+                        style={
+                          {
+                            '--slider-bg': trackBackground,
+                            '--slider-color': slider.color,
+                          } as CSSProperties
+                        }
+                      />
+                      <span className="w-12 text-end text-sm font-medium text-[#3A3A3A]">
+                        {value}%
+                      </span>
+                    </>
                   );
                 }}
               />
             </div>
           ))}
         </div>
+        <FormErrorMessage message={difficultyDistributionError} />
       </div>
 
       {/* Generate explanation toggle */}
