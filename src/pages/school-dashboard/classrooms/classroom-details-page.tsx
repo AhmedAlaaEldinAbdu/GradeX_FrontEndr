@@ -32,11 +32,16 @@ export default function ClassroomDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const currentLang = i18n.language as 'ar' | 'en';
   const schoolBranchId = getCurrentSchoolBranchId();
+  const locationState = location.state as LocationState | null;
+  const isFromTeacherDetails = locationState?.comeFrom === 'teacher-details';
 
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
   const grade = useAppSelector((state) => state.grades.currentGrade);
+  const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
+
 
   useEffect(() => {
     if (!id) {
@@ -113,13 +118,6 @@ export default function ClassroomDetailsPage() {
     },
   ];
 
-  const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
-
-  const location = useLocation();
-  const locationState = location.state as LocationState | null;
-  console.log('locationState', locationState);
-  const isFromTeacherDetails = locationState?.comeFrom === 'teacher-details';
-  console.log('teacherPersonalData', teacherPersonalData);
 
   const breadcrumbItems = isFromTeacherDetails
     ? [
