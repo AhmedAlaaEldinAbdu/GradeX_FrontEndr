@@ -13,9 +13,9 @@ export const QuestionBankBasicInfoSchema = object({
     .of(string().required())
     .min(1, 'eLearning.onlineExams.addQuestionBank.validation.gradeRequired')
     .required('eLearning.onlineExams.addQuestionBank.validation.gradeRequired'),
-  targetAudience: string().required(
-    'eLearning.onlineExams.addQuestionBank.validation.targetAudienceRequired'
-  ),
+  targetAudience: string()
+    .default('all')
+    .required('eLearning.onlineExams.addQuestionBank.validation.targetAudienceRequired'),
   startDate: string().required(
     'eLearning.onlineExams.addQuestionBank.validation.startDateRequired'
   ),
@@ -35,9 +35,9 @@ export const QuestionBankBasicInfoSchema = object({
         return !Number.isNaN(num) && num >= 0 && num <= 100;
       }
     ),
-  resultVisibility: string().required(
-    'eLearning.onlineExams.addQuestionBank.validation.resultVisibilityRequired'
-  ),
+  resultVisibility: string()
+    .default('afterExam')
+    .required('eLearning.onlineExams.addQuestionBank.validation.resultVisibilityRequired'),
 });
 
 export type QuestionBankBasicInfoProps = InferType<typeof QuestionBankBasicInfoSchema>;
