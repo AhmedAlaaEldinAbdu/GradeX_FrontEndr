@@ -361,12 +361,17 @@
           "stageRequired": "Le niveau scolaire est requis",
           "gradeRequired": "La classe est requise",
           "targetAudienceRequired": "Veuillez sélectionner le public cible",
+          "studentIdsRequired": "Veuillez sélectionner au moins un étudiant",
           "startDateRequired": "La date de début de l'examen est requise",
+          "endDateRequired": "La date de fin de l'examen est requise",
+          "endDateAfterStart": "La date de fin de l'examen doit être postérieure à la date de début",
           "passingGradeRequired": "La note de passage est requise",
           "passingGradeRange": "La note de passage doit être comprise entre 0 et 100",
+          "passingGradeMaxTotalPoints": "La note de passage doit être inférieure ou égale au total des points",
           "numberOfQuestionsRequired": "Le nombre de questions est requis",
           "totalPointsRequired": "Le total des points est requis",
-          "resultVisibilityRequired": "Veuillez sélectionner quand le résultat est affiché"
+          "resultVisibilityRequired": "Veuillez sélectionner quand le résultat est affiché",
+          "difficultyDistributionTotal": "Les pourcentages facile, moyen et difficile doivent totaliser 100%"
         }
       },
       "title": "Examens en ligne",

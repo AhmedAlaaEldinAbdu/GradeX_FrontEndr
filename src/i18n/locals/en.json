@@ -361,12 +361,17 @@
           "stageRequired": "The educational stage is required",
           "gradeRequired": "The class is required",
           "targetAudienceRequired": "Please select the target audience",
+          "studentIdsRequired": "Please select at least one student",
           "startDateRequired": "The exam start date is required",
+          "endDateRequired": "The exam end date is required",
+          "endDateAfterStart": "The exam end date must be after the start date",
           "passingGradeRequired": "The passing grade is required",
           "passingGradeRange": "The passing grade must be between 0 and 100",
+          "passingGradeMaxTotalPoints": "The passing grade must be less than or equal to the total points",
           "numberOfQuestionsRequired": "The number of questions is required",
           "totalPointsRequired": "The total points are required",
-          "resultVisibilityRequired": "Please select when the result is shown"
+          "resultVisibilityRequired": "Please select when the result is shown",
+          "difficultyDistributionTotal": "The easy, medium, and hard percentages must add up to 100%"
         }
       },
       "title": "Online Exams",

@@ -361,12 +361,17 @@
           "stageRequired": "المرحلة الدراسية مطلوبة",
           "gradeRequired": "الصف مطلوب",
           "targetAudienceRequired": "يرجى تحديد الفئة المستهدفة",
+          "studentIdsRequired": "يرجى تحديد طالب واحد على الأقل",
           "startDateRequired": "موعد بدء الأختبار مطلوب",
+          "endDateRequired": "موعد نهاية الأختبار مطلوب",
+          "endDateAfterStart": "موعد نهاية الأختبار يجب أن يكون بعد موعد البداية",
           "passingGradeRequired": "درجة النجاح مطلوبة",
           "passingGradeRange": "درجة النجاح يجب أن تكون بين 0 و 100",
+          "passingGradeMaxTotalPoints": "درجة النجاح يجب أن تكون أقل من أو تساوي إجمالي النقاط",
           "numberOfQuestionsRequired": "عدد الأسئلة مطلوب",
           "totalPointsRequired": "إجمالي النقاط مطلوب",
-          "resultVisibilityRequired": "يرجى تحديد وقت ظهور النتيجة"
+          "resultVisibilityRequired": "يرجى تحديد وقت ظهور النتيجة",
+          "difficultyDistributionTotal": "يجب أن يكون مجموع نسب السهل والمتوسط والصعب 100%"
         }
       },
       "title": "الأختبارات إلكترونية",
