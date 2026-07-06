@@ -40,6 +40,13 @@ export default function EducationalStagesTab({
   const { showToast } = useToast();
   const schoolBranchId = getCurrentSchoolBranchId();
 
+  const navigateToClassroom = (id: string) => {
+    navigate(`/classrooms/${id}`, { state: { comeFrom: 'teacher-details' } });
+  };
+  const navigateToClassroomRoster = (id: string) => {
+    navigate(`/classrooms/${id}/roster`, { state: { comeFrom: 'teacher-details' } });
+  };
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const [assignmentList, setAssignmentList] = useState<TeacherAssignmentListItem[]>([]);
@@ -126,9 +133,23 @@ export default function EducationalStagesTab({
           {row.classRooms.map((classroom) => (
             <span
               key={classroom.id}
-              className="inline-flex h-[43px] flex-row-reverse items-center justify-center gap-2 rounded-lg bg-[#DFF8ED] px-2 py-1.5 text-lg font-normal leading-[172.51%] text-[#3A3A3A]"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigateToClassroomRoster(`${classroom.id}`)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigateToClassroomRoster(`${classroom.id}`);
+                }
+              }}
+              className="inline-flex h-[43px] cursor-pointer flex-row-reverse items-center justify-center gap-2 rounded-lg bg-[#DFF8ED] px-2 py-1.5 text-lg font-normal leading-[172.51%] text-[#3A3A3A]"
+              aria-label={t('teachers.details.viewClassroom') ?? ''}
             >
-              <CustomImage src={EyeStyledIcon} alt="" className="h-4 w-4 rounded" />
+              <CustomImage
+                src={EyeStyledIcon}
+                alt={t('teachers.details.viewClassroom') ?? ''}
+                className="h-4 w-4 rounded"
+              />
               {currentLang === 'ar' ? classroom.name : classroom.nameEN}
             </span>
           ))}
@@ -163,6 +184,11 @@ export default function EducationalStagesTab({
       width: '25%',
     },
   ];
+
+  const handleHeaderEditClick = () => {
+    const firstClassroom = filteredStages?.[0];
+    navigateToClassroom(firstClassroom.id);
+  };
 
   if (!isActive || isLoadingAssignment) {
     return (
@@ -259,6 +285,7 @@ export default function EducationalStagesTab({
           </span>
           <button
             type="button"
+            onClick={handleHeaderEditClick}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(48,185,126,0.1)] transition-colors hover:bg-[rgba(48,185,126,0.18)]"
             aria-label={t('common.edit')}
           >
