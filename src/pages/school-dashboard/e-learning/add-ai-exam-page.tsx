@@ -55,7 +55,9 @@ const STEP1_FIELDS: (keyof AIExamProps)[] = [
   'grades',
   'classrooms',
   'targetAudience',
+  'studentIds',
   'startDate',
+  'endDate',
   'passingGrade',
 ];
 const STEP2_FIELDS: (keyof AIExamProps)[] = [
@@ -63,6 +65,9 @@ const STEP2_FIELDS: (keyof AIExamProps)[] = [
   'totalPoints',
   'passingGrade',
   'resultVisibility',
+  'difficultyEasy',
+  'difficultyMedium',
+  'difficultyHard',
 ];
 
 const DEFAULT_AI_QUESTION_TYPES: AIExamQuestionType[] = ['MCQ', 'TrueFalse'];
@@ -234,7 +239,7 @@ const buildCreatePayload = (
     materialId: values.subject,
     gradeId: grades[0] ?? '',
     startDate: toIsoDate(values.startDate),
-    endDate: toIsoDate(values.endDate || values.startDate),
+    endDate: toIsoDate(values.endDate),
     questionsCount: toNumber(values.numberOfQuestions) || questionPayloads.length,
     totalPoints,
     passingScore: toNumber(values.passingGrade),
