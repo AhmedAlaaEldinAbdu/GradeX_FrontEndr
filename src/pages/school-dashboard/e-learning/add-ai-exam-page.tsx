@@ -102,7 +102,7 @@ const toIsoDate = (value: string): string => {
 
 const mapResultVisibility = (value: string): number => (value === 'afterEachQuestion' ? 2 : 1);
 
-const mapStudentSelect = (value: string): number => (value === 'specific' ? 2 : 1);
+const mapStudentSelect = (value: string): number => (value === 'specific' ? 1 : 2);
 
 const mapLanguageToNumber = (value: string): number => LANGUAGE_NUMBER_BY_CODE[value] ?? 1;
 
