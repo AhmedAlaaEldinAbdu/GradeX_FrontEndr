@@ -40,15 +40,43 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
 const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> = ({
   application,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
+
+  const currentLang = (i18n.language || 'en') as 'ar' | 'en';
 
   const [isScheduleOpen, setScheduleOpen] = useState(false);
   const [isArchiveOpen, setArchiveOpen] = useState(false);
   const [isAcceptOpen, setAcceptOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const formatGraduationDate = (val: any) => {
+    if (val == null) return '-';
+    if (typeof val === 'number') return String(val);
+    if (typeof val === 'string') {
+      // year-only string
+      if (/^\d{4}$/.test(val)) return val;
+      const d = new Date(val);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      }
+      return val;
+    }
+    if (val instanceof Date) {
+      return val.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+    return String(val);
+  };
 
   const workTypeLabel = t(
     application.workType === WorkType.Full
@@ -65,17 +93,24 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
   const updateStatus = async (applicationStatus: number, successKey: string) => {
     try {
       setIsProcessing(true);
-      await dispatch(
+      const response = await dispatch(
         editApplicationsJobAdvertisementStatus({
           applicationsJobAdvertisementId: application.id,
           applicationStatus,
         })
       ).unwrap();
-      showToast({ message: t(successKey), type: 'success' });
+
+      const successMessage =
+        (response && ((response as any).message || (response as any).data?.message)) ||
+        t(successKey);
+      showToast({ message: successMessage, type: 'success' });
       navigate('/admin-requests');
       return true;
-    } catch {
-      showToast({ message: t('common.error'), type: 'error' });
+    } catch (err: unknown) {
+      const errorObj = err as any;
+      const errorMessage =
+        errorObj?.message || errorObj?.data?.message || errorObj?.payload?.message || err || t('common.error');
+      showToast({ message: errorMessage, type: 'error' });
       return false;
     } finally {
       setIsProcessing(false);
@@ -216,26 +251,69 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           </div>
         </Section>
 
-        {/* Education */}
+        {/* Education / Qualifications */}
         <Section title={t('adminRequests.jobApplication.sections.education')}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <InfoRow
-              label={t('adminRequests.jobApplication.fields.university')}
-              value={application.university}
-            />
-            <InfoRow
-              label={t('adminRequests.jobApplication.fields.subject')}
-              value={application.subject}
-            />
-            <InfoRow
-              label={t('adminRequests.jobApplication.fields.qualification')}
-              value={application.qualification}
-            />
-            <InfoRow
-              label={t('adminRequests.jobApplication.fields.graduationYear')}
-              value={application.graduationYear}
-            />
-          </div>
+          {application.qualifications.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {application.qualifications.map((q, idx) => (
+                <div key={q?.id ?? idx} className="rounded-xl border border-[#E6E6E6] bg-white p-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <InfoRow
+                      label={t('adminRequests.jobApplication.fields.qualification')}
+                      value={
+                        currentLang === 'ar'
+                          ? (q.qualificationNameAr ?? q.qualificationNameEn ?? '-')
+                          : (q.qualificationNameEn ?? q.qualificationNameAr ?? '-')
+                      }
+                    />
+                    <InfoRow
+                      label={t('adminRequests.jobApplication.fields.university')}
+                      value={
+                        currentLang === 'ar'
+                          ? (q.universityNameAr ?? q.universityNameEn ?? '-')
+                          : (q.universityNameEn ?? q.universityNameAr ?? '-')
+                      }
+                    />
+                    <InfoRow
+                      label={t('adminRequests.jobApplication.fields.country')}
+                      value={
+                        currentLang === 'ar'
+                          ? (q.countryUniversityNameAr ?? q.countryUniversityNameEn ?? '-')
+                          : (q.countryUniversityNameEn ?? q.countryUniversityNameAr ?? '-')
+                      }
+                    />
+                    <InfoRow
+                      label={t('adminRequests.jobApplication.fields.graduationYear')}
+                      value={formatGraduationDate(q.graduationYear)}
+                    />
+                    <InfoRow
+                      label={t('adminRequests.jobApplication.fields.college')}
+                      value={q.college}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <InfoRow
+                label={t('adminRequests.jobApplication.fields.university')}
+                value={application.university}
+              />
+              <InfoRow
+                label={t('adminRequests.jobApplication.fields.subject')}
+                value={application.subject}
+              />
+              <InfoRow
+                label={t('adminRequests.jobApplication.fields.qualification')}
+                value={application.qualification}
+              />
+              <InfoRow
+                label={t('adminRequests.jobApplication.fields.graduationYear')}
+                value={application.graduationYear}
+              />
+            </div>
+          )}
         </Section>
 
         {/* Training courses */}
