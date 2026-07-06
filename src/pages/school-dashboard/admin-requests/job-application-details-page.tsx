@@ -10,7 +10,7 @@ import {
   fetchJobApplicationById,
   clearCurrentJobApplication,
 } from '@/redux/features/teacher-requests/teacherRequestsSlice';
-import JobApplicationDetailsContent from './components/JobApplicationDetailsContent';
+import JobApplicationDetailsContent from './components/JobApplicationDetailsContent.tsx';
 import { mapJobApplication } from './admin-requests.mappers';
 
 const JobApplicationDetailsPage: React.FC = () => {
