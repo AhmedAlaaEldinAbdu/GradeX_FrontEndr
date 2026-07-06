@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import Card from '@gradex/shared/components/Card';
@@ -23,6 +23,10 @@ import {
 type ClassroomWithTeacherName = {
   teacherName?: string | null;
 };
+
+interface LocationState {
+  comeFrom?: string;
+}
 
 export default function ClassroomDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -69,7 +73,10 @@ export default function ClassroomDetailsPage() {
     0,
     Math.min(100, Math.round((classrooms.length / MAX_CLASSROOMS) * 100))
   );
-  const totalTeachers = classrooms.reduce((sum, classroom) => sum + (classroom.teacherNumber || 0), 0);
+  const totalTeachers = classrooms.reduce(
+    (sum, classroom) => sum + (classroom.teacherNumber || 0),
+    0
+  );
   const totalMaterials = classrooms.reduce(
     (sum, classroom) => sum + (classroom.materialNumber || 0),
     0
@@ -106,12 +113,34 @@ export default function ClassroomDetailsPage() {
     },
   ];
 
-  const breadcrumbItems = [
-    { label: t('sidebar.academicAffairs') },
-    { label: t('sidebar.eduStages') },
-    { label: t('grades.title'), path: '/classrooms' },
-    { label: classroomTitle || t('grades.classroomDetails') },
-  ];
+  const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
+
+  const location = useLocation();
+  const locationState = location.state as LocationState | null;
+  console.log('locationState', locationState);
+  const isFromTeacherDetails = locationState?.comeFrom === 'teacher-details';
+  console.log('teacherPersonalData', teacherPersonalData);
+
+  const breadcrumbItems = isFromTeacherDetails
+    ? [
+        { label: t('sidebar.humanResources') },
+        { label: t('sidebar.teachingStaff') },
+        { label: t('sidebar.staff'), path: '/teaching-staff?tab=teachers' },
+        {
+          label: teacherPersonalData?.fullName || t('common.loading'),
+          path: `/teaching-staff/teachers/${teacherPersonalData?.id}?tab=educational-stages`,
+        },
+        {
+          label: t('teachers.details.educationalStagesAndClassrooms'),
+          path: `/teaching-staff/teachers/${teacherPersonalData?.id}?tab=educational-stages`,
+        },
+      ]
+    : [
+        { label: t('sidebar.academicAffairs') },
+        { label: t('sidebar.eduStages') },
+        { label: t('grades.title'), path: '/classrooms' },
+        { label: classroomTitle || t('grades.classroomDetails') },
+      ];
 
   return (
     <div className="space-y-6">
