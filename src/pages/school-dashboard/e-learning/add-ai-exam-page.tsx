@@ -9,6 +9,7 @@ import Card from '@/shared/components/Card';
 import Button from '@/shared/components/Button';
 import StepIndicator from '@/shared/components/StepIndicator';
 import CustomImage from '@/shared/components/CustomImage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
@@ -41,6 +42,7 @@ import type {
 import FilesFillGreenIcon from '@gradex/assets/icons/FilesFillGreen.svg';
 import QuestionBankIcon from '@gradex/assets/icons/QuestionBank.svg';
 import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 
 const ONLINE_EXAMS_PATH = '/lms/online-exams';
 const LAST_STEP = 3;
@@ -268,6 +270,7 @@ export default function AddAIExamPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [classificationQuestions, setClassificationQuestions] = useState<ReviewQuestion[]>([]);
   const [isSaveInClassificationOpen, setIsSaveInClassificationOpen] = useState(false);
+  const [isSuccessPopupOpen, setIsSuccessPopupOpen] = useState(false);
   const generatedReviewQuestions = useMemo(
     () => generatedQuestions.map(mapGeneratedQuestionToReview),
     [generatedQuestions]
@@ -400,8 +403,7 @@ export default function AddAIExamPage() {
       await dispatch(
         createAIExamThunk(buildCreatePayload(methods.getValues(), schoolBranchId, questions))
       ).unwrap();
-      showToast({ message: 'common.successAdd', type: 'success' });
-      navigate(ONLINE_EXAMS_PATH);
+      setIsSuccessPopupOpen(true);
     } catch (error) {
       showSubmitError(error);
     }
@@ -503,6 +505,15 @@ export default function AddAIExamPage() {
       <SaveInClassificationPopup
         isOpen={isSaveInClassificationOpen}
         onClose={() => setIsSaveInClassificationOpen(false)}
+      />
+      <PopupMessage
+        open={isSuccessPopupOpen}
+        type="success"
+        message="eLearning.onlineExams.addAI.createdSuccessfully"
+        iconSrc={BigSuccessIcon}
+        autoClose
+        onClose={() => setIsSuccessPopupOpen(false)}
+        navigateAfterClose={ONLINE_EXAMS_PATH}
       />
     </div>
   );
