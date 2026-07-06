@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
@@ -45,6 +45,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
   const navigate = useNavigate();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
+  const { id } = useParams<{ id: string }>();
 
   const currentLang = (i18n.language || 'en') as 'ar' | 'en';
   const currentSchoolBranchId = getCurrentSchoolBranchId();
@@ -58,7 +59,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
     if (val == null || val === '') return '-';
     if (typeof val === 'number') return String(val);
     if (typeof val === 'string') {
-      // year-only string
       if (/^\d{4}$/.test(val)) return val;
       const d = new Date(val);
       if (!isNaN(d.getTime())) {
@@ -95,19 +95,24 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
   const updateStatus = async (applicationStatus: number, successKey: string) => {
     try {
       setIsProcessing(true);
-      const response = await dispatch(
+      await dispatch(
         editApplicationsJobAdvertisementStatus({
-          applicationsJobAdvertisementId: application.id,
+          applicationsJobAdvertisementId: id as string,
           applicationStatus,
         })
-      ).unwrap();
-
-      const successMessage =
-        (response && ((response as any).message || (response as any).data?.message)) ||
-        t(successKey);
-      showToast({ message: successMessage, type: 'success' });
-      navigate('/admin-requests');
-      return true;
+      )
+        .unwrap()
+        .then((res: any) => {
+          if (res.isSuccess) {
+            const successMessage = res.message || res.data?.message || t(successKey);
+            showToast({ message: successMessage, type: 'success' });
+            navigate('/admin-requests');
+            return true;
+          } else {
+            showToast({ message: res?.message || t('common.error'), type: 'error' });
+            return false;
+          }
+        });
     } catch (err: unknown) {
       const errorObj = err as any;
       const errorMessage =
@@ -146,7 +151,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
 
   return (
     <>
-      {/* Header: title + actions */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-lg font-medium text-black-900">
           {t('adminRequests.jobApplication.detailsTitle')}
@@ -177,7 +181,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
       </div>
 
       <div className="flex flex-col gap-5">
-        {/* Announcement card */}
         <div className="flex items-center justify-between rounded-2xl border border-[#E6E6E6] bg-white p-6">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E8F4EE]">
@@ -195,7 +198,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           </span>
         </div>
 
-        {/* Applicant card */}
         <div className="flex items-center gap-5 rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-6">
           <CustomImage
             src={application.applicantAvatarPath || DefaultAvatar}
@@ -209,7 +211,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           </div>
         </div>
 
-        {/* Personal data */}
         <Section title={t('adminRequests.jobApplication.sections.personal')}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <InfoRow
@@ -257,7 +258,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           </div>
         </Section>
 
-        {/* Education / Qualifications */}
         <Section title={t('adminRequests.jobApplication.sections.education')}>
           {application.qualifications.length > 0 ? (
             <div className="flex flex-col gap-4">
@@ -322,7 +322,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           )}
         </Section>
 
-        {/* Training courses */}
         <Section title={t('adminRequests.jobApplication.sections.training')}>
           <div className="flex flex-col gap-4">
             {application.courses.map((course, index) => (
@@ -340,7 +339,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           </div>
         </Section>
 
-        {/* Work experience */}
         <Section title={t('adminRequests.jobApplication.sections.experience')}>
           <InfoRow
             label={t('adminRequests.jobApplication.fields.experienceYears')}
@@ -358,7 +356,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           </ul>
         </Section>
 
-        {/* Languages */}
         <Section title={t('adminRequests.jobApplication.sections.languages')}>
           <p className="mb-2 text-start text-sm text-[#646969]">
             {t('adminRequests.jobApplication.fields.languagesLevels')}:
@@ -372,7 +369,6 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           </ul>
         </Section>
 
-        {/* Attachments */}
         <Section title={t('adminRequests.jobApplication.sections.attachments')}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {application.attachments.map((attachment) => (
