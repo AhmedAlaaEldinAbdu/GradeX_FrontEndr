@@ -21,6 +21,7 @@ import type {
   JobApplicationCourse,
   JobApplicationExperience,
   JobApplicationLanguage,
+  JobApplicationQualification,
   WorkType,
   JobApplicationStatus,
 } from './admin-requests.types';
@@ -50,26 +51,80 @@ const firstDefined = (...values: unknown[]): unknown =>
 const asArray = (value: unknown): LooseRecord[] =>
   Array.isArray(value) ? (value as LooseRecord[]) : [];
 
+const formatDate = (value: unknown): string => {
+  const raw = str(value).trim();
+  if (!raw) return '';
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) return raw;
+  return d.toISOString().split('T')[0];
+};
+
+const buildPeriod = (startDate: unknown, endDate: unknown, isPresent?: unknown): string => {
+  const start = formatDate(startDate);
+  if (!start) return '';
+  if (Boolean(isPresent)) return `${start} - Present`;
+  const end = formatDate(endDate);
+  return end ? `${start} - ${end}` : start;
+};
+
+const fileNameFromPath = (path: string, fallback: string): string => {
+  const clean = path.split('?')[0];
+  const segments = clean.split('/').filter(Boolean);
+  return segments[segments.length - 1] || fallback;
+};
+
 const mapCourse = (raw: LooseRecord): JobApplicationCourse => ({
+  id: str(raw.id),
   name: str(firstDefined(raw.name, raw.courseName)),
-  duration: str(firstDefined(raw.duration, raw.period)),
+  providerName: str(raw.providerName),
+  startDate: formatDate(raw.startDate),
+  endDate: formatDate(raw.endDate),
+  certificateImage: toFileUrl(raw.certificateImage),
+  duration:
+    buildPeriod(raw.startDate, raw.endDate) || str(firstDefined(raw.duration, raw.period, '-')),
 });
 
 const mapExperience = (raw: LooseRecord): JobApplicationExperience => ({
-  title: str(firstDefined(raw.title, raw.jobTitle, raw.name)),
-  period: str(firstDefined(raw.period, raw.duration)),
+  id: str(raw.id),
+  title: str(
+    firstDefined(
+      raw.title,
+      raw.jobTitle,
+      raw.name,
+      [raw.teacherLevelNameAr, raw.teacherLevelNameEn, raw.schoolName]
+        .map((v) => str(v).trim())
+        .filter(Boolean)
+        .join(' - ')
+    )
+  ),
+  period: buildPeriod(raw.startDate, raw.endDate, raw.isPresent) || str(firstDefined(raw.period, raw.duration)),
+  teacherLevelNameAr: str(raw.teacherLevelNameAr),
+  teacherLevelNameEn: str(raw.teacherLevelNameEn),
+  schoolName: str(raw.schoolName),
+  startDate: formatDate(raw.startDate),
+  endDate: formatDate(raw.endDate),
+  isPresent: Boolean(raw.isPresent),
+  attachments: asArray(raw.attachments).map((a, index) => ({
+    id: str(firstDefined(a.id, index)),
+    file: str(a.file),
+  })),
 });
 
 const mapLanguage = (raw: LooseRecord): JobApplicationLanguage => ({
-  name: str(firstDefined(raw.name, raw.languageName)),
-  level: str(firstDefined(raw.level, raw.languageLevel)),
+  id: str(raw.id),
+  name: str(firstDefined(raw.name, raw.languageName, raw.lkLanguageNameAr, raw.lkLanguageNameEn)),
+  level: str(firstDefined(raw.level, raw.languageLevel, raw.lkLanguageLevelNameAr, raw.lkLanguageLevelNameEn)),
+  nameAr: str(raw.lkLanguageNameAr),
+  nameEn: str(raw.lkLanguageNameEn),
+  levelAr: str(raw.lkLanguageLevelNameAr),
+  levelEn: str(raw.lkLanguageLevelNameEn),
 });
 
 const mapAttachment = (raw: LooseRecord, index: number): JobApplicationAttachment => ({
   id: str(firstDefined(raw.id, raw.key), String(index)),
   name: str(firstDefined(raw.name, raw.fileName)),
   size: str(firstDefined(raw.size, raw.fileSize)),
-  url: (firstDefined(raw.url, raw.path, raw.filePath) as string | undefined) ?? null,
+  url: toFileUrl(firstDefined(raw.url, raw.path, raw.filePath)),
 });
 
 const joinText = (value: unknown): string => {
@@ -136,7 +191,64 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
   // Cast through `unknown`: detail fields (TODO) aren't on the list DTO yet.
   const r = dto as unknown as LooseRecord;
 
-  const firstQualification = asArray(r.jobAdvertisementQualifications)[0];
+  const qualificationsRaw = asArray(firstDefined(r.qualifications, r.jobAdvertisementQualifications));
+  const qualifications: JobApplicationQualification[] = qualificationsRaw.map((q, index) => ({
+    id: str(firstDefined(q.id, index)),
+    lkQualificationId: str(q.lkQualificationId),
+    qualificationNameAr: str(firstDefined(q.qualificationNameAr, q.nameAr)),
+    qualificationNameEn: str(firstDefined(q.qualificationNameEn, q.nameEn)),
+    countryUniversityId: str(q.countryUniversityId),
+    countryUniversityNameAr: str(q.countryUniversityNameAr),
+    countryUniversityNameEn: str(q.countryUniversityNameEn),
+    graduationYear: firstDefined(q.graduationYear, q.graduationDate) as number | string | undefined,
+    lkUniversityId: str(q.lkUniversityId),
+    universityNameAr: str(q.universityNameAr),
+    universityNameEn: str(q.universityNameEn),
+    college: str(q.college),
+  }));
+
+  const firstQualification = qualifications[0];
+
+  const experiencesRaw = asArray(firstDefined(r.experience, r.experiences, r.previousExperiences));
+  const coursesRaw = asArray(firstDefined(r.courses, r.trainingCourses));
+
+  const derivedAttachments: JobApplicationAttachment[] = [];
+
+  const resumePath = toFileUrl(firstDefined(r.resumeFile, r.cvPath, r.cvUrl));
+  if (resumePath) {
+    derivedAttachments.push({
+      id: 'resume-file',
+      name: fileNameFromPath(resumePath, 'Resume'),
+      size: '-',
+      url: resumePath,
+    });
+  }
+
+  coursesRaw.forEach((course, index) => {
+    const cert = toFileUrl(course.certificateImage);
+    if (cert) {
+      derivedAttachments.push({
+        id: str(firstDefined(course.id, `course-cert-${index}`)),
+        name: fileNameFromPath(cert, `Course Certificate ${index + 1}`),
+        size: '-',
+        url: cert,
+      });
+    }
+  });
+
+  experiencesRaw.forEach((exp, expIndex) => {
+    asArray(exp.attachments).forEach((att, attIndex) => {
+      const file = toFileUrl(att.file);
+      if (file) {
+        derivedAttachments.push({
+          id: str(firstDefined(att.id, `experience-att-${expIndex}-${attIndex}`)),
+          name: fileNameFromPath(file, `Experience Attachment ${attIndex + 1}`),
+          size: '-',
+          url: file,
+        });
+      }
+    });
+  });
 
   return {
     id: str(firstDefined(r.applicationJobAdvertismentId, r.id)),
@@ -146,11 +258,23 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
     applicantName: str(firstDefined(r.teacherFullName, r.fullName, r.applicantName)),
     applicantAvatarPath:
       (firstDefined(r.teacherImagePath, r.imagePath, r.avatarPath) as string | undefined) ?? null,
-    role: str(firstDefined(r.subjectName, r.jobTitle, r.role)),
-    cvUrl: toFileUrl(firstDefined(r.resumeFile, r.cvPath, r.cvUrl)),
+    role: str(
+      firstDefined(
+        r.subjectName,
+        r.jobTitle,
+        r.role,
+        asArray(firstDefined(r.experience, r.experiences))[0]?.teacherLevelNameAr,
+        asArray(firstDefined(r.experience, r.experiences))[0]?.teacherLevelNameEn
+      )
+    ),
+    cvUrl: resumePath,
     workType: numOr(firstDefined(r.workShedule, r.workType)) as WorkType,
     qualification: str(
-      firstDefined(firstQualification?.nameAr, firstQualification?.nameEn, r.qualification)
+      firstDefined(
+        firstQualification?.qualificationNameAr,
+        firstQualification?.qualificationNameEn,
+        r.qualification
+      )
     ),
     experienceYears: numOr(firstDefined(r.yearsExperience, r.experienceYears)),
     country: str(firstDefined(r.lkCountryNameAr, r.lkCountryNameEn, r.countryName, r.country)),
@@ -162,19 +286,28 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
     status: numOr(firstDefined(r.applicationStatus, r.status)) as JobApplicationStatus,
 
     // ── Details (TODO(api): confirm once the details response is provided) ──
-    maritalStatus: str(firstDefined(r.maritalStatusName, r.maritalStatus)),
-    residenceCountry: str(firstDefined(r.residenceCountryName, r.residenceCountry)),
-    nationalId: str(firstDefined(r.identityNumber, r.nationalId)),
+    maritalStatus: str(firstDefined(r.socialStatusNameAr, r.socialStatusNameEn, r.maritalStatusName, r.socialStatus, r.maritalStatus)),
+    residenceCountry: str(firstDefined(r.residenceCountryName, r.residenceCountry, r.lkCountryNameAr, r.lkCountryNameEn)),
+    nationalId: str(firstDefined(r.nationalIdentityNumber, r.identityNumber, r.nationalId)),
     birthDate: str(firstDefined(r.dateOfBirth, r.birthDate)),
-    idType: str(firstDefined(r.identityTypeName, r.idType)),
-    university: str(firstDefined(r.universityName, r.university)),
-    subject: str(firstDefined(r.subjectName, r.subject)),
-    graduationYear: str(firstDefined(r.graduationYear, r.graduationDate)),
-    courses: asArray(firstDefined(r.courses, r.trainingCourses)).map(mapCourse),
-    previousExperiences: asArray(firstDefined(r.previousExperiences, r.experiences)).map(
-      mapExperience
+    idType: str(firstDefined(r.identityTypeNameAr, r.identityTypeNameEn, r.identityTypeName, r.identityType, r.idType)),
+    university: str(
+      firstDefined(
+        firstQualification?.universityNameAr,
+        firstQualification?.universityNameEn,
+        r.universityName,
+        r.university
+      )
     ),
+    subject: str(firstDefined(r.subjectName, r.subject)),
+    graduationYear: str(firstDefined(firstQualification?.graduationYear, r.graduationYear, r.graduationDate)),
+    qualifications,
+    courses: coursesRaw.map(mapCourse),
+    previousExperiences: experiencesRaw.map(mapExperience),
     languages: asArray(r.languages).map(mapLanguage),
-    attachments: asArray(firstDefined(r.attachments, r.files)).map(mapAttachment),
+    attachments: [
+      ...asArray(firstDefined(r.attachments, r.files)).map(mapAttachment),
+      ...derivedAttachments,
+    ],
   };
 };
