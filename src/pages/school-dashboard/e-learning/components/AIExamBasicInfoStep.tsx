@@ -36,6 +36,17 @@ const normalizeSelectValue = (value: string | string[]) =>
 const normalizeMultiValue = (value: string | string[]) =>
   (Array.isArray(value) ? value : [value]).filter(Boolean);
 
+const getNextDateValue = (dateValue?: string) => {
+  if (!dateValue) return undefined;
+
+  const [year, month, day] = dateValue.split('-').map(Number);
+  if (!year || !month || !day) return undefined;
+
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+};
+
 const AIExamBasicInfoStep = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
@@ -62,6 +73,7 @@ const AIExamBasicInfoStep = () => {
   const grades = useWatch({ control, name: 'grades' });
   const classrooms = useWatch({ control, name: 'classrooms' });
   const studentIds = useWatch({ control, name: 'studentIds' });
+  const startDate = useWatch({ control, name: 'startDate' });
   const selectedGradeIds = useMemo(() => (Array.isArray(grades) ? grades : []), [grades]);
   const selectedClassroomIds = useMemo(
     () => (Array.isArray(classrooms) ? classrooms : []),
@@ -192,6 +204,7 @@ const AIExamBasicInfoStep = () => {
     value: String(minutes),
     label: `${minutes} ${t('eLearning.onlineExams.details.minuteUnit')}`,
   }));
+  const endDateMin = getNextDateValue(startDate);
 
   return (
     <div className="space-y-8">
@@ -494,7 +507,11 @@ const AIExamBasicInfoStep = () => {
             </div>
           )}
         />
-        <FormErrorMessage message={errors.targetAudience?.message} />
+        <div data-form-field="studentIds">
+          <FormErrorMessage
+            message={errors.targetAudience?.message ?? errors.studentIds?.message}
+          />
+        </div>
       </div>
 
       {/* Start + end dates */}
@@ -522,7 +539,7 @@ const AIExamBasicInfoStep = () => {
 
         <FormField
           label={t('eLearning.onlineExams.addAI.fields.endDate')}
-          optional
+          required
           htmlFor="endDate"
           name="endDate"
           error={errors.endDate?.message}
@@ -535,6 +552,7 @@ const AIExamBasicInfoStep = () => {
                 {...field}
                 id="endDate"
                 type="date"
+                min={endDateMin}
                 placeholder={t('eLearning.onlineExams.addAI.fields.endDatePlaceholder')}
               />
             )}
