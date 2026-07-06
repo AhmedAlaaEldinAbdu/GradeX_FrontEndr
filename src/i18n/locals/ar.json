@@ -1327,7 +1327,8 @@
         "experienceYears": "سنوات الخبرة",
         "yearsUnit": "سنوات",
         "previousExperience": "الخبرات السابقة (أحدث أولًا)",
-        "languagesLevels": "اللغات ومستوى كل لغة"
+        "languagesLevels": "اللغات ومستوى كل لغة",
+        "college": "الكلية"
       },
       "schedulePopup": {
         "title": "تحديد موعد",
