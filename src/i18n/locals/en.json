@@ -2527,6 +2527,7 @@
     "scheduled": "Scheduled",
     "completed": "Completed",
     "cancelled": "Cancelled",
+    "interviewNotFound": "No interviews found",
     "searchByName": "Search by candidate name",
     "interviewAddedSuccessfully": "Interview added successfully",
     "interviewUpdatedSuccessfully": "Interview updated successfully",

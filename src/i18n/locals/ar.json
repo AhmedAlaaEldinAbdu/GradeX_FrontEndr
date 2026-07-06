@@ -2527,6 +2527,7 @@
     "scheduled": "مجدولة",
     "completed": "مكتملة",
     "cancelled": "ملغية",
+    "interviewNotFound": "المقابلة غير موجودة",
     "searchByName": "ابحث عن اسم المرشح",
     "interviewAddedSuccessfully": "تم إضافة المقابلة بنجاح",
     "interviewUpdatedSuccessfully": "تم تحديث المقابلة بنجاح",
