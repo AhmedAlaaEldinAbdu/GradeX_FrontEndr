@@ -232,8 +232,8 @@
           "totalPointsPlaceholder": "Выберите общее количество баллов",
           "examDuration": "Длительность экзамена (минуты)",
           "examDurationPlaceholder": "Выберите длительность экзамена (минуты)",
-          "passingGrade": "Проходной балл %",
-          "passingGradePlaceholder": "Введите проходной балл %",
+          "passingGrade": "Проходной балл",
+          "passingGradePlaceholder": "Введите проходной балл",
           "resultVisibility": "Видимость результата для ученика",
           "resultAfterExam": "Сразу после экзамена",
           "resultAfterEachQuestion": "Показывать результат после каждого вопроса"
@@ -316,6 +316,7 @@
         "comingSoon": "Этот шаг будет добавлен в ближайшее время",
         "generateQuestions": "Сгенерировать вопросы",
         "submit": "Добавить экзамен",
+        "createdSuccessfully": "Экзамен успешно добавлен",
         "addButton": "Добавить",
         "classifications": {
           "searchPlaceholder": "Поиск по названию категории",
@@ -361,12 +362,17 @@
           "stageRequired": "Учебный этап обязателен",
           "gradeRequired": "Класс обязателен",
           "targetAudienceRequired": "Пожалуйста, выберите целевую аудиторию",
+          "studentIdsRequired": "Пожалуйста, выберите хотя бы одного ученика",
           "startDateRequired": "Дата начала экзамена обязательна",
+          "endDateRequired": "Дата окончания экзамена обязательна",
+          "endDateAfterStart": "Дата окончания экзамена должна быть позже даты начала",
           "passingGradeRequired": "Проходной балл обязателен",
           "passingGradeRange": "Проходной балл должен быть от 0 до 100",
+          "passingGradeMaxTotalPoints": "Проходной балл должен быть меньше или равен общему количеству баллов",
           "numberOfQuestionsRequired": "Количество вопросов обязательно",
           "totalPointsRequired": "Общее количество баллов обязательно",
-          "resultVisibilityRequired": "Пожалуйста, выберите, когда показывать результат"
+          "resultVisibilityRequired": "Пожалуйста, выберите, когда показывать результат",
+          "difficultyDistributionTotal": "Сумма процентов для легких, средних и сложных вопросов должна быть 100%"
         }
       },
       "title": "Онлайн-экзамены",

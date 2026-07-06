@@ -232,8 +232,8 @@
           "totalPointsPlaceholder": "اختر إجمالي النقاط",
           "examDuration": "مدة الأختبار (دقيقة)",
           "examDurationPlaceholder": "اختر مدة الأختبار (دقيقة)",
-          "passingGrade": "درجة النجاح %",
-          "passingGradePlaceholder": "أدخل درجة النجاح %",
+          "passingGrade": "درجة النجاح",
+          "passingGradePlaceholder": "أدخل درجة النجاح",
           "resultVisibility": "ظهور النتيجة للطالب",
           "resultAfterExam": "بعد الأختبار مباشرة",
           "resultAfterEachQuestion": "عرض النتيجة بعد كل سؤال"
@@ -291,7 +291,7 @@
           "startDatePlaceholder": "اختر موعد بدء الأختبار",
           "endDate": "موعد انتهاء الأختبار",
           "endDatePlaceholder": "اختر موعد انتهاء الأختبار",
-          "passingGrade": "درجة النجاح %",
+          "passingGrade": "درجة النجاح",
           "passingGradePlaceholder": "ادخل درجة النجاح",
           "duration": "المدة (دقيقة)",
           "durationPlaceholder": "اختر المدة",
@@ -316,6 +316,7 @@
         "comingSoon": "سيتم إضافة هذه الخطوة قريباً",
         "generateQuestions": "توليد الأسئلة",
         "submit": "إضافة الأختبار",
+        "createdSuccessfully": "تم إضافة الأختبار بنجاح",
         "addButton": "إضافة",
         "classifications": {
           "searchPlaceholder": "ابحث عن اسم التصنيف",
@@ -361,12 +362,17 @@
           "stageRequired": "المرحلة الدراسية مطلوبة",
           "gradeRequired": "الصف مطلوب",
           "targetAudienceRequired": "يرجى تحديد الفئة المستهدفة",
+          "studentIdsRequired": "يرجى تحديد طالب واحد على الأقل",
           "startDateRequired": "موعد بدء الأختبار مطلوب",
+          "endDateRequired": "موعد نهاية الأختبار مطلوب",
+          "endDateAfterStart": "موعد نهاية الأختبار يجب أن يكون بعد موعد البداية",
           "passingGradeRequired": "درجة النجاح مطلوبة",
           "passingGradeRange": "درجة النجاح يجب أن تكون بين 0 و 100",
+          "passingGradeMaxTotalPoints": "درجة النجاح يجب أن تكون أقل من أو تساوي إجمالي النقاط",
           "numberOfQuestionsRequired": "عدد الأسئلة مطلوب",
           "totalPointsRequired": "إجمالي النقاط مطلوب",
-          "resultVisibilityRequired": "يرجى تحديد وقت ظهور النتيجة"
+          "resultVisibilityRequired": "يرجى تحديد وقت ظهور النتيجة",
+          "difficultyDistributionTotal": "يجب أن يكون مجموع نسب السهل والمتوسط والصعب 100%"
         }
       },
       "title": "الأختبارات إلكترونية",

@@ -232,8 +232,8 @@
           "totalPointsPlaceholder": "Gesamtpunkte auswählen",
           "examDuration": "Prüfungsdauer (Minuten)",
           "examDurationPlaceholder": "Prüfungsdauer auswählen (Minuten)",
-          "passingGrade": "Bestehensgrenze %",
-          "passingGradePlaceholder": "Bestehensgrenze eingeben %",
+          "passingGrade": "Bestehensgrenze",
+          "passingGradePlaceholder": "Bestehensgrenze eingeben",
           "resultVisibility": "Sichtbarkeit des Ergebnisses für den Schüler",
           "resultAfterExam": "Direkt nach der Prüfung",
           "resultAfterEachQuestion": "Ergebnis nach jeder Frage anzeigen"
@@ -316,6 +316,7 @@
         "comingSoon": "Dieser Schritt wird bald hinzugefügt",
         "generateQuestions": "Fragen generieren",
         "submit": "Prüfung hinzufügen",
+        "createdSuccessfully": "Prüfung erfolgreich hinzugefügt",
         "addButton": "Hinzufügen",
         "classifications": {
           "searchPlaceholder": "Nach Kategoriename suchen",
@@ -361,12 +362,17 @@
           "stageRequired": "Die Bildungsstufe ist erforderlich",
           "gradeRequired": "Die Klasse ist erforderlich",
           "targetAudienceRequired": "Bitte wählen Sie die Zielgruppe",
+          "studentIdsRequired": "Bitte wählen Sie mindestens einen Schüler aus",
           "startDateRequired": "Das Startdatum der Prüfung ist erforderlich",
+          "endDateRequired": "Das Enddatum der Prüfung ist erforderlich",
+          "endDateAfterStart": "Das Enddatum der Prüfung muss nach dem Startdatum liegen",
           "passingGradeRequired": "Die Bestehensnote ist erforderlich",
           "passingGradeRange": "Die Bestehensnote muss zwischen 0 und 100 liegen",
+          "passingGradeMaxTotalPoints": "Die Bestehensnote muss kleiner oder gleich der Gesamtpunktzahl sein",
           "numberOfQuestionsRequired": "Die Anzahl der Fragen ist erforderlich",
           "totalPointsRequired": "Die Gesamtpunktzahl ist erforderlich",
-          "resultVisibilityRequired": "Bitte wählen Sie, wann das Ergebnis angezeigt wird"
+          "resultVisibilityRequired": "Bitte wählen Sie, wann das Ergebnis angezeigt wird",
+          "difficultyDistributionTotal": "Die Prozentsätze für leicht, mittel und schwer müssen zusammen 100% ergeben"
         }
       },
       "title": "Online-Prüfungen",

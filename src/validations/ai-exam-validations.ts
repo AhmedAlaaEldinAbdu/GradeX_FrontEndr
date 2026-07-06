@@ -1,5 +1,19 @@
 import { array, boolean, number, object, string, type InferType } from 'yup';
 
+const toFiniteNumber = (value: unknown) => {
+  if (value === '' || value === null || value === undefined) return null;
+
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : null;
+};
+
+const toDateTime = (value: unknown) => {
+  if (typeof value !== 'string' || !value) return null;
+
+  const dateTime = new Date(value).getTime();
+  return Number.isNaN(dateTime) ? null : dateTime;
+};
+
 export const AIExamBasicInfoSchema = object({
   titleAr: string().trim().required('eLearning.onlineExams.addAI.validation.titleArRequired'),
   titleEn: string().trim().required('eLearning.onlineExams.addAI.validation.titleEnRequired'),
@@ -18,16 +32,44 @@ export const AIExamBasicInfoSchema = object({
   targetAudience: string().required(
     'eLearning.onlineExams.addAI.validation.targetAudienceRequired'
   ),
-  studentIds: array().of(string().required()).default([]),
+  studentIds: array()
+    .of(string().required())
+    .default([])
+    .when('targetAudience', {
+      is: 'specific',
+      then: (schema) => schema.min(1, 'eLearning.onlineExams.addAI.validation.studentIdsRequired'),
+    }),
   startDate: string().required('eLearning.onlineExams.addAI.validation.startDateRequired'),
-  endDate: string().default(''),
+  endDate: string()
+    .required('eLearning.onlineExams.addAI.validation.endDateRequired')
+    .test(
+      'end-after-start',
+      'eLearning.onlineExams.addAI.validation.endDateAfterStart',
+      function (value) {
+        const startDate = toDateTime(this.parent.startDate);
+        const endDate = toDateTime(value);
+
+        if (startDate === null || endDate === null) return true;
+        return endDate > startDate;
+      }
+    ),
   passingGrade: string()
     .required('eLearning.onlineExams.addAI.validation.passingGradeRequired')
     .test('range', 'eLearning.onlineExams.addAI.validation.passingGradeRange', (value) => {
-      if (!value) return false;
-      const num = Number(value);
-      return !Number.isNaN(num) && num >= 0 && num <= 100;
-    }),
+      const passingGrade = toFiniteNumber(value);
+      return passingGrade !== null && passingGrade >= 0 && passingGrade <= 100;
+    })
+    .test(
+      'max-total-points',
+      'eLearning.onlineExams.addAI.validation.passingGradeMaxTotalPoints',
+      function (value) {
+        const passingGrade = toFiniteNumber(value);
+        const totalPoints = toFiniteNumber(this.parent.totalPoints);
+
+        if (passingGrade === null || totalPoints === null) return true;
+        return passingGrade <= totalPoints;
+      }
+    ),
   duration: string().default(''),
 });
 
@@ -45,7 +87,22 @@ export const AIExamQuestionsSchema = object({
   difficultyMedium: number().min(0).max(100).default(0),
   difficultyHard: number().min(0).max(100).default(0),
   generateExplanation: boolean().default(false),
-});
+}).test(
+  'difficulty-total',
+  'eLearning.onlineExams.addAI.validation.difficultyDistributionTotal',
+  function (values) {
+    const easy = toFiniteNumber(values?.difficultyEasy) ?? 0;
+    const medium = toFiniteNumber(values?.difficultyMedium) ?? 0;
+    const hard = toFiniteNumber(values?.difficultyHard) ?? 0;
+
+    if (easy + medium + hard === 100) return true;
+
+    return this.createError({
+      path: 'difficultyHard',
+      message: 'eLearning.onlineExams.addAI.validation.difficultyDistributionTotal',
+    });
+  }
+);
 
 /** Full wizard schema (basic info + questions) used by the form resolver. */
 export const AIExamSchema = AIExamBasicInfoSchema.concat(AIExamQuestionsSchema);

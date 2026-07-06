@@ -9,6 +9,7 @@ import Card from '@/shared/components/Card';
 import Button from '@/shared/components/Button';
 import StepIndicator from '@/shared/components/StepIndicator';
 import CustomImage from '@/shared/components/CustomImage';
+import PopupMessage from '@/shared/popups/PopupMessage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
@@ -41,6 +42,7 @@ import type {
 import FilesFillGreenIcon from '@gradex/assets/icons/FilesFillGreen.svg';
 import QuestionBankIcon from '@gradex/assets/icons/QuestionBank.svg';
 import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
+import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 
 const ONLINE_EXAMS_PATH = '/lms/online-exams';
 const LAST_STEP = 3;
@@ -55,7 +57,9 @@ const STEP1_FIELDS: (keyof AIExamProps)[] = [
   'grades',
   'classrooms',
   'targetAudience',
+  'studentIds',
   'startDate',
+  'endDate',
   'passingGrade',
 ];
 const STEP2_FIELDS: (keyof AIExamProps)[] = [
@@ -63,6 +67,9 @@ const STEP2_FIELDS: (keyof AIExamProps)[] = [
   'totalPoints',
   'passingGrade',
   'resultVisibility',
+  'difficultyEasy',
+  'difficultyMedium',
+  'difficultyHard',
 ];
 
 const DEFAULT_AI_QUESTION_TYPES: AIExamQuestionType[] = ['MCQ', 'TrueFalse'];
@@ -234,7 +241,7 @@ const buildCreatePayload = (
     materialId: values.subject,
     gradeId: grades[0] ?? '',
     startDate: toIsoDate(values.startDate),
-    endDate: toIsoDate(values.endDate || values.startDate),
+    endDate: toIsoDate(values.endDate),
     questionsCount: toNumber(values.numberOfQuestions) || questionPayloads.length,
     totalPoints,
     passingScore: toNumber(values.passingGrade),
@@ -263,6 +270,7 @@ export default function AddAIExamPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [classificationQuestions, setClassificationQuestions] = useState<ReviewQuestion[]>([]);
   const [isSaveInClassificationOpen, setIsSaveInClassificationOpen] = useState(false);
+  const [isSuccessPopupOpen, setIsSuccessPopupOpen] = useState(false);
   const generatedReviewQuestions = useMemo(
     () => generatedQuestions.map(mapGeneratedQuestionToReview),
     [generatedQuestions]
@@ -395,8 +403,7 @@ export default function AddAIExamPage() {
       await dispatch(
         createAIExamThunk(buildCreatePayload(methods.getValues(), schoolBranchId, questions))
       ).unwrap();
-      showToast({ message: 'common.successAdd', type: 'success' });
-      navigate(ONLINE_EXAMS_PATH);
+      setIsSuccessPopupOpen(true);
     } catch (error) {
       showSubmitError(error);
     }
@@ -469,22 +476,18 @@ export default function AddAIExamPage() {
           <StepIndicator steps={steps} currentStep={currentStep} />
 
           {currentStep === LAST_STEP ? (
-            <div className="space-y-6">
-              <AIExamReviewStep
-                generatedQuestions={generatedReviewQuestions}
-                classificationQuestions={classificationQuestions}
-                isRegenerating={isGenerating}
-                onRegenerate={() => void generateQuestions(false)}
-                onRemoveGenerated={(id) => dispatch(removeGeneratedQuestion(id))}
-                onUpdateGenerated={handleUpdateGeneratedQuestion}
-                onRemoveClassification={(id) =>
-                  setClassificationQuestions((prev) =>
-                    prev.filter((question) => question.id !== id)
-                  )
-                }
-              />
-              {footer}
-            </div>
+            <AIExamReviewStep
+              generatedQuestions={generatedReviewQuestions}
+              classificationQuestions={classificationQuestions}
+              isRegenerating={isGenerating}
+              onRegenerate={() => void generateQuestions(false)}
+              onRemoveGenerated={(id) => dispatch(removeGeneratedQuestion(id))}
+              onUpdateGenerated={handleUpdateGeneratedQuestion}
+              onRemoveClassification={(id) =>
+                setClassificationQuestions((prev) => prev.filter((question) => question.id !== id))
+              }
+              footer={footer}
+            />
           ) : (
             <Card padding="md">
               <div className="space-y-8">
@@ -502,6 +505,15 @@ export default function AddAIExamPage() {
       <SaveInClassificationPopup
         isOpen={isSaveInClassificationOpen}
         onClose={() => setIsSaveInClassificationOpen(false)}
+      />
+      <PopupMessage
+        open={isSuccessPopupOpen}
+        type="success"
+        message="eLearning.onlineExams.addAI.createdSuccessfully"
+        iconSrc={BigSuccessIcon}
+        autoClose
+        onClose={() => setIsSuccessPopupOpen(false)}
+        navigateAfterClose={ONLINE_EXAMS_PATH}
       />
     </div>
   );

@@ -6,7 +6,12 @@ export interface AIExamApiEnvelope<T> {
   data: T;
   isSuccess: boolean;
   message: string;
-  validationErrors: string[] | null;
+  validationErrors: AIExamValidationError[] | string[] | null;
+}
+
+export interface AIExamValidationError {
+  propertyName: string;
+  errorMessage: string;
 }
 
 // ============================================================================
