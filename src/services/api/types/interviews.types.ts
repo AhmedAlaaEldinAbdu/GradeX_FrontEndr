@@ -63,7 +63,7 @@ export interface CreateInterviewRequest {
   schoolBranchesId: string;
   jobAdvertisementId: string;
   teacherId: string;
-  supervisorId: string;
+  supervisorId?: string;
   interviewDate: string;
   startTime: string;
   endTime: string;
