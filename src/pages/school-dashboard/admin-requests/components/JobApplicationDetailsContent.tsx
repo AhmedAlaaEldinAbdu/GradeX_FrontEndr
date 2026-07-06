@@ -52,8 +52,8 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
   const [isAcceptOpen, setAcceptOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const formatGraduationDate = (val: any) => {
-    if (val == null) return '-';
+  const formatDate = (val: any) => {
+    if (val == null || val === '') return '-';
     if (typeof val === 'number') return String(val);
     if (typeof val === 'string') {
       // year-only string
@@ -62,7 +62,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
       if (!isNaN(d.getTime())) {
         return d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
           year: 'numeric',
-          month: 'long',
+          month: 'numeric',
           day: 'numeric',
         });
       }
@@ -71,7 +71,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
     if (val instanceof Date) {
       return val.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US', {
         year: 'numeric',
-        month: 'long',
+        month: 'numeric',
         day: 'numeric',
       });
     }
@@ -109,7 +109,11 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
     } catch (err: unknown) {
       const errorObj = err as any;
       const errorMessage =
-        errorObj?.message || errorObj?.data?.message || errorObj?.payload?.message || err || t('common.error');
+        errorObj?.message ||
+        errorObj?.data?.message ||
+        errorObj?.payload?.message ||
+        err ||
+        t('common.error');
       showToast({ message: errorMessage, type: 'error' });
       return false;
     } finally {
@@ -236,7 +240,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
             />
             <InfoRow
               label={t('adminRequests.jobApplication.fields.birthDate')}
-              value={application.birthDate}
+              value={formatDate(application.birthDate)}
             />
             <InfoRow
               label={t('adminRequests.jobApplication.fields.idType')}
@@ -284,7 +288,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
                     />
                     <InfoRow
                       label={t('adminRequests.jobApplication.fields.graduationYear')}
-                      value={formatGraduationDate(q.graduationYear)}
+                      value={formatDate(q.graduationYear)}
                     />
                     <InfoRow
                       label={t('adminRequests.jobApplication.fields.college')}
