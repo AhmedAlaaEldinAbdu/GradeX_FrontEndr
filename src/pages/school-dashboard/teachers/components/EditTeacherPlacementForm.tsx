@@ -93,23 +93,8 @@ export default function EditTeacherPlacementForm({
   const gradeId = watch('gradeId');
   const bookIds = watch('bookIds') || [];
 
-  // Load lookup data on mount
+  // Load lookup data on mount (grades only)
   useEffect(() => {
-    dispatch(
-      fetchSubjects({
-        page: 1,
-        limit: 100,
-        filters: { schoolBranchesId: schoolBranchId || undefined },
-      })
-    );
-    dispatch(
-      fetchBooks({
-        page: 1,
-        limit: 1000,
-        filters: { schoolBranchesId: schoolBranchId || undefined },
-      })
-    );
-
     const loadGrades = async () => {
       setIsLoadingGrades(true);
       try {
@@ -126,6 +111,39 @@ export default function EditTeacherPlacementForm({
     };
     loadGrades();
   }, [dispatch, schoolBranchId]);
+
+  // Refetch subjects when grade changes (or on mount)
+  useEffect(() => {
+    if (!schoolBranchId) return;
+
+    dispatch(
+      fetchSubjects({
+        page: 1,
+        limit: 100,
+        filters: {
+          schoolBranchesId: schoolBranchId,
+          gradeId: gradeId || undefined,
+        },
+      })
+    );
+  }, [dispatch, schoolBranchId, gradeId]);
+
+  // Refetch books when grade or subject changes
+  useEffect(() => {
+    if (!schoolBranchId) return;
+
+    dispatch(
+      fetchBooks({
+        page: 1,
+        limit: 1000,
+        filters: {
+          schoolBranchesId: schoolBranchId,
+          gradeId: gradeId || undefined,
+          materialId: subjectId || undefined,
+        },
+      })
+    );
+  }, [dispatch, schoolBranchId, gradeId, subjectId]);
 
   // Load existing assignment to pre-fill the form. Try by assignmentId first;
   // if that fails (or returns no data), look up the first matching
@@ -240,11 +258,15 @@ export default function EditTeacherPlacementForm({
     label: currentLang === 'ar' ? c.name : c.nameEn || c.name,
   }));
 
-  const getBookOptionsForSubject = (subj: string) => {
+  const getBookOptionsForSubject = (subj: string, grade: string) => {
     if (!subj) return [] as { value: string; label: string }[];
     const result: { value: string; label: string }[] = [];
     bookGrades.forEach((gradeBook) => {
-      if (gradeBook.materialId === subj) {
+      // Filter by both subject (materialId) and grade (gradeId)
+      const matchesSubject = gradeBook.materialId === subj;
+      const matchesGrade = !grade || gradeBook.gradeId === grade;
+      
+      if (matchesSubject && matchesGrade) {
         gradeBook.bookDtos.forEach((book) => {
           result.push({ value: book.id, label: book.name });
         });
@@ -295,7 +317,7 @@ export default function EditTeacherPlacementForm({
         throw new Error(result.message);
       }
 
-      showToast({ message: t('common.successEdit'), type: 'success' });
+      showToast({ message: result.message || t('common.successEdit'), type: 'success' });
       navigate(`/teaching-staff/teachers/${teacherId}?tab=educational-stages`);
     } catch (error) {
       const errorMessage =
@@ -327,8 +349,40 @@ export default function EditTeacherPlacementForm({
     <Card>
       <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
         <div className="space-y-8">
-          {/* Subject + Stage row */}
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <FormField
+              label={t('teachers.placement.stage')}
+              required
+              error={errors.gradeId?.message}
+              htmlFor="stage"
+            >
+              <Controller
+                name="gradeId"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    value={field.value}
+                    onChange={(value) => {
+                      const v = Array.isArray(value) ? value[0] || '' : value;
+                      field.onChange(v);
+                      // Reset classrooms, subject and books when grade changes
+                      setValue('classroomIds', [], { shouldDirty: true });
+                      setValue('bookIds', [], { shouldDirty: true });
+                      setValue('subjectId', '', { shouldDirty: true });
+                    }}
+                    options={gradeOptions}
+                    placeholder={
+                      isLoadingGrades ? t('common.loading') : t('teachers.placement.selectStage')
+                    }
+                    disabled={isLoadingGrades}
+                    error={!!errors.gradeId}
+                    id="stage"
+                  />
+                )}
+              />
+            </FormField>
+
+            {/* Subject + Stage row */}
             <FormField
               label={t('teachers.placement.subject')}
               required
@@ -356,36 +410,6 @@ export default function EditTeacherPlacementForm({
                     disabled={isLoadingSubjects}
                     error={!!errors.subjectId}
                     id="subject"
-                  />
-                )}
-              />
-            </FormField>
-
-            <FormField
-              label={t('teachers.placement.stage')}
-              required
-              error={errors.gradeId?.message}
-              htmlFor="stage"
-            >
-              <Controller
-                name="gradeId"
-                control={control}
-                render={({ field }) => (
-                  <CustomSelect
-                    value={field.value}
-                    onChange={(value) => {
-                      const v = Array.isArray(value) ? value[0] || '' : value;
-                      field.onChange(v);
-                      // Reset classrooms when grade changes (classrooms filter by grade)
-                      setValue('classroomIds', [], { shouldDirty: true });
-                    }}
-                    options={gradeOptions}
-                    placeholder={
-                      isLoadingGrades ? t('common.loading') : t('teachers.placement.selectStage')
-                    }
-                    disabled={isLoadingGrades}
-                    error={!!errors.gradeId}
-                    id="stage"
                   />
                 )}
               />
@@ -451,15 +475,17 @@ export default function EditTeacherPlacementForm({
                     onChange={(value) =>
                       handleBookChange(bookIndex, Array.isArray(value) ? value[0] || '' : value)
                     }
-                    options={getBookOptionsForSubject(subjectId)}
+                    options={getBookOptionsForSubject(subjectId, gradeId)}
                     placeholder={
-                      !subjectId
-                        ? t('teachers.placement.selectSubjectFirst')
-                        : isLoadingBooks
-                          ? t('common.loading')
-                          : t('teachers.placement.selectBook')
+                      !gradeId
+                        ? t('teachers.placement.selectGradeFirst')
+                        : !subjectId
+                          ? t('teachers.placement.selectSubjectFirst')
+                          : isLoadingBooks
+                            ? t('common.loading')
+                            : t('teachers.placement.selectBook')
                     }
-                    disabled={!subjectId || isLoadingBooks}
+                    disabled={!subjectId || !gradeId || isLoadingBooks}
                     id={`book-${bookIndex}`}
                   />
                 </FormField>

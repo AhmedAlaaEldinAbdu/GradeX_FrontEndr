@@ -81,13 +81,8 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
 
   // Fetch lookup data on mount
   useEffect(() => {
-    dispatch(
-      fetchSubjects({
-        page: 1,
-        limit: 100,
-        filters: { schoolBranchesId: schoolBranchId || undefined },
-      })
-    );
+    // Subjects are fetched when grade is selected per-row to avoid
+    // overwriting global subjects when multiple grades are used in rows.
     dispatch(
       fetchBooks({
         page: 1,
@@ -125,12 +120,15 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
     label: currentLang === 'ar' ? grade.nameAr : grade.nameEn || grade.nameAr,
   }));
 
-  // Helper to get books filtered by materialId (subjectId)
-  const getBookOptionsForSubject = (subjectId: string) => {
-    if (!subjectId) return [];
+  // Helper to get books filtered by materialId (subjectId) and optionally gradeId
+  const getBookOptionsForSubject = (subjectId: string, gradeId?: string) => {
+    if (!subjectId) return [] as { value: string; label: string }[];
     const books: { value: string; label: string }[] = [];
     bookGrades.forEach((gradeBook) => {
-      if (gradeBook.materialId === subjectId) {
+      const matchesSubject = gradeBook.materialId === subjectId;
+      const matchesGrade = !gradeId || gradeBook.gradeId === gradeId;
+
+      if (matchesSubject && matchesGrade) {
         gradeBook.bookDtos.forEach((book) => {
           books.push({ value: book.id, label: book.name });
         });
@@ -172,7 +170,13 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
       assignments.map((row) => {
         if (row.id !== id) return row;
         if (field === 'gradeId') {
-          return { ...row, gradeId: value as string, classroomIds: [] };
+          return {
+            ...row,
+            gradeId: value as string,
+            classroomIds: [],
+            subjectId: '',
+            books: [{ id: generateId(), bookId: '' }],
+          };
         }
         if (field === 'subjectId') {
           return { ...row, subjectId: value as string, books: [{ id: generateId(), bookId: '' }] };
@@ -184,6 +188,16 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
     // Fetch classrooms when grade changes
     if (field === 'gradeId' && typeof value === 'string' && value) {
       fetchClassroomsForRow(id, value);
+      // Also fetch subjects filtered by the selected grade so the
+      // subject dropdown shows relevant items. This mirrors the
+      // single-row form behaviour where subjects depend on the grade.
+      dispatch(
+        fetchSubjects({
+          page: 1,
+          limit: 100,
+          filters: { schoolBranchesId: schoolBranchId || undefined, gradeId: value },
+        })
+      );
     }
 
     // Clear error when user changes value
