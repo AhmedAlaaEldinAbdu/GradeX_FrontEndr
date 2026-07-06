@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ReactNode } from 'react';
 import Card from '@/shared/components/Card';
 import Button from '@/shared/components/Button';
 import ExamReviewQuestionCard, { type ReviewQuestion } from './ExamReviewQuestionCard';
@@ -28,6 +29,7 @@ type AIExamReviewStepProps = {
   onRemoveGenerated: (id: string) => void;
   onUpdateGenerated: (question: ReviewQuestion) => void;
   onRemoveClassification: (id: string) => void;
+  footer?: ReactNode;
 };
 
 const AIExamReviewStep = ({
@@ -38,6 +40,7 @@ const AIExamReviewStep = ({
   onRemoveGenerated,
   onUpdateGenerated,
   onRemoveClassification,
+  footer,
 }: AIExamReviewStepProps) => {
   const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -121,6 +124,8 @@ const AIExamReviewStep = ({
               )
             )}
           </div>
+
+          {footer}
         </div>
       </Card>
     </div>

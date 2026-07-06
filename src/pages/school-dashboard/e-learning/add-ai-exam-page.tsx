@@ -469,22 +469,18 @@ export default function AddAIExamPage() {
           <StepIndicator steps={steps} currentStep={currentStep} />
 
           {currentStep === LAST_STEP ? (
-            <div className="space-y-6">
-              <AIExamReviewStep
-                generatedQuestions={generatedReviewQuestions}
-                classificationQuestions={classificationQuestions}
-                isRegenerating={isGenerating}
-                onRegenerate={() => void generateQuestions(false)}
-                onRemoveGenerated={(id) => dispatch(removeGeneratedQuestion(id))}
-                onUpdateGenerated={handleUpdateGeneratedQuestion}
-                onRemoveClassification={(id) =>
-                  setClassificationQuestions((prev) =>
-                    prev.filter((question) => question.id !== id)
-                  )
-                }
-              />
-              {footer}
-            </div>
+            <AIExamReviewStep
+              generatedQuestions={generatedReviewQuestions}
+              classificationQuestions={classificationQuestions}
+              isRegenerating={isGenerating}
+              onRegenerate={() => void generateQuestions(false)}
+              onRemoveGenerated={(id) => dispatch(removeGeneratedQuestion(id))}
+              onUpdateGenerated={handleUpdateGeneratedQuestion}
+              onRemoveClassification={(id) =>
+                setClassificationQuestions((prev) => prev.filter((question) => question.id !== id))
+              }
+              footer={footer}
+            />
           ) : (
             <Card padding="md">
               <div className="space-y-8">
