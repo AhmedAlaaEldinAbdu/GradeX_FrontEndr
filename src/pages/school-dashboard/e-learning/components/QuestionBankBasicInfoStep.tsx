@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
@@ -41,11 +41,13 @@ const RESULT_VISIBILITY_OPTIONS = [
     labelKey: 'eLearning.onlineExams.addQuestionBank.fields.resultAfterEachQuestion',
   },
 ];
+const DEFAULT_RESULT_VISIBILITY = RESULT_VISIBILITY_OPTIONS[0].value;
 
 const QuestionBankBasicInfoStep = () => {
   const { t } = useTranslation();
   const {
     control,
+    setValue,
     formState: { errors },
   } = useFormContext<QuestionBankBasicInfoProps>();
   const [isStudentsOpen, setIsStudentsOpen] = useState(false);
@@ -53,6 +55,17 @@ const QuestionBankBasicInfoStep = () => {
 
   // Classrooms handed to the popup so it can load their students.
   const grades = useWatch({ control, name: 'grades' });
+  const resultVisibility = useWatch({ control, name: 'resultVisibility' });
+
+  useEffect(() => {
+    if (!resultVisibility) {
+      setValue('resultVisibility', DEFAULT_RESULT_VISIBILITY, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+    }
+  }, [resultVisibility, setValue]);
+
   const selectedClassrooms = useMemo(() => {
     const ids = Array.isArray(grades) ? grades : [];
     return GRADE_OPTIONS.filter((option) => ids.includes(option.value)).map((option) => ({
@@ -180,7 +193,11 @@ const QuestionBankBasicInfoStep = () => {
               id="grades"
               isMulti
               value={Array.isArray(field.value) ? field.value : []}
-              onChange={(value) => field.onChange(Array.isArray(value) ? value : [value])}
+              onChange={(value) => {
+                field.onChange(Array.isArray(value) ? value : [value]);
+                setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
+                setSelectedStudents([]);
+              }}
               options={GRADE_OPTIONS}
               placeholder={t('eLearning.onlineExams.addQuestionBank.fields.gradePlaceholder')}
               error={!!errors.grades}
@@ -202,19 +219,27 @@ const QuestionBankBasicInfoStep = () => {
               <div className="flex flex-wrap items-center gap-8">
                 {TARGET_AUDIENCE_OPTIONS.map((option) => {
                   const isSelected = field.value === option.value;
+                  const isSpecificOption = option.value === 'specific';
+                  const isSpecificDisabled = isSpecificOption && selectedClassrooms.length === 0;
+
                   return (
                     <button
                       key={option.value}
                       type="button"
+                      disabled={isSpecificDisabled}
                       onClick={() => {
-                        field.onChange(option.value);
-                        if (option.value === 'specific') {
+                        if (isSpecificDisabled) return;
+
+                        if (isSpecificOption) {
                           setIsStudentsOpen(true);
                         } else {
+                          field.onChange(option.value);
                           setSelectedStudents([]);
                         }
                       }}
-                      className="flex items-center gap-2"
+                      className={`flex items-center gap-2 ${
+                        isSpecificDisabled ? 'cursor-not-allowed opacity-50' : ''
+                      }`}
                     >
                       <span
                         className={`flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
@@ -399,7 +424,7 @@ const QuestionBankBasicInfoStep = () => {
             render={({ field }) => (
               <div className="flex flex-wrap items-center gap-8 pt-2">
                 {RESULT_VISIBILITY_OPTIONS.map((option) => {
-                  const isSelected = field.value === option.value;
+                  const isSelected = (field.value || DEFAULT_RESULT_VISIBILITY) === option.value;
                   return (
                     <button
                       key={option.value}
@@ -432,7 +457,13 @@ const QuestionBankBasicInfoStep = () => {
         onClose={() => setIsStudentsOpen(false)}
         classrooms={selectedClassrooms}
         value={selectedStudents.map((s) => s.id)}
-        onConfirm={(students) => setSelectedStudents(students)}
+        requireSelection
+        onConfirm={(students) => {
+          if (students.length === 0) return;
+
+          setSelectedStudents(students);
+          setValue('targetAudience', 'specific', { shouldDirty: true, shouldValidate: true });
+        }}
       />
     </div>
   );

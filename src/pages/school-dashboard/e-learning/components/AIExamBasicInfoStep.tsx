@@ -137,6 +137,7 @@ const AIExamBasicInfoStep = () => {
   useEffect(() => {
     setSelectedStudents([]);
     setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
+    setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
   }, [selectedClassroomIdsKey, setValue]);
 
   const academicSystemOptions = useMemo<CustomSelectOption[]>(
@@ -346,6 +347,7 @@ const AIExamBasicInfoStep = () => {
                   setValue('grades', [], { shouldDirty: true, shouldValidate: true });
                   setValue('classrooms', [], { shouldDirty: true, shouldValidate: true });
                   setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
+                  setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
                   setSelectedStudents([]);
                 }}
                 options={academicSystemOptions}
@@ -381,6 +383,7 @@ const AIExamBasicInfoStep = () => {
                   field.onChange(normalizeMultiValue(value));
                   setValue('classrooms', [], { shouldDirty: true, shouldValidate: true });
                   setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
+                  setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
                   setSelectedStudents([]);
                 }}
                 options={gradeOptions}
@@ -416,6 +419,7 @@ const AIExamBasicInfoStep = () => {
                 onChange={(value) => {
                   field.onChange(normalizeMultiValue(value));
                   setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
+                  setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
                   setSelectedStudents([]);
                 }}
                 options={classroomOptions}
@@ -447,20 +451,28 @@ const AIExamBasicInfoStep = () => {
               <div className="flex flex-wrap items-center gap-8">
                 {TARGET_AUDIENCE_OPTIONS.map((option) => {
                   const isSelected = field.value === option.value;
+                  const isSpecificOption = option.value === 'specific';
+                  const isSpecificDisabled = isSpecificOption && selectedClassroomIds.length === 0;
+
                   return (
                     <button
                       key={option.value}
                       type="button"
+                      disabled={isSpecificDisabled}
                       onClick={() => {
-                        field.onChange(option.value);
-                        if (option.value === 'specific') {
+                        if (isSpecificDisabled) return;
+
+                        if (isSpecificOption) {
                           setIsStudentsOpen(true);
                         } else {
+                          field.onChange(option.value);
                           setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
                           setSelectedStudents([]);
                         }
                       }}
-                      className="flex items-center gap-2"
+                      className={`flex items-center gap-2 ${
+                        isSpecificDisabled ? 'cursor-not-allowed opacity-50' : ''
+                      }`}
                     >
                       <span
                         className={`flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
@@ -614,8 +626,12 @@ const AIExamBasicInfoStep = () => {
         onClose={() => setIsStudentsOpen(false)}
         classrooms={selectedClassrooms}
         value={selectedStudentIds}
+        requireSelection
         onConfirm={(students) => {
+          if (students.length === 0) return;
+
           setSelectedStudents(students);
+          setValue('targetAudience', 'specific', { shouldDirty: true, shouldValidate: true });
           setValue(
             'studentIds',
             students.map((student) => student.id),

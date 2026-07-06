@@ -54,13 +54,13 @@ export default function AddQuestionBankExamPage() {
       subject: '',
       stage: '',
       grades: [],
-      targetAudience: '',
+      targetAudience: 'all',
       startDate: '',
       endDate: '',
       totalPoints: '',
       duration: '',
       passingGrade: '',
-      resultVisibility: '',
+      resultVisibility: 'afterExam',
     },
   });
 

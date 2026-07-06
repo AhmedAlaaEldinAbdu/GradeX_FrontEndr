@@ -29,9 +29,9 @@ export const AIExamBasicInfoSchema = object({
     .of(string().required())
     .min(1, 'requests.addMessage.validation.classroomsRequired')
     .required('requests.addMessage.validation.classroomsRequired'),
-  targetAudience: string().required(
-    'eLearning.onlineExams.addAI.validation.targetAudienceRequired'
-  ),
+  targetAudience: string()
+    .default('all')
+    .required('eLearning.onlineExams.addAI.validation.targetAudienceRequired'),
   studentIds: array()
     .of(string().required())
     .default([])
@@ -80,9 +80,9 @@ export const AIExamQuestionsSchema = object({
     'eLearning.onlineExams.addAI.validation.numberOfQuestionsRequired'
   ),
   totalPoints: string().required('eLearning.onlineExams.addAI.validation.totalPointsRequired'),
-  resultVisibility: string().required(
-    'eLearning.onlineExams.addAI.validation.resultVisibilityRequired'
-  ),
+  resultVisibility: string()
+    .default('afterExam')
+    .required('eLearning.onlineExams.addAI.validation.resultVisibilityRequired'),
   difficultyEasy: number().min(0).max(100).default(0),
   difficultyMedium: number().min(0).max(100).default(0),
   difficultyHard: number().min(0).max(100).default(0),

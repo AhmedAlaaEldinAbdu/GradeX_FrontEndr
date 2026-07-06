@@ -51,6 +51,7 @@ type SelectStudentsPopupProps = {
   classrooms: ClassroomOption[];
   value: string[];
   onConfirm: (selected: SelectedStudent[]) => void;
+  requireSelection?: boolean;
 };
 
 export default function SelectStudentsPopup({
@@ -59,6 +60,7 @@ export default function SelectStudentsPopup({
   classrooms,
   value,
   onConfirm,
+  requireSelection = false,
 }: SelectStudentsPopupProps) {
   const { t } = useTranslation();
 
@@ -196,10 +198,7 @@ export default function SelectStudentsPopup({
                         </p>
                       ) : (
                         students.map((student) => (
-                          <div
-                            key={student.id}
-                            className="flex items-center justify-between gap-3"
-                          >
+                          <div key={student.id} className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                               <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-[#DDE0E0]">
                                 <CustomImage
@@ -233,7 +232,12 @@ export default function SelectStudentsPopup({
           <Button variant="outline" className="flex-1" onClick={onClose}>
             {t('common.cancel')}
           </Button>
-          <Button variant="primary" className="flex-1" onClick={handleConfirm}>
+          <Button
+            variant="primary"
+            className="flex-1"
+            onClick={handleConfirm}
+            disabled={requireSelection && selected.length === 0}
+          >
             {t('eLearning.selectStudents.confirm')}
           </Button>
         </div>
