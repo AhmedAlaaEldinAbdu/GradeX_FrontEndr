@@ -89,9 +89,11 @@ const AIExamReviewStep = ({
               variant="outline"
               size="sm"
               onClick={regenerate}
-              loading={isRegenerating}
+              disabled={isRegenerating}
             >
-              {t('eLearning.onlineExams.addAI.review.regenerate')}
+              {isRegenerating
+                ? t('common.generating')
+                : t('eLearning.onlineExams.addAI.review.regenerate')}
             </Button>
           </div>
 

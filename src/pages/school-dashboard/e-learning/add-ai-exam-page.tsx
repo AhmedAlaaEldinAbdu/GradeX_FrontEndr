@@ -418,16 +418,17 @@ export default function AddAIExamPage() {
     dispatch(updateGeneratedQuestion(mapReviewQuestionToGenerated(question)));
   };
 
-  const primaryLabel =
-    currentStep === 1
-      ? t('common.next')
-      : currentStep === 2
-        ? t('eLearning.onlineExams.addAI.generateQuestions')
-        : t('eLearning.onlineExams.addAI.submit');
+  const getPrimaryLabel = () => {
+    if (currentStep === 2 && isGenerating) return t('common.generating');
+    if (currentStep === LAST_STEP && isCreating) return t('common.saving');
+    if (currentStep === 1) return t('common.next');
+    if (currentStep === 2) return t('eLearning.onlineExams.addAI.generateQuestions');
+    return t('eLearning.onlineExams.addAI.submit');
+  };
+
+  const primaryLabel = getPrimaryLabel();
   const secondaryLabel = currentStep === 1 ? t('common.cancel') : t('common.previous');
   const isBusy = isGenerating || isCreating;
-  const isPrimaryLoading =
-    (currentStep === 2 && isGenerating) || (currentStep === LAST_STEP && isCreating);
 
   const footer = (
     <div className="flex items-center justify-between">
@@ -450,7 +451,6 @@ export default function AddAIExamPage() {
           type="button"
           variant="primary"
           onClick={() => void handlePrimary()}
-          loading={isPrimaryLoading}
           disabled={isBusy}
         >
           {primaryLabel}
