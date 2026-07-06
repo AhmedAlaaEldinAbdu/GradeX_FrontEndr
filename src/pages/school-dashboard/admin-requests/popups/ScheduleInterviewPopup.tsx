@@ -9,8 +9,11 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
 import { FaRegCalendarAlt } from 'react-icons/fa';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { createInterview } from '@/redux/features/interviews/interviewsSlice';
+import { useToast } from '@/shared/context/ToastContext';
 
-import { InterviewType } from '../admin-requests.types';
+import { InterviewType } from '@/services/api/types/interviews.types';
 
 export interface ScheduleInterviewValues {
   interviewType: string;
@@ -21,7 +24,11 @@ export interface ScheduleInterviewValues {
 interface ScheduleInterviewPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (values: ScheduleInterviewValues) => void;
+  onConfirm: (values: ScheduleInterviewValues) => void | Promise<void>;
+  schoolBranchesId?: string;
+  jobAdvertisementId?: string;
+  teacherId?: string;
+  supervisorId?: string;
   isProcessing?: boolean;
 }
 
@@ -29,13 +36,19 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  schoolBranchesId,
+  jobAdvertisementId,
+  teacherId,
   isProcessing = false,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const [interviewType, setInterviewType] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ interviewType?: string; date?: string; time?: string }>(
     {}
   );
@@ -48,13 +61,15 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
   };
 
   const handleClose = () => {
-    if (isProcessing) return;
+    if (isProcessing || isSubmitting) return;
     resetState();
     onClose();
   };
 
-  const handleConfirm = () => {
-    if (isProcessing) return;
+  const handleConfirm = async () => {
+    debugger;
+
+    if (isProcessing || isSubmitting) return;
 
     const nextErrors: typeof errors = {};
     if (!interviewType) nextErrors.interviewType = t('common.validation.required');
@@ -66,8 +81,58 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
       return;
     }
 
-    onConfirm({ interviewType, date, time });
-    resetState();
+    if (!schoolBranchesId || !jobAdvertisementId || !teacherId) {
+      showToast({ message: t('common.error'), type: 'error' });
+      return;
+    }
+
+    const normalizedTime = time.length === 5 ? `${time}:00` : time;
+    const startDateTime = new Date(`${date}T${normalizedTime}`);
+
+    if (Number.isNaN(startDateTime.getTime())) {
+      showToast({ message: t('common.error'), type: 'error' });
+      return;
+    }
+
+    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+
+    try {
+      setIsSubmitting(true);
+      const res = await dispatch(
+        createInterview({
+          schoolBranchesId,
+          jobAdvertisementId,
+          teacherId,
+          interviewDate: date,
+          startTime: startDateTime.toISOString(),
+          endTime: endDateTime.toISOString(),
+          interViewType: Number(interviewType) as InterviewType,
+        })
+      )
+        .unwrap()
+        .then((res: any) => {
+          if (res?.isSuccess) {
+            showToast({
+              message: res?.message || t('adminRequests.jobApplication.schedulePopup.success'),
+              type: 'success',
+            });
+          } else {
+            const message = res?.message || t('common.error');
+            showToast({ message, type: 'error' });
+          }
+        });
+      await onConfirm({ interviewType, date, time });
+      resetState();
+      onClose();
+    } catch (error) {
+      const message =
+        typeof error === 'string'
+          ? error
+          : (error as { message?: string })?.message || t('common.error');
+      showToast({ message, type: 'error' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -92,11 +157,11 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
             }}
             options={[
               {
-                value: String(InterviewType.Online),
+                value: String(InterviewType.ONLINE),
                 label: t('adminRequests.jobApplication.schedulePopup.online'),
               },
               {
-                value: String(InterviewType.Onsite),
+                value: String(InterviewType.OFFLINE),
                 label: t('adminRequests.jobApplication.schedulePopup.onsite'),
               },
             ]}
@@ -148,10 +213,20 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
         </FormField>
 
         <div className="flex w-full gap-3 pt-2">
-          <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
+          <Button
+            variant="outline"
+            fullWidth
+            onClick={handleClose}
+            disabled={isProcessing || isSubmitting}
+          >
             {t('common.cancel')}
           </Button>
-          <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
+          <Button
+            variant="success"
+            fullWidth
+            onClick={handleConfirm}
+            loading={isProcessing || isSubmitting}
+          >
             {t('adminRequests.jobApplication.schedulePopup.confirm')}
           </Button>
         </div>
