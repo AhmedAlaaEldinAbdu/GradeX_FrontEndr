@@ -98,7 +98,7 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
 
     try {
       setIsSubmitting(true);
-      const res = await dispatch(
+      await dispatch(
         createInterview({
           schoolBranchesId,
           jobAdvertisementId,
