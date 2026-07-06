@@ -232,8 +232,8 @@
           "totalPointsPlaceholder": "Gesamtpunkte auswählen",
           "examDuration": "Prüfungsdauer (Minuten)",
           "examDurationPlaceholder": "Prüfungsdauer auswählen (Minuten)",
-          "passingGrade": "Bestehensgrenze %",
-          "passingGradePlaceholder": "Bestehensgrenze eingeben %",
+          "passingGrade": "Bestehensgrenze",
+          "passingGradePlaceholder": "Bestehensgrenze eingeben",
           "resultVisibility": "Sichtbarkeit des Ergebnisses für den Schüler",
           "resultAfterExam": "Direkt nach der Prüfung",
           "resultAfterEachQuestion": "Ergebnis nach jeder Frage anzeigen"

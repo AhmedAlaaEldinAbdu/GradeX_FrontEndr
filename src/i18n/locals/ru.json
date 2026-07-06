@@ -232,8 +232,8 @@
           "totalPointsPlaceholder": "Выберите общее количество баллов",
           "examDuration": "Длительность экзамена (минуты)",
           "examDurationPlaceholder": "Выберите длительность экзамена (минуты)",
-          "passingGrade": "Проходной балл %",
-          "passingGradePlaceholder": "Введите проходной балл %",
+          "passingGrade": "Проходной балл",
+          "passingGradePlaceholder": "Введите проходной балл",
           "resultVisibility": "Видимость результата для ученика",
           "resultAfterExam": "Сразу после экзамена",
           "resultAfterEachQuestion": "Показывать результат после каждого вопроса"

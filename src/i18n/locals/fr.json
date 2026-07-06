@@ -232,8 +232,8 @@
           "totalPointsPlaceholder": "Sélectionnez le total des points",
           "examDuration": "Durée de l'examen (minutes)",
           "examDurationPlaceholder": "Sélectionnez la durée de l'examen (minutes)",
-          "passingGrade": "Note de réussite %",
-          "passingGradePlaceholder": "Saisissez la note de réussite %",
+          "passingGrade": "Note de réussite",
+          "passingGradePlaceholder": "Saisissez la note de réussite",
           "resultVisibility": "Visibilité du résultat pour l'élève",
           "resultAfterExam": "Juste après l'examen",
           "resultAfterEachQuestion": "Afficher le résultat après chaque question"
