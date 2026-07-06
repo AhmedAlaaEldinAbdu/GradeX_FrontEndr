@@ -76,7 +76,7 @@ function QuestionCard({ question }: { question: ExamQuestionItem }) {
           <div className="flex w-full items-center gap-2">
             <span className="text-sm font-normal text-[#00512E]">#{question.number}</span>
             <span className="flex-1 text-start text-base font-medium text-[#101828]">
-              {question.text}
+              <bdi>{question.text}</bdi>
             </span>
           </div>
         </div>
