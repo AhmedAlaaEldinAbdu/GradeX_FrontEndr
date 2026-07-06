@@ -252,6 +252,11 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
 
   return {
     id: str(firstDefined(r.applicationJobAdvertismentId, r.id)),
+    applicationJobAdvertismentId: str(firstDefined(r.applicationJobAdvertismentId, r.id)),
+    jobAdvertismentId: str(r.jobAdvertismentId),
+    teacherId: str(r.teacherId),
+    schoolBranchesId: str(firstDefined(r.schoolBranchesId, r.schoolBranchId)),
+    supervisorId: str(r.supervisorId),
     announcementName: str(
       firstDefined(r.jobAdvertismentNameAr, r.jobAdvertismentNameEn, r.announcementName)
     ),
