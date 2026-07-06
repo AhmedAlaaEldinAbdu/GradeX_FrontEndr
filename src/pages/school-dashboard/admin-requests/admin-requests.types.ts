@@ -90,6 +90,11 @@ export interface JobApplicationAttachment {
 
 export interface JobApplicationDto {
   id: string;
+  applicationJobAdvertismentId?: string;
+  jobAdvertismentId?: string;
+  teacherId?: string;
+  schoolBranchesId?: string;
+  supervisorId?: string;
   /** اسم الإعلان */
   announcementName: string;
   /** اسم مقدم الطلب */
