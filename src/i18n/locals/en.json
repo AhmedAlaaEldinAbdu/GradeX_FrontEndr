@@ -1327,7 +1327,8 @@
         "experienceYears": "Years of experience",
         "yearsUnit": "years",
         "previousExperience": "Previous experience (most recent first)",
-        "languagesLevels": "Languages and level of each"
+        "languagesLevels": "Languages and level of each",
+        "collage": "College"
       },
       "schedulePopup": {
         "title": "Schedule interview",

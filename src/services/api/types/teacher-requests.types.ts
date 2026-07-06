@@ -100,6 +100,57 @@ export interface JobAdvertisementLookupItem {
   nameEn: string | null;
 }
 
+export interface JobApplicationQualificationDto {
+  id: string;
+  lkQualificationId: string;
+  qualificationNameAr: string;
+  qualificationNameEn: string;
+  countryUniversityId: string;
+  countryUniversityNameAr: string;
+  countryUniversityNameEn: string;
+  graduationYear: number;
+  lkUniversityId: string;
+  universityNameAr: string;
+  universityNameEn: string;
+  college: string;
+}
+
+export interface JobApplicationExperienceAttachmentDto {
+  id: string;
+  file: string;
+}
+
+export interface JobApplicationExperienceDto {
+  id: string;
+  lkTeacherLevelId: string;
+  teacherLevelNameAr: string;
+  teacherLevelNameEn: string;
+  schoolName: string;
+  startDate: string;
+  endDate: string;
+  isPresent: boolean;
+  attachments: JobApplicationExperienceAttachmentDto[];
+}
+
+export interface JobApplicationLanguageDto {
+  id: string;
+  lkLanguageId: string;
+  lkLanguageNameAr: string;
+  lkLanguageNameEn: string;
+  lkLanguageLevelId: string;
+  lkLanguageLevelNameAr: string;
+  lkLanguageLevelNameEn: string;
+}
+
+export interface JobApplicationCourseDto {
+  id: string;
+  name: string;
+  providerName: string;
+  startDate: string;
+  endDate: string;
+  certificateImage: string;
+}
+
 /** A single row from `GET /TeacherRequests/apply-job-advertisment`. */
 export interface JobApplicationRequestDto {
   applicationJobAdvertismentId: string;
@@ -114,15 +165,31 @@ export interface JobApplicationRequestDto {
   resumeFile: string | null;
   workShedule: TeacherWorkSchedule;
   address: string | null;
-  lkCountryId: string | null;
-  lkCountryNameAr: string | null;
-  lkCountryNameEn: string | null;
-  nationalityId: string | null;
   nationalityNameAr: string | null;
   nationalityNameEn: string | null;
   nationality: number | null;
   jobAdvertisementCountries: JobAdvertisementLookupItem[];
   jobAdvertisementQualifications: JobAdvertisementLookupItem[];
+
+  // Details response fields from `GET /TeacherRequests/apply-job-advertisment/{id}`
+  phoneNumber?: string;
+  email?: string;
+  nationalityId?: string;
+  nationalIdentityNumber?: string;
+  birthDate?: string;
+  identityType?: number;
+  identityTypeNameAr?: string;
+  identityTypeNameEn?: string;
+  socialStatus?: number;
+  socialStatusNameAr?: string;
+  socialStatusNameEn?: string;
+  lkCountryId?: string;
+  lkCountryNameAr?: string;
+  lkCountryNameEn?: string;
+  qualifications?: JobApplicationQualificationDto[];
+  experience?: JobApplicationExperienceDto[];
+  languages?: JobApplicationLanguageDto[];
+  courses?: JobApplicationCourseDto[];
 }
 
 export interface EarlyLeaveRequestDto {
