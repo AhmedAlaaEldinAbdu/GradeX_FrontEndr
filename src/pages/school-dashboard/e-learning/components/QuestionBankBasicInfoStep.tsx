@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
@@ -41,6 +41,7 @@ const RESULT_VISIBILITY_OPTIONS = [
     labelKey: 'eLearning.onlineExams.addQuestionBank.fields.resultAfterEachQuestion',
   },
 ];
+const DEFAULT_RESULT_VISIBILITY = RESULT_VISIBILITY_OPTIONS[0].value;
 
 const QuestionBankBasicInfoStep = () => {
   const { t } = useTranslation();
@@ -54,6 +55,17 @@ const QuestionBankBasicInfoStep = () => {
 
   // Classrooms handed to the popup so it can load their students.
   const grades = useWatch({ control, name: 'grades' });
+  const resultVisibility = useWatch({ control, name: 'resultVisibility' });
+
+  useEffect(() => {
+    if (!resultVisibility) {
+      setValue('resultVisibility', DEFAULT_RESULT_VISIBILITY, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+    }
+  }, [resultVisibility, setValue]);
+
   const selectedClassrooms = useMemo(() => {
     const ids = Array.isArray(grades) ? grades : [];
     return GRADE_OPTIONS.filter((option) => ids.includes(option.value)).map((option) => ({
@@ -412,7 +424,7 @@ const QuestionBankBasicInfoStep = () => {
             render={({ field }) => (
               <div className="flex flex-wrap items-center gap-8 pt-2">
                 {RESULT_VISIBILITY_OPTIONS.map((option) => {
-                  const isSelected = field.value === option.value;
+                  const isSelected = (field.value || DEFAULT_RESULT_VISIBILITY) === option.value;
                   return (
                     <button
                       key={option.value}
