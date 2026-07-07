@@ -283,38 +283,52 @@ const JobApplicationsTab: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        if (
-          row.status === JobApplicationStatus.Accepted ||
-          row.status === JobApplicationStatus.Archived
-        ) {
+        const isAccepted = row.status === JobApplicationStatus.Accepted;
+        const isArchived = row.status === JobApplicationStatus.Archived;
+        const isInterviewScheduled = row.status === JobApplicationStatus.InterviewScheduled;
+
+        const showAcceptButton = !isAccepted;
+        const showScheduleButton = !isAccepted && !isArchived && !isInterviewScheduled;
+        const showArchiveButton = !isAccepted && !isArchived;
+
+        if (!showAcceptButton && !showScheduleButton && !showArchiveButton) {
           return null;
         }
+
         return (
           <div className="flex items-center justify-center gap-2">
-            <IconButton
-              variant="success"
-              ariaLabel={t('adminRequests.jobApplication.actions.accept')}
-              imgClassName="h-5 w-5"
-              onClick={() => setAcceptTarget(row)}
-            >
-              <CustomImage src={CheckGreenIcon} alt="" className="h-5 w-5" />
-            </IconButton>
-            <IconButton
-              variant="blue"
-              ariaLabel={t('adminRequests.jobApplication.actions.schedule')}
-              imgClassName="h-5 w-5"
-              onClick={() => setScheduleTarget(row)}
-            >
-              <CustomImage src={ClockBlueIcon} alt="" className="h-5 w-5" />
-            </IconButton>
-            <IconButton
-              variant="yellow"
-              ariaLabel={t('adminRequests.jobApplication.actions.archive')}
-              imgClassName="h-5 w-5"
-              onClick={() => setArchiveTarget(row)}
-            >
-              <CustomImage src={ArchiveIcon} alt="" className="h-5 w-5" />
-            </IconButton>
+            {showAcceptButton && (
+              <IconButton
+                variant="success"
+                ariaLabel={t('adminRequests.jobApplication.actions.accept')}
+                imgClassName="h-5 w-5"
+                onClick={() => setAcceptTarget(row)}
+              >
+                <CustomImage src={CheckGreenIcon} alt="" className="h-5 w-5" />
+              </IconButton>
+            )}
+
+            {showScheduleButton && (
+              <IconButton
+                variant="blue"
+                ariaLabel={t('adminRequests.jobApplication.actions.schedule')}
+                imgClassName="h-5 w-5"
+                onClick={() => setScheduleTarget(row)}
+              >
+                <CustomImage src={ClockBlueIcon} alt="" className="h-5 w-5" />
+              </IconButton>
+            )}
+
+            {showArchiveButton && (
+              <IconButton
+                variant="yellow"
+                ariaLabel={t('adminRequests.jobApplication.actions.archive')}
+                imgClassName="h-5 w-5"
+                onClick={() => setArchiveTarget(row)}
+              >
+                <CustomImage src={ArchiveIcon} alt="" className="h-5 w-5" />
+              </IconButton>
+            )}
           </div>
         );
       },
