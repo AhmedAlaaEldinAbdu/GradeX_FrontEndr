@@ -69,9 +69,7 @@ export default function StudentManagement() {
 
   useEffect(() => {
     if (!schoolBranchId) return;
-    dispatch(
-      fetchParentsByBranch({ schoolBranchId, pageIndex: 1, pageSize: 1000 })
-    );
+    dispatch(fetchParentsByBranch({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -97,6 +95,7 @@ export default function StudentManagement() {
           gradeId: selectedGradeId || undefined,
           classroomId: selectedClassroomId || undefined,
           schoolBranchId: getCurrentSchoolBranchId() || undefined,
+          createdBy: selectedCreatedById || undefined,
           date: selectedDate || undefined,
         },
       })
@@ -109,6 +108,7 @@ export default function StudentManagement() {
     selectedGradeId,
     selectedClassroomId,
     selectedSchoolBranchId,
+    selectedCreatedById,
     selectedDate,
   ]);
 
@@ -122,6 +122,7 @@ export default function StudentManagement() {
           gradeId: selectedGradeId || undefined,
           classroomId: selectedClassroomId || undefined,
           schoolBranchId: getCurrentSchoolBranchId() || undefined,
+          createdBy: selectedCreatedById || undefined,
           date: selectedDate || undefined,
         },
       })
@@ -171,6 +172,7 @@ export default function StudentManagement() {
             gradeId: selectedGradeId || undefined,
             classroomId: selectedClassroomId || undefined,
             schoolBranchId: getCurrentSchoolBranchId() || undefined,
+            createdBy: selectedCreatedById || undefined,
             date: selectedDate || undefined,
           },
         })
@@ -375,9 +377,7 @@ export default function StudentManagement() {
                 }))
               : []
           }
-          placeholder={
-            isLoadingParents ? t('common.loading') : t('studentManagement.createdBy')
-          }
+          placeholder={isLoadingParents ? t('common.loading') : t('studentManagement.createdBy')}
           disabled={isLoadingParents}
           maxHeight="200px"
         />
