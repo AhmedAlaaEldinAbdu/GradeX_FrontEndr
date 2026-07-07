@@ -78,6 +78,15 @@ export interface PaidService {
   amount: number;
 }
 
+export interface BookItem {
+  id: string;
+  name: string;
+  code?: string | null;
+  price?: number | null;
+  fileName?: string | null;
+  filePath?: string | null;
+}
+
 export interface StudentApplicationDetailDto {
   id: string;
   studentId: string;
@@ -86,6 +95,7 @@ export interface StudentApplicationDetailDto {
   thirdName: string;
   fourthName: string;
   dateOfBirth: string;
+  identityType?: number;
   lkSchoolStageId: string;
   lkSchoolStageName: string | null;
   gradeId: string;
@@ -100,6 +110,10 @@ export interface StudentApplicationDetailDto {
   installmentPlanId: string | null;
   offers: string[];
   paidServices: PaidService[];
+  paidServicesTotal?: number | null;
+  books?: BookItem[];
+  booksTotal?: number | null;
+  subTotal?: number | null;
   total: number | null;
   discountTotal: number | null;
   status: StudentApplicationStatus;
@@ -113,9 +127,22 @@ export interface StudentApplicationDetailDto {
   vaccinationCertificatePath: string | null;
   lastEducationCertificatePath: string | null;
   interviewDate?: string | null;
+  interviewDto?: {
+    interviewDate?: string | null;
+    startTime?: string | null;
+    endTime?: string | null;
+  };
   editRequest?: string | null;
   classroomid?: string | null;
   nationalityId?: string | null;
   nationalityName?: string | null;
+  createdDate?: string | null;
+  fatherName?: string | null;
+  fatherIdentityPath?: string | null;
+  fatherEducationalCertificatePath?: string | null;
+  motherName?: string | null;
+  motherIdentityPath?: string | null;
+  motherEducationalCertificatePath?: string | null;
+  familyCardPath?: string | null;
   parentInfo: ParentInfo;
 }
