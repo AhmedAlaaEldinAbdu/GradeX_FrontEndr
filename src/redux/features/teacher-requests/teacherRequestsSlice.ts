@@ -38,6 +38,22 @@ interface ListResult<T> {
   pagination: PaginationState;
 }
 
+interface JobApplicationsStatsState {
+  total: number;
+  totalAccepted: number;
+  totalRejected: number;
+  totalPending: number;
+  totalCancelled: number;
+  totalArchived: number;
+  totalInterviewScheduled: number;
+}
+
+interface JobApplicationsResult {
+  items: JobApplicationRequestDto[];
+  pagination: PaginationState;
+  stats: JobApplicationsStatsState;
+}
+
 export interface TeacherRequestsState {
   // Summary
   summary: TeacherRequestsSummaryDto | null;
@@ -46,6 +62,7 @@ export interface TeacherRequestsState {
   jobApplications: JobApplicationRequestDto[];
   currentJobApplication: JobApplicationRequestDto | null;
   jobApplicationsPagination: PaginationState;
+  jobApplicationsStats: JobApplicationsStatsState;
 
   // Early leave
   earlyLeaves: EarlyLeaveRequestDto[];
@@ -76,6 +93,15 @@ export interface TeacherRequestsState {
 }
 
 const defaultPagination: PaginationState = { page: 1, limit: 10, total: 0, totalPages: 0 };
+const defaultJobApplicationsStats: JobApplicationsStatsState = {
+  total: 0,
+  totalAccepted: 0,
+  totalRejected: 0,
+  totalPending: 0,
+  totalCancelled: 0,
+  totalArchived: 0,
+  totalInterviewScheduled: 0,
+};
 
 const initialState: TeacherRequestsState = {
   summary: null,
@@ -83,6 +109,7 @@ const initialState: TeacherRequestsState = {
   jobApplications: [],
   currentJobApplication: null,
   jobApplicationsPagination: { ...defaultPagination },
+  jobApplicationsStats: { ...defaultJobApplicationsStats },
 
   earlyLeaves: [],
   currentEarlyLeave: null,
@@ -140,7 +167,7 @@ export const fetchTeacherRequestsSummary = createAsyncThunk<
 });
 
 export const fetchJobApplications = createAsyncThunk<
-  ListResult<JobApplicationRequestDto>,
+  JobApplicationsResult,
   JobApplicationsQueryParams | void
 >('teacherRequests/fetchJobApplications', async (params, { rejectWithValue }) => {
   try {
@@ -149,6 +176,15 @@ export const fetchJobApplications = createAsyncThunk<
     return {
       items: data?.teacherRequestsApplyJobAdvertisments ?? [],
       pagination: buildPagination(data),
+      stats: {
+        total: data?.total ?? 0,
+        totalAccepted: data?.totalAccepted ?? 0,
+        totalRejected: data?.totalRejected ?? 0,
+        totalPending: data?.totalPending ?? 0,
+        totalCancelled: data?.totalCancelled ?? 0,
+        totalArchived: data?.totalArchived ?? 0,
+        totalInterviewScheduled: data?.totalInterviewScheduled ?? 0,
+      },
     };
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -303,10 +339,11 @@ const teacherRequestsSlice = createSlice({
       })
       .addCase(
         fetchJobApplications.fulfilled,
-        (state, action: PayloadAction<ListResult<JobApplicationRequestDto>>) => {
+        (state, action: PayloadAction<JobApplicationsResult>) => {
           state.isJobApplicationsLoading = false;
           state.jobApplications = action.payload.items;
           state.jobApplicationsPagination = action.payload.pagination;
+          state.jobApplicationsStats = action.payload.stats;
         }
       )
       .addCase(fetchJobApplications.rejected, (state, action) => {

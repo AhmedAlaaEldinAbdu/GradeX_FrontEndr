@@ -30,6 +30,7 @@ import { mapJobApplication } from '../admin-requests.mappers';
 import ScheduleInterviewPopup from '../popups/ScheduleInterviewPopup';
 import ArchiveConfirmPopup from '../popups/ArchiveConfirmPopup';
 import AcceptConfirmPopup from '../popups/AcceptConfirmPopup';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
 const PAGE_SIZE = 10;
 
@@ -283,38 +284,63 @@ const JobApplicationsTab: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        if (
-          row.status === JobApplicationStatus.Accepted ||
-          row.status === JobApplicationStatus.Archived
-        ) {
-          return null;
+        const isAccepted = row.status === JobApplicationStatus.Accepted;
+        const isArchived = row.status === JobApplicationStatus.Archived;
+        const isInterviewScheduled = row.status === JobApplicationStatus.InterviewScheduled;
+
+        const showAcceptButton = !isAccepted;
+        const showScheduleButton = !isAccepted && !isArchived && !isInterviewScheduled;
+        const showArchiveButton = !isAccepted && !isArchived;
+
+        if (!showAcceptButton && !showScheduleButton && !showArchiveButton) {
+          return (
+            <>
+              <IconButton
+                variant="blue"
+                ariaLabel={t('common.view')}
+                imgClassName="h-5 w-5"
+                onClick={() => navigate(`/admin-requests/job-application/${row.id}`)}
+              >
+                <CustomImage src={EyeStyledIcon} alt="" className="h-6 w-6" />
+              </IconButton>
+            </>
+          );
         }
+
         return (
           <div className="flex items-center justify-center gap-2">
-            <IconButton
-              variant="success"
-              ariaLabel={t('adminRequests.jobApplication.actions.accept')}
-              imgClassName="h-5 w-5"
-              onClick={() => setAcceptTarget(row)}
-            >
-              <CustomImage src={CheckGreenIcon} alt="" className="h-5 w-5" />
-            </IconButton>
-            <IconButton
-              variant="blue"
-              ariaLabel={t('adminRequests.jobApplication.actions.schedule')}
-              imgClassName="h-5 w-5"
-              onClick={() => setScheduleTarget(row)}
-            >
-              <CustomImage src={ClockBlueIcon} alt="" className="h-5 w-5" />
-            </IconButton>
-            <IconButton
-              variant="yellow"
-              ariaLabel={t('adminRequests.jobApplication.actions.archive')}
-              imgClassName="h-5 w-5"
-              onClick={() => setArchiveTarget(row)}
-            >
-              <CustomImage src={ArchiveIcon} alt="" className="h-5 w-5" />
-            </IconButton>
+            {showAcceptButton && (
+              <IconButton
+                variant="success"
+                ariaLabel={t('adminRequests.jobApplication.actions.accept')}
+                imgClassName="h-5 w-5"
+                onClick={() => setAcceptTarget(row)}
+              >
+                <CustomImage src={CheckGreenIcon} alt="" className="h-5 w-5" />
+              </IconButton>
+            )}
+
+            {showScheduleButton && (
+              <IconButton
+                variant="blue"
+                ariaLabel={t('adminRequests.jobApplication.actions.schedule')}
+                imgClassName="h-5 w-5"
+                onClick={() => setScheduleTarget(row)}
+              >
+                <CustomImage src={ClockBlueIcon} alt="" className="h-5 w-5" />
+              </IconButton>
+            )}
+
+            {showArchiveButton && (
+              <IconButton
+                variant="yellow"
+                ariaLabel={t('adminRequests.jobApplication.actions.archive')}
+                imgClassName="h-5 w-5"
+                onClick={() => setArchiveTarget(row)}
+              >
+                <CustomImage src={ArchiveIcon} alt="" className="h-5 w-5" />
+              </IconButton>
+            )}
           </div>
         );
       },
@@ -450,6 +476,10 @@ const JobApplicationsTab: React.FC = () => {
         isOpen={Boolean(scheduleTarget)}
         onClose={() => setScheduleTarget(null)}
         onConfirm={handleScheduleConfirm}
+        schoolBranchesId={scheduleTarget?.schoolBranchesId}
+        jobAdvertisementId={scheduleTarget?.jobAdvertismentId}
+        teacherId={scheduleTarget?.teacherId}
+        supervisorId={scheduleTarget?.supervisorId}
       />
 
       <ArchiveConfirmPopup

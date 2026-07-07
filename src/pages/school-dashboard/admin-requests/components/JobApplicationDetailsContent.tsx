@@ -90,7 +90,11 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
 
   const isAccepted = application.status === JobApplicationStatus.Accepted;
   const isArchived = application.status === JobApplicationStatus.Archived;
-  const actionsDisabled = isAccepted || isArchived;
+  const isInterviewScheduled = application.status === JobApplicationStatus.InterviewScheduled;
+
+  const showAcceptButton = !isAccepted;
+  const showScheduleButton = !isAccepted && !isArchived && !isInterviewScheduled;
+  const showArchiveButton = !isAccepted && !isArchived;
 
   const updateStatus = async (applicationStatus: number, successKey: string) => {
     try {
@@ -156,27 +160,27 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
           {t('adminRequests.jobApplication.detailsTitle')}
         </h1>
         <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="success"
-            onClick={() => setAcceptOpen(true)}
-            disabled={actionsDisabled || isProcessing}
-          >
-            {t('adminRequests.jobApplication.actions.accept')}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setScheduleOpen(true)}
-            disabled={actionsDisabled || isProcessing}
-          >
-            {t('adminRequests.jobApplication.actions.schedule')}
-          </Button>
-          <Button
-            variant="outlineWarning"
-            onClick={() => setArchiveOpen(true)}
-            disabled={actionsDisabled || isProcessing}
-          >
-            {t('adminRequests.jobApplication.actions.archive')}
-          </Button>
+          {showAcceptButton && (
+            <Button variant="success" onClick={() => setAcceptOpen(true)} disabled={isProcessing}>
+              {t('adminRequests.jobApplication.actions.accept')}
+            </Button>
+          )}
+
+          {showScheduleButton && (
+            <Button variant="outline" onClick={() => setScheduleOpen(true)} disabled={isProcessing}>
+              {t('adminRequests.jobApplication.actions.schedule')}
+            </Button>
+          )}
+
+          {showArchiveButton && (
+            <Button
+              variant="outlineWarning"
+              onClick={() => setArchiveOpen(true)}
+              disabled={isProcessing}
+            >
+              {t('adminRequests.jobApplication.actions.archive')}
+            </Button>
+          )}
         </div>
       </div>
 

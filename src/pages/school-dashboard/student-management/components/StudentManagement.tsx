@@ -95,7 +95,7 @@ export default function StudentManagement() {
           gradeId: selectedGradeId || undefined,
           classroomId: selectedClassroomId || undefined,
           schoolBranchId: getCurrentSchoolBranchId() || undefined,
-          createdBy: selectedCreatedById || undefined,
+          createby: selectedCreatedById || undefined,
           date: selectedDate || undefined,
         },
       })
@@ -122,7 +122,7 @@ export default function StudentManagement() {
           gradeId: selectedGradeId || undefined,
           classroomId: selectedClassroomId || undefined,
           schoolBranchId: getCurrentSchoolBranchId() || undefined,
-          createdBy: selectedCreatedById || undefined,
+          createby: selectedCreatedById || undefined,
           date: selectedDate || undefined,
         },
       })
@@ -172,7 +172,7 @@ export default function StudentManagement() {
             gradeId: selectedGradeId || undefined,
             classroomId: selectedClassroomId || undefined,
             schoolBranchId: getCurrentSchoolBranchId() || undefined,
-            createdBy: selectedCreatedById || undefined,
+            createby: selectedCreatedById || undefined,
             date: selectedDate || undefined,
           },
         })

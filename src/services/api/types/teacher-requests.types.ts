@@ -165,6 +165,11 @@ export interface JobApplicationRequestDto {
   resumeFile: string | null;
   workShedule: TeacherWorkSchedule;
   address: string | null;
+  lkCountryId: string | null;
+  lkCountryNameAr: string | null;
+  lkCountryNameEn: string | null;
+  nationalityId: string | null;
+  applicationStatus: number;
   nationalityNameAr: string | null;
   nationalityNameEn: string | null;
   nationality: number | null;
@@ -174,7 +179,6 @@ export interface JobApplicationRequestDto {
   // Details response fields from `GET /TeacherRequests/apply-job-advertisment/{id}`
   phoneNumber?: string;
   email?: string;
-  nationalityId?: string;
   nationalIdentityNumber?: string;
   birthDate?: string;
   identityType?: number;
@@ -183,9 +187,6 @@ export interface JobApplicationRequestDto {
   socialStatus?: number;
   socialStatusNameAr?: string;
   socialStatusNameEn?: string;
-  lkCountryId?: string;
-  lkCountryNameAr?: string;
-  lkCountryNameEn?: string;
   qualifications?: JobApplicationQualificationDto[];
   experience?: JobApplicationExperienceDto[];
   languages?: JobApplicationLanguageDto[];
@@ -243,6 +244,13 @@ export interface PaginatedList<T> extends PaginationMeta {
 /** Payload of `GET /TeacherRequests/apply-job-advertisment`. */
 export interface JobApplicationsListData extends PaginationMeta {
   teacherRequestsApplyJobAdvertisments: JobApplicationRequestDto[];
+  total: number;
+  totalAccepted: number;
+  totalRejected: number;
+  totalPending: number;
+  totalCancelled: number;
+  totalArchived: number;
+  totalInterviewScheduled: number;
 }
 
 /** Payload of `GET /TeacherRequests/teacher-request-messages`. */
