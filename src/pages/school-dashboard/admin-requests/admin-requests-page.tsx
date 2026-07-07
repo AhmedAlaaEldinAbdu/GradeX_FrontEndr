@@ -30,7 +30,9 @@ const AdminRequestsPage: React.FC = () => {
   useEffect(() => {
     if (schoolBranchId) {
       dispatch(fetchTeacherRequestsSummary({ SchoolBranchId: schoolBranchId }));
-      dispatch(fetchJobApplications({ SchoolBranchId: schoolBranchId, PageNumber: 1, PageSize: 10 }));
+      dispatch(
+        fetchJobApplications({ SchoolBranchId: schoolBranchId, PageNumber: 1, PageSize: 10 })
+      );
     }
   }, [dispatch, schoolBranchId]);
 
