@@ -5,6 +5,7 @@ export const StudentApplicationStatus = {
   EditRequest: 4, // طلب تعديل
   Edited: 5, // تم التعديل
   InterviewScheduled: 6, // تم تحديد مقابلة
+  Cancelled: 7, // ملغي
 } as const;
 
 export type StudentApplicationStatus =
@@ -99,7 +100,8 @@ export interface StudentApplicationDetailDto {
   installmentPlanId: string | null;
   offers: string[];
   paidServices: PaidService[];
-  total: number;
+  total: number | null;
+  discountTotal: number | null;
   status: StudentApplicationStatus;
   guardianName: string;
   relationshipType: RelationshipType;

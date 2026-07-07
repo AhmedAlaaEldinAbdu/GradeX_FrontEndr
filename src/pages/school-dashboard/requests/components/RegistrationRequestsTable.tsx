@@ -307,6 +307,12 @@ const RegistrationRequestsTable: React.FC = () => {
             })}
           </span>
         );
+      case StudentApplicationStatus.Cancelled:
+        return (
+          <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
+            {t('studentApplications.status.cancelled')}
+          </span>
+        );
       default:
         return null;
     }
@@ -412,7 +418,8 @@ const RegistrationRequestsTable: React.FC = () => {
 
         if (
           row.status === StudentApplicationStatus.Accept ||
-          row.status === StudentApplicationStatus.Reject
+          row.status === StudentApplicationStatus.Reject ||
+          row.status === StudentApplicationStatus.Cancelled
         ) {
           return null;
         }
@@ -541,6 +548,10 @@ const RegistrationRequestsTable: React.FC = () => {
               label: t('studentApplications.status.interviewScheduled', {
                 defaultValue: 'Interview Scheduled',
               }),
+            },
+            {
+              value: StudentApplicationStatus.Cancelled.toString(),
+              label: t('studentApplications.status.cancelled'),
             },
           ]}
           placeholder={t('common.status')}

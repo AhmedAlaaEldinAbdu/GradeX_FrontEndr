@@ -1502,7 +1502,8 @@
       "modified": "Geändert",
       "completed": "Abgeschlossen",
       "appointmentScheduled": "Termin vereinbart",
-      "interviewScheduled": "Vorstellungsgespräch geplant"
+      "interviewScheduled": "Vorstellungsgespräch geplant",
+      "cancelled": "Storniert"
     },
     "actions": {
       "accept": "Annehmen",

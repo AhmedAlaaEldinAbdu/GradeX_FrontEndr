@@ -1502,7 +1502,8 @@
       "modified": "Modifiée",
       "completed": "Terminée",
       "appointmentScheduled": "Rendez-vous planifié",
-      "interviewScheduled": "Entretien planifié"
+      "interviewScheduled": "Entretien planifié",
+      "cancelled": "Annulée"
     },
     "actions": {
       "accept": "Accepter",

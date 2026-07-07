@@ -66,6 +66,7 @@ export interface StudentQueryParams {
   SchoolBrancheId?: string; // TODO: temp fix for inconsistent API param name, should be removed once API is fixed
   GradeId?: string;
   ClassroomId?: string;
+  Createby?: string;
   Date?: string;
 }
 

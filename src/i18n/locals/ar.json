@@ -1628,7 +1628,8 @@
       "modified": "تم التعديل",
       "completed": "إكتمل",
       "appointmentScheduled": "تم تحديد موعد المقابلة",
-      "interviewScheduled": "تم تحديد مقابلة"
+      "interviewScheduled": "تم تحديد مقابلة",
+      "cancelled": "ملغي"
     },
     "actions": {
       "accept": "قبول",
