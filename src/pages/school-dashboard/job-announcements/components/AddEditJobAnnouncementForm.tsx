@@ -73,9 +73,9 @@ const NATIONALITY_OPTIONS = [
   { value: NationalityMode.SPECIFIC, labelKey: 'jobAnnouncement.form.nationalitySpecific' },
 ];
 
-type AddJobAnnouncementFormValues = InferType<typeof AddJobAnnouncementSchema>;
+type AddEditJobAnnouncementFormValues = InferType<typeof AddJobAnnouncementSchema>;
 
-const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
+const DEFAULT_VALUES: AddEditJobAnnouncementFormValues = {
   qualificationType: JobCategory.TEACHER,
   name: '',
   nameEn: '',
@@ -196,14 +196,14 @@ const mapContractTypeToWorkSchedule = (type?: ContractTypeValue): JobAdvertismen
   }
 };
 
-interface AddJobAnnouncementFormProps {
+interface AddEditJobAnnouncementFormProps {
   jobId?: string;
 }
 
 type SkillFieldName = 'technicalSkillIds' | 'personalSkillIds';
 type SkillType = 'technical' | 'personal';
 
-export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementFormProps) {
+export default function AddEditJobAnnouncementForm({ jobId }: AddEditJobAnnouncementFormProps) {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
@@ -254,12 +254,12 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     setValue,
     clearErrors,
     formState: { errors },
-  } = useForm<AddJobAnnouncementFormValues>({
+  } = useForm<AddEditJobAnnouncementFormValues>({
     resolver: yupResolver(AddJobAnnouncementSchema) as any,
     defaultValues: DEFAULT_VALUES,
   });
 
-  const scrollToFirstError = useScrollToFirstError<AddJobAnnouncementFormValues>();
+  const scrollToFirstError = useScrollToFirstError<AddEditJobAnnouncementFormValues>();
 
   const {
     fields: languageFields,
@@ -658,7 +658,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     updateSkillsField(field, updatedList);
   };
 
-  const onSubmit = async (values: AddJobAnnouncementFormValues) => {
+  const onSubmit = async (values: AddEditJobAnnouncementFormValues) => {
     const isTeacherJob = values.qualificationType === JobCategory.TEACHER;
     const selectedSpecializationId = isTeacherJob ? values.specializationIds || '' : '';
     const selectedStageId = isTeacherJob ? values.stageIds || '' : '';
@@ -752,14 +752,14 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
               setShowPopupMessage({
                 show: true,
                 type: 'success',
-                message: t('jobAnnouncement.form.editSuccessMessage'),
+                message: res.message || t('jobAnnouncement.form.editSuccessMessage'),
               });
               navigate('/job-announcements');
             } else {
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: t('common.errorOccurred'),
+                message: res.message || t('common.errorOccurred'),
               });
             }
           });
@@ -772,14 +772,14 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
               setShowPopupMessage({
                 show: true,
                 type: 'success',
-                message: t('jobAnnouncement.form.successMessage'),
+                message: res.message || t('jobAnnouncement.form.successMessage'),
               });
               navigate('/job-announcements');
             } else {
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: t('common.errorOccurred'),
+                message: res.message || t('common.errorOccurred'),
               });
             }
           });

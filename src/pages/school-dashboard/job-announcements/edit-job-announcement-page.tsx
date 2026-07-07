@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
-import AddJobAnnouncementForm from './components/AddJobAnnouncementForm';
+import AddEditJobAnnouncementForm from './components/AddEditJobAnnouncementForm';
 
 export default function EditJobAnnouncementPage() {
   const { t } = useTranslation();
@@ -21,7 +21,7 @@ export default function EditJobAnnouncementPage() {
 
       <PageHeader title="jobAnnouncement.editAnnouncement" />
 
-      <AddJobAnnouncementForm jobId={id} />
+      <AddEditJobAnnouncementForm jobId={id} />
     </div>
   );
 }
