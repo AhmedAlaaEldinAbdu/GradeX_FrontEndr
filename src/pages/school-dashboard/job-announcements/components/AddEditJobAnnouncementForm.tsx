@@ -73,9 +73,9 @@ const NATIONALITY_OPTIONS = [
   { value: NationalityMode.SPECIFIC, labelKey: 'jobAnnouncement.form.nationalitySpecific' },
 ];
 
-type AddJobAnnouncementFormValues = InferType<typeof AddJobAnnouncementSchema>;
+type AddEditJobAnnouncementFormValues = InferType<typeof AddJobAnnouncementSchema>;
 
-const DEFAULT_VALUES: AddJobAnnouncementFormValues = {
+const DEFAULT_VALUES: AddEditJobAnnouncementFormValues = {
   qualificationType: JobCategory.TEACHER,
   name: '',
   nameEn: '',
@@ -196,14 +196,14 @@ const mapContractTypeToWorkSchedule = (type?: ContractTypeValue): JobAdvertismen
   }
 };
 
-interface AddJobAnnouncementFormProps {
+interface AddEditJobAnnouncementFormProps {
   jobId?: string;
 }
 
 type SkillFieldName = 'technicalSkillIds' | 'personalSkillIds';
 type SkillType = 'technical' | 'personal';
 
-export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementFormProps) {
+export default function AddEditJobAnnouncementForm({ jobId }: AddEditJobAnnouncementFormProps) {
   const { t, i18n } = useTranslation();
   const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
@@ -253,12 +253,12 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     watch,
     setValue,
     formState: { errors },
-  } = useForm<AddJobAnnouncementFormValues>({
+  } = useForm<AddEditJobAnnouncementFormValues>({
     resolver: yupResolver(AddJobAnnouncementSchema) as any,
     defaultValues: DEFAULT_VALUES,
   });
 
-  const scrollToFirstError = useScrollToFirstError<AddJobAnnouncementFormValues>();
+  const scrollToFirstError = useScrollToFirstError<AddEditJobAnnouncementFormValues>();
 
   const {
     fields: languageFields,
@@ -645,7 +645,7 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
     updateSkillsField(field, updatedList);
   };
 
-  const onSubmit = async (values: AddJobAnnouncementFormValues) => {
+  const onSubmit = async (values: AddEditJobAnnouncementFormValues) => {
     const selectedSpecializationId = values.specializationIds || '';
     const selectedStageId = values.stageIds || '';
     const specializationList = selectedSpecializationId ? [selectedSpecializationId] : [];
