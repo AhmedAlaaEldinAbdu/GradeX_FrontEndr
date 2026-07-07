@@ -78,6 +78,12 @@ export interface PaidService {
   amount: number;
 }
 
+export interface StudentApplicationInterviewDto {
+  interviewDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
+}
+
 export interface BookItem {
   id: string;
   name: string;
@@ -127,11 +133,7 @@ export interface StudentApplicationDetailDto {
   vaccinationCertificatePath: string | null;
   lastEducationCertificatePath: string | null;
   interviewDate?: string | null;
-  interviewDto?: {
-    interviewDate?: string | null;
-    startTime?: string | null;
-    endTime?: string | null;
-  };
+  interviewDto?: StudentApplicationInterviewDto | null;
   editRequest?: string | null;
   classroomid?: string | null;
   nationalityId?: string | null;

@@ -5,15 +5,19 @@ import { StudentApplicationStatus } from '@/services/api/student-applications/st
 interface ApplicationStatusBannerProps {
   status: StudentApplicationStatus;
   interviewDate?: string | null;
+  interviewStartTime?: string | null;
+  interviewEndTime?: string | null;
   editRequest?: string | null;
 }
 
 const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
   status,
   interviewDate,
+  interviewStartTime,
+  interviewEndTime,
   editRequest,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showBorder] = useState(false);
 
   const editRequestTooltip =
@@ -21,15 +25,53 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
       ? editRequest.trim()
       : null;
 
-  // Check if this is the "appointment scheduled" case (default with interviewDate)
+  const isInterviewScheduled = status === StudentApplicationStatus.InterviewScheduled;
+
+  const formatDate = (dateValue?: string | null) => {
+    if (!dateValue) return null;
+
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return null;
+
+    return date.toLocaleDateString(i18n.language || undefined, {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
+  };
+
+  const formatTime = (dateValue?: string | null) => {
+    if (!dateValue) return null;
+
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return null;
+
+    return date.toLocaleTimeString(i18n.language || undefined, {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  const appointmentDateText = formatDate(interviewDate);
+  const appointmentStartTimeText = formatTime(interviewStartTime ?? interviewDate);
+  const appointmentEndTimeText = formatTime(interviewEndTime);
+  const appointmentTimeText = [appointmentStartTimeText, appointmentEndTimeText]
+    .filter(Boolean)
+    .join(' - ');
+  const appointmentText = [appointmentDateText, appointmentTimeText].filter(Boolean).join(' - ');
+
+  // Check if this is the "appointment scheduled" case.
   const isAppointmentScheduled =
-    status !== StudentApplicationStatus.Edited &&
-    status !== StudentApplicationStatus.EditRequest &&
-    status !== StudentApplicationStatus.Reject &&
-    status !== StudentApplicationStatus.Pending &&
-    status !== StudentApplicationStatus.Accept &&
-    status !== StudentApplicationStatus.Cancelled &&
-    !!interviewDate;
+    isInterviewScheduled ||
+    (status !== StudentApplicationStatus.Edited &&
+      status !== StudentApplicationStatus.EditRequest &&
+      status !== StudentApplicationStatus.Reject &&
+      status !== StudentApplicationStatus.Pending &&
+      status !== StudentApplicationStatus.Accept &&
+      status !== StudentApplicationStatus.Cancelled &&
+      !!interviewDate);
 
   const getBadgeContent = () => {
     switch (status) {
@@ -62,6 +104,11 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
         return {
           text: t('studentApplications.status.cancelled'),
           badgeClassName: 'bg-gray-100 text-gray-700 border border-gray-200',
+        };
+      case StudentApplicationStatus.InterviewScheduled:
+        return {
+          text: t('studentApplications.status.appointmentScheduled'),
+          badgeClassName: 'bg-green-100 text-green-700 border border-green-200',
         };
       default:
         if (interviewDate) {
@@ -144,19 +191,12 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
       </div>
 
       {/* Appointment date row — ONLY for "تحديد موعد" (appointment scheduled) status */}
-      {isAppointmentScheduled && interviewDate && (
+      {isAppointmentScheduled && appointmentText && (
         <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
           <span className="font-bold text-gray-800">
             {t('studentApplications.details.appointmentDateLabel')}:
           </span>
-          <span>
-            {new Date(interviewDate).toLocaleDateString(undefined, {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'numeric',
-              day: 'numeric',
-            })}
-          </span>
+          <span>{appointmentText}</span>
         </div>
       )}
     </div>

@@ -79,7 +79,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   const studentFullName = `${data.firstName} ${data.secondName} ${data.thirdName} ${data.fourthName}`;
   const effectiveStatus = data.status;
   const effectiveInterviewDate =
-    data.interviewDto?.startTime || data.interviewDto?.interviewDate || data.interviewDate || null;
+    data.interviewDto?.interviewDate ?? data.interviewDto?.startTime ?? data.interviewDate;
   const isCancelled = effectiveStatus === StudentApplicationStatus.Cancelled;
 
   // Action handlers — open modals
@@ -265,6 +265,8 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
         <ApplicationStatusBanner
           status={effectiveStatus}
           interviewDate={effectiveInterviewDate}
+          interviewStartTime={data.interviewDto?.startTime}
+          interviewEndTime={data.interviewDto?.endTime}
           editRequest={data.editRequest}
         />
 
