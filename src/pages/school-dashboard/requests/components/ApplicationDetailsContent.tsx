@@ -79,6 +79,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   const studentFullName = `${data.firstName} ${data.secondName} ${data.thirdName} ${data.fourthName}`;
   const effectiveStatus = data.status;
   const effectiveInterviewDate = data.interviewDate;
+  const isCancelled = effectiveStatus === StudentApplicationStatus.Cancelled;
 
   // Action handlers — open modals
   const handleAccept = () => {
@@ -233,16 +234,18 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
       {/* Header with Student Name and Actions */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900">{studentFullName}</h1>
-        <ApplicationHeaderActions
-          status={effectiveStatus}
-          hasInterview={!!effectiveInterviewDate}
-          isHoused={!!data.classroomid}
-          onAccept={handleAccept}
-          onNotPassed={handleNotPassed}
-          onEditRequest={handleEditRequest}
-          onSchedule={handleScheduleAppointment}
-          onHousing={handleHousing}
-        />
+        {!isCancelled && (
+          <ApplicationHeaderActions
+            status={effectiveStatus}
+            hasInterview={!!effectiveInterviewDate}
+            isHoused={!!data.classroomid}
+            onAccept={handleAccept}
+            onNotPassed={handleNotPassed}
+            onEditRequest={handleEditRequest}
+            onSchedule={handleScheduleAppointment}
+            onHousing={handleHousing}
+          />
+        )}
       </div>
 
       {/* Single white card container for all sections */}
