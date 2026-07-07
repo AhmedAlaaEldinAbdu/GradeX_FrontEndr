@@ -11,7 +11,10 @@ import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchTeacherRequestsSummary } from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import {
+  fetchTeacherRequestsSummary,
+  fetchJobApplications,
+} from '@/redux/features/teacher-requests/teacherRequestsSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import JobApplicationsTab from './components/JobApplicationsTab';
@@ -20,25 +23,27 @@ import MessagesTab from './components/MessagesTab';
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { summary } = useAppSelector((state) => state.teacherRequests);
+  const { summary, jobApplicationsStats } = useAppSelector((state) => state.teacherRequests);
 
   const schoolBranchId = getCurrentSchoolBranchId();
 
   useEffect(() => {
     if (schoolBranchId) {
       dispatch(fetchTeacherRequestsSummary({ SchoolBranchId: schoolBranchId }));
+      dispatch(fetchJobApplications({ SchoolBranchId: schoolBranchId, PageNumber: 1, PageSize: 10 }));
     }
   }, [dispatch, schoolBranchId]);
 
-  const acceptedPercentage = summary?.totalRequests
-    ? Math.round((summary.acceptedRequests / summary.totalRequests) * 100)
-    : 0;
-
   const stats = {
-    total: summary?.totalRequests ?? 0,
-    rejected: summary?.rejectedRequests ?? 0,
-    acceptedPercentage,
-    pending: summary?.pendingRequests ?? 0,
+    total: jobApplicationsStats.total || summary?.totalRequests || 0,
+    totalAccepted: jobApplicationsStats.totalAccepted || summary?.acceptedRequests || 0,
+    totalArchived: jobApplicationsStats.totalArchived,
+    totalCancelled: jobApplicationsStats.totalCancelled,
+    totalInterviewScheduled: jobApplicationsStats.totalInterviewScheduled,
+    totalItems: jobApplicationsStats.total,
+    totalPages: 1,
+    totalPending: jobApplicationsStats.totalPending || summary?.pendingRequests || 0,
+    totalRejected: jobApplicationsStats.totalRejected || summary?.rejectedRequests || 0,
   };
 
   const breadcrumbItems = [
@@ -93,20 +98,19 @@ const AdminRequestsPage: React.FC = () => {
         />
         <MetricCard
           title={t('adminRequests.rejectedCount')}
-          value={stats.rejected}
+          value={stats.totalRejected}
           icon={<CustomImage src={XmarkCircleRedIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#FCE8E8]"
         />
         <MetricCard
           title={t('adminRequests.acceptedCount')}
-          value={stats.acceptedPercentage}
-          percentage
+          value={stats.totalAccepted}
           icon={<CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#E8F4EE]"
         />
         <MetricCard
           title={t('adminRequests.pendingCount')}
-          value={stats.pending}
+          value={stats.totalPending}
           icon={<CustomImage src={ClockYellowBoldIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#FDF6E0]"
         />
