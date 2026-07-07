@@ -30,6 +30,7 @@ import { mapJobApplication } from '../admin-requests.mappers';
 import ScheduleInterviewPopup from '../popups/ScheduleInterviewPopup';
 import ArchiveConfirmPopup from '../popups/ArchiveConfirmPopup';
 import AcceptConfirmPopup from '../popups/AcceptConfirmPopup';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 
 const PAGE_SIZE = 10;
 
@@ -292,7 +293,18 @@ const JobApplicationsTab: React.FC = () => {
         const showArchiveButton = !isAccepted && !isArchived;
 
         if (!showAcceptButton && !showScheduleButton && !showArchiveButton) {
-          return null;
+          return (
+            <>
+              <IconButton
+                variant="blue"
+                ariaLabel={t('common.view')}
+                imgClassName="h-5 w-5"
+                onClick={() => navigate(`/admin-requests/job-application/${row.id}`)}
+              >
+                <CustomImage src={EyeStyledIcon} alt="" className="h-6 w-6" />
+              </IconButton>
+            </>
+          );
         }
 
         return (
@@ -464,6 +476,10 @@ const JobApplicationsTab: React.FC = () => {
         isOpen={Boolean(scheduleTarget)}
         onClose={() => setScheduleTarget(null)}
         onConfirm={handleScheduleConfirm}
+        schoolBranchesId={scheduleTarget?.schoolBranchesId}
+        jobAdvertisementId={scheduleTarget?.jobAdvertismentId}
+        teacherId={scheduleTarget?.teacherId}
+        supervisorId={scheduleTarget?.supervisorId}
       />
 
       <ArchiveConfirmPopup
