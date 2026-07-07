@@ -78,7 +78,8 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
   const data = currentApplication;
   const studentFullName = `${data.firstName} ${data.secondName} ${data.thirdName} ${data.fourthName}`;
   const effectiveStatus = data.status;
-  const effectiveInterviewDate = data.interviewDate;
+  const effectiveInterviewDate =
+    data.interviewDto?.startTime || data.interviewDto?.interviewDate || data.interviewDate || null;
   const isCancelled = effectiveStatus === StudentApplicationStatus.Cancelled;
 
   // Action handlers — open modals
