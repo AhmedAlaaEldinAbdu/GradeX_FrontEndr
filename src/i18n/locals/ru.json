@@ -1502,7 +1502,8 @@
       "modified": "Изменено",
       "completed": "Завершено",
       "appointmentScheduled": "Встреча запланирована",
-      "interviewScheduled": "Собеседование запланировано"
+      "interviewScheduled": "Собеседование запланировано",
+      "cancelled": "Отменено"
     },
     "actions": {
       "accept": "Принять",

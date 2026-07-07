@@ -1628,7 +1628,8 @@
       "modified": "Modified",
       "completed": "Completed",
       "appointmentScheduled": "Appointment Scheduled",
-      "interviewScheduled": "Interview Scheduled"
+      "interviewScheduled": "Interview Scheduled",
+      "cancelled": "Cancelled"
     },
     "actions": {
       "accept": "Accept",
