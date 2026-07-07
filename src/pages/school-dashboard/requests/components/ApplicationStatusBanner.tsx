@@ -28,6 +28,7 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
     status !== StudentApplicationStatus.Reject &&
     status !== StudentApplicationStatus.Pending &&
     status !== StudentApplicationStatus.Accept &&
+    status !== StudentApplicationStatus.Cancelled &&
     !!interviewDate;
 
   const getBadgeContent = () => {
@@ -56,6 +57,11 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
         return {
           text: t('studentApplications.status.completed'),
           badgeClassName: 'bg-green-100 text-green-700 border border-green-200',
+        };
+      case StudentApplicationStatus.Cancelled:
+        return {
+          text: t('studentApplications.status.cancelled'),
+          badgeClassName: 'bg-gray-100 text-gray-700 border border-gray-200',
         };
       default:
         if (interviewDate) {
@@ -88,6 +94,8 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
         return `${base} border-s-orange-400`;
       case StudentApplicationStatus.Accept:
         return `${base} border-s-green-400`;
+      case StudentApplicationStatus.Cancelled:
+        return `${base} border-s-gray-400`;
       default:
         return `${base} border-s-green-400`;
     }

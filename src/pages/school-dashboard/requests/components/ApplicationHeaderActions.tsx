@@ -26,6 +26,10 @@ const ApplicationHeaderActions: React.FC<ApplicationHeaderActionsProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  if (status === StudentApplicationStatus.Cancelled) {
+    return null;
+  }
+
   if (status === StudentApplicationStatus.Accept) {
     if (isHoused) return null;
     if (!onHousing) return null;
