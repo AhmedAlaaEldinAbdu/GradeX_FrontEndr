@@ -99,7 +99,8 @@ export interface StudentApplicationDetailDto {
   installmentPlanId: string | null;
   offers: string[];
   paidServices: PaidService[];
-  total: number;
+  total: number | null;
+  discountTotal: number | null;
   status: StudentApplicationStatus;
   guardianName: string;
   relationshipType: RelationshipType;

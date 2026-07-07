@@ -11,14 +11,8 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
 
   if (!data) return null;
 
-  const paidServicesTotal = (data.paidServices ?? []).reduce(
-    (sum, service) => sum + (service?.amount ?? 0),
-    0
-  );
-  const grandTotal = (data.tuitionAmount || 0) + paidServicesTotal;
-
-  const originalTotal =
-    data.total && data.total !== data.tuitionAmount ? data.total + paidServicesTotal : null;
+  const total = data.total;
+  const discountTotal = data.discountTotal;
 
   return (
     <div className="mb-8 rounded-2xl border border-gray-200 p-6">
@@ -47,7 +41,9 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
             {t('studentApplications.details.discount')}:
           </span>
           <span className="text-gray-600">
-            {data.offers?.length > 0 ? data.offers.join(', ') : '-'}
+            {discountTotal !== null && discountTotal !== undefined && discountTotal > 0
+              ? `${discountTotal.toLocaleString()} ${t('common.currencyRiyal')}`
+              : '-'}
           </span>
         </div>
       </div>
@@ -78,16 +74,11 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
         <span className="text-sm font-bold text-green-700">
           {t('studentApplications.details.totalExpenses')}
         </span>
-        <div className="flex items-center gap-3" dir="ltr">
-          <span className="text-xl font-bold text-green-600">
-            {grandTotal.toLocaleString()} {t('common.currencyRiyal')}
-          </span>
-          {originalTotal ? (
-            <span className="text-base text-gray-400 line-through">
-              {originalTotal.toLocaleString()} {t('common.currencyRiyal')}
-            </span>
-          ) : null}
-        </div>
+        <span className="text-xl font-bold text-green-600" dir="ltr">
+          {total !== null && total !== undefined
+            ? `${total.toLocaleString()} ${t('common.currencyRiyal')}`
+            : '-'}
+        </span>
       </div>
     </div>
   );
