@@ -31,9 +31,37 @@ const ApplicationAttachments: React.FC<ApplicationAttachmentsProps> = ({ data, b
       name: t('studentApplications.details.educationalCustody'),
       path: data.educationalCustodyPath,
     },
+    {
+      name: t('studentApplications.details.fatherIdentity'),
+      path: data.fatherIdentityPath,
+    },
+    {
+      name: t('studentApplications.details.fatherEducationalCertificate'),
+      path: data.fatherEducationalCertificatePath,
+    },
+    {
+      name: t('studentApplications.details.motherIdentity'),
+      path: data.motherIdentityPath,
+    },
+    {
+      name: t('studentApplications.details.motherEducationalCertificate'),
+      path: data.motherEducationalCertificatePath,
+    },
+    {
+      name: t('studentApplications.details.familyCard'),
+      path: data.familyCardPath,
+    },
   ];
 
-  const availableAttachments = attachments.filter((attachment) => attachment.path);
+  // Include book files as attachments (if any)
+  const bookAttachments = (data.books || []).map((book) => ({
+    name: book.name,
+    path: book.filePath || book.fileName,
+  }));
+
+  const availableAttachments = attachments
+    .concat(bookAttachments)
+    .filter((attachment) => attachment.path);
 
   if (availableAttachments.length === 0) {
     return null;
