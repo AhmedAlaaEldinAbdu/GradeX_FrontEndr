@@ -734,14 +734,14 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
               setShowPopupMessage({
                 show: true,
                 type: 'success',
-                message: t('jobAnnouncement.form.editSuccessMessage'),
+                message: res.message || t('jobAnnouncement.form.editSuccessMessage'),
               });
               navigate('/job-announcements');
             } else {
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: t('common.errorOccurred'),
+                message: res.message || t('common.errorOccurred'),
               });
             }
           });
@@ -754,14 +754,14 @@ export default function AddJobAnnouncementForm({ jobId }: AddJobAnnouncementForm
               setShowPopupMessage({
                 show: true,
                 type: 'success',
-                message: t('jobAnnouncement.form.successMessage'),
+                message: res.message || t('jobAnnouncement.form.successMessage'),
               });
               navigate('/job-announcements');
             } else {
               setShowPopupMessage({
                 show: true,
                 type: 'error',
-                message: t('common.errorOccurred'),
+                message: res.message || t('common.errorOccurred'),
               });
             }
           });
