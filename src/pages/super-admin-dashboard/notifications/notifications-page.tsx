@@ -14,7 +14,8 @@ const NotificationsPage: React.FC = () => {
             label: 'notifications.sendNotification',
             to: 'add-notification',
             imgSrc: PlusIcon,
-            imgClassName: `w-[24px] h-[24px]`,
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />
