@@ -18,7 +18,8 @@ const AcademicSystemPage: React.FC = () => {
                   label: 'academicSystem.addAcademicSystem',
                   to: '/academic-system/add-academic-system',
                   imgSrc: PlusIcon,
-                  imgClassName: `w-[24px] h-[24px]`,
+                  imgClassName: 'w-10 h-10',
+                  circle: true,
                 },
               ]
             : []
