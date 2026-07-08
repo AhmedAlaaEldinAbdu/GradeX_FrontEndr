@@ -151,6 +151,15 @@ export interface AdminRequestsStats {
   total: number;
 }
 
+export interface ScheduledInterviewDto {
+  id: string;
+  applicationId: string;
+  applicantName: string;
+  applicantAvatarPath: string | null;
+  interviewDate: string;
+  interviewTime: string | null;
+}
+
 export const AdminMessageStatus = {
   Pending: 1,
   Sent: 2,
