@@ -1261,6 +1261,27 @@
     "acceptedCount": "Принятые заявки",
     "pendingCount": "Заявки в ожидании",
     "empty": "Заявки ещё не добавлены.",
+    "scheduleInterview": {
+      "searchPlaceholder": "Поиск по имени сотрудника",
+      "datePlaceholder": "Дата",
+      "columns": {
+        "preview": "Просмотр заявки",
+        "applicantName": "Имя кандидата",
+        "interviewDate": "Дата собеседования",
+        "interviewTime": "Время собеседования"
+      },
+      "actions": {
+        "preview": "Просмотреть заявку",
+        "accept": "Принять",
+        "reschedule": "Перенести",
+        "reject": "Отклонить"
+      },
+      "toasts": {
+        "previewPending": "Просмотр заявки будет подключен к серверной части.",
+        "profilePending": "Профиль сотрудника будет подключен к серверной части.",
+        "actionPending": "Это действие будет подключено к серверной части."
+      }
+    },
     "messages": {
       "detailsTitle": "Просмотр сообщения",
       "searchPlaceholder": "Поиск по имени сотрудника",

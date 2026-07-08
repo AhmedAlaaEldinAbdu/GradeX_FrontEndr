@@ -1357,6 +1357,27 @@
         "accepted": "تم قبول الطلب بنجاح"
       }
     },
+    "scheduleInterview": {
+      "searchPlaceholder": "ابحث عن اسم الموظف",
+      "datePlaceholder": "التاريخ",
+      "columns": {
+        "preview": "معاينة الطلب",
+        "applicantName": "اسم مقدم الطلب",
+        "interviewDate": "تاريخ المقابلة",
+        "interviewTime": "وقت المقابلة"
+      },
+      "actions": {
+        "preview": "معاينة الطلب",
+        "accept": "قبول",
+        "reschedule": "إعادة تحديد الموعد",
+        "reject": "رفض"
+      },
+      "toasts": {
+        "previewPending": "سيتم ربط معاينة الطلب مع النظام لاحقًا.",
+        "profilePending": "سيتم ربط ملف الموظف مع النظام لاحقًا.",
+        "actionPending": "سيتم ربط هذا الإجراء مع النظام لاحقًا."
+      }
+    },
     "messages": {
       "detailsTitle": "معاينة الرسالة",
       "searchPlaceholder": "ابحث عن اسم الموظف",

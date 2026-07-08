@@ -1357,6 +1357,27 @@
         "accepted": "Application accepted successfully"
       }
     },
+    "scheduleInterview": {
+      "searchPlaceholder": "Search by employee name",
+      "datePlaceholder": "Date",
+      "columns": {
+        "preview": "Request Preview",
+        "applicantName": "Applicant Name",
+        "interviewDate": "Interview Date",
+        "interviewTime": "Interview Time"
+      },
+      "actions": {
+        "preview": "Preview request",
+        "accept": "Accept",
+        "reschedule": "Reschedule",
+        "reject": "Reject"
+      },
+      "toasts": {
+        "previewPending": "Request preview will be connected with the backend.",
+        "profilePending": "Employee profile will be connected with the backend.",
+        "actionPending": "This action will be connected with the backend."
+      }
+    },
     "messages": {
       "detailsTitle": "Message Preview",
       "searchPlaceholder": "Search by employee name",

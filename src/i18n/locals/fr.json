@@ -1261,6 +1261,27 @@
     "acceptedCount": "Demandes acceptées",
     "pendingCount": "Demandes en attente",
     "empty": "Aucune demande n'a encore été ajoutée.",
+    "scheduleInterview": {
+      "searchPlaceholder": "Rechercher par nom d’employé",
+      "datePlaceholder": "Date",
+      "columns": {
+        "preview": "Aperçu de la demande",
+        "applicantName": "Nom du candidat",
+        "interviewDate": "Date de l’entretien",
+        "interviewTime": "Heure de l’entretien"
+      },
+      "actions": {
+        "preview": "Voir la demande",
+        "accept": "Accepter",
+        "reschedule": "Replanifier",
+        "reject": "Refuser"
+      },
+      "toasts": {
+        "previewPending": "L’aperçu de la demande sera connecté au backend.",
+        "profilePending": "Le profil de l’employé sera connecté au backend.",
+        "actionPending": "Cette action sera connectée au backend."
+      }
+    },
     "messages": {
       "detailsTitle": "Aperçu du message",
       "searchPlaceholder": "Rechercher par nom d'employé",

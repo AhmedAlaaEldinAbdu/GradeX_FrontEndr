@@ -1261,6 +1261,27 @@
     "acceptedCount": "Angenommene Anträge",
     "pendingCount": "Ausstehende Anträge",
     "empty": "Es wurden noch keine Anträge hinzugefügt.",
+    "scheduleInterview": {
+      "searchPlaceholder": "Nach Mitarbeitername suchen",
+      "datePlaceholder": "Datum",
+      "columns": {
+        "preview": "Anfrage anzeigen",
+        "applicantName": "Name des Bewerbers",
+        "interviewDate": "Vorstellungsgesprächsdatum",
+        "interviewTime": "Vorstellungsgesprächszeit"
+      },
+      "actions": {
+        "preview": "Anfrage anzeigen",
+        "accept": "Annehmen",
+        "reschedule": "Neu planen",
+        "reject": "Ablehnen"
+      },
+      "toasts": {
+        "previewPending": "Die Anfrageansicht wird später mit dem Backend verbunden.",
+        "profilePending": "Das Mitarbeiterprofil wird später mit dem Backend verbunden.",
+        "actionPending": "Diese Aktion wird später mit dem Backend verbunden."
+      }
+    },
     "messages": {
       "detailsTitle": "Nachrichtenvorschau",
       "searchPlaceholder": "Nach Mitarbeitername suchen",
