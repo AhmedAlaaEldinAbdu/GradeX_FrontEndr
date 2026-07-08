@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, type CSSProperties } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormField from '@/shared/components/FormField';
@@ -6,10 +6,7 @@ import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import Input from '@/shared/components/Input';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomCheckbox from '@/shared/components/CustomCheckbox';
-import Button from '@/shared/components/Button';
 import { useLanguage } from '@/hooks/useLanguage';
-import ClassificationsPopup from '../popups/ClassificationsPopup';
-import type { ReviewQuestion } from './ExamReviewQuestionCard';
 import type { AIExamProps } from '@/validations/ai-exam-validations';
 
 const QUESTION_COUNT_VALUES = [5, 10, 15, 20, 25, 30];
@@ -35,14 +32,9 @@ const DIFFICULTY_SLIDERS = [
   { name: 'difficultyHard', labelKey: 'eLearning.onlineExams.difficulty.hard', color: '#DD0417' },
 ] as const;
 
-type AIExamQuestionsStepProps = {
-  onClassificationsSelected?: (questions: ReviewQuestion[]) => void;
-};
-
-const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepProps) => {
+const AIExamQuestionsStep = () => {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
-  const [isClassificationsOpen, setIsClassificationsOpen] = useState(false);
   const {
     control,
     setValue,
@@ -280,27 +272,6 @@ const AIExamQuestionsStep = ({ onClassificationsSelected }: AIExamQuestionsStepP
             textClassName="text-sm font-normal text-[#646969]"
           />
         )}
-      />
-
-      {/* Classification questions */}
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-normal text-[#0E1F1F]">
-          {t('eLearning.onlineExams.addAI.fields.classificationsTitle')}
-        </span>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setIsClassificationsOpen(true)}
-        >
-          {t('eLearning.onlineExams.addAI.addButton')}
-        </Button>
-      </div>
-
-      <ClassificationsPopup
-        isOpen={isClassificationsOpen}
-        onClose={() => setIsClassificationsOpen(false)}
-        onAdd={onClassificationsSelected}
       />
     </div>
   );
