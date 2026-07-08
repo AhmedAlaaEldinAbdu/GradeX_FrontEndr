@@ -293,9 +293,6 @@ const SchoolForm = ({
         const licenseFromExisting = await Promise.all(
           existingLicenseFiles.map((p) => fetchExistingFileAsUpload(p))
         );
-        if (licenseFromExisting.some((file) => file === null)) {
-          throw new Error('Failed to load an existing license file for the school update.');
-        }
 
         const schoolImageUploads: File[] = [];
         const keptSchoolImages: ExistingImageAttachment[] = [];
@@ -314,7 +311,7 @@ const SchoolForm = ({
 
           // logo stays a path; only keep paths whose re-upload failed.
           existingLogo: existingLogo || undefined,
-          existingLicensePaths: [],
+          existingLicensePaths: existingLicenseFiles.filter((_, i) => !licenseFromExisting[i]),
           existingCertificatePaths: existingCertificateFiles,
         };
         submitSchoolImages = keptSchoolImages;
