@@ -24,7 +24,6 @@ import {
 import AIExamBasicInfoStep from './components/AIExamBasicInfoStep';
 import AIExamQuestionsStep from './components/AIExamQuestionsStep';
 import AIExamReviewStep from './components/AIExamReviewStep';
-import SaveInClassificationPopup from './popups/SaveInClassificationPopup';
 import type {
   ReviewAnswer,
   ReviewDifficulty,
@@ -268,8 +267,6 @@ export default function AddAIExamPage() {
   const isGenerating = useAppSelector((state) => state.aiExam.isGenerating);
   const isCreating = useAppSelector((state) => state.aiExam.isCreating);
   const [currentStep, setCurrentStep] = useState(1);
-  const [classificationQuestions, setClassificationQuestions] = useState<ReviewQuestion[]>([]);
-  const [isSaveInClassificationOpen, setIsSaveInClassificationOpen] = useState(false);
   const [isSuccessPopupOpen, setIsSuccessPopupOpen] = useState(false);
   const generatedReviewQuestions = useMemo(
     () => generatedQuestions.map(mapGeneratedQuestionToReview),
@@ -339,13 +336,6 @@ export default function AddAIExamPage() {
     },
   ];
 
-  const handleClassificationsSelected = (questions: ReviewQuestion[]) => {
-    setClassificationQuestions((prev) => {
-      const seen = new Set(prev.map((question) => question.id));
-      return [...prev, ...questions.filter((question) => !seen.has(question.id))];
-    });
-  };
-
   const showSubmitError = (error: unknown) => {
     if (typeof error === 'string' && error.trim()) {
       showToast({ message: error, type: 'error', isRaw: true });
@@ -393,7 +383,7 @@ export default function AddAIExamPage() {
       return;
     }
 
-    const questions = [...generatedReviewQuestions, ...classificationQuestions];
+    const questions = generatedReviewQuestions;
     if (questions.length === 0) {
       showToast({ message: 'common.errorOccurred', type: 'error' });
       return;
@@ -415,10 +405,6 @@ export default function AddAIExamPage() {
     } else {
       setCurrentStep((prev) => prev - 1);
     }
-  };
-
-  const handleSaveInClassification = () => {
-    setIsSaveInClassificationOpen(true);
   };
 
   const handleUpdateGeneratedQuestion = (question: ReviewQuestion) => {
@@ -444,16 +430,6 @@ export default function AddAIExamPage() {
         <Button type="button" variant="outline" onClick={handleSecondary} disabled={isBusy}>
           {secondaryLabel}
         </Button>
-        {currentStep === LAST_STEP && (
-          <button
-            type="button"
-            onClick={handleSaveInClassification}
-            disabled={isBusy}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#A7F1CA] bg-[#E5FFF4] px-5 py-2 text-lg font-medium text-green-500 transition-colors hover:bg-[#d6fbe9] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {t('eLearning.onlineExams.addAI.review.saveInClassification')}
-          </button>
-        )}
         <Button
           type="button"
           variant="primary"
@@ -478,23 +454,17 @@ export default function AddAIExamPage() {
           {currentStep === LAST_STEP ? (
             <AIExamReviewStep
               generatedQuestions={generatedReviewQuestions}
-              classificationQuestions={classificationQuestions}
               isRegenerating={isGenerating}
               onRegenerate={() => void generateQuestions(false)}
               onRemoveGenerated={(id) => dispatch(removeGeneratedQuestion(id))}
               onUpdateGenerated={handleUpdateGeneratedQuestion}
-              onRemoveClassification={(id) =>
-                setClassificationQuestions((prev) => prev.filter((question) => question.id !== id))
-              }
               footer={footer}
             />
           ) : (
             <Card padding="md">
               <div className="space-y-8">
                 {currentStep === 1 && <AIExamBasicInfoStep />}
-                {currentStep === 2 && (
-                  <AIExamQuestionsStep onClassificationsSelected={handleClassificationsSelected} />
-                )}
+                {currentStep === 2 && <AIExamQuestionsStep />}
                 {footer}
               </div>
             </Card>
@@ -502,10 +472,6 @@ export default function AddAIExamPage() {
         </form>
       </FormProvider>
 
-      <SaveInClassificationPopup
-        isOpen={isSaveInClassificationOpen}
-        onClose={() => setIsSaveInClassificationOpen(false)}
-      />
       <PopupMessage
         open={isSuccessPopupOpen}
         type="success"
