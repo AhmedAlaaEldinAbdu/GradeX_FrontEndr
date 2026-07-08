@@ -23,23 +23,19 @@ function BannerCheckIcon() {
 
 type AIExamReviewStepProps = {
   generatedQuestions: ReviewQuestion[];
-  classificationQuestions: ReviewQuestion[];
   isRegenerating?: boolean;
   onRegenerate: () => void;
   onRemoveGenerated: (id: string) => void;
   onUpdateGenerated: (question: ReviewQuestion) => void;
-  onRemoveClassification: (id: string) => void;
   footer?: ReactNode;
 };
 
 const AIExamReviewStep = ({
   generatedQuestions,
-  classificationQuestions,
   isRegenerating = false,
   onRegenerate,
   onRemoveGenerated,
   onUpdateGenerated,
-  onRemoveClassification,
   footer,
 }: AIExamReviewStepProps) => {
   const { t } = useTranslation();
@@ -57,25 +53,6 @@ const AIExamReviewStep = ({
 
   return (
     <div className="space-y-6">
-      {classificationQuestions.length > 0 && (
-        <Card padding="md">
-          <div className="space-y-4">
-            <h3 className="text-start text-base font-medium text-[#101828]">
-              {t('eLearning.onlineExams.addAI.review.sectionTitle')}
-            </h3>
-            <div className="space-y-4">
-              {classificationQuestions.map((question) => (
-                <ExamReviewQuestionCard
-                  key={question.id}
-                  question={question}
-                  onDelete={() => onRemoveClassification(question.id)}
-                />
-              ))}
-            </div>
-          </div>
-        </Card>
-      )}
-
       <Card padding="md">
         <div className="space-y-6">
           <div className="flex items-center justify-between gap-4 rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
