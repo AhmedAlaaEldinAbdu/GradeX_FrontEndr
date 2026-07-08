@@ -14,7 +14,8 @@ const OfficialHolidaysPage: React.FC = () => {
             label: 'officialHolidays.addHoliday',
             to: 'add-holiday',
             imgSrc: PlusIcon,
-            imgClassName: `w-[24px] h-[24px]`,
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />
