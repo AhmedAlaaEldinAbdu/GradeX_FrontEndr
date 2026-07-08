@@ -67,6 +67,13 @@ const buildDateTime = (date: string, time: string) => {
   return new Date(`${date}T${normalizedTime}`);
 };
 
+const buildLocalIsoString = (date: string, time: string) => {
+  if (!date) return '';
+  const normalizedTime = time ? normalizeTime(time) : normalizeTime(DEFAULT_CALENDAR_START);
+  // Keep local wall-clock time (no UTC conversion) to avoid timezone shifts in payload.
+  return `${date}T${normalizedTime}`;
+};
+
 const isPastCalendarDate = (date?: Date | string) => {
   if (!date) return false;
 
@@ -409,21 +416,23 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const transformValuesToRequest = (
     values: MonthlyEventFormValues
   ): CreateMonthlyCalendarRequest => {
-    const dayISO = values.day ? new Date(`${values.day}T00:00:00.000Z`) : new Date();
+    const dayISO = values.day
+      ? `${values.day}T00:00:00`
+      : format(new Date(), "yyyy-MM-dd'T'00:00:00");
     const startDateTime = values.isFullDay
       ? null
-      : buildDateTime(values.day, values.startTime || DEFAULT_CALENDAR_START).toISOString();
+      : buildLocalIsoString(values.day, values.startTime || DEFAULT_CALENDAR_START);
     const endDateTime = values.isFullDay
       ? null
-      : buildDateTime(
+      : buildLocalIsoString(
           values.day,
           values.endTime || values.startTime || DEFAULT_CALENDAR_END
-        ).toISOString();
+        );
 
     return {
       nameAr: values.nameAr,
       nameEn: values.nameEn,
-      day: dayISO.toISOString(),
+      day: dayISO,
       duration: values.isFullDay
         ? MonthlyCalendarDuration.Day
         : MonthlyCalendarDuration.SpecificTime,
