@@ -19,6 +19,7 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import JobApplicationsTab from './components/JobApplicationsTab';
 import MessagesTab from './components/MessagesTab';
+import ScheduleInterviewTab from './components/ScheduleInterviewTab';
 
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -64,11 +65,11 @@ const AdminRequestsPage: React.FC = () => {
     //   label: t('adminRequests.tabs.applicationArchive'),
     //   content: <TabPlaceholder />,
     // },
-    // {
-    //   id: 'schedule-interview',
-    //   label: t('adminRequests.tabs.scheduleInterview'),
-    //   content: <TabPlaceholder />,
-    // },
+    {
+      id: 'schedule-interview',
+      label: t('adminRequests.tabs.scheduleInterview'),
+      content: <ScheduleInterviewTab />,
+    },
     // { id: 'early-leave', label: t('adminRequests.tabs.earlyLeave'), content: <TabPlaceholder /> },
     // { id: 'leave', label: t('adminRequests.tabs.leave'), content: <TabPlaceholder /> },
     // {
