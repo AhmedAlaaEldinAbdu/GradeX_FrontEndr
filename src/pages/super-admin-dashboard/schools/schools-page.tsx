@@ -21,7 +21,8 @@ const SchoolsPage: React.FC = () => {
             label: 'schools.addSchool',
             to: '/schools/add-school',
             imgSrc: PlusIcon,
-            imgClassName: `w-[24px] h-[24px]`,
+            imgClassName: 'w-10 h-10',
+            circle: true,
           },
         ]}
       />
