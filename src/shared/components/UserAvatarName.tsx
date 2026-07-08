@@ -49,11 +49,12 @@ export default function UserAvatarName({
   const sizeClasses = SIZE_CLASSES[size];
   const label = viewLabel ?? t('common.view');
   const hasViewCount = viewCount !== undefined && viewCount !== null;
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
   return (
     <div className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${className}`}>
       <CustomImage
-        src={avatarSrc || fallbackSrc}
+        src={avatarSrc ? baseUrl + '/' + avatarSrc : fallbackSrc}
         fallbackSrc={fallbackSrc}
         alt={name ?? ''}
         className={`${sizeClasses.avatar} shrink-0 rounded-lg object-cover`}
