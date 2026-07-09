@@ -1406,6 +1406,43 @@
         "markedViewed": "Message status updated successfully"
       }
     },
+    "teacherNotes": {
+      "detailsTitle": "Note",
+      "searchPlaceholder": "Search by employee name",
+      "columns": {
+        "preview": "Request Preview",
+        "sentFrom": "Sent From",
+        "sentTo": "Sent To",
+        "status": "Request Status",
+        "stage": "Educational Stage",
+        "classroom": "Classroom",
+        "sentDate": "Sent Date",
+        "content": "Note Content"
+      },
+      "status": {
+        "pending": "Pending",
+        "viewed": "Viewed"
+      },
+      "actions": {
+        "markViewed": "Viewed"
+      },
+      "filters": {
+        "status": "Request Status",
+        "date": "Date"
+      },
+      "toasts": {
+        "markedViewed": "Note status updated successfully",
+        "profilePending": "Employee profile will be connected with the backend."
+      },
+      "sample": {
+        "teacherName": "Ahmed Moataz Hassan",
+        "secondTeacherName": "Ahmed Hassan Ibrahim",
+        "schoolName": "School",
+        "stage": "Middle stage",
+        "classroom": "1/1 A",
+        "content": "There is a student bullying his classmate in class"
+      }
+    },
     "tabs": {
       "jobApplication": "Job Application",
       "applicationArchive": "Application (Archive)",

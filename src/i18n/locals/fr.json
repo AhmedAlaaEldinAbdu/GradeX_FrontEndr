@@ -1310,6 +1310,43 @@
         "markedViewed": "Statut du message mis à jour avec succès"
       }
     },
+    "teacherNotes": {
+      "detailsTitle": "Note",
+      "searchPlaceholder": "Rechercher par nom d'employé",
+      "columns": {
+        "preview": "Aperçu de la demande",
+        "sentFrom": "Envoyé par",
+        "sentTo": "Envoyé à",
+        "status": "Statut de la demande",
+        "stage": "Niveau scolaire",
+        "classroom": "Classe",
+        "sentDate": "Date d'envoi",
+        "content": "Contenu de la note"
+      },
+      "status": {
+        "pending": "En attente",
+        "viewed": "Consulté"
+      },
+      "actions": {
+        "markViewed": "Consulté"
+      },
+      "filters": {
+        "status": "Statut de la demande",
+        "date": "Date"
+      },
+      "toasts": {
+        "markedViewed": "Statut de la note mis à jour avec succès",
+        "profilePending": "Le profil de l’employé sera connecté au backend."
+      },
+      "sample": {
+        "teacherName": "Ahmed Moataz Hassan",
+        "secondTeacherName": "Ahmed Hassan Ibrahim",
+        "schoolName": "École",
+        "stage": "Niveau collège",
+        "classroom": "1/1 A",
+        "content": "Un élève intimide son camarade en classe"
+      }
+    },
     "tabs": {
       "jobApplication": "Candidature à un poste",
       "applicationArchive": "Candidature (Archive)",

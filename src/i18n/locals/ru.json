@@ -1310,6 +1310,43 @@
         "markedViewed": "Статус сообщения успешно обновлён"
       }
     },
+    "teacherNotes": {
+      "detailsTitle": "Заметка",
+      "searchPlaceholder": "Поиск по имени сотрудника",
+      "columns": {
+        "preview": "Просмотр запроса",
+        "sentFrom": "Отправитель",
+        "sentTo": "Получатель",
+        "status": "Статус запроса",
+        "stage": "Уровень образования",
+        "classroom": "Класс",
+        "sentDate": "Дата отправки",
+        "content": "Содержание заметки"
+      },
+      "status": {
+        "pending": "В ожидании",
+        "viewed": "Просмотрено"
+      },
+      "actions": {
+        "markViewed": "Просмотрено"
+      },
+      "filters": {
+        "status": "Статус запроса",
+        "date": "Дата"
+      },
+      "toasts": {
+        "markedViewed": "Статус заметки успешно обновлён",
+        "profilePending": "Профиль сотрудника будет подключен к серверной части."
+      },
+      "sample": {
+        "teacherName": "Ahmed Moataz Hassan",
+        "secondTeacherName": "Ahmed Hassan Ibrahim",
+        "schoolName": "Школа",
+        "stage": "Средняя ступень",
+        "classroom": "1/1 A",
+        "content": "Один ученик обижает своего одноклассника в классе"
+      }
+    },
     "tabs": {
       "jobApplication": "Заявка на вакансию",
       "applicationArchive": "Заявка (Архив)",

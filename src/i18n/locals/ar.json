@@ -1406,6 +1406,43 @@
         "markedViewed": "تم تحديث حالة الرسالة بنجاح"
       }
     },
+    "teacherNotes": {
+      "detailsTitle": "الملاحظة",
+      "searchPlaceholder": "ابحث عن اسم الموظف",
+      "columns": {
+        "preview": "معاينة الطلب",
+        "sentFrom": "مرسل من",
+        "sentTo": "مرسل إلي",
+        "status": "حالة الطلب",
+        "stage": "المرحلة الدراسية",
+        "classroom": "الفصل الدراسي",
+        "sentDate": "تاريخ الإرسال",
+        "content": "محتوي الملاحظة"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "viewed": "تم الإطلاع"
+      },
+      "actions": {
+        "markViewed": "تم الإطلاع"
+      },
+      "filters": {
+        "status": "حالة الطلب",
+        "date": "التاريخ"
+      },
+      "toasts": {
+        "markedViewed": "تم تحديث حالة الملاحظة بنجاح",
+        "profilePending": "سيتم ربط ملف الموظف مع النظام لاحقًا."
+      },
+      "sample": {
+        "teacherName": "أحمد معتز حسن",
+        "secondTeacherName": "أحمد حسن إبراهيم",
+        "schoolName": "المدرسة",
+        "stage": "المرحلة الإعدادية",
+        "classroom": "1/1 ع",
+        "content": "هناك طالب يعتدي علي زملائه في الفصل"
+      }
+    },
     "tabs": {
       "jobApplication": "طلب تقديم علي وظيفة",
       "applicationArchive": "طلب تقديم (الإرشيف)",

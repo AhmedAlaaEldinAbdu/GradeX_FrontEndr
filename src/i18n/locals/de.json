@@ -1310,6 +1310,43 @@
         "markedViewed": "Nachrichtenstatus erfolgreich aktualisiert"
       }
     },
+    "teacherNotes": {
+      "detailsTitle": "Notiz",
+      "searchPlaceholder": "Nach Mitarbeitername suchen",
+      "columns": {
+        "preview": "Antragsvorschau",
+        "sentFrom": "Gesendet von",
+        "sentTo": "Gesendet an",
+        "status": "Antragsstatus",
+        "stage": "Bildungsstufe",
+        "classroom": "Klasse",
+        "sentDate": "Sendedatum",
+        "content": "Notizinhalt"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "viewed": "Angesehen"
+      },
+      "actions": {
+        "markViewed": "Angesehen"
+      },
+      "filters": {
+        "status": "Antragsstatus",
+        "date": "Datum"
+      },
+      "toasts": {
+        "markedViewed": "Notizstatus erfolgreich aktualisiert",
+        "profilePending": "Das Mitarbeiterprofil wird später mit dem Backend verbunden."
+      },
+      "sample": {
+        "teacherName": "Ahmed Moataz Hassan",
+        "secondTeacherName": "Ahmed Hassan Ibrahim",
+        "schoolName": "Schule",
+        "stage": "Mittelstufe",
+        "classroom": "1/1 A",
+        "content": "Ein Schüler schikaniert seinen Klassenkameraden im Unterricht"
+      }
+    },
     "tabs": {
       "jobApplication": "Stellenbewerbung",
       "applicationArchive": "Bewerbung (Archiv)",
