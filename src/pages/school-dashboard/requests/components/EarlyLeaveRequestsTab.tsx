@@ -12,12 +12,13 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
+  approveStudentEarlyLeaveRequest,
+  deleteStudentEarlyLeaveRequest,
   fetchStudentEarlyLeaveRequests,
-  updateStudentEarlyLeaveStatus,
 } from '@/redux/features/studentRequestEarlyLeaveSlice';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
-import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
+import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import EditGreenIcon from '@gradex/assets/icons/EditGreen.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
@@ -32,7 +33,7 @@ import { formatEarlyLeaveDuration, formatEarlyLeaveTime } from './earlyLeaveForm
 
 const PAGE_SIZE = 10;
 
-type ConfirmState = { type: 'accept' | 'reject'; request: EarlyLeaveRequestDto } | null;
+type ConfirmState = { type: 'approve' | 'delete'; request: EarlyLeaveRequestDto } | null;
 
 const EarlyLeaveRequestsTab: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -96,12 +97,14 @@ const EarlyLeaveRequestsTab: React.FC = () => {
   const handleConfirm = async () => {
     if (!confirm) return;
 
-    const status =
-      confirm.type === 'accept' ? EarlyLeaveStatus.Accepted : EarlyLeaveStatus.Rejected;
-
     try {
-      await dispatch(updateStudentEarlyLeaveStatus({ id: confirm.request.id, status })).unwrap();
-      showToast({ message: t('studentApplications.statusUpdated'), type: 'success' });
+      if (confirm.type === 'approve') {
+        await dispatch(approveStudentEarlyLeaveRequest(confirm.request.id)).unwrap();
+        showToast({ message: t('requests.earlyLeave.approvedSuccess'), type: 'success' });
+      } else {
+        await dispatch(deleteStudentEarlyLeaveRequest(confirm.request.id)).unwrap();
+        showToast({ message: t('requests.earlyLeave.deletedSuccess'), type: 'success' });
+      }
       setConfirm(null);
     } catch (error) {
       showToast({
@@ -197,19 +200,19 @@ const EarlyLeaveRequestsTab: React.FC = () => {
           <div className="flex items-center justify-center gap-2">
             <button
               type="button"
-              aria-label={t('requests.earlyLeave.confirm')}
-              onClick={() => setConfirm({ type: 'accept', request: row })}
+              aria-label={t('requests.earlyLeave.approve')}
+              onClick={() => setConfirm({ type: 'approve', request: row })}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
             >
               <CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />
             </button>
             <button
               type="button"
-              aria-label={t('requests.earlyLeave.reject')}
-              onClick={() => setConfirm({ type: 'reject', request: row })}
+              aria-label={t('requests.earlyLeave.delete')}
+              onClick={() => setConfirm({ type: 'delete', request: row })}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 transition-colors hover:bg-red-100"
             >
-              <CustomImage src={XmarkCircleRedIcon} alt="" className="h-5 w-5" />
+              <CustomImage src={TrashIcon} alt="" className="h-5 w-5" />
             </button>
           </div>
         ) : (
@@ -217,7 +220,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
             <button
               type="button"
               aria-label={t('common.edit')}
-              onClick={() => setDetailsRequest(row)}
+              onClick={() => {}}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-green-50 transition-colors hover:bg-green-100"
             >
               <CustomImage src={EditGreenIcon} alt="" className="h-5 w-5" />
@@ -336,18 +339,18 @@ const EarlyLeaveRequestsTab: React.FC = () => {
 
       <ConfirmActionPopup
         open={!!confirm}
-        iconSrc={confirm?.type === 'reject' ? XMarkDangerIcon : BigSuccessIcon}
+        iconSrc={confirm?.type === 'delete' ? XMarkDangerIcon : BigSuccessIcon}
         message={
-          confirm?.type === 'reject'
-            ? t('requests.earlyLeave.rejectConfirm')
-            : t('requests.earlyLeave.acceptConfirm')
+          confirm?.type === 'delete'
+            ? t('requests.earlyLeave.deleteConfirm')
+            : t('requests.earlyLeave.approveConfirm')
         }
         confirmLabel={
-          confirm?.type === 'reject'
-            ? t('requests.earlyLeave.reject')
-            : t('requests.earlyLeave.confirm')
+          confirm?.type === 'delete'
+            ? t('requests.earlyLeave.delete')
+            : t('requests.earlyLeave.approve')
         }
-        confirmVariant={confirm?.type === 'reject' ? 'danger' : 'primary'}
+        confirmVariant={confirm?.type === 'delete' ? 'danger' : 'primary'}
         isProcessing={isUpdating}
         onConfirm={handleConfirm}
         onCancel={() => {

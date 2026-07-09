@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { getErrorMessage } from '@/lib/http';
 import { studentRequestEarlyLeaveApiService } from '@/services/api/requests/student-request-early-leave.service';
+import { EarlyLeaveStatus } from '@/services/api/requests/requests.types';
 import type {
   EarlyLeaveRequestDto,
-  EarlyLeaveStatus,
   StudentEarlyLeaveRequestsListResponse,
   StudentEarlyLeaveRequestsQueryParams,
-  UpdateStudentEarlyLeaveStatusRequest,
+  UpdateStudentEarlyLeaveRequest,
 } from '@/services/api/requests/requests.types';
 
 interface StudentRequestEarlyLeaveState {
@@ -83,14 +83,40 @@ export const fetchStudentEarlyLeaveRequestById = createAsyncThunk<
   }
 });
 
-export const updateStudentEarlyLeaveStatus = createAsyncThunk<
-  UpdateStudentEarlyLeaveStatusRequest,
-  UpdateStudentEarlyLeaveStatusRequest,
+export const approveStudentEarlyLeaveRequest = createAsyncThunk<
+  string,
+  string,
   { rejectValue: string }
->('studentRequestEarlyLeave/updateStatus', async (body, { rejectWithValue }) => {
+>('studentRequestEarlyLeave/approve', async (id, { rejectWithValue }) => {
   try {
-    await studentRequestEarlyLeaveApiService.updateStudentEarlyLeaveStatus(body);
-    return body;
+    await studentRequestEarlyLeaveApiService.approveStudentEarlyLeaveRequest(id);
+    return id;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const deleteStudentEarlyLeaveRequest = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>('studentRequestEarlyLeave/delete', async (id, { rejectWithValue }) => {
+  try {
+    await studentRequestEarlyLeaveApiService.deleteStudentEarlyLeaveRequest(id);
+    return id;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const updateStudentEarlyLeaveRequest = createAsyncThunk<
+  EarlyLeaveRequestDto,
+  UpdateStudentEarlyLeaveRequest,
+  { rejectValue: string }
+>('studentRequestEarlyLeave/update', async (data, { rejectWithValue }) => {
+  try {
+    await studentRequestEarlyLeaveApiService.updateStudentEarlyLeaveRequest(data);
+    return await studentRequestEarlyLeaveApiService.getStudentEarlyLeaveRequestById(data.Id);
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }
@@ -145,24 +171,77 @@ const studentRequestEarlyLeaveSlice = createSlice({
         state.isDetailsLoading = false;
         state.error = action.payload ?? action.error.message ?? null;
       })
-      .addCase(updateStudentEarlyLeaveStatus.pending, (state) => {
+      .addCase(approveStudentEarlyLeaveRequest.pending, (state) => {
         state.isUpdating = true;
         state.error = null;
       })
       .addCase(
-        updateStudentEarlyLeaveStatus.fulfilled,
-        (state, action: PayloadAction<UpdateStudentEarlyLeaveStatusRequest>) => {
+        approveStudentEarlyLeaveRequest.fulfilled,
+        (state, action: PayloadAction<string>) => {
           state.isUpdating = false;
-          const { id, status } = action.payload;
+          const id = action.payload;
           state.requests = state.requests.map((request) =>
-            request.id === id ? { ...request, status } : request
+            request.id === id ? { ...request, status: EarlyLeaveStatus.Accepted } : request
           );
           if (state.currentRequest?.id === id) {
-            state.currentRequest = { ...state.currentRequest, status };
+            state.currentRequest = {
+              ...state.currentRequest,
+              status: EarlyLeaveStatus.Accepted,
+            };
           }
         }
       )
-      .addCase(updateStudentEarlyLeaveStatus.rejected, (state, action) => {
+      .addCase(approveStudentEarlyLeaveRequest.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.error = action.payload ?? action.error.message ?? null;
+      })
+      .addCase(deleteStudentEarlyLeaveRequest.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(deleteStudentEarlyLeaveRequest.fulfilled, (state, action: PayloadAction<string>) => {
+        state.isUpdating = false;
+        const id = action.payload;
+        state.requests = state.requests.filter((request) => request.id !== id);
+        if (state.currentRequest?.id === id) {
+          state.currentRequest = null;
+        }
+        state.pagination.totalItems = Math.max(0, state.pagination.totalItems - 1);
+      })
+      .addCase(deleteStudentEarlyLeaveRequest.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.error = action.payload ?? action.error.message ?? null;
+      })
+      .addCase(updateStudentEarlyLeaveRequest.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(
+        updateStudentEarlyLeaveRequest.fulfilled,
+        (state, action: PayloadAction<EarlyLeaveRequestDto>) => {
+          state.isUpdating = false;
+          const updatedRequest = action.payload;
+
+          state.requests = state.requests.map((request) =>
+            request.id === updatedRequest.id
+              ? {
+                  ...request,
+                  ...updatedRequest,
+                  studentName:
+                    updatedRequest.studentName !== '-'
+                      ? updatedRequest.studentName
+                      : request.studentName,
+                  stage: updatedRequest.stage !== '-' ? updatedRequest.stage : request.stage,
+                  classroom:
+                    updatedRequest.classroom !== '-' ? updatedRequest.classroom : request.classroom,
+                }
+              : request
+          );
+
+          state.currentRequest = updatedRequest;
+        }
+      )
+      .addCase(updateStudentEarlyLeaveRequest.rejected, (state, action) => {
         state.isUpdating = false;
         state.error = action.payload ?? action.error.message ?? null;
       });

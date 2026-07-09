@@ -12,6 +12,7 @@ import type {
   StudentEarlyLeaveRequestApiDto,
   StudentEarlyLeaveRequestsListResponse,
   StudentEarlyLeaveRequestsQueryParams,
+  UpdateStudentEarlyLeaveRequest,
 } from './requests.types';
 import { EarlyLeaveStatus as EarlyLeaveStatusValues } from './requests.types';
 
@@ -336,6 +337,9 @@ const mapEarlyLeaveRequest = (
       'StudentRequestEarlyLeaveId',
     ]) ?? `early-leave-${index}`;
   const studentId = pickString(source, ['studentId', 'StudentId']) ?? student?.id ?? '';
+  const schoolBranchId = pickString(source, ['schoolBranchId', 'SchoolBranchId']);
+  const attendanceId = pickString(source, ['attendanceId', 'AttendanceId']);
+  const schoolName = pickString(source, ['schoolName', 'SchoolName']);
   const fromTime = pickString(source, ['fromTime', 'FromTime']);
   const toTime = pickString(source, ['toTime', 'ToTime']);
   const time = normalizeTime(fromTime);
@@ -345,10 +349,14 @@ const mapEarlyLeaveRequest = (
   const duration = pickString(source, ['duration', 'Duration']);
   const durationMinutes =
     parseDurationMinutes(duration) ?? calculateDurationMinutes(fromTime, toTime);
+  const attachments = getValue(source, ['attachments', 'Attachments']);
 
   return {
     id,
     studentId,
+    schoolBranchId,
+    attendanceId,
+    schoolName,
     studentName: pickString(source, STUDENT_NAME_KEYS) ?? studentDisplayName(student) ?? '-',
     studentAvatarPath:
       pickString(source, ['studentAvatarPath', 'studentImage', 'studentimage', 'profilePicture']) ??
@@ -356,9 +364,12 @@ const mapEarlyLeaveRequest = (
       null,
     time,
     duration: duration ?? (durationMinutes === null ? '-' : String(durationMinutes)),
+    rawDate: date,
     fromTime,
     toTime,
     durationMinutes,
+    reason: pickString(source, ['reason', 'Reason']),
+    attachments: Array.isArray(attachments) ? attachments : [],
     date: formatDate(date),
     stage: grade,
     classroom,
@@ -516,9 +527,33 @@ export async function createStudentEarlyLeaveRequest(
   return mapEarlyLeaveRequest(payload, 0);
 }
 
-export async function approveStudentEarlyLeaveRequest(
-  id: string
+export async function updateStudentEarlyLeaveRequest(
+  data: UpdateStudentEarlyLeaveRequest
 ): Promise<ApiResponseModel<null>> {
+  const formData = new FormData();
+  formData.append('Id', data.Id);
+  formData.append('StudentId', data.StudentId);
+  formData.append('SchoolBranchId', data.SchoolBranchId);
+  formData.append('Date', data.Date);
+  formData.append('FromTime', data.FromTime);
+  formData.append('ToTime', data.ToTime);
+  formData.append('Reason', data.Reason);
+
+  if (data.Attachment instanceof Blob) {
+    formData.append('Attachment', data.Attachment);
+  } else {
+    formData.append('Attachment', data.Attachment ?? '');
+  }
+
+  const response = await axiosClient.put<ApiResponseModel<null>>(
+    StudentRequestEarlyLeaveEndpoints.update,
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+  return response.data;
+}
+
+export async function approveStudentEarlyLeaveRequest(id: string): Promise<ApiResponseModel<null>> {
   const response = await axiosClient.get<ApiResponseModel<null>>(
     StudentRequestEarlyLeaveEndpoints.approve,
     { params: { Id: id } }
@@ -544,6 +579,7 @@ export const studentRequestEarlyLeaveApiService = {
   getStudentEarlyLeaveRequests,
   getStudentEarlyLeaveRequestById,
   createStudentEarlyLeaveRequest,
+  updateStudentEarlyLeaveRequest,
   approveStudentEarlyLeaveRequest,
   deleteStudentEarlyLeaveRequest,
 };

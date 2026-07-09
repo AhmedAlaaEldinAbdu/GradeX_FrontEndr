@@ -170,13 +170,19 @@ export type EarlyLeaveStatus = (typeof EarlyLeaveStatus)[keyof typeof EarlyLeave
 export interface EarlyLeaveRequestDto {
   id: string;
   studentId: string;
+  schoolBranchId?: string | null;
+  attendanceId?: string | null;
+  schoolName?: string | null;
   studentName: string;
   studentAvatarPath: string | null;
   time: string;
   duration: string;
+  rawDate?: string | null;
   fromTime?: string | null;
   toTime?: string | null;
   durationMinutes?: number | null;
+  reason?: string | null;
+  attachments?: StudentEarlyLeaveAttachmentDto[];
   /** Request date, e.g. "1/1/2020". */
   date: string;
   stage: string;
@@ -255,9 +261,9 @@ export interface CreateStudentEarlyLeaveRequest {
   Reason: string;
 }
 
-export interface UpdateStudentEarlyLeaveStatusRequest {
-  id: string;
-  status: EarlyLeaveStatus;
+export interface UpdateStudentEarlyLeaveRequest extends CreateStudentEarlyLeaveRequest {
+  Id: string;
+  Attachment?: File | Blob | string | null;
 }
 
 export interface StudentEarlyLeaveRequestsListResponse {

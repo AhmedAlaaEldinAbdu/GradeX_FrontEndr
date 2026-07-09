@@ -88,6 +88,7 @@ import CustomerDetailsPage from '@/pages/school-dashboard/customers/customer-det
 import RequestsPage from '@/pages/school-dashboard/requests/requests-page';
 import ViewMessagePage from '@/pages/school-dashboard/requests/view-message-page';
 import AddMessagePage from '@/pages/school-dashboard/requests/add-message-page';
+import EditEarlyLeaveRequestPage from '@/pages/school-dashboard/requests/edit-early-leave-request-page';
 import AdminRequestsPage from '@/pages/school-dashboard/admin-requests/admin-requests-page';
 import JobApplicationDetailsPage from '@/pages/school-dashboard/admin-requests/job-application-details-page';
 import SchoolNotificationsPage from '@/pages/school-dashboard/notifications/notifications-page';
@@ -1136,6 +1137,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <AddMessagePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/requests/early-leave/edit/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <EditEarlyLeaveRequestPage />
             </MainLayout>
           </ProtectedRoute>
         }

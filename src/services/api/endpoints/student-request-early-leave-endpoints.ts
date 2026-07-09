@@ -5,10 +5,9 @@ export const StudentRequestEarlyLeaveEndpoints = {
   getAll: StudentRequestEarlyLeave,
   getById: (id: string) => `${StudentRequestEarlyLeave}/${id}`,
   create: StudentRequestEarlyLeave,
+  update: StudentRequestEarlyLeave,
   approve: `${StudentRequestEarlyLeave}/Approve`,
   delete: StudentRequestEarlyLeave,
-  updateStatus: `${StudentRequestEarlyLeave}/update-status`,
-  updateStatusById: (id: string) => `${StudentRequestEarlyLeave}/UpdateStatus/${id}`,
 };
 
 export default StudentRequestEarlyLeaveEndpoints;
