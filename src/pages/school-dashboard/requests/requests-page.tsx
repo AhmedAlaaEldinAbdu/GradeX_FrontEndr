@@ -15,7 +15,7 @@ import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
 import MessageRequestsTab from './components/MessageRequestsTab';
 import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
-// import ReminderRequestsTab from './components/ReminderRequestsTab';
+import ReminderRequestsTab from './components/ReminderRequestsTab';
 // import AddDelegateRequestsTab from './components/AddDelegateRequestsTab';
 // import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
 import ApplicationsTab from './components/ApplicationsTab';
@@ -41,7 +41,7 @@ const RequestsPage: React.FC = () => {
       content: <EarlyLeaveRequestsTab />,
     },
     { id: 'messages', label: t('requests.tabs.messages'), content: <MessageRequestsTab /> },
-    // { id: 'reminder', label: t('requests.tabs.reminder'), content: <ReminderRequestsTab /> },
+    { id: 'reminder', label: t('requests.tabs.reminder'), content: <ReminderRequestsTab /> },
     // {
     //   id: 'add-delegate',
     //   label: t('requests.tabs.addDelegate'),
