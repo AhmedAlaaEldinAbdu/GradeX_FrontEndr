@@ -172,10 +172,11 @@ export interface EarlyLeaveRequestDto {
   studentId: string;
   studentName: string;
   studentAvatarPath: string | null;
-  /** Departure time, e.g. "2:00 مساءا". */
   time: string;
-  /** Early-leave duration, e.g. "ساعتين". */
   duration: string;
+  fromTime?: string | null;
+  toTime?: string | null;
+  durationMinutes?: number | null;
   /** Request date, e.g. "1/1/2020". */
   date: string;
   stage: string;
