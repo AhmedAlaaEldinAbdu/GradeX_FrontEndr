@@ -1,13 +1,20 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@/shared/components/Card';
 import CustomSelect from '@/shared/components/CustomSelect';
+import Input from '@/shared/components/Input';
 import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
+import { useToast } from '@/shared/context/ToastContext';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import {
+  fetchStudentEarlyLeaveRequests,
+  updateStudentEarlyLeaveStatus,
+} from '@/redux/features/studentRequestEarlyLeaveSlice';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
@@ -19,7 +26,6 @@ import {
   EarlyLeaveStatus,
   type EarlyLeaveRequestDto,
 } from '@/services/api/requests/requests.types';
-import { MOCK_EARLY_LEAVE_REQUESTS } from '../requests.mock';
 import EarlyLeaveDetailsPopup from './EarlyLeaveDetailsPopup';
 import ConfirmActionPopup from './ConfirmActionPopup';
 
@@ -30,9 +36,13 @@ type ConfirmState = { type: 'accept' | 'reject'; request: EarlyLeaveRequestDto }
 const EarlyLeaveRequestsTab: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
-  // TODO(backend): swap mock state for a redux slice + service once the API exists.
-  const [data, setData] = useState<EarlyLeaveRequestDto[]>(MOCK_EARLY_LEAVE_REQUESTS);
+  const { requests, isLoading, isUpdating, pagination } = useAppSelector(
+    (state) => state.studentRequestEarlyLeave
+  );
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedClassroom, setSelectedClassroom] = useState('');
@@ -42,37 +52,62 @@ const EarlyLeaveRequestsTab: React.FC = () => {
   const [detailsRequest, setDetailsRequest] = useState<EarlyLeaveRequestDto | null>(null);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
 
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      dispatch(
+        fetchStudentEarlyLeaveRequests({
+          page,
+          limit: PAGE_SIZE,
+          searchTerm,
+          date: selectedDate,
+        })
+      );
+    }, 350);
+
+    return () => clearTimeout(handle);
+  }, [dispatch, page, searchTerm, selectedDate]);
+
   const filteredData = useMemo(
     () =>
-      data.filter((row) => {
-        const matchesSearch = !searchTerm || row.studentName.includes(searchTerm);
+      requests.filter((row) => {
         const matchesStage = !selectedStage || row.stage === selectedStage;
         const matchesClassroom = !selectedClassroom || row.classroom === selectedClassroom;
-        const matchesDate = !selectedDate || row.date === selectedDate;
-        return matchesSearch && matchesStage && matchesClassroom && matchesDate;
+        return matchesStage && matchesClassroom;
       }),
-    [data, searchTerm, selectedStage, selectedClassroom, selectedDate]
+    [requests, selectedStage, selectedClassroom]
   );
 
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const pageData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
   const toOptions = (values: string[]) =>
-    Array.from(new Set(values)).map((v) => ({ value: v, label: v }));
-  const stageOptions = useMemo(() => toOptions(data.map((r) => r.stage)), [data]);
-  const classroomOptions = useMemo(() => toOptions(data.map((r) => r.classroom)), [data]);
-  const dateOptions = useMemo(() => toOptions(data.map((r) => r.date)), [data]);
+    Array.from(new Set(values.filter((value) => value && value !== '-'))).map((value) => ({
+      value,
+      label: value,
+    }));
 
-  const updateStatus = (id: string, status: EarlyLeaveStatus) =>
-    setData((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+  const stageOptions = useMemo(
+    () => toOptions(requests.map((request) => request.stage)),
+    [requests]
+  );
+  const classroomOptions = useMemo(
+    () => toOptions(requests.map((request) => request.classroom)),
+    [requests]
+  );
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!confirm) return;
-    updateStatus(
-      confirm.request.id,
-      confirm.type === 'accept' ? EarlyLeaveStatus.Accepted : EarlyLeaveStatus.Rejected
-    );
-    setConfirm(null);
+
+    const status =
+      confirm.type === 'accept' ? EarlyLeaveStatus.Accepted : EarlyLeaveStatus.Rejected;
+
+    try {
+      await dispatch(updateStudentEarlyLeaveStatus({ id: confirm.request.id, status })).unwrap();
+      showToast({ message: t('studentApplications.statusUpdated'), type: 'success' });
+      setConfirm(null);
+    } catch (error) {
+      showToast({
+        message: typeof error === 'string' ? error : t('common.errorOccurred'),
+        type: 'error',
+      });
+    }
   };
 
   const columns: DataTableColumn<EarlyLeaveRequestDto>[] = [
@@ -110,7 +145,9 @@ const EarlyLeaveRequestsTab: React.FC = () => {
           name={row.studentName}
           avatarSrc={row.studentAvatarPath}
           align="center"
-          onView={() => navigate(`/students/student-details/${row.studentId}`)}
+          onView={
+            row.studentId ? () => navigate(`/students/student-details/${row.studentId}`) : undefined
+          }
         />
       ),
       headerClassName: 'min-w-[240px] text-center',
@@ -242,15 +279,14 @@ const EarlyLeaveRequestsTab: React.FC = () => {
       onChange: () => {},
       width: '20%',
       customComponent: (
-        <CustomSelect
+        <Input
+          type="date"
           value={selectedDate}
-          onChange={(value) => {
-            setSelectedDate(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+          onChange={(event) => {
+            setSelectedDate(event.target.value);
             setPage(1);
           }}
-          options={dateOptions}
           placeholder={t('requests.earlyLeave.date')}
-          showSearch={false}
         />
       ),
     },
@@ -264,15 +300,22 @@ const EarlyLeaveRequestsTab: React.FC = () => {
     setPage(1);
   };
 
+  const hasClientFilters = Boolean(selectedStage || selectedClassroom);
+  const totalItems = hasClientFilters ? filteredData.length : pagination.totalItems;
+  const totalPages = hasClientFilters
+    ? Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE))
+    : Math.max(1, pagination.totalPages);
+
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={pageData}
+        data={filteredData}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
-        pagination={{ page, limit: PAGE_SIZE, total: filteredData.length, totalPages }}
+        isLoading={isLoading}
+        pagination={{ page, limit: PAGE_SIZE, total: totalItems, totalPages }}
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
         t={t}
@@ -298,8 +341,11 @@ const EarlyLeaveRequestsTab: React.FC = () => {
             : t('requests.earlyLeave.confirm')
         }
         confirmVariant={confirm?.type === 'reject' ? 'danger' : 'primary'}
+        isProcessing={isUpdating}
         onConfirm={handleConfirm}
-        onCancel={() => setConfirm(null)}
+        onCancel={() => {
+          if (!isUpdating) setConfirm(null);
+        }}
       />
     </Card>
   );
