@@ -14,7 +14,7 @@ import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
 import MessageRequestsTab from './components/MessageRequestsTab';
-// import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
+import EarlyLeaveRequestsTab from './components/EarlyLeaveRequestsTab';
 // import ReminderRequestsTab from './components/ReminderRequestsTab';
 // import AddDelegateRequestsTab from './components/AddDelegateRequestsTab';
 // import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
@@ -35,11 +35,11 @@ const RequestsPage: React.FC = () => {
 
   const tabs: TabItem[] = [
     { id: 'applications', label: t('requests.tabs.applications'), content: <ApplicationsTab /> },
-    // {
-    //   id: 'early-leave',
-    //   label: t('requests.tabs.earlyLeave'),
-    //   content: <EarlyLeaveRequestsTab />,
-    // },
+    {
+      id: 'early-leave',
+      label: t('requests.tabs.earlyLeave'),
+      content: <EarlyLeaveRequestsTab />,
+    },
     { id: 'messages', label: t('requests.tabs.messages'), content: <MessageRequestsTab /> },
     // { id: 'reminder', label: t('requests.tabs.reminder'), content: <ReminderRequestsTab /> },
     // {
@@ -92,6 +92,7 @@ const RequestsPage: React.FC = () => {
         <Tabs
           items={tabs}
           defaultValue="applications"
+          lazy={true}
           searchParamKey="tab"
           listClassName="flex w-full mb-5"
         />
