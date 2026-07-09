@@ -20,6 +20,7 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import JobApplicationsTab from './components/JobApplicationsTab';
 import MessagesTab from './components/MessagesTab';
 import ScheduleInterviewTab from './components/ScheduleInterviewTab';
+import TeacherNotesTab from './components/TeacherNotesTab';
 
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -78,12 +79,11 @@ const AdminRequestsPage: React.FC = () => {
     //   content: <TabPlaceholder />,
     // },
     { id: 'messages', label: t('adminRequests.tabs.messages'), content: <MessagesTab /> },
-    // { id: 'notes', label: t('adminRequests.tabs.notes'), content: <TabPlaceholder /> },
-    // {
-    //   id: 'teacher-notes',
-    //   label: t('adminRequests.tabs.teacherNotes'),
-    //   content: <TabPlaceholder />,
-    // },
+    {
+      id: 'notes',
+      label: t('adminRequests.tabs.notes'),
+      content: <TeacherNotesTab />,
+    },
   ];
 
   return (
