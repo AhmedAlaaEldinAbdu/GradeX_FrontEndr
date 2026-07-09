@@ -28,13 +28,14 @@ import {
 } from '@/services/api/requests/requests.types';
 import EarlyLeaveDetailsPopup from './EarlyLeaveDetailsPopup';
 import ConfirmActionPopup from './ConfirmActionPopup';
+import { formatEarlyLeaveDuration, formatEarlyLeaveTime } from './earlyLeaveFormatters';
 
 const PAGE_SIZE = 10;
 
 type ConfirmState = { type: 'accept' | 'reject'; request: EarlyLeaveRequestDto } | null;
 
 const EarlyLeaveRequestsTab: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
@@ -155,13 +156,19 @@ const EarlyLeaveRequestsTab: React.FC = () => {
     },
     {
       header: 'requests.earlyLeave.time',
-      accessor: (row) => <span className="text-[#646969]">{row.time}</span>,
+      accessor: (row) => (
+        <span className="whitespace-nowrap text-[#646969]">
+          {formatEarlyLeaveTime(row.fromTime ?? row.time, i18n.language)}
+        </span>
+      ),
       headerClassName: 'min-w-[120px] text-center',
       className: 'text-center',
     },
     {
       header: 'requests.earlyLeave.duration',
-      accessor: (row) => <span className="text-[#646969]">{row.duration}</span>,
+      accessor: (row) => (
+        <span className="whitespace-nowrap text-[#646969]">{formatEarlyLeaveDuration(row, t)}</span>
+      ),
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
