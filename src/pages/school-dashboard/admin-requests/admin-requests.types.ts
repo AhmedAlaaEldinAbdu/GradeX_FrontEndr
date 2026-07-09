@@ -186,3 +186,29 @@ export interface AdminMessageDto {
   sentDate: string;
   messageContent: string;
 }
+
+export const AdminTeacherNoteStatus = {
+  Pending: 1,
+  Viewed: 2,
+} as const;
+
+export type AdminTeacherNoteStatus =
+  (typeof AdminTeacherNoteStatus)[keyof typeof AdminTeacherNoteStatus];
+
+export interface AdminTeacherNoteParty {
+  name: string;
+  avatarPath: string | null;
+  profilePath: string | null;
+  isSchool?: boolean;
+}
+
+export interface AdminTeacherNoteDto {
+  id: string;
+  sender: AdminTeacherNoteParty;
+  recipient: AdminTeacherNoteParty;
+  status: AdminTeacherNoteStatus;
+  stage: string | null;
+  classroom: string | null;
+  sentDate: string;
+  noteContent: string;
+}
