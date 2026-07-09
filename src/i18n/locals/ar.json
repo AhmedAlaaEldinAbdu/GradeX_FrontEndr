@@ -1525,8 +1525,11 @@
     },
     "earlyLeave": {
       "detailsTitle": "طلب إنصراف مبكر",
+      "editTitle": "تعديل طلب الخروج المبكر",
       "studentName": "اسم الطالب",
       "time": "الوقت",
+      "fromTime": "وقت البداية",
+      "toTime": "وقت النهاية",
       "duration": "مدة الخروج المبكر",
       "durationUnits": {
         "hour_one": "ساعة",
@@ -1541,10 +1544,27 @@
       "requestDate": "تاريخ الطلب",
       "stage": "المرحلة الدراسية",
       "classroom": "الفصل الدراسي",
+      "reason": "السبب",
+      "attachment": "المرفق",
+      "uploadAttachment": "رفع المرفق",
       "status": {
         "pending": "قيد الانتظار",
         "accepted": "مقبول",
         "rejected": "مرفوض"
+      },
+      "approveConfirm": "هل تريد الموافقة على طلب الطالب؟",
+      "deleteConfirm": "هل تريد حذف طلب الطالب؟",
+      "approve": "موافقة",
+      "delete": "حذف",
+      "approvedSuccess": "تمت الموافقة على طلب الخروج المبكر بنجاح",
+      "deletedSuccess": "تم حذف طلب الخروج المبكر بنجاح",
+      "updatedSuccess": "تم تعديل طلب الخروج المبكر بنجاح",
+      "validation": {
+        "dateRequired": "التاريخ مطلوب",
+        "fromTimeRequired": "وقت البداية مطلوب",
+        "toTimeRequired": "وقت النهاية مطلوب",
+        "reasonRequired": "السبب مطلوب",
+        "missingUpdateData": "لا يمكن تعديل هذا الطلب لعدم توفر بيانات الطلب المطلوبة"
       },
       "acceptConfirm": "هل تريد قبول طلب الطالب؟",
       "rejectConfirm": "هل تريد رفض طلب الطالب؟",

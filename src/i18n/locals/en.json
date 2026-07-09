@@ -1525,8 +1525,11 @@
     },
     "earlyLeave": {
       "detailsTitle": "Early Departure Request",
+      "editTitle": "Edit Early Departure Request",
       "studentName": "Student Name",
       "time": "Time",
+      "fromTime": "From time",
+      "toTime": "To time",
       "duration": "Early Leave Duration",
       "durationUnits": {
         "hour_one": "1 hour",
@@ -1541,10 +1544,27 @@
       "requestDate": "Request Date",
       "stage": "Educational Stage",
       "classroom": "Class",
+      "reason": "Reason",
+      "attachment": "Attachment",
+      "uploadAttachment": "Upload attachment",
       "status": {
         "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected"
+      },
+      "approveConfirm": "Do you want to approve the student's request?",
+      "deleteConfirm": "Do you want to delete the student's request?",
+      "approve": "Approve",
+      "delete": "Delete",
+      "approvedSuccess": "Early leave request approved successfully",
+      "deletedSuccess": "Early leave request deleted successfully",
+      "updatedSuccess": "Early leave request updated successfully",
+      "validation": {
+        "dateRequired": "Date is required",
+        "fromTimeRequired": "From time is required",
+        "toTimeRequired": "To time is required",
+        "reasonRequired": "Reason is required",
+        "missingUpdateData": "Cannot update this request because required request data is missing"
       },
       "acceptConfirm": "Do you want to accept the student's request?",
       "rejectConfirm": "Do you want to reject the student's request?",

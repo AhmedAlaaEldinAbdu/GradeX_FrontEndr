@@ -1399,8 +1399,11 @@
     },
     "earlyLeave": {
       "detailsTitle": "Запрос на ранний уход",
+      "editTitle": "Редактировать запрос на ранний уход",
       "studentName": "Имя студента",
       "time": "Время",
+      "fromTime": "Время начала",
+      "toTime": "Время окончания",
       "duration": "Длительность раннего ухода",
       "durationUnits": {
         "hour_one": "1 час",
@@ -1415,10 +1418,27 @@
       "requestDate": "Дата запроса",
       "stage": "Учебный этап",
       "classroom": "Класс",
+      "reason": "Причина",
+      "attachment": "Вложение",
+      "uploadAttachment": "Загрузить вложение",
       "status": {
         "pending": "Ожидает",
         "accepted": "Принят",
         "rejected": "Отклонён"
+      },
+      "approveConfirm": "Вы хотите одобрить запрос студента?",
+      "deleteConfirm": "Вы хотите удалить запрос студента?",
+      "approve": "Одобрить",
+      "delete": "Удалить",
+      "approvedSuccess": "Запрос на ранний уход успешно одобрен",
+      "deletedSuccess": "Запрос на ранний уход успешно удалён",
+      "updatedSuccess": "Запрос на ранний уход успешно обновлён",
+      "validation": {
+        "dateRequired": "Дата обязательна",
+        "fromTimeRequired": "Время начала обязательно",
+        "toTimeRequired": "Время окончания обязательно",
+        "reasonRequired": "Причина обязательна",
+        "missingUpdateData": "Невозможно обновить этот запрос, так как отсутствуют обязательные данные"
       },
       "acceptConfirm": "Принять запрос студента?",
       "rejectConfirm": "Отклонить запрос студента?",

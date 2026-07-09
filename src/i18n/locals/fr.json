@@ -1399,8 +1399,11 @@
     },
     "earlyLeave": {
       "detailsTitle": "Demande de sortie anticipée",
+      "editTitle": "Modifier la demande de sortie anticipée",
       "studentName": "Nom de l'étudiant",
       "time": "Heure",
+      "fromTime": "Heure de début",
+      "toTime": "Heure de fin",
       "duration": "Durée de sortie anticipée",
       "durationUnits": {
         "hour_one": "1 heure",
@@ -1415,10 +1418,27 @@
       "requestDate": "Date de la demande",
       "stage": "Niveau d'études",
       "classroom": "Classe",
+      "reason": "Motif",
+      "attachment": "Pièce jointe",
+      "uploadAttachment": "Téléverser une pièce jointe",
       "status": {
         "pending": "En attente",
         "accepted": "Acceptée",
         "rejected": "Refusée"
+      },
+      "approveConfirm": "Voulez-vous approuver la demande de l'étudiant ?",
+      "deleteConfirm": "Voulez-vous supprimer la demande de l'étudiant ?",
+      "approve": "Approuver",
+      "delete": "Supprimer",
+      "approvedSuccess": "Demande de sortie anticipée approuvée avec succès",
+      "deletedSuccess": "Demande de sortie anticipée supprimée avec succès",
+      "updatedSuccess": "Demande de sortie anticipée mise à jour avec succès",
+      "validation": {
+        "dateRequired": "La date est requise",
+        "fromTimeRequired": "L'heure de début est requise",
+        "toTimeRequired": "L'heure de fin est requise",
+        "reasonRequired": "Le motif est requis",
+        "missingUpdateData": "Impossible de mettre à jour cette demande car des données requises sont manquantes"
       },
       "acceptConfirm": "Voulez-vous accepter la demande de l'étudiant ?",
       "rejectConfirm": "Voulez-vous refuser la demande de l'étudiant ?",

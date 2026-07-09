@@ -1399,8 +1399,11 @@
     },
     "earlyLeave": {
       "detailsTitle": "Antrag auf frühzeitiges Verlassen",
+      "editTitle": "Antrag auf frühzeitiges Verlassen bearbeiten",
       "studentName": "Schülername",
       "time": "Uhrzeit",
+      "fromTime": "Startzeit",
+      "toTime": "Endzeit",
       "duration": "Dauer des frühzeitigen Verlassens",
       "durationUnits": {
         "hour_one": "1 Stunde",
@@ -1415,10 +1418,27 @@
       "requestDate": "Antragsdatum",
       "stage": "Bildungsstufe",
       "classroom": "Klasse",
+      "reason": "Grund",
+      "attachment": "Anhang",
+      "uploadAttachment": "Anhang hochladen",
       "status": {
         "pending": "Ausstehend",
         "accepted": "Angenommen",
         "rejected": "Abgelehnt"
+      },
+      "approveConfirm": "Möchten Sie den Antrag des Schülers genehmigen?",
+      "deleteConfirm": "Möchten Sie den Antrag des Schülers löschen?",
+      "approve": "Genehmigen",
+      "delete": "Löschen",
+      "approvedSuccess": "Antrag auf frühzeitiges Verlassen erfolgreich genehmigt",
+      "deletedSuccess": "Antrag auf frühzeitiges Verlassen erfolgreich gelöscht",
+      "updatedSuccess": "Antrag auf frühzeitiges Verlassen erfolgreich aktualisiert",
+      "validation": {
+        "dateRequired": "Datum ist erforderlich",
+        "fromTimeRequired": "Startzeit ist erforderlich",
+        "toTimeRequired": "Endzeit ist erforderlich",
+        "reasonRequired": "Grund ist erforderlich",
+        "missingUpdateData": "Dieser Antrag kann nicht aktualisiert werden, da erforderliche Daten fehlen"
       },
       "acceptConfirm": "Möchten Sie den Antrag des Schülers annehmen?",
       "rejectConfirm": "Möchten Sie den Antrag des Schülers ablehnen?",
