@@ -183,6 +183,90 @@ export interface EarlyLeaveRequestDto {
   status: EarlyLeaveStatus;
 }
 
+export interface StudentEarlyLeaveAttachmentDto {
+  id?: string | null;
+  name?: string | null;
+  file?: string | null;
+  filePath?: string | null;
+  url?: string | null;
+  [key: string]: unknown;
+}
+
+export interface StudentEarlyLeaveRequestApiDto {
+  id?: string | null;
+  requestId?: string | null;
+  studentRequestEarlyLeaveId?: string | null;
+  studentId?: string | null;
+  attendanceId?: string | null;
+  schoolBranchId?: string | null;
+  schoolName?: string | null;
+  date?: string | null;
+  requestDate?: string | null;
+  createdAt?: string | null;
+  fromTime?: string | null;
+  toTime?: string | null;
+  duration?: string | null;
+  reason?: string | null;
+  requestStatus?: number | null;
+  status?: number | null;
+  studentName?: string | null;
+  studentFullName?: string | null;
+  fullName?: string | null;
+  name?: string | null;
+  studentImage?: string | null;
+  studentimage?: string | null;
+  studentAvatarPath?: string | null;
+  profilePicture?: string | null;
+  grade?: string | null;
+  gradeName?: string | null;
+  gradeNameAr?: string | null;
+  gradeNameEn?: string | null;
+  gradeNameEN?: string | null;
+  educationalStage?: string | null;
+  stage?: string | null;
+  classroom?: string | null;
+  classroomName?: string | null;
+  classroomNameAr?: string | null;
+  classroomNameEn?: string | null;
+  classroomNameEN?: string | null;
+  className?: string | null;
+  attachments?: StudentEarlyLeaveAttachmentDto[] | null;
+  [key: string]: unknown;
+}
+
+export interface StudentEarlyLeaveRequestsQueryParams {
+  SchoolBrancheId?: string;
+  PageNumber?: number;
+  PageSize?: number;
+  SearchStudentName?: string;
+  RequestStatus?: EarlyLeaveStatus;
+  Date?: string;
+  GradeId?: string;
+  ClassroomId?: string;
+}
+
+export interface CreateStudentEarlyLeaveRequest {
+  StudentId: string;
+  SchoolBranchId: string;
+  Date: string;
+  FromTime: string;
+  ToTime: string;
+  Reason: string;
+}
+
+export interface UpdateStudentEarlyLeaveStatusRequest {
+  id: string;
+  status: EarlyLeaveStatus;
+}
+
+export interface StudentEarlyLeaveRequestsListResponse {
+  requests: EarlyLeaveRequestDto[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
 /** A delegate-assignment (إضافة مفوض) request row. */
 export interface DelegateRequestDto {
   id: string;
