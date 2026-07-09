@@ -1,9 +1,6 @@
 import { axiosClient } from '@/lib/http';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import { studentsApiService } from '@/services/api/students/students.service';
 import type { ApiResponseModel } from '../config';
-import type { StudentDto } from '../types/students.types';
-import { getStudentFullName } from '../types/students.types';
 import { StudentRequestEarlyLeaveEndpoints } from '../endpoints/student-request-early-leave-endpoints';
 import type {
   CreateStudentEarlyLeaveRequest,
@@ -278,53 +275,9 @@ const calculateDurationMinutes = (
   return toMinutes >= fromMinutes ? toMinutes - fromMinutes : toMinutes + 24 * 60 - fromMinutes;
 };
 
-const studentDisplayName = (student?: StudentDto): string | null => {
-  if (!student) return null;
-  return getStudentFullName(student) || student.name || null;
-};
-
-const needsStudentLookup = (item: StudentEarlyLeaveRequestApiDto): boolean => {
-  const source = asRecord(item);
-  const studentId = pickString(source, ['studentId', 'StudentId']);
-  if (!studentId) return false;
-
-  const hasName = pickString(source, STUDENT_NAME_KEYS);
-  const hasGrade = pickString(source, GRADE_KEYS);
-  const hasClassroom = pickString(source, CLASSROOM_KEYS);
-
-  return !hasName || !hasGrade || !hasClassroom;
-};
-
-const fetchStudentDetails = async (
-  items: StudentEarlyLeaveRequestApiDto[]
-): Promise<Map<string, StudentDto>> => {
-  const ids = Array.from(
-    new Set(
-      items
-        .filter(needsStudentLookup)
-        .map((item) => pickString(asRecord(item), ['studentId', 'StudentId']))
-        .filter((id): id is string => Boolean(id))
-    )
-  );
-
-  const entries = await Promise.all(
-    ids.map(async (id) => {
-      try {
-        const student = await studentsApiService.getStudentById(id);
-        return [id, student] as const;
-      } catch {
-        return null;
-      }
-    })
-  );
-
-  return new Map(entries.filter((entry): entry is readonly [string, StudentDto] => Boolean(entry)));
-};
-
 const mapEarlyLeaveRequest = (
   item: StudentEarlyLeaveRequestApiDto,
-  index: number,
-  student?: StudentDto
+  index: number
 ): EarlyLeaveRequestDto => {
   const source = asRecord(item);
   const id =
@@ -336,7 +289,7 @@ const mapEarlyLeaveRequest = (
       'studentRequestEarlyLeaveId',
       'StudentRequestEarlyLeaveId',
     ]) ?? `early-leave-${index}`;
-  const studentId = pickString(source, ['studentId', 'StudentId']) ?? student?.id ?? '';
+  const studentId = pickString(source, ['studentId', 'StudentId']) ?? '';
   const schoolBranchId = pickString(source, ['schoolBranchId', 'SchoolBranchId']);
   const attendanceId = pickString(source, ['attendanceId', 'AttendanceId']);
   const schoolName = pickString(source, ['schoolName', 'SchoolName']);
@@ -344,8 +297,9 @@ const mapEarlyLeaveRequest = (
   const toTime = pickString(source, ['toTime', 'ToTime']);
   const time = normalizeTime(fromTime);
   const date = pickString(source, ['date', 'Date', 'requestDate', 'createdAt']);
-  const grade = pickString(source, GRADE_KEYS) ?? student?.grade ?? '-';
-  const classroom = pickString(source, CLASSROOM_KEYS) ?? student?.className ?? '-';
+  const studentName = pickString(source, STUDENT_NAME_KEYS);
+  const grade = pickString(source, GRADE_KEYS);
+  const classroom = pickString(source, CLASSROOM_KEYS);
   const duration = pickString(source, ['duration', 'Duration']);
   const durationMinutes =
     parseDurationMinutes(duration) ?? calculateDurationMinutes(fromTime, toTime);
@@ -357,10 +311,10 @@ const mapEarlyLeaveRequest = (
     schoolBranchId,
     attendanceId,
     schoolName,
-    studentName: pickString(source, STUDENT_NAME_KEYS) ?? studentDisplayName(student) ?? '-',
+    studentName: studentName ?? '',
+    studentNameFromRequest: Boolean(studentName),
     studentAvatarPath:
       pickString(source, ['studentAvatarPath', 'studentImage', 'studentimage', 'profilePicture']) ??
-      student?.profilePicture ??
       null,
     time,
     duration: duration ?? (durationMinutes === null ? '-' : String(durationMinutes)),
@@ -371,8 +325,10 @@ const mapEarlyLeaveRequest = (
     reason: pickString(source, ['reason', 'Reason']),
     attachments: Array.isArray(attachments) ? attachments : [],
     date: formatDate(date),
-    stage: grade,
-    classroom,
+    stage: grade ?? '-',
+    stageFromRequest: Boolean(grade),
+    classroom: classroom ?? '-',
+    classroomFromRequest: Boolean(classroom),
     status: normalizeStatus(
       getValue(source, ['requestStatus', 'RequestStatus', 'status', 'Status'])
     ),
@@ -448,17 +404,13 @@ const extractItems = (payload: unknown, depth = 0): StudentEarlyLeaveRequestApiD
   return [];
 };
 
-const buildListResponse = async (
+const buildListResponse = (
   payload: unknown,
   params?: StudentEarlyLeaveRequestsQueryParams
-): Promise<StudentEarlyLeaveRequestsListResponse> => {
+): StudentEarlyLeaveRequestsListResponse => {
   const data = asRecord(payload) as ListPayload;
   const items = extractItems(payload);
-  const students = await fetchStudentDetails(items);
-  const requests = items.map((item, index) => {
-    const studentId = pickString(asRecord(item), ['studentId', 'StudentId']);
-    return mapEarlyLeaveRequest(item, index, studentId ? students.get(studentId) : undefined);
-  });
+  const requests = items.map(mapEarlyLeaveRequest);
 
   return {
     requests,
@@ -492,18 +444,7 @@ export async function getStudentEarlyLeaveRequestById(id: string): Promise<Early
     StudentRequestEarlyLeaveEndpoints.getById(id)
   );
   const payload = extractPayload(response.data) as StudentEarlyLeaveRequestApiDto;
-  const studentId = pickString(asRecord(payload), ['studentId', 'StudentId']);
-  let student: StudentDto | undefined;
-
-  if (studentId && needsStudentLookup(payload)) {
-    try {
-      student = await studentsApiService.getStudentById(studentId);
-    } catch {
-      student = undefined;
-    }
-  }
-
-  return mapEarlyLeaveRequest(payload, 0, student);
+  return mapEarlyLeaveRequest(payload, 0);
 }
 
 export async function createStudentEarlyLeaveRequest(
