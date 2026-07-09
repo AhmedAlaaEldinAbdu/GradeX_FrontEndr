@@ -1,29 +1,59 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@/shared/components/Card';
 import CustomSelect from '@/shared/components/CustomSelect';
+import Input from '@/shared/components/Input';
 import IconButton from '@/shared/components/IconButton';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
-import type { StudentRequestDto } from '@/services/api/requests/requests.types';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
+  clearCurrentStudentEarlyLeaveRequest,
+  fetchStudentEarlyLeaveRequestById,
+  fetchStudentEarlyLeaveRequests,
+} from '@/redux/features/studentRequestEarlyLeaveSlice';
+import type {
+  EarlyLeaveRequestDto,
+  StudentRequestDto,
+} from '@/services/api/requests/requests.types';
+import {
+  EarlyLeaveStatus,
   StudentRequestStatus,
+  StudentRequestType,
   RequestParticipantRole,
 } from '@/services/api/requests/requests.types';
-import { MOCK_REMINDER_REQUESTS } from '../requests.mock';
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 
 const PAGE_SIZE = 10;
 
+const EARLY_LEAVE_STATUS_TO_REQUEST_STATUS: Record<EarlyLeaveStatus, StudentRequestStatus> = {
+  [EarlyLeaveStatus.Pending]: StudentRequestStatus.Pending,
+  [EarlyLeaveStatus.Accepted]: StudentRequestStatus.Viewed,
+  [EarlyLeaveStatus.Rejected]: StudentRequestStatus.Replied,
+};
+
+const REQUEST_STATUS_TO_EARLY_LEAVE_STATUS: Partial<
+  Record<StudentRequestStatus, EarlyLeaveStatus>
+> = {
+  [StudentRequestStatus.Pending]: EarlyLeaveStatus.Pending,
+  [StudentRequestStatus.Viewed]: EarlyLeaveStatus.Accepted,
+  [StudentRequestStatus.Replied]: EarlyLeaveStatus.Rejected,
+};
+
 const formatRequestDate = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-GB');
+};
+
+const emptyWhenMissing = (value?: string | null) => {
+  const trimmed = value?.trim();
+  return trimmed && trimmed !== '-' ? trimmed : '';
 };
 
 const STATUS_BADGE_CLASSES: Record<StudentRequestStatus, string> = {
@@ -43,47 +73,101 @@ const STATUS_LABEL_KEYS: Record<StudentRequestStatus, string> = {
 const ReminderRequestsTab: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const {
+    requests: earlyLeaveRequests,
+    currentRequest,
+    isLoading,
+    pagination,
+  } = useAppSelector((state) => state.studentRequestEarlyLeave);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState<StudentRequestDto | null>(null);
-  const [requests, setRequests] = useState<StudentRequestDto[]>(MOCK_REMINDER_REQUESTS);
 
-  const filteredData = useMemo(
+  const schoolLabel = t('requests.schoolLabel');
+
+  const mapEarlyLeaveToRequest = useMemo(
     () =>
-      requests.filter((row) => {
-        const matchesSearch =
-          !searchTerm ||
-          (row.studentName ?? '').includes(searchTerm) ||
-          row.recipientName.includes(searchTerm);
-        const matchesStatus = !selectedStatus || row.status === Number(selectedStatus);
-        const matchesDate = !selectedDate || formatRequestDate(row.created) === selectedDate;
-        return matchesSearch && matchesStatus && matchesDate;
-      }),
-    [requests, searchTerm, selectedStatus, selectedDate]
+      (request: EarlyLeaveRequestDto): StudentRequestDto => {
+        const studentName = request.studentNameFromRequest
+          ? emptyWhenMissing(request.studentName)
+          : '';
+        const stage = request.stageFromRequest ? emptyWhenMissing(request.stage) : '';
+        const classroom = request.classroomFromRequest ? emptyWhenMissing(request.classroom) : '';
+
+        return {
+          id: request.id,
+          senderName: schoolLabel,
+          senderAvatarPath: null,
+          senderRole: RequestParticipantRole.School,
+          recipientName: studentName,
+          recipientAvatarPath: request.studentAvatarPath,
+          recipientRole: RequestParticipantRole.Student,
+          recipientId: request.studentId || undefined,
+          messageContent: emptyWhenMissing(request.reason),
+          status: EARLY_LEAVE_STATUS_TO_REQUEST_STATUS[request.status],
+          type: StudentRequestType.Reminder,
+          created: request.rawDate ?? '',
+          studentName,
+          studentId: request.studentId || undefined,
+          educationalStage: stage,
+          classrooms: classroom ? [classroom] : [],
+        };
+      },
+    [schoolLabel]
   );
 
-  const handleMarkViewed = (request: StudentRequestDto) => {
-    setRequests((prev) =>
-      prev.map((row) =>
-        row.id === request.id ? { ...row, status: StudentRequestStatus.Viewed } : row
-      )
-    );
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      dispatch(
+        fetchStudentEarlyLeaveRequests({
+          page,
+          limit: PAGE_SIZE,
+          searchTerm,
+          status: selectedStatus
+            ? REQUEST_STATUS_TO_EARLY_LEAVE_STATUS[Number(selectedStatus) as StudentRequestStatus]
+            : undefined,
+          date: selectedDate,
+        })
+      );
+    }, 350);
+
+    return () => clearTimeout(handle);
+  }, [dispatch, page, searchTerm, selectedStatus, selectedDate]);
+
+  const requests = useMemo(
+    () => earlyLeaveRequests.map(mapEarlyLeaveToRequest),
+    [earlyLeaveRequests, mapEarlyLeaveToRequest]
+  );
+
+  const totalPages = Math.max(1, pagination.totalPages);
+  const totalItems = pagination.totalItems;
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  useEffect(() => {
+    if (currentRequest && selectedRequest?.id === currentRequest.id) {
+      setSelectedRequest(mapEarlyLeaveToRequest(currentRequest));
+    }
+  }, [currentRequest, mapEarlyLeaveToRequest, selectedRequest?.id]);
+
+  const handleOpenPreview = (request: StudentRequestDto) => {
+    setSelectedRequest(request);
+    dispatch(fetchStudentEarlyLeaveRequestById(request.id));
   };
 
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
-  const pageData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  const dateOptions = useMemo(
-    () =>
-      Array.from(new Set(requests.map((r) => formatRequestDate(r.created)))).map((d) => ({
-        value: d,
-        label: d,
-      })),
-    [requests]
-  );
+  const handleClosePreview = () => {
+    setSelectedRequest(null);
+    dispatch(clearCurrentStudentEarlyLeaveRequest());
+  };
 
   const getStatusBadge = (status: StudentRequestStatus) => (
     <span
@@ -112,7 +196,7 @@ const ReminderRequestsTab: React.FC = () => {
             variant="darkBlue"
             ariaLabel={t('common.view')}
             className="h-10 w-10"
-            onClick={() => setSelectedRequest(row)}
+            onClick={() => handleOpenPreview(row)}
           >
             <CustomImage src={EyeDarkBlueIcon} alt={t('common.view')} className="h-6 w-6" />
           </IconButton>
@@ -186,7 +270,7 @@ const ReminderRequestsTab: React.FC = () => {
               size="sm"
               className="!rounded-2xl px-6"
               disabled={isViewed}
-              onClick={() => navigate(`/requests/view-message/${row.id}`)}
+              onClick={() => navigate(`/requests/view-message/${row.studentId ?? row.id}`)}
             >
               {t('requests.actions.sendReply')}
             </Button>
@@ -239,15 +323,14 @@ const ReminderRequestsTab: React.FC = () => {
       onChange: () => {},
       width: '25%',
       customComponent: (
-        <CustomSelect
+        <Input
+          type="date"
           value={selectedDate}
-          onChange={(value) => {
-            setSelectedDate(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+          onChange={(event) => {
+            setSelectedDate(event.target.value);
             setPage(1);
           }}
-          options={dateOptions}
           placeholder={t('requests.filters.date')}
-          showSearch={false}
         />
       ),
     },
@@ -263,12 +346,13 @@ const ReminderRequestsTab: React.FC = () => {
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={pageData}
+        data={requests}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
-        pagination={{ page, limit: PAGE_SIZE, total: filteredData.length, totalPages }}
+        isLoading={isLoading}
+        pagination={{ page, limit: PAGE_SIZE, total: totalItems, totalPages }}
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
         t={t}
@@ -276,9 +360,9 @@ const ReminderRequestsTab: React.FC = () => {
 
       <MessageDetailsPopup
         isOpen={Boolean(selectedRequest)}
-        onClose={() => setSelectedRequest(null)}
+        onClose={handleClosePreview}
         request={selectedRequest}
-        onMarkViewed={handleMarkViewed}
+        onMarkViewed={() => undefined}
         titleKey="requests.reminder.detailsTitle"
       />
     </Card>
