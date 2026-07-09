@@ -174,6 +174,7 @@ export interface EarlyLeaveRequestDto {
   attendanceId?: string | null;
   schoolName?: string | null;
   studentName: string;
+  studentNameFromRequest?: boolean;
   studentAvatarPath: string | null;
   time: string;
   duration: string;
@@ -186,7 +187,9 @@ export interface EarlyLeaveRequestDto {
   /** Request date, e.g. "1/1/2020". */
   date: string;
   stage: string;
+  stageFromRequest?: boolean;
   classroom: string;
+  classroomFromRequest?: boolean;
   status: EarlyLeaveStatus;
 }
 
