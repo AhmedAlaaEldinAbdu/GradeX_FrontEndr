@@ -193,33 +193,89 @@ const formatDate = (value: string | null): string => {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('en-GB');
 };
 
-const formatTime = (value: string | null): string => {
+const parseTimeParts = (value: string | null): { hours: number; minutes: number } | null => {
+  if (!value) return null;
+
+  const timeValue = value.includes('T') ? (value.split('T')[1] ?? value) : value;
+  const match = timeValue.match(/^(\d{1,2}):(\d{1,2})/);
+  if (!match) return null;
+
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+
+  if (
+    !Number.isFinite(hours) ||
+    !Number.isFinite(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    return null;
+  }
+
+  return { hours, minutes };
+};
+
+const normalizeTime = (value: string | null): string => {
+  const parts = parseTimeParts(value);
   if (!value) return '-';
-  const [hours, minutes] = value.split(':');
-  if (!hours || !minutes) return value;
-  return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+  if (!parts) return value;
+
+  return `${String(parts.hours).padStart(2, '0')}:${String(parts.minutes).padStart(2, '0')}`;
 };
 
 const parseTimeMinutes = (value: string | null): number | null => {
-  if (!value) return null;
-  const [hours, minutes] = value.split(':').map((part) => Number(part));
-  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+  const parts = parseTimeParts(value);
+  if (!parts) return null;
+  const { hours, minutes } = parts;
   return hours * 60 + minutes;
 };
 
-const formatDuration = (fromTime: string | null, toTime: string | null): string => {
+const parseDurationMinutes = (value: string | null): number | null => {
+  if (!value) return null;
+
+  const normalized = value.trim().toLowerCase();
+  if (!normalized || normalized === '-') return null;
+
+  const timeMatch = normalized.match(/^(\d+):(\d{1,2})(?::\d{1,2})?$/);
+  if (timeMatch) {
+    const hours = Number(timeMatch[1]);
+    const minutes = Number(timeMatch[2]);
+    if (Number.isFinite(hours) && Number.isFinite(minutes)) {
+      return hours * 60 + minutes;
+    }
+  }
+
+  const hoursMatch = normalized.match(/^(\d+(?:\.\d+)?)\s*(h|hr|hrs|hour|hours)$/);
+  if (hoursMatch) {
+    const hours = Number(hoursMatch[1]);
+    return Number.isFinite(hours) ? Math.round(hours * 60) : null;
+  }
+
+  const minutesMatch = normalized.match(/^(\d+)\s*(m|min|mins|minute|minutes)$/);
+  if (minutesMatch) {
+    const minutes = Number(minutesMatch[1]);
+    return Number.isFinite(minutes) ? minutes : null;
+  }
+
+  const numericDuration = Number(normalized);
+  if (Number.isFinite(numericDuration)) {
+    return numericDuration <= 24 ? Math.round(numericDuration * 60) : Math.round(numericDuration);
+  }
+
+  return null;
+};
+
+const calculateDurationMinutes = (
+  fromTime: string | null,
+  toTime: string | null
+): number | null => {
   const fromMinutes = parseTimeMinutes(fromTime);
   const toMinutes = parseTimeMinutes(toTime);
-  if (fromMinutes === null || toMinutes === null) return '-';
+  if (fromMinutes === null || toMinutes === null) return null;
 
-  const diff =
-    toMinutes >= fromMinutes ? toMinutes - fromMinutes : toMinutes + 24 * 60 - fromMinutes;
-  const hours = Math.floor(diff / 60);
-  const minutes = diff % 60;
-
-  if (hours > 0 && minutes > 0) return `${hours}h ${minutes}m`;
-  if (hours > 0) return `${hours}h`;
-  return `${minutes}m`;
+  return toMinutes >= fromMinutes ? toMinutes - fromMinutes : toMinutes + 24 * 60 - fromMinutes;
 };
 
 const studentDisplayName = (student?: StudentDto): string | null => {
@@ -283,11 +339,13 @@ const mapEarlyLeaveRequest = (
   const studentId = pickString(source, ['studentId', 'StudentId']) ?? student?.id ?? '';
   const fromTime = pickString(source, ['fromTime', 'FromTime']);
   const toTime = pickString(source, ['toTime', 'ToTime']);
-  const time =
-    fromTime && toTime ? `${formatTime(fromTime)} - ${formatTime(toTime)}` : formatTime(fromTime);
+  const time = normalizeTime(fromTime);
   const date = pickString(source, ['date', 'Date', 'requestDate', 'createdAt']);
   const grade = pickString(source, GRADE_KEYS) ?? student?.grade ?? '-';
   const classroom = pickString(source, CLASSROOM_KEYS) ?? student?.className ?? '-';
+  const duration = pickString(source, ['duration', 'Duration']);
+  const durationMinutes =
+    parseDurationMinutes(duration) ?? calculateDurationMinutes(fromTime, toTime);
 
   return {
     id,
@@ -298,7 +356,10 @@ const mapEarlyLeaveRequest = (
       student?.profilePicture ??
       null,
     time,
-    duration: pickString(source, ['duration', 'Duration']) ?? formatDuration(fromTime, toTime),
+    duration: duration ?? (durationMinutes === null ? '-' : String(durationMinutes)),
+    fromTime,
+    toTime,
+    durationMinutes,
     date: formatDate(date),
     stage: grade,
     classroom,
@@ -399,8 +460,7 @@ const buildListResponse = async (
       pickNumber(data, ['totalPages', 'TotalPages']) ??
       Math.max(1, Math.ceil(requests.length / (params?.PageSize ?? 10))),
     totalItems:
-      pickNumber(data, ['totalItems', 'TotalItems', 'totalCount', 'TotalCount']) ??
-      requests.length,
+      pickNumber(data, ['totalItems', 'TotalItems', 'totalCount', 'TotalCount']) ?? requests.length,
     pageSize: pickNumber(data, ['pageSize', 'PageSize']) ?? params?.PageSize ?? 10,
   };
 };
