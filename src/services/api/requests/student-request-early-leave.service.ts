@@ -1,4 +1,4 @@
-import { axiosClient, isErrorStatus } from '@/lib/http';
+import { axiosClient } from '@/lib/http';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { studentsApiService } from '@/services/api/students/students.service';
 import type { ApiResponseModel } from '../config';
@@ -12,7 +12,6 @@ import type {
   StudentEarlyLeaveRequestApiDto,
   StudentEarlyLeaveRequestsListResponse,
   StudentEarlyLeaveRequestsQueryParams,
-  UpdateStudentEarlyLeaveStatusRequest,
 } from './requests.types';
 import { EarlyLeaveStatus as EarlyLeaveStatusValues } from './requests.types';
 
@@ -517,34 +516,36 @@ export async function createStudentEarlyLeaveRequest(
   return mapEarlyLeaveRequest(payload, 0);
 }
 
-export async function updateStudentEarlyLeaveStatus(
-  body: UpdateStudentEarlyLeaveStatusRequest
+export async function approveStudentEarlyLeaveRequest(
+  id: string
 ): Promise<ApiResponseModel<null>> {
-  try {
-    const response = await axiosClient.put<ApiResponseModel<null>>(
-      StudentRequestEarlyLeaveEndpoints.updateStatus,
-      body
-    );
-    return response.data;
-  } catch (error) {
-    if (!isErrorStatus(error, 404) && !isErrorStatus(error, 405)) {
-      throw error;
-    }
+  const response = await axiosClient.get<ApiResponseModel<null>>(
+    StudentRequestEarlyLeaveEndpoints.approve,
+    { params: { Id: id } }
+  );
+  return response.data;
+}
 
-    const response = await axiosClient.put<ApiResponseModel<null>>(
-      StudentRequestEarlyLeaveEndpoints.updateStatusById(body.id),
-      undefined,
-      { params: { status: body.status } }
-    );
-    return response.data;
-  }
+export async function deleteStudentEarlyLeaveRequest(id: string): Promise<ApiResponseModel<null>> {
+  const formData = new FormData();
+  formData.append('Id', id);
+
+  const response = await axiosClient.delete<ApiResponseModel<null>>(
+    StudentRequestEarlyLeaveEndpoints.delete,
+    {
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }
+  );
+  return response.data;
 }
 
 export const studentRequestEarlyLeaveApiService = {
   getStudentEarlyLeaveRequests,
   getStudentEarlyLeaveRequestById,
   createStudentEarlyLeaveRequest,
-  updateStudentEarlyLeaveStatus,
+  approveStudentEarlyLeaveRequest,
+  deleteStudentEarlyLeaveRequest,
 };
 
 export default studentRequestEarlyLeaveApiService;
