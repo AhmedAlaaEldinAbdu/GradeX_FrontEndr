@@ -40,6 +40,7 @@ import dailyReportReducer from '../features/daily-report/dailyReportSlice';
 import parentReducer from '../features/parent/parentSlice';
 import schoolCoursesReducer from '../features/school-course/schoolCourseSlice';
 import schoolMessagesReducer from '../features/school-messages/schoolMessagesSlice';
+import studentRequestEarlyLeaveReducer from '../features/studentRequestEarlyLeaveSlice';
 import teacherRequestsReducer from '../features/teacher-requests/teacherRequestsSlice';
 import schoolNotificationsReducer from '../features/schoolNotificationsSlice';
 import aiExamReducer from '../features/ai-exam/aiExamSlice';
@@ -87,6 +88,7 @@ export const store = configureStore({
     parent: parentReducer,
     schoolCourses: schoolCoursesReducer,
     schoolMessages: schoolMessagesReducer,
+    studentRequestEarlyLeave: studentRequestEarlyLeaveReducer,
     teacherRequests: teacherRequestsReducer,
     schoolNotifications: schoolNotificationsReducer,
     aiExam: aiExamReducer,
