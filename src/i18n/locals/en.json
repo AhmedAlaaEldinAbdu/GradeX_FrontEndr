@@ -1528,6 +1528,15 @@
       "studentName": "Student Name",
       "time": "Time",
       "duration": "Early Leave Duration",
+      "durationUnits": {
+        "hour_one": "1 hour",
+        "hour_two": "2 hours",
+        "hour_other": "{{count}} hours",
+        "minute_one": "1 minute",
+        "minute_two": "2 minutes",
+        "minute_other": "{{count}} minutes",
+        "separator": "{{hours}} and {{minutes}}"
+      },
       "date": "Date",
       "requestDate": "Request Date",
       "stage": "Educational Stage",

@@ -1402,6 +1402,15 @@
       "studentName": "Schülername",
       "time": "Uhrzeit",
       "duration": "Dauer des frühzeitigen Verlassens",
+      "durationUnits": {
+        "hour_one": "1 Stunde",
+        "hour_two": "2 Stunden",
+        "hour_other": "{{count}} Stunden",
+        "minute_one": "1 Minute",
+        "minute_two": "2 Minuten",
+        "minute_other": "{{count}} Minuten",
+        "separator": "{{hours}} und {{minutes}}"
+      },
       "date": "Datum",
       "requestDate": "Antragsdatum",
       "stage": "Bildungsstufe",

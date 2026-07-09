@@ -1402,6 +1402,15 @@
       "studentName": "Nom de l'étudiant",
       "time": "Heure",
       "duration": "Durée de sortie anticipée",
+      "durationUnits": {
+        "hour_one": "1 heure",
+        "hour_two": "2 heures",
+        "hour_other": "{{count}} heures",
+        "minute_one": "1 minute",
+        "minute_two": "2 minutes",
+        "minute_other": "{{count}} minutes",
+        "separator": "{{hours}} et {{minutes}}"
+      },
       "date": "Date",
       "requestDate": "Date de la demande",
       "stage": "Niveau d'études",

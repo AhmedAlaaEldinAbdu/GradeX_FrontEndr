@@ -1528,6 +1528,15 @@
       "studentName": "اسم الطالب",
       "time": "الوقت",
       "duration": "مدة الخروج المبكر",
+      "durationUnits": {
+        "hour_one": "ساعة",
+        "hour_two": "ساعتين",
+        "hour_other": "{{count}} ساعات",
+        "minute_one": "دقيقة",
+        "minute_two": "دقيقتين",
+        "minute_other": "{{count}} دقيقة",
+        "separator": "{{hours}} و {{minutes}}"
+      },
       "date": "التاريخ",
       "requestDate": "تاريخ الطلب",
       "stage": "المرحلة الدراسية",

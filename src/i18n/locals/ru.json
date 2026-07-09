@@ -1402,6 +1402,15 @@
       "studentName": "Имя студента",
       "time": "Время",
       "duration": "Длительность раннего ухода",
+      "durationUnits": {
+        "hour_one": "1 час",
+        "hour_two": "2 часа",
+        "hour_other": "{{count}} часов",
+        "minute_one": "1 минута",
+        "minute_two": "2 минуты",
+        "minute_other": "{{count}} минут",
+        "separator": "{{hours}} и {{minutes}}"
+      },
       "date": "Дата",
       "requestDate": "Дата запроса",
       "stage": "Учебный этап",
