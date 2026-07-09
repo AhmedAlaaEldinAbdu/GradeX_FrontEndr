@@ -7,7 +7,6 @@ import IconButton from '@/shared/components/IconButton';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import Modal from '@/shared/popups/Modal';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
 
 import {
   AdminTeacherNoteStatus,
@@ -43,11 +42,9 @@ type DetailRowProps = {
 };
 
 const DetailRow: React.FC<DetailRowProps> = ({ label, children }) => (
-  <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-start">
+  <div className="flex items-center gap-3">
     <span className="text-base font-semibold text-[#0E1F1F]">{label}:</span>
-    <div className="flex min-w-0 items-center gap-2 text-sm font-normal text-[#646969]">
-      {children}
-    </div>
+    <div className="flex items-center gap-2">{children}</div>
   </div>
 );
 
@@ -63,19 +60,18 @@ const PartyValue: React.FC<{
   onProfilePreview: () => void;
 }> = ({ party, eyeLabel, onProfilePreview }) => {
   if (party.isSchool) {
-    return <span>{displayValue(party.name)}</span>;
+    return <span className="text-sm font-normal text-[#646969]">{displayValue(party.name)}</span>;
   }
 
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <>
       <UserAvatarName
         name={displayValue(party.name)}
         avatarSrc={party.avatarPath}
         align="center"
-        className="min-w-0"
       />
       <EyeBadge label={eyeLabel} onClick={onProfilePreview} />
-    </div>
+    </>
   );
 };
 
@@ -106,80 +102,61 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      showHeader={false}
-      size="lg"
-      contentClassName="p-0"
+      title={t('adminRequests.teacherNotes.detailsTitle')}
+      size="md"
     >
-      <div className="relative px-6 py-8 sm:px-12 sm:py-10">
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={t('common.close')}
-          className="absolute left-6 top-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#DDE0E0] bg-white transition-colors hover:bg-gray-50 sm:left-12 sm:top-10"
-        >
-          <CustomImage src={XmarkCircleGrayIcon} alt="" className="h-8 w-8" />
-        </button>
+      <div className="space-y-6">
+        <DetailRow label={t('adminRequests.teacherNotes.columns.status')}>
+          <span
+            className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium ${STATUS_BADGE_CLASSES[note.status]}`}
+          >
+            {t(STATUS_LABEL_KEYS[note.status])}
+          </span>
+        </DetailRow>
 
-        <h2 className="text-center text-2xl font-semibold text-[#0E1F1F]">
-          {t('adminRequests.teacherNotes.detailsTitle')}
-        </h2>
+        <DetailRow label={t('adminRequests.teacherNotes.columns.sentFrom')}>
+          <PartyValue
+            party={note.sender}
+            eyeLabel={t('common.view')}
+            onProfilePreview={onProfilePreview}
+          />
+        </DetailRow>
 
-        <div className="mx-auto mt-12 max-w-2xl space-y-8">
-          <DetailRow label={t('adminRequests.teacherNotes.columns.status')}>
-            <span
-              className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium ${STATUS_BADGE_CLASSES[note.status]}`}
-            >
-              {t(STATUS_LABEL_KEYS[note.status])}
-            </span>
-          </DetailRow>
+        <DetailRow label={t('adminRequests.teacherNotes.columns.sentTo')}>
+          <PartyValue
+            party={note.recipient}
+            eyeLabel={t('common.view')}
+            onProfilePreview={onProfilePreview}
+          />
+        </DetailRow>
 
-          <DetailRow label={t('adminRequests.teacherNotes.columns.sentFrom')}>
-            <PartyValue
-              party={note.sender}
-              eyeLabel={t('common.view')}
-              onProfilePreview={onProfilePreview}
-            />
-          </DetailRow>
+        <DetailRow label={t('adminRequests.teacherNotes.columns.stage')}>
+          <span className="text-sm font-normal text-[#646969]">{displayValue(note.stage)}</span>
+        </DetailRow>
 
-          <DetailRow label={t('adminRequests.teacherNotes.columns.sentTo')}>
-            <PartyValue
-              party={note.recipient}
-              eyeLabel={t('common.view')}
-              onProfilePreview={onProfilePreview}
-            />
-          </DetailRow>
+        <DetailRow label={t('adminRequests.teacherNotes.columns.classroom')}>
+          <span className="text-sm font-normal text-[#646969]">
+            {displayValue(note.classroom)}
+          </span>
+        </DetailRow>
 
-          <DetailRow label={t('adminRequests.teacherNotes.columns.stage')}>
-            <span>{displayValue(note.stage)}</span>
-          </DetailRow>
+        <DetailRow label={t('adminRequests.teacherNotes.columns.sentDate')}>
+          <span className="text-sm font-normal text-[#646969]">{formatDate(note.sentDate)}</span>
+        </DetailRow>
 
-          <DetailRow label={t('adminRequests.teacherNotes.columns.classroom')}>
-            <span>{displayValue(note.classroom)}</span>
-          </DetailRow>
-
-          <DetailRow label={t('adminRequests.teacherNotes.columns.sentDate')}>
-            <span>{formatDate(note.sentDate)}</span>
-          </DetailRow>
-
-          <DetailRow label={t('adminRequests.teacherNotes.columns.content')}>
-            <span>{displayValue(note.noteContent)}</span>
-          </DetailRow>
-        </div>
+        <DetailRow label={t('adminRequests.teacherNotes.columns.content')}>
+          <span className="text-sm font-normal text-[#646969]">
+            {displayValue(note.noteContent)}
+          </span>
+        </DetailRow>
 
         {canMarkViewed ? (
-          <div className="mt-12 flex flex-wrap items-center justify-end gap-4">
-            <Button
-              variant="outline"
-              size="md"
-              className="min-w-[150px]"
-              onClick={onClose}
-            >
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button variant="outline" onClick={onClose}>
               {t('common.cancel')}
             </Button>
             <Button
-              variant="success"
-              size="md"
-              className="min-w-[210px]"
+              variant="primary"
               onClick={() => {
                 onMarkViewed(note);
                 onClose();
