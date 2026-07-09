@@ -4,7 +4,11 @@ import Modal from '@/shared/popups/Modal';
 import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import { EarlyLeaveStatus, type EarlyLeaveRequestDto } from '@/services/api/requests/requests.types';
+import {
+  EarlyLeaveStatus,
+  type EarlyLeaveRequestDto,
+} from '@/services/api/requests/requests.types';
+import { formatEarlyLeaveDuration, formatEarlyLeaveTime } from './earlyLeaveFormatters';
 
 const STATUS_BADGE_CLASSES: Record<EarlyLeaveStatus, string> = {
   [EarlyLeaveStatus.Pending]: 'bg-orange-100 text-orange-700',
@@ -38,12 +42,17 @@ export default function EarlyLeaveDetailsPopup({
   onClose,
   request,
 }: EarlyLeaveDetailsPopupProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (!request) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('requests.earlyLeave.detailsTitle')} size="sm">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('requests.earlyLeave.detailsTitle')}
+      size="sm"
+    >
       <div className="flex flex-col gap-5">
         <DetailRow label={t('requests.requestStatus')}>
           <span
@@ -65,8 +74,12 @@ export default function EarlyLeaveDetailsPopup({
         <DetailRow label={t('requests.earlyLeave.stage')}>{request.stage}</DetailRow>
         <DetailRow label={t('requests.earlyLeave.classroom')}>{request.classroom}</DetailRow>
         <DetailRow label={t('requests.earlyLeave.requestDate')}>{request.date}</DetailRow>
-        <DetailRow label={t('requests.earlyLeave.time')}>{request.time}</DetailRow>
-        <DetailRow label={t('requests.earlyLeave.duration')}>{request.duration}</DetailRow>
+        <DetailRow label={t('requests.earlyLeave.time')}>
+          {formatEarlyLeaveTime(request.fromTime ?? request.time, i18n.language)}
+        </DetailRow>
+        <DetailRow label={t('requests.earlyLeave.duration')}>
+          {formatEarlyLeaveDuration(request, t)}
+        </DetailRow>
       </div>
     </Modal>
   );
