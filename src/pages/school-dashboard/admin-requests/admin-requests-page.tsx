@@ -18,6 +18,7 @@ import {
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import JobApplicationsTab from './components/JobApplicationsTab';
+import ArchiveApplicationsTab from './components/ArchiveApplicationsTab';
 import MessagesTab from './components/MessagesTab';
 import ScheduleInterviewTab from './components/ScheduleInterviewTab';
 import TeacherNotesTab from './components/TeacherNotesTab';
@@ -61,11 +62,11 @@ const AdminRequestsPage: React.FC = () => {
       label: t('adminRequests.tabs.jobApplication'),
       content: <JobApplicationsTab />,
     },
-    // {
-    //   id: 'application-archive',
-    //   label: t('adminRequests.tabs.applicationArchive'),
-    //   content: <TabPlaceholder />,
-    // },
+    {
+      id: 'application-archive',
+      label: t('adminRequests.tabs.applicationArchive'),
+      content: <ArchiveApplicationsTab />,
+    },
     {
       id: 'schedule-interview',
       label: t('adminRequests.tabs.scheduleInterview'),
