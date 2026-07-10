@@ -161,6 +161,7 @@ export interface JobApplicationRequestDto {
   teacherFullName: string;
   teacherEmail: string;
   teacherPhoneNumber: string;
+  teacherPictureProfilePath: string | null;
   yearsExperience: number;
   resumeFile: string | null;
   workShedule: TeacherWorkSchedule;
