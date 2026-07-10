@@ -41,6 +41,7 @@ import parentReducer from '../features/parent/parentSlice';
 import schoolCoursesReducer from '../features/school-course/schoolCourseSlice';
 import schoolMessagesReducer from '../features/school-messages/schoolMessagesSlice';
 import studentRequestEarlyLeaveReducer from '../features/studentRequestEarlyLeaveSlice';
+import requestAppointmentsReducer from '../features/requestAppointmentSlice';
 import teacherRequestsReducer from '../features/teacher-requests/teacherRequestsSlice';
 import schoolNotificationsReducer from '../features/schoolNotificationsSlice';
 import aiExamReducer from '../features/ai-exam/aiExamSlice';
@@ -89,6 +90,7 @@ export const store = configureStore({
     schoolCourses: schoolCoursesReducer,
     schoolMessages: schoolMessagesReducer,
     studentRequestEarlyLeave: studentRequestEarlyLeaveReducer,
+    requestAppointments: requestAppointmentsReducer,
     teacherRequests: teacherRequestsReducer,
     schoolNotifications: schoolNotificationsReducer,
     aiExam: aiExamReducer,
