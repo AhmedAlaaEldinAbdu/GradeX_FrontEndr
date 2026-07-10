@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import EmailYellowIcon from '@gradex/assets/icons/EmailYellow.svg';
 import WhatsAppIcon from '@gradex/assets/icons/WhatsApp.svg';
-import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import RestoreBlueIcon from '@gradex/assets/icons/RestoreBlue.svg';
 
 import { WorkType, type JobApplicationDto } from '../admin-requests.types';
 import { fetchJobApplications } from '@/redux/features/teacher-requests/teacherRequestsSlice';
@@ -23,6 +23,7 @@ import type {
   TeacherWorkSchedule,
 } from '@/services/api/types/teacher-requests.types';
 import { mapJobApplication } from '../admin-requests.mappers';
+import RestoreApplicationFromArchivePopup from '../popups/RestoreApplicationFromArchivePopup';
 
 const PAGE_SIZE = 10;
 
@@ -53,6 +54,9 @@ const ArchiveApplicationsTab: React.FC = () => {
   const [selectedExperience, setSelectedExperience] = useState('');
   const [selectedNationality, setSelectedNationality] = useState('');
   const [page, setPage] = useState(1);
+  const [isRestorePopupOpen, setRestorePopupOpen] = useState(false);
+  const [selectedApplicationId, setSelectedApplicationId] = useState<string>('');
+  const [selectedApplicationName, setSelectedApplicationName] = useState<string>('');
 
   const loadApplications = useCallback(() => {
     const params: JobApplicationsQueryParams = {
@@ -229,11 +233,15 @@ const ArchiveApplicationsTab: React.FC = () => {
       accessor: (row) => (
         <IconButton
           variant="blue"
-          ariaLabel={t('common.view')}
+          ariaLabel={t('common.restore')}
           imgClassName="h-5 w-5"
-          onClick={() => navigate(`/admin-requests/job-application/${row.id}`)}
+          onClick={() => {
+            setSelectedApplicationId(row.id);
+            setSelectedApplicationName(row.applicantName);
+            setRestorePopupOpen(true);
+          }}
         >
-          <CustomImage src={EyeStyledIcon} alt="" className="h-6 w-6" />
+          <CustomImage src={RestoreBlueIcon} alt="" className="h-6 w-6" />
         </IconButton>
       ),
       headerClassName: 'min-w-[140px] text-center',
@@ -343,27 +351,43 @@ const ArchiveApplicationsTab: React.FC = () => {
     setPage(1);
   };
 
+  const handleRestoreConfirm = () => {
+    // API call to restore application will go here
+    setRestorePopupOpen(false);
+    loadApplications();
+  };
+
   return (
-    <Card className="rounded-2xl" padding="lg">
-      <DataTable
-        data={data}
-        columns={columns}
-        keyExtractor={(row) => row.id}
-        filters={filterConfigs}
-        showFilters={true}
-        pagination={{
-          page: jobApplicationsPagination.page,
-          limit: jobApplicationsPagination.limit,
-          total: jobApplicationsPagination.total,
-          totalPages: jobApplicationsPagination.totalPages,
-        }}
-        onPageChange={setPage}
-        onResetFilters={handleResetFilters}
-        emptyMessage="adminRequests.empty"
-        isLoading={isJobApplicationsLoading}
-        t={t}
+    <>
+      <Card className="rounded-2xl" padding="lg">
+        <DataTable
+          data={data}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          filters={filterConfigs}
+          showFilters={true}
+          pagination={{
+            page: jobApplicationsPagination.page,
+            limit: jobApplicationsPagination.limit,
+            total: jobApplicationsPagination.total,
+            totalPages: jobApplicationsPagination.totalPages,
+          }}
+          onPageChange={setPage}
+          onResetFilters={handleResetFilters}
+          emptyMessage="adminRequests.empty"
+          isLoading={isJobApplicationsLoading}
+          t={t}
+        />
+      </Card>
+
+      <RestoreApplicationFromArchivePopup
+        isOpen={isRestorePopupOpen}
+        onClose={() => setRestorePopupOpen(false)}
+        onConfirm={handleRestoreConfirm}
+        applicationName={selectedApplicationName}
+        applicationId={selectedApplicationId}
       />
-    </Card>
+    </>
   );
 };
 
