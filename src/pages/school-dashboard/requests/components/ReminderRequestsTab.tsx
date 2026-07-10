@@ -13,17 +13,13 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import {
-  clearCurrentStudentEarlyLeaveRequest,
-  fetchStudentEarlyLeaveRequestById,
-  fetchStudentEarlyLeaveRequests,
-} from '@/redux/features/studentRequestEarlyLeaveSlice';
+import { fetchRequestAppointments } from '@/redux/features/requestAppointmentSlice';
 import type {
-  EarlyLeaveRequestDto,
+  RequestAppointmentDto,
   StudentRequestDto,
 } from '@/services/api/requests/requests.types';
 import {
-  EarlyLeaveStatus,
+  RequestAppointmentParticipant,
   StudentRequestStatus,
   StudentRequestType,
   RequestParticipantRole,
@@ -31,20 +27,6 @@ import {
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 
 const PAGE_SIZE = 10;
-
-const EARLY_LEAVE_STATUS_TO_REQUEST_STATUS: Record<EarlyLeaveStatus, StudentRequestStatus> = {
-  [EarlyLeaveStatus.Pending]: StudentRequestStatus.Pending,
-  [EarlyLeaveStatus.Accepted]: StudentRequestStatus.Viewed,
-  [EarlyLeaveStatus.Rejected]: StudentRequestStatus.Replied,
-};
-
-const REQUEST_STATUS_TO_EARLY_LEAVE_STATUS: Partial<
-  Record<StudentRequestStatus, EarlyLeaveStatus>
-> = {
-  [StudentRequestStatus.Pending]: EarlyLeaveStatus.Pending,
-  [StudentRequestStatus.Viewed]: EarlyLeaveStatus.Accepted,
-  [StudentRequestStatus.Replied]: EarlyLeaveStatus.Rejected,
-};
 
 const formatRequestDate = (value: string) => {
   const date = new Date(value);
@@ -76,11 +58,10 @@ const ReminderRequestsTab: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const {
-    requests: earlyLeaveRequests,
-    currentRequest,
+    appointments,
     isLoading,
     pagination,
-  } = useAppSelector((state) => state.studentRequestEarlyLeave);
+  } = useAppSelector((state) => state.requestAppointments);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -90,62 +71,73 @@ const ReminderRequestsTab: React.FC = () => {
 
   const schoolLabel = t('requests.schoolLabel');
 
-  const mapEarlyLeaveToRequest = useMemo(
+  const mapAppointmentToRequest = useMemo(
     () =>
-      (request: EarlyLeaveRequestDto): StudentRequestDto => {
-        const studentName = request.studentNameFromRequest
-          ? emptyWhenMissing(request.studentName)
-          : '';
-        const stage = request.stageFromRequest ? emptyWhenMissing(request.stage) : '';
-        const classroom = request.classroomFromRequest ? emptyWhenMissing(request.classroom) : '';
+      (appointment: RequestAppointmentDto): StudentRequestDto => {
+        const senderIsSchool =
+          appointment.appointmentSender === RequestAppointmentParticipant.School;
+        const receiverIsSchool =
+          appointment.appointmentReciver === RequestAppointmentParticipant.School;
+        const parentName = emptyWhenMissing(appointment.parentName);
+        const studentName = emptyWhenMissing(appointment.studentName);
 
         return {
-          id: request.id,
-          senderName: schoolLabel,
+          id: appointment.id,
+          senderName: senderIsSchool ? schoolLabel : parentName,
           senderAvatarPath: null,
-          senderRole: RequestParticipantRole.School,
-          recipientName: studentName,
-          recipientAvatarPath: request.studentAvatarPath,
-          recipientRole: RequestParticipantRole.Student,
-          recipientId: request.studentId || undefined,
-          messageContent: emptyWhenMissing(request.reason),
-          status: EARLY_LEAVE_STATUS_TO_REQUEST_STATUS[request.status],
+          senderRole: senderIsSchool ? RequestParticipantRole.School : RequestParticipantRole.Parent,
+          senderId: senderIsSchool ? undefined : appointment.parentId,
+          recipientName: receiverIsSchool ? schoolLabel : parentName,
+          recipientAvatarPath: null,
+          recipientRole: receiverIsSchool
+            ? RequestParticipantRole.School
+            : RequestParticipantRole.Parent,
+          recipientId: receiverIsSchool ? undefined : appointment.parentId,
+          messageContent: emptyWhenMissing(appointment.reason),
+          status: receiverIsSchool ? StudentRequestStatus.Pending : StudentRequestStatus.Sent,
           type: StudentRequestType.Reminder,
-          created: request.rawDate ?? '',
+          created: appointment.date,
           studentName,
-          studentId: request.studentId || undefined,
-          educationalStage: stage,
-          classrooms: classroom ? [classroom] : [],
+          studentId: appointment.studentId || undefined,
         };
       },
     [schoolLabel]
   );
 
   useEffect(() => {
-    const handle = setTimeout(() => {
-      dispatch(
-        fetchStudentEarlyLeaveRequests({
-          page,
-          limit: PAGE_SIZE,
-          searchTerm,
-          status: selectedStatus
-            ? REQUEST_STATUS_TO_EARLY_LEAVE_STATUS[Number(selectedStatus) as StudentRequestStatus]
-            : undefined,
-          date: selectedDate,
-        })
-      );
-    }, 350);
-
-    return () => clearTimeout(handle);
-  }, [dispatch, page, searchTerm, selectedStatus, selectedDate]);
+    dispatch(fetchRequestAppointments({ page, limit: PAGE_SIZE }));
+  }, [dispatch, page]);
 
   const requests = useMemo(
-    () => earlyLeaveRequests.map(mapEarlyLeaveToRequest),
-    [earlyLeaveRequests, mapEarlyLeaveToRequest]
+    () => appointments.map(mapAppointmentToRequest),
+    [appointments, mapAppointmentToRequest]
   );
 
-  const totalPages = Math.max(1, pagination.totalPages);
-  const totalItems = pagination.totalItems;
+  const filteredRequests = useMemo(
+    () =>
+      requests.filter((request) => {
+        const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+        const matchesSearch =
+          !normalizedSearchTerm ||
+          [
+            request.studentName,
+            request.senderName,
+            request.recipientName,
+            request.messageContent,
+          ].some((value) => value?.toLowerCase().includes(normalizedSearchTerm));
+        const matchesStatus = !selectedStatus || request.status === Number(selectedStatus);
+        const matchesDate = !selectedDate || request.created.startsWith(selectedDate);
+
+        return matchesSearch && matchesStatus && matchesDate;
+      }),
+    [requests, searchTerm, selectedStatus, selectedDate]
+  );
+
+  const hasClientFilters = Boolean(searchTerm.trim() || selectedStatus || selectedDate);
+  const totalPages = hasClientFilters
+    ? Math.max(1, Math.ceil(filteredRequests.length / PAGE_SIZE))
+    : Math.max(1, pagination.totalPages);
+  const totalItems = hasClientFilters ? filteredRequests.length : pagination.totalItems;
 
   useEffect(() => {
     if (page > totalPages) {
@@ -153,20 +145,12 @@ const ReminderRequestsTab: React.FC = () => {
     }
   }, [page, totalPages]);
 
-  useEffect(() => {
-    if (currentRequest && selectedRequest?.id === currentRequest.id) {
-      setSelectedRequest(mapEarlyLeaveToRequest(currentRequest));
-    }
-  }, [currentRequest, mapEarlyLeaveToRequest, selectedRequest?.id]);
-
   const handleOpenPreview = (request: StudentRequestDto) => {
     setSelectedRequest(request);
-    dispatch(fetchStudentEarlyLeaveRequestById(request.id));
   };
 
   const handleClosePreview = () => {
     setSelectedRequest(null);
-    dispatch(clearCurrentStudentEarlyLeaveRequest());
   };
 
   const getStatusBadge = (status: StudentRequestStatus) => (
@@ -262,14 +246,16 @@ const ReminderRequestsTab: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        const isViewed = row.status === StudentRequestStatus.Viewed;
+        const canReply =
+          row.recipientRole === RequestParticipantRole.School &&
+          row.status === StudentRequestStatus.Pending;
         return (
           <div className="flex items-center justify-center">
             <Button
               variant="outline"
               size="sm"
               className="!rounded-2xl px-6"
-              disabled={isViewed}
+              disabled={!canReply}
               onClick={() => navigate(`/requests/view-message/${row.studentId ?? row.id}`)}
             >
               {t('requests.actions.sendReply')}
@@ -309,7 +295,7 @@ const ReminderRequestsTab: React.FC = () => {
           }}
           options={[
             { value: StudentRequestStatus.Pending.toString(), label: t('requests.status.pending') },
-            { value: StudentRequestStatus.Viewed.toString(), label: t('requests.status.viewed') },
+            { value: StudentRequestStatus.Sent.toString(), label: t('requests.status.sent') },
           ]}
           placeholder={t('requests.filters.status')}
           showSearch={false}
@@ -346,7 +332,7 @@ const ReminderRequestsTab: React.FC = () => {
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={requests}
+        data={filteredRequests}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
