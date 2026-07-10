@@ -57,11 +57,9 @@ const ReminderRequestsTab: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const {
-    appointments,
-    isLoading,
-    pagination,
-  } = useAppSelector((state) => state.requestAppointments);
+  const { appointments, isLoading, pagination } = useAppSelector(
+    (state) => state.requestAppointments
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -85,7 +83,9 @@ const ReminderRequestsTab: React.FC = () => {
           id: appointment.id,
           senderName: senderIsSchool ? schoolLabel : parentName,
           senderAvatarPath: null,
-          senderRole: senderIsSchool ? RequestParticipantRole.School : RequestParticipantRole.Parent,
+          senderRole: senderIsSchool
+            ? RequestParticipantRole.School
+            : RequestParticipantRole.Parent,
           senderId: senderIsSchool ? undefined : appointment.parentId,
           recipientName: receiverIsSchool ? schoolLabel : parentName,
           recipientAvatarPath: null,
