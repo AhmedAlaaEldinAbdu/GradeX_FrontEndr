@@ -1357,6 +1357,11 @@
       "messages": "Messages",
       "notes": "Notes",
       "teacherNotes": "Notes pour les enseignants"
+    },
+    "popup": {
+      "confirmRestore": "Voulez-vous restaurer {{name}} ?",
+      "restoreDescription": "Ils seront déplacés vers la liste des candidats à l'annonce d'emploi",
+      "restoreSuccess": "Demande restaurée avec succès"
     }
   },
   "requests": {

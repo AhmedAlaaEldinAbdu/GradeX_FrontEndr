@@ -1357,6 +1357,11 @@
       "messages": "Nachrichten",
       "notes": "Notizen",
       "teacherNotes": "Notizen für Lehrer"
+    },
+    "popup": {
+      "confirmRestore": "Möchten Sie {{name}} wiederherstellen ?",
+      "restoreDescription": "Sie werden in die Kandidatenliste der Stellenausschreibung verschoben",
+      "restoreSuccess": "Anfrage erfolgreich wiederhergestellt"
     }
   },
   "requests": {

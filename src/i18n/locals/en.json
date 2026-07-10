@@ -1453,6 +1453,11 @@
       "messages": "Messages",
       "notes": "Notes",
       "teacherNotes": "Teacher Notes"
+    },
+    "popup": {
+      "confirmRestore": "Do you want to restore {{name}} ?",
+      "restoreDescription": "They will be moved to the job announcement applicants list",
+      "restoreSuccess": "Request restored successfully"
     }
   },
   "requests": {

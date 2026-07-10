@@ -1453,6 +1453,11 @@
       "messages": "الرسائل",
       "notes": "ملاحظات",
       "teacherNotes": "ملاحظات للمعلمين"
+    },
+    "popup": {
+      "confirmRestore": "هل أنت تريد إسترجاع {{name}} ؟",
+      "restoreDescription": "سيتم نقله لجدول المتقدمين على الاعلان",
+      "restoreSuccess": "تم إسترجاع الطلب بنجاح"
     }
   },
   "requests": {
