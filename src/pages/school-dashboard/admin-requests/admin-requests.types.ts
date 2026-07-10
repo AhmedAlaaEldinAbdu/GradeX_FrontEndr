@@ -100,6 +100,8 @@ export interface JobApplicationDto {
   /** اسم مقدم الطلب */
   applicantName: string;
   applicantAvatarPath: string | null;
+  /** URL of the teacher profile picture (teacherPictureProfilePath) */
+  teacherPictureProfilePath: string | null;
   /** e.g. "مدرس تاريخ" — shown under the name on the details page */
   role: string;
   /** السيرة الذاتية */
