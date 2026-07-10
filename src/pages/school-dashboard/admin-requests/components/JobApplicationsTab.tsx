@@ -187,7 +187,7 @@ const JobApplicationsTab: React.FC = () => {
       accessor: (row) => (
         <UserAvatarName
           name={row.applicantName}
-          avatarSrc={row.applicantAvatarPath}
+          avatarSrc={row.teacherPictureProfilePath ?? row.applicantAvatarPath}
           align="between"
           onView={() => navigate(`/admin-requests/job-application/${row.id}`)}
         />
