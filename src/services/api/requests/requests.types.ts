@@ -28,6 +28,7 @@ export type StudentRequestType = (typeof StudentRequestType)[keyof typeof Studen
 export const RequestParticipantRole = {
   School: 'school',
   Student: 'student',
+  Parent: 'parent',
   Teacher: 'teacher',
 } as const;
 
@@ -334,4 +335,46 @@ export interface StudentRequestsStats {
   acceptedPercentage: number;
   rejected: number;
   total: number;
+}
+
+export const RequestAppointmentParticipant = {
+  School: 1,
+  Parent: 2,
+} as const;
+
+export type RequestAppointmentParticipant =
+  (typeof RequestAppointmentParticipant)[keyof typeof RequestAppointmentParticipant];
+
+export interface RequestAppointmentDto {
+  id: string;
+  schoolBranchesId: string;
+  studentId: string;
+  studentName: string;
+  parentId: string;
+  parentName: string;
+  appointmentReciver: RequestAppointmentParticipant;
+  appointmentSender: RequestAppointmentParticipant;
+  date: string;
+  reason: string | null;
+}
+
+export interface RequestAppointmentsData {
+  requestAppointmentDto: RequestAppointmentDto[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface RequestAppointmentsListResponse {
+  appointments: RequestAppointmentDto[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface RequestAppointmentsQueryParams {
+  PageIndex?: number;
+  PageSize?: number;
 }
