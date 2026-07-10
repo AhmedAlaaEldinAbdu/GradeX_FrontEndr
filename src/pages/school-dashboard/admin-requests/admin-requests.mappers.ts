@@ -62,7 +62,7 @@ const formatDate = (value: unknown): string => {
 const buildPeriod = (startDate: unknown, endDate: unknown, isPresent?: unknown): string => {
   const start = formatDate(startDate);
   if (!start) return '';
-  if (Boolean(isPresent)) return `${start} - Present`;
+  if (isPresent) return `${start} - Present`;
   const end = formatDate(endDate);
   return end ? `${start} - ${end}` : start;
 };
@@ -97,7 +97,9 @@ const mapExperience = (raw: LooseRecord): JobApplicationExperience => ({
         .join(' - ')
     )
   ),
-  period: buildPeriod(raw.startDate, raw.endDate, raw.isPresent) || str(firstDefined(raw.period, raw.duration)),
+  period:
+    buildPeriod(raw.startDate, raw.endDate, raw.isPresent) ||
+    str(firstDefined(raw.period, raw.duration)),
   teacherLevelNameAr: str(raw.teacherLevelNameAr),
   teacherLevelNameEn: str(raw.teacherLevelNameEn),
   schoolName: str(raw.schoolName),
@@ -113,7 +115,9 @@ const mapExperience = (raw: LooseRecord): JobApplicationExperience => ({
 const mapLanguage = (raw: LooseRecord): JobApplicationLanguage => ({
   id: str(raw.id),
   name: str(firstDefined(raw.name, raw.languageName, raw.lkLanguageNameAr, raw.lkLanguageNameEn)),
-  level: str(firstDefined(raw.level, raw.languageLevel, raw.lkLanguageLevelNameAr, raw.lkLanguageLevelNameEn)),
+  level: str(
+    firstDefined(raw.level, raw.languageLevel, raw.lkLanguageLevelNameAr, raw.lkLanguageLevelNameEn)
+  ),
   nameAr: str(raw.lkLanguageNameAr),
   nameEn: str(raw.lkLanguageNameEn),
   levelAr: str(raw.lkLanguageLevelNameAr),
@@ -191,7 +195,9 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
   // Cast through `unknown`: detail fields (TODO) aren't on the list DTO yet.
   const r = dto as unknown as LooseRecord;
 
-  const qualificationsRaw = asArray(firstDefined(r.qualifications, r.jobAdvertisementQualifications));
+  const qualificationsRaw = asArray(
+    firstDefined(r.qualifications, r.jobAdvertisementQualifications)
+  );
   const qualifications: JobApplicationQualification[] = qualificationsRaw.map((q, index) => ({
     id: str(firstDefined(q.id, index)),
     lkQualificationId: str(q.lkQualificationId),
@@ -261,8 +267,12 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
       firstDefined(r.jobAdvertismentNameAr, r.jobAdvertismentNameEn, r.announcementName)
     ),
     applicantName: str(firstDefined(r.teacherFullName, r.fullName, r.applicantName)),
-    applicantAvatarPath:
-      (firstDefined(r.teacherImagePath, r.imagePath, r.avatarPath) as string | undefined) ?? null,
+    applicantAvatarPath: toFileUrl(
+      firstDefined(r.teacherPictureProfilePath, r.teacherImagePath, r.imagePath, r.avatarPath)
+    ),
+    teacherPictureProfilePath: toFileUrl(
+      firstDefined(r.teacherPictureProfilePath, r.teacherImagePath, r.imagePath, r.avatarPath)
+    ),
     role: str(
       firstDefined(
         r.subjectName,
@@ -278,11 +288,24 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
       firstDefined(
         firstQualification?.qualificationNameAr,
         firstQualification?.qualificationNameEn,
+        // jobAdvertisementQualifications from the list response
+        asArray(r.jobAdvertisementQualifications)[0]?.nameAr,
+        asArray(r.jobAdvertisementQualifications)[0]?.nameEn,
         r.qualification
       )
     ),
     experienceYears: numOr(firstDefined(r.yearsExperience, r.experienceYears)),
-    country: str(firstDefined(r.lkCountryNameAr, r.lkCountryNameEn, r.countryName, r.country)),
+    country: str(
+      firstDefined(
+        r.lkCountryNameAr,
+        r.lkCountryNameEn,
+        // jobAdvertisementCountries[0] is the fallback when lkCountryName* are null
+        asArray(r.jobAdvertisementCountries)[0]?.nameAr,
+        asArray(r.jobAdvertisementCountries)[0]?.nameEn,
+        r.countryName,
+        r.country
+      )
+    ),
     nationality: str(firstDefined(r.nationalityNameAr, r.nationalityNameEn, r.nationality)),
     address: str(r.address),
     email: str(firstDefined(r.teacherEmail, r.email)),
@@ -291,11 +314,29 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
     status: numOr(firstDefined(r.applicationStatus, r.status)) as JobApplicationStatus,
 
     // ── Details (TODO(api): confirm once the details response is provided) ──
-    maritalStatus: str(firstDefined(r.socialStatusNameAr, r.socialStatusNameEn, r.maritalStatusName, r.socialStatus, r.maritalStatus)),
-    residenceCountry: str(firstDefined(r.residenceCountryName, r.residenceCountry, r.lkCountryNameAr, r.lkCountryNameEn)),
+    maritalStatus: str(
+      firstDefined(
+        r.socialStatusNameAr,
+        r.socialStatusNameEn,
+        r.maritalStatusName,
+        r.socialStatus,
+        r.maritalStatus
+      )
+    ),
+    residenceCountry: str(
+      firstDefined(r.residenceCountryName, r.residenceCountry, r.lkCountryNameAr, r.lkCountryNameEn)
+    ),
     nationalId: str(firstDefined(r.nationalIdentityNumber, r.identityNumber, r.nationalId)),
     birthDate: str(firstDefined(r.dateOfBirth, r.birthDate)),
-    idType: str(firstDefined(r.identityTypeNameAr, r.identityTypeNameEn, r.identityTypeName, r.identityType, r.idType)),
+    idType: str(
+      firstDefined(
+        r.identityTypeNameAr,
+        r.identityTypeNameEn,
+        r.identityTypeName,
+        r.identityType,
+        r.idType
+      )
+    ),
     university: str(
       firstDefined(
         firstQualification?.universityNameAr,
@@ -305,7 +346,9 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
       )
     ),
     subject: str(firstDefined(r.subjectName, r.subject)),
-    graduationYear: str(firstDefined(firstQualification?.graduationYear, r.graduationYear, r.graduationDate)),
+    graduationYear: str(
+      firstDefined(firstQualification?.graduationYear, r.graduationYear, r.graduationDate)
+    ),
     qualifications,
     courses: coursesRaw.map(mapCourse),
     previousExperiences: experiencesRaw.map(mapExperience),
