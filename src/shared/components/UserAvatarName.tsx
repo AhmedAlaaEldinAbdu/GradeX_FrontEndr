@@ -51,10 +51,16 @@ export default function UserAvatarName({
   const hasViewCount = viewCount !== undefined && viewCount !== null;
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
 
+  const resolvedAvatarSrc = avatarSrc
+    ? /^https?:\/\//.test(avatarSrc)
+      ? avatarSrc
+      : `${baseUrl}/${avatarSrc}`
+    : undefined;
+
   return (
     <div className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${className}`}>
       <CustomImage
-        src={avatarSrc ? baseUrl + '/' + avatarSrc : fallbackSrc}
+        src={resolvedAvatarSrc ?? fallbackSrc}
         fallbackSrc={fallbackSrc}
         alt={name ?? ''}
         className={`${sizeClasses.avatar} shrink-0 rounded-lg object-cover`}
