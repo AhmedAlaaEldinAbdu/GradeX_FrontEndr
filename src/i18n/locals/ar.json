@@ -1457,7 +1457,30 @@
     "popup": {
       "confirmRestore": "هل أنت تريد إسترجاع {{name}} ؟",
       "restoreDescription": "سيتم نقله لجدول المتقدمين على الاعلان",
-      "restoreSuccess": "تم إسترجاع الطلب بنجاح"
+      "restoreSuccess": "تم إسترجاع الطلب بنجاح",
+      "approve": "الموافقة",
+      "reject": "الرفض",
+      "approveSuccess": "تم الموافقة بنجاح",
+      "approveError": "حدث خطأ في الموافقة",
+      "rejectSuccess": "تم الرفض بنجاح",
+      "rejectError": "حدث خطأ في الرفض"
+    },
+    "earlyLeave": {
+      "detailsTitle": "تفاصيل طلب الخروج المبكر",
+      "applicant": "اسم الموظف",
+      "requestDate": "تاريخ الطلب",
+      "time": "الوقت",
+      "duration": "المدة",
+      "status": "الحالة",
+      "previewRequest": "معاينة الطلب",
+      "earlyLeaveDuration": "مدة الخروج المبكر",
+      "requestStatus": "حالة الطلب",
+      "actions": "الإجراءات",
+      "chooseStatus": "اختر الحالة",
+      "pending": "قيد الانتظار",
+      "approved": "موافقة",
+      "rejected": "مرفوض",
+      "alreadyProcessed": "هذا الطلب تم {{status}} بالفعل ولا يمكن تغيير حالته"
     }
   },
   "requests": {

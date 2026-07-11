@@ -1361,7 +1361,30 @@
     "popup": {
       "confirmRestore": "Вы хотите восстановить {{name}} ?",
       "restoreDescription": "Они будут перемещены в список соискателей объявления о вакансии",
-      "restoreSuccess": "Запрос успешно восстановлен"
+      "restoreSuccess": "Запрос успешно восстановлен",
+      "approve": "Одобрить",
+      "reject": "Отклонить",
+      "approveSuccess": "Успешно одобрено",
+      "approveError": "Ошибка при одобрении",
+      "rejectSuccess": "Успешно отклонено",
+      "rejectError": "Ошибка при отклонении"
+    },
+    "earlyLeave": {
+      "detailsTitle": "Детали запроса на ранний уход",
+      "applicant": "Имя сотрудника",
+      "requestDate": "Дата запроса",
+      "time": "Время",
+      "duration": "Продолжительность",
+      "status": "Статус",
+      "previewRequest": "Предпросмотр запроса",
+      "earlyLeaveDuration": "Продолжительность раннего ухода",
+      "requestStatus": "Статус запроса",
+      "actions": "Действия",
+      "chooseStatus": "Выберите статус",
+      "pending": "В ожидании",
+      "approved": "Одобрено",
+      "rejected": "Отклонено",
+      "alreadyProcessed": "Этот запрос уже {{status}} и не может быть изменен"
     }
   },
   "requests": {

@@ -1457,7 +1457,30 @@
     "popup": {
       "confirmRestore": "Do you want to restore {{name}} ?",
       "restoreDescription": "They will be moved to the job announcement applicants list",
-      "restoreSuccess": "Request restored successfully"
+      "restoreSuccess": "Request restored successfully",
+      "approve": "Approve",
+      "reject": "Reject",
+      "approveSuccess": "Approved successfully",
+      "approveError": "Error approving request",
+      "rejectSuccess": "Rejected successfully",
+      "rejectError": "Error rejecting request"
+    },
+    "earlyLeave": {
+      "detailsTitle": "Early Leave Request Details",
+      "applicant": "Employee Name",
+      "requestDate": "Request Date",
+      "time": "Time",
+      "duration": "Duration",
+      "status": "Status",
+      "previewRequest": "Preview Request",
+      "earlyLeaveDuration": "Early Leave Duration",
+      "requestStatus": "Request Status",
+      "actions": "Actions",
+      "chooseStatus": "Choose Status",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "alreadyProcessed": "This request has already been {{status}} and cannot be changed"
     }
   },
   "requests": {

@@ -1361,7 +1361,30 @@
     "popup": {
       "confirmRestore": "Möchten Sie {{name}} wiederherstellen ?",
       "restoreDescription": "Sie werden in die Kandidatenliste der Stellenausschreibung verschoben",
-      "restoreSuccess": "Anfrage erfolgreich wiederhergestellt"
+      "restoreSuccess": "Anfrage erfolgreich wiederhergestellt",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "approveSuccess": "Erfolgreich genehmigt",
+      "approveError": "Fehler beim Genehmigen",
+      "rejectSuccess": "Erfolgreich abgelehnt",
+      "rejectError": "Fehler beim Ablehnen"
+    },
+    "earlyLeave": {
+      "detailsTitle": "Details der Anfrage zum frühen Verlassen",
+      "applicant": "Name des Mitarbeiters",
+      "requestDate": "Anfragedatum",
+      "time": "Zeit",
+      "duration": "Dauer",
+      "status": "Status",
+      "previewRequest": "Anfrage in der Vorschau anzeigen",
+      "earlyLeaveDuration": "Dauer des frühen Verlassens",
+      "requestStatus": "Anfragestatus",
+      "actions": "Aktionen",
+      "chooseStatus": "Status auswählen",
+      "pending": "Ausstehend",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "alreadyProcessed": "Diese Anfrage wurde bereits {{status}} und kann nicht geändert werden"
     }
   },
   "requests": {

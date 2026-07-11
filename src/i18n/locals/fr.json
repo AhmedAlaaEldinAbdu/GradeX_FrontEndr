@@ -1361,7 +1361,30 @@
     "popup": {
       "confirmRestore": "Voulez-vous restaurer {{name}} ?",
       "restoreDescription": "Ils seront déplacés vers la liste des candidats à l'annonce d'emploi",
-      "restoreSuccess": "Demande restaurée avec succès"
+      "restoreSuccess": "Demande restaurée avec succès",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "approveSuccess": "Approuvé avec succès",
+      "approveError": "Erreur lors de l'approbation",
+      "rejectSuccess": "Rejeté avec succès",
+      "rejectError": "Erreur lors du rejet"
+    },
+    "earlyLeave": {
+      "detailsTitle": "Détails de la demande de départ précoce",
+      "applicant": "Nom de l'employé",
+      "requestDate": "Date de la demande",
+      "time": "Heure",
+      "duration": "Durée",
+      "status": "Statut",
+      "previewRequest": "Aperçu de la demande",
+      "earlyLeaveDuration": "Durée du départ précoce",
+      "requestStatus": "Statut de la demande",
+      "actions": "Actions",
+      "chooseStatus": "Choisir le statut",
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "alreadyProcessed": "Cette demande a déjà été {{status}} et ne peut pas être modifiée"
     }
   },
   "requests": {
