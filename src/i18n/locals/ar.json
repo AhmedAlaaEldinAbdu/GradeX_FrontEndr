@@ -1483,6 +1483,11 @@
       "alreadyProcessed": "هذا الطلب تم {{status}} بالفعل ولا يمكن تغيير حالته"
     },
     "leave": {
+      "detailsTitle": "طلب إجازة",
+      "statusLabel": "حالة الطلب",
+      "employeeName": "اسم المعلم",
+      "requestDate": "تاريخ الطلب",
+      "time": "الوقت",
       "searchPlaceholder": "ابحث عن اسم الموظف",
       "columns": {
         "previewRequest": "معاينة الطلب",
@@ -1503,6 +1508,16 @@
         "pending": "قيد الانتظار",
         "approved": "موافقة",
         "rejected": "مرفوض"
+      },
+      "approvePopup": {
+        "title": "هل تريد قبول طلب الموظف؟",
+        "confirm": "تأكيد",
+        "success": "تم قبول الطلب بنجاح"
+      },
+      "rejectPopup": {
+        "title": "هل متأكد من رفض طلب الموظف نهائياً؟",
+        "confirm": "حذف",
+        "success": "تم رفض الطلب بنجاح"
       },
       "types": {
         "sick": "مرضية",

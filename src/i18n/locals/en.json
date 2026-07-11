@@ -1483,6 +1483,11 @@
       "alreadyProcessed": "This request has already been {{status}} and cannot be changed"
     },
     "leave": {
+      "detailsTitle": "Leave Request",
+      "statusLabel": "Request Status",
+      "employeeName": "Teacher Name",
+      "requestDate": "Request Date",
+      "time": "Time",
       "searchPlaceholder": "Search by employee name",
       "columns": {
         "previewRequest": "Request Preview",
@@ -1503,6 +1508,16 @@
         "pending": "Pending",
         "approved": "Approved",
         "rejected": "Rejected"
+      },
+      "approvePopup": {
+        "title": "Do you want to accept the employee's request?",
+        "confirm": "Confirm",
+        "success": "Request accepted successfully"
+      },
+      "rejectPopup": {
+        "title": "Are you sure you want to permanently reject the employee's request?",
+        "confirm": "Delete",
+        "success": "Request rejected successfully"
       },
       "types": {
         "sick": "Sick",

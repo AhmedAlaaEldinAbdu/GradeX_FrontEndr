@@ -1387,6 +1387,11 @@
       "alreadyProcessed": "Cette demande a déjà été {{status}} et ne peut pas être modifiée"
     },
     "leave": {
+      "detailsTitle": "Demande de congé",
+      "statusLabel": "Statut de la demande",
+      "employeeName": "Nom de l'enseignant",
+      "requestDate": "Date de la demande",
+      "time": "Heure",
       "searchPlaceholder": "Rechercher par nom d'employé",
       "columns": {
         "previewRequest": "Aperçu de la demande",
@@ -1407,6 +1412,16 @@
         "pending": "En attente",
         "approved": "Approuvé",
         "rejected": "Rejeté"
+      },
+      "approvePopup": {
+        "title": "Voulez-vous accepter la demande de l'employé ?",
+        "confirm": "Confirmer",
+        "success": "Demande acceptée avec succès"
+      },
+      "rejectPopup": {
+        "title": "Êtes-vous sûr de vouloir rejeter définitivement la demande de l'employé ?",
+        "confirm": "Supprimer",
+        "success": "Demande rejetée avec succès"
       },
       "types": {
         "sick": "Maladie",

@@ -1387,6 +1387,11 @@
       "alreadyProcessed": "Diese Anfrage wurde bereits {{status}} und kann nicht geändert werden"
     },
     "leave": {
+      "detailsTitle": "Urlaubsantrag",
+      "statusLabel": "Antragsstatus",
+      "employeeName": "Name des Lehrers",
+      "requestDate": "Antragsdatum",
+      "time": "Zeit",
       "searchPlaceholder": "Nach Mitarbeitername suchen",
       "columns": {
         "previewRequest": "Anfrage anzeigen",
@@ -1407,6 +1412,16 @@
         "pending": "Ausstehend",
         "approved": "Genehmigt",
         "rejected": "Abgelehnt"
+      },
+      "approvePopup": {
+        "title": "Möchten Sie den Antrag des Mitarbeiters annehmen?",
+        "confirm": "Bestätigen",
+        "success": "Antrag erfolgreich angenommen"
+      },
+      "rejectPopup": {
+        "title": "Sind Sie sicher, dass Sie den Antrag des Mitarbeiters endgültig ablehnen möchten?",
+        "confirm": "Löschen",
+        "success": "Antrag erfolgreich abgelehnt"
       },
       "types": {
         "sick": "Krankheit",
