@@ -21,6 +21,7 @@ import JobApplicationsTab from './components/JobApplicationsTab';
 import ArchiveApplicationsTab from './components/ArchiveApplicationsTab';
 import MessagesTab from './components/MessagesTab';
 import ScheduleInterviewTab from './components/ScheduleInterviewTab';
+import EarlyLeaveTab from './components/EarlyLeaveTab';
 import TeacherNotesTab from './components/TeacherNotesTab';
 
 const AdminRequestsPage: React.FC = () => {
@@ -72,7 +73,11 @@ const AdminRequestsPage: React.FC = () => {
       label: t('adminRequests.tabs.scheduleInterview'),
       content: <ScheduleInterviewTab />,
     },
-    // { id: 'early-leave', label: t('adminRequests.tabs.earlyLeave'), content: <TabPlaceholder /> },
+    {
+      id: 'early-leave',
+      label: t('adminRequests.tabs.earlyLeave'),
+      content: <EarlyLeaveTab />,
+    },
     // { id: 'leave', label: t('adminRequests.tabs.leave'), content: <TabPlaceholder /> },
     // {
     //   id: 'contract-authentication',
