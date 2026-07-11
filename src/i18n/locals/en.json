@@ -1481,6 +1481,34 @@
       "approved": "Approved",
       "rejected": "Rejected",
       "alreadyProcessed": "This request has already been {{status}} and cannot be changed"
+    },
+    "leave": {
+      "searchPlaceholder": "Search by employee name",
+      "columns": {
+        "previewRequest": "Request Preview",
+        "employeeName": "Employee Name",
+        "status": "Request Status",
+        "leaveType": "Leave Type",
+        "leaveDays": "Leave Days",
+        "leaveFrom": "Leave Date From",
+        "leaveTo": "Leave Date To",
+        "attachments": "Attachments"
+      },
+      "filters": {
+        "leaveType": "Leave Type",
+        "status": "Request Status",
+        "date": "Date"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "types": {
+        "sick": "Sick",
+        "annual": "Annual",
+        "emergency": "Emergency"
+      }
     }
   },
   "requests": {

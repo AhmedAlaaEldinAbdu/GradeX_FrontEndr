@@ -1385,6 +1385,34 @@
       "approved": "Genehmigt",
       "rejected": "Abgelehnt",
       "alreadyProcessed": "Diese Anfrage wurde bereits {{status}} und kann nicht geändert werden"
+    },
+    "leave": {
+      "searchPlaceholder": "Nach Mitarbeitername suchen",
+      "columns": {
+        "previewRequest": "Anfrage anzeigen",
+        "employeeName": "Name des Mitarbeiters",
+        "status": "Antragsstatus",
+        "leaveType": "Urlaubsart",
+        "leaveDays": "Anzahl der Urlaubstage",
+        "leaveFrom": "Urlaub von",
+        "leaveTo": "Urlaub bis",
+        "attachments": "Anhänge"
+      },
+      "filters": {
+        "leaveType": "Urlaubsart",
+        "status": "Antragsstatus",
+        "date": "Datum"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt"
+      },
+      "types": {
+        "sick": "Krankheit",
+        "annual": "Jahresurlaub",
+        "emergency": "Notfall"
+      }
     }
   },
   "requests": {

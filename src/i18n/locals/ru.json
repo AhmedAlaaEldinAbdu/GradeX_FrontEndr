@@ -1385,6 +1385,34 @@
       "approved": "Одобрено",
       "rejected": "Отклонено",
       "alreadyProcessed": "Этот запрос уже {{status}} и не может быть изменен"
+    },
+    "leave": {
+      "searchPlaceholder": "Поиск по имени сотрудника",
+      "columns": {
+        "previewRequest": "Просмотр заявки",
+        "employeeName": "Имя сотрудника",
+        "status": "Статус заявки",
+        "leaveType": "Тип отпуска",
+        "leaveDays": "Количество дней отпуска",
+        "leaveFrom": "Отпуск с",
+        "leaveTo": "Отпуск до",
+        "attachments": "Вложения"
+      },
+      "filters": {
+        "leaveType": "Тип отпуска",
+        "status": "Статус заявки",
+        "date": "Дата"
+      },
+      "status": {
+        "pending": "В ожидании",
+        "approved": "Одобрено",
+        "rejected": "Отклонено"
+      },
+      "types": {
+        "sick": "Больничный",
+        "annual": "Ежегодный",
+        "emergency": "Экстренный"
+      }
     }
   },
   "requests": {

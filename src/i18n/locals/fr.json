@@ -1385,6 +1385,34 @@
       "approved": "Approuvé",
       "rejected": "Rejeté",
       "alreadyProcessed": "Cette demande a déjà été {{status}} et ne peut pas être modifiée"
+    },
+    "leave": {
+      "searchPlaceholder": "Rechercher par nom d'employé",
+      "columns": {
+        "previewRequest": "Aperçu de la demande",
+        "employeeName": "Nom de l'employé",
+        "status": "Statut de la demande",
+        "leaveType": "Type de congé",
+        "leaveDays": "Nombre de jours de congé",
+        "leaveFrom": "Date de début du congé",
+        "leaveTo": "Date de fin du congé",
+        "attachments": "Pièces jointes"
+      },
+      "filters": {
+        "leaveType": "Type de congé",
+        "status": "Statut de la demande",
+        "date": "Date"
+      },
+      "status": {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "rejected": "Rejeté"
+      },
+      "types": {
+        "sick": "Maladie",
+        "annual": "Annuel",
+        "emergency": "Urgence"
+      }
     }
   },
   "requests": {

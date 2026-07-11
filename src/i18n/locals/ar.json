@@ -1481,6 +1481,34 @@
       "approved": "موافقة",
       "rejected": "مرفوض",
       "alreadyProcessed": "هذا الطلب تم {{status}} بالفعل ولا يمكن تغيير حالته"
+    },
+    "leave": {
+      "searchPlaceholder": "ابحث عن اسم الموظف",
+      "columns": {
+        "previewRequest": "معاينة الطلب",
+        "employeeName": "اسم الموظف",
+        "status": "حالة الطلب",
+        "leaveType": "نوع الإجازة",
+        "leaveDays": "عدد أيام الإجازة",
+        "leaveFrom": "تاريخ الإجازة من",
+        "leaveTo": "تاريخ الإجازة إلى",
+        "attachments": "المرفقات"
+      },
+      "filters": {
+        "leaveType": "نوع الإجازة",
+        "status": "حالة الطلب",
+        "date": "التاريخ"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "approved": "موافقة",
+        "rejected": "مرفوض"
+      },
+      "types": {
+        "sick": "مرضية",
+        "annual": "سنوية",
+        "emergency": "طارئة"
+      }
     }
   },
   "requests": {
