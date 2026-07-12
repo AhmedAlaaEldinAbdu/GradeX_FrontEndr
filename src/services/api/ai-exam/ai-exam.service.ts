@@ -3,12 +3,16 @@ import { axiosClient } from '@/lib/http';
 import AIExamEndpoints from '../endpoints/ai-exam-endpoints';
 import type {
   AIExamDashboardStatsQueryParams,
+  AIExamDetailsQueryParams,
   AIExamsListQueryParams,
   CreateAIExamRequest,
   CreateAIExamResponse,
   GenerateAIExamQuestionsRequest,
   GenerateAIExamQuestionsResponse,
   GetAIExamDashboardStatsResponse,
+  GetAIExamQuestionsStatsResponse,
+  GetAIExamResultsDistributionResponse,
+  GetAIExamSummaryResponse,
   GetAIExamsResponse,
 } from '../types/ai-exam.types';
 
@@ -71,6 +75,66 @@ export async function getAIExams(params: AIExamsListQueryParams): Promise<GetAIE
   return response.data;
 }
 
+export async function getAIExamSummary(
+  params: AIExamDetailsQueryParams
+): Promise<GetAIExamSummaryResponse> {
+  const response: AxiosResponse<GetAIExamSummaryResponse> = await axiosClient.get(
+    AIExamEndpoints.getExamSummary,
+    { params }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      data: null,
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
+
+export async function getAIExamQuestionsStats(
+  params: AIExamDetailsQueryParams
+): Promise<GetAIExamQuestionsStatsResponse> {
+  const response: AxiosResponse<GetAIExamQuestionsStatsResponse> = await axiosClient.get(
+    AIExamEndpoints.getExamQuestionsStats,
+    { params }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      data: [],
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
+
+export async function getAIExamResultsDistribution(
+  params: AIExamDetailsQueryParams
+): Promise<GetAIExamResultsDistributionResponse> {
+  const response: AxiosResponse<GetAIExamResultsDistributionResponse> = await axiosClient.get(
+    AIExamEndpoints.getExamResultsDistribution,
+    { params }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      data: [],
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
+
 export async function generateAIExamQuestions(
   data: GenerateAIExamQuestionsRequest
 ): Promise<GenerateAIExamQuestionsResponse> {
@@ -92,6 +156,9 @@ export async function createAIExam(data: CreateAIExamRequest): Promise<CreateAIE
 export const aiExamApiService = {
   getAIExamDashboardStats,
   getAIExams,
+  getAIExamSummary,
+  getAIExamQuestionsStats,
+  getAIExamResultsDistribution,
   generateAIExamQuestions,
   createAIExam,
 };

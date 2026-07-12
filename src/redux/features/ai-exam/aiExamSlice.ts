@@ -4,9 +4,13 @@ import aiExamApiService from '@/services/api/ai-exam/ai-exam.service';
 import type {
   AIExamDashboardStats,
   AIExamDashboardStatsQueryParams,
+  AIExamDetailsQueryParams,
   AIExamDetails,
   AIExamGeneratedQuestion,
   AIExamListItem,
+  AIExamQuestionStats,
+  AIExamResultsDistributionBucket,
+  AIExamSummary,
   AIExamsListData,
   AIExamsListQueryParams,
   CreateAIExamRequest,
@@ -16,6 +20,9 @@ import type {
 export interface AIExamState {
   exams: AIExamListItem[];
   dashboardStats: AIExamDashboardStats;
+  currentExamSummary: AIExamSummary | null;
+  examQuestionsStats: AIExamQuestionStats[];
+  examResultsDistribution: AIExamResultsDistributionBucket[];
   generatedQuestions: AIExamGeneratedQuestion[];
   createdExam: AIExamDetails | null;
   pagination: {
@@ -26,10 +33,16 @@ export interface AIExamState {
   };
   isLoadingDashboardStats: boolean;
   isLoadingList: boolean;
+  isLoadingExamSummary: boolean;
+  isLoadingExamQuestionsStats: boolean;
+  isLoadingExamResultsDistribution: boolean;
   isGenerating: boolean;
   isCreating: boolean;
   error: string | null;
   dashboardStatsError: string | null;
+  examSummaryError: string | null;
+  examQuestionsStatsError: string | null;
+  examResultsDistributionError: string | null;
   isInitialized: boolean;
 }
 
@@ -39,6 +52,9 @@ const initialState: AIExamState = {
     successRate: 0,
     activeExamsCount: 0,
   },
+  currentExamSummary: null,
+  examQuestionsStats: [],
+  examResultsDistribution: [],
   generatedQuestions: [],
   createdExam: null,
   pagination: {
@@ -49,10 +65,16 @@ const initialState: AIExamState = {
   },
   isLoadingDashboardStats: false,
   isLoadingList: false,
+  isLoadingExamSummary: false,
+  isLoadingExamQuestionsStats: false,
+  isLoadingExamResultsDistribution: false,
   isGenerating: false,
   isCreating: false,
   error: null,
   dashboardStatsError: null,
+  examSummaryError: null,
+  examQuestionsStatsError: null,
+  examResultsDistributionError: null,
   isInitialized: false,
 };
 
@@ -87,6 +109,54 @@ export const fetchAIExams = createAsyncThunk<AIExamsListData, AIExamsListQueryPa
     }
   }
 );
+
+export const fetchAIExamSummary = createAsyncThunk<
+  AIExamSummary | null,
+  AIExamDetailsQueryParams
+>('aiExam/fetchSummary', async (params, { rejectWithValue }) => {
+  try {
+    const response = await aiExamApiService.getAIExamSummary(params);
+    if (!response.isSuccess) {
+      return rejectWithValue(response.message || 'Failed to fetch AI exam summary');
+    }
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const fetchAIExamQuestionsStats = createAsyncThunk<
+  AIExamQuestionStats[],
+  AIExamDetailsQueryParams
+>('aiExam/fetchQuestionsStats', async (params, { rejectWithValue }) => {
+  try {
+    const response = await aiExamApiService.getAIExamQuestionsStats(params);
+    if (!response.isSuccess) {
+      return rejectWithValue(response.message || 'Failed to fetch AI exam questions stats');
+    }
+
+    return response.data ?? [];
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const fetchAIExamResultsDistribution = createAsyncThunk<
+  AIExamResultsDistributionBucket[],
+  AIExamDetailsQueryParams
+>('aiExam/fetchResultsDistribution', async (params, { rejectWithValue }) => {
+  try {
+    const response = await aiExamApiService.getAIExamResultsDistribution(params);
+    if (!response.isSuccess) {
+      return rejectWithValue(response.message || 'Failed to fetch AI exam results distribution');
+    }
+
+    return response.data ?? [];
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const generateAIExamQuestions = createAsyncThunk<
   AIExamGeneratedQuestion[],
@@ -129,6 +199,10 @@ const aiExamSlice = createSlice({
   reducers: {
     clearAIExamError: (state) => {
       state.error = null;
+      state.dashboardStatsError = null;
+      state.examSummaryError = null;
+      state.examQuestionsStatsError = null;
+      state.examResultsDistributionError = null;
     },
     clearGeneratedQuestions: (state) => {
       state.generatedQuestions = [];
@@ -188,6 +262,60 @@ const aiExamSlice = createSlice({
       .addCase(fetchAIExams.rejected, (state, action) => {
         state.isLoadingList = false;
         state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchAIExamSummary.pending, (state) => {
+        state.isLoadingExamSummary = true;
+        state.examSummaryError = null;
+        state.currentExamSummary = null;
+      })
+      .addCase(
+        fetchAIExamSummary.fulfilled,
+        (state, action: PayloadAction<AIExamSummary | null>) => {
+          state.isLoadingExamSummary = false;
+          state.currentExamSummary = action.payload;
+        }
+      )
+      .addCase(fetchAIExamSummary.rejected, (state, action) => {
+        state.isLoadingExamSummary = false;
+        state.examSummaryError = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchAIExamQuestionsStats.pending, (state) => {
+        state.isLoadingExamQuestionsStats = true;
+        state.examQuestionsStatsError = null;
+        state.examQuestionsStats = [];
+      })
+      .addCase(
+        fetchAIExamQuestionsStats.fulfilled,
+        (state, action: PayloadAction<AIExamQuestionStats[]>) => {
+          state.isLoadingExamQuestionsStats = false;
+          state.examQuestionsStats = action.payload;
+        }
+      )
+      .addCase(fetchAIExamQuestionsStats.rejected, (state, action) => {
+        state.isLoadingExamQuestionsStats = false;
+        state.examQuestionsStatsError = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchAIExamResultsDistribution.pending, (state) => {
+        state.isLoadingExamResultsDistribution = true;
+        state.examResultsDistributionError = null;
+        state.examResultsDistribution = [];
+      })
+      .addCase(
+        fetchAIExamResultsDistribution.fulfilled,
+        (state, action: PayloadAction<AIExamResultsDistributionBucket[]>) => {
+          state.isLoadingExamResultsDistribution = false;
+          state.examResultsDistribution = action.payload;
+        }
+      )
+      .addCase(fetchAIExamResultsDistribution.rejected, (state, action) => {
+        state.isLoadingExamResultsDistribution = false;
+        state.examResultsDistributionError = action.payload as string;
       });
 
     builder
