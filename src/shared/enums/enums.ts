@@ -209,3 +209,14 @@ export const ApplicantIdentityType = {
   ResidenceID: 2
 } as const;
 export type ApplicantIdentityType = (typeof ApplicantIdentityType)[keyof typeof ApplicantIdentityType];
+
+export const JobApplicationStatus = {
+  Accept: 1,           // مقبول
+  Reject: 2,           // مرفوض
+  Pending: 3,          // قيد المراجعة
+  Cancelled: 4,        // تم الالغاء
+  Archived: 5,         // مؤرشف
+  InterviewScheduled: 6 // تم تحديد مقابلة
+} as const;
+export type JobApplicationStatus = (typeof JobApplicationStatus)[keyof typeof JobApplicationStatus];
+
