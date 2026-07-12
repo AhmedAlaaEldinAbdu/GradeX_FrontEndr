@@ -13,7 +13,6 @@ import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
   fetchTeacherRequestsSummary,
-  fetchJobApplications,
 } from '@/redux/features/teacher-requests/teacherRequestsSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
@@ -35,9 +34,6 @@ const AdminRequestsPage: React.FC = () => {
   useEffect(() => {
     if (schoolBranchId) {
       dispatch(fetchTeacherRequestsSummary({ SchoolBranchId: schoolBranchId }));
-      dispatch(
-        fetchJobApplications({ SchoolBranchId: schoolBranchId, PageNumber: 1, PageSize: 10 })
-      );
     }
   }, [dispatch, schoolBranchId]);
 
