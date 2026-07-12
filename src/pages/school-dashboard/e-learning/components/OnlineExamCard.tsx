@@ -20,6 +20,8 @@ export type OnlineExamItem = {
   difficulty: ExamDifficulty;
   status: ExamStatus;
   title: string;
+  titleSuffix?: string;
+  titleDirection?: 'rtl' | 'ltr';
   stage: string;
   subject: string;
   studentsCount: number;
@@ -83,6 +85,7 @@ export default function OnlineExamCard({ exam }: { exam: OnlineExamItem }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const source = SOURCE_STYLES[exam.source];
+  const dateTimeText = [exam.date, exam.time].filter(Boolean).join(' - ');
 
   return (
     <div
@@ -104,12 +107,23 @@ export default function OnlineExamCard({ exam }: { exam: OnlineExamItem }) {
           <CustomImage src={source.icon} alt="" className="h-6 w-6" />
         </div>
 
-        <div className="flex flex-col gap-2 text-right">
+        <div className="flex min-w-0 flex-col gap-2 text-start">
           <span className={`text-sm font-normal ${source.labelClass}`}>
             {t(`eLearning.exams.sources.${exam.source}`)}
           </span>
-          <div className="flex items-center gap-3">
-            <span className="text-base font-normal text-[#0E1F1F]">{exam.title}</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span
+              dir={exam.titleDirection}
+              className="inline-flex flex-wrap items-center gap-1 text-base font-normal text-[#0E1F1F]"
+            >
+              <span>{exam.title}</span>
+              {exam.titleSuffix && (
+                <>
+                  <span>-</span>
+                  <span>{exam.titleSuffix}</span>
+                </>
+              )}
+            </span>
             <Badge variant={DIFFICULTY_VARIANT[exam.difficulty]} size="sm">
               {t(`eLearning.onlineExams.difficulty.${exam.difficulty}`)}
             </Badge>
@@ -124,7 +138,7 @@ export default function OnlineExamCard({ exam }: { exam: OnlineExamItem }) {
               icon={CompletedIcon}
               text={`${exam.completedCount} ${t('eLearning.onlineExams.completedExam')}`}
             />
-            <ExamMetaItem icon={CalendarIcon} text={`${exam.date} - ${exam.time}`} />
+            {dateTimeText && <ExamMetaItem icon={CalendarIcon} text={dateTimeText} />}
           </div>
         </div>
       </div>
