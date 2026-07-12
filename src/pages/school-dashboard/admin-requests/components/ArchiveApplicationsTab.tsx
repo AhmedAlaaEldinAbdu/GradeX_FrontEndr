@@ -67,7 +67,7 @@ const ArchiveApplicationsTab: React.FC = () => {
       YearsExperience: selectedExperience ? Number(selectedExperience) : undefined,
       QualificationId: selectedQualification || undefined,
       NationalityId: selectedNationality || undefined,
-      // Status: 3, // Archived status
+      ApplicationStatus: 8, // Archived status
     };
     dispatch(fetchJobApplications(params));
   }, [
