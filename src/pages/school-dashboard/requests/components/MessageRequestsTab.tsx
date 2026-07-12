@@ -51,6 +51,19 @@ const REQUEST_STATUS_TO_MESSAGE_STATUS: Record<StudentRequestStatus, MessageStat
   [StudentRequestStatus.Replied]: MessageStatus.Replied,
 };
 
+const normalizeMessageStatus = (status: MessageStatus | 0): MessageStatus => {
+  if (
+    status === MessageStatus.Pending ||
+    status === MessageStatus.Sent ||
+    status === MessageStatus.Viewed ||
+    status === MessageStatus.Replied
+  ) {
+    return status;
+  }
+
+  return MessageStatus.Pending;
+};
+
 const getParticipantProfilePath = (
   role: RequestParticipantRole | undefined,
   id: string | undefined
@@ -141,6 +154,7 @@ const MessageRequestsTab: React.FC = () => {
         const isToStudent = message.recivertype === MessageSenderType.Student;
         const sender = isFromStudent ? studentEndpoint : schoolEndpoint;
         const recipient = isToStudent ? studentEndpoint : schoolEndpoint;
+        const messageStatus = normalizeMessageStatus(message.messageStatus);
 
         return {
           id: message.messageId,
@@ -155,7 +169,7 @@ const MessageRequestsTab: React.FC = () => {
           recipientId: recipient.id,
           recipientParticipants: recipient.participants,
           messageContent: message.message,
-          status: MESSAGE_STATUS_TO_REQUEST_STATUS[message.messageStatus],
+          status: MESSAGE_STATUS_TO_REQUEST_STATUS[messageStatus],
           type: StudentRequestType.Messages,
           created: message.createdAt,
           isFromStudent,
