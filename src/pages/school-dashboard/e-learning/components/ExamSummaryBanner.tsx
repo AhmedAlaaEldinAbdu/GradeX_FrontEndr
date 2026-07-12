@@ -33,6 +33,7 @@ function StatBox({
 
 export default function ExamSummaryBanner({ exam }: { exam: ExamDetailsItem }) {
   const { t } = useTranslation();
+  const dateTimeText = [exam.date, exam.time].filter(Boolean).join(' - ');
 
   const stats = [
     {
@@ -71,16 +72,31 @@ export default function ExamSummaryBanner({ exam }: { exam: ExamDetailsItem }) {
             className="border-[#DFAFAF] text-[#DD0417]"
           />
         </div>
-        <h3 className="text-base font-medium text-[#0E1F1F]">{exam.fullTitle}</h3>
+        <h3 className="text-base font-medium text-[#0E1F1F]">
+          <span
+            dir={exam.titleDirection}
+            className="inline-flex flex-wrap items-center gap-1 text-start"
+          >
+            <span>{exam.fullTitle}</span>
+            {exam.fullTitleSuffix && (
+              <>
+                <span>-</span>
+                <span>{exam.fullTitleSuffix}</span>
+              </>
+            )}
+          </span>
+        </h3>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-normal text-[#646969]">
           <span className="flex items-center gap-2">
             <CustomImage src={InstituteIcon} alt="" className="h-4 w-4" />
             {exam.stage}
           </span>
-          <span className="flex items-center gap-2">
-            <CustomImage src={CalendarIcon} alt="" className="h-4 w-4" />
-            {exam.date} - {exam.time}
-          </span>
+          {dateTimeText && (
+            <span className="flex items-center gap-2">
+              <CustomImage src={CalendarIcon} alt="" className="h-4 w-4" />
+              {dateTimeText}
+            </span>
+          )}
         </div>
       </div>
 
