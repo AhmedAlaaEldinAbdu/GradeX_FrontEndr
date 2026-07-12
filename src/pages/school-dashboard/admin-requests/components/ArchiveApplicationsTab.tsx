@@ -184,21 +184,9 @@ const ArchiveApplicationsTab: React.FC = () => {
       className: 'text-center',
     },
     {
-      header: 'adminRequests.jobApplication.columns.country',
-      accessor: (row) => <span className="text-gray-700">{row.country}</span>,
-      headerClassName: 'min-w-[100px] text-center',
-      className: 'text-center',
-    },
-    {
       header: 'adminRequests.jobApplication.columns.nationality',
       accessor: (row) => <span className="text-gray-700">{row.nationality}</span>,
       headerClassName: 'min-w-[110px] text-center',
-      className: 'text-center',
-    },
-    {
-      header: 'adminRequests.jobApplication.columns.address',
-      accessor: (row) => <span className="text-gray-700">{row.address}</span>,
-      headerClassName: 'min-w-[180px] text-center',
       className: 'text-center',
     },
     {
