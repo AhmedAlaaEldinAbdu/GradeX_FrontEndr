@@ -7,6 +7,7 @@ export const AIExamEndpoints = {
   getExamSummary: `${AIExam}/GetExamSummary`,
   getExamQuestionsStats: `${AIExam}/GetExamQuestionsStats`,
   getExamResultsDistribution: `${AIExam}/GetExamResultsDistribution`,
+  getExamStudentsResults: `${AIExam}/GetExamStudentsResults`,
   generateQuestions: `${AIExam}/GenerateAIExamQuestions`,
 };
 

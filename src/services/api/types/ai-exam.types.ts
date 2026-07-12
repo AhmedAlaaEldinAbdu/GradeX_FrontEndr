@@ -134,11 +134,35 @@ export interface AIExamResultsDistributionBucket {
   studentsCount: number;
 }
 
+export interface AIExamStudentsResultsQueryParams extends AIExamDetailsQueryParams {
+  Rating?: string;
+  Search?: string;
+  PageNumber?: number;
+  PageSize?: number;
+}
+
+export interface AIExamStudentResult {
+  studentId: string;
+  studentName: string;
+  rating: string | null;
+  score: number | null;
+  timeMinutes: number;
+}
+
+export interface AIExamStudentsResultsData {
+  students: AIExamStudentResult[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
 export type GetAIExamSummaryResponse = AIExamApiEnvelope<AIExamSummary | null>;
 export type GetAIExamQuestionsStatsResponse = AIExamApiEnvelope<AIExamQuestionStats[]>;
 export type GetAIExamResultsDistributionResponse = AIExamApiEnvelope<
   AIExamResultsDistributionBucket[]
 >;
+export type GetAIExamStudentsResultsResponse = AIExamApiEnvelope<AIExamStudentsResultsData>;
 
 // ============================================================================
 // Question models
