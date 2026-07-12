@@ -1,13 +1,17 @@
-import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
-import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
+import DataTable, {
+  type DataTableColumn,
+  type FilterConfig,
+  type PaginationData,
+} from '@/shared/components/DataTable';
+import ErrorMessage from '@/shared/components/ErrorMessage';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import { EXAM_STUDENTS, type ExamStudentItem, type StudentGrade } from './examDetailsData';
+import type { ExamStudentItem, StudentGrade } from './examDetailsData';
 
 const GRADE_VARIANT: Record<StudentGrade, 'success' | 'info' | 'warning' | 'danger'> = {
   'A+': 'success',
@@ -22,6 +26,15 @@ const GRADE_COLOR: Record<StudentGrade, string> = {
   C: '#F8951B',
   D: '#DD0417',
 };
+
+const isStudentGrade = (value: string): value is StudentGrade =>
+  value === 'A+' || value === 'B' || value === 'C' || value === 'D';
+
+const getGradeVariant = (grade: string): 'success' | 'info' | 'warning' | 'danger' | 'default' =>
+  isStudentGrade(grade) ? GRADE_VARIANT[grade] : 'default';
+
+const getGradeColor = (grade: string): string =>
+  isStudentGrade(grade) ? GRADE_COLOR[grade] : '#646969';
 
 /** Tints the monochrome eye icon to a dynamic colour via a CSS mask (keeps the SVG file untouched). */
 function EyeButton({
@@ -59,24 +72,38 @@ function EyeButton({
   );
 }
 
-export default function ExamStudentsList() {
+type ExamStudentsListProps = {
+  students: ExamStudentItem[];
+  isLoading?: boolean;
+  error?: string | null;
+  search: string;
+  rating: string;
+  pagination?: PaginationData;
+  onSearchChange: (value: string) => void;
+  onRatingChange: (value: string) => void;
+  onPageChange: (page: number) => void;
+  onResetFilters: () => void;
+  onRetry?: () => void;
+};
+
+export default function ExamStudentsList({
+  students,
+  isLoading = false,
+  error,
+  search,
+  rating,
+  pagination,
+  onSearchChange,
+  onRatingChange,
+  onPageChange,
+  onResetFilters,
+  onRetry,
+}: ExamStudentsListProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  const [search, setSearch] = useState('');
-  const [rating, setRating] = useState('');
-
   const openReview = (studentId: string) => navigate(`/lms/online-exams/${id}/review/${studentId}`);
-
-  const filteredStudents = useMemo(
-    () =>
-      EXAM_STUDENTS.filter(
-        (student) =>
-          (!search || student.name.includes(search)) && (!rating || student.grade === rating)
-      ),
-    [search, rating]
-  );
 
   const columns: DataTableColumn<ExamStudentItem>[] = [
     {
@@ -114,10 +141,13 @@ export default function ExamStudentsList() {
     {
       header: 'eLearning.onlineExams.details.studentsTable.grade',
       accessor: (row) =>
-        row.score == null || row.grade == null ? (
+        row.score == null ? (
           <span className="font-medium text-[#646969]">--</span>
         ) : (
-          <span className="font-medium" style={{ color: GRADE_COLOR[row.grade] }}>
+          <span
+            className="font-medium"
+            style={{ color: row.grade ? getGradeColor(row.grade) : '#646969' }}
+          >
             {row.score}
             <span className="text-[#646969]">/100</span>
           </span>
@@ -131,7 +161,7 @@ export default function ExamStudentsList() {
         row.grade == null ? (
           <span className="font-medium text-[#646969]">--</span>
         ) : (
-          <Badge variant={GRADE_VARIANT[row.grade]} size="sm">
+          <Badge variant={getGradeVariant(row.grade)} size="sm">
             {row.grade}
           </Badge>
         ),
@@ -156,7 +186,7 @@ export default function ExamStudentsList() {
       name: 'student-search',
       placeholder: t('eLearning.onlineExams.details.studentsTable.searchPlaceholder'),
       value: search,
-      onChange: (value) => setSearch(value as string),
+      onChange: (value) => onSearchChange(value as string),
       width: '40%',
     },
     {
@@ -164,7 +194,7 @@ export default function ExamStudentsList() {
       name: 'student-rating',
       placeholder: t('eLearning.onlineExams.details.studentsTable.rating'),
       value: rating,
-      onChange: (value) => setRating(value as string),
+      onChange: (value) => onRatingChange(value as string),
       options: [
         { value: 'A+', label: 'A+' },
         { value: 'B', label: 'B' },
@@ -177,20 +207,24 @@ export default function ExamStudentsList() {
 
   return (
     <Card className="overflow-hidden rounded-3xl border border-[#DDE0E0]" padding="md">
-      <DataTable
-        data={filteredStudents}
-        columns={columns}
-        keyExtractor={(row) => row.id}
-        filters={filterConfigs}
-        showFilters={true}
-        onResetFilters={() => {
-          setSearch('');
-          setRating('');
-        }}
-        floatingActions={false}
-        emptyMessage={t('common.noDataFound')}
-        t={t}
-      />
+      {error && !isLoading ? (
+        <ErrorMessage message="common.errorOccurred" details={error} onRetry={onRetry} />
+      ) : (
+        <DataTable
+          data={students}
+          columns={columns}
+          keyExtractor={(row) => row.id}
+          filters={filterConfigs}
+          showFilters={true}
+          onResetFilters={onResetFilters}
+          pagination={pagination}
+          onPageChange={onPageChange}
+          isLoading={isLoading}
+          floatingActions={false}
+          emptyMessage="common.noDataFound"
+          t={t}
+        />
+      )}
     </Card>
   );
 }
