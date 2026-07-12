@@ -7,6 +7,8 @@ export type ExamDetailsItem = {
   source: ExamSource;
   difficulty: ExamDifficulty;
   fullTitle: string;
+  fullTitleSuffix?: string;
+  titleDirection?: 'rtl' | 'ltr';
   stage: string;
   date: string;
   time: string;
