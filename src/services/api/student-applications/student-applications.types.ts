@@ -6,7 +6,6 @@ export const StudentApplicationStatus = {
   Edited: 5, // تم التعديل
   InterviewScheduled: 6, // تم تحديد مقابلة
   Cancelled: 7, // ملغي
-  Archived: 8, // مؤرشف
 } as const;
 
 export type StudentApplicationStatus =
