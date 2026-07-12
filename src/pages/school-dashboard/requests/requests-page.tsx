@@ -37,6 +37,7 @@ const RequestsPage: React.FC = () => {
   const { stats: applicationStats } = useAppSelector((state) => state.studentApplications);
   const { stats: earlyLeaveStats } = useAppSelector((state) => state.studentRequestEarlyLeave);
   const { stats: messageStats } = useAppSelector((state) => state.schoolMessages);
+  const reminderTotal = useAppSelector((state) => state.requestAppointments.pagination.totalItems);
 
   // Get current tab from URL, default to 'applications'
   const currentTab = searchParams.get('tab') || 'applications';
@@ -123,6 +124,7 @@ const RequestsPage: React.FC = () => {
         iconClassName: 'bg-[#E8F4EE]',
       },
     ],
+    reminder: [totalMetricCard(reminderTotal)],
   };
 
   const metricCards = metricCardsByTab[currentTab] ?? [
