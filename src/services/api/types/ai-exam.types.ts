@@ -90,6 +90,57 @@ export interface AIExamDashboardStats {
 export type GetAIExamDashboardStatsResponse = AIExamApiEnvelope<AIExamDashboardStats>;
 
 // ============================================================================
+// Exam details
+// ============================================================================
+
+export interface AIExamDetailsQueryParams {
+  ExamId: string;
+}
+
+export interface AIExamSummary {
+  examId: string;
+  titleAr: string;
+  titleEn: string;
+  topic?: string | null;
+  status: AIExamStatus | number;
+  difficulty: AIExamDifficulty | number;
+  isAIGenerated: boolean;
+  gradeName?: string | null;
+  stageName?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  successRate: number;
+  averageTimeMinutes: number;
+  questionsCount: number;
+  attendedCount: number;
+  assignedCount: number;
+  comparedToPreviousExamPercentage?: number | null;
+}
+
+export interface AIExamQuestionStats {
+  questionId: string;
+  order: number;
+  text: string;
+  difficulty: AIExamDifficulty | number;
+  successRate: number;
+  averageTimeSeconds: number;
+  correctAnswersCount: number;
+  wrongAnswersCount: number;
+}
+
+export interface AIExamResultsDistributionBucket {
+  rangeFrom: number;
+  rangeTo: number;
+  studentsCount: number;
+}
+
+export type GetAIExamSummaryResponse = AIExamApiEnvelope<AIExamSummary | null>;
+export type GetAIExamQuestionsStatsResponse = AIExamApiEnvelope<AIExamQuestionStats[]>;
+export type GetAIExamResultsDistributionResponse = AIExamApiEnvelope<
+  AIExamResultsDistributionBucket[]
+>;
+
+// ============================================================================
 // Question models
 // ============================================================================
 
