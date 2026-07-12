@@ -1,10 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
+import ErrorMessage from '@/shared/components/ErrorMessage';
+import Loading from '@/shared/components/Loading';
+import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import CompletedIcon from '@gradex/assets/icons/CompletedGreen.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
-import { EXAM_QUESTIONS, type ExamQuestionItem } from './examDetailsData';
+import type { ExamQuestionItem } from './examDetailsData';
 import type { ExamDifficulty } from './OnlineExamCard';
 
 const DIFFICULTY_VARIANT: Record<ExamDifficulty, 'success' | 'warning' | 'danger'> = {
@@ -104,10 +107,34 @@ function QuestionCard({ question }: { question: ExamQuestionItem }) {
   );
 }
 
-export default function ExamQuestionsList() {
+type ExamQuestionsListProps = {
+  questions: ExamQuestionItem[];
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
+};
+
+export default function ExamQuestionsList({
+  questions,
+  isLoading = false,
+  error,
+  onRetry,
+}: ExamQuestionsListProps) {
+  if (error && !isLoading) {
+    return <ErrorMessage message="common.errorOccurred" details={error} onRetry={onRetry} />;
+  }
+
+  if (isLoading && questions.length === 0) {
+    return <Loading />;
+  }
+
+  if (questions.length === 0) {
+    return <NotFoundMessage message="eLearning.onlineExams.details.questionsEmpty" />;
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      {EXAM_QUESTIONS.map((question) => (
+    <div className={isLoading ? 'flex flex-col gap-4 opacity-60' : 'flex flex-col gap-4'}>
+      {questions.map((question) => (
         <QuestionCard key={question.id} question={question} />
       ))}
     </div>
