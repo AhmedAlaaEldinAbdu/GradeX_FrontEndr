@@ -40,7 +40,7 @@ const WORK_TYPE_LABEL: Record<WorkType, string> = {
   [WorkType.Part]: 'adminRequests.workType.part',
 };
 
-const ArchiveApplicationsTab: React.FC = () => {
+const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -82,8 +82,10 @@ const ArchiveApplicationsTab: React.FC = () => {
   ]);
 
   useEffect(() => {
-    loadApplications();
-  }, [loadApplications]);
+    if (isActive) {
+      loadApplications();
+    }
+  }, [isActive, loadApplications]);
 
   const data = useMemo(() => jobApplications.map(mapJobApplication), [jobApplications]);
 
