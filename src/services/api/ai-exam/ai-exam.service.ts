@@ -2,13 +2,38 @@ import type { AxiosResponse } from 'axios';
 import { axiosClient } from '@/lib/http';
 import AIExamEndpoints from '../endpoints/ai-exam-endpoints';
 import type {
+  AIExamDashboardStatsQueryParams,
   AIExamsListQueryParams,
   CreateAIExamRequest,
   CreateAIExamResponse,
   GenerateAIExamQuestionsRequest,
   GenerateAIExamQuestionsResponse,
+  GetAIExamDashboardStatsResponse,
   GetAIExamsResponse,
 } from '../types/ai-exam.types';
+
+export async function getAIExamDashboardStats(
+  params: AIExamDashboardStatsQueryParams
+): Promise<GetAIExamDashboardStatsResponse> {
+  const response: AxiosResponse<GetAIExamDashboardStatsResponse> = await axiosClient.get(
+    AIExamEndpoints.getDashboardStats,
+    { params }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      data: {
+        successRate: 0,
+        activeExamsCount: 0,
+      },
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
 
 export async function getAIExams(params: AIExamsListQueryParams): Promise<GetAIExamsResponse> {
   const response: AxiosResponse<GetAIExamsResponse> = await axiosClient.get(
@@ -65,6 +90,7 @@ export async function createAIExam(data: CreateAIExamRequest): Promise<CreateAIE
 }
 
 export const aiExamApiService = {
+  getAIExamDashboardStats,
   getAIExams,
   generateAIExamQuestions,
   createAIExam,

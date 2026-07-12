@@ -75,6 +75,21 @@ export interface AIExamsListData {
 export type GetAIExamsResponse = AIExamApiEnvelope<AIExamsListData>;
 
 // ============================================================================
+// Dashboard stats
+// ============================================================================
+
+export interface AIExamDashboardStatsQueryParams {
+  SchoolBranchId: string;
+}
+
+export interface AIExamDashboardStats {
+  successRate: number;
+  activeExamsCount: number;
+}
+
+export type GetAIExamDashboardStatsResponse = AIExamApiEnvelope<AIExamDashboardStats>;
+
+// ============================================================================
 // Question models
 // ============================================================================
 

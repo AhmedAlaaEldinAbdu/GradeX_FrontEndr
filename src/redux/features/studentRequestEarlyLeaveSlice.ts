@@ -4,6 +4,7 @@ import { studentRequestEarlyLeaveApiService } from '@/services/api/requests/stud
 import { EarlyLeaveStatus } from '@/services/api/requests/requests.types';
 import type {
   EarlyLeaveRequestDto,
+  EarlyLeaveStatusCount,
   StudentEarlyLeaveRequestsListResponse,
   StudentEarlyLeaveRequestsQueryParams,
   UpdateStudentEarlyLeaveRequest,
@@ -17,6 +18,10 @@ interface StudentRequestEarlyLeaveState {
     pageSize: number;
     totalItems: number;
     totalPages: number;
+  };
+  stats: {
+    totalRequests: number;
+    statusCounts: EarlyLeaveStatusCount[];
   };
   isLoading: boolean;
   isDetailsLoading: boolean;
@@ -32,6 +37,10 @@ const initialState: StudentRequestEarlyLeaveState = {
     pageSize: 10,
     totalItems: 0,
     totalPages: 0,
+  },
+  stats: {
+    totalRequests: 0,
+    statusCounts: [],
   },
   isLoading: false,
   isDetailsLoading: false,
@@ -122,6 +131,23 @@ export const updateStudentEarlyLeaveRequest = createAsyncThunk<
   }
 });
 
+const updateStatusCount = (
+  statusCounts: EarlyLeaveStatusCount[],
+  status: EarlyLeaveStatus,
+  delta: number
+) => {
+  const existingStatusCount = statusCounts.find((item) => item.status === status);
+
+  if (existingStatusCount) {
+    existingStatusCount.count = Math.max(0, existingStatusCount.count + delta);
+    return;
+  }
+
+  if (delta > 0) {
+    statusCounts.push({ status, count: delta });
+  }
+};
+
 const studentRequestEarlyLeaveSlice = createSlice({
   name: 'studentRequestEarlyLeave',
   initialState,
@@ -149,6 +175,10 @@ const studentRequestEarlyLeaveSlice = createSlice({
             pageSize: action.payload.pageSize,
             totalItems: action.payload.totalItems,
             totalPages: action.payload.totalPages,
+          };
+          state.stats = {
+            totalRequests: action.payload.totalRequests,
+            statusCounts: action.payload.statusCounts,
           };
         }
       )
@@ -180,6 +210,13 @@ const studentRequestEarlyLeaveSlice = createSlice({
         (state, action: PayloadAction<string>) => {
           state.isUpdating = false;
           const id = action.payload;
+          const previousRequest = state.requests.find((request) => request.id === id);
+
+          if (previousRequest && previousRequest.status !== EarlyLeaveStatus.Accepted) {
+            updateStatusCount(state.stats.statusCounts, previousRequest.status, -1);
+            updateStatusCount(state.stats.statusCounts, EarlyLeaveStatus.Accepted, 1);
+          }
+
           state.requests = state.requests.map((request) =>
             request.id === id ? { ...request, status: EarlyLeaveStatus.Accepted } : request
           );
@@ -202,6 +239,13 @@ const studentRequestEarlyLeaveSlice = createSlice({
       .addCase(deleteStudentEarlyLeaveRequest.fulfilled, (state, action: PayloadAction<string>) => {
         state.isUpdating = false;
         const id = action.payload;
+        const removedRequest = state.requests.find((request) => request.id === id);
+
+        if (removedRequest) {
+          updateStatusCount(state.stats.statusCounts, removedRequest.status, -1);
+          state.stats.totalRequests = Math.max(0, state.stats.totalRequests - 1);
+        }
+
         state.requests = state.requests.filter((request) => request.id !== id);
         if (state.currentRequest?.id === id) {
           state.currentRequest = null;
@@ -221,6 +265,14 @@ const studentRequestEarlyLeaveSlice = createSlice({
         (state, action: PayloadAction<EarlyLeaveRequestDto>) => {
           state.isUpdating = false;
           const updatedRequest = action.payload;
+          const previousRequest = state.requests.find(
+            (request) => request.id === updatedRequest.id
+          );
+
+          if (previousRequest && previousRequest.status !== updatedRequest.status) {
+            updateStatusCount(state.stats.statusCounts, previousRequest.status, -1);
+            updateStatusCount(state.stats.statusCounts, updatedRequest.status, 1);
+          }
 
           state.requests = state.requests.map((request) =>
             request.id === updatedRequest.id

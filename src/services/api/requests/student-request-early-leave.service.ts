@@ -6,6 +6,7 @@ import type {
   CreateStudentEarlyLeaveRequest,
   EarlyLeaveRequestDto,
   EarlyLeaveStatus,
+  EarlyLeaveStatusCount,
   StudentEarlyLeaveRequestApiDto,
   StudentEarlyLeaveRequestsListResponse,
   StudentEarlyLeaveRequestsQueryParams,
@@ -24,10 +25,16 @@ type ListPayload = {
   TotalPages?: number;
   totalItems?: number;
   TotalItems?: number;
+  totalRequests?: number;
+  TotalRequests?: number;
   totalCount?: number;
   TotalCount?: number;
   pageSize?: number;
   PageSize?: number;
+  statusCounts?: unknown[];
+  StatusCounts?: unknown[];
+  requestEarlyLeaves?: StudentEarlyLeaveRequestApiDto[];
+  RequestEarlyLeaves?: StudentEarlyLeaveRequestApiDto[];
   studentRequestEarlyLeaves?: StudentEarlyLeaveRequestApiDto[];
   StudentRequestEarlyLeaves?: StudentEarlyLeaveRequestApiDto[];
   studentRequestEarlyLeaveDtos?: StudentEarlyLeaveRequestApiDto[];
@@ -90,6 +97,8 @@ const CLASSROOM_KEYS = [
 ];
 
 const LIST_KEYS = [
+  'requestEarlyLeaves',
+  'RequestEarlyLeaves',
   'studentRequestEarlyLeaves',
   'StudentRequestEarlyLeaves',
   'studentRequestEarlyLeaveDtos',
@@ -172,7 +181,7 @@ const pickNumber = (source: UnknownRecord, keys: string[]): number | null => {
   return null;
 };
 
-const normalizeStatus = (status: unknown): EarlyLeaveStatus => {
+const toEarlyLeaveStatus = (status: unknown): EarlyLeaveStatus | null => {
   const numericStatus = Number(status);
   if (
     numericStatus === EarlyLeaveStatusValues.Pending ||
@@ -181,7 +190,33 @@ const normalizeStatus = (status: unknown): EarlyLeaveStatus => {
   ) {
     return numericStatus;
   }
+  return null;
+};
+
+const normalizeStatus = (status: unknown): EarlyLeaveStatus => {
+  const earlyLeaveStatus = toEarlyLeaveStatus(status);
+  if (earlyLeaveStatus) return earlyLeaveStatus;
   return EarlyLeaveStatusValues.Pending;
+};
+
+const extractStatusCounts = (payload: unknown): EarlyLeaveStatusCount[] => {
+  const data = asRecord(payload);
+  const rawStatusCounts = getValue(data, ['statusCounts', 'StatusCounts']);
+
+  if (!Array.isArray(rawStatusCounts)) return [];
+
+  return rawStatusCounts.reduce<EarlyLeaveStatusCount[]>((statusCounts, item) => {
+    const source = asRecord(item);
+    const status = toEarlyLeaveStatus(
+      getValue(source, ['status', 'Status', 'requestStatus', 'RequestStatus'])
+    );
+    const count = pickNumber(source, ['count', 'Count']);
+
+    if (!status || count === null) return statusCounts;
+
+    statusCounts.push({ status, count: Math.max(0, count) });
+    return statusCounts;
+  }, []);
 };
 
 const formatDate = (value: string | null): string => {
@@ -411,18 +446,29 @@ const buildListResponse = (
   const data = asRecord(payload) as ListPayload;
   const items = extractItems(payload);
   const requests = items.map(mapEarlyLeaveRequest);
+  const totalRequests =
+    pickNumber(data, [
+      'totalRequests',
+      'TotalRequests',
+      'totalItems',
+      'TotalItems',
+      'totalCount',
+      'TotalCount',
+    ]) ?? requests.length;
 
   return {
     requests,
+    totalRequests,
+    statusCounts: extractStatusCounts(payload),
     pageIndex:
       pickNumber(data, ['pageIndex', 'PageIndex', 'pageNumber', 'PageNumber']) ??
       params?.PageNumber ??
       1,
     totalPages:
       pickNumber(data, ['totalPages', 'TotalPages']) ??
-      Math.max(1, Math.ceil(requests.length / (params?.PageSize ?? 10))),
+      Math.max(1, Math.ceil(totalRequests / (params?.PageSize ?? 10))),
     totalItems:
-      pickNumber(data, ['totalItems', 'TotalItems', 'totalCount', 'TotalCount']) ?? requests.length,
+      pickNumber(data, ['totalItems', 'TotalItems', 'totalCount', 'TotalCount']) ?? totalRequests,
     pageSize: pickNumber(data, ['pageSize', 'PageSize']) ?? params?.PageSize ?? 10,
   };
 };

@@ -35,6 +35,18 @@ const PAGE_SIZE = 10;
 
 type ConfirmState = { type: 'approve' | 'delete'; request: EarlyLeaveRequestDto } | null;
 
+const STATUS_BADGE_CLASSES: Record<EarlyLeaveStatus, string> = {
+  [EarlyLeaveStatus.Pending]: 'bg-orange-100 text-orange-700',
+  [EarlyLeaveStatus.Accepted]: 'bg-green-100 text-green-700',
+  [EarlyLeaveStatus.Rejected]: 'bg-red-100 text-red-700',
+};
+
+const STATUS_LABEL_KEYS: Record<EarlyLeaveStatus, string> = {
+  [EarlyLeaveStatus.Pending]: 'requests.earlyLeave.status.pending',
+  [EarlyLeaveStatus.Accepted]: 'requests.earlyLeave.status.accepted',
+  [EarlyLeaveStatus.Rejected]: 'requests.earlyLeave.status.rejected',
+};
+
 const EarlyLeaveRequestsTab: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -48,6 +60,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('');
   const [selectedClassroom, setSelectedClassroom] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
 
@@ -61,13 +74,14 @@ const EarlyLeaveRequestsTab: React.FC = () => {
           page,
           limit: PAGE_SIZE,
           searchTerm,
+          status: selectedStatus ? (Number(selectedStatus) as EarlyLeaveStatus) : undefined,
           date: selectedDate,
         })
       );
     }, 350);
 
     return () => clearTimeout(handle);
-  }, [dispatch, page, searchTerm, selectedDate]);
+  }, [dispatch, page, searchTerm, selectedDate, selectedStatus]);
 
   const filteredData = useMemo(
     () =>
@@ -114,6 +128,14 @@ const EarlyLeaveRequestsTab: React.FC = () => {
     }
   };
 
+  const getStatusBadge = (status: EarlyLeaveStatus) => (
+    <span
+      className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${STATUS_BADGE_CLASSES[status]}`}
+    >
+      {t(STATUS_LABEL_KEYS[status])}
+    </span>
+  );
+
   const columns: DataTableColumn<EarlyLeaveRequestDto>[] = [
     {
       header: '#',
@@ -155,6 +177,12 @@ const EarlyLeaveRequestsTab: React.FC = () => {
         />
       ),
       headerClassName: 'min-w-[240px] text-center',
+      className: 'text-center',
+    },
+    {
+      header: 'requests.requestStatus',
+      accessor: (row) => getStatusBadge(row.status),
+      headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
@@ -242,7 +270,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
         setSearchTerm(value as string);
         setPage(1);
       },
-      width: '30%',
+      width: '20%',
     },
     {
       type: 'custom',
@@ -284,6 +312,38 @@ const EarlyLeaveRequestsTab: React.FC = () => {
     },
     {
       type: 'custom',
+      name: 'status-filter',
+      value: selectedStatus,
+      onChange: () => {},
+      width: '20%',
+      customComponent: (
+        <CustomSelect
+          value={selectedStatus}
+          onChange={(value) => {
+            setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setPage(1);
+          }}
+          options={[
+            {
+              value: EarlyLeaveStatus.Pending.toString(),
+              label: t('requests.earlyLeave.status.pending'),
+            },
+            {
+              value: EarlyLeaveStatus.Accepted.toString(),
+              label: t('requests.earlyLeave.status.accepted'),
+            },
+            {
+              value: EarlyLeaveStatus.Rejected.toString(),
+              label: t('requests.earlyLeave.status.rejected'),
+            },
+          ]}
+          placeholder={t('requests.filters.status')}
+          showSearch={false}
+        />
+      ),
+    },
+    {
+      type: 'custom',
       name: 'date-filter',
       value: selectedDate,
       onChange: () => {},
@@ -306,6 +366,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
     setSearchTerm('');
     setSelectedStage('');
     setSelectedClassroom('');
+    setSelectedStatus('');
     setSelectedDate('');
     setPage(1);
   };

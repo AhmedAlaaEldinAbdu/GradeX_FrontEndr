@@ -1,11 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
-import { useAppSelector } from '@/hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { fetchAIExamDashboardStats } from '@/redux/features/ai-exam/aiExamSlice';
 import ExamCreationCard from './components/ExamCreationCard';
 import OnlineExamsList from './components/OnlineExamsList';
 import CreateExamPopup from './popups/CreateExamPopup';
@@ -18,15 +20,16 @@ import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
 
 export default function OnlineExamsPage() {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const schoolBranchId = getCurrentSchoolBranchId();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const exams = useAppSelector((state) => state.aiExam.exams);
-  const pagination = useAppSelector((state) => state.aiExam.pagination);
+  const dashboardStats = useAppSelector((state) => state.aiExam.dashboardStats);
 
-  const averageSuccessRate = useMemo(() => {
-    if (exams.length === 0) return 0;
-    const total = exams.reduce((sum, exam) => sum + (exam.successRate ?? 0), 0);
-    return Math.round(total / exams.length);
-  }, [exams]);
+  useEffect(() => {
+    if (!schoolBranchId) return;
+
+    dispatch(fetchAIExamDashboardStats({ SchoolBranchId: schoolBranchId }));
+  }, [dispatch, schoolBranchId]);
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
@@ -61,7 +64,7 @@ export default function OnlineExamsPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <MetricCard
             title={t('eLearning.metrics.successRate')}
-            value={`${averageSuccessRate}%`}
+            value={`${dashboardStats.successRate ?? 0}%`}
             icon={
               <CustomImage
                 src={CheckMarkIcon}
@@ -73,7 +76,7 @@ export default function OnlineExamsPage() {
           />
           <MetricCard
             title={t('eLearning.metrics.activeExams')}
-            value={`${pagination.totalItems} ${t('eLearning.units.exam')}`}
+            value={`${dashboardStats.activeExamsCount ?? 0} ${t('eLearning.units.exam')}`}
             icon={
               <span
                 aria-hidden

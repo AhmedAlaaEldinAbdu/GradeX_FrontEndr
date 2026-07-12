@@ -168,6 +168,11 @@ export const EarlyLeaveStatus = {
 
 export type EarlyLeaveStatus = (typeof EarlyLeaveStatus)[keyof typeof EarlyLeaveStatus];
 
+export interface EarlyLeaveStatusCount {
+  status: EarlyLeaveStatus;
+  count: number;
+}
+
 export interface EarlyLeaveRequestDto {
   id: string;
   studentId: string;
@@ -272,6 +277,8 @@ export interface UpdateStudentEarlyLeaveRequest extends CreateStudentEarlyLeaveR
 
 export interface StudentEarlyLeaveRequestsListResponse {
   requests: EarlyLeaveRequestDto[];
+  totalRequests: number;
+  statusCounts: EarlyLeaveStatusCount[];
   pageIndex: number;
   totalPages: number;
   totalItems: number;
