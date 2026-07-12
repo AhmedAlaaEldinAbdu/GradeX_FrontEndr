@@ -16,6 +16,7 @@ import DefaultAvatar from '@gradex/assets/images/profile.png';
 import { WorkType, JobApplicationStatus, type JobApplicationDto } from '../admin-requests.types';
 import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
+import { getSocialStatusLabel, getIdentityTypeLabel } from '@/lib/utils/enum-mappings';
 import ScheduleInterviewPopup from '../popups/ScheduleInterviewPopup';
 import ArchiveConfirmPopup from '../popups/ArchiveConfirmPopup';
 import AcceptConfirmPopup from '../popups/AcceptConfirmPopup';
@@ -227,7 +228,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
             />
             <InfoRow
               label={t('adminRequests.jobApplication.fields.maritalStatus')}
-              value={application.maritalStatus}
+              value={getSocialStatusLabel(application.maritalStatus, t)}
             />
             <InfoRow
               label={t('adminRequests.jobApplication.fields.nationality')}
@@ -251,7 +252,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
             />
             <InfoRow
               label={t('adminRequests.jobApplication.fields.idType')}
-              value={application.idType}
+              value={getIdentityTypeLabel(application.idType, t)}
             />
             <div className="md:col-span-2">
               <InfoRow
