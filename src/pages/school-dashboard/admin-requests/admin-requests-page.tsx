@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
@@ -11,9 +12,7 @@ import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import {
-  fetchTeacherRequestsSummary,
-} from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import { fetchTeacherRequestsSummary } from '@/redux/features/teacher-requests/teacherRequestsSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import JobApplicationsTab from './components/JobApplicationsTab';
@@ -28,6 +27,8 @@ const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { summary, jobApplicationsStats } = useAppSelector((state) => state.teacherRequests);
+  const [searchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'job-application';
 
   const schoolBranchId = getCurrentSchoolBranchId();
 
@@ -58,12 +59,12 @@ const AdminRequestsPage: React.FC = () => {
     {
       id: 'job-application',
       label: t('adminRequests.tabs.jobApplication'),
-      content: <JobApplicationsTab />,
+      content: <JobApplicationsTab isActive={activeTab === 'job-application'} />,
     },
     {
       id: 'application-archive',
       label: t('adminRequests.tabs.applicationArchive'),
-      content: <ArchiveApplicationsTab />,
+      content: <ArchiveApplicationsTab isActive={activeTab === 'application-archive'} />,
     },
     {
       id: 'schedule-interview',
