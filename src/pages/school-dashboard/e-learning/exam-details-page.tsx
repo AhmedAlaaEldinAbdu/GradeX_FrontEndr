@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
@@ -7,24 +7,33 @@ import Tabs, { type TabItem } from '@/shared/components/Tabs';
 import Card from '@/shared/components/Card';
 import ErrorMessage from '@/shared/components/ErrorMessage';
 import Loading from '@/shared/components/Loading';
-import NotFoundMessage from '@/shared/components/NotFoundMessage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import useLanguage from '@/hooks/useLanguage';
 import {
   fetchAIExamQuestionsStats,
   fetchAIExamResultsDistribution,
+  fetchAIExamStudentsResults,
   fetchAIExamSummary,
 } from '@/redux/features/ai-exam/aiExamSlice';
 import type {
   AIExamQuestionStats,
   AIExamResultsDistributionBucket,
+  AIExamStudentResult,
   AIExamSummary,
 } from '@/services/api/types/ai-exam.types';
 import ExamSummaryBanner from './components/ExamSummaryBanner';
 import ExamResultsDistribution from './components/ExamResultsDistribution';
 import ExamQuestionsList from './components/ExamQuestionsList';
-import type { ExamDetailsItem, ExamQuestionItem, ResultBucket } from './components/examDetailsData';
+import ExamStudentsList from './components/ExamStudentsList';
+import type {
+  ExamDetailsItem,
+  ExamQuestionItem,
+  ExamStudentItem,
+  ResultBucket,
+} from './components/examDetailsData';
 import type { ExamDifficulty, ExamSource } from './components/OnlineExamCard';
+
+const STUDENTS_PAGE_SIZE = 10;
 
 const DIFFICULTY_MAP: Record<number, ExamDifficulty> = {
   1: 'easy',
@@ -130,25 +139,44 @@ const mapResultsDistribution = (
   }));
 };
 
+const mapStudentResult = (student: AIExamStudentResult): ExamStudentItem => ({
+  id: student.studentId,
+  name: student.studentName || '-',
+  grade: student.rating,
+  score: student.score,
+  timeMinutes: student.timeMinutes,
+});
+
 export default function ExamDetailsPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const { currentLanguage } = useLanguage();
+  const [studentSearch, setStudentSearch] = useState('');
+  const [studentRating, setStudentRating] = useState('');
+  const [studentsPage, setStudentsPage] = useState(1);
 
   const summary = useAppSelector((state) => state.aiExam.currentExamSummary);
   const questionsStats = useAppSelector((state) => state.aiExam.examQuestionsStats);
   const resultsDistribution = useAppSelector((state) => state.aiExam.examResultsDistribution);
+  const studentsResults = useAppSelector((state) => state.aiExam.examStudentsResults);
+  const studentsResultsPagination = useAppSelector(
+    (state) => state.aiExam.examStudentsPagination
+  );
   const isLoadingSummary = useAppSelector((state) => state.aiExam.isLoadingExamSummary);
   const isLoadingQuestions = useAppSelector((state) => state.aiExam.isLoadingExamQuestionsStats);
   const isLoadingResultsDistribution = useAppSelector(
     (state) => state.aiExam.isLoadingExamResultsDistribution
+  );
+  const isLoadingStudentsResults = useAppSelector(
+    (state) => state.aiExam.isLoadingExamStudentsResults
   );
   const summaryError = useAppSelector((state) => state.aiExam.examSummaryError);
   const questionsError = useAppSelector((state) => state.aiExam.examQuestionsStatsError);
   const resultsDistributionError = useAppSelector(
     (state) => state.aiExam.examResultsDistributionError
   );
+  const studentsResultsError = useAppSelector((state) => state.aiExam.examStudentsResultsError);
 
   const loadExamDetails = useCallback(() => {
     if (!id) return;
@@ -157,9 +185,46 @@ export default function ExamDetailsPage() {
     dispatch(fetchAIExamResultsDistribution({ ExamId: id }));
   }, [dispatch, id]);
 
+  const loadExamStudents = useCallback(() => {
+    if (!id) return;
+    dispatch(
+      fetchAIExamStudentsResults({
+        ExamId: id,
+        Search: studentSearch || undefined,
+        Rating: studentRating || undefined,
+        PageNumber: studentsPage,
+        PageSize: STUDENTS_PAGE_SIZE,
+      })
+    );
+  }, [dispatch, id, studentRating, studentSearch, studentsPage]);
+
   useEffect(() => {
     loadExamDetails();
   }, [loadExamDetails]);
+
+  useEffect(() => {
+    loadExamStudents();
+  }, [loadExamStudents]);
+
+  const handleStudentSearchChange = useCallback((value: string) => {
+    setStudentSearch(value);
+    setStudentsPage(1);
+  }, []);
+
+  const handleStudentRatingChange = useCallback((value: string) => {
+    setStudentRating(value);
+    setStudentsPage(1);
+  }, []);
+
+  const handleResetStudentFilters = useCallback(() => {
+    setStudentSearch('');
+    setStudentRating('');
+    setStudentsPage(1);
+  }, []);
+
+  const handleStudentsPageChange = useCallback((page: number) => {
+    setStudentsPage(page);
+  }, []);
 
   const isLoadedExam = Boolean(summary && summary.examId === id);
   const exam = useMemo(
@@ -170,6 +235,16 @@ export default function ExamDetailsPage() {
   const distributionBuckets = useMemo(
     () => mapResultsDistribution(resultsDistribution),
     [resultsDistribution]
+  );
+  const students = useMemo(() => studentsResults.map(mapStudentResult), [studentsResults]);
+  const studentsPagination = useMemo(
+    () => ({
+      page: studentsResultsPagination.pageIndex,
+      limit: studentsResultsPagination.pageSize,
+      total: studentsResultsPagination.totalItems,
+      totalPages: studentsResultsPagination.totalPages,
+    }),
+    [studentsResultsPagination]
   );
   const pageTitle = exam?.name || t('eLearning.onlineExams.title');
 
@@ -209,7 +284,21 @@ export default function ExamDetailsPage() {
     {
       id: 'students',
       label: t('eLearning.onlineExams.details.tabs.students'),
-      content: <NotFoundMessage message="eLearning.onlineExams.details.studentsEmpty" />,
+      content: (
+        <ExamStudentsList
+          students={students}
+          isLoading={isLoadingStudentsResults}
+          error={studentsResultsError}
+          search={studentSearch}
+          rating={studentRating}
+          pagination={studentsPagination}
+          onSearchChange={handleStudentSearchChange}
+          onRatingChange={handleStudentRatingChange}
+          onPageChange={handleStudentsPageChange}
+          onResetFilters={handleResetStudentFilters}
+          onRetry={loadExamStudents}
+        />
+      ),
     },
   ];
 
