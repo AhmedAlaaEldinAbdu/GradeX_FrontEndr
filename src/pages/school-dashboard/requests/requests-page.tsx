@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from '@/hooks/useRedux';
+import { EarlyLeaveStatus } from '@/services/api/requests/requests.types';
 import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
@@ -22,24 +23,56 @@ import ReminderRequestsTab from './components/ReminderRequestsTab';
 // import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
 import ApplicationsTab from './components/ApplicationsTab';
 
+type RequestMetricStats = {
+  total: number;
+  rejected: number;
+  accepted: number;
+  pending: number;
+};
+
+const EMPTY_REQUEST_STATS: RequestMetricStats = {
+  total: 0,
+  rejected: 0,
+  accepted: 0,
+  pending: 0,
+};
+
 const RequestsPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { stats: applicationStats } = useAppSelector((state) => state.studentApplications);
-
-  const getStatusCount = (status: StudentApplicationStatus) =>
-    applicationStats.statusCounts.find((item) => Number(item.status) === status)?.count ?? 0;
-
-  const stats = {
-    total: applicationStats.totalApplications,
-    rejected: getStatusCount(StudentApplicationStatus.Reject),
-    accepted: getStatusCount(StudentApplicationStatus.Accept),
-    pending: getStatusCount(StudentApplicationStatus.Pending),
-  };
+  const { stats: earlyLeaveStats } = useAppSelector((state) => state.studentRequestEarlyLeave);
 
   // Get current tab from URL, default to 'applications'
   const currentTab = searchParams.get('tab') || 'applications';
+
+  const getApplicationStatusCount = (status: StudentApplicationStatus) =>
+    applicationStats.statusCounts.find((item) => Number(item.status) === status)?.count ?? 0;
+
+  const getEarlyLeaveStatusCount = (status: EarlyLeaveStatus) =>
+    earlyLeaveStats.statusCounts.find((item) => Number(item.status) === status)?.count ?? 0;
+
+  const applicationMetricStats: RequestMetricStats = {
+    total: applicationStats.totalApplications,
+    rejected: getApplicationStatusCount(StudentApplicationStatus.Reject),
+    accepted: getApplicationStatusCount(StudentApplicationStatus.Accept),
+    pending: getApplicationStatusCount(StudentApplicationStatus.Pending),
+  };
+
+  const earlyLeaveMetricStats: RequestMetricStats = {
+    total: earlyLeaveStats.totalRequests,
+    rejected: getEarlyLeaveStatusCount(EarlyLeaveStatus.Rejected),
+    accepted: getEarlyLeaveStatusCount(EarlyLeaveStatus.Approved),
+    pending: getEarlyLeaveStatusCount(EarlyLeaveStatus.Pending),
+  };
+
+  const stats =
+    currentTab === 'early-leave'
+      ? earlyLeaveMetricStats
+      : currentTab === 'applications'
+        ? applicationMetricStats
+        : EMPTY_REQUEST_STATS;
 
   const breadcrumbItems = [{ label: t('sidebar.studentAffairs') }, { label: t('requests.title') }];
 
