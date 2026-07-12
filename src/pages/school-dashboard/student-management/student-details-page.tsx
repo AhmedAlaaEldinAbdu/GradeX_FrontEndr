@@ -161,15 +161,9 @@ export default function StudentDetailsPage() {
         title={studentName}
         actions={[
           {
-            label: 'students.details.sendToParents',
-            // Action wired later — the Figma doesn't define the behaviour yet.
-            onClick: () => {},
-            variant: 'primary',
-            imgSrc: ShareIcon,
-            imgClassName: 'h-4 w-4',
-          },
-          {
-            label: student?.className ? 'studentManagement.reAssignStudent' : 'studentApplications.modals.housingTitle',
+            label: student?.className
+              ? 'studentManagement.reAssignStudent'
+              : 'studentApplications.modals.housingTitle',
             onClick: () => setHousingPopupOpen(true),
             variant: 'primary',
           },
