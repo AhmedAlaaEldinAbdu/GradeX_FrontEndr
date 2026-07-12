@@ -162,11 +162,17 @@ export interface SchoolMessagesQueryParams {
 /** Status of an early-leave (طلب خروج مبكر) request. */
 export const EarlyLeaveStatus = {
   Pending: 1, // قيد الانتظار
+  Approved: 2, // مقبول
   Accepted: 2, // مقبول
   Rejected: 3, // مرفوض
 } as const;
 
 export type EarlyLeaveStatus = (typeof EarlyLeaveStatus)[keyof typeof EarlyLeaveStatus];
+
+export interface EarlyLeaveStatusCount {
+  status: EarlyLeaveStatus;
+  count: number;
+}
 
 export interface EarlyLeaveRequestDto {
   id: string;
@@ -272,6 +278,8 @@ export interface UpdateStudentEarlyLeaveRequest extends CreateStudentEarlyLeaveR
 
 export interface StudentEarlyLeaveRequestsListResponse {
   requests: EarlyLeaveRequestDto[];
+  totalRequests: number;
+  statusCounts: EarlyLeaveStatusCount[];
   pageIndex: number;
   totalPages: number;
   totalItems: number;
