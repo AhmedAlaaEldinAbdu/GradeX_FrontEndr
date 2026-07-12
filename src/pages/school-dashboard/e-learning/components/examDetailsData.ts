@@ -61,7 +61,7 @@ export type ExamStudentItem = {
   id: string;
   name: string;
   /** null when the student has not been graded yet. */
-  grade: StudentGrade | null;
+  grade: string | null;
   score: number | null;
   timeMinutes: number;
 };
