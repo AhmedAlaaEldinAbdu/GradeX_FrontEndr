@@ -2,6 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import { useAppSelector } from '@/hooks/useRedux';
+import { StudentApplicationStatus } from '@/services/api/student-applications/student-applications.types';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import MetricCard from '@/shared/components/MetricCard';
@@ -19,14 +21,22 @@ import ReminderRequestsTab from './components/ReminderRequestsTab';
 // import AddDelegateRequestsTab from './components/AddDelegateRequestsTab';
 // import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
 import ApplicationsTab from './components/ApplicationsTab';
-import { MOCK_REQUESTS_STATS } from './requests.mock';
 
 const RequestsPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { stats: applicationStats } = useAppSelector((state) => state.studentApplications);
 
-  const stats = MOCK_REQUESTS_STATS;
+  const getStatusCount = (status: StudentApplicationStatus) =>
+    applicationStats.statusCounts.find((item) => Number(item.status) === status)?.count ?? 0;
+
+  const stats = {
+    total: applicationStats.totalApplications,
+    rejected: getStatusCount(StudentApplicationStatus.Reject),
+    accepted: getStatusCount(StudentApplicationStatus.Accept),
+    pending: getStatusCount(StudentApplicationStatus.Pending),
+  };
 
   // Get current tab from URL, default to 'applications'
   const currentTab = searchParams.get('tab') || 'applications';
@@ -75,8 +85,7 @@ const RequestsPage: React.FC = () => {
         />
         <MetricCard
           title={t('requests.acceptedCount')}
-          value={stats.acceptedPercentage}
-          percentage
+          value={stats.accepted}
           icon={<CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />}
           iconClassName="bg-[#E8F4EE]"
         />
