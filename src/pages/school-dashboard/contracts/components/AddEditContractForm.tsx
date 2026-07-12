@@ -21,7 +21,7 @@ export type ContractFormValues = {
   shortNationalAddress: string;
   schoolKind: 'company' | 'foundation' | '';
   commercialRegister: string;
-  adminFees: string;
+  // adminFees: string;
   taxNumber: string;
   representativeName: string;
   representativeRole: string;
@@ -93,10 +93,10 @@ const buildDefaults = (initial?: Partial<ContractFormValues>): Partial<ContractF
   shortNationalAddress: initial?.shortNationalAddress ?? '',
   schoolKind: initial?.schoolKind || undefined,
   commercialRegister: initial?.commercialRegister ?? '',
-  adminFees:
-    initial?.adminFees !== undefined && initial.adminFees !== ''
-      ? Number(initial.adminFees)
-      : (undefined as unknown as number),
+  // adminFees:
+  //   initial?.adminFees !== undefined && initial.adminFees !== ''
+  //     ? Number(initial.adminFees)
+  //     : (undefined as unknown as number),
   taxNumber: initial?.taxNumber ?? '',
   representativeName: initial?.representativeName ?? '',
   representativeRole: initial?.representativeRole ?? '',
@@ -176,7 +176,7 @@ export default function AddEditContractForm({
       shortNationalAddress: data.shortNationalAddress,
       schoolKind: data.schoolKind as ContractFormValues['schoolKind'],
       commercialRegister: data.commercialRegister,
-      adminFees: String(data.adminFees ?? ''),
+      // adminFees: String(data.adminFees ?? ''),
       taxNumber: data.taxNumber,
       representativeName: data.representativeName,
       representativeRole: data.representativeRole,
@@ -271,7 +271,7 @@ export default function AddEditContractForm({
               />
             </FormField>
 
-            <FormField
+            {/* <FormField
               label={t('contracts.form.adminFees')}
               required
               error={errors.adminFees?.message}
@@ -295,9 +295,9 @@ export default function AddEditContractForm({
                   />
                 )}
               />
-            </FormField>
+            </FormField> */}
 
-            <div className="md:col-span-2">
+            <div className="md:col-span-1">
               <FormField
                 label={t('contracts.form.taxNumber')}
                 required
@@ -322,7 +322,7 @@ export default function AddEditContractForm({
         </SectionCard>
 
         <SectionCard title={t('contracts.sections.representative')}>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('contracts.form.representativeName')}
               required
