@@ -46,7 +46,7 @@ const WORK_TYPE_LABEL: Record<WorkType, string> = {
   [WorkType.Part]: 'adminRequests.workType.part',
 };
 
-const JobApplicationsTab: React.FC = () => {
+const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -92,8 +92,10 @@ const JobApplicationsTab: React.FC = () => {
   ]);
 
   useEffect(() => {
-    loadApplications();
-  }, [loadApplications]);
+    if (isActive) {
+      loadApplications();
+    }
+  }, [isActive, loadApplications]);
 
   const data = useMemo(() => jobApplications.map(mapJobApplication), [jobApplications]);
 

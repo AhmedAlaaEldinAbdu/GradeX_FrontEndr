@@ -24,6 +24,7 @@ import type {
 } from '@/services/api/types/teacher-requests.types';
 import { mapJobApplication } from '../admin-requests.mappers';
 import RestoreApplicationFromArchivePopup from '../popups/RestoreApplicationFromArchivePopup';
+import { JobApplicationStatus } from '@/shared/enums/enums';
 
 const PAGE_SIZE = 10;
 
@@ -39,7 +40,7 @@ const WORK_TYPE_LABEL: Record<WorkType, string> = {
   [WorkType.Part]: 'adminRequests.workType.part',
 };
 
-const ArchiveApplicationsTab: React.FC = () => {
+const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -67,7 +68,7 @@ const ArchiveApplicationsTab: React.FC = () => {
       YearsExperience: selectedExperience ? Number(selectedExperience) : undefined,
       QualificationId: selectedQualification || undefined,
       NationalityId: selectedNationality || undefined,
-      ApplicationStatus: 8, // Archived status
+      ApplicationStatus: JobApplicationStatus.Archived, // Archived status
     };
     dispatch(fetchJobApplications(params));
   }, [
@@ -81,8 +82,10 @@ const ArchiveApplicationsTab: React.FC = () => {
   ]);
 
   useEffect(() => {
-    loadApplications();
-  }, [loadApplications]);
+    if (isActive) {
+      loadApplications();
+    }
+  }, [isActive, loadApplications]);
 
   const data = useMemo(() => jobApplications.map(mapJobApplication), [jobApplications]);
 
@@ -184,21 +187,9 @@ const ArchiveApplicationsTab: React.FC = () => {
       className: 'text-center',
     },
     {
-      header: 'adminRequests.jobApplication.columns.country',
-      accessor: (row) => <span className="text-gray-700">{row.country}</span>,
-      headerClassName: 'min-w-[100px] text-center',
-      className: 'text-center',
-    },
-    {
       header: 'adminRequests.jobApplication.columns.nationality',
       accessor: (row) => <span className="text-gray-700">{row.nationality}</span>,
       headerClassName: 'min-w-[110px] text-center',
-      className: 'text-center',
-    },
-    {
-      header: 'adminRequests.jobApplication.columns.address',
-      accessor: (row) => <span className="text-gray-700">{row.address}</span>,
-      headerClassName: 'min-w-[180px] text-center',
       className: 'text-center',
     },
     {

@@ -12,9 +12,17 @@ import type { ApiResponseModel } from '../config';
 // Enums (values per swagger; labels are confirmed when responses are provided)
 // ============================================================================
 
-/** Apply-job-advertisement application status. Swagger values: 1–8. */
-export type TeacherApplicationStatus = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+/** Apply-job-advertisement application status. Backend enum values: 1–6. */
+export type TeacherApplicationStatus = 1 | 2 | 3 | 4 | 5 | 6;
 export const TEACHER_APPLICATION_STATUS_VALUES: TeacherApplicationStatus[] = [1, 2, 3, 4, 5, 6];
+export const TeacherApplicationStatusMap = {
+  Accept: 1,           // مقبول
+  Reject: 2,           // مرفوض
+  Pending: 3,          // قيد المراجعة
+  Cancelled: 4,        // تم الالغاء
+  Archived: 5,         // مؤرشف
+  InterviewScheduled: 6 // تم تحديد مقابلة
+} as const;
 
 /** Work schedule (WorkShedule). Swagger values: 1–3. */
 export type TeacherWorkSchedule = 1 | 2 | 3;
