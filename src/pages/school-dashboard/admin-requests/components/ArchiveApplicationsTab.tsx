@@ -24,6 +24,7 @@ import type {
 } from '@/services/api/types/teacher-requests.types';
 import { mapJobApplication } from '../admin-requests.mappers';
 import RestoreApplicationFromArchivePopup from '../popups/RestoreApplicationFromArchivePopup';
+import { JobApplicationStatus } from '@/shared/enums/enums';
 
 const PAGE_SIZE = 10;
 
@@ -67,7 +68,7 @@ const ArchiveApplicationsTab: React.FC = () => {
       YearsExperience: selectedExperience ? Number(selectedExperience) : undefined,
       QualificationId: selectedQualification || undefined,
       NationalityId: selectedNationality || undefined,
-      ApplicationStatus: 5, // Archived status
+      ApplicationStatus: JobApplicationStatus.Archived, // Archived status
     };
     dispatch(fetchJobApplications(params));
   }, [
