@@ -10,6 +10,9 @@ import type {
   AIExamListItem,
   AIExamQuestionStats,
   AIExamResultsDistributionBucket,
+  AIExamStudentResult,
+  AIExamStudentsResultsData,
+  AIExamStudentsResultsQueryParams,
   AIExamSummary,
   AIExamsListData,
   AIExamsListQueryParams,
@@ -23,6 +26,13 @@ export interface AIExamState {
   currentExamSummary: AIExamSummary | null;
   examQuestionsStats: AIExamQuestionStats[];
   examResultsDistribution: AIExamResultsDistributionBucket[];
+  examStudentsResults: AIExamStudentResult[];
+  examStudentsPagination: {
+    pageIndex: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
   generatedQuestions: AIExamGeneratedQuestion[];
   createdExam: AIExamDetails | null;
   pagination: {
@@ -36,6 +46,7 @@ export interface AIExamState {
   isLoadingExamSummary: boolean;
   isLoadingExamQuestionsStats: boolean;
   isLoadingExamResultsDistribution: boolean;
+  isLoadingExamStudentsResults: boolean;
   isGenerating: boolean;
   isCreating: boolean;
   error: string | null;
@@ -43,6 +54,7 @@ export interface AIExamState {
   examSummaryError: string | null;
   examQuestionsStatsError: string | null;
   examResultsDistributionError: string | null;
+  examStudentsResultsError: string | null;
   isInitialized: boolean;
 }
 
@@ -55,6 +67,13 @@ const initialState: AIExamState = {
   currentExamSummary: null,
   examQuestionsStats: [],
   examResultsDistribution: [],
+  examStudentsResults: [],
+  examStudentsPagination: {
+    pageIndex: 1,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+  },
   generatedQuestions: [],
   createdExam: null,
   pagination: {
@@ -68,6 +87,7 @@ const initialState: AIExamState = {
   isLoadingExamSummary: false,
   isLoadingExamQuestionsStats: false,
   isLoadingExamResultsDistribution: false,
+  isLoadingExamStudentsResults: false,
   isGenerating: false,
   isCreating: false,
   error: null,
@@ -75,6 +95,7 @@ const initialState: AIExamState = {
   examSummaryError: null,
   examQuestionsStatsError: null,
   examResultsDistributionError: null,
+  examStudentsResultsError: null,
   isInitialized: false,
 };
 
@@ -158,6 +179,22 @@ export const fetchAIExamResultsDistribution = createAsyncThunk<
   }
 });
 
+export const fetchAIExamStudentsResults = createAsyncThunk<
+  AIExamStudentsResultsData,
+  AIExamStudentsResultsQueryParams
+>('aiExam/fetchStudentsResults', async (params, { rejectWithValue }) => {
+  try {
+    const response = await aiExamApiService.getAIExamStudentsResults(params);
+    if (!response.isSuccess) {
+      return rejectWithValue(response.message || 'Failed to fetch AI exam students results');
+    }
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 export const generateAIExamQuestions = createAsyncThunk<
   AIExamGeneratedQuestion[],
   GenerateAIExamQuestionsRequest
@@ -203,6 +240,7 @@ const aiExamSlice = createSlice({
       state.examSummaryError = null;
       state.examQuestionsStatsError = null;
       state.examResultsDistributionError = null;
+      state.examStudentsResultsError = null;
     },
     clearGeneratedQuestions: (state) => {
       state.generatedQuestions = [];
@@ -316,6 +354,29 @@ const aiExamSlice = createSlice({
       .addCase(fetchAIExamResultsDistribution.rejected, (state, action) => {
         state.isLoadingExamResultsDistribution = false;
         state.examResultsDistributionError = action.payload as string;
+      });
+
+    builder
+      .addCase(fetchAIExamStudentsResults.pending, (state) => {
+        state.isLoadingExamStudentsResults = true;
+        state.examStudentsResultsError = null;
+      })
+      .addCase(
+        fetchAIExamStudentsResults.fulfilled,
+        (state, action: PayloadAction<AIExamStudentsResultsData>) => {
+          state.isLoadingExamStudentsResults = false;
+          state.examStudentsResults = action.payload.students ?? [];
+          state.examStudentsPagination = {
+            pageIndex: action.payload.pageIndex ?? 1,
+            pageSize: action.payload.pageSize ?? 10,
+            totalItems: action.payload.totalItems ?? 0,
+            totalPages: action.payload.totalPages ?? 0,
+          };
+        }
+      )
+      .addCase(fetchAIExamStudentsResults.rejected, (state, action) => {
+        state.isLoadingExamStudentsResults = false;
+        state.examStudentsResultsError = action.payload as string;
       });
 
     builder
