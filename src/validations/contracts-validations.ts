@@ -16,10 +16,10 @@ export const ContractFormSchema = object({
   commercialRegister: string()
     .required('contracts.validation.commercialRegisterRequired')
     .typeError('contracts.validation.commercialRegisterRequired'),
-  adminFees: number()
-    .typeError('contracts.validation.adminFeesRequired')
-    .required('contracts.validation.adminFeesRequired')
-    .min(0, 'contracts.validation.adminFeesPositive'),
+  // adminFees: number(),
+    // .typeError('contracts.validation.adminFeesRequired')
+    // .required('contracts.validation.adminFeesRequired')
+    // .min(0, 'contracts.validation.adminFeesPositive'),
   taxNumber: string()
     .required('contracts.validation.taxNumberRequired')
     .typeError('contracts.validation.taxNumberRequired'),
