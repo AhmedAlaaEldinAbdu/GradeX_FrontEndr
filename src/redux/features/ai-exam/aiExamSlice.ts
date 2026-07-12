@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/tool
 import { getErrorMessage } from '@/lib/http';
 import aiExamApiService from '@/services/api/ai-exam/ai-exam.service';
 import type {
+  AIExamDashboardStats,
+  AIExamDashboardStatsQueryParams,
   AIExamDetails,
   AIExamGeneratedQuestion,
   AIExamListItem,
@@ -13,6 +15,7 @@ import type {
 
 export interface AIExamState {
   exams: AIExamListItem[];
+  dashboardStats: AIExamDashboardStats;
   generatedQuestions: AIExamGeneratedQuestion[];
   createdExam: AIExamDetails | null;
   pagination: {
@@ -21,15 +24,21 @@ export interface AIExamState {
     totalItems: number;
     totalPages: number;
   };
+  isLoadingDashboardStats: boolean;
   isLoadingList: boolean;
   isGenerating: boolean;
   isCreating: boolean;
   error: string | null;
+  dashboardStatsError: string | null;
   isInitialized: boolean;
 }
 
 const initialState: AIExamState = {
   exams: [],
+  dashboardStats: {
+    successRate: 0,
+    activeExamsCount: 0,
+  },
   generatedQuestions: [],
   createdExam: null,
   pagination: {
@@ -38,12 +47,30 @@ const initialState: AIExamState = {
     totalItems: 0,
     totalPages: 0,
   },
+  isLoadingDashboardStats: false,
   isLoadingList: false,
   isGenerating: false,
   isCreating: false,
   error: null,
+  dashboardStatsError: null,
   isInitialized: false,
 };
+
+export const fetchAIExamDashboardStats = createAsyncThunk<
+  AIExamDashboardStats,
+  AIExamDashboardStatsQueryParams
+>('aiExam/fetchDashboardStats', async (params, { rejectWithValue }) => {
+  try {
+    const response = await aiExamApiService.getAIExamDashboardStats(params);
+    if (!response.isSuccess) {
+      return rejectWithValue(response.message || 'Failed to fetch AI exam dashboard stats');
+    }
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const fetchAIExams = createAsyncThunk<AIExamsListData, AIExamsListQueryParams>(
   'aiExam/fetchAll',
@@ -122,6 +149,26 @@ const aiExamSlice = createSlice({
     resetAIExamState: () => initialState,
   },
   extraReducers: (builder) => {
+    builder
+      .addCase(fetchAIExamDashboardStats.pending, (state) => {
+        state.isLoadingDashboardStats = true;
+        state.dashboardStatsError = null;
+      })
+      .addCase(
+        fetchAIExamDashboardStats.fulfilled,
+        (state, action: PayloadAction<AIExamDashboardStats>) => {
+          state.isLoadingDashboardStats = false;
+          state.dashboardStats = {
+            successRate: action.payload.successRate ?? 0,
+            activeExamsCount: action.payload.activeExamsCount ?? 0,
+          };
+        }
+      )
+      .addCase(fetchAIExamDashboardStats.rejected, (state, action) => {
+        state.isLoadingDashboardStats = false;
+        state.dashboardStatsError = action.payload as string;
+      });
+
     builder
       .addCase(fetchAIExams.pending, (state) => {
         state.isLoadingList = true;
