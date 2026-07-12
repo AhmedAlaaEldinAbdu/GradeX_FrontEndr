@@ -43,10 +43,18 @@ export async function getAllSchoolMessages(
     });
 
   const data = response.data.data ?? response.data.value;
-  if (data) return data;
+  if (data) {
+    return {
+      ...data,
+      totalMessages: data.totalMessages ?? data.totalItems ?? 0,
+      statusCounts: data.statusCounts ?? [],
+    };
+  }
 
   return {
     messages: [],
+    totalMessages: 0,
+    statusCounts: [],
     pageIndex: params?.PageNumber ?? 1,
     totalPages: 0,
     totalItems: 0,
