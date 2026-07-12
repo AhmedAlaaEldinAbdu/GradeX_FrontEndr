@@ -795,6 +795,10 @@
       "endDateAfterStart": "Enddatum muss nach Startdatum liegen",
       "startDateInPast": "Startdatum darf nicht in der Vergangenheit liegen",
       "endDateInPast": "Enddatum darf nicht in der Vergangenheit liegen"
+    },
+    "identityType": {
+      "national": "Personalausweis",
+      "residence": "Aufenthaltserlaubnis"
     }
   },
   "actions": {
@@ -2345,6 +2349,12 @@
         "3": "Dritte",
         "4": "Vierte",
         "5": "Fünfte"
+      },
+      "socialStatus": {
+        "single": "Ledig",
+        "married": "Verheiratet",
+        "divorced": "Geschieden",
+        "widowed": "Verwitwet"
       }
     },
     "placement": {

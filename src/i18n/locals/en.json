@@ -795,6 +795,10 @@
       "endDateAfterStart": "End date must be after start date",
       "startDateInPast": "Start date cannot be in the past",
       "endDateInPast": "End date cannot be in the past"
+    },
+    "identityType": {
+      "national": "National ID",
+      "residence": "Residence ID"
     }
   },
   "actions": {
@@ -2471,6 +2475,12 @@
         "3": "Third",
         "4": "Fourth",
         "5": "Fifth"
+      },
+      "socialStatus": {
+        "single": "Single",
+        "married": "Married",
+        "divorced": "Divorced",
+        "widowed": "Widowed"
       }
     },
     "placement": {

@@ -795,6 +795,10 @@
       "endDateAfterStart": "La date de fin doit être postérieure à la date de début",
       "startDateInPast": "La date de début ne peut pas être dans le passé",
       "endDateInPast": "La date de fin ne peut pas être dans le passé"
+    },
+    "identityType": {
+      "national": "Carte d'identité nationale",
+      "residence": "Carte de résidence"
     }
   },
   "actions": {
@@ -2345,6 +2349,12 @@
         "3": "Troisième",
         "4": "Quatrième",
         "5": "Cinquième"
+      },
+      "socialStatus": {
+        "single": "Célibataire",
+        "married": "Marié",
+        "divorced": "Divorcé",
+        "widowed": "Veuf"
       }
     },
     "placement": {
