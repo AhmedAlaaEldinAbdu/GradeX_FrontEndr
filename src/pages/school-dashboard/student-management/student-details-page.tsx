@@ -13,7 +13,6 @@ import MedicalRecordTab from '@/pages/school-dashboard/student-management/compon
 import ExamsTab from '@/pages/school-dashboard/student-management/components/details/ExamsTab';
 import PageHeader from '@/shared/components/PageHeader';
 import Loading from '@/shared/components/Loading';
-import ShareIcon from '@gradex/assets/icons/Share.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchStudentByIdSilent } from '@/redux/features/students/studentsSlice';
 import { getStudentFullName, type StudentDto } from '@/services/api/types/students.types';

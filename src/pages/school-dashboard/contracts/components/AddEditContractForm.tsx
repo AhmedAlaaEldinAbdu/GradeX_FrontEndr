@@ -31,6 +31,7 @@ export type ContractFormValues = {
   phone: string;
   nationality: string;
   withdrawalType: 'beforeTerm' | 'afterTerm';
+  adminFees: string;
   term: string;
   withdrawalPeriod: string;
   adminFeesDiscountPercentage: string;
@@ -189,6 +190,7 @@ export default function AddEditContractForm({
       term: data.term,
       withdrawalPeriod: data.withdrawalPeriod,
       adminFeesDiscountPercentage: String(data.adminFeesDiscountPercentage ?? ''),
+      adminFees: '',
     };
 
     await onSubmit(outgoing, roleDocument);
