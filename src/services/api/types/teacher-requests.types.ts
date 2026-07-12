@@ -12,8 +12,8 @@ import type { ApiResponseModel } from '../config';
 // Enums (values per swagger; labels are confirmed when responses are provided)
 // ============================================================================
 
-/** Apply-job-advertisement application status. Swagger values: 1–6. */
-export type TeacherApplicationStatus = 1 | 2 | 3 | 4 | 5 | 6;
+/** Apply-job-advertisement application status. Swagger values: 1–8. */
+export type TeacherApplicationStatus = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 export const TEACHER_APPLICATION_STATUS_VALUES: TeacherApplicationStatus[] = [1, 2, 3, 4, 5, 6];
 
 /** Work schedule (WorkShedule). Swagger values: 1–3. */
