@@ -185,7 +185,7 @@ const toEarlyLeaveStatus = (status: unknown): EarlyLeaveStatus | null => {
   const numericStatus = Number(status);
   if (
     numericStatus === EarlyLeaveStatusValues.Pending ||
-    numericStatus === EarlyLeaveStatusValues.Approved ||
+    numericStatus === EarlyLeaveStatusValues.Accepted ||
     numericStatus === EarlyLeaveStatusValues.Rejected
   ) {
     return numericStatus;

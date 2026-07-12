@@ -212,18 +212,18 @@ const studentRequestEarlyLeaveSlice = createSlice({
           const id = action.payload;
           const previousRequest = state.requests.find((request) => request.id === id);
 
-          if (previousRequest && previousRequest.status !== EarlyLeaveStatus.Approved) {
+          if (previousRequest && previousRequest.status !== EarlyLeaveStatus.Accepted) {
             updateStatusCount(state.stats.statusCounts, previousRequest.status, -1);
-            updateStatusCount(state.stats.statusCounts, EarlyLeaveStatus.Approved, 1);
+            updateStatusCount(state.stats.statusCounts, EarlyLeaveStatus.Accepted, 1);
           }
 
           state.requests = state.requests.map((request) =>
-            request.id === id ? { ...request, status: EarlyLeaveStatus.Approved } : request
+            request.id === id ? { ...request, status: EarlyLeaveStatus.Accepted } : request
           );
           if (state.currentRequest?.id === id) {
             state.currentRequest = {
               ...state.currentRequest,
-              status: EarlyLeaveStatus.Approved,
+              status: EarlyLeaveStatus.Accepted,
             };
           }
         }

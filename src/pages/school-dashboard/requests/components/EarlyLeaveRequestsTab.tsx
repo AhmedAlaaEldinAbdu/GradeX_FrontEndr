@@ -37,13 +37,13 @@ type ConfirmState = { type: 'approve' | 'delete'; request: EarlyLeaveRequestDto 
 
 const STATUS_BADGE_CLASSES: Record<EarlyLeaveStatus, string> = {
   [EarlyLeaveStatus.Pending]: 'bg-orange-100 text-orange-700',
-  [EarlyLeaveStatus.Approved]: 'bg-green-100 text-green-700',
+  [EarlyLeaveStatus.Accepted]: 'bg-green-100 text-green-700',
   [EarlyLeaveStatus.Rejected]: 'bg-red-100 text-red-700',
 };
 
 const STATUS_LABEL_KEYS: Record<EarlyLeaveStatus, string> = {
   [EarlyLeaveStatus.Pending]: 'requests.earlyLeave.status.pending',
-  [EarlyLeaveStatus.Approved]: 'requests.earlyLeave.status.accepted',
+  [EarlyLeaveStatus.Accepted]: 'requests.earlyLeave.status.accepted',
   [EarlyLeaveStatus.Rejected]: 'requests.earlyLeave.status.rejected',
 };
 
@@ -329,7 +329,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
               label: t('requests.earlyLeave.status.pending'),
             },
             {
-              value: EarlyLeaveStatus.Approved.toString(),
+              value: EarlyLeaveStatus.Accepted.toString(),
               label: t('requests.earlyLeave.status.accepted'),
             },
             {

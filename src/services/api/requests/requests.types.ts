@@ -162,7 +162,6 @@ export interface SchoolMessagesQueryParams {
 /** Status of an early-leave (طلب خروج مبكر) request. */
 export const EarlyLeaveStatus = {
   Pending: 1, // قيد الانتظار
-  Approved: 2, // مقبول
   Accepted: 2, // مقبول
   Rejected: 3, // مرفوض
 } as const;

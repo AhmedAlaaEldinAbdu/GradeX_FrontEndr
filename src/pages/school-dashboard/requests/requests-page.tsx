@@ -63,7 +63,7 @@ const RequestsPage: React.FC = () => {
   const earlyLeaveMetricStats: RequestMetricStats = {
     total: earlyLeaveStats.totalRequests,
     rejected: getEarlyLeaveStatusCount(EarlyLeaveStatus.Rejected),
-    accepted: getEarlyLeaveStatusCount(EarlyLeaveStatus.Approved),
+    accepted: getEarlyLeaveStatusCount(EarlyLeaveStatus.Accepted),
     pending: getEarlyLeaveStatusCount(EarlyLeaveStatus.Pending),
   };
 
