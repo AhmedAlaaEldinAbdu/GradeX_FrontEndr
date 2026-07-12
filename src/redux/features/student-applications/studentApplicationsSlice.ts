@@ -3,6 +3,7 @@ import { studentApplicationsApiService } from '@/services/api/student-applicatio
 import type {
   StudentApplicationDto,
   StudentApplicationDetailDto,
+  StudentApplicationStatusCount,
 } from '@/services/api/student-applications/student-applications.types';
 import { getErrorMessage } from '@/lib/http';
 
@@ -15,6 +16,10 @@ interface StudentApplicationsState {
     pageSize: number;
     totalItems: number;
     totalPages: number;
+  };
+  stats: {
+    totalApplications: number;
+    statusCounts: StudentApplicationStatusCount[];
   };
   isLoading: boolean;
   error: string | null;
@@ -29,6 +34,10 @@ const initialState: StudentApplicationsState = {
     pageSize: 10,
     totalItems: 0,
     totalPages: 0,
+  },
+  stats: {
+    totalApplications: 0,
+    statusCounts: [],
   },
   isLoading: false,
   error: null,
@@ -50,6 +59,10 @@ export interface FetchStudentApplicationsResponse {
     pageIndex: number;
     pageSize: number;
     totalPages: number;
+  };
+  stats: {
+    totalApplications: number;
+    statusCounts: StudentApplicationStatusCount[];
   };
 }
 
@@ -77,16 +90,24 @@ export const fetchStudentApplications = createAsyncThunk<
           pageSize: 10,
           totalPages: 0,
         },
+        stats: {
+          totalApplications: 0,
+          statusCounts: [],
+        },
       };
     }
 
     return {
       data: response.data.applicationDtos || [],
       meta: {
-        totalItems: response.data.totalItems || 0,
-        pageIndex: response.data.pageIndex || 1,
-        pageSize: response.data.pageSize || 10,
-        totalPages: response.data.totalPages || 0,
+        totalItems: response.data.totalItems ?? 0,
+        pageIndex: response.data.pageIndex ?? 1,
+        pageSize: response.data.pageSize ?? 10,
+        totalPages: response.data.totalPages ?? 0,
+      },
+      stats: {
+        totalApplications: response.data.totalApplications ?? response.data.totalItems ?? 0,
+        statusCounts: response.data.statusCounts ?? [],
       },
     };
   } catch (error) {
@@ -179,6 +200,7 @@ const studentApplicationsSlice = createSlice({
             totalItems: action.payload.meta.totalItems,
             totalPages: action.payload.meta.totalPages,
           };
+          state.stats = action.payload.stats;
         }
       )
       .addCase(fetchStudentApplications.rejected, (state, action) => {
