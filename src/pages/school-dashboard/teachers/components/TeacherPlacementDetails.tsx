@@ -11,6 +11,7 @@ import { fetchTeacherPersonalData } from '@/redux/features/teachers';
 import { teacherApiService } from '@/services/api/teachers/teachers.service';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
+import { getSocialStatusLabel } from '@/lib/utils/enum-mappings';
 
 interface TeacherPlacementDetailsProps {
   teacherId: string;
@@ -348,11 +349,7 @@ export default function TeacherPlacementDetails({
           <InfoRow label={t('teachers.details.email')} value={personalData.email} />
           <InfoRow
             label={t('teachers.details.maritalStatus')}
-            value={
-              personalData.socialStatus !== null
-                ? String(personalData.socialStatus)
-                : t('common.notAvailable')
-            }
+            value={getSocialStatusLabel(personalData.socialStatus, t)}
           />
           <InfoRow
             label={t('teachers.details.nationality')}
