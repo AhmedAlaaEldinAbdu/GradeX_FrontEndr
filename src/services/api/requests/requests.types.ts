@@ -107,7 +107,7 @@ export interface SchoolMessageDto {
   messageId: string;
   message: string;
   createdAt: string;
-  messageStatus: MessageStatus;
+  messageStatus: MessageStatus | 0;
   schoolBranchesId: string;
   messageReply: string | null;
   sendertype: number;
@@ -120,8 +120,15 @@ export interface SchoolMessageDto {
   classrooms: string[];
 }
 
+export interface MessageStatusCount {
+  status: MessageStatus | 0;
+  count: number;
+}
+
 export interface SchoolMessagesListResponse {
   messages: SchoolMessageDto[];
+  totalMessages: number;
+  statusCounts: MessageStatusCount[];
   pageIndex: number;
   totalPages: number;
   totalItems: number;
