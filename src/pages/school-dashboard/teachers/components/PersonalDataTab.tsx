@@ -10,6 +10,7 @@ import { useAppSelector } from '@/hooks/useRedux';
 import { teacherApiService } from '@/services/api/teachers/teachers.service';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { TeacherAssignmentListItem } from '@/types/teacherAssignment';
+import { getSocialStatusLabel, getIdentityTypeLabel } from '@/lib/utils/enum-mappings';
 
 interface PersonalDataTabProps {
   teacherId: string;
@@ -330,11 +331,7 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
           <InfoRow label={t('teachers.details.email')} value={personalData.email} />
           <InfoRow
             label={t('teachers.details.maritalStatus')}
-            value={
-              personalData.socialStatus !== null
-                ? String(personalData.socialStatus)
-                : t('common.notAvailable')
-            }
+            value={getSocialStatusLabel(personalData.socialStatus, t)}
           />
           <InfoRow
             label={t('teachers.details.nationality')}
@@ -364,11 +361,7 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
           />
           <InfoRow
             label={t('teachers.details.idType')}
-            value={
-              personalData.identityType !== null
-                ? String(personalData.identityType)
-                : t('common.notAvailable')
-            }
+            value={getIdentityTypeLabel(personalData.identityType, t)}
           />
           <InfoRow
             label={t('teachers.details.dateOfBirth')}
