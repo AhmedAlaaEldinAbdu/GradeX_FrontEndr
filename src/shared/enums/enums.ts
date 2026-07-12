@@ -195,3 +195,17 @@ export const WithdrawalTime = {
   AfterTerm: 1,
 } as const;
 export type WithdrawalTime = (typeof WithdrawalTime)[keyof typeof WithdrawalTime];
+
+export const SocialStatus = {
+  Single: 1,
+  Married: 2,
+  Divorced: 3,
+  Widowed: 4
+} as const;
+export type SocialStatus = (typeof SocialStatus)[keyof typeof SocialStatus];
+
+export const ApplicantIdentityType = {
+  National: 1,
+  ResidenceID: 2
+} as const;
+export type ApplicantIdentityType = (typeof ApplicantIdentityType)[keyof typeof ApplicantIdentityType];
