@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
+import { useAppSelector } from '@/hooks/useRedux';
 import ExamCreationCard from './components/ExamCreationCard';
 import OnlineExamsList from './components/OnlineExamsList';
 import CreateExamPopup from './popups/CreateExamPopup';
@@ -18,6 +19,14 @@ import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
 export default function OnlineExamsPage() {
   const { t } = useTranslation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const exams = useAppSelector((state) => state.aiExam.exams);
+  const pagination = useAppSelector((state) => state.aiExam.pagination);
+
+  const averageSuccessRate = useMemo(() => {
+    if (exams.length === 0) return 0;
+    const total = exams.reduce((sum, exam) => sum + (exam.successRate ?? 0), 0);
+    return Math.round(total / exams.length);
+  }, [exams]);
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
@@ -52,13 +61,19 @@ export default function OnlineExamsPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <MetricCard
             title={t('eLearning.metrics.successRate')}
-            value="78%"
-            icon={<CustomImage src={CheckMarkIcon} alt="Success rate" className="h-6 w-6" />}
+            value={`${averageSuccessRate}%`}
+            icon={
+              <CustomImage
+                src={CheckMarkIcon}
+                alt={t('eLearning.metrics.successRate')}
+                className="h-6 w-6"
+              />
+            }
             iconClassName="bg-[#1A9F58]/[0.16]"
           />
           <MetricCard
             title={t('eLearning.metrics.activeExams')}
-            value={`30 ${t('eLearning.units.exam')}`}
+            value={`${pagination.totalItems} ${t('eLearning.units.exam')}`}
             icon={
               <span
                 aria-hidden

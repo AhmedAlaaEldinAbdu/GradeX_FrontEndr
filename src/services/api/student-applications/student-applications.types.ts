@@ -33,8 +33,15 @@ export interface StudentApplicationDto {
   created: string;
 }
 
+export interface StudentApplicationStatusCount {
+  status: StudentApplicationStatus;
+  count: number;
+}
+
 export interface StudentApplicationListResponse {
   applicationDtos: StudentApplicationDto[];
+  totalApplications: number;
+  statusCounts: StudentApplicationStatusCount[];
   pageIndex: number;
   totalPages: number;
   totalItems: number;

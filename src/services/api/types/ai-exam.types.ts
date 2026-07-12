@@ -15,6 +15,66 @@ export interface AIExamValidationError {
 }
 
 // ============================================================================
+// List exams
+// ============================================================================
+
+export const AIExamStatus = {
+  Active: 1,
+  Scheduled: 2,
+} as const;
+export type AIExamStatus = (typeof AIExamStatus)[keyof typeof AIExamStatus];
+
+export const AIExamDifficulty = {
+  Easy: 1,
+  Medium: 2,
+  Hard: 3,
+} as const;
+export type AIExamDifficulty = (typeof AIExamDifficulty)[keyof typeof AIExamDifficulty];
+
+export interface AIExamsListQueryParams {
+  SchoolBranchId: string;
+  PageNumber?: number;
+  PageSize?: number;
+  Search?: string;
+  MaterialId?: string;
+  GradeId?: string;
+  Status?: AIExamStatus;
+  Difficulty?: AIExamDifficulty;
+}
+
+export interface AIExamListItem {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  topic?: string | null;
+  materialName?: string | null;
+  gradeName?: string | null;
+  status: AIExamStatus | number;
+  isAIGenerated: boolean;
+  difficulty: AIExamDifficulty | number;
+  successRate: number;
+  durationMinutes: number;
+  questionsCount: number;
+  totalPoints: number;
+  startDate?: string | null;
+  endDate?: string | null;
+  studentsCount: number;
+  submittedCount: number;
+  inProgressCount: number;
+  notStartedCount: number;
+}
+
+export interface AIExamsListData {
+  exams: AIExamListItem[];
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export type GetAIExamsResponse = AIExamApiEnvelope<AIExamsListData>;
+
+// ============================================================================
 // Question models
 // ============================================================================
 

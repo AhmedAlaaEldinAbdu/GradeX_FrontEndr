@@ -36,6 +36,8 @@ export async function getStudentApplications(
     return {
       data: {
         applicationDtos: [],
+        totalApplications: 0,
+        statusCounts: [],
         totalItems: 0,
         totalPages: 0,
         pageIndex: params?.PageIndex || 1,
@@ -45,6 +47,8 @@ export async function getStudentApplications(
       validationErrors: null,
       value: {
         applicationDtos: [],
+        totalApplications: 0,
+        statusCounts: [],
         totalItems: 0,
         totalPages: 0,
         pageIndex: params?.PageIndex || 1,

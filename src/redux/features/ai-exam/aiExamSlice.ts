@@ -4,25 +4,62 @@ import aiExamApiService from '@/services/api/ai-exam/ai-exam.service';
 import type {
   AIExamDetails,
   AIExamGeneratedQuestion,
+  AIExamListItem,
+  AIExamsListData,
+  AIExamsListQueryParams,
   CreateAIExamRequest,
   GenerateAIExamQuestionsRequest,
 } from '@/services/api/types/ai-exam.types';
 
 export interface AIExamState {
+  exams: AIExamListItem[];
   generatedQuestions: AIExamGeneratedQuestion[];
   createdExam: AIExamDetails | null;
+  pagination: {
+    pageIndex: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  isLoadingList: boolean;
   isGenerating: boolean;
   isCreating: boolean;
   error: string | null;
+  isInitialized: boolean;
 }
 
 const initialState: AIExamState = {
+  exams: [],
   generatedQuestions: [],
   createdExam: null,
+  pagination: {
+    pageIndex: 1,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+  },
+  isLoadingList: false,
   isGenerating: false,
   isCreating: false,
   error: null,
+  isInitialized: false,
 };
+
+export const fetchAIExams = createAsyncThunk<AIExamsListData, AIExamsListQueryParams>(
+  'aiExam/fetchAll',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await aiExamApiService.getAIExams(params);
+      if (!response.isSuccess) {
+        return rejectWithValue(response.message || 'Failed to fetch AI exams');
+      }
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
 
 export const generateAIExamQuestions = createAsyncThunk<
   AIExamGeneratedQuestion[],
@@ -85,6 +122,27 @@ const aiExamSlice = createSlice({
     resetAIExamState: () => initialState,
   },
   extraReducers: (builder) => {
+    builder
+      .addCase(fetchAIExams.pending, (state) => {
+        state.isLoadingList = true;
+        state.error = null;
+      })
+      .addCase(fetchAIExams.fulfilled, (state, action: PayloadAction<AIExamsListData>) => {
+        state.isLoadingList = false;
+        state.exams = action.payload.exams ?? [];
+        state.pagination = {
+          pageIndex: action.payload.pageIndex ?? 1,
+          pageSize: action.payload.pageSize ?? 10,
+          totalItems: action.payload.totalItems ?? 0,
+          totalPages: action.payload.totalPages ?? 0,
+        };
+        state.isInitialized = true;
+      })
+      .addCase(fetchAIExams.rejected, (state, action) => {
+        state.isLoadingList = false;
+        state.error = action.payload as string;
+      });
+
     builder
       .addCase(generateAIExamQuestions.pending, (state) => {
         state.isGenerating = true;
