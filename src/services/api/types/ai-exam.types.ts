@@ -203,6 +203,9 @@ export interface GenerateAIExamQuestionsRequest {
   mediumPercentage: number;
   hardPercentage: number;
   questionTypes: AIExamQuestionType[];
+  bookId: string;
+  pageFrom: number;
+  pageTo: number;
 }
 
 export type GenerateAIExamQuestionsResponse = AIExamApiEnvelope<AIExamQuestionPayload[]>;
