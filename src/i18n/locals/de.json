@@ -1429,7 +1429,12 @@
         "minute": "Minute",
         "minutes": "Minuten",
         "and": "und"
-      }
+      },
+      "confirmApprove": "Möchten Sie die Mitarbeiteranfrage genehmigen?",
+      "confirmReject": "Möchten Sie die Mitarbeiteranfrage ablehnen?",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "cancel": "Abbrechen"
     },
     "leave": {
       "detailsTitle": "Urlaubsantrag",

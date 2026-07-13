@@ -1524,7 +1524,12 @@
         "minute": "minute",
         "minutes": "minutes",
         "and": "and"
-      }
+      },
+      "confirmApprove": "Do you want to approve the employee request?",
+      "confirmReject": "Do you want to reject the employee request?",
+      "approve": "Approve",
+      "reject": "Reject",
+      "cancel": "Cancel"
     },
     "leave": {
       "detailsTitle": "Leave Request",

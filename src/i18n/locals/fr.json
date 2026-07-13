@@ -1429,7 +1429,12 @@
         "minute": "minute",
         "minutes": "minutes",
         "and": "et"
-      }
+      },
+      "confirmApprove": "Voulez-vous approuver la demande de l'employé?",
+      "confirmReject": "Voulez-vous rejeter la demande de l'employé?",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "cancel": "Annuler"
     },
     "leave": {
       "detailsTitle": "Demande de congé",

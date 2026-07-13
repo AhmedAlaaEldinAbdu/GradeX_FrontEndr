@@ -1534,7 +1534,12 @@
         "minute": "دقيقة",
         "minutes": "دقائق",
         "and": "و"
-      }
+      },
+      "confirmApprove": "هل تريد قبول طلب الموظف؟",
+      "confirmReject": "هل تريد رفض طلب الموظف؟",
+      "approve": "قبول",
+      "reject": "رفض",
+      "cancel": "إلغاء"
     },
     "leave": {
       "detailsTitle": "طلب إجازة",
