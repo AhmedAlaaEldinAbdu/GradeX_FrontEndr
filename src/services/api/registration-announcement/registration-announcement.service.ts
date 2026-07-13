@@ -5,6 +5,7 @@ import type {
   CreateRegistrationAnnouncementRequest,
   UpdateRegistrationAnnouncementRequest,
   RegistrationAnnouncementQueryParams,
+  RegistrationAnnouncementMutationResponse,
 } from './registration-announcement.types';
 
 export const registrationAnnouncementApi = {
@@ -35,7 +36,10 @@ export const registrationAnnouncementApi = {
   },
 
   create: async (data: CreateRegistrationAnnouncementRequest) => {
-    const response = await axiosClient.post('/RegistrationAnouncement', data);
+    const response = await axiosClient.post<RegistrationAnnouncementMutationResponse>(
+      '/RegistrationAnouncement',
+      data
+    );
     return response.data;
   },
 
@@ -47,7 +51,7 @@ export const registrationAnnouncementApi = {
   },
 
   update: async (data: UpdateRegistrationAnnouncementRequest) => {
-    const response = await axiosClient.put(
+    const response = await axiosClient.put<RegistrationAnnouncementMutationResponse>(
       `/RegistrationAnouncement`,
       {
         id: data.id,
