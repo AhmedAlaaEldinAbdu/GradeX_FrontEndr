@@ -20,6 +20,9 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import { getErrorMessage } from '@/lib/http';
+import { formatValidationErrors } from '@/lib/utils/error-utils';
+import type { RegistrationAnnouncementMutationResponse } from '@/services/api/registration-announcement/registration-announcement.types';
 
 interface RegistrationAnnouncementFormProps {
   initialValues?: Partial<RegistrationAnnouncementProps>;
@@ -50,6 +53,11 @@ const normalizeGradeIds = (
     })
     .filter(Boolean);
 };
+
+const getMutationErrorMessage = (
+  response: RegistrationAnnouncementMutationResponse,
+  fallbackMessage: string
+): string => formatValidationErrors(response.validationErrors, response.message || fallbackMessage);
 
 const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> = ({
   initialValues,
@@ -118,7 +126,7 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
     const normalizedGradeIds = normalizeGradeIds(data.gradeIds);
     try {
       if (isEditMode && registrationId) {
-        await registrationAnnouncementApi.update({
+        const response = await registrationAnnouncementApi.update({
           id: registrationId,
           gradeIds: normalizedGradeIds,
           startDate: new Date(data.startDate).toISOString(),
@@ -127,18 +135,36 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
           registrationAnouncementStatus: 1, // Status needs to be 1 for update based on requirement
         });
 
+        if (response.isSuccess === false) {
+          setShowPopupMessage({
+            show: true,
+            type: 'error',
+            message: getMutationErrorMessage(response, t('common.errorOccurred')),
+          });
+          return;
+        }
+
         setShowPopupMessage({
           show: true,
           type: 'success',
           message: t('registrationAnnouncement.updatedSuccessfully'),
         });
       } else {
-        await registrationAnnouncementApi.create({
+        const response = await registrationAnnouncementApi.create({
           gradeIds: normalizedGradeIds,
           startDate: new Date(data.startDate).toISOString(),
           endDate: new Date(data.endDate).toISOString(),
           schoolBranchId: schoolBranchesId,
         });
+
+        if (response.isSuccess === false) {
+          setShowPopupMessage({
+            show: true,
+            type: 'error',
+            message: getMutationErrorMessage(response, t('common.errorOccurred')),
+          });
+          return;
+        }
 
         setShowPopupMessage({
           show: true,
@@ -147,11 +173,10 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
         });
       }
     } catch (error: unknown) {
-      const errorMessage = (error as any)?.response?.data?.message || t('common.errorOccurred');
       setShowPopupMessage({
         show: true,
         type: 'error',
-        message: errorMessage,
+        message: getErrorMessage(error) || t('common.errorOccurred'),
       });
     } finally {
       setIsSubmitting(false);
