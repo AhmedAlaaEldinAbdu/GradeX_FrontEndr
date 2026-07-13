@@ -1475,6 +1475,8 @@
       "requestDate": "تاريخ الطلب",
       "time": "الوقت",
       "duration": "المدة",
+      "reason": "السبب",
+      "attachments": "المرفقات",
       "status": "الحالة",
       "previewRequest": "معاينة الطلب",
       "earlyLeaveDuration": "مدة الخروج المبكر",
@@ -1484,7 +1486,14 @@
       "pending": "قيد الانتظار",
       "approved": "موافقة",
       "rejected": "مرفوض",
-      "alreadyProcessed": "هذا الطلب تم {{status}} بالفعل ولا يمكن تغيير حالته"
+      "alreadyProcessed": "هذا الطلب تم {{status}} بالفعل ولا يمكن تغيير حالته",
+      "timeUnits": {
+        "hour": "ساعة",
+        "hours": "ساعات",
+        "minute": "دقيقة",
+        "minutes": "دقائق",
+        "and": "و"
+      }
     },
     "leave": {
       "detailsTitle": "طلب إجازة",

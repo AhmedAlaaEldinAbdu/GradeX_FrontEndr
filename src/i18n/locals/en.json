@@ -1475,6 +1475,8 @@
       "requestDate": "Request Date",
       "time": "Time",
       "duration": "Duration",
+      "reason": "Reason",
+      "attachments": "Attachments",
       "status": "Status",
       "previewRequest": "Preview Request",
       "earlyLeaveDuration": "Early Leave Duration",
@@ -1484,7 +1486,14 @@
       "pending": "Pending",
       "approved": "Approved",
       "rejected": "Rejected",
-      "alreadyProcessed": "This request has already been {{status}} and cannot be changed"
+      "alreadyProcessed": "This request has already been {{status}} and cannot be changed",
+      "timeUnits": {
+        "hour": "hour",
+        "hours": "hours",
+        "minute": "minute",
+        "minutes": "minutes",
+        "and": "and"
+      }
     },
     "leave": {
       "detailsTitle": "Leave Request",

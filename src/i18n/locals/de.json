@@ -1379,6 +1379,8 @@
       "requestDate": "Anfragedatum",
       "time": "Zeit",
       "duration": "Dauer",
+      "reason": "Grund",
+      "attachments": "Anhänge",
       "status": "Status",
       "previewRequest": "Anfrage in der Vorschau anzeigen",
       "earlyLeaveDuration": "Dauer des frühen Verlassens",
@@ -1388,7 +1390,14 @@
       "pending": "Ausstehend",
       "approved": "Genehmigt",
       "rejected": "Abgelehnt",
-      "alreadyProcessed": "Diese Anfrage wurde bereits {{status}} und kann nicht geändert werden"
+      "alreadyProcessed": "Diese Anfrage wurde bereits {{status}} und kann nicht geändert werden",
+      "timeUnits": {
+        "hour": "Stunde",
+        "hours": "Stunden",
+        "minute": "Minute",
+        "minutes": "Minuten",
+        "and": "und"
+      }
     },
     "leave": {
       "detailsTitle": "Urlaubsantrag",

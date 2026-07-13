@@ -1379,6 +1379,8 @@
       "requestDate": "Дата запроса",
       "time": "Время",
       "duration": "Продолжительность",
+      "reason": "Причина",
+      "attachments": "Вложения",
       "status": "Статус",
       "previewRequest": "Предпросмотр запроса",
       "earlyLeaveDuration": "Продолжительность раннего ухода",
@@ -1388,7 +1390,14 @@
       "pending": "В ожидании",
       "approved": "Одобрено",
       "rejected": "Отклонено",
-      "alreadyProcessed": "Этот запрос уже {{status}} и не может быть изменен"
+      "alreadyProcessed": "Этот запрос уже {{status}} и не может быть изменен",
+      "timeUnits": {
+        "hour": "час",
+        "hours": "часов",
+        "minute": "минута",
+        "minutes": "минут",
+        "and": "и"
+      }
     },
     "leave": {
       "detailsTitle": "Заявка на отпуск",

@@ -1379,6 +1379,8 @@
       "requestDate": "Date de la demande",
       "time": "Heure",
       "duration": "Durée",
+      "reason": "Raison",
+      "attachments": "Pièces jointes",
       "status": "Statut",
       "previewRequest": "Aperçu de la demande",
       "earlyLeaveDuration": "Durée du départ précoce",
@@ -1388,7 +1390,14 @@
       "pending": "En attente",
       "approved": "Approuvé",
       "rejected": "Rejeté",
-      "alreadyProcessed": "Cette demande a déjà été {{status}} et ne peut pas être modifiée"
+      "alreadyProcessed": "Cette demande a déjà été {{status}} et ne peut pas être modifiée",
+      "timeUnits": {
+        "hour": "heure",
+        "hours": "heures",
+        "minute": "minute",
+        "minutes": "minutes",
+        "and": "et"
+      }
     },
     "leave": {
       "detailsTitle": "Demande de congé",
