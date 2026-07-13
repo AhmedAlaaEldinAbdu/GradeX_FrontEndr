@@ -227,7 +227,7 @@ const getSchoolAdminSections = (): MenuSection[] => [
           { key: 'liveClasses', path: '/lms/live-classes' },
           { key: 'onlineExams', path: '/lms/online-exams' },
           { key: 'trainingCourses', path: '/lms/courses' },
-          { key: 'questionBank', path: '/lms/question-bank' },
+          // { key: 'questionBank', path: '/lms/question-bank' },
           { key: 'assignments', path: '/calendar/tasks' },
           { key: 'lessonPreparation', path: '/calendar/preparations' },
         ],
