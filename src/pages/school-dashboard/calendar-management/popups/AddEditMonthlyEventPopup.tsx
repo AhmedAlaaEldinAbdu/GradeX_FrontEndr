@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -45,6 +45,7 @@ export default function AddEditMonthlyEventPopup({
 }: AddEditMonthlyEventPopupProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language;
+  const previousGradesKeyRef = useRef<string | null>(null);
 
   const {
     control,
@@ -73,6 +74,7 @@ export default function AddEditMonthlyEventPopup({
 
   const isFullDay = watch('isFullDay');
   const watchedGrades = watch('grades');
+  const watchedGradesKey = useMemo(() => (watchedGrades || []).join('|'), [watchedGrades]);
 
   // Filter classrooms to only those belonging to the selected grade(s)
   const filteredClassroomOptions = useMemo<CustomSelectOption[]>(() => {
@@ -88,8 +90,18 @@ export default function AddEditMonthlyEventPopup({
 
   // Reset classrooms when grades change
   useEffect(() => {
+    if (previousGradesKeyRef.current === null) {
+      previousGradesKeyRef.current = watchedGradesKey;
+      return;
+    }
+
+    if (previousGradesKeyRef.current === watchedGradesKey) {
+      return;
+    }
+
+    previousGradesKeyRef.current = watchedGradesKey;
     setValue('classRomms', []);
-  }, [watchedGrades, setValue]);
+  }, [watchedGradesKey, setValue]);
 
   const createDefaultValues = (): MonthlyEventFormValues => ({
     nameAr: '',
@@ -106,7 +118,9 @@ export default function AddEditMonthlyEventPopup({
 
   useEffect(() => {
     if (isOpen) {
-      reset(initialValues ?? createDefaultValues());
+      const values = initialValues ?? createDefaultValues();
+      previousGradesKeyRef.current = (values.grades || []).join('|');
+      reset(values);
     }
   }, [isOpen, initialValues, reset, selectedDate, schoolBranchId]);
 
