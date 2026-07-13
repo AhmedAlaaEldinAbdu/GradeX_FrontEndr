@@ -17,6 +17,7 @@ import type { SchoolFormData } from '../types/school.types';
 import {
   transformSchoolFormBackend,
   type ExistingImageAttachment,
+  type ExistingLicenseAttachment,
 } from '../utils/school-form.transformer';
 import { fetchExistingFileAsUpload } from '../utils/existing-file-upload';
 import { logFormData } from '@/shared/common/common';
@@ -41,7 +42,7 @@ import CustomImage from '@/shared/components/CustomImage';
 interface SchoolFormProps {
   mode: 'add' | 'edit' | 'view';
   initialData?: SchoolFormData & {
-    licenseFiles?: string[];
+    licenseFiles?: ExistingLicenseAttachment[];
     imageFiles?: ExistingImageAttachment[];
     certificateFiles?: string[];
     logoFile?: string;
@@ -106,7 +107,7 @@ const SchoolForm = ({
   const [schoolImageFiles, setSchoolImageFiles] = useState<ExistingImageAttachment[]>([]);
   const [existingLogo, setExistingLogo] = useState<string>('');
 
-  const [existingLicenseFiles, setExistingLicenseFiles] = useState<string[]>([]);
+  const [existingLicenseFiles, setExistingLicenseFiles] = useState<ExistingLicenseAttachment[]>([]);
   const [existingCertificateFiles, setExistingCertificateFiles] = useState<string[]>([]);
 
   // Ref to prevent accidental submission immediately after navigation
@@ -280,20 +281,16 @@ const SchoolForm = ({
     try {
       // Defaults (add mode): send new uploads + keep existing files as stored paths.
       let submitData = data;
-      let submitFiles = {
+      let submitFiles: Parameters<typeof transformSchoolFormBackend>[1] = {
         ...files,
         existingLogo: existingLogo || undefined,
-        existingLicensePaths: existingLicenseFiles,
+        existingLicenses: existingLicenseFiles,
         existingCertificatePaths: existingCertificateFiles,
       };
       let submitBranches = branches;
       let submitSchoolImages = schoolImageFiles;
 
       if (mode === 'edit') {
-        const licenseFromExisting = await Promise.all(
-          existingLicenseFiles.map((p) => fetchExistingFileAsUpload(p))
-        );
-
         const schoolImageUploads: File[] = [];
         const keptSchoolImages: ExistingImageAttachment[] = [];
         await Promise.all(
@@ -307,11 +304,11 @@ const SchoolForm = ({
         submitFiles = {
           ...files,
           image: [...files.image, ...schoolImageUploads],
-          license: [...files.license, ...licenseFromExisting.filter((f): f is File => f !== null)],
+          license: files.license,
 
-          // logo stays a path; only keep paths whose re-upload failed.
+          // Existing licenses are kept by id only; new licenses are sent through files.license.
           existingLogo: existingLogo || undefined,
-          existingLicensePaths: existingLicenseFiles.filter((_, i) => !licenseFromExisting[i]),
+          existingLicenses: existingLicenseFiles,
           existingCertificatePaths: existingCertificateFiles,
         };
         submitSchoolImages = keptSchoolImages;
@@ -463,11 +460,17 @@ const SchoolForm = ({
               onLogoUpload={handleFileUpload('license')}
               onLogoDelete={(index?: number) => handleFileDelete('license', index)()}
               licenseFileNames={
-                mode === 'view' ? initialData?.licenseFiles || [] : getFileNames('license')
+                mode === 'view'
+                  ? initialData?.licenseFiles?.map((attachment) => attachment.attachmentFile) || []
+                  : getFileNames('license')
               }
               licenseFiles={files.license}
               licenseError={fileErrors.license}
-              existingLicenseFiles={mode === 'edit' ? existingLicenseFiles : []}
+              existingLicenseFiles={
+                mode === 'edit'
+                  ? existingLicenseFiles.map((attachment) => attachment.attachmentFile)
+                  : []
+              }
               onExistingLicenseDelete={handleExistingLicenseDelete}
               readOnly={mode === 'view'}
               showRejectedLabel={showRejectedLabel}
