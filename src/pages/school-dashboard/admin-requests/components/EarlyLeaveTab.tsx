@@ -1,5 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import {
+  fetchEarlyLeaves,
+  fetchEarlyLeaveById,
+} from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import type { EarlyLeaveRequestStatus } from '@/services/api/types/teacher-requests.types';
 
 import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/components/DataTable';
 import Card from '@/shared/components/Card';
@@ -12,129 +18,154 @@ import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import EarlyLeaveDetailsPopup from '../popups/EarlyLeaveDetailsPopup';
+import ApproveRejectConfirmationPopup from '../popups/ApproveRejectConfirmationPopup';
+import type { EarlyLeaveRequestDto } from '@/services/api/types/teacher-requests.types';
 
-interface EarlyLeaveRequest {
-  id: string;
-  status: 'pending' | 'approved' | 'rejected';
-  requestDate: string;
-  applicantName: string;
-  applicantAvatar: string;
-  time: string;
-  duration: string;
-}
-
-const EARLY_LEAVE_DUMMY_DATA: EarlyLeaveRequest[] = [
-  {
-    id: '1',
-    status: 'pending',
-    requestDate: '1/1/2020',
-    applicantName: 'أحمد معتز حسن',
-    applicantAvatar: '',
-    time: '2 مساءا',
-    duration: 'ساعتين',
-  },
-  {
-    id: '2',
-    status: 'approved',
-    requestDate: '1/1/2020',
-    applicantName: 'أحمد معتز حسن',
-    applicantAvatar: '',
-    time: '2 مساءا',
-    duration: 'ساعتين',
-  },
-  {
-    id: '3',
-    status: 'pending',
-    requestDate: '1/1/2020',
-    applicantName: 'أحمد معتز حسن',
-    applicantAvatar: '',
-    time: '2 مساءا',
-    duration: 'ساعتين',
-  },
-  {
-    id: '4',
-    status: 'pending',
-    requestDate: '1/1/2020',
-    applicantName: 'أحمد معتز حسن',
-    applicantAvatar: '',
-    time: '2 مساءا',
-    duration: 'ساعتين',
-  },
-  {
-    id: '5',
-    status: 'approved',
-    requestDate: '1/1/2020',
-    applicantName: 'أحمد معتز حسن',
-    applicantAvatar: '',
-    time: '2 مساءا',
-    duration: 'ساعتين',
-  },
-  {
-    id: '6',
-    status: 'rejected',
-    requestDate: '1/1/2020',
-    applicantName: 'أحمد معتز حسن',
-    applicantAvatar: '',
-    time: '2 مساءا',
-    duration: 'ساعتين',
-  },
-];
-
-const EarlyLeaveTab: React.FC = () => {
+const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  // Format time from HH:mm:ss to display format (HH:mm)
+  const formatTime = (timeString: string): string => {
+    if (!timeString) return '--';
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
+
+  // Format duration from HH:mm:ss to readable format
+  const formatDuration = (durationString: string, t: (key: string) => string): string => {
+    if (!durationString) return '--';
+    const [hours, minutes] = durationString.split(':');
+    const hoursNum = parseInt(hours, 10);
+    const minutesNum = parseInt(minutes, 10);
+
+    let result = '';
+    if (hoursNum > 0) {
+      const hourLabel =
+        hoursNum === 1
+          ? t('adminRequests.earlyLeave.timeUnits.hour')
+          : t('adminRequests.earlyLeave.timeUnits.hours');
+      result += `${hoursNum} ${hourLabel}`;
+    }
+    if (minutesNum > 0) {
+      if (result) result += ` ${t('adminRequests.earlyLeave.timeUnits.and')} `;
+      const minuteLabel =
+        minutesNum === 1
+          ? t('adminRequests.earlyLeave.timeUnits.minute')
+          : t('adminRequests.earlyLeave.timeUnits.minutes');
+      result += `${minutesNum} ${minuteLabel}`;
+    }
+    return result || '--';
+  };
+
+  // Format date from ISO string to DD/MM/YYYY
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return '--';
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch {
+      return '--';
+    }
+  };
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<EarlyLeaveRequestStatus | ''>('');
   const [page, setPage] = useState(1);
   const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState<EarlyLeaveRequest | null>(null);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [confirmationType, setConfirmationType] = useState<'approve' | 'reject'>('approve');
+  const [selectedRequest, setSelectedRequest] = useState<EarlyLeaveRequestDto | null>(null);
 
   const PAGE_SIZE = 10;
 
-  // Define status labels dynamically with translation
+  // Redux selectors
+  const earlyLeaves = useAppSelector((state) => state.teacherRequests.earlyLeaves);
+  const earlyLeavesPagination = useAppSelector(
+    (state) => state.teacherRequests.earlyLeavesPagination
+  );
+  const isLoading = useAppSelector((state) => state.teacherRequests.isEarlyLeavesLoading);
+  const currentEarlyLeave = useAppSelector((state) => state.teacherRequests.currentEarlyLeave);
+
+  // Load early leaves when tab becomes active
+  const loadEarlyLeaves = useCallback(() => {
+    dispatch(
+      fetchEarlyLeaves({
+        PageNumber: page,
+        PageSize: PAGE_SIZE,
+        SearchTeacherName: searchTerm || undefined,
+        RequestStatus:
+          selectedStatus !== '' ? (selectedStatus as EarlyLeaveRequestStatus) : undefined,
+      })
+    );
+  }, [dispatch, page, searchTerm, selectedStatus]);
+
+  useEffect(() => {
+    if (isActive) {
+      loadEarlyLeaves();
+    }
+  }, [isActive, loadEarlyLeaves]);
+
+  // Status mapping: 1 = Pending, 2 = Approved, 3 = Rejected
   const statusBadgeConfig = {
-    pending: {
+    1: {
       bg: 'bg-yellow-100',
       text: 'text-yellow-700',
       label: t('adminRequests.earlyLeave.pending'),
     },
-    approved: {
+    2: {
       bg: 'bg-green-100',
       text: 'text-green-700',
       label: t('adminRequests.earlyLeave.approved'),
     },
-    rejected: {
+    3: {
       bg: 'bg-red-100',
       text: 'text-red-700',
       label: t('adminRequests.earlyLeave.rejected'),
     },
   } as const;
 
-  const handleViewDetails = (request: EarlyLeaveRequest) => {
-    setSelectedRequest(request);
+  const handleViewDetails = (request: EarlyLeaveRequestDto) => {
+    dispatch(fetchEarlyLeaveById(request.id));
     setIsDetailsPopupOpen(true);
   };
 
   const handleCloseDetailsPopup = () => {
     setIsDetailsPopupOpen(false);
+  };
+
+  const handleApprove = (request: EarlyLeaveRequestDto) => {
+    setSelectedRequest(request);
+    setConfirmationType('approve');
+    setIsConfirmationOpen(true);
+  };
+
+  const handleReject = (request: EarlyLeaveRequestDto) => {
+    setSelectedRequest(request);
+    setConfirmationType('reject');
+    setIsConfirmationOpen(true);
+  };
+
+  const handleConfirmation = async () => {
+    // TODO: Implement API call to approve/reject when endpoint is provided
+    // Example: await dispatch(updateEarlyLeaveStatus({...}))
+    console.log(`${confirmationType}:`, selectedRequest);
+  };
+
+  const handleCloseConfirmation = () => {
+    setIsConfirmationOpen(false);
     setSelectedRequest(null);
   };
 
-  const filteredData = useMemo(() => {
-    return EARLY_LEAVE_DUMMY_DATA.filter((item) => {
-      const matchSearch =
-        searchTerm === '' || item.applicantName.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchStatus = selectedStatus === '' || item.status === selectedStatus;
-      return matchSearch && matchStatus;
-    });
-  }, [searchTerm, selectedStatus]);
-
   const statusOptions = [
-    { value: 'pending', label: t('adminRequests.earlyLeave.pending') },
-    { value: 'approved', label: t('adminRequests.earlyLeave.approved') },
-    { value: 'rejected', label: t('adminRequests.earlyLeave.rejected') },
+    { value: '1', label: t('adminRequests.earlyLeave.pending') },
+    { value: '2', label: t('adminRequests.earlyLeave.approved') },
+    { value: '3', label: t('adminRequests.earlyLeave.rejected') },
   ];
 
-  const columns: DataTableColumn<EarlyLeaveRequest>[] = [
+  const columns: DataTableColumn<EarlyLeaveRequestDto>[] = [
     {
       header: '#',
       accessor: (_row, index) => (
@@ -164,8 +195,8 @@ const EarlyLeaveTab: React.FC = () => {
       header: t('adminRequests.earlyLeave.applicant'),
       accessor: (row) => (
         <UserAvatarName
-          name={row.applicantName}
-          avatarSrc={row.applicantAvatar}
+          name={row.teacherName}
+          avatarSrc={undefined}
           onView={() => handleViewDetails(row)}
         />
       ),
@@ -174,33 +205,42 @@ const EarlyLeaveTab: React.FC = () => {
     },
     {
       header: t('adminRequests.earlyLeave.time'),
-      accessor: (row) => <span className="text-gray-700">{row.time}</span>,
+      accessor: (row) => (
+        <span className="text-gray-700">
+          {formatTime(row.fromTime)} - {formatTime(row.toTime)}
+        </span>
+      ),
       headerClassName: 'min-w-[120px] text-center',
       className: 'text-center',
     },
     {
       header: t('adminRequests.earlyLeave.earlyLeaveDuration'),
-      accessor: (row) => <span className="text-gray-700">{row.duration}</span>,
+      accessor: (row) => <span className="text-gray-700">{formatDuration(row.duration, t)}</span>,
       headerClassName: 'min-w-[150px] text-center',
       className: 'text-center',
     },
     {
       header: t('adminRequests.earlyLeave.requestStatus'),
-      accessor: (row) => (
-        <div className="flex justify-center">
-          <span
-            className={`inline-flex items-center rounded-full px-4 py-1 text-sm font-medium ${statusBadgeConfig[row.status].bg} ${statusBadgeConfig[row.status].text}`}
-          >
-            {statusBadgeConfig[row.status].label}
-          </span>
-        </div>
-      ),
+      accessor: (row) => {
+        const status = row.requestStatus as 1 | 2 | 3;
+        const config =
+          statusBadgeConfig[status as keyof typeof statusBadgeConfig] || statusBadgeConfig[1];
+        return (
+          <div className="flex justify-center">
+            <span
+              className={`inline-flex items-center rounded-full px-4 py-1 text-sm font-medium ${config.bg} ${config.text}`}
+            >
+              {config.label}
+            </span>
+          </div>
+        );
+      },
       headerClassName: 'min-w-[140px] text-center',
       className: 'text-center',
     },
     {
       header: t('adminRequests.earlyLeave.requestDate'),
-      accessor: (row) => <span className="text-gray-700">{row.requestDate}</span>,
+      accessor: (row) => <span className="text-gray-700">{formatDate(row.date)}</span>,
       headerClassName: 'min-w-[120px] text-center',
       className: 'text-center',
     },
@@ -208,13 +248,13 @@ const EarlyLeaveTab: React.FC = () => {
       header: t('adminRequests.earlyLeave.actions'),
       accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
-          {row.status === 'pending' ? (
+          {row.requestStatus === 1 ? (
             <>
               <IconButton
                 variant="success"
                 ariaLabel={t('adminRequests.popup.approve')}
                 className="rounded-full bg-green-100 p-2.5 hover:bg-green-200"
-                onClick={() => handleViewDetails(row)}
+                onClick={() => handleApprove(row)}
               >
                 <CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />
               </IconButton>
@@ -222,7 +262,7 @@ const EarlyLeaveTab: React.FC = () => {
                 variant="danger"
                 ariaLabel={t('adminRequests.popup.reject')}
                 className="rounded-full bg-red-100 p-2.5 hover:bg-red-200"
-                onClick={() => handleViewDetails(row)}
+                onClick={() => handleReject(row)}
               >
                 <CustomImage src={XmarkCircleRedIcon} alt="" className="h-5 w-5" />
               </IconButton>
@@ -259,14 +299,15 @@ const EarlyLeaveTab: React.FC = () => {
     {
       type: 'custom',
       name: 'status-filter',
-      value: selectedStatus,
+      value: selectedStatus ? String(selectedStatus) : '',
       onChange: () => {},
       width: '20%',
       customComponent: (
         <CustomSelect
-          value={selectedStatus}
+          value={selectedStatus ? String(selectedStatus) : ''}
           onChange={(value) => {
-            setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            const numValue = value ? Number(Array.isArray(value) ? value[0] : value) : '';
+            setSelectedStatus(numValue === '' ? '' : (numValue as EarlyLeaveRequestStatus));
             setPage(1);
           }}
           options={statusOptions}
@@ -287,7 +328,7 @@ const EarlyLeaveTab: React.FC = () => {
     <>
       <Card className="rounded-2xl" padding="lg">
         <DataTable
-          data={filteredData}
+          data={earlyLeaves}
           columns={columns}
           keyExtractor={(row) => row.id}
           filters={filterConfigs}
@@ -295,20 +336,26 @@ const EarlyLeaveTab: React.FC = () => {
           pagination={{
             page,
             limit: PAGE_SIZE,
-            total: filteredData.length,
-            totalPages: Math.ceil(filteredData.length / PAGE_SIZE),
+            total: earlyLeavesPagination.total,
+            totalPages: earlyLeavesPagination.totalPages,
           }}
           onPageChange={setPage}
           onResetFilters={handleResetFilters}
           emptyMessage="adminRequests.empty"
-          isLoading={false}
+          isLoading={isLoading}
           t={t}
         />
       </Card>
       <EarlyLeaveDetailsPopup
         isOpen={isDetailsPopupOpen}
         onClose={handleCloseDetailsPopup}
-        request={selectedRequest}
+        request={currentEarlyLeave}
+      />
+      <ApproveRejectConfirmationPopup
+        isOpen={isConfirmationOpen}
+        onClose={handleCloseConfirmation}
+        type={confirmationType}
+        onConfirm={handleConfirmation}
       />
     </>
   );

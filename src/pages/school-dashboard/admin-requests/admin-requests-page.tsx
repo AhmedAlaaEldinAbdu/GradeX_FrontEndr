@@ -74,7 +74,7 @@ const AdminRequestsPage: React.FC = () => {
     {
       id: 'early-leave',
       label: t('adminRequests.tabs.earlyLeave'),
-      content: <EarlyLeaveTab />,
+      content: <EarlyLeaveTab isActive={activeTab === 'early-leave'} />,
     },
     {
       id: 'leave',

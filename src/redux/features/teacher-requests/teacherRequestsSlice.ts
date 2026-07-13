@@ -209,7 +209,11 @@ export const fetchEarlyLeaves = createAsyncThunk<
 >('teacherRequests/fetchEarlyLeaves', async (params, { rejectWithValue }) => {
   try {
     const response = await teacherRequestsApiService.getEarlyLeaves(params || undefined);
-    return toListResult(response.data);
+    const data = response.data;
+    return {
+      items: data?.teacherRequestsEarlyLeaves ?? [],
+      pagination: buildPagination(data),
+    };
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }
@@ -418,10 +422,10 @@ const teacherRequestsSlice = createSlice({
           state.isUpdatingStatus = false;
           const { id, status } = action.payload;
           state.earlyLeaves = state.earlyLeaves.map((item) =>
-            item.id === id ? { ...item, status } : item
+            item.id === id ? { ...item, requestStatus: status } : item
           );
           if (state.currentEarlyLeave?.id === id) {
-            state.currentEarlyLeave = { ...state.currentEarlyLeave, status };
+            state.currentEarlyLeave = { ...state.currentEarlyLeave, requestStatus: status };
           }
         }
       )
