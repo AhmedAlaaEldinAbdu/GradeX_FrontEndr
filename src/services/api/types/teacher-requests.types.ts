@@ -203,10 +203,23 @@ export interface JobApplicationRequestDto {
   courses?: JobApplicationCourseDto[];
 }
 
+export interface EarlyLeaveAttachmentDto {
+  id: string;
+  filePath: string;
+  fileName: string;
+}
+
 export interface EarlyLeaveRequestDto {
   id: string;
-  // TODO(api): replace with the real early-leave fields.
-  [key: string]: unknown;
+  teacherId: string;
+  teacherName: string;
+  date: string; // DateTime
+  fromTime: string; // TimeSpan (HH:mm:ss)
+  toTime: string; // TimeSpan (HH:mm:ss)
+  duration: string; // TimeSpan (HH:mm:ss)
+  reason: string;
+  requestStatus: EarlyLeaveRequestStatus; // 1 = Pending, 2 = Approved, 3 = Rejected
+  attachments: EarlyLeaveAttachmentDto[];
 }
 
 /** A single row from `GET /TeacherRequests/teacher-request-messages`. */
@@ -268,10 +281,19 @@ export interface TeacherMessagesListData extends PaginationMeta {
   teacherRequestMessages: TeacherMessageDto[];
 }
 
+/** Payload of `GET /TeacherRequestEarlyLeave`. */
+export interface EarlyLeavesListData extends PaginationMeta {
+  teacherRequestsEarlyLeaves: EarlyLeaveRequestDto[];
+  totalRequests: number;
+  totalPending: number;
+  totalApproved: number;
+  totalRejected: number;
+}
+
 export type TeacherRequestsSummaryResponse = ApiResponseModel<TeacherRequestsSummaryDto>;
 export type JobApplicationsListResponse = ApiResponseModel<JobApplicationsListData>;
 export type JobApplicationResponse = ApiResponseModel<JobApplicationRequestDto>;
-export type EarlyLeavesListResponse = ApiResponseModel<PaginatedList<EarlyLeaveRequestDto>>;
+export type EarlyLeavesListResponse = ApiResponseModel<EarlyLeavesListData>;
 export type EarlyLeaveResponse = ApiResponseModel<EarlyLeaveRequestDto>;
 export type TeacherMessagesListResponse = ApiResponseModel<TeacherMessagesListData>;
 export type TeacherMessageResponse = ApiResponseModel<TeacherMessageDto>;
