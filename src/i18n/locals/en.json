@@ -232,8 +232,8 @@
           "totalPointsPlaceholder": "Select the total points",
           "examDuration": "Exam duration (minutes)",
           "examDurationPlaceholder": "Select the exam duration (minutes)",
-          "passingGrade": "Passing grade %",
-          "passingGradePlaceholder": "Enter the passing grade %",
+          "passingGrade": "Passing grade",
+          "passingGradePlaceholder": "Enter the passing grade",
           "resultVisibility": "Result visibility to student",
           "resultAfterExam": "Right after the exam",
           "resultAfterEachQuestion": "Show result after each question"
@@ -284,6 +284,15 @@
           "stagePlaceholder": "Select the educational stage",
           "grade": "Class",
           "gradePlaceholder": "Select classes",
+          "book": "Book name",
+          "bookPlaceholder": "Select the book name",
+          "selectSubjectAndGradeFirst": "Select subject and class first",
+          "loadingBooks": "Loading books...",
+          "noBooksAvailable": "No books available for the selected subject and class",
+          "pageFrom": "Page start",
+          "pageFromPlaceholder": "Select pages",
+          "pageTo": "Page end",
+          "pageToPlaceholder": "Select pages",
           "targetAudience": "Exam is directed to",
           "allClasses": "All class students",
           "specificStudents": "Specific students",
@@ -359,6 +368,11 @@
           "topicRequired": "The lesson / topic is required",
           "languageRequired": "The language is required",
           "subjectRequired": "The subject is required",
+          "bookRequired": "The book name is required",
+          "pageFromRequired": "The page start is required",
+          "pageToRequired": "The page end is required",
+          "pageRange": "Pages must be greater than 0",
+          "pageToAfterFrom": "The page end must be greater than or equal to the page start",
           "stageRequired": "The educational stage is required",
           "gradeRequired": "The class is required",
           "targetAudienceRequired": "Please select the target audience",
@@ -795,10 +809,6 @@
       "endDateAfterStart": "End date must be after start date",
       "startDateInPast": "Start date cannot be in the past",
       "endDateInPast": "End date cannot be in the past"
-    },
-    "identityType": {
-      "national": "National ID",
-      "residence": "Residence ID"
     }
   },
   "actions": {
@@ -1331,8 +1341,7 @@
         "experienceYears": "Years of experience",
         "yearsUnit": "years",
         "previousExperience": "Previous experience (most recent first)",
-        "languagesLevels": "Languages and level of each",
-        "collage": "College"
+        "languagesLevels": "Languages and level of each"
       },
       "schedulePopup": {
         "title": "Schedule interview",
@@ -1359,27 +1368,6 @@
         "scheduled": "Interview scheduled successfully",
         "archived": "Teacher moved to the archive list successfully",
         "accepted": "Application accepted successfully"
-      }
-    },
-    "scheduleInterview": {
-      "searchPlaceholder": "Search by employee name",
-      "datePlaceholder": "Date",
-      "columns": {
-        "preview": "Request Preview",
-        "applicantName": "Applicant Name",
-        "interviewDate": "Interview Date",
-        "interviewTime": "Interview Time"
-      },
-      "actions": {
-        "preview": "Preview request",
-        "accept": "Accept",
-        "reschedule": "Reschedule",
-        "reject": "Reject"
-      },
-      "toasts": {
-        "previewPending": "Request preview will be connected with the backend.",
-        "profilePending": "Employee profile will be connected with the backend.",
-        "actionPending": "This action will be connected with the backend."
       }
     },
     "messages": {
@@ -1410,43 +1398,6 @@
         "markedViewed": "Message status updated successfully"
       }
     },
-    "teacherNotes": {
-      "detailsTitle": "Note",
-      "searchPlaceholder": "Search by employee name",
-      "columns": {
-        "preview": "Request Preview",
-        "sentFrom": "Sent From",
-        "sentTo": "Sent To",
-        "status": "Request Status",
-        "stage": "Educational Stage",
-        "classroom": "Classroom",
-        "sentDate": "Sent Date",
-        "content": "Note Content"
-      },
-      "status": {
-        "pending": "Pending",
-        "viewed": "Viewed"
-      },
-      "actions": {
-        "markViewed": "Viewed"
-      },
-      "filters": {
-        "status": "Request Status",
-        "date": "Date"
-      },
-      "toasts": {
-        "markedViewed": "Note status updated successfully",
-        "profilePending": "Employee profile will be connected with the backend."
-      },
-      "sample": {
-        "teacherName": "Ahmed Moataz Hassan",
-        "secondTeacherName": "Ahmed Hassan Ibrahim",
-        "schoolName": "School",
-        "stage": "Middle stage",
-        "classroom": "1/1 A",
-        "content": "There is a student bullying his classmate in class"
-      }
-    },
     "tabs": {
       "jobApplication": "Job Application",
       "applicationArchive": "Application (Archive)",
@@ -1457,77 +1408,6 @@
       "messages": "Messages",
       "notes": "Notes",
       "teacherNotes": "Teacher Notes"
-    },
-    "popup": {
-      "confirmRestore": "Do you want to restore {{name}} ?",
-      "restoreDescription": "They will be moved to the job announcement applicants list",
-      "restoreSuccess": "Request restored successfully",
-      "approve": "Approve",
-      "reject": "Reject",
-      "approveSuccess": "Approved successfully",
-      "approveError": "Error approving request",
-      "rejectSuccess": "Rejected successfully",
-      "rejectError": "Error rejecting request"
-    },
-    "earlyLeave": {
-      "detailsTitle": "Early Leave Request Details",
-      "applicant": "Employee Name",
-      "requestDate": "Request Date",
-      "time": "Time",
-      "duration": "Duration",
-      "status": "Status",
-      "previewRequest": "Preview Request",
-      "earlyLeaveDuration": "Early Leave Duration",
-      "requestStatus": "Request Status",
-      "actions": "Actions",
-      "chooseStatus": "Choose Status",
-      "pending": "Pending",
-      "approved": "Approved",
-      "rejected": "Rejected",
-      "alreadyProcessed": "This request has already been {{status}} and cannot be changed"
-    },
-    "leave": {
-      "detailsTitle": "Leave Request",
-      "statusLabel": "Request Status",
-      "employeeName": "Teacher Name",
-      "requestDate": "Request Date",
-      "time": "Time",
-      "searchPlaceholder": "Search by employee name",
-      "columns": {
-        "previewRequest": "Request Preview",
-        "employeeName": "Employee Name",
-        "status": "Request Status",
-        "leaveType": "Leave Type",
-        "leaveDays": "Leave Days",
-        "leaveFrom": "Leave Date From",
-        "leaveTo": "Leave Date To",
-        "attachments": "Attachments"
-      },
-      "filters": {
-        "leaveType": "Leave Type",
-        "status": "Request Status",
-        "date": "Date"
-      },
-      "status": {
-        "pending": "Pending",
-        "approved": "Approved",
-        "rejected": "Rejected"
-      },
-      "approvePopup": {
-        "title": "Do you want to accept the employee's request?",
-        "confirm": "Confirm",
-        "success": "Request accepted successfully"
-      },
-      "rejectPopup": {
-        "title": "Are you sure you want to permanently reject the employee's request?",
-        "confirm": "Delete",
-        "success": "Request rejected successfully"
-      },
-      "types": {
-        "sick": "Sick",
-        "annual": "Annual",
-        "emergency": "Emergency"
-      }
     }
   },
   "requests": {
@@ -1637,46 +1517,17 @@
     },
     "earlyLeave": {
       "detailsTitle": "Early Departure Request",
-      "editTitle": "Edit Early Departure Request",
       "studentName": "Student Name",
       "time": "Time",
-      "fromTime": "From time",
-      "toTime": "To time",
       "duration": "Early Leave Duration",
-      "durationUnits": {
-        "hour_one": "1 hour",
-        "hour_two": "2 hours",
-        "hour_other": "{{count}} hours",
-        "minute_one": "1 minute",
-        "minute_two": "2 minutes",
-        "minute_other": "{{count}} minutes",
-        "separator": "{{hours}} and {{minutes}}"
-      },
       "date": "Date",
       "requestDate": "Request Date",
       "stage": "Educational Stage",
       "classroom": "Class",
-      "reason": "Reason",
-      "attachment": "Attachment",
-      "uploadAttachment": "Upload attachment",
       "status": {
         "pending": "Pending",
         "accepted": "Accepted",
         "rejected": "Rejected"
-      },
-      "approveConfirm": "Do you want to approve the student's request?",
-      "deleteConfirm": "Do you want to delete the student's request?",
-      "approve": "Approve",
-      "delete": "Delete",
-      "approvedSuccess": "Early leave request approved successfully",
-      "deletedSuccess": "Early leave request deleted successfully",
-      "updatedSuccess": "Early leave request updated successfully",
-      "validation": {
-        "dateRequired": "Date is required",
-        "fromTimeRequired": "From time is required",
-        "toTimeRequired": "To time is required",
-        "reasonRequired": "Reason is required",
-        "missingUpdateData": "Cannot update this request because required request data is missing"
       },
       "acceptConfirm": "Do you want to accept the student's request?",
       "rejectConfirm": "Do you want to reject the student's request?",
@@ -1790,8 +1641,7 @@
       "modified": "Modified",
       "completed": "Completed",
       "appointmentScheduled": "Appointment Scheduled",
-      "interviewScheduled": "Interview Scheduled",
-      "cancelled": "Cancelled"
+      "interviewScheduled": "Interview Scheduled"
     },
     "actions": {
       "accept": "Accept",
@@ -2475,12 +2325,6 @@
         "3": "Third",
         "4": "Fourth",
         "5": "Fifth"
-      },
-      "socialStatus": {
-        "single": "Single",
-        "married": "Married",
-        "divorced": "Divorced",
-        "widowed": "Widowed"
       }
     },
     "placement": {
@@ -2696,7 +2540,6 @@
     "scheduled": "Scheduled",
     "completed": "Completed",
     "cancelled": "Cancelled",
-    "interviewNotFound": "No interviews found",
     "searchByName": "Search by candidate name",
     "interviewAddedSuccessfully": "Interview added successfully",
     "interviewUpdatedSuccessfully": "Interview updated successfully",
