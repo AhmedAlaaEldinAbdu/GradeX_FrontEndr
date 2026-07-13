@@ -1,5 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { updateEarlyLeaveStatus } from '@/redux/features/teacher-requests/teacherRequestsSlice';
 import Modal from '@/shared/popups/Modal';
 import CustomImage from '@/shared/components/CustomImage';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
@@ -10,7 +12,8 @@ interface ApproveRejectConfirmationPopupProps {
   isOpen: boolean;
   onClose: () => void;
   type: 'approve' | 'reject';
-  onConfirm: () => void | Promise<void>;
+  requestId: string;
+  onConfirm?: () => void;
   isLoading?: boolean;
 }
 
@@ -18,10 +21,12 @@ const ApproveRejectConfirmationPopup: React.FC<ApproveRejectConfirmationPopupPro
   isOpen,
   onClose,
   type,
+  requestId,
   onConfirm,
   isLoading = false,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
   const config = {
     approve: {
@@ -34,6 +39,7 @@ const ApproveRejectConfirmationPopup: React.FC<ApproveRejectConfirmationPopupPro
       confirmButtonClass: 'bg-green-600 hover:bg-green-700 text-white',
       containerClass: 'bg-green-50',
       btnColor: 'success',
+      status: 2, // Approved
     },
     reject: {
       icon: XmarkCircleRedIcon,
@@ -45,6 +51,7 @@ const ApproveRejectConfirmationPopup: React.FC<ApproveRejectConfirmationPopupPro
       confirmButtonClass: 'bg-red-600 hover:bg-red-700 text-white',
       containerClass: 'bg-red-50',
       btnColor: 'danger',
+      status: 3, // Rejected
     },
   };
 
@@ -52,7 +59,13 @@ const ApproveRejectConfirmationPopup: React.FC<ApproveRejectConfirmationPopupPro
 
   const handleConfirm = async () => {
     try {
-      await onConfirm();
+      await dispatch(
+        updateEarlyLeaveStatus({
+          id: requestId,
+          status: current.status as 2 | 3,
+        })
+      );
+      onConfirm?.();
       onClose();
     } catch (error) {
       console.error('Error in confirmation:', error);
