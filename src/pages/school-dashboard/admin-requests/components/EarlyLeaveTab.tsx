@@ -148,12 +148,6 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
     setIsConfirmationOpen(true);
   };
 
-  const handleConfirmation = async () => {
-    // TODO: Implement API call to approve/reject when endpoint is provided
-    // Example: await dispatch(updateEarlyLeaveStatus({...}))
-    console.log(`${confirmationType}:`, selectedRequest);
-  };
-
   const handleCloseConfirmation = () => {
     setIsConfirmationOpen(false);
     setSelectedRequest(null);
@@ -355,7 +349,7 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         isOpen={isConfirmationOpen}
         onClose={handleCloseConfirmation}
         type={confirmationType}
-        onConfirm={handleConfirmation}
+        requestId={selectedRequest?.id || ''}
       />
     </>
   );
