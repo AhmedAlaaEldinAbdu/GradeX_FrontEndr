@@ -71,9 +71,14 @@ const withSelectedValue = (base: string[], current: string) => {
 type CourseBasicInfoStepProps = {
   data: BasicInfoData;
   onChange: (data: BasicInfoData) => void;
+  errors?: Partial<Record<keyof BasicInfoData, string>>;
 };
 
-export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoStepProps) {
+export default function CourseBasicInfoStep({
+  data,
+  onChange,
+  errors = {},
+}: CourseBasicInfoStepProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const schoolBranchId = getCurrentSchoolBranchId();
@@ -109,14 +114,24 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
 
   return (
     <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
-      <FormField label={t('eLearning.courses.add.fields.nameAr')} required>
+      <FormField
+        label={t('eLearning.courses.add.fields.nameAr')}
+        required
+        name="nameAr"
+        error={errors.nameAr}
+      >
         <Input
           value={data.nameAr}
           onChange={(e) => set('nameAr')(e.target.value)}
           placeholder={t('eLearning.courses.add.fields.nameArPlaceholder')}
         />
       </FormField>
-      <FormField label={t('eLearning.courses.add.fields.nameEn')} required>
+      <FormField
+        label={t('eLearning.courses.add.fields.nameEn')}
+        required
+        name="nameEn"
+        error={errors.nameEn}
+      >
         <Input
           value={data.nameEn}
           onChange={(e) => set('nameEn')(e.target.value)}
@@ -124,14 +139,24 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
         />
       </FormField>
 
-      <FormField label={t('eLearning.courses.add.fields.descAr')} optional>
+      <FormField
+        label={t('eLearning.courses.add.fields.descAr')}
+        optional
+        name="descAr"
+        error={errors.descAr}
+      >
         <TextArea
           value={data.descAr}
           onChange={(e) => set('descAr')(e.target.value)}
           placeholder={t('eLearning.courses.add.fields.descArPlaceholder')}
         />
       </FormField>
-      <FormField label={t('eLearning.courses.add.fields.descEn')} optional>
+      <FormField
+        label={t('eLearning.courses.add.fields.descEn')}
+        optional
+        name="descEn"
+        error={errors.descEn}
+      >
         <TextArea
           value={data.descEn}
           onChange={(e) => set('descEn')(e.target.value)}
@@ -139,24 +164,41 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
         />
       </FormField>
 
-      <FormField label={t('eLearning.courses.add.fields.subject')} required>
+      <FormField
+        label={t('eLearning.courses.add.fields.subject')}
+        required
+        name="subject"
+        error={errors.subject}
+      >
         <CustomSelect
           value={data.subject}
           onChange={(v) => set('subject')(v as string)}
           options={subjectOptions}
           placeholder={t('eLearning.courses.add.fields.subjectPlaceholder')}
+          error={!!errors.subject}
         />
       </FormField>
-      <FormField label={t('eLearning.courses.add.fields.teacher')} required>
+      <FormField
+        label={t('eLearning.courses.add.fields.teacher')}
+        required
+        name="teacher"
+        error={errors.teacher}
+      >
         <CustomSelect
           value={data.teacher}
           onChange={(v) => set('teacher')(v as string)}
           options={teacherOptions}
           placeholder={t('eLearning.courses.add.fields.teacherPlaceholder')}
+          error={!!errors.teacher}
         />
       </FormField>
 
-      <FormField label={t('eLearning.courses.add.fields.startDate')} required>
+      <FormField
+        label={t('eLearning.courses.add.fields.startDate')}
+        required
+        name="startDate"
+        error={errors.startDate}
+      >
         <Input
           type="date"
           value={data.startDate}
@@ -164,7 +206,12 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
           placeholder={t('eLearning.courses.add.fields.startDatePlaceholder')}
         />
       </FormField>
-      <FormField label={t('eLearning.courses.add.fields.endDate')} optional>
+      <FormField
+        label={t('eLearning.courses.add.fields.endDate')}
+        optional
+        name="endDate"
+        error={errors.endDate}
+      >
         <Input
           type="date"
           value={data.endDate}
@@ -173,25 +220,37 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
         />
       </FormField>
 
-      <FormField label={t('eLearning.courses.add.fields.lessonsCount')} required>
+      <FormField
+        label={t('eLearning.courses.add.fields.lessonsCount')}
+        required
+        name="lessonsCount"
+        error={errors.lessonsCount}
+      >
         <CustomSelect
           value={data.lessonsCount}
           onChange={(v) => set('lessonsCount')(v as string)}
           options={lessonsCountOptions}
           placeholder={t('eLearning.courses.add.fields.lessonsCountPlaceholder')}
+          error={!!errors.lessonsCount}
         />
       </FormField>
-      <FormField label={t('eLearning.courses.add.fields.lessonDuration')} optional>
+      <FormField
+        label={t('eLearning.courses.add.fields.lessonDuration')}
+        optional
+        name="lessonDuration"
+        error={errors.lessonDuration}
+      >
         <CustomSelect
           value={data.lessonDuration}
           onChange={(v) => set('lessonDuration')(v as string)}
           options={lessonDurationOptions}
           placeholder={t('eLearning.courses.add.fields.lessonDurationPlaceholder')}
           showSearch={false}
+          error={!!errors.lessonDuration}
         />
       </FormField>
 
-      <div className="md:col-span-2">
+      <div className="md:col-span-2" data-form-field="coverImage">
         <FileUpload
           id="course-cover"
           label={t('eLearning.courses.add.fields.cover')}
@@ -202,12 +261,16 @@ export default function CourseBasicInfoStep({ data, onChange }: CourseBasicInfoS
           maxSize={10}
           fileName={data.coverImageUrl ? data.coverImageUrl.split('/').pop() : undefined}
           fileUrl={data.coverImageUrl}
+          error={!!errors.coverImage}
           onChange={(e) =>
             // Selecting a new cover replaces the existing one (drop the old URL preview).
             onChange({ ...data, coverImage: e.target.files?.[0] ?? null, coverImageUrl: undefined })
           }
           onDelete={() => onChange({ ...data, coverImage: null, coverImageUrl: undefined })}
         />
+        {errors.coverImage && (
+          <p className="mt-1 text-start text-sm text-red-500">{t(errors.coverImage)}</p>
+        )}
       </div>
     </div>
   );
