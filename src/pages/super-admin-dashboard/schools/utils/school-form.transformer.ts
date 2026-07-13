@@ -11,11 +11,17 @@ interface FileAttachments {
   certificate: File[];
   logo?: File[];
   existingLogo?: string; // existing logo URL (edit mode)
-  existingLicensePaths?: string[];
+  existingLicenses?: ExistingLicenseAttachment[];
   existingCertificatePaths?: string[];
 }
 
-export type { ExistingImageAttachment };
+export type { ExistingImageAttachment, ExistingLicenseAttachment };
+
+interface ExistingLicenseAttachment {
+  id?: string;
+  attachmentFile: string;
+  attachmentName?: string;
+}
 
 interface ExistingImageAttachment {
   id?: string;
@@ -131,13 +137,10 @@ function appendBasicInformation(formData: FormData, schoolData: SchoolFormData):
 function appendLicenseAttachments(formData: FormData, files: FileAttachments): void {
   let index = 0;
 
-  (files.existingLicensePaths || []).forEach((path) => {
-    if (!path) return;
-    formData.append(`LicensesAttachments[${index}].attachmentFile`, path);
-    formData.append(
-      `LicensesAttachments[${index}].attachmentName`,
-      path.split('/').pop() || 'License'
-    );
+  (files.existingLicenses || []).forEach((attachment) => {
+    if (!attachment.id) return;
+    const prefix = `LicensesAttachments[${index}]`;
+    formData.append(`${prefix}.id`, attachment.id);
     index++;
   });
 
@@ -616,7 +619,7 @@ export function transformBackendSchoolToForm(
   backendData: unknown,
   lookupFacilities?: Array<{ id: string; arabicName: string; englishName: string }>
 ): SchoolFormData & {
-  licenseFiles?: string[];
+  licenseFiles?: ExistingLicenseAttachment[];
   imageFiles?: ExistingImageAttachment[];
   certificateFiles?: string[];
   logoFile?: string;
@@ -660,8 +663,15 @@ export function transformBackendSchoolToForm(
     (data as any).AcademicSystemId;
   const academicSystemIds = extractAcademicSystemIds(academicSystemIdsRaw);
 
-  // Extract license file paths from attachments (use filePath for full URL access)
-  const licenseFiles = data.licensesAttachments?.map((attachment) => attachment.filePath) || [];
+  // Extract license attachments from backend and keep IDs for update requests.
+  const licenseFiles =
+    data.licensesAttachments
+      ?.filter((attachment) => attachment.filePath)
+      .map((attachment) => ({
+        id: attachment.id,
+        attachmentFile: attachment.filePath,
+        attachmentName: attachment.fileName,
+      })) || [];
 
   // Extract school images - prefer per-branch images from main branch, fall back to top-level
   const rawImageAttachments =
