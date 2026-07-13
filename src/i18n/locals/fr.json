@@ -188,6 +188,24 @@
           "lessonDuration": "Durée de la leçon (minutes)",
           "lessonDurationPlaceholder": "Sélectionnez la durée de la leçon",
           "cover": "Image de couverture du cours"
+        },
+        "validation": {
+          "nameArRequired": "Veuillez saisir le nom du cours dans la première langue",
+          "nameEnRequired": "Veuillez saisir le nom du cours dans la deuxième langue",
+          "subjectRequired": "Veuillez sélectionner une matière",
+          "teacherRequired": "Veuillez sélectionner un enseignant",
+          "startDateRequired": "Veuillez sélectionner la date de début du cours",
+          "endDateAfterStart": "La date de fin doit être postérieure à la date de début",
+          "lessonsCountRequired": "Veuillez sélectionner le nombre de leçons",
+          "lessonsCountPositive": "Le nombre de leçons doit être supérieur à zéro",
+          "coverRequired": "Veuillez téléverser une image de couverture du cours",
+          "stageRequired": "Veuillez sélectionner au moins une étape éducative",
+          "classroomsRequired": "Veuillez sélectionner au moins une classe",
+          "studentsRequired": "Veuillez sélectionner au moins un étudiant",
+          "lecturesRequired": "Veuillez ajouter au moins une leçon",
+          "lectureNameArRequired": "Veuillez saisir le nom de la leçon dans la première langue",
+          "lectureNameEnRequired": "Veuillez saisir le nom de la leçon dans la deuxième langue",
+          "lectureVideoRequired": "Veuillez téléverser une vidéo de leçon"
         }
       }
     },

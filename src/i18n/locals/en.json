@@ -188,6 +188,24 @@
           "lessonDuration": "Lesson Duration (minutes)",
           "lessonDurationPlaceholder": "Select lesson duration",
           "cover": "Course Cover Image"
+        },
+        "validation": {
+          "nameArRequired": "Please enter the course name in the first language",
+          "nameEnRequired": "Please enter the course name in the second language",
+          "subjectRequired": "Please select a subject",
+          "teacherRequired": "Please select a teacher",
+          "startDateRequired": "Please select the course start date",
+          "endDateAfterStart": "End date must be after start date",
+          "lessonsCountRequired": "Please select the number of lessons",
+          "lessonsCountPositive": "Number of lessons must be greater than zero",
+          "coverRequired": "Please upload a course cover image",
+          "stageRequired": "Please select at least one educational stage",
+          "classroomsRequired": "Please select at least one class",
+          "studentsRequired": "Please select at least one student",
+          "lecturesRequired": "Please add at least one lecture",
+          "lectureNameArRequired": "Please enter the lecture name in the first language",
+          "lectureNameEnRequired": "Please enter the lecture name in the second language",
+          "lectureVideoRequired": "Please upload a lecture video"
         }
       }
     },

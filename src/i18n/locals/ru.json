@@ -188,6 +188,24 @@
           "lessonDuration": "Длительность урока (мин.)",
           "lessonDurationPlaceholder": "Выберите длительность урока",
           "cover": "Обложка курса"
+        },
+        "validation": {
+          "nameArRequired": "Введите название курса на первом языке",
+          "nameEnRequired": "Введите название курса на втором языке",
+          "subjectRequired": "Выберите предмет",
+          "teacherRequired": "Выберите преподавателя",
+          "startDateRequired": "Выберите дату начала курса",
+          "endDateAfterStart": "Дата окончания должна быть позже даты начала",
+          "lessonsCountRequired": "Выберите количество уроков",
+          "lessonsCountPositive": "Количество уроков должно быть больше нуля",
+          "coverRequired": "Загрузите обложку курса",
+          "stageRequired": "Выберите хотя бы один образовательный этап",
+          "classroomsRequired": "Выберите хотя бы один класс",
+          "studentsRequired": "Выберите хотя бы одного студента",
+          "lecturesRequired": "Добавьте хотя бы одну лекцию",
+          "lectureNameArRequired": "Введите название лекции на первом языке",
+          "lectureNameEnRequired": "Введите название лекции на втором языке",
+          "lectureVideoRequired": "Загрузите видео лекции"
         }
       }
     },

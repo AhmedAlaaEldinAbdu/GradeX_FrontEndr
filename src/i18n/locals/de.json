@@ -188,6 +188,24 @@
           "lessonDuration": "Lektionsdauer (Minuten)",
           "lessonDurationPlaceholder": "Lektionsdauer auswählen",
           "cover": "Kurs-Titelbild"
+        },
+        "validation": {
+          "nameArRequired": "Bitte geben Sie den Kursnamen in der ersten Sprache ein",
+          "nameEnRequired": "Bitte geben Sie den Kursnamen in der zweiten Sprache ein",
+          "subjectRequired": "Bitte wählen Sie ein Fach aus",
+          "teacherRequired": "Bitte wählen Sie einen Lehrer aus",
+          "startDateRequired": "Bitte wählen Sie das Startdatum des Kurses aus",
+          "endDateAfterStart": "Das Enddatum muss nach dem Startdatum liegen",
+          "lessonsCountRequired": "Bitte wählen Sie die Anzahl der Lektionen aus",
+          "lessonsCountPositive": "Die Anzahl der Lektionen muss größer als null sein",
+          "coverRequired": "Bitte laden Sie ein Kurs-Titelbild hoch",
+          "stageRequired": "Bitte wählen Sie mindestens eine Bildungsstufe aus",
+          "classroomsRequired": "Bitte wählen Sie mindestens eine Klasse aus",
+          "studentsRequired": "Bitte wählen Sie mindestens einen Schüler aus",
+          "lecturesRequired": "Bitte fügen Sie mindestens eine Lektion hinzu",
+          "lectureNameArRequired": "Bitte geben Sie den Lektionsnamen in der ersten Sprache ein",
+          "lectureNameEnRequired": "Bitte geben Sie den Lektionsnamen in der zweiten Sprache ein",
+          "lectureVideoRequired": "Bitte laden Sie ein Lektionsvideo hoch"
         }
       }
     },

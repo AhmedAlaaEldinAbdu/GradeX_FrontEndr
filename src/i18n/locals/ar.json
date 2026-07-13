@@ -188,6 +188,24 @@
           "lessonDuration": "مدة الدرس (دقيقة)",
           "lessonDurationPlaceholder": "أختر مدة الدرس",
           "cover": "صورة غلاف الدورة التدريبية"
+        },
+        "validation": {
+          "nameArRequired": "يرجى إدخال اسم الدورة التدريبية باللغة الأولى",
+          "nameEnRequired": "يرجى إدخال اسم الدورة التدريبية باللغة الثانية",
+          "subjectRequired": "يرجى اختيار المادة",
+          "teacherRequired": "يرجى اختيار المعلم",
+          "startDateRequired": "يرجى اختيار موعد بدء الدورة التدريبية",
+          "endDateAfterStart": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء",
+          "lessonsCountRequired": "يرجى اختيار عدد الدروس",
+          "lessonsCountPositive": "يجب أن يكون عدد الدروس أكبر من صفر",
+          "coverRequired": "يرجى رفع صورة غلاف الدورة التدريبية",
+          "stageRequired": "يرجى اختيار مرحلة دراسية واحدة على الأقل",
+          "classroomsRequired": "يرجى اختيار صف واحد على الأقل",
+          "studentsRequired": "يرجى اختيار طالب واحد على الأقل",
+          "lecturesRequired": "يرجى إضافة محاضرة واحدة على الأقل",
+          "lectureNameArRequired": "يرجى إدخال اسم المحاضرة باللغة الأولى",
+          "lectureNameEnRequired": "يرجى إدخال اسم المحاضرة باللغة الثانية",
+          "lectureVideoRequired": "يرجى رفع فيديو المحاضرة"
         }
       }
     },
