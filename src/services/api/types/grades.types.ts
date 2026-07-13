@@ -32,6 +32,7 @@ export interface GradeDetailsDto extends GradeDto {}
 
 export interface GradeListData {
   gradeDtos: GradeDto[];
+  totalStudentsCount?: number;
   pageIndex: number;
   totalPages: number;
   totalItems: number;

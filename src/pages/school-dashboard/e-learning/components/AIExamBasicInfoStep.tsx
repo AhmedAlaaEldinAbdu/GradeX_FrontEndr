@@ -9,6 +9,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import { fetchBooks } from '@/redux/features/books/booksSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
@@ -24,7 +25,6 @@ const EXAM_LANGUAGE_LABEL_KEYS: Record<(typeof EXAM_LANGUAGE_CODES)[number], str
   fr: 'languageSwitcher.languages.fr',
   ru: 'languageSwitcher.languages.ru',
 };
-const DURATION_VALUES = [15, 30, 45, 60, 90, 120];
 
 const TARGET_AUDIENCE_OPTIONS = [
   { value: 'all', labelKey: 'eLearning.onlineExams.addAI.fields.allClasses' },
@@ -68,8 +68,11 @@ const AIExamBasicInfoStep = () => {
   const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
   const subjects = useAppSelector((state) => state.subjects.subjects);
   const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
+  const bookGrades = useAppSelector((state) => state.books.bookGrades);
+  const isLoadingBooks = useAppSelector((state) => state.books.isLoading);
 
   const academicSystem = useWatch({ control, name: 'academicSystem' });
+  const subject = useWatch({ control, name: 'subject' });
   const grades = useWatch({ control, name: 'grades' });
   const classrooms = useWatch({ control, name: 'classrooms' });
   const studentIds = useWatch({ control, name: 'studentIds' });
@@ -135,6 +138,27 @@ const AIExamBasicInfoStep = () => {
   }, [academicSystem, dispatch, schoolBranchId, selectedGradeIds, selectedGradeIdsKey]);
 
   useEffect(() => {
+    if (!subject || selectedGradeIds.length === 0) {
+      setValue('bookId', '', { shouldDirty: true, shouldValidate: true });
+      setValue('pageFrom', '', { shouldDirty: true, shouldValidate: true });
+      setValue('pageTo', '', { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+
+    dispatch(
+      fetchBooks({
+        page: 1,
+        limit: 1000,
+        filters: {
+          materialId: subject,
+          ...(selectedGradeIds.length === 1 && { gradeId: selectedGradeIds[0] }),
+          schoolBranchesId: schoolBranchId || undefined,
+        },
+      })
+    );
+  }, [dispatch, schoolBranchId, selectedGradeIds, selectedGradeIdsKey, setValue, subject]);
+
+  useEffect(() => {
     setSelectedStudents([]);
     setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
     setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
@@ -185,6 +209,28 @@ const AIExamBasicInfoStep = () => {
     [isArabic, subjects]
   );
 
+  const bookOptions = useMemo<CustomSelectOption[]>(() => {
+    const gradeIds = new Set(selectedGradeIds);
+    const options = new Map<string, CustomSelectOption>();
+
+    bookGrades.forEach((bookGrade) => {
+      const matchesGrade = selectedGradeIds.length === 0 || gradeIds.has(bookGrade.gradeId);
+      const matchesSubject = !subject || bookGrade.materialId === subject;
+
+      if (!matchesGrade || !matchesSubject) return;
+
+      bookGrade.bookDtos.forEach((book) => {
+        if (!book.id || !book.name || options.has(book.id)) return;
+        options.set(book.id, {
+          value: book.id,
+          label: book.name,
+        });
+      });
+    });
+
+    return Array.from(options.values());
+  }, [bookGrades, selectedGradeIds, subject]);
+
   // Classrooms handed to the popup so it can load their students.
   const selectedClassrooms = useMemo(() => {
     const classroomIds = new Set(selectedClassroomIds);
@@ -200,10 +246,6 @@ const AIExamBasicInfoStep = () => {
   const languageOptions = EXAM_LANGUAGE_CODES.map((code) => ({
     value: code,
     label: t(EXAM_LANGUAGE_LABEL_KEYS[code]),
-  }));
-  const durationOptions = DURATION_VALUES.map((minutes) => ({
-    value: String(minutes),
-    label: `${minutes} ${t('eLearning.onlineExams.details.minuteUnit')}`,
   }));
   const endDateMin = getNextDateValue(startDate);
 
@@ -314,7 +356,12 @@ const AIExamBasicInfoStep = () => {
               <CustomSelect
                 id="subject"
                 value={(field.value as string) ?? ''}
-                onChange={(value) => field.onChange(value)}
+                onChange={(value) => {
+                  field.onChange(normalizeSelectValue(value));
+                  setValue('bookId', '', { shouldDirty: true, shouldValidate: true });
+                  setValue('pageFrom', '', { shouldDirty: true, shouldValidate: true });
+                  setValue('pageTo', '', { shouldDirty: true, shouldValidate: true });
+                }}
                 options={subjectOptions}
                 placeholder={
                   isLoadingSubjects
@@ -346,6 +393,9 @@ const AIExamBasicInfoStep = () => {
                   field.onChange(normalizeSelectValue(value));
                   setValue('grades', [], { shouldDirty: true, shouldValidate: true });
                   setValue('classrooms', [], { shouldDirty: true, shouldValidate: true });
+                  setValue('bookId', '', { shouldDirty: true, shouldValidate: true });
+                  setValue('pageFrom', '', { shouldDirty: true, shouldValidate: true });
+                  setValue('pageTo', '', { shouldDirty: true, shouldValidate: true });
                   setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
                   setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
                   setSelectedStudents([]);
@@ -382,6 +432,9 @@ const AIExamBasicInfoStep = () => {
                 onChange={(value) => {
                   field.onChange(normalizeMultiValue(value));
                   setValue('classrooms', [], { shouldDirty: true, shouldValidate: true });
+                  setValue('bookId', '', { shouldDirty: true, shouldValidate: true });
+                  setValue('pageFrom', '', { shouldDirty: true, shouldValidate: true });
+                  setValue('pageTo', '', { shouldDirty: true, shouldValidate: true });
                   setValue('studentIds', [], { shouldDirty: true, shouldValidate: true });
                   setValue('targetAudience', 'all', { shouldDirty: true, shouldValidate: true });
                   setSelectedStudents([]);
@@ -432,6 +485,85 @@ const AIExamBasicInfoStep = () => {
                 }
                 disabled={selectedGradeIds.length === 0 || isLoadingClassrooms}
                 error={!!errors.classrooms}
+              />
+            )}
+          />
+        </FormField>
+      </div>
+
+      {/* Book + page range */}
+      <FormField
+        label={t('eLearning.onlineExams.addAI.fields.book')}
+        required
+        htmlFor="bookId"
+        name="bookId"
+        error={errors.bookId?.message}
+      >
+        <Controller
+          name="bookId"
+          control={control}
+          render={({ field }) => (
+            <CustomSelect
+              id="bookId"
+              value={(field.value as string) ?? ''}
+              onChange={(value) => field.onChange(normalizeSelectValue(value))}
+              options={bookOptions}
+              placeholder={
+                !subject || selectedGradeIds.length === 0
+                  ? t('eLearning.onlineExams.addAI.fields.selectSubjectAndGradeFirst')
+                  : isLoadingBooks
+                    ? t('eLearning.onlineExams.addAI.fields.loadingBooks')
+                    : bookOptions.length === 0
+                      ? t('eLearning.onlineExams.addAI.fields.noBooksAvailable')
+                      : t('eLearning.onlineExams.addAI.fields.bookPlaceholder')
+              }
+              disabled={!subject || selectedGradeIds.length === 0 || isLoadingBooks}
+              error={!!errors.bookId}
+            />
+          )}
+        />
+      </FormField>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <FormField
+          label={t('eLearning.onlineExams.addAI.fields.pageFrom')}
+          required
+          htmlFor="pageFrom"
+          name="pageFrom"
+          error={errors.pageFrom?.message}
+        >
+          <Controller
+            name="pageFrom"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                id="pageFrom"
+                type="number"
+                min={1}
+                placeholder={t('eLearning.onlineExams.addAI.fields.pageFromPlaceholder')}
+              />
+            )}
+          />
+        </FormField>
+
+        <FormField
+          label={t('eLearning.onlineExams.addAI.fields.pageTo')}
+          required
+          htmlFor="pageTo"
+          name="pageTo"
+          error={errors.pageTo?.message}
+        >
+          <Controller
+            name="pageTo"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                id="pageTo"
+                type="number"
+                min={1}
+                placeholder={t('eLearning.onlineExams.addAI.fields.pageToPlaceholder')}
               />
             )}
           />
@@ -566,55 +698,6 @@ const AIExamBasicInfoStep = () => {
                 type="date"
                 min={endDateMin}
                 placeholder={t('eLearning.onlineExams.addAI.fields.endDatePlaceholder')}
-              />
-            )}
-          />
-        </FormField>
-      </div>
-
-      {/* Passing grade + duration */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField
-          label={t('eLearning.onlineExams.addAI.fields.passingGrade')}
-          required
-          htmlFor="passingGrade"
-          name="passingGrade"
-          error={errors.passingGrade?.message}
-        >
-          <Controller
-            name="passingGrade"
-            control={control}
-            render={({ field }) => (
-              <Input
-                {...field}
-                id="passingGrade"
-                type="number"
-                min={0}
-                max={100}
-                placeholder={t('eLearning.onlineExams.addAI.fields.passingGradePlaceholder')}
-              />
-            )}
-          />
-        </FormField>
-
-        <FormField
-          label={t('eLearning.onlineExams.addAI.fields.duration')}
-          optional
-          htmlFor="duration"
-          name="duration"
-          error={errors.duration?.message}
-        >
-          <Controller
-            name="duration"
-            control={control}
-            render={({ field }) => (
-              <CustomSelect
-                id="duration"
-                value={(field.value as string) ?? ''}
-                onChange={(value) => field.onChange(value)}
-                options={durationOptions}
-                placeholder={t('eLearning.onlineExams.addAI.fields.durationPlaceholder')}
-                error={!!errors.duration}
               />
             )}
           />

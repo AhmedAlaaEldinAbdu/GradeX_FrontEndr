@@ -13,6 +13,7 @@ import type {
 
 export interface GradesState {
   grades: GradeDto[];
+  totalStudentsCount: number;
   isLoading: boolean;
   error: string | null;
   currentGrade: GradeDetailsDto | null;
@@ -24,28 +25,34 @@ export interface GradesState {
 // Thunks
 // ============================================================================
 
+interface FetchGradesResult {
+  grades: GradeDto[];
+  totalStudentsCount: number;
+}
+
 const normalizeOptionalParam = (value?: string) => {
   const normalizedValue = value?.trim();
   return normalizedValue ? normalizedValue : undefined;
 };
 
-export const fetchGrades = createAsyncThunk<GradeDto[], string | GradeQueryParams | undefined>(
-  'grades/fetchAll',
-  async (params, { rejectWithValue }) => {
-    try {
-      const schoolBranchIdParam =
-        typeof params === 'string'
-          ? normalizeOptionalParam(params)
-          : normalizeOptionalParam(params?.SchoolBranchId);
+export const fetchGrades = createAsyncThunk<
+  FetchGradesResult,
+  string | GradeQueryParams | undefined
+>('grades/fetchAll', async (params, { rejectWithValue }) => {
+  try {
+    const schoolBranchIdParam =
+      typeof params === 'string'
+        ? normalizeOptionalParam(params)
+        : normalizeOptionalParam(params?.SchoolBranchId);
 
-      const normalizedParams: GradeQueryParams =
-        typeof params === 'string'
-          ? {
+    const normalizedParams: GradeQueryParams =
+      typeof params === 'string'
+        ? {
             PageIndex: 1,
             PageSize: 1000,
             SchoolBranchId: schoolBranchIdParam,
           }
-          : {
+        : {
             PageIndex: params?.PageIndex ?? 1,
             PageSize: params?.PageSize ?? 1000,
             NameAr: normalizeOptionalParam(params?.NameAr),
@@ -55,15 +62,17 @@ export const fetchGrades = createAsyncThunk<GradeDto[], string | GradeQueryParam
             SchoolBranchId: schoolBranchIdParam,
           };
 
-      const response = await gradeApiService.getGrades({
-        ...normalizedParams,
-      });
-      return response.value?.gradeDtos ?? [];
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
+    const response = await gradeApiService.getGrades({
+      ...normalizedParams,
+    });
+    return {
+      grades: response.value?.gradeDtos ?? [],
+      totalStudentsCount: response.value?.totalStudentsCount ?? 0,
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
   }
-);
+});
 
 export const fetchGradeById = createAsyncThunk<GradeDetailsDto, string>(
   'grades/fetchById',
@@ -82,6 +91,7 @@ export const fetchGradeById = createAsyncThunk<GradeDetailsDto, string>(
 
 const initialState: GradesState = {
   grades: [],
+  totalStudentsCount: 0,
   isLoading: false,
   error: null,
   currentGrade: null,
@@ -101,7 +111,8 @@ const gradesSlice = createSlice({
       })
       .addCase(fetchGrades.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.grades = action.payload;
+        state.grades = action.payload.grades;
+        state.totalStudentsCount = action.payload.totalStudentsCount;
       })
       .addCase(fetchGrades.rejected, (state, action) => {
         state.isLoading = false;

@@ -29,6 +29,30 @@ export const AIExamBasicInfoSchema = object({
     .of(string().required())
     .min(1, 'requests.addMessage.validation.classroomsRequired')
     .required('requests.addMessage.validation.classroomsRequired'),
+  bookId: string().required('eLearning.onlineExams.addAI.validation.bookRequired'),
+  pageFrom: string()
+    .required('eLearning.onlineExams.addAI.validation.pageFromRequired')
+    .test('positive-page', 'eLearning.onlineExams.addAI.validation.pageRange', (value) => {
+      const pageFrom = toFiniteNumber(value);
+      return pageFrom !== null && pageFrom > 0;
+    }),
+  pageTo: string()
+    .required('eLearning.onlineExams.addAI.validation.pageToRequired')
+    .test('positive-page', 'eLearning.onlineExams.addAI.validation.pageRange', (value) => {
+      const pageTo = toFiniteNumber(value);
+      return pageTo !== null && pageTo > 0;
+    })
+    .test(
+      'page-to-after-from',
+      'eLearning.onlineExams.addAI.validation.pageToAfterFrom',
+      function (value) {
+        const pageFrom = toFiniteNumber(this.parent.pageFrom);
+        const pageTo = toFiniteNumber(value);
+
+        if (pageFrom === null || pageTo === null) return true;
+        return pageTo >= pageFrom;
+      }
+    ),
   targetAudience: string()
     .default('all')
     .required('eLearning.onlineExams.addAI.validation.targetAudienceRequired'),
@@ -53,6 +77,15 @@ export const AIExamBasicInfoSchema = object({
         return endDate > startDate;
       }
     ),
+});
+
+export type AIExamBasicInfoProps = InferType<typeof AIExamBasicInfoSchema>;
+
+export const AIExamQuestionsSchema = object({
+  numberOfQuestions: string().required(
+    'eLearning.onlineExams.addAI.validation.numberOfQuestionsRequired'
+  ),
+  totalPoints: string().required('eLearning.onlineExams.addAI.validation.totalPointsRequired'),
   passingGrade: string()
     .required('eLearning.onlineExams.addAI.validation.passingGradeRequired')
     .test('range', 'eLearning.onlineExams.addAI.validation.passingGradeRange', (value) => {
@@ -71,15 +104,6 @@ export const AIExamBasicInfoSchema = object({
       }
     ),
   duration: string().default(''),
-});
-
-export type AIExamBasicInfoProps = InferType<typeof AIExamBasicInfoSchema>;
-
-export const AIExamQuestionsSchema = object({
-  numberOfQuestions: string().required(
-    'eLearning.onlineExams.addAI.validation.numberOfQuestionsRequired'
-  ),
-  totalPoints: string().required('eLearning.onlineExams.addAI.validation.totalPointsRequired'),
   resultVisibility: string()
     .default('afterExam')
     .required('eLearning.onlineExams.addAI.validation.resultVisibilityRequired'),

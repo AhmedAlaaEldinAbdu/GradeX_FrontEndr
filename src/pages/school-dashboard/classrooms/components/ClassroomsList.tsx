@@ -35,6 +35,7 @@ export default function ClassroomsList() {
 
   // Grades
   const grades = useAppSelector((state) => state.grades.grades);
+  const totalStudents = useAppSelector((state) => state.grades.totalStudentsCount);
   const isLoadingGrades = useAppSelector((state) => state.grades.isLoading);
   const isLoading = isLoadingGrades;
 
@@ -80,11 +81,6 @@ export default function ClassroomsList() {
   const shouldShowEmptyState = !isLoading && !hasDisplayableStages && !hasActiveFilters;
   const shouldShowContent = isLoading || hasDisplayableStages || hasActiveFilters;
 
-  // Top-of-page aggregate metrics derived from the grades response.
-  // - Educational stages: count of distinct lkSchoolStageId values.
-  // - Classrooms: sum of classroomCount across every grade.
-  // NOTE: Total students is intentionally 0 until the API exposes a student
-  // count on grades; wire it through here once that field lands.
   const { totalEducationalStages, totalClassrooms } = useMemo(() => {
     const list = Array.isArray(grades) ? grades : [];
     const stageIds = new Set<string>();
@@ -99,7 +95,6 @@ export default function ClassroomsList() {
       totalClassrooms: classrooms,
     };
   }, [grades]);
-  const totalStudents = 0;
 
   const maxStudentCount = useMemo(
     () =>

@@ -7,6 +7,8 @@ export type ExamDetailsItem = {
   source: ExamSource;
   difficulty: ExamDifficulty;
   fullTitle: string;
+  fullTitleSuffix?: string;
+  titleDirection?: 'rtl' | 'ltr';
   stage: string;
   date: string;
   time: string;
@@ -59,7 +61,7 @@ export type ExamStudentItem = {
   id: string;
   name: string;
   /** null when the student has not been graded yet. */
-  grade: StudentGrade | null;
+  grade: string | null;
   score: number | null;
   timeMinutes: number;
 };

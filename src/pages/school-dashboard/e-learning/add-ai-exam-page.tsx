@@ -55,16 +55,19 @@ const STEP1_FIELDS: (keyof AIExamProps)[] = [
   'academicSystem',
   'grades',
   'classrooms',
+  'bookId',
+  'pageFrom',
+  'pageTo',
   'targetAudience',
   'studentIds',
   'startDate',
   'endDate',
-  'passingGrade',
 ];
 const STEP2_FIELDS: (keyof AIExamProps)[] = [
   'numberOfQuestions',
   'totalPoints',
   'passingGrade',
+  'duration',
   'resultVisibility',
   'difficultyEasy',
   'difficultyMedium',
@@ -215,6 +218,9 @@ const buildGeneratePayload = (values: AIExamProps): GenerateAIExamQuestionsReque
   mediumPercentage: toNumber(values.difficultyMedium),
   hardPercentage: toNumber(values.difficultyHard),
   questionTypes: DEFAULT_AI_QUESTION_TYPES,
+  bookId: values.bookId,
+  pageFrom: toNumber(values.pageFrom),
+  pageTo: toNumber(values.pageTo),
 });
 
 const buildCreatePayload = (
@@ -286,6 +292,9 @@ export default function AddAIExamPage() {
       academicSystem: '',
       grades: [],
       classrooms: [],
+      bookId: '',
+      pageFrom: '',
+      pageTo: '',
       targetAudience: 'all',
       studentIds: [],
       startDate: '',

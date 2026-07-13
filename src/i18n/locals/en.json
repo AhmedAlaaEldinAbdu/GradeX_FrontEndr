@@ -188,6 +188,24 @@
           "lessonDuration": "Lesson Duration (minutes)",
           "lessonDurationPlaceholder": "Select lesson duration",
           "cover": "Course Cover Image"
+        },
+        "validation": {
+          "nameArRequired": "Please enter the course name in the first language",
+          "nameEnRequired": "Please enter the course name in the second language",
+          "subjectRequired": "Please select a subject",
+          "teacherRequired": "Please select a teacher",
+          "startDateRequired": "Please select the course start date",
+          "endDateAfterStart": "End date must be after start date",
+          "lessonsCountRequired": "Please select the number of lessons",
+          "lessonsCountPositive": "Number of lessons must be greater than zero",
+          "coverRequired": "Please upload a course cover image",
+          "stageRequired": "Please select at least one educational stage",
+          "classroomsRequired": "Please select at least one class",
+          "studentsRequired": "Please select at least one student",
+          "lecturesRequired": "Please add at least one lecture",
+          "lectureNameArRequired": "Please enter the lecture name in the first language",
+          "lectureNameEnRequired": "Please enter the lecture name in the second language",
+          "lectureVideoRequired": "Please upload a lecture video"
         }
       }
     },
@@ -232,8 +250,8 @@
           "totalPointsPlaceholder": "Select the total points",
           "examDuration": "Exam duration (minutes)",
           "examDurationPlaceholder": "Select the exam duration (minutes)",
-          "passingGrade": "Passing grade %",
-          "passingGradePlaceholder": "Enter the passing grade %",
+          "passingGrade": "Passing grade",
+          "passingGradePlaceholder": "Enter the passing grade",
           "resultVisibility": "Result visibility to student",
           "resultAfterExam": "Right after the exam",
           "resultAfterEachQuestion": "Show result after each question"
@@ -284,6 +302,15 @@
           "stagePlaceholder": "Select the educational stage",
           "grade": "Class",
           "gradePlaceholder": "Select classes",
+          "book": "Book name",
+          "bookPlaceholder": "Select the book name",
+          "selectSubjectAndGradeFirst": "Select subject and class first",
+          "loadingBooks": "Loading books...",
+          "noBooksAvailable": "No books available for the selected subject and class",
+          "pageFrom": "Page start",
+          "pageFromPlaceholder": "Select pages",
+          "pageTo": "Page end",
+          "pageToPlaceholder": "Select pages",
           "targetAudience": "Exam is directed to",
           "allClasses": "All class students",
           "specificStudents": "Specific students",
@@ -359,6 +386,11 @@
           "topicRequired": "The lesson / topic is required",
           "languageRequired": "The language is required",
           "subjectRequired": "The subject is required",
+          "bookRequired": "The book name is required",
+          "pageFromRequired": "The page start is required",
+          "pageToRequired": "The page end is required",
+          "pageRange": "Pages must be greater than 0",
+          "pageToAfterFrom": "The page end must be greater than or equal to the page start",
           "stageRequired": "The educational stage is required",
           "gradeRequired": "The class is required",
           "targetAudienceRequired": "Please select the target audience",
@@ -1331,8 +1363,7 @@
         "experienceYears": "Years of experience",
         "yearsUnit": "years",
         "previousExperience": "Previous experience (most recent first)",
-        "languagesLevels": "Languages and level of each",
-        "collage": "College"
+        "languagesLevels": "Languages and level of each"
       },
       "schedulePopup": {
         "title": "Schedule interview",
@@ -1799,8 +1830,7 @@
       "modified": "Modified",
       "completed": "Completed",
       "appointmentScheduled": "Appointment Scheduled",
-      "interviewScheduled": "Interview Scheduled",
-      "cancelled": "Cancelled"
+      "interviewScheduled": "Interview Scheduled"
     },
     "actions": {
       "accept": "Accept",
@@ -2705,7 +2735,6 @@
     "scheduled": "Scheduled",
     "completed": "Completed",
     "cancelled": "Cancelled",
-    "interviewNotFound": "No interviews found",
     "searchByName": "Search by candidate name",
     "interviewAddedSuccessfully": "Interview added successfully",
     "interviewUpdatedSuccessfully": "Interview updated successfully",

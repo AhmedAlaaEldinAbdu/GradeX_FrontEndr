@@ -5,20 +5,20 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import { fetchClassroomsByGrade } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import SelectStudentsPopup, { type SelectedStudent } from '../popups/SelectStudentsPopup';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 
 export type StudentsData = {
-  stage: string;
+  stage: string[];
   grades: string[];
   audience: 'all' | 'specific';
   selectedStudents: SelectedStudent[];
 };
 
 export const INITIAL_STUDENTS_DATA: StudentsData = {
-  stage: '',
+  stage: [],
   grades: [],
   audience: 'all',
   selectedStudents: [],
@@ -27,9 +27,14 @@ export const INITIAL_STUDENTS_DATA: StudentsData = {
 type CourseStudentsStepProps = {
   data: StudentsData;
   onChange: (data: StudentsData) => void;
+  errors?: Partial<Record<keyof StudentsData, string>>;
 };
 
-export default function CourseStudentsStep({ data, onChange }: CourseStudentsStepProps) {
+export default function CourseStudentsStep({
+  data,
+  onChange,
+  errors = {},
+}: CourseStudentsStepProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const isArabic = i18n.language === 'ar';
@@ -37,25 +42,40 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
   const [popupOpen, setPopupOpen] = useState(false);
 
   const grades = useAppSelector((s) => s.grades.grades);
-  const gradeClassrooms = useAppSelector((s) => s.classrooms.gradeClassrooms);
-  const isLoadingClassrooms = useAppSelector((s) => s.classrooms.isLoadingGradeClassrooms);
+  const classrooms = useAppSelector((s) => s.classrooms.classrooms);
+  const isLoadingClassrooms = useAppSelector((s) => s.classrooms.isLoading);
+  const selectedStageIdsKey = data.stage.join('|');
 
   // Stage (grade level) options come from the grades endpoint.
   useEffect(() => {
     if (schoolBranchId) dispatch(fetchGrades(schoolBranchId));
   }, [dispatch, schoolBranchId]);
 
-  // When returning to the step with a stage already chosen, reload its classrooms.
+  // When returning to the step with stages already chosen, reload their classrooms.
   useEffect(() => {
-    if (data.stage) dispatch(fetchClassroomsByGrade(data.stage));
-  }, [dispatch, data.stage]);
+    if (data.stage.length === 0) return;
+
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: {
+          ...(data.stage.length === 1 && { gradeId: data.stage[0] }),
+          ...(schoolBranchId && { schoolBranchId }),
+        },
+      })
+    );
+  }, [dispatch, schoolBranchId, data.stage, selectedStageIdsKey]);
 
   const set = (partial: Partial<StudentsData>) => onChange({ ...data, ...partial });
 
-  const handleStageChange = (gradeId: string) => {
-    // Switching stage invalidates the previously picked classrooms/students.
-    // The effect above reloads this stage's classrooms once `data.stage` updates.
-    set({ stage: gradeId, grades: [], selectedStudents: [] });
+  const normalizeMultiValue = (value: string | string[]) =>
+    (Array.isArray(value) ? value : [value]).filter(Boolean);
+
+  const handleStageChange = (value: string | string[]) => {
+    // Switching stages invalidates the previously picked classrooms/students.
+    // The effect above reloads selected stages' classrooms once `data.stage` updates.
+    set({ stage: normalizeMultiValue(value), grades: [], selectedStudents: [] });
   };
 
   const stageOptions = useMemo(
@@ -64,34 +84,52 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
   );
 
   // الصف options are the classrooms that belong to the selected stage.
-  const gradeOptions = useMemo(
-    () =>
-      gradeClassrooms.map((c) => ({ value: c.id, label: isArabic ? c.name : c.nameEn || c.name })),
-    [gradeClassrooms, isArabic]
-  );
+  const gradeOptions = useMemo(() => {
+    const selectedStageIds = new Set(data.stage);
+
+    return classrooms
+      .filter((c) => selectedStageIds.has(c.gradeId))
+      .map((c) => ({ value: c.id, label: isArabic ? c.name : c.nameEn || c.name }));
+  }, [classrooms, data.stage, isArabic]);
 
   // Classrooms handed to the popup so it can load their students.
   // When specific classes are chosen → those; otherwise fall back to the whole stage.
   const selectedClassrooms = useMemo(() => {
+    const selectedStageIds = new Set(data.stage);
+    const selectedClassroomIds = new Set(data.grades);
+    const stageClassrooms = classrooms.filter((c) => selectedStageIds.has(c.gradeId));
     const source = data.grades.length
-      ? gradeClassrooms.filter((c) => data.grades.includes(c.id))
-      : gradeClassrooms;
+      ? stageClassrooms.filter((c) => selectedClassroomIds.has(c.id))
+      : stageClassrooms;
+
     return source.map((c) => ({ id: c.id, name: isArabic ? c.name : c.nameEn || c.name }));
-  }, [gradeClassrooms, data.grades, isArabic]);
+  }, [classrooms, data.grades, data.stage, isArabic]);
 
   return (
     <div className="flex flex-col gap-5">
-      <FormField label={t('eLearning.courses.add.students.stage')} required>
+      <FormField
+        label={t('eLearning.courses.add.students.stage')}
+        required
+        name="stage"
+        error={errors.stage}
+      >
         <CustomSelect
           value={data.stage}
-          onChange={(v) => handleStageChange(v as string)}
+          onChange={handleStageChange}
           options={stageOptions}
           placeholder={t('eLearning.courses.add.students.stagePlaceholder')}
+          isMulti
           showSearch={false}
+          error={!!errors.stage}
         />
       </FormField>
 
-      <FormField label={t('eLearning.courses.add.students.grade')} required>
+      <FormField
+        label={t('eLearning.courses.add.students.grade')}
+        required
+        name="grades"
+        error={errors.grades}
+      >
         <CustomSelect
           value={data.grades}
           onChange={(v) => set({ grades: v as string[] })}
@@ -99,11 +137,17 @@ export default function CourseStudentsStep({ data, onChange }: CourseStudentsSte
           placeholder={t('eLearning.courses.add.students.gradePlaceholder')}
           isMulti
           showSearch={false}
-          disabled={!data.stage || isLoadingClassrooms}
+          disabled={data.stage.length === 0 || isLoadingClassrooms}
+          error={!!errors.grades}
         />
       </FormField>
 
-      <FormField label={t('eLearning.courses.add.students.audience')} required>
+      <FormField
+        label={t('eLearning.courses.add.students.audience')}
+        required
+        name="selectedStudents"
+        error={errors.selectedStudents}
+      >
         <div className="flex items-center gap-8 pt-1">
           <label className="flex cursor-pointer items-center gap-2">
             <input

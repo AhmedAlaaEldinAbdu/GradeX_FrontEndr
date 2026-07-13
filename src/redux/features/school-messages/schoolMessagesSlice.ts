@@ -2,6 +2,7 @@ import { createSlice, type ActionReducerMapBuilder, createAsyncThunk } from '@re
 import { schoolMessageApiService } from '@/services/api/requests/school-message.service';
 import type {
   CreateSchoolMessageRequest,
+  MessageStatusCount,
   SchoolMessageDto,
   SchoolMessagesListResponse,
   SchoolMessagesQueryParams,
@@ -17,6 +18,10 @@ export interface SchoolMessagesState {
   totalPages: number;
   totalItems: number;
   pageSize: number;
+  stats: {
+    totalMessages: number;
+    statusCounts: MessageStatusCount[];
+  };
 }
 
 const initialState: SchoolMessagesState = {
@@ -28,6 +33,10 @@ const initialState: SchoolMessagesState = {
   totalPages: 1,
   totalItems: 0,
   pageSize: 10,
+  stats: {
+    totalMessages: 0,
+    statusCounts: [],
+  },
 };
 
 export const createSchoolMessage = createAsyncThunk<void, CreateSchoolMessageRequest>(
@@ -80,6 +89,10 @@ const schoolMessagesSlice = createSlice({
         state.totalPages = action.payload.totalPages;
         state.totalItems = action.payload.totalItems;
         state.pageSize = action.payload.pageSize;
+        state.stats = {
+          totalMessages: action.payload.totalMessages,
+          statusCounts: action.payload.statusCounts,
+        };
       })
       .addCase(fetchSchoolMessages.rejected, (state, action) => {
         state.isLoading = false;
