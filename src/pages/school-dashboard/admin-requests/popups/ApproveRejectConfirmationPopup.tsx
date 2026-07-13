@@ -33,6 +33,7 @@ const ApproveRejectConfirmationPopup: React.FC<ApproveRejectConfirmationPopupPro
       confirmButtonText: t('adminRequests.earlyLeave.approve', 'Approve'),
       confirmButtonClass: 'bg-green-600 hover:bg-green-700 text-white',
       containerClass: 'bg-green-50',
+      btnColor: 'success',
     },
     reject: {
       icon: XmarkCircleRedIcon,
@@ -43,6 +44,7 @@ const ApproveRejectConfirmationPopup: React.FC<ApproveRejectConfirmationPopupPro
       confirmButtonText: t('adminRequests.earlyLeave.reject', 'Reject'),
       confirmButtonClass: 'bg-red-600 hover:bg-red-700 text-white',
       containerClass: 'bg-red-50',
+      btnColor: 'danger',
     },
   };
 
@@ -70,8 +72,13 @@ const ApproveRejectConfirmationPopup: React.FC<ApproveRejectConfirmationPopupPro
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3 sm:flex-row-reverse sm:gap-3">
-          <Button onClick={handleConfirm} disabled={isLoading} className="flex-1">
-            {isLoading ? t('common.processing') : t('common.confirm')}
+          <Button
+            variant={current.btnColor === 'danger' ? 'danger' : 'success'}
+            onClick={handleConfirm}
+            disabled={isLoading}
+            className="flex-1"
+          >
+            {isLoading ? t('common.processing') : current.confirmButtonText}
           </Button>
           <Button variant="outline" onClick={onClose} disabled={isLoading} className="flex-1">
             {t('common.cancel')}
