@@ -18,6 +18,7 @@ import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import EarlyLeaveDetailsPopup from '../popups/EarlyLeaveDetailsPopup';
+import ApproveRejectConfirmationPopup from '../popups/ApproveRejectConfirmationPopup';
 import type { EarlyLeaveRequestDto } from '@/services/api/types/teacher-requests.types';
 
 const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
@@ -74,6 +75,9 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const [selectedStatus, setSelectedStatus] = useState<EarlyLeaveRequestStatus | ''>('');
   const [page, setPage] = useState(1);
   const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [confirmationType, setConfirmationType] = useState<'approve' | 'reject'>('approve');
+  const [selectedRequest, setSelectedRequest] = useState<EarlyLeaveRequestDto | null>(null);
 
   const PAGE_SIZE = 10;
 
@@ -130,6 +134,29 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
 
   const handleCloseDetailsPopup = () => {
     setIsDetailsPopupOpen(false);
+  };
+
+  const handleApprove = (request: EarlyLeaveRequestDto) => {
+    setSelectedRequest(request);
+    setConfirmationType('approve');
+    setIsConfirmationOpen(true);
+  };
+
+  const handleReject = (request: EarlyLeaveRequestDto) => {
+    setSelectedRequest(request);
+    setConfirmationType('reject');
+    setIsConfirmationOpen(true);
+  };
+
+  const handleConfirmation = async () => {
+    // TODO: Implement API call to approve/reject when endpoint is provided
+    // Example: await dispatch(updateEarlyLeaveStatus({...}))
+    console.log(`${confirmationType}:`, selectedRequest);
+  };
+
+  const handleCloseConfirmation = () => {
+    setIsConfirmationOpen(false);
+    setSelectedRequest(null);
   };
 
   const statusOptions = [
@@ -227,7 +254,7 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
                 variant="success"
                 ariaLabel={t('adminRequests.popup.approve')}
                 className="rounded-full bg-green-100 p-2.5 hover:bg-green-200"
-                onClick={() => handleViewDetails(row)}
+                onClick={() => handleApprove(row)}
               >
                 <CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />
               </IconButton>
@@ -235,7 +262,7 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
                 variant="danger"
                 ariaLabel={t('adminRequests.popup.reject')}
                 className="rounded-full bg-red-100 p-2.5 hover:bg-red-200"
-                onClick={() => handleViewDetails(row)}
+                onClick={() => handleReject(row)}
               >
                 <CustomImage src={XmarkCircleRedIcon} alt="" className="h-5 w-5" />
               </IconButton>
@@ -323,6 +350,12 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         isOpen={isDetailsPopupOpen}
         onClose={handleCloseDetailsPopup}
         request={currentEarlyLeave}
+      />
+      <ApproveRejectConfirmationPopup
+        isOpen={isConfirmationOpen}
+        onClose={handleCloseConfirmation}
+        type={confirmationType}
+        onConfirm={handleConfirmation}
       />
     </>
   );
