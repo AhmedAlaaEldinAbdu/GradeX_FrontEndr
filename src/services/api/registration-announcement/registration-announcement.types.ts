@@ -27,6 +27,18 @@ export interface GetRegistrationAnnouncementByIdResponse {
   validationErrors: null;
 }
 
+export interface RegistrationAnnouncementValidationError {
+  propertyName: string;
+  errorMessage: string;
+}
+
+export interface RegistrationAnnouncementMutationResponse {
+  data: unknown;
+  isSuccess: boolean;
+  message: string;
+  validationErrors: RegistrationAnnouncementValidationError[] | string[] | null;
+}
+
 export interface RegistrationAnnouncementQueryParams {
   pageIndex?: number;
   pageSize?: number;
