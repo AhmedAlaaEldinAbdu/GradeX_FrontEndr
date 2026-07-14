@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Button from '@/shared/components/Button';
@@ -18,6 +18,9 @@ import {
   type AdminTeacherNoteParty,
 } from '../admin-requests.types';
 import TeacherNoteDetailsPopup from '../popups/TeacherNoteDetailsPopup';
+import { teacherRequestsApiService } from '@/services/api/teacher-requests/teacher-requests.service';
+import type { TeacherNotesQueryParams } from '@/services/api/types/teacher-requests.types';
+import { NoteType } from '@/shared/enums/enums';
 
 const PAGE_SIZE = 10;
 
@@ -49,119 +52,67 @@ const TeacherNotesTab: React.FC = () => {
   const { showToast } = useToast();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const [selectedNoteType, setSelectedNoteType] = useState('');
   const [page, setPage] = useState(1);
   const [statusById, setStatusById] = useState<Record<string, AdminTeacherNoteStatus>>({});
   const [selectedNote, setSelectedNote] = useState<AdminTeacherNoteDto | null>(null);
+  const [notes, setNotes] = useState<AdminTeacherNoteDto[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
 
   const schoolLabel = t('requests.schoolLabel');
 
-  const mockNotes = useMemo<AdminTeacherNoteDto[]>(() => {
-    const teacherName = t('adminRequests.teacherNotes.sample.teacherName');
-    const secondTeacherName = t('adminRequests.teacherNotes.sample.secondTeacherName');
-    const schoolName = t('adminRequests.teacherNotes.sample.schoolName');
-    const noteContent = t('adminRequests.teacherNotes.sample.content');
-    const stage = t('adminRequests.teacherNotes.sample.stage');
-    const classroom = t('adminRequests.teacherNotes.sample.classroom');
+  const loadNotes = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const params: TeacherNotesQueryParams = {
+        PageNumber: page,
+        PageSize: PAGE_SIZE,
+        SearchTeacherName: searchTerm || undefined,
+        NoteType: selectedNoteType ? (Number(selectedNoteType) as any) : undefined,
+        Date: selectedDate || undefined,
+      };
 
-    const schoolParty: AdminTeacherNoteParty = {
-      name: schoolName,
-      avatarPath: null,
-      profilePath: null,
-      isSchool: true,
-    };
+      const response = await teacherRequestsApiService.getTeacherNotes(params);
 
-    const teacherParty: AdminTeacherNoteParty = {
-      name: teacherName,
-      avatarPath: null,
-      profilePath: null,
-    };
+      if (response.isSuccess && response.data) {
+        setNotes(response.data.teacherRequestMessages || []);
+        setTotalPages(response.data.totalPages || 1);
+      } else {
+        showToast({
+          message: response.message || t('common.error'),
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      showToast({
+        message: t('common.error'),
+        type: 'error',
+      });
+      console.error('Failed to fetch teacher notes:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, searchTerm, selectedDate, selectedNoteType, t, showToast]);
 
-    const secondTeacherParty: AdminTeacherNoteParty = {
-      name: secondTeacherName,
-      avatarPath: null,
-      profilePath: null,
-    };
+  useEffect(() => {
+    loadNotes();
+  }, [loadNotes]);
 
-    return [
-      {
-        id: 'teacher-note-1',
-        sender: teacherParty,
-        recipient: schoolParty,
-        status: AdminTeacherNoteStatus.Pending,
-        stage,
-        classroom,
-        sentDate: '2020-01-01',
-        noteContent,
-      },
-      {
-        id: 'teacher-note-2',
-        sender: teacherParty,
-        recipient: schoolParty,
-        status: AdminTeacherNoteStatus.Viewed,
-        stage: null,
-        classroom: null,
-        sentDate: '2020-01-01',
-        noteContent,
-      },
-      {
-        id: 'teacher-note-3',
-        sender: secondTeacherParty,
-        recipient: teacherParty,
-        status: AdminTeacherNoteStatus.Pending,
-        stage,
-        classroom,
-        sentDate: '2020-01-01',
-        noteContent,
-      },
-      {
-        id: 'teacher-note-4',
-        sender: teacherParty,
-        recipient: schoolParty,
-        status: AdminTeacherNoteStatus.Pending,
-        stage: null,
-        classroom: null,
-        sentDate: '2020-01-01',
-        noteContent,
-      },
-      {
-        id: 'teacher-note-5',
-        sender: teacherParty,
-        recipient: schoolParty,
-        status: AdminTeacherNoteStatus.Viewed,
-        stage: null,
-        classroom: null,
-        sentDate: '2020-01-01',
-        noteContent,
-      },
-      {
-        id: 'teacher-note-6',
-        sender: teacherParty,
-        recipient: schoolParty,
-        status: AdminTeacherNoteStatus.Pending,
-        stage: null,
-        classroom: null,
-        sentDate: '2020-01-01',
-        noteContent,
-      },
-    ];
-  }, [t]);
-
-  const notes = useMemo(
+  const notesWithStatus = useMemo(
     () =>
-      mockNotes.map((note) => ({
+      notes.map((note) => ({
         ...note,
         status: statusById[note.id] ?? note.status,
       })),
-    [mockNotes, statusById]
+    [notes, statusById]
   );
 
   const filteredNotes = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    return notes.filter((note) => {
-      const matchesStatus = !selectedStatus || note.status === Number(selectedStatus);
+    return notesWithStatus.filter((note) => {
       const matchesDate = !selectedDate || note.sentDate.startsWith(selectedDate);
       const searchableText = [
         note.sender.name,
@@ -175,9 +126,9 @@ const TeacherNotesTab: React.FC = () => {
         .toLowerCase();
       const matchesSearch = !normalizedSearch || searchableText.includes(normalizedSearch);
 
-      return matchesStatus && matchesDate && matchesSearch;
+      return matchesDate && matchesSearch;
     });
-  }, [notes, searchTerm, selectedDate, selectedStatus]);
+  }, [notesWithStatus, searchTerm, selectedDate]);
 
   const markViewed = (note: AdminTeacherNoteDto) => {
     setStatusById((current) => ({
@@ -242,11 +193,7 @@ const TeacherNotesTab: React.FC = () => {
             className="h-10 w-10"
             onClick={() => setSelectedNote(row)}
           >
-            <CustomImage
-              src={EyeDarkBlueIcon}
-              alt={t('common.view')}
-              className="h-6 w-6"
-            />
+            <CustomImage src={EyeDarkBlueIcon} alt={t('common.view')} className="h-6 w-6" />
           </IconButton>
         </div>
       ),
@@ -343,28 +290,32 @@ const TeacherNotesTab: React.FC = () => {
     },
     {
       type: 'custom',
-      name: 'status-filter',
-      value: selectedStatus,
+      name: 'note-type-filter',
+      value: selectedNoteType,
       onChange: () => {},
       width: '20%',
       customComponent: (
         <CustomSelect
-          value={selectedStatus}
+          value={selectedNoteType}
           onChange={(value) => {
-            setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setSelectedNoteType(Array.isArray(value) ? (value[0] ?? '') : (value as string));
             setPage(1);
           }}
           options={[
             {
-              value: String(AdminTeacherNoteStatus.Pending),
-              label: t('adminRequests.teacherNotes.status.pending'),
+              value: String(NoteType.Behavioral),
+              label: t('adminRequests.teacherNotes.noteType.behavioral'),
             },
             {
-              value: String(AdminTeacherNoteStatus.Viewed),
-              label: t('adminRequests.teacherNotes.status.viewed'),
+              value: String(NoteType.Academic),
+              label: t('adminRequests.teacherNotes.noteType.academic'),
+            },
+            {
+              value: String(NoteType.Medical),
+              label: t('adminRequests.teacherNotes.noteType.medical'),
             },
           ]}
-          placeholder={t('adminRequests.teacherNotes.filters.status')}
+          placeholder={t('adminRequests.teacherNotes.filters.noteType')}
           showSearch={false}
         />
       ),
@@ -391,12 +342,10 @@ const TeacherNotesTab: React.FC = () => {
 
   const handleResetFilters = () => {
     setSearchTerm('');
-    setSelectedStatus('');
     setSelectedDate('');
+    setSelectedNoteType('');
     setPage(1);
   };
-
-  const totalPages = Math.max(1, Math.ceil(filteredNotes.length / PAGE_SIZE));
 
   return (
     <Card className="rounded-2xl" padding="lg">
@@ -406,10 +355,11 @@ const TeacherNotesTab: React.FC = () => {
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
-        pagination={{ page, limit: PAGE_SIZE, total: filteredNotes.length, totalPages }}
+        pagination={{ page, limit: PAGE_SIZE, total: notes.length, totalPages }}
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
         emptyMessage="adminRequests.empty"
+        isLoading={isLoading}
         t={t}
       />
 
