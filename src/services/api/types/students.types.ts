@@ -27,6 +27,7 @@ export interface StudentDto {
   motherCountryCode: string | null;
   emergencyNumber: string | null;
   emergencyCountryCode: string | null;
+  image?: string | null;
   profilePicture: string | null;
   schoolBrancheId: string | null;
   schoolBranches: string | null;

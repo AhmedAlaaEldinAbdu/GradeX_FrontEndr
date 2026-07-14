@@ -90,11 +90,9 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
         name: [student.firstName, student.secondName, student.thirdName, student.fourthName]
           .filter(Boolean)
           .join(' ') || student.name,
-        imageSrc: student.profilePicture
-          ? `${baseUrl}/${student.profilePicture.replace(/^\/+/, '')}`
-          : ProfileImage,
+        imageSrc: student.image || student.profilePicture || ProfileImage,
       })),
-    [baseUrl, classroomStudents]
+    [classroomStudents]
   );
 
   const filteredStudents = useMemo(
