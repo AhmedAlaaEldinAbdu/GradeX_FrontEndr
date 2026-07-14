@@ -3689,6 +3689,7 @@
     "selectEndTime": "Выберите время окончания",
     "scheduleInfo": "Информация о расписании",
     "lessonType": "Тип урока",
+    "applyToAllWeeks": "Применить ко всем неделям",
     "inPerson": "Очно",
     "remote": "Удалённо",
     "loadingMaterials": "Загрузка предметов...",
