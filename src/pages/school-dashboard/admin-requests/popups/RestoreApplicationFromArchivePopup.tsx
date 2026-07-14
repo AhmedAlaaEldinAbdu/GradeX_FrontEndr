@@ -48,8 +48,8 @@ const RestoreApplicationFromArchivePopup: React.FC<RestoreApplicationFromArchive
         type: 'error',
         isRaw: true,
       });
-      setIsProcessing(false);
     }
+    setIsProcessing(false);
   };
 
   return (
