@@ -89,6 +89,7 @@ function buildLessonFormData(data: CreateLessonRequest, attachmentFiles?: File[]
   formData.append('HomeworkFromPage', String(data.homeworkFromPage));
   formData.append('HomeworkToPage', String(data.homeworkToPage));
   formData.append('IsHomeworkForAllStudents', String(data.isHomeworkForAllStudents));
+  formData.append('ApplyToAllWeeks', String(data.applyToAllWeeks ?? false));
 
   // Optional fields
   if (data.lessonsStudent && data.lessonsStudent.length > 0) {
@@ -180,6 +181,7 @@ export async function updateLesson(
 
   // Boolean and descriptions
   formData.append('dto[0].isHomeworkForAllStudents', String(data.isHomeworkForAllStudents ?? true));
+  formData.append('dto[0].ApplyToAllWeeks', String(data.applyToAllWeeks ?? false));
   if (data.homeworkDescriptionEn)
     formData.append('dto[0].homeworkDescriptionEn', data.homeworkDescriptionEn);
   if (data.homeworkDescriptionAr)
@@ -278,6 +280,7 @@ export async function bulkUpdateLessons(
       `${prefix}.isHomeworkForAllStudents`,
       String(data.isHomeworkForAllStudents ?? true)
     );
+    formData.append(`${prefix}.ApplyToAllWeeks`, String(data.applyToAllWeeks ?? false));
     if (data.homeworkDescriptionEn)
       formData.append(`${prefix}.homeworkDescriptionEn`, data.homeworkDescriptionEn);
     if (data.homeworkDescriptionAr)
