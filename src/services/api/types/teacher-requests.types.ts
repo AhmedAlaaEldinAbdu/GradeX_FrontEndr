@@ -6,7 +6,7 @@
  * index signatures with the real fields once the API response schemas are
  * provided. Query params and request bodies already match the swagger spec.
  */
-import type { MessageStatus } from '@/shared/enums/enums';
+import type { MessageStatus, NoteType } from '@/shared/enums/enums';
 import type { ApiResponseModel } from '../config';
 
 // ============================================================================
@@ -79,6 +79,7 @@ export interface TeacherNotesQueryParams {
   PageNumber?: number;
   PageSize?: number;
   SearchTeacherName?: string;
+  NoteType?: NoteType;
   /** ISO date-time string. */
   Date?: string;
 }
