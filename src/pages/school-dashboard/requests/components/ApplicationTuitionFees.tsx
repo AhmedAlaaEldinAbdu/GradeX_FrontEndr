@@ -13,6 +13,8 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
 
   const total = data.total;
   const discountTotal = data.discountTotal;
+  const hasPaidServices = data.paidServices?.length > 0;
+  const hasBooks = Boolean(data.books?.length);
 
   return (
     <div className="mb-8 rounded-2xl border border-gray-200 p-6">
@@ -48,24 +50,44 @@ const ApplicationTuitionFees: React.FC<ApplicationTuitionFeesProps> = ({ data })
         </div>
       </div>
 
-      {/* Paid Services Label */}
-      {data.paidServices?.length > 0 && (
+      {/* Added Fees */}
+      {(hasPaidServices || hasBooks) && (
         <>
           <div className="mb-4 text-start text-sm font-bold text-gray-800">
             {t('studentApplications.details.addedFees')}:
           </div>
 
-          {/* Paid Services Grid - 4 columns */}
-          <div className="mb-6 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-4">
-            {data.paidServices.map((service) => (
-              <div key={service?.id || Math.random()} className="text-center">
-                <p className="text-sm font-bold text-gray-800">{service?.name || '-'}</p>
-                <p className="text-sm text-gray-500">
-                  {service?.amount?.toLocaleString() || '0'} {t('common.currencyRiyal')}
-                </p>
+          {hasPaidServices && (
+            <div className="mb-6 grid grid-cols-2 gap-x-4 gap-y-4 md:grid-cols-4">
+              {data.paidServices.map((service) => (
+                <div key={service?.id || service?.name} className="text-center">
+                  <p className="text-sm font-bold text-gray-800">{service?.name || '-'}</p>
+                  <p className="text-sm text-gray-500">
+                    {service?.amount?.toLocaleString() || '0'} {t('common.currencyRiyal')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {hasBooks && (
+            <div className="mb-6">
+              <div className="mb-3 text-start text-sm font-bold text-gray-800">
+                {t('studentApplications.details.books')}:
               </div>
-            ))}
-          </div>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {data.books?.map((book) => (
+                  <div key={book.id} className="rounded-xl border border-gray-100 p-3 text-start">
+                    <p className="text-sm font-bold text-gray-800">{book.name || '-'}</p>
+                    {book.code && <p className="mt-1 text-xs text-gray-500">{book.code}</p>}
+                    <p className="mt-2 text-sm text-gray-500">
+                      {book.price?.toLocaleString() || '0'} {t('common.currencyRiyal')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
 
