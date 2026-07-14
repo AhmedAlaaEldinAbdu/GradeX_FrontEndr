@@ -20,7 +20,6 @@ import CheckGreenIcon from '@gradex/assets/icons/CheckGreen.svg';
 
 import {
   WorkType,
-  JobApplicationStatus,
   type JobApplicationDto,
   EmployeeApplicationStatus,
 } from '../admin-requests.types';
