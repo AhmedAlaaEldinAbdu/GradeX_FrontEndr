@@ -24,6 +24,7 @@ import type {
   JobApplicationQualification,
   WorkType,
   JobApplicationStatus,
+  EmployeeApplicationStatus,
 } from './admin-requests.types';
 
 type LooseRecord = Record<string, unknown>;
@@ -311,7 +312,7 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
     email: str(firstDefined(r.teacherEmail, r.email)),
     phone: str(firstDefined(r.teacherPhoneNumber, r.phoneNumber, r.phone)),
     whatsapp: str(firstDefined(r.teacherPhoneNumber, r.phoneNumber, r.phone)),
-    status: numOr(firstDefined(r.applicationStatus, r.status)) as JobApplicationStatus,
+    status: numOr(firstDefined(r.applicationStatus, r.status)) as EmployeeApplicationStatus,
 
     // ── Details (TODO(api): confirm once the details response is provided) ──
     maritalStatus: str(
