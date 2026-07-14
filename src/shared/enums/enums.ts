@@ -228,3 +228,10 @@ export const MessageStatus = {
 } as const;
 export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus];
 
+export const NoteType = {
+  Behavioral: 1, // سلوكيًا
+  Academic: 2,   // أكاديميًا
+  Medical: 3     // صحيًا
+} as const;
+export type NoteType = (typeof NoteType)[keyof typeof NoteType];
+
