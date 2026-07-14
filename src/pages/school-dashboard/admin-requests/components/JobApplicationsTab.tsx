@@ -129,9 +129,13 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
     [data]
   );
 
-  const updateStatus = async (id: string, applicationStatus: number, successKey: string) => {
+  const updateStatus = async (
+    id: string,
+    applicationStatus: number,
+    successKey: string
+  ): Promise<boolean> => {
     try {
-      await dispatch(
+      const result = await dispatch(
         editApplicationsJobAdvertisementStatus({
           applicationsJobAdvertisementId: id,
           applicationStatus,
@@ -149,6 +153,7 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
             return false;
           }
         });
+      return result;
     } catch {
       showToast({ message: t('common.error'), type: 'error' });
       return false;
