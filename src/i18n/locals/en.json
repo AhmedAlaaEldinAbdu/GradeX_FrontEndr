@@ -1463,11 +1463,17 @@
       },
       "filters": {
         "status": "Request Status",
-        "date": "Date"
+        "date": "Date",
+        "noteType": "Note Type"
       },
       "toasts": {
         "markedViewed": "Note status updated successfully",
         "profilePending": "Employee profile will be connected with the backend."
+      },
+      "noteType": {
+        "behavioral": "Behavioral",
+        "academic": "Academic",
+        "medical": "Medical"
       },
       "sample": {
         "teacherName": "Ahmed Moataz Hassan",

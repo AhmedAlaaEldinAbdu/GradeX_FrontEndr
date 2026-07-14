@@ -1473,11 +1473,17 @@
       },
       "filters": {
         "status": "حالة الطلب",
-        "date": "التاريخ"
+        "date": "التاريخ",
+        "noteType": "نوع الملاحظة"
       },
       "toasts": {
         "markedViewed": "تم تحديث حالة الملاحظة بنجاح",
         "profilePending": "سيتم ربط ملف الموظف مع النظام لاحقًا."
+      },
+      "noteType": {
+        "behavioral": "سلوكيًا",
+        "academic": "أكاديميًا",
+        "medical": "صحيًا"
       },
       "sample": {
         "teacherName": "أحمد معتز حسن",
