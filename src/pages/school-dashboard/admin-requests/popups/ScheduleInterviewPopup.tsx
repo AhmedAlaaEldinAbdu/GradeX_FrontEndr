@@ -67,7 +67,6 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
   };
 
   const handleConfirm = async () => {
-    debugger;
 
     if (isProcessing || isSubmitting) return;
 
