@@ -16,7 +16,7 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
-import EditIcon from '@gradex/assets/icons/Edit.svg';
+import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EarlyLeaveDetailsPopup from '../popups/EarlyLeaveDetailsPopup';
 import ApproveRejectConfirmationPopup from '../popups/ApproveRejectConfirmationPopup';
 import type { EarlyLeaveRequestDto } from '@/services/api/types/teacher-requests.types';
@@ -176,10 +176,9 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         <IconButton
           variant="darkBlue"
           ariaLabel={t('common.view')}
-          imgClassName="h-5 w-5"
           onClick={() => handleViewDetails(row)}
         >
-          <CustomImage src={EyeDarkBlueIcon} alt="" className="h-6 w-6" />
+          <CustomImage src={EyeDarkBlueIcon} alt="view" className="h-6 w-6" />
         </IconButton>
       ),
       headerClassName: 'min-w-[120px] text-center',
@@ -247,28 +246,25 @@ const EarlyLeaveTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
               <IconButton
                 variant="success"
                 ariaLabel={t('adminRequests.popup.approve')}
-                className="rounded-full bg-green-100 p-2.5 hover:bg-green-200"
                 onClick={() => handleApprove(row)}
               >
-                <CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />
+                <CustomImage src={CheckMarkIcon} alt="approve" className="h-5 w-5" />
               </IconButton>
               <IconButton
                 variant="danger"
                 ariaLabel={t('adminRequests.popup.reject')}
-                className="rounded-full bg-red-100 p-2.5 hover:bg-red-200"
                 onClick={() => handleReject(row)}
               >
-                <CustomImage src={XmarkCircleRedIcon} alt="" className="h-5 w-5" />
+                <CustomImage src={XmarkCircleRedIcon} alt="reject" className="h-5 w-5" />
               </IconButton>
             </>
           ) : (
             <IconButton
               variant="blue"
-              ariaLabel={t('common.edit')}
-              className="rounded-full bg-green-100 p-2.5 hover:bg-green-200"
+              ariaLabel={t('common.view')}
               onClick={() => handleViewDetails(row)}
             >
-              <CustomImage src={EditIcon} alt="" className="h-5 w-5" />
+              <CustomImage src={EyeStyledIcon} alt="view" className="h-6 w-6" />
             </IconButton>
           )}
         </div>
