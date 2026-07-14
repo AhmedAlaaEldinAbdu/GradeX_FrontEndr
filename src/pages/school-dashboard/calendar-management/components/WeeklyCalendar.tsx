@@ -1148,6 +1148,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           homeworkDescriptionAr: fullLesson.homeworkDescriptionAr || '',
           homeworkDescriptionEn: fullLesson.homeworkDescriptionEn || '',
           isHomeworkForAllStudents: fullLesson.isHomeworkForAllStudents,
+          applyToAllWeeks: fullLesson.applyToAllWeeks ?? fullLesson.ApplyToAllWeeks ?? false,
           lessonsStudent: fullLesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
           attachments: fullLesson.attachments.map((a) => ({
             fileName: a.fileName,

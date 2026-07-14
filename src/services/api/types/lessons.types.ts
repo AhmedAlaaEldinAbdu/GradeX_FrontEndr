@@ -43,6 +43,8 @@ export interface Lesson {
   classroomNameAr: string;
   classroomNameEn: string | null;
   isHomeworkForAllStudents: boolean;
+  applyToAllWeeks?: boolean;
+  ApplyToAllWeeks?: boolean;
   lessonsStudent: LessonStudent[];
   attachments: LessonAttachment[];
 }
@@ -100,6 +102,7 @@ export interface CreateLessonRequest {
   endTime: string;
   homeworkFromPage: number;
   isHomeworkForAllStudents: boolean;
+  applyToAllWeeks: boolean;
   classroomId: string;
   date: string;
   startTime: string;
@@ -132,6 +135,7 @@ export interface LessonFormValues {
   endTime: string;
   date: string;
   isHomeworkForAllStudents: boolean;
+  applyToAllWeeks: boolean;
   studentIds: string[];
   schoolBranchesId: string;
 }

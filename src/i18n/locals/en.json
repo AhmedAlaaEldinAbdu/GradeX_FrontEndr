@@ -3805,6 +3805,7 @@
     "selectEndTime": "Select End Time",
     "scheduleInfo": "Schedule Information",
     "lessonType": "Lesson Type",
+    "applyToAllWeeks": "Apply to all weeks",
     "inPerson": "In-Person",
     "remote": "Remote",
     "loadingMaterials": "Loading subjects...",
