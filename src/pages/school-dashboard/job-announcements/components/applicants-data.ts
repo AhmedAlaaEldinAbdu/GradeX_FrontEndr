@@ -19,6 +19,7 @@ export const JOB_APPLICATION_STATUS = {
   PENDING: 3,
   DELETED: 4,
   ARCHIVED: 5,
+  INTERVIEW_SCHEDULED: 6,
 } as const;
 
 export type JobApplicationStatus =
