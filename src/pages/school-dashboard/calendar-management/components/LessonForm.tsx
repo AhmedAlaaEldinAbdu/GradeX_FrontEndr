@@ -51,6 +51,7 @@ export interface LessonFormData {
   date: string;
   startTime: string;
   endTime: string;
+  applyToAllWeeks: boolean;
 }
 
 export interface LessonAttachmentData {
@@ -90,6 +91,7 @@ function mapLessonToFormData(lesson: Lesson): LessonData {
     date: lesson.date ? lesson.date.split('T')[0] : '',
     startTime: lesson.startTime ? lesson.startTime.substring(0, 5) : '',
     endTime: lesson.endTime ? lesson.endTime.substring(0, 5) : '',
+    applyToAllWeeks: lesson.applyToAllWeeks ?? lesson.ApplyToAllWeeks ?? false,
     isHomeworkForAllStudents: lesson.isHomeworkForAllStudents,
     attachments:
       lesson.attachments?.map((a) => ({
@@ -193,6 +195,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
       date: normalizedInitialData?.date || dateParam || '',
       startTime: normalizedInitialData?.startTime || startTimeParam || '',
       endTime: normalizedInitialData?.endTime || endTimeParam || '',
+      applyToAllWeeks: normalizedInitialData?.applyToAllWeeks ?? false,
     },
   });
 
@@ -332,6 +335,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         date: normalizedInitialData.date,
         startTime: normalizedInitialData.startTime,
         endTime: normalizedInitialData.endTime,
+        applyToAllWeeks: normalizedInitialData.applyToAllWeeks ?? false,
       });
       // If there are selected students, set to 'specific', otherwise 'all'
       const hasStudents =
@@ -369,6 +373,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         startTime: data.startTime || '08:00',
         endTime: data.endTime || '09:00',
         isHomeworkForAllStudents: sendTo === 'all',
+        applyToAllWeeks: data.applyToAllWeeks,
         schoolBranchesId: schoolBranchId,
       };
 
@@ -552,6 +557,29 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                   )}
                 />
               </FormField>
+            </div>
+
+            <div className="mb-4">
+              <Controller
+                name="applyToAllWeeks"
+                control={control}
+                render={({ field }) => (
+                  <label
+                    htmlFor="applyToAllWeeks"
+                    className="flex cursor-pointer items-center gap-2 text-base text-black-800"
+                  >
+                    <input
+                      id="applyToAllWeeks"
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={(event) => field.onChange(event.target.checked)}
+                      onBlur={field.onBlur}
+                      className="h-4 w-4 accent-green-600"
+                    />
+                    <span>{t('lesson.applyToAllWeeks')}</span>
+                  </label>
+                )}
+              />
             </div>
 
             {/* Educational Stage & Grade/Classroom */}
