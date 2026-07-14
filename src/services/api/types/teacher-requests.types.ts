@@ -6,6 +6,7 @@
  * index signatures with the real fields once the API response schemas are
  * provided. Query params and request bodies already match the swagger spec.
  */
+import type { MessageStatus } from '@/shared/enums/enums';
 import type { ApiResponseModel } from '../config';
 
 // ============================================================================
@@ -68,6 +69,7 @@ export interface TeacherMessagesQueryParams {
   PageNumber?: number;
   PageSize?: number;
   SearchTeacherName?: string;
+  MessageStatus?: MessageStatus;
   /** ISO date-time string. */
   Date?: string;
 }
@@ -222,7 +224,7 @@ export interface EarlyLeaveRequestDto {
   attachments: EarlyLeaveAttachmentDto[];
 }
 
-/** A single row from `GET /TeacherRequests/teacher-request-messages`. */
+/** A single row from `GET /TeacherRequests/message`. */
 export interface TeacherMessageDto {
   id: string;
   schoolBranchId: string;
@@ -234,6 +236,7 @@ export interface TeacherMessageDto {
   classrooms: unknown[]; // TODO(api): define classroom type if needed
   receivers: unknown[]; // TODO(api): define receiver type if needed
   message: string;
+  messageStatus: MessageStatus;
   createdAt: string;
   sendType: number;
 }
@@ -276,9 +279,17 @@ export interface JobApplicationsListData extends PaginationMeta {
   totalInterviewScheduled: number;
 }
 
-/** Payload of `GET /TeacherRequests/teacher-request-messages`. */
+/** Status count item for message status distribution. */
+export interface StatusCount {
+  status: MessageStatus;
+  count: number;
+}
+
+/** Payload of `GET /TeacherRequests/message`. */
 export interface TeacherMessagesListData extends PaginationMeta {
   teacherRequestMessages: TeacherMessageDto[];
+  totalMessages: number;
+  statusCounts: StatusCount[];
 }
 
 /** Payload of `GET /TeacherRequestEarlyLeave`. */
