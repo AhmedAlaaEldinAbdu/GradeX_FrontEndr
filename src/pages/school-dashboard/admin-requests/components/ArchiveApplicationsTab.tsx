@@ -8,7 +8,7 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
-// import { useToast } from '@/shared/context/ToastContext';
+import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 
 import PdfIcon from '@gradex/assets/icons/Pdf.svg';
@@ -18,10 +18,12 @@ import RestoreBlueIcon from '@gradex/assets/icons/RestoreBlue.svg';
 
 import { WorkType, type JobApplicationDto } from '../admin-requests.types';
 import { fetchJobApplications } from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import type {
   JobApplicationsQueryParams,
   TeacherWorkSchedule,
 } from '@/services/api/types/teacher-requests.types';
+import { TeacherApplicationStatusMap as STATUS_MAP } from '@/services/api/types/teacher-requests.types';
 import { mapJobApplication } from '../admin-requests.mappers';
 import RestoreApplicationFromArchivePopup from '../popups/RestoreApplicationFromArchivePopup';
 import { JobApplicationStatus } from '@/shared/enums/enums';
@@ -44,6 +46,7 @@ const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) =
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const { jobApplications, jobApplicationsPagination, isJobApplicationsLoading } = useAppSelector(
     (state) => state.teacherRequests
@@ -86,6 +89,42 @@ const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) =
       loadApplications();
     }
   }, [isActive, loadApplications]);
+
+  const updateStatus = async (id: string, applicationStatus: number, successKey: string) => {
+    try {
+      await dispatch(
+        editApplicationsJobAdvertisementStatus({
+          applicationsJobAdvertisementId: id,
+          applicationStatus,
+        })
+      )
+        .unwrap()
+        .then((res: any) => {
+          if (res?.isSuccess) {
+            showToast({ message: t(successKey), type: 'success' });
+            loadApplications();
+            return true;
+          } else {
+            const message = res?.message || t('common.error');
+            showToast({ message, type: 'error' });
+            return false;
+          }
+        });
+    } catch {
+      showToast({ message: t('common.error'), type: 'error' });
+      return false;
+    }
+  };
+
+  const handleRestoreConfirm = async () => {
+    if (!selectedApplicationId) return;
+    await updateStatus(
+      selectedApplicationId,
+      STATUS_MAP.Pending,
+      'adminRequests.jobApplication.toasts.restored'
+    );
+    setRestorePopupOpen(false);
+  };
 
   const data = useMemo(() => jobApplications.map(mapJobApplication), [jobApplications]);
 
@@ -342,12 +381,6 @@ const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) =
     setPage(1);
   };
 
-  const handleRestoreConfirm = () => {
-    // API call to restore application will go here
-    setRestorePopupOpen(false);
-    loadApplications();
-  };
-
   return (
     <>
       <Card className="rounded-2xl" padding="lg">
@@ -374,7 +407,7 @@ const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) =
       <RestoreApplicationFromArchivePopup
         isOpen={isRestorePopupOpen}
         onClose={() => setRestorePopupOpen(false)}
-        onConfirm={handleRestoreConfirm}
+        onRestoreConfirm={handleRestoreConfirm}
         applicationName={selectedApplicationName}
         applicationId={selectedApplicationId}
       />
