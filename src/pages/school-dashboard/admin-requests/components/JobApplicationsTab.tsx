@@ -55,6 +55,9 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
+
 
   const { jobApplications, jobApplicationsPagination, isJobApplicationsLoading } = useAppSelector(
     (state) => state.teacherRequests
@@ -171,8 +174,14 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   };
 
   const handleScheduleConfirm = () => {
-    setScheduleTarget(null);
-    showToast({ message: t('adminRequests.jobApplication.toasts.scheduled'), type: 'success' });
+    if (!scheduleTarget) return;
+    updateStatus(
+      scheduleTarget.id,
+      JOB_APPLICATION_STATUS.INTERVIEW_SCHEDULED,
+      'adminRequests.jobApplication.toasts.scheduled'
+    ).then((success) => {
+      if (success) setScheduleTarget(null);
+    });
   };
 
   const handleArchiveConfirm = async () => {
@@ -496,7 +505,7 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         isOpen={Boolean(scheduleTarget)}
         onClose={() => setScheduleTarget(null)}
         onConfirm={handleScheduleConfirm}
-        schoolBranchesId={scheduleTarget?.schoolBranchesId}
+        schoolBranchesId={schoolBranchId}
         jobAdvertisementId={scheduleTarget?.jobAdvertismentId}
         teacherId={scheduleTarget?.teacherId}
         supervisorId={scheduleTarget?.supervisorId}
