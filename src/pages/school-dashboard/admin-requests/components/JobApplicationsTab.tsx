@@ -18,7 +18,12 @@ import ArchiveIcon from '@gradex/assets/icons/Archive.svg';
 import ClockBlueIcon from '@gradex/assets/icons/ClockBlue.svg';
 import CheckGreenIcon from '@gradex/assets/icons/CheckGreen.svg';
 
-import { WorkType, JobApplicationStatus, type JobApplicationDto } from '../admin-requests.types';
+import {
+  WorkType,
+  JobApplicationStatus,
+  type JobApplicationDto,
+  EmployeeApplicationStatus,
+} from '../admin-requests.types';
 import { fetchJobApplications } from '@/redux/features/teacher-requests/teacherRequestsSlice';
 import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
@@ -132,10 +137,19 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
           applicationsJobAdvertisementId: id,
           applicationStatus,
         })
-      ).unwrap();
-      showToast({ message: t(successKey), type: 'success' });
-      loadApplications();
-      return true;
+      )
+        .unwrap()
+        .then((res: any) => {
+          if (res?.isSuccess) {
+            showToast({ message: t(successKey), type: 'success' });
+            loadApplications();
+            return true;
+          } else {
+            const message = res?.message || t('common.error');
+            showToast({ message, type: 'error' });
+            return false;
+          }
+        });
     } catch {
       showToast({ message: t('common.error'), type: 'error' });
       return false;
@@ -286,9 +300,9 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        const isAccepted = row.status === JobApplicationStatus.Accepted;
-        const isArchived = row.status === JobApplicationStatus.Archived;
-        const isInterviewScheduled = row.status === JobApplicationStatus.InterviewScheduled;
+        const isAccepted = row.status === EmployeeApplicationStatus.Accept;
+        const isArchived = row.status === EmployeeApplicationStatus.Archived;
+        const isInterviewScheduled = row.status === EmployeeApplicationStatus.InterviewScheduled;
 
         const showAcceptButton = !isAccepted;
         const showScheduleButton = !isAccepted && !isArchived && !isInterviewScheduled;
