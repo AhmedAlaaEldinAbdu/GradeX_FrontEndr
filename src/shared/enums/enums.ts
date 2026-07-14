@@ -220,3 +220,11 @@ export const JobApplicationStatus = {
 } as const;
 export type JobApplicationStatus = (typeof JobApplicationStatus)[keyof typeof JobApplicationStatus];
 
+export const MessageStatus = {
+  Pending: 1,  // تم الإنشاء ولم يُرسل
+  Sent: 2,     // تم الإرسال
+  Viewed: 3,   // تم فتح الرسالة
+  Replied: 4   // تم الرد عليها
+} as const;
+export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus];
+
