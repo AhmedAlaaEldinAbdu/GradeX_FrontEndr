@@ -9,7 +9,7 @@ import CustomImage from '@/shared/components/CustomImage';
 interface RestoreApplicationFromArchivePopupProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onRestoreConfirm: () => Promise<void>;
   applicationName: string;
   applicationId: string;
 }
@@ -17,9 +17,9 @@ interface RestoreApplicationFromArchivePopupProps {
 const RestoreApplicationFromArchivePopup: React.FC<RestoreApplicationFromArchivePopupProps> = ({
   isOpen,
   onClose,
-  onConfirm,
+  onRestoreConfirm,
   applicationName,
-  //   applicationId,
+  // applicationId is passed but not directly used; onRestoreConfirm handles the restore logic
 }) => {
   const { t } = useTranslation();
   const { showToast } = useToast();
@@ -29,11 +29,7 @@ const RestoreApplicationFromArchivePopup: React.FC<RestoreApplicationFromArchive
   const handleConfirm = async () => {
     try {
       setIsProcessing(true);
-      // TODO: Replace with actual API call to restore application
-      // await restoreJobApplication(applicationId);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await onRestoreConfirm();
 
       setShowSuccess(true);
       showToast({
@@ -43,7 +39,6 @@ const RestoreApplicationFromArchivePopup: React.FC<RestoreApplicationFromArchive
 
       setTimeout(() => {
         setShowSuccess(false);
-        onConfirm();
         onClose();
       }, 1500);
     } catch (error) {
@@ -75,14 +70,9 @@ const RestoreApplicationFromArchivePopup: React.FC<RestoreApplicationFromArchive
             <h2 className="mb-2 text-lg font-bold text-gray-900">
               {t('adminRequests.popup.confirmRestore', {
                 name: applicationName,
-                defaultValue: `هل أنت تريد إسترجاع ${applicationName} ؟`,
               })}
             </h2>
-            <p className="text-sm text-gray-600">
-              {t('adminRequests.popup.restoreDescription', {
-                defaultValue: 'سيتم نقلهم لجدول المتقدمين على الاعلان',
-              })}
-            </p>
+            <p className="text-sm text-gray-600">{t('adminRequests.popup.restoreDescription')}</p>
           </div>
 
           {/* Action Buttons */}
