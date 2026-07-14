@@ -277,7 +277,11 @@ export const fetchTeacherNotes = createAsyncThunk<
 >('teacherRequests/fetchNotes', async (params, { rejectWithValue }) => {
   try {
     const response = await teacherRequestsApiService.getTeacherNotes(params || undefined);
-    return toListResult(response.data);
+    const data = response.data;
+    return {
+      items: data?.notes ?? [],
+      pagination: buildPagination(data),
+    };
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }

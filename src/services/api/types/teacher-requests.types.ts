@@ -242,10 +242,26 @@ export interface TeacherMessageDto {
   sendType: number;
 }
 
+/** A single row from `GET /TeacherRequests/note`. */
 export interface TeacherNoteDto {
   id: string;
-  // TODO(api): replace with the real note fields.
-  [key: string]: unknown;
+  sender: {
+    name: string;
+    avatarPath: string | null;
+    profilePath: string | null;
+    isSchool?: boolean;
+  };
+  recipient: {
+    name: string;
+    avatarPath: string | null;
+    profilePath: string | null;
+    isSchool?: boolean;
+  };
+  status: number; // AdminTeacherNoteStatus: 1 = Pending, 2 = Viewed
+  stage: string | null;
+  classroom: string | null;
+  sentDate: string;
+  noteContent: string;
 }
 
 // ============================================================================
@@ -286,6 +302,12 @@ export interface StatusCount {
   count: number;
 }
 
+/** Note type count item for note type distribution. */
+export interface NoteTypeCount {
+  noteType: NoteType;
+  count: number;
+}
+
 /** Payload of `GET /TeacherRequests/message`. */
 export interface TeacherMessagesListData extends PaginationMeta {
   teacherRequestMessages: TeacherMessageDto[];
@@ -302,6 +324,13 @@ export interface EarlyLeavesListData extends PaginationMeta {
   totalRejected: number;
 }
 
+/** Payload of `GET /TeacherRequests/note`. */
+export interface TeacherNotesListData extends PaginationMeta {
+  notes: TeacherNoteDto[];
+  totalNotes: number;
+  noteTypeCounts: NoteTypeCount[];
+}
+
 export type TeacherRequestsSummaryResponse = ApiResponseModel<TeacherRequestsSummaryDto>;
 export type JobApplicationsListResponse = ApiResponseModel<JobApplicationsListData>;
 export type JobApplicationResponse = ApiResponseModel<JobApplicationRequestDto>;
@@ -309,5 +338,5 @@ export type EarlyLeavesListResponse = ApiResponseModel<EarlyLeavesListData>;
 export type EarlyLeaveResponse = ApiResponseModel<EarlyLeaveRequestDto>;
 export type TeacherMessagesListResponse = ApiResponseModel<TeacherMessagesListData>;
 export type TeacherMessageResponse = ApiResponseModel<TeacherMessageDto>;
-export type TeacherNotesListResponse = ApiResponseModel<PaginatedList<TeacherNoteDto>>;
+export type TeacherNotesListResponse = ApiResponseModel<TeacherNotesListData>;
 export type TeacherNoteResponse = ApiResponseModel<TeacherNoteDto>;

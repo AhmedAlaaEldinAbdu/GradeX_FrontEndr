@@ -77,7 +77,8 @@ const TeacherNotesTab: React.FC = () => {
       const response = await teacherRequestsApiService.getTeacherNotes(params);
 
       if (response.isSuccess && response.data) {
-        setNotes(response.data.teacherRequestMessages || []);
+        // Cast TeacherNoteDto to AdminTeacherNoteDto as they share the same structure
+        setNotes((response.data.notes || []) as AdminTeacherNoteDto[]);
         setTotalPages(response.data.totalPages || 1);
       } else {
         showToast({
