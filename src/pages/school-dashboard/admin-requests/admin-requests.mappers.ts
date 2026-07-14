@@ -23,7 +23,6 @@ import type {
   JobApplicationLanguage,
   JobApplicationQualification,
   WorkType,
-  JobApplicationStatus,
   EmployeeApplicationStatus,
 } from './admin-requests.types';
 
