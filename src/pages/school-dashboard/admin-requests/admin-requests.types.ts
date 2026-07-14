@@ -30,6 +30,17 @@ export const InterviewType = {
 
 export type InterviewType = (typeof InterviewType)[keyof typeof InterviewType];
 
+export const EmployeeApplicationStatus = {
+  Accept: 1,
+  Reject: 2,
+  Pending: 3,
+  Cancelled: 4,
+  Archived: 5,
+  InterviewScheduled: 6,
+} as const;
+
+export type EmployeeApplicationStatus = (typeof EmployeeApplicationStatus)[keyof typeof EmployeeApplicationStatus];
+
 export interface JobApplicationCourse {
   id?: string;
   name: string;
@@ -120,7 +131,7 @@ export interface JobApplicationDto {
   email: string;
   phone: string;
   whatsapp: string;
-  status: JobApplicationStatus;
+  status: EmployeeApplicationStatus;
 
   // ── Details ──────────────────────────────────────────────
   /** الحالة الإجتماعية */
