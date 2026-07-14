@@ -35,6 +35,7 @@ import ScheduleInterviewPopup from '../popups/ScheduleInterviewPopup';
 import ArchiveConfirmPopup from '../popups/ArchiveConfirmPopup';
 import AcceptConfirmPopup from '../popups/AcceptConfirmPopup';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
+import { getCurrentSchoolBranchId } from '@/lib/auth';
 
 const PAGE_SIZE = 10;
 
@@ -55,9 +56,7 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
-  const userData = localStorage.getItem('userData') || undefined;
-  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
-
+  const currentSchoolBranchId = getCurrentSchoolBranchId();
 
   const { jobApplications, jobApplicationsPagination, isJobApplicationsLoading } = useAppSelector(
     (state) => state.teacherRequests
@@ -505,7 +504,7 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         isOpen={Boolean(scheduleTarget)}
         onClose={() => setScheduleTarget(null)}
         onConfirm={handleScheduleConfirm}
-        schoolBranchesId={schoolBranchId}
+        schoolBranchesId={currentSchoolBranchId}
         jobAdvertisementId={scheduleTarget?.jobAdvertismentId}
         teacherId={scheduleTarget?.teacherId}
         supervisorId={scheduleTarget?.supervisorId}
