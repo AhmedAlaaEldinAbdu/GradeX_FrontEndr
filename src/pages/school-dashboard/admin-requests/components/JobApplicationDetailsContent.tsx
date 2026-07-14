@@ -13,7 +13,7 @@ import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import DownloadIcon from '@gradex/assets/icons/Download.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 
-import { WorkType, JobApplicationStatus, type JobApplicationDto } from '../admin-requests.types';
+import { WorkType, EmployeeApplicationStatus, type JobApplicationDto } from '../admin-requests.types';
 import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
 import { getSocialStatusLabel, getIdentityTypeLabel } from '@/lib/utils/enum-mappings';
@@ -89,9 +89,9 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
         : 'adminRequests.workType.both'
   );
 
-  const isAccepted = application.status === JobApplicationStatus.Accepted;
-  const isArchived = application.status === JobApplicationStatus.Archived;
-  const isInterviewScheduled = application.status === JobApplicationStatus.InterviewScheduled;
+  const isAccepted = application.status === EmployeeApplicationStatus.Accept;
+  const isArchived = application.status === EmployeeApplicationStatus.Archived;
+  const isInterviewScheduled = application.status === EmployeeApplicationStatus.InterviewScheduled;
 
   const showAcceptButton = !isAccepted;
   const showScheduleButton = !isAccepted && !isArchived && !isInterviewScheduled;
@@ -141,9 +141,12 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
     if (success) setAcceptOpen(false);
   };
 
-  const handleScheduleConfirm = () => {
-    setScheduleOpen(false);
-    showToast({ message: t('adminRequests.jobApplication.toasts.scheduled'), type: 'success' });
+  const handleScheduleConfirm = async () => {
+    const success = await updateStatus(
+      JOB_APPLICATION_STATUS.INTERVIEW_SCHEDULED,
+      'adminRequests.jobApplication.toasts.scheduled'
+    );
+    if (success) setScheduleOpen(false);
   };
 
   const handleArchiveConfirm = async () => {
