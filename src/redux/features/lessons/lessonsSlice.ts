@@ -215,6 +215,7 @@ export const recoverAllLessons = createAsyncThunk<
         homeworkDescriptionAr: lesson.homeworkDescriptionAr || '',
         homeworkDescriptionEn: lesson.homeworkDescriptionEn || '',
         isHomeworkForAllStudents: lesson.isHomeworkForAllStudents,
+        applyToAllWeeks: lesson.applyToAllWeeks ?? lesson.ApplyToAllWeeks ?? false,
         lessonsStudent: lesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
         attachments: lesson.attachments.map((a) => ({ fileName: a.fileName, fileUrl: a.fileUrl })),
       };
