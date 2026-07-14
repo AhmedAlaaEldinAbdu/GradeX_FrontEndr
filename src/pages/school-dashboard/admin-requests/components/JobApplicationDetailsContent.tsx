@@ -13,7 +13,11 @@ import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 import DownloadIcon from '@gradex/assets/icons/Download.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 
-import { WorkType, EmployeeApplicationStatus, type JobApplicationDto } from '../admin-requests.types';
+import {
+  WorkType,
+  EmployeeApplicationStatus,
+  type JobApplicationDto,
+} from '../admin-requests.types';
 import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
 import { getSocialStatusLabel, getIdentityTypeLabel } from '@/lib/utils/enum-mappings';
@@ -47,6 +51,8 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
+  const userData = localStorage.getItem('userData') || undefined;
+  const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
 
   const currentLang = (i18n.language || 'en') as 'ar' | 'en';
   const currentSchoolBranchId = getCurrentSchoolBranchId();
@@ -413,7 +419,7 @@ const JobApplicationDetailsContent: React.FC<JobApplicationDetailsContentProps> 
         isOpen={isScheduleOpen}
         onClose={() => setScheduleOpen(false)}
         onConfirm={handleScheduleConfirm}
-        schoolBranchesId={application.schoolBranchesId || currentSchoolBranchId}
+        schoolBranchesId={schoolBranchId}
         jobAdvertisementId={application.jobAdvertismentId}
         teacherId={application.teacherId}
         supervisorId={application.supervisorId}
