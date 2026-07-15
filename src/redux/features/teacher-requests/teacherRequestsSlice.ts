@@ -18,7 +18,6 @@ import type {
   TeacherMessagesQueryParams,
   TeacherNoteDto,
   TeacherNotesQueryParams,
-  PaginatedList,
   PaginationMeta,
 } from '@/services/api/types/teacher-requests.types';
 
@@ -143,11 +142,6 @@ const buildPagination = (meta?: Partial<PaginationMeta> | null): PaginationState
   limit: meta?.pageSize ?? defaultPagination.limit,
   total: meta?.totalItems ?? 0,
   totalPages: meta?.totalPages ?? 0,
-});
-
-const toListResult = <T>(data?: PaginatedList<T> | null): ListResult<T> => ({
-  items: data?.items ?? [],
-  pagination: buildPagination(data),
 });
 
 // ============================================================================

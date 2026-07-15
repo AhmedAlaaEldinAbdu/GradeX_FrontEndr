@@ -1769,6 +1769,7 @@
       "services": "Services",
       "offers": "Offres",
       "paidServices": "Services payants",
+      "books": "Livres",
       "guardianName": "Nom du tuteur",
       "relationship": "Lien de parenté",
       "father": "Père",
@@ -2492,6 +2493,7 @@
     "uploadBook": "Téléverser le livre",
     "bookFile": "Fichier du livre",
     "uploadBookImage": "Cliquez pour téléverser l'image du livre",
+    "uploadCoverImage": "Cliquez pour téléverser l'image de couverture",
     "uploadBookPdf": "Cliquez pour téléverser le PDF du livre",
     "uploadBookFile": "Cliquez pour téléverser le fichier du livre (PDF ou image)",
     "addAnotherBook": "Ajouter un autre livre",
@@ -2537,6 +2539,7 @@
       "setQuantityMustBePositive": "La quantité de l'ensemble doit être un nombre positif",
       "setQuantityMustBeInteger": "La quantité de l'ensemble doit être un entier",
       "priceViewRequired": "L'option d'affichage du prix est requise",
+      "coverImageInvalid": "L'image de couverture doit être un fichier image uniquement",
       "requiredList": "La liste des livres est requise",
       "atLeastOne": "Au moins un livre doit être ajouté"
     }

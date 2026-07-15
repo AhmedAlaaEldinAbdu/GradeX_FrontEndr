@@ -1899,6 +1899,7 @@
       "services": "Services",
       "offers": "Offers",
       "paidServices": "Paid Services",
+      "books": "Books",
       "guardianName": "Guardian Name",
       "relationship": "Relationship",
       "father": "Father",
@@ -2622,6 +2623,7 @@
     "uploadBook": "Upload Book",
     "bookFile": "Book File",
     "uploadBookImage": "Click to upload book image",
+    "uploadCoverImage": "Click to upload cover image",
     "uploadBookPdf": "Click to upload book PDF",
     "uploadBookFile": "Click to upload book file (PDF or Image)",
     "addAnotherBook": "Add Another Book",
@@ -2667,6 +2669,7 @@
       "setQuantityMustBePositive": "Set quantity must be a positive number",
       "setQuantityMustBeInteger": "Set quantity must be an integer",
       "priceViewRequired": "Price view option is required",
+      "coverImageInvalid": "Cover image must be an image file only",
       "requiredList": "Books list is required",
       "atLeastOne": "At least one book must be added"
     }

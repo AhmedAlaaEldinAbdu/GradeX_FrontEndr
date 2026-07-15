@@ -1910,6 +1910,7 @@
       "services": "الخدمات",
       "offers": "العروض",
       "paidServices": "الخدمات المدفوعة",
+      "books": "الكتب",
       "guardianName": "اسم ولي الأمر",
       "relationship": "صلة القرابة",
       "father": "أب",
@@ -2633,6 +2634,7 @@
     "uploadBook": "رفع الكتاب",
     "bookFile": "ملف الكتاب",
     "uploadBookImage": "اضغط لرفع صورة الكتاب",
+    "uploadCoverImage": "اضغط لرفع صورة الغلاف",
     "uploadBookPdf": "اضغط لرفع ملف الكتاب",
     "uploadBookFile": "اضغط لرفع ملف الكتاب (PDF أو صورة)",
     "addAnotherBook": "إضافة كتاب آخر",
@@ -2678,6 +2680,7 @@
       "setQuantityMustBePositive": "عدد المجموعة يجب أن يكون رقم موجب",
       "setQuantityMustBeInteger": "عدد المجموعة يجب أن يكون رقم صحيح",
       "priceViewRequired": "عرض سعر الكتاب مطلوب",
+      "coverImageInvalid": "يجب أن تكون صورة الغلاف ملف صورة فقط",
       "requiredList": "قائمة الكتب مطلوبة",
       "atLeastOne": "يجب إضافة كتاب واحد على الأقل"
     }
