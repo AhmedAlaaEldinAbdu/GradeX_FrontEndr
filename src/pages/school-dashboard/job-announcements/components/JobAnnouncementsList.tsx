@@ -117,6 +117,16 @@ interface FiltersParams {
   selectedWorkType: string;
 }
 
+interface FiltersParams {
+  schoolBranchId: string;
+  searchTerm: string;
+  selectedCountryId: string;
+  selectedStageId: string;
+  selectedSubjectId: string;
+  selectedWorkType: string;
+  selectedAnnouncementStatus: string;
+}
+
 const buildFiltersPayload = ({
   schoolBranchId,
   searchTerm,
@@ -124,10 +134,18 @@ const buildFiltersPayload = ({
   selectedStageId,
   selectedSubjectId,
   selectedWorkType,
+  selectedAnnouncementStatus,
 }: FiltersParams): JobAdvertismentFilters => {
   const workShedule = selectedWorkType
     ? (Number(selectedWorkType) as JobAdvertismentWorkShedule)
     : undefined;
+
+  let isActive: boolean | undefined;
+  if (selectedAnnouncementStatus === 'active') {
+    isActive = true;
+  } else if (selectedAnnouncementStatus === 'expired') {
+    isActive = false;
+  }
 
   return {
     schoolBranchId,
@@ -136,12 +154,23 @@ const buildFiltersPayload = ({
     lkSchoolStageId: selectedStageId || undefined,
     materialId: selectedSubjectId || undefined,
     workShedule,
+    isActive,
   };
 };
 
 interface LocationState {
   comeFrom?: string;
   filter?: { name?: string };
+}
+
+interface FiltersParams {
+  schoolBranchId: string;
+  searchTerm: string;
+  selectedCountryId: string;
+  selectedStageId: string;
+  selectedSubjectId: string;
+  selectedWorkType: string;
+  selectedAnnouncementStatus: string;
 }
 
 export default function JobAnnouncementsList() {
@@ -194,6 +223,7 @@ export default function JobAnnouncementsList() {
       selectedStageId,
       selectedSubjectId,
       selectedWorkType,
+      selectedAnnouncementStatus,
     });
 
     const fetchData = async () => {
@@ -220,6 +250,7 @@ export default function JobAnnouncementsList() {
     selectedStageId,
     selectedSubjectId,
     selectedWorkType,
+    selectedAnnouncementStatus,
   ]);
 
   useEffect(() => {
@@ -647,7 +678,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedSubjectId,
       onChange: () => {},
-      width: '12%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={selectedSubjectId}
@@ -670,7 +701,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedStageId,
       onChange: () => {},
-      width: '12%',
+      width: '20%',
       customComponent: (
         <CustomSelect
           value={selectedStageId}
@@ -694,7 +725,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedAnnouncementStatus,
       onChange: () => {},
-      width: '12%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={selectedAnnouncementStatus}
@@ -715,7 +746,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedCountryId,
       onChange: () => {},
-      width: '12%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={selectedCountryId}
@@ -737,7 +768,7 @@ export default function JobAnnouncementsList() {
       placeholder: '',
       value: selectedWorkType,
       onChange: () => {},
-      width: '12%',
+      width: '15%',
       customComponent: (
         <CustomSelect
           value={selectedWorkType}
@@ -789,6 +820,7 @@ export default function JobAnnouncementsList() {
       selectedStageId,
       selectedSubjectId,
       selectedWorkType,
+      selectedAnnouncementStatus,
     });
 
     try {
