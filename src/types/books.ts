@@ -16,6 +16,7 @@ export interface Book {
   price: number;
   fileName: string;
   filePath: string;
+  coverImage?: string | null;
   totalQuantity: number;
   soldQuantity: number;
   remainingQuantity: number;
@@ -98,6 +99,7 @@ export interface FlattenedBook {
   price: number;
   fileName: string;
   filePath: string;
+  coverImage?: string | null;
   totalQuantity: number;
   soldQuantity: number;
   remainingQuantity: number;
@@ -127,6 +129,7 @@ export interface CreateBookRequest {
   fileName?: string;
   filePath?: string;
   file?: File;
+  coverImage?: File;
   schoolBranchesId?: string;
 }
 

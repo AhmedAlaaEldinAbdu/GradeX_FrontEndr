@@ -76,6 +76,7 @@ export function flattenBooksForDisplay(response: BookListResponse): FlattenedBoo
         price: book.price,
         fileName: book.fileName,
         filePath: book.filePath,
+        coverImage: book.coverImage,
         totalQuantity: book.totalQuantity,
         soldQuantity: book.soldQuantity,
         remainingQuantity: book.remainingQuantity,
@@ -131,6 +132,9 @@ export async function createBook(
   }
   if (data.file) {
     formData.append('FilePath', data.file);
+  }
+  if (data.coverImage) {
+    formData.append('CoverImage', data.coverImage);
   }
 
   const response: AxiosResponse<{
@@ -196,6 +200,7 @@ export async function getBookById(
         price: book.price,
         fileName: book.fileName,
         filePath: book.filePath,
+        coverImage: book.coverImage,
         totalQuantity: book.totalQuantity,
         soldQuantity: book.soldQuantity,
         remainingQuantity: book.remainingQuantity,
@@ -243,6 +248,9 @@ export async function updateBook(
 
   if (data.file) {
     formData.append('FilePath', data.file);
+  }
+  if (data.coverImage) {
+    formData.append('CoverImage', data.coverImage);
   }
 
   const response: AxiosResponse<{
