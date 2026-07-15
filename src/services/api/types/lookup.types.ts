@@ -258,10 +258,6 @@ export interface Qualification {
   id: string;
   nameAr: string;
   nameEn: string;
-  college: string;
-  specialty: string;
-  certificateUrl: string;
-  graduationYear: string;
 }
 
 export interface QualificationsApiResponse {
