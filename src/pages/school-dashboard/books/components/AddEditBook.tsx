@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import BookIcon from '@gradex/assets/icons/Book.svg';
@@ -20,7 +20,7 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { FlattenedBook } from '@/types/books';
 import { AddBookSchema, type AddBookProps } from '@/validations/books-validations';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
-import FileUpload from '@/shared/components/FileUpload';
+import FileUpload, { type FileUploadRef } from '@/shared/components/FileUpload';
 import DataTable, { type DataTableColumn } from '@/shared/components/DataTable';
 import CustomImage from '@/shared/components/CustomImage';
 import Loading from '@/shared/components/Loading';
@@ -60,6 +60,8 @@ export default function AddEditBook() {
     message: string;
   }>({ show: false, type: 'success', message: '' });
 
+  const coverUploadRef = useRef<FileUploadRef>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [books] = useState<BookItem[]>([]);
 
@@ -214,6 +216,23 @@ export default function AddEditBook() {
 
   const previewData: BookItem[] = [...generatePreviewRows(), ...books];
 
+  const handleCoverImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+
+    if (file && !file.type.startsWith('image/')) {
+      setCoverImageFile(null);
+      coverUploadRef.current?.reset();
+      setShowPopupMessage({
+        show: true,
+        type: 'error',
+        message: t('books.validation.coverImageInvalid'),
+      });
+      return;
+    }
+
+    setCoverImageFile(file);
+  };
+
   const onSubmit = async (data: AddBookProps) => {
     try {
       if (isEditMode && bookId) {
@@ -234,6 +253,7 @@ export default function AddEditBook() {
               materialId: data.materialId,
               fileName: imageFile?.name ?? currentBook?.fileName ?? '',
               file: imageFile ?? undefined,
+              coverImage: coverImageFile ?? undefined,
               schoolBranchesId,
             },
           })
@@ -259,6 +279,7 @@ export default function AddEditBook() {
             fileName: imageFile?.name ?? '',
             filePath: '',
             file: imageFile ?? undefined,
+            coverImage: coverImageFile ?? undefined,
             schoolBranchesId,
           })
         ).unwrap();
@@ -268,6 +289,7 @@ export default function AddEditBook() {
           message: t('books.booksAddedSuccessfully'),
         });
         reset();
+        setCoverImageFile(null);
         setImageFile(null);
       }
     } catch (error) {
@@ -631,6 +653,31 @@ export default function AddEditBook() {
                 )}
               />
             </FormField>
+          </div>
+
+          {/* Cover image upload */}
+          <div className="mb-6">
+            <FileUpload
+              ref={coverUploadRef}
+              label={t('books.coverImage')}
+              accept="image/*"
+              onChange={handleCoverImageChange}
+              onDelete={() => setCoverImageFile(null)}
+              fileName={coverImageFile?.name}
+              uploadText={t('books.uploadCoverImage')}
+              formatHints={['JPG', 'PNG', 'WEBP']}
+              id="bookCoverImage"
+              attachments={
+                isEditMode && currentBook?.coverImage && !coverImageFile
+                  ? [
+                      {
+                        fileName: currentBook.coverImage.split('/').pop() || t('books.coverImage'),
+                        filePath: currentBook.coverImage,
+                      },
+                    ]
+                  : undefined
+              }
+            />
           </div>
 
           {/* File upload */}
