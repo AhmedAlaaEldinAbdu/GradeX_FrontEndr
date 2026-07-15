@@ -11,7 +11,7 @@ export default function EditJobAnnouncementPage() {
   const breadcrumbItems = [
     { label: t('sidebar.humanResources') },
     { label: t('sidebar.teachingStaff') },
-    { label: t('sidebar.jobAnnouncements') },
+    { label: t('sidebar.jobAnnouncements'), to: '/job-announcements' },
     { label: t('jobAnnouncement.editAnnouncement') },
   ];
 
