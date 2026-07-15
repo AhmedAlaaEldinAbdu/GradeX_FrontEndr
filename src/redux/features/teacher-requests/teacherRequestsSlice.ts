@@ -18,7 +18,6 @@ import type {
   TeacherMessagesQueryParams,
   TeacherNoteDto,
   TeacherNotesQueryParams,
-  PaginatedList,
   PaginationMeta,
 } from '@/services/api/types/teacher-requests.types';
 
