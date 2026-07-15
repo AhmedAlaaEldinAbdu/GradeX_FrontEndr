@@ -24,6 +24,7 @@ import {
   EmployeeApplicationStatus,
 } from '../admin-requests.types';
 import { fetchJobApplications } from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import { fetchQualifications } from '@/redux/features/lookups/lookupsSlice';
 import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
 import type {
@@ -52,7 +53,8 @@ const WORK_TYPE_LABEL: Record<WorkType, string> = {
 };
 
 const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
@@ -61,6 +63,8 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   const { jobApplications, jobApplicationsPagination, isJobApplicationsLoading } = useAppSelector(
     (state) => state.teacherRequests
   );
+
+  const { qualifications, isLoadingQualifications } = useAppSelector((state) => state.lookups);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedWorkType, setSelectedWorkType] = useState('');
@@ -99,19 +103,22 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
 
   useEffect(() => {
     if (isActive) {
+      dispatch(fetchQualifications());
       loadApplications();
     }
-  }, [isActive, loadApplications]);
+  }, [isActive, loadApplications, dispatch]);
 
   const data = useMemo(() => jobApplications.map(mapJobApplication), [jobApplications]);
 
   const qualificationOptions = useMemo(
     () =>
-      Array.from(new Set(data.map((row) => row.qualification).filter(Boolean))).map((value) => ({
-        value,
-        label: value,
-      })),
-    [data]
+      Array.isArray(qualifications)
+        ? qualifications.map((qualification) => ({
+            value: qualification.id,
+            label: currentLang === 'ar' ? qualification.nameAr : qualification.nameEn,
+          }))
+        : [],
+    [qualifications, currentLang]
   );
 
   const experienceOptions = useMemo(
@@ -425,8 +432,11 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
             setPage(1);
           }}
           options={qualificationOptions}
-          placeholder={t('adminRequests.filters.qualification')}
+          placeholder={
+            isLoadingQualifications ? t('common.loading') : t('adminRequests.filters.qualification')
+          }
           showSearch={false}
+          disabled={isLoadingQualifications}
         />
       ),
     },
