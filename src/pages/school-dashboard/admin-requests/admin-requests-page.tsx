@@ -131,6 +131,7 @@ const AdminRequestsPage: React.FC = () => {
         <Tabs
           items={tabs}
           defaultValue="job-application"
+          lazy={true}
           searchParamKey="tab"
           listClassName="flex w-full mb-5 overflow-x-auto"
         />
