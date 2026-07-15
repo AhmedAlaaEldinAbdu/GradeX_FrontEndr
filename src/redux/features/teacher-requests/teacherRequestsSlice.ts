@@ -145,11 +145,6 @@ const buildPagination = (meta?: Partial<PaginationMeta> | null): PaginationState
   totalPages: meta?.totalPages ?? 0,
 });
 
-const toListResult = <T>(data?: PaginatedList<T> | null): ListResult<T> => ({
-  items: data?.items ?? [],
-  pagination: buildPagination(data),
-});
-
 // ============================================================================
 // Thunks
 // ============================================================================
