@@ -152,6 +152,7 @@ export interface JobAdvertismentQueryParams {
   LKSchoolStageId?: string;
   MaterialId?: string;
   WorkShedule?: JobAdvertismentWorkShedule;
+  IsActive?: boolean;
 }
 
 export interface CreateJobAdvertismentRequest extends JobAdvertismentBase {}
