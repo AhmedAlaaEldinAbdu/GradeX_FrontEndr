@@ -134,7 +134,7 @@ export async function createBook(
     formData.append('FilePath', data.file);
   }
   if (data.coverImage) {
-    formData.append('CoverImage', data.coverImage);
+    formData.append('CoverPath', data.coverImage);
   }
 
   const response: AxiosResponse<{
@@ -250,7 +250,7 @@ export async function updateBook(
     formData.append('FilePath', data.file);
   }
   if (data.coverImage) {
-    formData.append('CoverImage', data.coverImage);
+    formData.append('CoverPath', data.coverImage);
   }
 
   const response: AxiosResponse<{
