@@ -26,6 +26,7 @@ export interface JobAdvertismentFilters {
   materialId?: string;
   workShedule?: JobAdvertismentWorkShedule;
   searchName?: string;
+  isActive?: boolean;
 }
 
 export interface JobAdvertismentsState {
@@ -103,6 +104,7 @@ export const fetchJobAdvertisments = createAsyncThunk<
           materialId,
           workShedule,
           searchName,
+          isActive,
         } = payload.filters;
 
         if (schoolBranchId) params.SchoolBranchId = schoolBranchId;
@@ -111,6 +113,7 @@ export const fetchJobAdvertisments = createAsyncThunk<
         if (materialId) params.MaterialId = materialId;
         if (workShedule !== undefined) params.WorkShedule = workShedule;
         if (searchName) params.SearchName = searchName;
+        if (isActive !== undefined) params.IsActive = isActive;
       }
     }
 
