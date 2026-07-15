@@ -2493,6 +2493,7 @@
     "uploadBook": "Buch hochladen",
     "bookFile": "Buchdatei",
     "uploadBookImage": "Klicken, um Buchbild hochzuladen",
+    "uploadCoverImage": "Klicken, um Titelbild hochzuladen",
     "uploadBookPdf": "Klicken, um Buch-PDF hochzuladen",
     "uploadBookFile": "Klicken, um Buchdatei hochzuladen (PDF oder Bild)",
     "addAnotherBook": "Weiteres Buch hinzufügen",
@@ -2538,6 +2539,7 @@
       "setQuantityMustBePositive": "Setmenge muss eine positive Zahl sein",
       "setQuantityMustBeInteger": "Setmenge muss eine ganze Zahl sein",
       "priceViewRequired": "Preisanzeigeoption ist erforderlich",
+      "coverImageInvalid": "Das Titelbild muss eine Bilddatei sein",
       "requiredList": "Bücherliste ist erforderlich",
       "atLeastOne": "Mindestens ein Buch muss hinzugefügt werden"
     }
