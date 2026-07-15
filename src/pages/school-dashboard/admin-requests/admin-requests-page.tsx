@@ -18,7 +18,6 @@ import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import JobApplicationsTab from './components/JobApplicationsTab';
 import ArchiveApplicationsTab from './components/ArchiveApplicationsTab';
 import MessagesTab from './components/MessagesTab';
-import ScheduleInterviewTab from './components/ScheduleInterviewTab';
 import EarlyLeaveTab from './components/EarlyLeaveTab';
 import TeacherNotesTab from './components/TeacherNotesTab';
 import LeaveRequestsTab from './components/LeaveRequestsTab';
@@ -65,11 +64,6 @@ const AdminRequestsPage: React.FC = () => {
       id: 'application-archive',
       label: t('adminRequests.tabs.applicationArchive'),
       content: <ArchiveApplicationsTab isActive={activeTab === 'application-archive'} />,
-    },
-    {
-      id: 'schedule-interview',
-      label: t('adminRequests.tabs.scheduleInterview'),
-      content: <ScheduleInterviewTab />,
     },
     {
       id: 'early-leave',
