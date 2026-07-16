@@ -11,6 +11,10 @@ import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import useLanguage from '@/hooks/useLanguage';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
 import {
   approveStudentEarlyLeaveRequest,
   deleteStudentEarlyLeaveRequest,
@@ -49,23 +53,50 @@ const STATUS_LABEL_KEYS: Record<EarlyLeaveStatus, string> = {
 
 const EarlyLeaveRequestsTab: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { isArabic } = useLanguage();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+  const schoolBranchId = getCurrentSchoolBranchId();
 
   const { requests, isLoading, isUpdating, pagination } = useAppSelector(
     (state) => state.studentRequestEarlyLeave
   );
+  const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStage, setSelectedStage] = useState('');
-  const [selectedClassroom, setSelectedClassroom] = useState('');
+  const [selectedStageId, setSelectedStageId] = useState('');
+  const [selectedClassroomId, setSelectedClassroomId] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
 
   const [detailsRequest, setDetailsRequest] = useState<EarlyLeaveRequestDto | null>(null);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
+
+  useEffect(() => {
+    dispatch(
+      getEducationalStages({
+        pageIndex: 1,
+        pageSize: 100,
+        schoolBranchId: schoolBranchId || undefined,
+      })
+    );
+  }, [dispatch, schoolBranchId]);
+
+  useEffect(() => {
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 100,
+        filters: {
+          gradeId: selectedStageId || undefined,
+          schoolBranchId: schoolBranchId || undefined,
+        },
+      })
+    );
+  }, [dispatch, schoolBranchId, selectedStageId]);
 
   useEffect(() => {
     const handle = setTimeout(() => {
@@ -76,36 +107,39 @@ const EarlyLeaveRequestsTab: React.FC = () => {
           searchTerm,
           status: selectedStatus ? (Number(selectedStatus) as EarlyLeaveStatus) : undefined,
           date: selectedDate,
+          gradeId: selectedStageId || undefined,
+          classroomId: selectedClassroomId || undefined,
         })
       );
     }, 350);
 
     return () => clearTimeout(handle);
-  }, [dispatch, page, searchTerm, selectedDate, selectedStatus]);
-
-  const filteredData = useMemo(
-    () =>
-      requests.filter((row) => {
-        const matchesStage = !selectedStage || row.stage === selectedStage;
-        const matchesClassroom = !selectedClassroom || row.classroom === selectedClassroom;
-        return matchesStage && matchesClassroom;
-      }),
-    [requests, selectedStage, selectedClassroom]
-  );
-
-  const toOptions = (values: string[]) =>
-    Array.from(new Set(values.filter((value) => value && value !== '-'))).map((value) => ({
-      value,
-      label: value,
-    }));
+  }, [
+    dispatch,
+    page,
+    searchTerm,
+    selectedClassroomId,
+    selectedDate,
+    selectedStageId,
+    selectedStatus,
+  ]);
 
   const stageOptions = useMemo(
-    () => toOptions(requests.map((request) => request.stage)),
-    [requests]
+    () =>
+      educationalStages.map((stage) => ({
+        value: stage.id,
+        label: (isArabic && stage.nameAr) || stage.nameEn || stage.nameAr || '',
+      })),
+    [educationalStages, isArabic]
   );
+
   const classroomOptions = useMemo(
-    () => toOptions(requests.map((request) => request.classroom)),
-    [requests]
+    () =>
+      classrooms.map((classroom) => ({
+        value: classroom.id,
+        label: (isArabic && classroom.name) || classroom.nameEn || classroom.name,
+      })),
+    [classrooms, isArabic]
   );
 
   const handleConfirm = async () => {
@@ -275,14 +309,15 @@ const EarlyLeaveRequestsTab: React.FC = () => {
     {
       type: 'custom',
       name: 'stage-filter',
-      value: selectedStage,
+      value: selectedStageId,
       onChange: () => {},
       width: '20%',
       customComponent: (
         <CustomSelect
-          value={selectedStage}
+          value={selectedStageId}
           onChange={(value) => {
-            setSelectedStage(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setSelectedStageId(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setSelectedClassroomId('');
             setPage(1);
           }}
           options={stageOptions}
@@ -294,14 +329,14 @@ const EarlyLeaveRequestsTab: React.FC = () => {
     {
       type: 'custom',
       name: 'classroom-filter',
-      value: selectedClassroom,
+      value: selectedClassroomId,
       onChange: () => {},
       width: '20%',
       customComponent: (
         <CustomSelect
-          value={selectedClassroom}
+          value={selectedClassroomId}
           onChange={(value) => {
-            setSelectedClassroom(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setSelectedClassroomId(Array.isArray(value) ? (value[0] ?? '') : (value as string));
             setPage(1);
           }}
           options={classroomOptions}
@@ -364,29 +399,28 @@ const EarlyLeaveRequestsTab: React.FC = () => {
 
   const handleResetFilters = () => {
     setSearchTerm('');
-    setSelectedStage('');
-    setSelectedClassroom('');
+    setSelectedStageId('');
+    setSelectedClassroomId('');
     setSelectedStatus('');
     setSelectedDate('');
     setPage(1);
   };
 
-  const hasClientFilters = Boolean(selectedStage || selectedClassroom);
-  const totalItems = hasClientFilters ? filteredData.length : pagination.totalItems;
-  const totalPages = hasClientFilters
-    ? Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE))
-    : Math.max(1, pagination.totalPages);
-
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={filteredData}
+        data={requests}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
         showFilters={true}
         isLoading={isLoading}
-        pagination={{ page, limit: PAGE_SIZE, total: totalItems, totalPages }}
+        pagination={{
+          page,
+          limit: PAGE_SIZE,
+          total: pagination.totalItems,
+          totalPages: Math.max(1, pagination.totalPages),
+        }}
         onPageChange={setPage}
         onResetFilters={handleResetFilters}
         t={t}
