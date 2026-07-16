@@ -108,6 +108,15 @@ function mapLessonToFormData(lesson: Lesson): LessonData {
   };
 }
 
+const buildLessonDateTime = (date: string, time: string): string => {
+  const datePart = date?.split('T')[0];
+  const timePart = time || '08:00';
+  const timeWithSeconds = timePart.split(':').length === 3 ? timePart : `${timePart}:00`;
+  const lessonDate = datePart ? new Date(`${datePart}T${timeWithSeconds}`) : new Date();
+
+  return Number.isNaN(lessonDate.getTime()) ? new Date().toISOString() : lessonDate.toISOString();
+};
+
 export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const { t } = useTranslation();
   const { isArabic } = useLanguage();
@@ -369,7 +378,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
         homeworkToPage: parseInt(data.homeworkToPage) || 0,
         homeworkDescriptionAr: data.descriptionAr || undefined,
         homeworkDescriptionEn: data.descriptionEn || undefined,
-        date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+        date: buildLessonDateTime(data.date, data.startTime),
         startTime: data.startTime || '08:00',
         endTime: data.endTime || '09:00',
         isHomeworkForAllStudents: sendTo === 'all',
