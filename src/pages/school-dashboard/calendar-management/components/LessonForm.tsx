@@ -569,26 +569,34 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
             </div>
 
             <div className="mb-4">
-              <Controller
-                name="applyToAllWeeks"
-                control={control}
-                render={({ field }) => (
-                  <label
-                    htmlFor="applyToAllWeeks"
-                    className="flex cursor-pointer items-center gap-2 text-base text-black-800"
-                  >
-                    <input
-                      id="applyToAllWeeks"
-                      type="checkbox"
-                      checked={field.value}
-                      onChange={(event) => field.onChange(event.target.checked)}
-                      onBlur={field.onBlur}
-                      className="h-4 w-4 accent-green-600"
-                    />
-                    <span>{t('lesson.applyToAllWeeks')}</span>
-                  </label>
-                )}
-              />
+              <FormField label={t('lesson.applyToAllWeeks')}>
+                <Controller
+                  name="applyToAllWeeks"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex gap-6 text-right">
+                      <div className="flex items-center justify-end">
+                        <label
+                          htmlFor="applyToAllWeeksSwitch"
+                          className="relative inline-flex h-6 w-11 cursor-pointer items-center"
+                        >
+                          <input
+                            id="applyToAllWeeksSwitch"
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            className="peer sr-only"
+                            aria-label={t('lesson.applyToAllWeeks')}
+                          />
+                          <div className="peer-unchecked:bg-gray-200 h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600"></div>
+                          <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                />
+              </FormField>
             </div>
 
             {/* Educational Stage & Grade/Classroom */}
