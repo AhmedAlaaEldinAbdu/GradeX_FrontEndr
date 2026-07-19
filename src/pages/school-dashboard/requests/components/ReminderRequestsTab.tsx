@@ -105,8 +105,15 @@ const ReminderRequestsTab: React.FC = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchRequestAppointments({ page, limit: PAGE_SIZE }));
-  }, [dispatch, page]);
+    dispatch(
+      fetchRequestAppointments({
+        page,
+        limit: PAGE_SIZE,
+        studentName: searchTerm.trim() || undefined,
+        date: selectedDate || undefined,
+      })
+    );
+  }, [dispatch, page, searchTerm, selectedDate]);
 
   const requests = useMemo(
     () => appointments.map(mapAppointmentToRequest),
@@ -116,24 +123,14 @@ const ReminderRequestsTab: React.FC = () => {
   const filteredRequests = useMemo(
     () =>
       requests.filter((request) => {
-        const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-        const matchesSearch =
-          !normalizedSearchTerm ||
-          [
-            request.studentName,
-            request.senderName,
-            request.recipientName,
-            request.messageContent,
-          ].some((value) => value?.toLowerCase().includes(normalizedSearchTerm));
         const matchesStatus = !selectedStatus || request.status === Number(selectedStatus);
-        const matchesDate = !selectedDate || request.created.startsWith(selectedDate);
 
-        return matchesSearch && matchesStatus && matchesDate;
+        return matchesStatus;
       }),
-    [requests, searchTerm, selectedStatus, selectedDate]
+    [requests, selectedStatus]
   );
 
-  const hasClientFilters = Boolean(searchTerm.trim() || selectedStatus || selectedDate);
+  const hasClientFilters = Boolean(selectedStatus);
   const totalPages = hasClientFilters
     ? Math.max(1, Math.ceil(filteredRequests.length / PAGE_SIZE))
     : Math.max(1, pagination.totalPages);
@@ -271,7 +268,7 @@ const ReminderRequestsTab: React.FC = () => {
   const filterConfigs: FilterConfig[] = [
     {
       type: 'search',
-      name: 'search',
+      name: 'StudentName',
       placeholder: t('requests.searchPlaceholder'),
       value: searchTerm,
       onChange: (value) => {
@@ -304,7 +301,7 @@ const ReminderRequestsTab: React.FC = () => {
     },
     {
       type: 'custom',
-      name: 'date-filter',
+      name: 'Date',
       value: selectedDate,
       onChange: () => {},
       width: '25%',
