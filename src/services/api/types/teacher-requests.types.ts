@@ -240,6 +240,10 @@ export interface TeacherMessageDto {
   messageStatus: MessageStatus;
   createdAt: string;
   sendType: number;
+  isViewed?: boolean;
+  viewedAt?: string | null;
+  viewedByUserId?: string | null;
+  viewedByName?: string | null;
 }
 
 /** A single row from `GET /TeacherRequests/note`. */
@@ -262,6 +266,10 @@ export interface TeacherNoteDto {
   classroom: string | null;
   sentDate: string;
   noteContent: string;
+  isViewed?: boolean;
+  viewedAt?: string | null;
+  viewedByUserId?: string | null;
+  viewedByName?: string | null;
 }
 
 // ============================================================================

@@ -149,6 +149,13 @@ export async function getTeacherMessageById(id: string): Promise<TeacherMessageR
   return response.data;
 }
 
+export async function markTeacherMessageAsViewed(id: string): Promise<ApiResponseModel<null>> {
+  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
+    TeacherRequestsEndpoints.markMessageAsViewed(id)
+  );
+  return response.data;
+}
+
 // ============================================================================
 // Notes
 // ============================================================================
@@ -170,6 +177,13 @@ export async function getTeacherNoteById(id: string): Promise<TeacherNoteRespons
   return response.data;
 }
 
+export async function markTeacherNoteAsViewed(id: string): Promise<ApiResponseModel<null>> {
+  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
+    TeacherRequestsEndpoints.markNoteAsViewed(id)
+  );
+  return response.data;
+}
+
 // ============================================================================
 // Export
 // ============================================================================
@@ -183,8 +197,10 @@ export const teacherRequestsApiService = {
   updateEarlyLeaveStatus,
   getTeacherMessages,
   getTeacherMessageById,
+  markTeacherMessageAsViewed,
   getTeacherNotes,
   getTeacherNoteById,
+  markTeacherNoteAsViewed,
 };
 
 export default teacherRequestsApiService;
