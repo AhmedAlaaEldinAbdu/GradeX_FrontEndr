@@ -10,11 +10,15 @@ import IconButton from '@/shared/components/IconButton';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
+import { useToast } from '@/shared/context/ToastContext';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchSchoolMessages } from '@/redux/features/school-messages/schoolMessagesSlice';
+import {
+  fetchSchoolMessages,
+  markSchoolMessageAsViewed,
+} from '@/redux/features/school-messages/schoolMessagesSlice';
 import type {
   StudentRequestDto,
   RequestParticipant,
@@ -97,6 +101,7 @@ const MessageRequestsTab: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const { messages, isLoading, totalItems, totalPages } = useAppSelector(
     (state) => state.schoolMessages
@@ -109,6 +114,7 @@ const MessageRequestsTab: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState<StudentRequestDto | null>(null);
+  const [isMarkingViewed, setIsMarkingViewed] = useState(false);
   const [participantsView, setParticipantsView] = useState<ParticipantsView | null>(null);
 
   const schoolLabel = t('requests.schoolLabel');
@@ -174,6 +180,17 @@ const MessageRequestsTab: React.FC = () => {
           created: message.createdAt,
           isFromStudent,
           studentId: firstStudent?.id ?? message.studentId,
+          educationalStage: message.grades
+            .map((grade) => grade.gradeNameAr || grade.gradeNameEN)
+            .filter(Boolean)
+            .join(', '),
+          classrooms: message.classrooms
+            .map((classroom) => classroom.classroomNameAr || classroom.classroomNameEN)
+            .filter(Boolean),
+          isViewed: message.isViewed,
+          viewedAt: message.viewedAt,
+          viewedByUserId: message.viewedByUserId,
+          viewedByName: message.viewedByName,
         };
       },
     [schoolLabel]
@@ -235,6 +252,38 @@ const MessageRequestsTab: React.FC = () => {
   const handleViewParticipant = (participant: RequestParticipant) => {
     const path = getParticipantProfilePath(participant.role, participant.id);
     if (path) navigate(path);
+  };
+
+  const refreshMessages = () => {
+    dispatch(
+      fetchSchoolMessages({
+        PageNumber: page,
+        PageSize: PAGE_SIZE,
+        SearchStudentName: searchTerm.trim() || undefined,
+        MessageStatus: selectedStatus
+          ? REQUEST_STATUS_TO_MESSAGE_STATUS[Number(selectedStatus) as StudentRequestStatus]
+          : undefined,
+        Date: selectedDate || undefined,
+      })
+    );
+  };
+
+  const handleMarkViewed = async (request: StudentRequestDto) => {
+    try {
+      setIsMarkingViewed(true);
+      await dispatch(markSchoolMessageAsViewed(request.id)).unwrap();
+      showToast({ message: t('requests.popup.markedViewed'), type: 'success' });
+      refreshMessages();
+    } catch (error) {
+      showToast({
+        message: typeof error === 'string' ? error : t('common.errorOccurred'),
+        type: 'error',
+        isRaw: typeof error === 'string',
+      });
+      throw error;
+    } finally {
+      setIsMarkingViewed(false);
+    }
   };
 
   const renderParticipantCell = (
@@ -521,7 +570,8 @@ const MessageRequestsTab: React.FC = () => {
         isOpen={Boolean(selectedRequest)}
         onClose={() => setSelectedRequest(null)}
         request={selectedRequest}
-        onMarkViewed={() => undefined}
+        onMarkViewed={handleMarkViewed}
+        isMarkingViewed={isMarkingViewed}
       />
 
       <ParticipantsPopup
