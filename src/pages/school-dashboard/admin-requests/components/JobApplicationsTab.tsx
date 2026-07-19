@@ -24,7 +24,6 @@ import {
   EmployeeApplicationStatus,
 } from '../admin-requests.types';
 import { fetchJobApplications } from '@/redux/features/teacher-requests/teacherRequestsSlice';
-import { fetchQualifications, fetchCountries } from '@/redux/features/lookups/lookupsSlice';
 import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
 import type {
