@@ -10,8 +10,10 @@ export const TeacherRequestsEndpoints = {
   updateEarlyLeaveStatus: `${TeacherRequests}/early-leave/update-status`,
   getMessages: `${TeacherRequests}/message`,
   getMessageById: (id: string) => `${TeacherRequests}/message/${id}`,
+  markMessageAsViewed: (id: string) => `${TeacherRequests}/message/${id}/mark-as-viewed`,
   getNotes: `${TeacherRequests}/note`,
   getNoteById: (id: string) => `${TeacherRequests}/note/${id}`,
+  markNoteAsViewed: (id: string) => `${TeacherRequests}/note/${id}/mark-as-viewed`,
 };
 
 export default TeacherRequestsEndpoints;
