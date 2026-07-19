@@ -123,10 +123,11 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
 
   const experienceOptions = useMemo(
     () =>
-      Array.from(new Set(data.map((row) => row.experienceYears)))
-        .sort((a, b) => a - b)
-        .map((value) => ({ value: String(value), label: String(value) })),
-    [data]
+      Array.from({ length: 21 }, (_, i) => i).map((value) => ({
+        value: String(value),
+        label: String(value),
+      })),
+    []
   );
 
   const nationalityOptions = useMemo(
