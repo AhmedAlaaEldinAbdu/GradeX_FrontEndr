@@ -1336,7 +1336,8 @@
         "viewed": "Consulté"
       },
       "actions": {
-        "markViewed": "Marquer comme consulté"
+        "markViewed": "Marquer comme consulté",
+        "markingViewed": "Mise à jour..."
       },
       "filters": {
         "status": "Statut de la demande",
@@ -1364,7 +1365,8 @@
         "viewed": "Consulté"
       },
       "actions": {
-        "markViewed": "Consulté"
+        "markViewed": "Consulté",
+        "markingViewed": "Mise à jour..."
       },
       "filters": {
         "status": "Statut de la demande",

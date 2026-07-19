@@ -1441,7 +1441,8 @@
         "viewed": "تم الإطلاع"
       },
       "actions": {
-        "markViewed": "تم الإطلاع"
+        "markViewed": "تم الإطلاع",
+        "markingViewed": "جاري التحديث..."
       },
       "filters": {
         "status": "حالة الطلب",

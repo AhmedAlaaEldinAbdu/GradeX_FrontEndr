@@ -1336,7 +1336,8 @@
         "viewed": "Angesehen"
       },
       "actions": {
-        "markViewed": "Als angesehen markieren"
+        "markViewed": "Als angesehen markieren",
+        "markingViewed": "Wird aktualisiert..."
       },
       "filters": {
         "status": "Antragsstatus",
@@ -1364,7 +1365,8 @@
         "viewed": "Angesehen"
       },
       "actions": {
-        "markViewed": "Angesehen"
+        "markViewed": "Angesehen",
+        "markingViewed": "Wird aktualisiert..."
       },
       "filters": {
         "status": "Antragsstatus",
