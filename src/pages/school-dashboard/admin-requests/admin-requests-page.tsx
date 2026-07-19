@@ -13,6 +13,7 @@ import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchTeacherRequestsSummary } from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import { fetchCountries, fetchQualifications } from '@/redux/features/lookups/lookupsSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 
 import JobApplicationsTab from './components/JobApplicationsTab';
@@ -33,6 +34,10 @@ const AdminRequestsPage: React.FC = () => {
 
   useEffect(() => {
     if (schoolBranchId) {
+      // Fetch shared lookups for all tabs
+      dispatch(fetchCountries());
+      dispatch(fetchQualifications());
+      // Fetch summary statistics
       dispatch(fetchTeacherRequestsSummary({ SchoolBranchId: schoolBranchId }));
     }
   }, [dispatch, schoolBranchId]);

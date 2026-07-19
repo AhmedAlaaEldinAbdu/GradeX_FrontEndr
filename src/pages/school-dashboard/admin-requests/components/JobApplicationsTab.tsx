@@ -105,11 +105,9 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
 
   useEffect(() => {
     if (isActive) {
-      dispatch(fetchQualifications());
-      dispatch(fetchCountries());
       loadApplications();
     }
-  }, [isActive, loadApplications, dispatch]);
+  }, [isActive, loadApplications]);
 
   const data = useMemo(() => jobApplications.map(mapJobApplication), [jobApplications]);
 
