@@ -34,6 +34,8 @@ const initialState: RequestAppointmentState = {
 export interface FetchRequestAppointmentsPayload {
   page?: number;
   limit?: number;
+  studentName?: string;
+  date?: string;
 }
 
 export const fetchRequestAppointments = createAsyncThunk<
@@ -46,6 +48,9 @@ export const fetchRequestAppointments = createAsyncThunk<
       PageIndex: payload?.page ?? 1,
       PageSize: payload?.limit ?? 10,
     };
+
+    if (payload?.studentName) params.StudentName = payload.studentName;
+    if (payload?.date) params.Date = payload.date;
 
     return await requestAppointmentApiService.getRequestAppointments(params);
   } catch (error) {

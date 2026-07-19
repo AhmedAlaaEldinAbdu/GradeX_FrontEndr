@@ -10,10 +10,13 @@ import type {
 export async function getRequestAppointments(
   params?: RequestAppointmentsQueryParams
 ): Promise<RequestAppointmentsListResponse> {
-  const requestParams: Required<RequestAppointmentsQueryParams> = {
+  const requestParams: RequestAppointmentsQueryParams = {
     PageIndex: params?.PageIndex ?? 1,
     PageSize: params?.PageSize ?? 10,
   };
+
+  if (params?.StudentName) requestParams.StudentName = params.StudentName;
+  if (params?.Date) requestParams.Date = params.Date;
 
   const response = await axiosClient.get<ApiResponseModel<RequestAppointmentsData>>(
     RequestAppointmentEndpoints.getAll,
