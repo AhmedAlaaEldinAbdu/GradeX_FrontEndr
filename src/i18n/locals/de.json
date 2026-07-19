@@ -1543,7 +1543,9 @@
       "studentName": "Name des Schülers",
       "educationalStage": "Bildungsstufe",
       "classroom": "Klassenzimmer",
-      "markViewed": "Gesehen"
+      "markViewed": "Gesehen",
+      "markingViewed": "Wird aktualisiert...",
+      "markedViewed": "Nachrichtenstatus erfolgreich aktualisiert"
     },
     "viewMessage": {
       "title": "Nachricht anzeigen",
@@ -1867,6 +1869,7 @@
     "absent": "Abwesend",
     "late": "Verspätet",
     "searchStudent": "Nach Schülername oder Datum suchen",
+    "searchStudentName": "Nach Schülername suchen",
     "searchEmployee": "Nach Mitarbeitername suchen",
     "noStudents": "Keine Ergebnisse gefunden",
     "noEmployees": "Keine Ergebnisse gefunden",

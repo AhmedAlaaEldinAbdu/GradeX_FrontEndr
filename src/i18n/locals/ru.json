@@ -1557,7 +1557,9 @@
       "studentName": "Имя ученика",
       "educationalStage": "Уровень образования",
       "classroom": "Класс",
-      "markViewed": "Просмотрено"
+      "markViewed": "Просмотрено",
+      "markingViewed": "Обновление...",
+      "markedViewed": "Статус сообщения успешно обновлён"
     },
     "viewMessage": {
       "title": "Просмотр сообщения",
@@ -1881,6 +1883,7 @@
     "absent": "Отсутствует",
     "late": "Опоздал",
     "searchStudent": "Поиск по имени ученика или дате",
+    "searchStudentName": "Поиск по имени ученика",
     "searchEmployee": "Поиск по имени сотрудника",
     "noStudents": "Результаты не найдены",
     "noEmployees": "Результаты не найдены",

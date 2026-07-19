@@ -63,6 +63,10 @@ export interface StudentRequestDto {
   studentId?: string;
   educationalStage?: string;
   classrooms?: string[];
+  isViewed?: boolean;
+  viewedAt?: string | null;
+  viewedByUserId?: string | null;
+  viewedByName?: string | null;
 }
 
 export const SendType = {
@@ -103,6 +107,18 @@ export interface SchoolMessageStudentDto {
   studentimage: string | null;
 }
 
+export interface SchoolMessageGradeDto {
+  gradeId: string;
+  gradeNameAr: string | null;
+  gradeNameEN: string | null;
+}
+
+export interface SchoolMessageClassroomDto {
+  classroomId: string;
+  classroomNameAr: string | null;
+  classroomNameEN: string | null;
+}
+
 export interface SchoolMessageDto {
   messageId: string;
   message: string;
@@ -116,8 +132,12 @@ export interface SchoolMessageDto {
   studentName: string | null;
   studentimage: string | null;
   students: SchoolMessageStudentDto[];
-  grades: string[];
-  classrooms: string[];
+  grades: SchoolMessageGradeDto[];
+  classrooms: SchoolMessageClassroomDto[];
+  isViewed: boolean;
+  viewedAt: string | null;
+  viewedByUserId: string | null;
+  viewedByName: string | null;
 }
 
 export interface MessageStatusCount {
@@ -370,6 +390,10 @@ export interface RequestAppointmentDto {
   appointmentSender: RequestAppointmentParticipant;
   date: string;
   reason: string | null;
+  isViewed: boolean;
+  viewedAt: string | null;
+  viewedByUserId: string | null;
+  viewedByName: string | null;
 }
 
 export interface RequestAppointmentsData {
@@ -391,4 +415,6 @@ export interface RequestAppointmentsListResponse {
 export interface RequestAppointmentsQueryParams {
   PageIndex?: number;
   PageSize?: number;
+  StudentName?: string;
+  Date?: string;
 }

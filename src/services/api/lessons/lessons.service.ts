@@ -116,6 +116,19 @@ function buildLessonFormData(data: CreateLessonRequest, attachmentFiles?: File[]
   return formData;
 }
 
+const formatLessonDateForUpdate = (date?: string): string => {
+  if (!date) return '';
+  if (date.includes('T')) return date;
+
+  const dateStr = date.split('T')[0];
+  const dateParts = dateStr.split('-');
+  if (dateParts.length === 3) {
+    return `${dateParts[1]}-${dateParts[2]}-${dateParts[0]}`;
+  }
+
+  return date;
+};
+
 export async function createLesson(
   data: CreateLessonRequest,
   attachmentFiles?: File[]
@@ -139,16 +152,7 @@ export async function updateLesson(
   attachmentFiles?: File[]
 ): Promise<ApiResponseModel<null>> {
   const formData = new FormData();
-
-  // Convert date from YYYY-MM-DD or ISO format to MM-DD-YYYY format
-  let formattedDate = '';
-  if (data.date) {
-    const dateStr = data.date.split('T')[0]; // Handle ISO format
-    const dateParts = dateStr.split('-');
-    if (dateParts.length === 3) {
-      formattedDate = `${dateParts[1]}-${dateParts[2]}-${dateParts[0]}`; // MM-DD-YYYY
-    }
-  }
+  const formattedDate = formatLessonDateForUpdate(data.date);
 
   // Format time to HH:MM:SS
   const formatTime = (time?: string): string => {
@@ -237,16 +241,7 @@ export async function bulkUpdateLessons(
 
   lessonsData.forEach((data, lessonIndex) => {
     const prefix = `dto[${lessonIndex}]`;
-
-    // Convert date from YYYY-MM-DD or ISO format to MM-DD-YYYY format
-    let formattedDate = '';
-    if (data.date) {
-      const dateStr = data.date.split('T')[0]; // Handle ISO format
-      const dateParts = dateStr.split('-');
-      if (dateParts.length === 3) {
-        formattedDate = `${dateParts[1]}-${dateParts[2]}-${dateParts[0]}`; // MM-DD-YYYY
-      }
-    }
+    const formattedDate = formatLessonDateForUpdate(data.date);
 
     // Format time to HH:MM:SS
     const formatTime = (time?: string): string => {

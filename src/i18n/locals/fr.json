@@ -1543,7 +1543,9 @@
       "studentName": "Nom de l'élève",
       "educationalStage": "Niveau scolaire",
       "classroom": "Classe",
-      "markViewed": "Consulté"
+      "markViewed": "Consulté",
+      "markingViewed": "Mise à jour...",
+      "markedViewed": "Statut du message mis à jour avec succès"
     },
     "viewMessage": {
       "title": "Voir le message",
@@ -1867,6 +1869,7 @@
     "absent": "Absent",
     "late": "En retard",
     "searchStudent": "Rechercher par nom d'élève ou date",
+    "searchStudentName": "Rechercher par nom d'élève",
     "searchEmployee": "Rechercher par nom d'employé",
     "noStudents": "Aucun résultat trouvé",
     "noEmployees": "Aucun résultat trouvé",

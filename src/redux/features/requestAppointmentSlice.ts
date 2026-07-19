@@ -34,6 +34,8 @@ const initialState: RequestAppointmentState = {
 export interface FetchRequestAppointmentsPayload {
   page?: number;
   limit?: number;
+  studentName?: string;
+  date?: string;
 }
 
 export const fetchRequestAppointments = createAsyncThunk<
@@ -47,7 +49,22 @@ export const fetchRequestAppointments = createAsyncThunk<
       PageSize: payload?.limit ?? 10,
     };
 
+    if (payload?.studentName) params.StudentName = payload.studentName;
+    if (payload?.date) params.Date = payload.date;
+
     return await requestAppointmentApiService.getRequestAppointments(params);
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const markRequestAppointmentAsViewed = createAsyncThunk<
+  void,
+  string,
+  { rejectValue: string }
+>('requestAppointments/markAsViewed', async (id, { rejectWithValue }) => {
+  try {
+    await requestAppointmentApiService.markRequestAppointmentAsViewed(id);
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }

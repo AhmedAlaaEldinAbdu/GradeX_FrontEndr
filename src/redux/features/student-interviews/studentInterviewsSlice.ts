@@ -24,7 +24,7 @@ export interface StudentInterviewFilters {
   studentId?: string;
   supervisorId?: string;
   schoolBranchId?: string;
-  gradeId?: string;
+  GradeId?: string;
   date?: string;
   month?: number;
   year?: number;
@@ -109,7 +109,7 @@ export const fetchStudentInterviews = createAsyncThunk<
           studentId,
           supervisorId,
           schoolBranchId,
-          gradeId,
+          GradeId,
           date,
           month,
           year,
@@ -120,7 +120,7 @@ export const fetchStudentInterviews = createAsyncThunk<
         if (studentId) params.StudentId = studentId;
         if (supervisorId) params.SupervisorId = supervisorId;
         if (schoolBranchId) params.schoolBranchId = schoolBranchId;
-        if (gradeId) params.GradeId = gradeId;
+        if (GradeId) params.GradeId = GradeId;
         if (date) params.Date = date;
         if (month !== undefined) params.Month = month;
         if (year !== undefined) params.Year = year;

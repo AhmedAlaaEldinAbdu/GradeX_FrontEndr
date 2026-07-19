@@ -70,7 +70,7 @@ const PersonalInterviewsTable: React.FC = () => {
         limit: 10,
         filters: {
           studentName: searchTerm || undefined,
-          gradeId: selectedGradeId || undefined,
+          GradeId: selectedGradeId || undefined,
           date: selectedDate || undefined,
           schoolBranchId: schoolBranchId || undefined,
         },
@@ -150,7 +150,7 @@ const PersonalInterviewsTable: React.FC = () => {
           limit: pagination.pageSize,
           filters: {
             studentName: searchTerm || undefined,
-            gradeId: selectedGradeId || undefined,
+            GradeId: selectedGradeId || undefined,
             date: selectedDate || undefined,
             schoolBranchId: schoolBranchId || undefined,
           },
@@ -201,7 +201,7 @@ const PersonalInterviewsTable: React.FC = () => {
           limit: pagination.pageSize,
           filters: {
             studentName: searchTerm || undefined,
-            gradeId: selectedGradeId || undefined,
+            GradeId: selectedGradeId || undefined,
             date: selectedDate || undefined,
             schoolBranchId: schoolBranchId || undefined,
           },
@@ -263,7 +263,7 @@ const PersonalInterviewsTable: React.FC = () => {
           limit: pagination.pageSize,
           filters: {
             studentName: searchTerm || undefined,
-            gradeId: selectedGradeId || undefined,
+            GradeId: selectedGradeId || undefined,
             date: selectedDate || undefined,
             schoolBranchId: schoolBranchId || undefined,
           },
@@ -445,7 +445,7 @@ const PersonalInterviewsTable: React.FC = () => {
               limit: pagination.pageSize,
               filters: {
                 studentName: searchTerm || undefined,
-                gradeId: selectedGradeId || undefined,
+                GradeId: selectedGradeId || undefined,
                 date: selectedDate || undefined,
                 schoolBranchId: schoolBranchId || undefined,
               },

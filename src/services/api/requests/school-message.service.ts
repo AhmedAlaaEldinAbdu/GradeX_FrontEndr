@@ -95,10 +95,15 @@ export async function getMessageByStudentId(studentId: string): Promise<StudentM
   return data?.messages ?? [];
 }
 
+export async function markSchoolMessageAsViewed(id: string): Promise<void> {
+  await axiosClient.put(SchoolMessageEndpoints.markAsViewed(id));
+}
+
 export const schoolMessageApiService = {
   createSchoolMessage,
   getAllSchoolMessages,
   getMessageByStudentId,
+  markSchoolMessageAsViewed,
   replyToSchoolMessage,
 };
 

@@ -5,4 +5,5 @@ export const SchoolMessageEndpoints = {
   create: SchoolMessage,
   getAll: `${SchoolMessage}/GetAll`,
   getByStudentId: `${SchoolMessage}/GetMessageByStudentId`,
+  markAsViewed: (id: string) => `${SchoolMessage}/${id}/mark-as-viewed`,
 };
