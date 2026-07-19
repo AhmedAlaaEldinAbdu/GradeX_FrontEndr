@@ -165,6 +165,10 @@ const MessageRequestsTab: React.FC = () => {
         const recipient = isToStudent ? studentEndpoint : schoolEndpoint;
         const messageStatus = normalizeMessageStatus(message.messageStatus);
 
+        const requestStatus = message.isViewed
+          ? StudentRequestStatus.Viewed
+          : MESSAGE_STATUS_TO_REQUEST_STATUS[messageStatus];
+
         return {
           id: message.messageId,
           senderName: sender.name,
@@ -178,7 +182,7 @@ const MessageRequestsTab: React.FC = () => {
           recipientId: recipient.id,
           recipientParticipants: recipient.participants,
           messageContent: message.message,
-          status: MESSAGE_STATUS_TO_REQUEST_STATUS[messageStatus],
+          status: requestStatus,
           type: StudentRequestType.Messages,
           created: message.createdAt,
           isFromStudent,
