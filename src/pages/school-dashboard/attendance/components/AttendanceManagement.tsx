@@ -97,7 +97,7 @@ export default function AttendanceManagement() {
         page: pagination.pageIndex,
         limit: pagination.pageSize,
         search: searchTerm || undefined,
-        lkSchoolStageId: selectedStageId || undefined,
+        gradeId: selectedStageId || undefined,
         classroomId: selectedClassroomId || undefined,
         date: selectedDate || undefined,
       })
@@ -118,7 +118,7 @@ export default function AttendanceManagement() {
         page,
         limit: pagination.pageSize,
         search: searchTerm || undefined,
-        lkSchoolStageId: selectedStageId || undefined,
+        gradeId: selectedStageId || undefined,
         classroomId: selectedClassroomId || undefined,
         date: selectedDate || undefined,
       })
@@ -161,7 +161,7 @@ export default function AttendanceManagement() {
         page: pagination.pageIndex,
         limit: pagination.pageSize,
         search: searchTerm || undefined,
-        lkSchoolStageId: selectedStageId || undefined,
+        gradeId: selectedStageId || undefined,
         classroomId: selectedClassroomId || undefined,
         date: selectedDate || undefined,
       })
