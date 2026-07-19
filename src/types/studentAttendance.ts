@@ -43,7 +43,7 @@ export interface StudentAttendanceQueryParams {
   SchoolBrancheId: string;
   PageIndex?: number;
   PageSize?: number;
-  Search?: string;
+  SearchStudentName?: string;
   gradeId?: string;
   ClassroomId?: string;
   Status?: number;

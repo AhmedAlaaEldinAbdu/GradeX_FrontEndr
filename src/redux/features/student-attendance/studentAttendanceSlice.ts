@@ -118,7 +118,7 @@ export const fetchStudentAttendance = createAsyncThunk<
       SchoolBrancheId: schoolBranchId,
       PageIndex: payload?.page || 1,
       PageSize: payload?.limit || 10,
-      Search: payload?.search,
+      SearchStudentName: payload?.search,
       gradeId: payload?.gradeId,
       ClassroomId: payload?.classroomId,
       Status: payload?.status,

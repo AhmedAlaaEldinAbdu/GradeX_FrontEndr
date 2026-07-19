@@ -474,8 +474,8 @@ export default function AttendanceManagement() {
   const filterConfigs: FilterConfig[] = [
     {
       type: 'search',
-      name: 'searchStudent',
-      placeholder: t('attendance.searchStudent'),
+      name: 'SearchStudentName',
+      placeholder: t('attendance.searchStudentName'),
       value: searchTerm,
       onChange: (value) => setSearchTerm(value as string),
       width: '30%',
