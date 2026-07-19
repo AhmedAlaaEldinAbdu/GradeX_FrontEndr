@@ -55,7 +55,8 @@ export interface MessageDetailsPopupProps {
   isOpen: boolean;
   onClose: () => void;
   request: StudentRequestDto | null;
-  onMarkViewed?: (request: StudentRequestDto) => void;
+  onMarkViewed?: (request: StudentRequestDto) => Promise<void> | void;
+  isMarkingViewed?: boolean;
   /** Translation key for the popup title (defaults to the message title). */
   titleKey?: string;
 }
@@ -65,6 +66,7 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
   onClose,
   request,
   onMarkViewed,
+  isMarkingViewed = false,
   titleKey = 'requests.popup.title',
 }) => {
   const { t } = useTranslation();
@@ -75,10 +77,16 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
 
   const canMarkViewed =
     request.recipientRole === RequestParticipantRole.School &&
-    request.status === StudentRequestStatus.Pending;
+    request.status === StudentRequestStatus.Pending &&
+    request.isViewed !== true;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t(titleKey)} size="md">
+    <Modal
+      isOpen={isOpen}
+      onClose={isMarkingViewed ? () => undefined : onClose}
+      title={t(titleKey)}
+      size="md"
+    >
       <div className="space-y-6">
         <DetailRow label={t('requests.requestStatus')}>
           <span
@@ -145,17 +153,22 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
 
         {canMarkViewed ? (
           <div className="flex items-center justify-end gap-3 pt-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={isMarkingViewed}>
               {t('common.cancel')}
             </Button>
             <Button
               variant="primary"
-              onClick={() => {
-                onMarkViewed?.(request);
-                onClose();
+              disabled={isMarkingViewed}
+              onClick={async () => {
+                try {
+                  await onMarkViewed?.(request);
+                  onClose();
+                } catch {
+                  // Keep the popup open; parent handlers own user feedback.
+                }
               }}
             >
-              {t('requests.popup.markViewed')}
+              {isMarkingViewed ? t('requests.popup.markingViewed') : t('requests.popup.markViewed')}
             </Button>
           </div>
         ) : null}
