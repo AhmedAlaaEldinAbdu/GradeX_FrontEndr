@@ -61,6 +61,17 @@ export const fetchSchoolMessages = createAsyncThunk<
   }
 });
 
+export const markSchoolMessageAsViewed = createAsyncThunk<void, string, { rejectValue: string }>(
+  'schoolMessages/markAsViewed',
+  async (id, { rejectWithValue }) => {
+    try {
+      await schoolMessageApiService.markSchoolMessageAsViewed(id);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const schoolMessagesSlice = createSlice({
   name: 'schoolMessages',
   initialState,
