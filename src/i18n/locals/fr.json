@@ -1543,7 +1543,9 @@
       "studentName": "Nom de l'élève",
       "educationalStage": "Niveau scolaire",
       "classroom": "Classe",
-      "markViewed": "Consulté"
+      "markViewed": "Consulté",
+      "markingViewed": "Mise à jour...",
+      "markedViewed": "Statut du message mis à jour avec succès"
     },
     "viewMessage": {
       "title": "Voir le message",

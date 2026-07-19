@@ -1649,7 +1649,9 @@
       "studentName": "Student Name",
       "grade": "Grades",
       "classroom": "Classroom",
-      "markViewed": "Viewed"
+      "markViewed": "Viewed",
+      "markingViewed": "Updating...",
+      "markedViewed": "Message status updated successfully"
     },
     "addMessage": {
       "title": "Add Message",
