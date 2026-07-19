@@ -418,6 +418,7 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
           options={[
             { value: String(WorkType.Full), label: t('adminRequests.workType.full') },
             { value: String(WorkType.Part), label: t('adminRequests.workType.part') },
+            { value: String(WorkType.Both), label: t('adminRequests.workType.both') },
           ]}
           placeholder={t('adminRequests.filters.workType')}
           showSearch={false}
