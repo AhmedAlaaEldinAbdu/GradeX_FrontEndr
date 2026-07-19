@@ -58,6 +58,18 @@ export const fetchRequestAppointments = createAsyncThunk<
   }
 });
 
+export const markRequestAppointmentAsViewed = createAsyncThunk<
+  void,
+  string,
+  { rejectValue: string }
+>('requestAppointments/markAsViewed', async (id, { rejectWithValue }) => {
+  try {
+    await requestAppointmentApiService.markRequestAppointmentAsViewed(id);
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
 const requestAppointmentSlice = createSlice({
   name: 'requestAppointments',
   initialState,

@@ -34,8 +34,13 @@ export async function getRequestAppointments(
   };
 }
 
+export async function markRequestAppointmentAsViewed(id: string): Promise<void> {
+  await axiosClient.put(RequestAppointmentEndpoints.markAsViewed(id));
+}
+
 export const requestAppointmentApiService = {
   getRequestAppointments,
+  markRequestAppointmentAsViewed,
 };
 
 export default requestAppointmentApiService;
