@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
+import Button from '@/shared/components/Button';
 import Modal from '@/shared/popups/Modal';
 import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
@@ -89,6 +90,8 @@ export interface MessageDetailsPopupProps {
   onClose: () => void;
   message: AdminMessageDto | null;
   isLoading?: boolean;
+  onMarkViewed?: (message: AdminMessageDto) => Promise<void> | void;
+  isMarkingViewed?: boolean;
 }
 
 const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
@@ -96,6 +99,8 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
   onClose,
   message,
   isLoading = false,
+  onMarkViewed,
+  isMarkingViewed = false,
 }) => {
   const { t } = useTranslation();
 
@@ -103,11 +108,16 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
     return null;
   }
   const schoolLabel = t('requests.schoolLabel');
+  const canMarkViewed =
+    Boolean(onMarkViewed) &&
+    message !== null &&
+    message.status === AdminMessageStatus.Sent &&
+    message.isViewed !== true;
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={isMarkingViewed ? () => undefined : onClose}
       title={t('adminRequests.messages.detailsTitle')}
       size="md"
     >
@@ -168,6 +178,30 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
               {displayValue(message.messageContent)}
             </span>
           </DetailRow>
+
+          {canMarkViewed && onMarkViewed ? (
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <Button variant="outline" onClick={onClose} disabled={isMarkingViewed}>
+                {t('common.cancel')}
+              </Button>
+              <Button
+                variant="primary"
+                disabled={isMarkingViewed}
+                onClick={async () => {
+                  try {
+                    await onMarkViewed(message);
+                    onClose();
+                  } catch {
+                    // Keep the popup open; parent handlers own user feedback.
+                  }
+                }}
+              >
+                {isMarkingViewed
+                  ? t('adminRequests.messages.actions.markingViewed')
+                  : t('adminRequests.messages.actions.markViewed')}
+              </Button>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </Modal>

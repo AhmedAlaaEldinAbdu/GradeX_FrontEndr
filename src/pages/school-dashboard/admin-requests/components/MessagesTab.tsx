@@ -10,6 +10,7 @@ import IconButton from '@/shared/components/IconButton';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
+import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
@@ -24,6 +25,7 @@ import {
   fetchTeacherMessages,
 } from '@/redux/features/teacher-requests/teacherRequestsSlice';
 import type { TeacherMessagesQueryParams } from '@/services/api/types/teacher-requests.types';
+import { teacherRequestsApiService } from '@/services/api/teacher-requests/teacher-requests.service';
 import { mapTeacherMessage } from '../admin-requests.mappers';
 import MessageDetailsPopup from '../popups/MessageDetailsPopup';
 
@@ -66,20 +68,28 @@ const mergeMessageDetails = (
   if (!summary) return details;
   if (!details) return summary;
 
+  const isViewed = summary.isViewed === true || details.isViewed === true;
+
   return {
     ...summary,
     ...details,
     sender: { ...summary.sender, ...details.sender },
     recipient: { ...summary.recipient, ...details.recipient },
+    status: isViewed ? AdminMessageStatus.Viewed : details.status,
     stage: details.stage ?? summary.stage,
     classroom: details.classroom ?? summary.classroom,
     sentDate: details.sentDate || summary.sentDate,
     messageContent: details.messageContent || summary.messageContent,
+    isViewed,
+    viewedAt: details.viewedAt ?? summary.viewedAt,
+    viewedByUserId: details.viewedByUserId ?? summary.viewedByUserId,
+    viewedByName: details.viewedByName ?? summary.viewedByName,
   };
 };
 
 const MessagesTab: React.FC = () => {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -94,6 +104,8 @@ const MessagesTab: React.FC = () => {
   const [selectedMessageSummary, setSelectedMessageSummary] = useState<AdminMessageDto | null>(
     null
   );
+  const [statusById, setStatusById] = useState<Record<string, AdminMessageStatus>>({});
+  const [markingViewedId, setMarkingViewedId] = useState<string | null>(null);
 
   const schoolLabel = t('requests.schoolLabel');
 
@@ -111,7 +123,23 @@ const MessagesTab: React.FC = () => {
     loadMessages();
   }, [loadMessages]);
 
-  const data = useMemo(() => messages.map(mapTeacherMessage), [messages]);
+  const data = useMemo(
+    () =>
+      messages.map((message) => {
+        const mappedMessage = mapTeacherMessage(message);
+        const status = statusById[mappedMessage.id] ?? mappedMessage.status;
+
+        return {
+          ...mappedMessage,
+          status,
+          isViewed:
+            mappedMessage.isViewed === true || status === AdminMessageStatus.Viewed
+              ? true
+              : mappedMessage.isViewed,
+        };
+      }),
+    [messages, statusById]
+  );
 
   const filteredData = useMemo(
     () =>
@@ -146,6 +174,47 @@ const MessagesTab: React.FC = () => {
     setSelectedMessageId(null);
     setSelectedMessageSummary(null);
     dispatch(clearCurrentMessage());
+  };
+
+  const handleMarkViewed = async (message: AdminMessageDto) => {
+    try {
+      setMarkingViewedId(message.id);
+      const response = await teacherRequestsApiService.markTeacherMessageAsViewed(message.id);
+
+      if (!response.isSuccess) {
+        throw new Error(response.message || t('common.errorOccurred'));
+      }
+
+      setStatusById((current) => ({
+        ...current,
+        [message.id]: AdminMessageStatus.Viewed,
+      }));
+      setSelectedMessageSummary((current) =>
+        current?.id === message.id
+          ? { ...current, status: AdminMessageStatus.Viewed, isViewed: true }
+          : current
+      );
+      showToast({
+        message: t('adminRequests.messages.toasts.markedViewed'),
+        type: 'success',
+      });
+      loadMessages();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : typeof error === 'string'
+            ? error
+            : t('common.errorOccurred');
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: errorMessage !== t('common.errorOccurred'),
+      });
+      throw error;
+    } finally {
+      setMarkingViewedId(null);
+    }
   };
 
   const renderPartyCell = (party: AdminMessageParty) => {
@@ -248,19 +317,23 @@ const MessagesTab: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        const canMarkViewed = row.status === AdminMessageStatus.Sent;
+        const isViewed = row.status === AdminMessageStatus.Viewed || row.isViewed === true;
+        const isMarkingViewed = markingViewedId === row.id;
+        const canMarkViewed = row.status === AdminMessageStatus.Sent && !isViewed;
         return (
           <div className="flex items-center justify-center gap-2">
             <Button
               variant="outline"
               size="sm"
               className="!rounded-2xl px-6"
-              disabled={!canMarkViewed}
+              disabled={!canMarkViewed || isMarkingViewed}
               onClick={() => {
-                // handleMarkViewed(row);
+                void handleMarkViewed(row);
               }}
             >
-              {t('adminRequests.messages.actions.markViewed')}
+              {isMarkingViewed
+                ? t('adminRequests.messages.actions.markingViewed')
+                : t('adminRequests.messages.actions.markViewed')}
             </Button>
           </div>
         );
@@ -371,6 +444,8 @@ const MessagesTab: React.FC = () => {
         onClose={handleCloseMessage}
         message={selectedMessage}
         isLoading={isDetailsLoading && !selectedMessageDetails}
+        onMarkViewed={handleMarkViewed}
+        isMarkingViewed={markingViewedId === selectedMessage?.id}
       />
     </Card>
   );
