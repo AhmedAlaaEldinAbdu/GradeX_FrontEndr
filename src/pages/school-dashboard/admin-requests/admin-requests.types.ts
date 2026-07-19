@@ -7,9 +7,9 @@
 
 // Aligned with the API `workShedule` values (see JobAdvertismentWorkShedule).
 export const WorkType = {
-  Both: 0,
   Full: 1,
   Part: 2,
+  Both: 3,
 } as const;
 
 export type WorkType = (typeof WorkType)[keyof typeof WorkType];

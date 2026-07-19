@@ -24,7 +24,7 @@ import {
   EmployeeApplicationStatus,
 } from '../admin-requests.types';
 import { fetchJobApplications } from '@/redux/features/teacher-requests/teacherRequestsSlice';
-import { fetchQualifications } from '@/redux/features/lookups/lookupsSlice';
+import { fetchQualifications, fetchCountries } from '@/redux/features/lookups/lookupsSlice';
 import { editApplicationsJobAdvertisementStatus } from '@/redux/features/applications-job-advertisements/applicationsJobAdvertisementsSlice';
 import { JOB_APPLICATION_STATUS } from '@/pages/school-dashboard/job-announcements/components/applicants-data';
 import type {
@@ -64,7 +64,9 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
     (state) => state.teacherRequests
   );
 
-  const { qualifications, isLoadingQualifications } = useAppSelector((state) => state.lookups);
+  const { qualifications, isLoadingQualifications, countries, isLoadingCountries } = useAppSelector(
+    (state) => state.lookups
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedWorkType, setSelectedWorkType] = useState('');
@@ -104,6 +106,7 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   useEffect(() => {
     if (isActive) {
       dispatch(fetchQualifications());
+      dispatch(fetchCountries());
       loadApplications();
     }
   }, [isActive, loadApplications, dispatch]);
@@ -123,19 +126,22 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
 
   const experienceOptions = useMemo(
     () =>
-      Array.from(new Set(data.map((row) => row.experienceYears)))
-        .sort((a, b) => a - b)
-        .map((value) => ({ value: String(value), label: String(value) })),
-    [data]
+      Array.from({ length: 21 }, (_, i) => i).map((value) => ({
+        value: String(value),
+        label: String(value),
+      })),
+    []
   );
 
   const nationalityOptions = useMemo(
     () =>
-      Array.from(new Set(data.map((row) => row.nationality).filter(Boolean))).map((value) => ({
-        value,
-        label: value,
-      })),
-    [data]
+      Array.isArray(countries)
+        ? countries.map((country) => ({
+            value: country.id,
+            label: currentLang === 'ar' ? country.arabicName : country.englishName,
+          }))
+        : [],
+    [countries, currentLang]
   );
 
   const updateStatus = async (
@@ -412,6 +418,7 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
           options={[
             { value: String(WorkType.Full), label: t('adminRequests.workType.full') },
             { value: String(WorkType.Part), label: t('adminRequests.workType.part') },
+            { value: String(WorkType.Both), label: t('adminRequests.workType.both') },
           ]}
           placeholder={t('adminRequests.filters.workType')}
           showSearch={false}
@@ -473,8 +480,11 @@ const JobApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
             setPage(1);
           }}
           options={nationalityOptions}
-          placeholder={t('adminRequests.filters.nationality')}
+          placeholder={
+            isLoadingCountries ? t('common.loading') : t('adminRequests.filters.nationality')
+          }
           showSearch={false}
+          disabled={isLoadingCountries}
         />
       ),
     },
