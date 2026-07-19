@@ -79,7 +79,8 @@ export interface TeacherNoteDetailsPopupProps {
   isOpen: boolean;
   onClose: () => void;
   note: AdminTeacherNoteDto | null;
-  onMarkViewed: (note: AdminTeacherNoteDto) => void;
+  onMarkViewed: (note: AdminTeacherNoteDto) => Promise<void> | void;
+  isMarkingViewed?: boolean;
   onProfilePreview: () => void;
 }
 
@@ -88,6 +89,7 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
   onClose,
   note,
   onMarkViewed,
+  isMarkingViewed = false,
   onProfilePreview,
 }) => {
   const { t } = useTranslation();
@@ -96,12 +98,12 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
     return null;
   }
 
-  const canMarkViewed = note.status === AdminTeacherNoteStatus.Pending;
+  const canMarkViewed = note.status === AdminTeacherNoteStatus.Pending && note.isViewed !== true;
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={isMarkingViewed ? () => undefined : onClose}
       title={t('adminRequests.teacherNotes.detailsTitle')}
       size="md"
     >
@@ -152,17 +154,24 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
 
         {canMarkViewed ? (
           <div className="flex items-center justify-end gap-3 pt-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={isMarkingViewed}>
               {t('common.cancel')}
             </Button>
             <Button
               variant="primary"
-              onClick={() => {
-                onMarkViewed(note);
-                onClose();
+              disabled={isMarkingViewed}
+              onClick={async () => {
+                try {
+                  await onMarkViewed(note);
+                  onClose();
+                } catch {
+                  // Keep the popup open; parent handlers own user feedback.
+                }
               }}
             >
-              {t('adminRequests.teacherNotes.actions.markViewed')}
+              {isMarkingViewed
+                ? t('adminRequests.teacherNotes.actions.markingViewed')
+                : t('adminRequests.teacherNotes.actions.markViewed')}
             </Button>
           </div>
         ) : null}
