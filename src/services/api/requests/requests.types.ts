@@ -391,4 +391,6 @@ export interface RequestAppointmentsListResponse {
 export interface RequestAppointmentsQueryParams {
   PageIndex?: number;
   PageSize?: number;
+  StudentName?: string;
+  Date?: string;
 }
