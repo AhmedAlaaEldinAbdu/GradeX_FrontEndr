@@ -10,10 +10,14 @@ import IconButton from '@/shared/components/IconButton';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
+import { useToast } from '@/shared/context/ToastContext';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { fetchRequestAppointments } from '@/redux/features/requestAppointmentSlice';
+import {
+  fetchRequestAppointments,
+  markRequestAppointmentAsViewed,
+} from '@/redux/features/requestAppointmentSlice';
 import type {
   RequestAppointmentDto,
   StudentRequestDto,
@@ -56,6 +60,7 @@ const ReminderRequestsTab: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { showToast } = useToast();
 
   const { appointments, isLoading, pagination } = useAppSelector(
     (state) => state.requestAppointments
@@ -66,6 +71,7 @@ const ReminderRequestsTab: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState<StudentRequestDto | null>(null);
+  const [isMarkingViewed, setIsMarkingViewed] = useState(false);
 
   const schoolLabel = t('requests.schoolLabel');
 
@@ -148,6 +154,35 @@ const ReminderRequestsTab: React.FC = () => {
 
   const handleClosePreview = () => {
     setSelectedRequest(null);
+  };
+
+  const refreshAppointments = () => {
+    dispatch(
+      fetchRequestAppointments({
+        page,
+        limit: PAGE_SIZE,
+        studentName: searchTerm.trim() || undefined,
+        date: selectedDate || undefined,
+      })
+    );
+  };
+
+  const handleMarkViewed = async (request: StudentRequestDto) => {
+    try {
+      setIsMarkingViewed(true);
+      await dispatch(markRequestAppointmentAsViewed(request.id)).unwrap();
+      showToast({ message: t('requests.popup.markedViewed'), type: 'success' });
+      refreshAppointments();
+    } catch (error) {
+      showToast({
+        message: typeof error === 'string' ? error : t('common.errorOccurred'),
+        type: 'error',
+        isRaw: typeof error === 'string',
+      });
+      throw error;
+    } finally {
+      setIsMarkingViewed(false);
+    }
   };
 
   const getStatusBadge = (status: StudentRequestStatus) => (
@@ -345,7 +380,8 @@ const ReminderRequestsTab: React.FC = () => {
         isOpen={Boolean(selectedRequest)}
         onClose={handleClosePreview}
         request={selectedRequest}
-        onMarkViewed={() => undefined}
+        onMarkViewed={handleMarkViewed}
+        isMarkingViewed={isMarkingViewed}
         titleKey="requests.reminder.detailsTitle"
       />
     </Card>
