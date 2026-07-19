@@ -44,7 +44,7 @@ export interface StudentAttendanceQueryParams {
   PageIndex?: number;
   PageSize?: number;
   Search?: string;
-  LKSchoolStageId?: string;
+  gradeId?: string;
   ClassroomId?: string;
   Status?: number;
   Date?: string;

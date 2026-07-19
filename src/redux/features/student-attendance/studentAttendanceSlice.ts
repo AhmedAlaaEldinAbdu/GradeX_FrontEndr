@@ -82,7 +82,7 @@ export interface FetchStudentAttendancePayload {
   page?: number;
   limit?: number;
   search?: string;
-  lkSchoolStageId?: string;
+  gradeId?: string;
   classroomId?: string;
   status?: number;
   date?: string;
@@ -119,7 +119,7 @@ export const fetchStudentAttendance = createAsyncThunk<
       PageIndex: payload?.page || 1,
       PageSize: payload?.limit || 10,
       Search: payload?.search,
-      LKSchoolStageId: payload?.lkSchoolStageId,
+      gradeId: payload?.gradeId,
       ClassroomId: payload?.classroomId,
       Status: payload?.status,
       Date: payload?.date,
