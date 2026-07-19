@@ -390,6 +390,10 @@ export interface RequestAppointmentDto {
   appointmentSender: RequestAppointmentParticipant;
   date: string;
   reason: string | null;
+  isViewed: boolean;
+  viewedAt: string | null;
+  viewedByUserId: string | null;
+  viewedByName: string | null;
 }
 
 export interface RequestAppointmentsData {

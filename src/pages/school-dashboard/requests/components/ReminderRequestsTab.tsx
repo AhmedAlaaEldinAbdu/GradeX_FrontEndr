@@ -84,6 +84,11 @@ const ReminderRequestsTab: React.FC = () => {
           appointment.appointmentReciver === RequestAppointmentParticipant.School;
         const parentName = emptyWhenMissing(appointment.parentName);
         const studentName = emptyWhenMissing(appointment.studentName);
+        const requestStatus = appointment.isViewed
+          ? StudentRequestStatus.Viewed
+          : receiverIsSchool
+            ? StudentRequestStatus.Pending
+            : StudentRequestStatus.Sent;
 
         return {
           id: appointment.id,
@@ -100,11 +105,15 @@ const ReminderRequestsTab: React.FC = () => {
             : RequestParticipantRole.Parent,
           recipientId: receiverIsSchool ? undefined : appointment.parentId,
           messageContent: emptyWhenMissing(appointment.reason),
-          status: receiverIsSchool ? StudentRequestStatus.Pending : StudentRequestStatus.Sent,
+          status: requestStatus,
           type: StudentRequestType.Reminder,
           created: appointment.date,
           studentName,
           studentId: appointment.studentId || undefined,
+          isViewed: appointment.isViewed,
+          viewedAt: appointment.viewedAt,
+          viewedByUserId: appointment.viewedByUserId,
+          viewedByName: appointment.viewedByName,
         };
       },
     [schoolLabel]
