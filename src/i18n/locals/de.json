@@ -1867,6 +1867,7 @@
     "absent": "Abwesend",
     "late": "Verspätet",
     "searchStudent": "Nach Schülername oder Datum suchen",
+    "searchStudentName": "Nach Schülername suchen",
     "searchEmployee": "Nach Mitarbeitername suchen",
     "noStudents": "Keine Ergebnisse gefunden",
     "noEmployees": "Keine Ergebnisse gefunden",

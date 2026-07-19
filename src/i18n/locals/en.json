@@ -1997,6 +1997,7 @@
     "absent": "Absent",
     "late": "Late",
     "searchStudent": "Search by student name or Date",
+    "searchStudentName": "Search by student name",
     "searchEmployee": "Search by employee name",
     "noStudents": "No results found",
     "noEmployees": "No results found",
