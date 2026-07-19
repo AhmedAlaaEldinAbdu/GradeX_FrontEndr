@@ -68,6 +68,9 @@ const normalizeMessageStatus = (status: MessageStatus | 0): MessageStatus => {
   return MessageStatus.Pending;
 };
 
+const isNonEmptyString = (value: string | null | undefined): value is string =>
+  typeof value === 'string' && value.trim().length > 0;
+
 const getParticipantProfilePath = (
   role: RequestParticipantRole | undefined,
   id: string | undefined
@@ -182,11 +185,11 @@ const MessageRequestsTab: React.FC = () => {
           studentId: firstStudent?.id ?? message.studentId,
           educationalStage: message.grades
             .map((grade) => grade.gradeNameAr || grade.gradeNameEN)
-            .filter(Boolean)
+            .filter(isNonEmptyString)
             .join(', '),
           classrooms: message.classrooms
             .map((classroom) => classroom.classroomNameAr || classroom.classroomNameEN)
-            .filter(Boolean),
+            .filter(isNonEmptyString),
           isViewed: message.isViewed,
           viewedAt: message.viewedAt,
           viewedByUserId: message.viewedByUserId,
