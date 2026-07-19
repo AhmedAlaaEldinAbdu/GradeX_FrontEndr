@@ -43,13 +43,18 @@ const WORK_TYPE_LABEL: Record<WorkType, string> = {
 };
 
 const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = (i18n.language as 'ar' | 'en') ?? 'ar';
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
 
   const { jobApplications, jobApplicationsPagination, isJobApplicationsLoading } = useAppSelector(
     (state) => state.teacherRequests
+  );
+
+  const { qualifications, isLoadingQualifications, countries, isLoadingCountries } = useAppSelector(
+    (state) => state.lookups
   );
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -130,28 +135,33 @@ const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) =
 
   const qualificationOptions = useMemo(
     () =>
-      Array.from(new Set(data.map((row) => row.qualification).filter(Boolean))).map((value) => ({
-        value,
-        label: value,
-      })),
-    [data]
+      Array.isArray(qualifications)
+        ? qualifications.map((qualification) => ({
+            value: qualification.id,
+            label: currentLang === 'ar' ? qualification.nameAr : qualification.nameEn,
+          }))
+        : [],
+    [qualifications, currentLang]
   );
 
   const experienceOptions = useMemo(
     () =>
-      Array.from(new Set(data.map((row) => row.experienceYears)))
-        .sort((a, b) => a - b)
-        .map((value) => ({ value: String(value), label: String(value) })),
-    [data]
+      Array.from({ length: 21 }, (_, i) => i).map((value) => ({
+        value: String(value),
+        label: String(value),
+      })),
+    []
   );
 
   const nationalityOptions = useMemo(
     () =>
-      Array.from(new Set(data.map((row) => row.nationality).filter(Boolean))).map((value) => ({
-        value,
-        label: value,
-      })),
-    [data]
+      Array.isArray(countries)
+        ? countries.map((country) => ({
+            value: country.id,
+            label: currentLang === 'ar' ? country.arabicName : country.englishName,
+          }))
+        : [],
+    [countries, currentLang]
   );
 
   const columns: DataTableColumn<JobApplicationDto>[] = [
@@ -328,8 +338,11 @@ const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) =
             setPage(1);
           }}
           options={qualificationOptions}
-          placeholder={t('adminRequests.filters.qualification')}
+          placeholder={
+            isLoadingQualifications ? t('common.loading') : t('adminRequests.filters.qualification')
+          }
           showSearch={false}
+          disabled={isLoadingQualifications}
         />
       ),
     },
@@ -366,8 +379,11 @@ const ArchiveApplicationsTab: React.FC<{ isActive: boolean }> = ({ isActive }) =
             setPage(1);
           }}
           options={nationalityOptions}
-          placeholder={t('adminRequests.filters.nationality')}
+          placeholder={
+            isLoadingCountries ? t('common.loading') : t('adminRequests.filters.nationality')
+          }
           showSearch={false}
+          disabled={isLoadingCountries}
         />
       ),
     },
