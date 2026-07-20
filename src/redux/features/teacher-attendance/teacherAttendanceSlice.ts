@@ -118,8 +118,8 @@ export const fetchTeacherAttendance = createAsyncThunk<
 
       if (payload.filters) {
         if (payload.filters.search) params.Search = payload.filters.search;
-        if (payload.filters.lkSchoolStageId)
-          params.LKSchoolStageId = payload.filters.lkSchoolStageId;
+        if (payload.filters.gradeId)
+          params.gradeId = payload.filters.gradeId;
         if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
         if (payload.filters.status) params.Status = payload.filters.status;
       }

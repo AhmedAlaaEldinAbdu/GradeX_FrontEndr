@@ -7,6 +7,7 @@ export interface TeacherAttendanceClassroom {
 export interface TeacherAttendanceCreatedBy {
   createdById: string;
   createdByFullNane: string | null;
+  createdByFullName: string | null;
   lkAdministrativePositionId: string | null;
   administrativePositionNameAr: string;
   administrativePositionNameEn: string;
@@ -48,14 +49,14 @@ export interface TeacherAttendanceQueryParams {
   PageIndex?: number;
   PageSize?: number;
   Search?: string;
-  LKSchoolStageId?: string;
+  gradeId?: string;
   ClassroomId?: string;
   Status?: number;
 }
 
 export interface TeacherAttendanceFilters {
   search?: string;
-  lkSchoolStageId?: string;
+  gradeId?: string;
   classroomId?: string;
   status?: number;
 }
