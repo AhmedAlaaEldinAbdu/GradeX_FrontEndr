@@ -23,6 +23,15 @@
       "student": "élève",
       "exam": "examen"
     },
+    "liveClasses": {
+      "title": "Cours en direct",
+      "metrics": {
+        "totalRemoteClasses": "Total des cours à distance",
+        "liveClassesNow": "Cours en direct maintenant",
+        "attendanceRate": "Taux de présence"
+      },
+      "emptyTitle": "Aucun cours à distance n'a encore été ajouté"
+    },
     "moodle": {
       "name": "Moodle LMS",
       "connected": "Connecté",

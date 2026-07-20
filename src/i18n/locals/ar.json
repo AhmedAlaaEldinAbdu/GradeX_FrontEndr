@@ -23,6 +23,15 @@
       "student": "طالب",
       "exam": "أختبار"
     },
+    "liveClasses": {
+      "title": "الحصص المباشرة",
+      "metrics": {
+        "totalRemoteClasses": "إجمالي حصص عن بعد",
+        "liveClassesNow": "حصص مباشرة الآن",
+        "attendanceRate": "نسبة الحضور"
+      },
+      "emptyTitle": "لم يتم إضافة حصص عن بعد"
+    },
     "moodle": {
       "name": "Moodle LMS",
       "connected": "متصل",

@@ -23,6 +23,15 @@
       "student": "Schüler",
       "exam": "Prüfung"
     },
+    "liveClasses": {
+      "title": "Live-Unterricht",
+      "metrics": {
+        "totalRemoteClasses": "Remote-Unterricht insgesamt",
+        "liveClassesNow": "Live-Unterricht jetzt",
+        "attendanceRate": "Anwesenheitsrate"
+      },
+      "emptyTitle": "Es wurden noch keine Remote-Unterrichtsstunden hinzugefügt"
+    },
     "moodle": {
       "name": "Moodle LMS",
       "connected": "Verbunden",

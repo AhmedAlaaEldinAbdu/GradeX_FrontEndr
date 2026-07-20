@@ -23,6 +23,15 @@
       "student": "student",
       "exam": "exam"
     },
+    "liveClasses": {
+      "title": "Live Classes",
+      "metrics": {
+        "totalRemoteClasses": "Total Remote Classes",
+        "liveClassesNow": "Live Classes Now",
+        "attendanceRate": "Attendance Rate"
+      },
+      "emptyTitle": "No remote classes have been added"
+    },
     "moodle": {
       "name": "Moodle LMS",
       "connected": "Connected",

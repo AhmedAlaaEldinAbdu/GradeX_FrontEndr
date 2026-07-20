@@ -23,6 +23,15 @@
       "student": "учащийся",
       "exam": "экзамен"
     },
+    "liveClasses": {
+      "title": "Онлайн-уроки",
+      "metrics": {
+        "totalRemoteClasses": "Всего дистанционных уроков",
+        "liveClassesNow": "Онлайн-уроки сейчас",
+        "attendanceRate": "Посещаемость"
+      },
+      "emptyTitle": "Дистанционные уроки ещё не добавлены"
+    },
     "moodle": {
       "name": "Moodle LMS",
       "connected": "Подключено",
