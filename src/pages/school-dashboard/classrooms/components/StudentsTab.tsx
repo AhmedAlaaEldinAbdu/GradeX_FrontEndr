@@ -45,6 +45,7 @@ export default function StudentsTab({
       avatarSrc={imageSrc}
       align="between"
       onView={() => navigate(`/students/student-details/${id}`, { state: { from: 'roster' } })}
+      className="w-full"
     />
   );
 
