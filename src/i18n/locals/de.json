@@ -32,6 +32,7 @@
       },
       "emptyTitle": "Es wurden noch keine Remote-Unterrichtsstunden hinzugefügt",
       "searchPlaceholder": "Nach Fachnamen suchen",
+      "startNow": "Jetzt starten",
       "filters": {
         "teacher": "Lehrername",
         "classroom": "Klasse",
@@ -45,6 +46,7 @@
         "closed": "Geschlossen"
       },
       "table": {
+        "management": "Verwaltung",
         "subject": "Fachname",
         "teacherName": "Lehrername",
         "status": "Status",
@@ -53,6 +55,13 @@
         "date": "Datum",
         "startsAt": "Unterrichtszeit (von)",
         "endsAt": "Unterrichtszeit (bis)"
+      },
+      "popup": {
+        "title": "Remote-Unterricht starten",
+        "subjectTitle": "Fach {{subject}}",
+        "teacherName": "Lehrer {{teacher}}",
+        "linkLabel": "Unterrichtslink",
+        "linkPlaceholder": "Unterrichtslink eingeben"
       }
     },
     "moodle": {

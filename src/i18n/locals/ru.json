@@ -32,6 +32,7 @@
       },
       "emptyTitle": "Дистанционные уроки ещё не добавлены",
       "searchPlaceholder": "Поиск по названию предмета",
+      "startNow": "Начать",
       "filters": {
         "teacher": "Имя учителя",
         "classroom": "Класс",
@@ -45,6 +46,7 @@
         "closed": "Закрыто"
       },
       "table": {
+        "management": "Управление",
         "subject": "Название предмета",
         "teacherName": "Имя учителя",
         "status": "Статус",
@@ -53,6 +55,13 @@
         "date": "Дата",
         "startsAt": "Время урока (с)",
         "endsAt": "Время урока (до)"
+      },
+      "popup": {
+        "title": "Начать дистанционный урок",
+        "subjectTitle": "Предмет {{subject}}",
+        "teacherName": "Учитель {{teacher}}",
+        "linkLabel": "Ссылка на урок",
+        "linkPlaceholder": "Введите ссылку на урок"
       }
     },
     "moodle": {

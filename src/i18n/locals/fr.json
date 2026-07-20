@@ -32,6 +32,7 @@
       },
       "emptyTitle": "Aucun cours à distance n'a encore été ajouté",
       "searchPlaceholder": "Rechercher par nom de matière",
+      "startNow": "Démarrer",
       "filters": {
         "teacher": "Nom de l’enseignant",
         "classroom": "Classe",
@@ -45,6 +46,7 @@
         "closed": "Fermé"
       },
       "table": {
+        "management": "Gestion",
         "subject": "Nom de la matière",
         "teacherName": "Nom de l’enseignant",
         "status": "Statut",
@@ -53,6 +55,13 @@
         "date": "Date",
         "startsAt": "Heure du cours (de)",
         "endsAt": "Heure du cours (à)"
+      },
+      "popup": {
+        "title": "Démarrer le cours à distance",
+        "subjectTitle": "Matière {{subject}}",
+        "teacherName": "Enseignant {{teacher}}",
+        "linkLabel": "Lien du cours",
+        "linkPlaceholder": "Saisir le lien du cours"
       }
     },
     "moodle": {

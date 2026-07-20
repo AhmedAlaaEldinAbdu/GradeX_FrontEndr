@@ -32,6 +32,7 @@
       },
       "emptyTitle": "لم يتم إضافة حصص عن بعد",
       "searchPlaceholder": "إبحث عن اسم المادة",
+      "startNow": "أبدء الآن",
       "filters": {
         "teacher": "اسم المعلم",
         "classroom": "الصف الدراسي",
@@ -45,6 +46,7 @@
         "closed": "مغلقة"
       },
       "table": {
+        "management": "إدارة",
         "subject": "اسم المادة",
         "teacherName": "اسم المعلم",
         "status": "الحالة",
@@ -53,6 +55,13 @@
         "date": "التاريخ",
         "startsAt": "موعد الحصة (من)",
         "endsAt": "موعد الحصة (إلي)"
+      },
+      "popup": {
+        "title": "بدء حصة من بعد",
+        "subjectTitle": "مادة {{subject}}",
+        "teacherName": "المعلم {{teacher}}",
+        "linkLabel": "رابط الحصة",
+        "linkPlaceholder": "أدخل رابط الحصة"
       }
     },
     "moodle": {

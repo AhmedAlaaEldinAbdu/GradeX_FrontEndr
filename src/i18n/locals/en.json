@@ -32,6 +32,7 @@
       },
       "emptyTitle": "No remote classes have been added",
       "searchPlaceholder": "Search by subject name",
+      "startNow": "Start now",
       "filters": {
         "teacher": "Teacher name",
         "classroom": "Class",
@@ -45,6 +46,7 @@
         "closed": "Closed"
       },
       "table": {
+        "management": "Management",
         "subject": "Subject name",
         "teacherName": "Teacher name",
         "status": "Status",
@@ -53,6 +55,13 @@
         "date": "Date",
         "startsAt": "Class time (from)",
         "endsAt": "Class time (to)"
+      },
+      "popup": {
+        "title": "Start remote class",
+        "subjectTitle": "{{subject}} subject",
+        "teacherName": "Teacher {{teacher}}",
+        "linkLabel": "Class link",
+        "linkPlaceholder": "Enter class link"
       }
     },
     "moodle": {
