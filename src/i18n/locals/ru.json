@@ -30,7 +30,30 @@
         "liveClassesNow": "Онлайн-уроки сейчас",
         "attendanceRate": "Посещаемость"
       },
-      "emptyTitle": "Дистанционные уроки ещё не добавлены"
+      "emptyTitle": "Дистанционные уроки ещё не добавлены",
+      "searchPlaceholder": "Поиск по названию предмета",
+      "filters": {
+        "teacher": "Имя учителя",
+        "classroom": "Класс",
+        "status": "Статус",
+        "date": "Дата"
+      },
+      "status": {
+        "completed": "Завершено",
+        "active": "Идет сейчас",
+        "upcoming": "Предстоит",
+        "closed": "Закрыто"
+      },
+      "table": {
+        "subject": "Название предмета",
+        "teacherName": "Имя учителя",
+        "status": "Статус",
+        "stage": "Образовательный этап",
+        "classroom": "Класс",
+        "date": "Дата",
+        "startsAt": "Время урока (с)",
+        "endsAt": "Время урока (до)"
+      }
     },
     "moodle": {
       "name": "Moodle LMS",

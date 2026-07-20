@@ -30,7 +30,30 @@
         "liveClassesNow": "Live Classes Now",
         "attendanceRate": "Attendance Rate"
       },
-      "emptyTitle": "No remote classes have been added"
+      "emptyTitle": "No remote classes have been added",
+      "searchPlaceholder": "Search by subject name",
+      "filters": {
+        "teacher": "Teacher name",
+        "classroom": "Class",
+        "status": "Status",
+        "date": "Date"
+      },
+      "status": {
+        "completed": "Completed",
+        "active": "Active now",
+        "upcoming": "Upcoming",
+        "closed": "Closed"
+      },
+      "table": {
+        "subject": "Subject name",
+        "teacherName": "Teacher name",
+        "status": "Status",
+        "stage": "Educational stage",
+        "classroom": "Class",
+        "date": "Date",
+        "startsAt": "Class time (from)",
+        "endsAt": "Class time (to)"
+      }
     },
     "moodle": {
       "name": "Moodle LMS",

@@ -30,7 +30,30 @@
         "liveClassesNow": "Live-Unterricht jetzt",
         "attendanceRate": "Anwesenheitsrate"
       },
-      "emptyTitle": "Es wurden noch keine Remote-Unterrichtsstunden hinzugefügt"
+      "emptyTitle": "Es wurden noch keine Remote-Unterrichtsstunden hinzugefügt",
+      "searchPlaceholder": "Nach Fachnamen suchen",
+      "filters": {
+        "teacher": "Lehrername",
+        "classroom": "Klasse",
+        "status": "Status",
+        "date": "Datum"
+      },
+      "status": {
+        "completed": "Abgeschlossen",
+        "active": "Läuft jetzt",
+        "upcoming": "Bevorstehend",
+        "closed": "Geschlossen"
+      },
+      "table": {
+        "subject": "Fachname",
+        "teacherName": "Lehrername",
+        "status": "Status",
+        "stage": "Bildungsstufe",
+        "classroom": "Klasse",
+        "date": "Datum",
+        "startsAt": "Unterrichtszeit (von)",
+        "endsAt": "Unterrichtszeit (bis)"
+      }
     },
     "moodle": {
       "name": "Moodle LMS",

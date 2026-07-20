@@ -30,7 +30,30 @@
         "liveClassesNow": "حصص مباشرة الآن",
         "attendanceRate": "نسبة الحضور"
       },
-      "emptyTitle": "لم يتم إضافة حصص عن بعد"
+      "emptyTitle": "لم يتم إضافة حصص عن بعد",
+      "searchPlaceholder": "إبحث عن اسم المادة",
+      "filters": {
+        "teacher": "اسم المعلم",
+        "classroom": "الصف الدراسي",
+        "status": "الحالة",
+        "date": "التاريخ"
+      },
+      "status": {
+        "completed": "منتهية",
+        "active": "تعمل الآن",
+        "upcoming": "قادمة",
+        "closed": "مغلقة"
+      },
+      "table": {
+        "subject": "اسم المادة",
+        "teacherName": "اسم المعلم",
+        "status": "الحالة",
+        "stage": "المرحلة التعليمية",
+        "classroom": "الصف الدراسية",
+        "date": "التاريخ",
+        "startsAt": "موعد الحصة (من)",
+        "endsAt": "موعد الحصة (إلي)"
+      }
     },
     "moodle": {
       "name": "Moodle LMS",

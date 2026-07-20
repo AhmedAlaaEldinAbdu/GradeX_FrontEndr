@@ -30,7 +30,30 @@
         "liveClassesNow": "Cours en direct maintenant",
         "attendanceRate": "Taux de présence"
       },
-      "emptyTitle": "Aucun cours à distance n'a encore été ajouté"
+      "emptyTitle": "Aucun cours à distance n'a encore été ajouté",
+      "searchPlaceholder": "Rechercher par nom de matière",
+      "filters": {
+        "teacher": "Nom de l’enseignant",
+        "classroom": "Classe",
+        "status": "Statut",
+        "date": "Date"
+      },
+      "status": {
+        "completed": "Terminé",
+        "active": "En cours",
+        "upcoming": "À venir",
+        "closed": "Fermé"
+      },
+      "table": {
+        "subject": "Nom de la matière",
+        "teacherName": "Nom de l’enseignant",
+        "status": "Statut",
+        "stage": "Niveau scolaire",
+        "classroom": "Classe",
+        "date": "Date",
+        "startsAt": "Heure du cours (de)",
+        "endsAt": "Heure du cours (à)"
+      }
     },
     "moodle": {
       "name": "Moodle LMS",
