@@ -424,10 +424,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       : buildLocalIsoString(values.day, values.startTime || DEFAULT_CALENDAR_START);
     const endDateTime = values.isFullDay
       ? null
-      : buildLocalIsoString(
-          values.day,
-          values.endTime || values.startTime || DEFAULT_CALENDAR_END
-        );
+      : buildLocalIsoString(values.day, values.endTime || values.startTime || DEFAULT_CALENDAR_END);
 
     return {
       nameAr: values.nameAr,
@@ -764,6 +761,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         event={selectedEvent}
         date={selectedLeaveDay ?? undefined}
         leaves={detailsLeaves}
+        filterOptions={{ grade: stageFilter, searchTerm: searchTerm }}
       />
 
       <DeletePopup
