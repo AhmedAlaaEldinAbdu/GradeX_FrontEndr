@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
@@ -9,102 +10,9 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import CalendarInputIcon from '@gradex/assets/icons/CalendarInput.svg';
 import VideoConferenceIcon from '@gradex/assets/icons/VideoConference.svg';
 import StartLiveClassPopup from '../popups/StartLiveClassPopup';
-
-type LiveClassStatus = 'completed' | 'active' | 'upcoming' | 'closed';
-
-export type LiveClassRow = {
-  id: string;
-  subject: string;
-  teacherName: string;
-  status: LiveClassStatus;
-  stage: string;
-  classroom: string;
-  date: string;
-  startsAt: string;
-  endsAt: string;
-};
+import { LIVE_CLASSES, type LiveClassRow, type LiveClassStatus } from './live-classes-data';
 
 const PAGE_SIZE = 6;
-
-const LIVE_CLASSES: LiveClassRow[] = [
-  {
-    id: '1',
-    subject: 'لغة عربية',
-    teacherName: 'أحمد معتز حسن',
-    status: 'completed',
-    stage: 'المرحلة الأبتدائية',
-    classroom: '1/1 ع',
-    date: '22/2/2025',
-    startsAt: '10:00 صباحا',
-    endsAt: '12:00 مساءا',
-  },
-  {
-    id: '2',
-    subject: 'لغة عربية',
-    teacherName: 'أحمد معتز حسن',
-    status: 'completed',
-    stage: 'المرحلة الثانوية',
-    classroom: '2/1 ع',
-    date: '22/2/2025',
-    startsAt: '10:00 صباحا',
-    endsAt: '12:00 مساءا',
-  },
-  {
-    id: '3',
-    subject: 'لغة عربية',
-    teacherName: 'أحمد معتز حسن',
-    status: 'active',
-    stage: 'المرحلة الإعدادية',
-    classroom: '1/1 ع',
-    date: '22/2/2025',
-    startsAt: '10:00 صباحا',
-    endsAt: '12:00 مساءا',
-  },
-  {
-    id: '4',
-    subject: 'لغة عربية',
-    teacherName: 'أحمد معتز حسن',
-    status: 'upcoming',
-    stage: 'رياض الأطفال',
-    classroom: '1/1 ع',
-    date: '22/2/2025',
-    startsAt: '10:00 صباحا',
-    endsAt: '12:00 مساءا',
-  },
-  {
-    id: '5',
-    subject: 'لغة عربية',
-    teacherName: 'أحمد معتز حسن',
-    status: 'upcoming',
-    stage: 'المرحلة الأبتدائية',
-    classroom: '3/1 ع',
-    date: '22/2/2025',
-    startsAt: '10:00 صباحا',
-    endsAt: '12:00 مساءا',
-  },
-  {
-    id: '6',
-    subject: 'لغة عربية',
-    teacherName: 'أحمد معتز حسن',
-    status: 'closed',
-    stage: 'المرحلة الأبتدائية',
-    classroom: '1/1 ع',
-    date: '22/2/2025',
-    startsAt: '10:00 صباحا',
-    endsAt: '12:00 مساءا',
-  },
-  {
-    id: '7',
-    subject: 'لغة عربية',
-    teacherName: 'أحمد معتز حسن',
-    status: 'upcoming',
-    stage: 'المرحلة الثانوية',
-    classroom: '2/1 ع',
-    date: '22/2/2025',
-    startsAt: '10:00 صباحا',
-    endsAt: '12:00 مساءا',
-  },
-];
 
 const statusClassName: Record<LiveClassStatus, string> = {
   completed: 'bg-[#E6F3FE] text-[#117BD7]',
@@ -123,6 +31,7 @@ const classroomOptions = [
 
 export default function LiveClassesList() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [teacher, setTeacher] = useState('');
   const [classroom, setClassroom] = useState('');
@@ -240,9 +149,14 @@ export default function LiveClassesList() {
     },
     {
       header: 'common.actions',
-      accessor: () => (
+      accessor: (row) => (
         <div className="flex items-center justify-center gap-3">
-          <IconButton status="edit" variant="success" ariaLabel={t('actions.edit')} />
+          <IconButton
+            status="edit"
+            variant="success"
+            ariaLabel={t('actions.edit')}
+            onClick={() => navigate(`/lms/live-classes/${row.id}/edit`)}
+          />
           <IconButton status="delete" variant="danger" ariaLabel={t('actions.delete')} />
         </div>
       ),
