@@ -59,6 +59,7 @@ const TeacherNotesTab: React.FC = () => {
   const [selectedNote, setSelectedNote] = useState<AdminTeacherNoteDto | null>(null);
   const [notes, setNotes] = useState<AdminTeacherNoteDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [markingViewedId, setMarkingViewedId] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
 
   const schoolLabel = t('requests.schoolLabel');
@@ -105,7 +106,10 @@ const TeacherNotesTab: React.FC = () => {
     () =>
       notes.map((note) => ({
         ...note,
-        status: statusById[note.id] ?? note.status,
+        status:
+          note.isViewed === true
+            ? AdminTeacherNoteStatus.Viewed
+            : (statusById[note.id] ?? note.status),
       })),
     [notes, statusById]
   );
@@ -131,18 +135,49 @@ const TeacherNotesTab: React.FC = () => {
     });
   }, [notesWithStatus, searchTerm, selectedDate]);
 
-  const markViewed = (note: AdminTeacherNoteDto) => {
-    setStatusById((current) => ({
-      ...current,
-      [note.id]: AdminTeacherNoteStatus.Viewed,
-    }));
-    setSelectedNote((current) =>
-      current?.id === note.id ? { ...current, status: AdminTeacherNoteStatus.Viewed } : current
-    );
-    showToast({
-      message: t('adminRequests.teacherNotes.toasts.markedViewed'),
-      type: 'success',
-    });
+  const markViewed = async (note: AdminTeacherNoteDto) => {
+    try {
+      setMarkingViewedId(note.id);
+      const response = await teacherRequestsApiService.markTeacherNoteAsViewed(note.id);
+      if (!response.isSuccess) {
+        throw new Error(response.message || t('common.errorOccurred'));
+      }
+      setStatusById((current) => ({
+        ...current,
+        [note.id]: AdminTeacherNoteStatus.Viewed,
+      }));
+      setNotes((current) =>
+        current.map((item) =>
+          item.id === note.id
+            ? { ...item, status: AdminTeacherNoteStatus.Viewed, isViewed: true }
+            : item
+        )
+      );
+      setSelectedNote((current) =>
+        current?.id === note.id
+          ? { ...current, status: AdminTeacherNoteStatus.Viewed, isViewed: true }
+          : current
+      );
+      showToast({
+        message: t('adminRequests.teacherNotes.toasts.markedViewed'),
+        type: 'success',
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : typeof error === 'string'
+            ? error
+            : t('common.errorOccurred');
+      showToast({
+        message: errorMessage,
+        type: 'error',
+        isRaw: errorMessage !== t('common.errorOccurred'),
+      });
+      throw error;
+    } finally {
+      setMarkingViewedId(null);
+    }
   };
 
   const showProfilePendingToast = () => {
@@ -256,7 +291,8 @@ const TeacherNotesTab: React.FC = () => {
     {
       header: 'common.actions',
       accessor: (row) => {
-        const isViewed = row.status === AdminTeacherNoteStatus.Viewed;
+        const isViewed = row.status === AdminTeacherNoteStatus.Viewed || row.isViewed === true;
+        const isMarkingViewed = markingViewedId === row.id;
 
         return (
           <div className="flex items-center justify-center">
@@ -264,10 +300,14 @@ const TeacherNotesTab: React.FC = () => {
               variant="outline"
               size="sm"
               className="!rounded-2xl px-6"
-              disabled={isViewed}
-              onClick={() => markViewed(row)}
+              disabled={isViewed || isMarkingViewed}
+              onClick={() => {
+                void markViewed(row);
+              }}
             >
-              {t('adminRequests.teacherNotes.actions.markViewed')}
+              {isMarkingViewed
+                ? t('adminRequests.teacherNotes.actions.markingViewed')
+                : t('adminRequests.teacherNotes.actions.markViewed')}
             </Button>
           </div>
         );
@@ -369,6 +409,7 @@ const TeacherNotesTab: React.FC = () => {
         onClose={() => setSelectedNote(null)}
         note={selectedNote}
         onMarkViewed={markViewed}
+        isMarkingViewed={markingViewedId === selectedNote?.id}
         onProfilePreview={showProfilePendingToast}
       />
     </Card>

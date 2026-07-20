@@ -176,15 +176,21 @@ const mapAdminMessageStatus = (sendType: number): AdminMessageStatus => {
 };
 
 export const mapTeacherMessage = (dto: TeacherMessageDto): AdminMessageDto => {
+  const isViewed = dto.isViewed === true;
+
   return {
     id: dto.id,
     sender: mapMessageParty(dto, 'sender'),
     recipient: mapMessageParty(dto, 'recipient'),
-    status: mapAdminMessageStatus(dto.sendType),
+    status: isViewed ? AdminMessageStatus.Viewed : mapAdminMessageStatus(dto.sendType),
     stage: joinText(dto.grades) || null,
     classroom: joinText(dto.classrooms) || null,
     sentDate: dto.createdAt,
     messageContent: dto.message,
+    isViewed,
+    viewedAt: dto.viewedAt ?? null,
+    viewedByUserId: dto.viewedByUserId ?? null,
+    viewedByName: dto.viewedByName ?? null,
   };
 };
 

@@ -198,6 +198,10 @@ export interface AdminMessageDto {
   classroom: string | null;
   sentDate: string;
   messageContent: string;
+  isViewed?: boolean;
+  viewedAt?: string | null;
+  viewedByUserId?: string | null;
+  viewedByName?: string | null;
 }
 
 export const AdminTeacherNoteStatus = {
@@ -224,4 +228,8 @@ export interface AdminTeacherNoteDto {
   classroom: string | null;
   sentDate: string;
   noteContent: string;
+  isViewed?: boolean;
+  viewedAt?: string | null;
+  viewedByUserId?: string | null;
+  viewedByName?: string | null;
 }

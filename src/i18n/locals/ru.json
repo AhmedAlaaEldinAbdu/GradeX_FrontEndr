@@ -1350,7 +1350,8 @@
         "viewed": "Просмотрено"
       },
       "actions": {
-        "markViewed": "Отметить как просмотренное"
+        "markViewed": "Отметить как просмотренное",
+        "markingViewed": "Обновление..."
       },
       "filters": {
         "status": "Статус запроса",
@@ -1378,7 +1379,8 @@
         "viewed": "Просмотрено"
       },
       "actions": {
-        "markViewed": "Просмотрено"
+        "markViewed": "Просмотрено",
+        "markingViewed": "Обновление..."
       },
       "filters": {
         "status": "Статус запроса",

@@ -1431,7 +1431,8 @@
         "viewed": "Viewed"
       },
       "actions": {
-        "markViewed": "Mark as Viewed"
+        "markViewed": "Mark as Viewed",
+        "markingViewed": "Updating..."
       },
       "filters": {
         "status": "Request Status",
@@ -1459,7 +1460,8 @@
         "viewed": "Viewed"
       },
       "actions": {
-        "markViewed": "Viewed"
+        "markViewed": "Viewed",
+        "markingViewed": "Updating..."
       },
       "filters": {
         "status": "Request Status",
