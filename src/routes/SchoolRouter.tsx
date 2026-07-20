@@ -8,6 +8,7 @@ import MainLayout from '@gradex/shared/layout/MainLayout';
 import DashboardPage from '@/pages/school-dashboard/dashboard/dashboard-page';
 import ELearningOverviewPage from '@/pages/school-dashboard/e-learning/e-learning-overview-page';
 import LiveClassesPage from '@/pages/school-dashboard/e-learning/live-classes-page';
+import AddLiveClassPage from '@/pages/school-dashboard/e-learning/add-live-class-page';
 import OnlineExamsPage from '@/pages/school-dashboard/e-learning/online-exams-page';
 import AddAIExamPage from '@/pages/school-dashboard/e-learning/add-ai-exam-page';
 import AddQuestionBankExamPage from '@/pages/school-dashboard/e-learning/add-question-bank-exam-page';
@@ -1012,6 +1013,16 @@ const SchoolRouter: React.FC = () => {
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
               <LiveClassesPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lms/live-classes/add"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <AddLiveClassPage />
             </MainLayout>
           </ProtectedRoute>
         }
