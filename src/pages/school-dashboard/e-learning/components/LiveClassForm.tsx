@@ -20,6 +20,7 @@ import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { LiveClassSchema } from '@/validations/live-class-validations';
+import type { LiveClassRow } from './live-classes-data';
 import SelectStudentsPopup, { type SelectedStudent } from '../popups/SelectStudentsPopup';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
@@ -83,11 +84,27 @@ const FILE_FORMATS = [
 ];
 const FILE_ACCEPT = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.ppt,.pptx';
 
-export default function LiveClassForm() {
+const parseArabicTime = (time?: string): string => {
+  if (!time) return '';
+  const match = time.trim().match(/(\d{1,2}):(\d{2})/);
+  if (!match) return '';
+  let hour = Number(match[1]);
+  if (time.includes('مساء') && hour < 12) hour += 12;
+  if (time.includes('صباح') && hour === 12) hour = 0;
+  return `${String(hour).padStart(2, '0')}:${match[2]}`;
+};
+
+type LiveClassFormProps = {
+  mode: 'add' | 'edit';
+  initialData?: LiveClassRow;
+};
+
+export default function LiveClassForm({ mode, initialData }: LiveClassFormProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isArabic = i18n.language === 'ar';
+  const isEdit = mode === 'edit';
   const schoolBranchId = getCurrentSchoolBranchId();
 
   const [data, setData] = useState<LiveClassFormData>(INITIAL_DATA);
@@ -121,6 +138,15 @@ export default function LiveClassForm() {
     );
   }, [dispatch, schoolBranchId, data.stage]);
 
+  useEffect(() => {
+    if (!isEdit || !initialData) return;
+    setData((prev) => ({
+      ...prev,
+      fromTime: parseArabicTime(initialData.startsAt),
+      toTime: parseArabicTime(initialData.endsAt),
+    }));
+  }, [isEdit, initialData]);
+
   const subjectOptions = useMemo(
     () => materials.map((m) => ({ value: m.id, label: m.name })),
     [materials]
@@ -146,6 +172,21 @@ export default function LiveClassForm() {
     return option ? [{ id: option.value, name: option.label }] : [];
   }, [gradeOptions, data.grade]);
 
+  useEffect(() => {
+    if (!isEdit || !initialData) return;
+    const subject = subjectOptions.find((o) => o.label === initialData.subject)?.value ?? '';
+    const teacher = teacherOptions.find((o) => o.label === initialData.teacherName)?.value ?? '';
+    const stage = stageOptions.find((o) => o.label === initialData.stage)?.value ?? '';
+    const grade = gradeOptions.find((o) => o.label === initialData.classroom)?.value ?? '';
+    setData((prev) => ({
+      ...prev,
+      subject: prev.subject || subject,
+      teacher: prev.teacher || teacher,
+      stage: prev.stage || stage,
+      grade: prev.grade || grade,
+    }));
+  }, [isEdit, initialData, subjectOptions, teacherOptions, stageOptions, gradeOptions]);
+
   const set =
     <K extends keyof LiveClassFormData>(key: K) =>
     (value: LiveClassFormData[K]) => {
@@ -154,12 +195,13 @@ export default function LiveClassForm() {
     };
 
   const base = 'eLearning.liveClasses.add';
+  const titleKey = isEdit ? `${base}.editTitle` : `${base}.title`;
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
     { label: t('sidebar.lms') },
     { label: t('eLearning.liveClasses.title'), path: '/lms/live-classes' },
-    { label: t(`${base}.title`) },
+    { label: t(titleKey) },
   ];
 
   const handleCancel = () => navigate('/lms/live-classes');
@@ -184,7 +226,7 @@ export default function LiveClassForm() {
   return (
     <div>
       <Breadcrumb items={breadcrumbItems} />
-      <PageHeader title={`${base}.title`} />
+      <PageHeader title={titleKey} />
 
       <Card>
         <div className="flex flex-col gap-6">
@@ -470,7 +512,7 @@ export default function LiveClassForm() {
               {t('common.cancel')}
             </Button>
             <Button variant="primary" onClick={() => void handleSubmit()}>
-              {t('common.add')}
+              {t(isEdit ? 'common.save' : 'common.add')}
             </Button>
           </div>
         </div>
