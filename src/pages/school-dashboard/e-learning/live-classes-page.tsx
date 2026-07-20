@@ -52,6 +52,7 @@ export default function LiveClassesPage() {
             imgSrc: PlusIcon,
             imgClassName: 'w-10 h-10',
             circle: true,
+            to: '/lms/live-classes/add',
           },
         ]}
       />
