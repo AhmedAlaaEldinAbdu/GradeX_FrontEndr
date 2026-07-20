@@ -7,6 +7,7 @@ import MainLayout from '@gradex/shared/layout/MainLayout';
 
 import DashboardPage from '@/pages/school-dashboard/dashboard/dashboard-page';
 import ELearningOverviewPage from '@/pages/school-dashboard/e-learning/e-learning-overview-page';
+import LiveClassesPage from '@/pages/school-dashboard/e-learning/live-classes-page';
 import OnlineExamsPage from '@/pages/school-dashboard/e-learning/online-exams-page';
 import AddAIExamPage from '@/pages/school-dashboard/e-learning/add-ai-exam-page';
 import AddQuestionBankExamPage from '@/pages/school-dashboard/e-learning/add-question-bank-exam-page';
@@ -1010,10 +1011,7 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.liveClasses')}</h2>
-                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
-              </div>
+              <LiveClassesPage />
             </MainLayout>
           </ProtectedRoute>
         }
