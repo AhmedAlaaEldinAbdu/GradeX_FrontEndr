@@ -21,7 +21,7 @@ import ArchiveApplicationsTab from './components/ArchiveApplicationsTab';
 import MessagesTab from './components/MessagesTab';
 import EarlyLeaveTab from './components/EarlyLeaveTab';
 import TeacherNotesTab from './components/TeacherNotesTab';
-import LeaveRequestsTab from './components/LeaveRequestsTab';
+// import LeaveRequestsTab from './components/LeaveRequestsTab';
 
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
