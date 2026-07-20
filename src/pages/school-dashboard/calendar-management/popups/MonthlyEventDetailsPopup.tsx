@@ -28,6 +28,7 @@ interface MonthlyEventDetailsPopupProps {
   date?: string;
   leaves?: OfficialHoliday[];
   onEdit?: (event: MonthlyEventEntity) => void;
+  filterOptions?: any;
 }
 
 export default function MonthlyEventDetailsPopup({
@@ -37,6 +38,7 @@ export default function MonthlyEventDetailsPopup({
   date,
   leaves,
   onEdit,
+  filterOptions,
 }: MonthlyEventDetailsPopupProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
@@ -83,7 +85,7 @@ export default function MonthlyEventDetailsPopup({
 
     dispatch(
       fetchMonthlyCalendarEvents({
-        filters: { date: dayKey, schoolBranchId: getCurrentSchoolBranchId() },
+        filters: { date: dayKey, schoolBranchId: getCurrentSchoolBranchId(), ...filterOptions },
         target: 'popup',
       })
     )
