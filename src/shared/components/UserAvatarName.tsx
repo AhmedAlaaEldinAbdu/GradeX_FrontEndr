@@ -18,6 +18,7 @@ interface UserAvatarNameProps {
   size?: UserAvatarNameSize;
   align?: UserAvatarNameAlign;
   className?: string;
+  specificClassName?: string;
 }
 
 const SIZE_CLASSES: Record<
@@ -44,6 +45,7 @@ export default function UserAvatarName({
   size = 'md',
   align = 'center',
   className = '',
+  specificClassName = '',
 }: UserAvatarNameProps) {
   const { t } = useTranslation();
   const sizeClasses = SIZE_CLASSES[size];
@@ -59,28 +61,30 @@ export default function UserAvatarName({
 
   return (
     <div className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${className}`}>
-      <CustomImage
-        src={resolvedAvatarSrc ?? fallbackSrc}
-        fallbackSrc={fallbackSrc}
-        alt={name ?? ''}
-        className={`${sizeClasses.avatar} shrink-0 rounded-lg object-cover`}
-      />
-      {name ? (
-        <span
-          className="w-[150px] truncate text-start text-sm font-normal text-[#646969]"
-          title={name ?? ''}
-        >
-          {name?.trim() ? name : '-'}
+      <div className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${specificClassName}`}>
+        <CustomImage
+          src={resolvedAvatarSrc ?? fallbackSrc}
+          fallbackSrc={fallbackSrc}
+          alt={name ?? ''}
+          className={`${sizeClasses.avatar} shrink-0 rounded-lg object-cover`}
+        />
+        {name ? (
+          <span
+            className="w-[150px] truncate text-start text-sm font-normal text-[#646969]"
+            title={name ?? ''}
+          >
+            {name?.trim() ? name : '-'}
 
-          {hasViewCount && (
-            <span className="mx-2 shrink-0 text-start text-base font-medium text-[#087B48]">
-              <bdi>+{viewCount}</bdi>
-            </span>
-          )}
-        </span>
-      ) : (
-        ''
-      )}
+            {hasViewCount && (
+              <span className="mx-2 shrink-0 text-start text-base font-medium text-[#087B48]">
+                <bdi>+{viewCount}</bdi>
+              </span>
+            )}
+          </span>
+        ) : (
+          ''
+        )}
+      </div>
       {onView && (
         <IconButton
           variant="blue"
