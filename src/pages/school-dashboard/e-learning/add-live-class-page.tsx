@@ -1,5 +1,5 @@
 import LiveClassForm from './components/LiveClassForm';
 
 export default function AddLiveClassPage() {
-  return <LiveClassForm />;
+  return <LiveClassForm mode="add" />;
 }
