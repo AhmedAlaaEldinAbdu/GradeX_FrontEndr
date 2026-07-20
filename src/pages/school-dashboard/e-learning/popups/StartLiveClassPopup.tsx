@@ -7,7 +7,7 @@ import ClockIcon from '@gradex/assets/icons/Clock.svg';
 import PeopleOutlineIcon from '@gradex/assets/icons/PeopleOutline.svg';
 import UserIcon from '@gradex/assets/icons/User.svg';
 import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
-import type { LiveClassRow } from '../components/LiveClassesList';
+import type { LiveClassRow } from '../components/live-classes-data';
 
 type StartLiveClassPopupProps = {
   isOpen: boolean;
