@@ -196,7 +196,7 @@
   color: inherit;
   font-size: 0.75rem;
   border: none;
-  cursor: default;
+  cursor: pointer;
   transition: all 0.2s;
 }
 

@@ -310,6 +310,10 @@ export default function JobAnnouncementsList() {
         value: String(JobAdvertismentWorkShedule.PART_TIME),
         labelKey: 'jobAnnouncement.form.contractPartTime',
       },
+      {
+        value: String(JobAdvertismentWorkShedule.BOTH),
+        labelKey: 'jobAnnouncement.form.contractBoth',
+      },
     ];
 
     return baseOptions.map(({ value, labelKey }) => ({ value, label: t(labelKey) }));

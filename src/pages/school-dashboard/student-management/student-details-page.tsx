@@ -21,11 +21,12 @@ import { assignStudentToClassroom } from '@/services/api/students/students.servi
 import { useToast } from '@/shared/context/ToastContext';
 
 export default function StudentDetailsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+  const currentLang = i18n.language as 'ar' | 'en';
 
   const [student, setStudent] = useState<StudentDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +36,11 @@ export default function StudentDetailsPage() {
   const [isHousingLoading, setHousingLoading] = useState(false);
 
   const { currentApplication } = useAppSelector((state) => state.studentApplications);
+  const currentClassroom = useAppSelector((state) => state.classrooms.currentClassroom);
   const data = currentApplication;
+
+  const classroomTitle = currentLang === 'ar' ? currentClassroom?.name : currentClassroom?.nameEn;
+  const gradeTitle = currentClassroom?.gradeName;
 
   useEffect(() => {
     if (!id) {
@@ -64,6 +69,7 @@ export default function StudentDetailsPage() {
 
   const isFromAttendance = location.state?.from === 'attendance';
   const isFromStudentsRecord = location.state?.from === 'studentsRecord';
+  const isFromRoster = location.state?.from === 'roster';
 
   const breadcrumbItems = isFromAttendance
     ? [
@@ -79,11 +85,32 @@ export default function StudentDetailsPage() {
           { label: t('studentManagement.studentsRecord'), path: '/students-record' },
           { label: studentName },
         ]
-      : [
-          { label: t('sidebar.studentManagement') },
-          { label: t('students.title'), path: '/students-record' },
-          { label: studentName },
-        ];
+      : isFromRoster
+        ? [
+            { label: t('sidebar.academicAffairs') },
+            { label: t('sidebar.eduStages') },
+            { label: t('grades.title'), path: '/classrooms' },
+            ...(gradeTitle
+              ? [
+                  {
+                    label: gradeTitle,
+                    ...(currentClassroom?.gradeId
+                      ? { path: `/classrooms/${currentClassroom.gradeId}` }
+                      : {}),
+                  },
+                ]
+              : []),
+            {
+              label: classroomTitle || t('grades.classroomDetails'),
+              path: `/classrooms/${currentClassroom?.id}/roster`,
+            },
+            { label: studentName },
+          ]
+        : [
+            { label: t('sidebar.studentManagement') },
+            { label: t('students.title'), path: '/students-record' },
+            { label: studentName },
+          ];
 
   if (isLoading) {
     return (

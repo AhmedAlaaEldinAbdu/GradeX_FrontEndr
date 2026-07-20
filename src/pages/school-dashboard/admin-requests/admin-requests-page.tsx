@@ -21,7 +21,7 @@ import ArchiveApplicationsTab from './components/ArchiveApplicationsTab';
 import MessagesTab from './components/MessagesTab';
 import EarlyLeaveTab from './components/EarlyLeaveTab';
 import TeacherNotesTab from './components/TeacherNotesTab';
-import LeaveRequestsTab from './components/LeaveRequestsTab';
+// import LeaveRequestsTab from './components/LeaveRequestsTab';
 
 const AdminRequestsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -75,11 +75,11 @@ const AdminRequestsPage: React.FC = () => {
       label: t('adminRequests.tabs.earlyLeave'),
       content: <EarlyLeaveTab isActive={activeTab === 'early-leave'} />,
     },
-    {
-      id: 'leave',
-      label: t('adminRequests.tabs.leave'),
-      content: <LeaveRequestsTab />,
-    },
+    // {
+    //   id: 'leave',
+    //   label: t('adminRequests.tabs.leave'),
+    //   content: <LeaveRequestsTab />,
+    // },
     // {
     //   id: 'contract-authentication',
     //   label: t('adminRequests.tabs.contractAuthentication'),

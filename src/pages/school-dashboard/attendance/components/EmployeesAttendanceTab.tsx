@@ -113,7 +113,7 @@ export default function EmployeesAttendanceTab({
           limit: pagination.limit,
           filters: {
             search: searchTerm || undefined,
-            lkSchoolStageId: selectedStage || undefined,
+            gradeId: selectedStage || undefined,
             classroomId: selectedClassroom || undefined,
             status: selectedType ? Number(selectedType) : undefined,
           },
@@ -231,7 +231,7 @@ export default function EmployeesAttendanceTab({
             limit: pagination.limit,
             filters: {
               search: searchTerm || undefined,
-              lkSchoolStageId: selectedStage || undefined,
+              gradeId: selectedStage || undefined,
               classroomId: selectedClassroom || undefined,
               status: selectedType ? Number(selectedType) : undefined,
             },
@@ -303,7 +303,7 @@ export default function EmployeesAttendanceTab({
             limit: pagination.limit,
             filters: {
               search: searchTerm || undefined,
-              lkSchoolStageId: selectedStage || undefined,
+              gradeId: selectedStage || undefined,
               classroomId: selectedClassroom || undefined,
               status: selectedType ? Number(selectedType) : undefined,
             },
@@ -394,8 +394,8 @@ export default function EmployeesAttendanceTab({
       accessor: (row) => (
         <span>
           {currentLang === 'ar'
-            ? row.lkSchoolStageNameAr || t('attendance.notAvailable')
-            : row.lkSchoolStageNameEn || t('attendance.notAvailable')}
+            ? row.lkSchoolStageNameAr || "-"
+            : row.lkSchoolStageNameEn || "-"}
         </span>
       ),
       headerClassName: 'min-w-[210px]',
@@ -427,14 +427,19 @@ export default function EmployeesAttendanceTab({
     },
     {
       header: 'attendance.createdBy',
-      accessor: (row) => (
-        <span className="text-sm">
-          {row.createdBy.createdByFullNane || t('attendance.notAvailable')}
-          {row.createdBy.administrativePositionNameAr || row.createdBy.administrativePositionNameEn
-            ? ` (${currentLang === 'ar' ? row.createdBy.administrativePositionNameAr : row.createdBy.administrativePositionNameEn})`
-            : ''}
-        </span>
-      ),
+      accessor: (row) => {
+        if (!row.createdBy) {
+          return <span className="text-sm">-</span>;
+        }
+        return (
+          <span className="text-sm">
+            {row.createdBy.createdByFullName || "-"}
+            {row.createdBy.administrativePositionNameAr || row.createdBy.administrativePositionNameEn
+              ? ` (${currentLang === 'ar' ? row.createdBy.administrativePositionNameAr : row.createdBy.administrativePositionNameEn})`
+              : ''}
+          </span>
+        );
+      },
       headerClassName: 'min-w-[220px]',
       className: 'text-center',
     },

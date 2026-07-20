@@ -12,6 +12,8 @@ import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { MessageStatus } from '@/shared/enums/enums';
+import { getCurrentSchoolBranchId } from '@/lib/auth';
 import EyeDarkBlueIcon from '@gradex/assets/icons/EyeDarkBlue.svg';
 
 import {
@@ -92,6 +94,7 @@ const MessagesTab: React.FC = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const currentSchoolBranchId = getCurrentSchoolBranchId();
 
   const { messages, currentMessage, messagesPagination, isMessagesLoading, isDetailsLoading } =
     useAppSelector((state) => state.teacherRequests);
@@ -113,11 +116,13 @@ const MessagesTab: React.FC = () => {
     const params: TeacherMessagesQueryParams = {
       PageNumber: page,
       PageSize: PAGE_SIZE,
+      SchoolBranchId: currentSchoolBranchId,
       SearchTeacherName: searchTerm.trim() || undefined,
+      MessageStatus: selectedStatus ? (Number(selectedStatus) as MessageStatus) : undefined,
       Date: selectedDate || undefined,
     };
     dispatch(fetchTeacherMessages(params));
-  }, [dispatch, page, searchTerm, selectedDate]);
+  }, [dispatch, page, searchTerm, selectedStatus, selectedDate, currentSchoolBranchId]);
 
   useEffect(() => {
     loadMessages();
@@ -139,15 +144,6 @@ const MessagesTab: React.FC = () => {
         };
       }),
     [messages, statusById]
-  );
-
-  const filteredData = useMemo(
-    () =>
-      data.filter((row) => {
-        const matchesStatus = !selectedStatus || row.status === Number(selectedStatus);
-        return matchesStatus;
-      }),
-    [data, selectedStatus]
   );
 
   const selectedMessageDetails = useMemo(() => {
@@ -421,7 +417,7 @@ const MessagesTab: React.FC = () => {
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={filteredData}
+        data={data}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
