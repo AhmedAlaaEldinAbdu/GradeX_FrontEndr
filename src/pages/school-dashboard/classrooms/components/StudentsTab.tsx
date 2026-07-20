@@ -3,6 +3,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import DataTable from '@/shared/components/DataTable';
 import EditGreenIcon from '@gradex/assets/icons/EditGreen.svg';
+import { useNavigate } from 'react-router-dom';
 
 export type StudentRow = {
   id: string;
@@ -36,9 +37,15 @@ export default function StudentsTab({
   onResetFilters,
 }: StudentsTabProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const renderPersonCell = (name: string, imageSrc: string) => (
-    <UserAvatarName name={name} avatarSrc={imageSrc} align="between" onView={() => {}} />
+  const renderPersonCell = (id: string, name: string, imageSrc: string) => (
+    <UserAvatarName
+      name={name}
+      avatarSrc={imageSrc}
+      align="between"
+      onView={() => navigate(`/students/student-details/${id}`, { state: { from: 'roster' } })}
+    />
   );
 
   const renderIconButton = (icon: string, backgroundClassName: string, alt: string) => (
@@ -61,7 +68,7 @@ export default function StudentsTab({
     },
     {
       header: 'studentManagement.studentName',
-      accessor: (row: StudentRow) => renderPersonCell(row.name, row.imageSrc),
+      accessor: (row: StudentRow) => renderPersonCell(row.id, row.name, row.imageSrc),
       headerClassName: 'min-w-[250px] text-start',
       className: 'min-w-[250px]',
     },
