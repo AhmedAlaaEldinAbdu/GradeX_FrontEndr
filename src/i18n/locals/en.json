@@ -105,7 +105,8 @@
           "gradeRequired": "Please select the class",
           "sendToRequired": "Please select the homework recipients",
           "studentsRequired": "Please select at least one student"
-        }
+        },
+        "editTitle": "Edit Class"
       }
     },
     "moodle": {

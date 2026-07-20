@@ -105,7 +105,8 @@
           "gradeRequired": "Veuillez sélectionner la classe",
           "sendToRequired": "Veuillez sélectionner les destinataires des devoirs",
           "studentsRequired": "Veuillez sélectionner au moins un élève"
-        }
+        },
+        "editTitle": "Modifier le cours"
       }
     },
     "moodle": {

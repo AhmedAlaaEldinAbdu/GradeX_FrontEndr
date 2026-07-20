@@ -105,7 +105,8 @@
           "gradeRequired": "Bitte wählen Sie die Klasse",
           "sendToRequired": "Bitte wählen Sie die Empfänger der Hausaufgaben",
           "studentsRequired": "Bitte wählen Sie mindestens einen Schüler"
-        }
+        },
+        "editTitle": "Unterricht bearbeiten"
       }
     },
     "moodle": {

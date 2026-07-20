@@ -105,7 +105,8 @@
           "gradeRequired": "يرجى اختيار الصف الدراسي",
           "sendToRequired": "يرجى تحديد مستلمي الواجب",
           "studentsRequired": "يرجى اختيار طالب واحد على الأقل"
-        }
+        },
+        "editTitle": "تعديل حصة"
       }
     },
     "moodle": {
