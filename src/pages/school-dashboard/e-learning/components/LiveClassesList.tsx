@@ -8,10 +8,11 @@ import IconButton from '@/shared/components/IconButton';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import CalendarInputIcon from '@gradex/assets/icons/CalendarInput.svg';
 import VideoConferenceIcon from '@gradex/assets/icons/VideoConference.svg';
+import StartLiveClassPopup from '../popups/StartLiveClassPopup';
 
 type LiveClassStatus = 'completed' | 'active' | 'upcoming' | 'closed';
 
-type LiveClassRow = {
+export type LiveClassRow = {
   id: string;
   subject: string;
   teacherName: string;
@@ -128,6 +129,7 @@ export default function LiveClassesList() {
   const [status, setStatus] = useState('');
   const [date, setDate] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedLiveClass, setSelectedLiveClass] = useState<LiveClassRow | null>(null);
 
   const statusOptions = [
     { value: 'completed', label: t('eLearning.liveClasses.status.completed') },
@@ -167,6 +169,20 @@ export default function LiveClassesList() {
       header: '#',
       accessor: (_row, index = 0) => (page - 1) * PAGE_SIZE + index + 1,
       headerClassName: 'w-16',
+      className: 'text-center',
+    },
+    {
+      header: 'eLearning.liveClasses.table.management',
+      accessor: (row) => (
+        <button
+          type="button"
+          onClick={() => setSelectedLiveClass(row)}
+          className="inline-flex min-w-[112px] items-center justify-center rounded-2xl border border-green-500 bg-white px-5 py-2 text-sm font-medium text-green-500 transition-colors hover:bg-green-50"
+        >
+          {t('eLearning.liveClasses.startNow')}
+        </button>
+      ),
+      headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
     {
@@ -377,6 +393,11 @@ export default function LiveClassesList() {
           />
         </Card>
       ) : null}
+      <StartLiveClassPopup
+        isOpen={!!selectedLiveClass}
+        liveClass={selectedLiveClass}
+        onClose={() => setSelectedLiveClass(null)}
+      />
     </>
   );
 }
