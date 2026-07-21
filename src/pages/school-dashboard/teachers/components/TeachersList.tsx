@@ -15,7 +15,7 @@ import DataTable, { type FilterConfig, type DataTableColumn } from '@/shared/com
 import { fetchTeachers, deleteTeacher as deleteTeacherAction } from '@/redux/features/teachers';
 import { fetchSubjects } from '@/redux/features/subjects/subjectsSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
-import { fetchSchoolStages } from '@/redux/features/lookups';
+import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import type { Teacher } from '@/types/teachers';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
@@ -32,9 +32,9 @@ export default function TeachersList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedTeacherId, setSelectedTeacherId] = useState<string>('');
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedEducationalStage, setSelectedEducationalStage] = useState('');
   const [selectedClassroom, setSelectedClassroom] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState('');
+  const [selectedMaterial, setSelectedMaterial] = useState('');
 
   const { showToast } = useToast();
 
@@ -46,10 +46,10 @@ export default function TeachersList() {
   // Get subjects and classrooms from other slices for filter options
   const subjects = useAppSelector((state) => state.subjects.subjects);
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
-  const schoolStages = useAppSelector((state) => state.lookups.schoolStages);
+  const grades = useAppSelector((state) => state.grades.grades);
   const isLoadingSubjects = useAppSelector((state) => state.subjects.isLoading);
   const isLoadingClassrooms = useAppSelector((state) => state.classrooms.isLoading);
-  const isLoadingSchoolStages = useAppSelector((state) => state.lookups.isLoadingSchoolStages);
+  const isLoadingGrades = useAppSelector((state) => state.grades.isLoading);
 
   // Fetch filter data on mount
   useEffect(() => {
@@ -61,8 +61,8 @@ export default function TeachersList() {
       })
     );
     dispatch(fetchClassrooms({ page: 1, limit: 100, filters: { schoolBranchId: schoolBranchId } }));
-    dispatch(fetchSchoolStages());
-  }, [dispatch]);
+    dispatch(fetchGrades(schoolBranchId));
+  }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
     dispatch(
@@ -71,9 +71,9 @@ export default function TeachersList() {
         limit: pagination.limit,
         filters: {
           SearchTerm: searchTerm || undefined,
-          subjectId: selectedSubject || undefined,
-          educationalStageId: selectedEducationalStage || undefined,
           classroomId: selectedClassroom || undefined,
+          gradeId: selectedGrade || undefined,
+          materialId: selectedMaterial || undefined,
           schoolBranchId: schoolBranchId || undefined,
           Language: currentLang || undefined,
         },
@@ -84,9 +84,9 @@ export default function TeachersList() {
     pagination.page,
     pagination.limit,
     searchTerm,
-    selectedSubject,
-    selectedEducationalStage,
     selectedClassroom,
+    selectedGrade,
+    selectedMaterial,
     schoolBranchId,
   ]);
 
@@ -97,9 +97,9 @@ export default function TeachersList() {
         limit: pagination.limit,
         filters: {
           SearchTerm: searchTerm || undefined,
-          subjectId: selectedSubject || undefined,
-          educationalStageId: selectedEducationalStage || undefined,
           classroomId: selectedClassroom || undefined,
+          gradeId: selectedGrade || undefined,
+          materialId: selectedMaterial || undefined,
           schoolBranchesId: schoolBranchId || undefined,
           Language: currentLang || undefined,
         },
@@ -107,8 +107,7 @@ export default function TeachersList() {
     );
   };
 
-  const hasActiveFilters =
-    searchTerm || selectedSubject || selectedEducationalStage || selectedClassroom;
+  const hasActiveFilters = searchTerm || selectedClassroom || selectedGrade || selectedMaterial;
   const shouldShowEmptyState = !isLoading && teachers.length === 0 && !hasActiveFilters;
   const shouldShowContent = isLoading || teachers.length > 0 || hasActiveFilters;
 
@@ -190,7 +189,7 @@ export default function TeachersList() {
       accessor: (row) => {
         // Check for new API format (materialName) first, then fall back to old formats
         const materialName = row.materialName;
-        
+
         if (materialName) {
           return <span>{materialName}</span>;
         }
@@ -220,7 +219,7 @@ export default function TeachersList() {
       accessor: (row) => {
         // Check for new API format (gradeName) first, then fall back to old format
         const gradeName = row.gradeName;
-        
+
         if (gradeName) {
           return <span>{gradeName}</span>;
         }
@@ -243,7 +242,7 @@ export default function TeachersList() {
       accessor: (row) => {
         // Handle both new format (classroomId/classroomName) and old format (id/nameAr/nameEn)
         const classrooms = row.classrooms;
-        
+
         if (!classrooms || classrooms.length === 0) {
           return (
             <div className="flex flex-wrap gap-1">
@@ -257,9 +256,10 @@ export default function TeachersList() {
             {classrooms.map((classroom: any, index: number) => {
               // Check if it's new format (classroomId/classroomName)
               const classroomId = classroom.classroomId || classroom.id;
-              const classroomName = classroom.classroomName || 
+              const classroomName =
+                classroom.classroomName ||
                 (currentLang === 'ar' ? classroom.nameAr : classroom.nameEn || classroom.nameAr);
-              
+
               return (
                 <span
                   key={classroomId || `classroom-${index}`}
@@ -307,9 +307,9 @@ export default function TeachersList() {
     label: currentLang === 'ar' ? classroom.name : classroom.nameEn || classroom.name,
   }));
 
-  const schoolStageOptions = schoolStages.map((stage) => ({
-    value: stage.id,
-    label: currentLang === 'ar' ? stage.nameAR : stage.nameEN,
+  const gradeOptions = grades.map((grade) => ({
+    value: grade.id,
+    label: currentLang === 'ar' ? grade.nameAr : grade.nameEn,
   }));
 
   const filterConfigs: FilterConfig[] = [
@@ -323,15 +323,15 @@ export default function TeachersList() {
     },
     {
       type: 'custom',
-      name: 'subject-filter',
+      name: 'material-filter',
       placeholder: '',
-      value: selectedSubject,
+      value: selectedMaterial,
       onChange: () => {},
       width: '20%',
       customComponent: (
         <CustomSelect
-          value={selectedSubject}
-          onChange={(value) => setSelectedSubject(Array.isArray(value) ? (value[0] ?? '') : value)}
+          value={selectedMaterial}
+          onChange={(value) => setSelectedMaterial(Array.isArray(value) ? (value[0] ?? '') : value)}
           options={subjectOptions}
           placeholder={isLoadingSubjects ? t('common.loading') : t('teachers.selectSubject')}
           disabled={isLoadingSubjects}
@@ -361,22 +361,18 @@ export default function TeachersList() {
     },
     {
       type: 'custom',
-      name: 'stage-filter',
+      name: 'grade-filter',
       placeholder: '',
-      value: selectedEducationalStage,
+      value: selectedGrade,
       onChange: () => {},
       width: '25%',
       customComponent: (
         <CustomSelect
-          value={selectedEducationalStage}
-          onChange={(value) =>
-            setSelectedEducationalStage(Array.isArray(value) ? (value[0] ?? '') : value)
-          }
-          options={schoolStageOptions}
-          placeholder={
-            isLoadingSchoolStages ? t('common.loading') : t('teachers.selectEducationalStage')
-          }
-          disabled={isLoadingSchoolStages}
+          value={selectedGrade}
+          onChange={(value) => setSelectedGrade(Array.isArray(value) ? (value[0] ?? '') : value)}
+          options={gradeOptions}
+          placeholder={isLoadingGrades ? t('common.loading') : t('teachers.selectEducationalStage')}
+          disabled={isLoadingGrades}
           maxHeight="200px"
         />
       ),
@@ -385,9 +381,9 @@ export default function TeachersList() {
 
   const handleResetFilters = () => {
     setSearchTerm('');
-    setSelectedSubject('');
-    setSelectedEducationalStage('');
     setSelectedClassroom('');
+    setSelectedGrade('');
+    setSelectedMaterial('');
   };
 
   const handleDeleteConfirm = async () => {
@@ -409,9 +405,9 @@ export default function TeachersList() {
                 limit: pagination.limit,
                 filters: {
                   SearchTerm: searchTerm || undefined,
-                  subjectId: selectedSubject || undefined,
-                  educationalStageId: selectedEducationalStage || undefined,
                   classroomId: selectedClassroom || undefined,
+                  gradeId: selectedGrade || undefined,
+                  materialId: selectedMaterial || undefined,
                   schoolBranchesId: schoolBranchId || undefined,
                   Language: currentLang || undefined,
                 },
