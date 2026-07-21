@@ -29,6 +29,18 @@ export const TeacherApplicationStatusMap = {
 export type TeacherWorkSchedule = 1 | 2 | 3;
 export const TEACHER_WORK_SCHEDULE_VALUES: TeacherWorkSchedule[] = [1, 2, 3];
 
+export const TeacherWorkScheduleMap = {
+  FullTime: 1,
+  PartTime: 2,    // Note: API schema has "BartTime" but represents part-time
+  Both: 3,
+} as const;
+
+export const TeacherWorkScheduleDisplayNames: Record<TeacherWorkSchedule, string> = {
+  [TeacherWorkScheduleMap.FullTime]: 'Full Time',
+  [TeacherWorkScheduleMap.PartTime]: 'Part Time',
+  [TeacherWorkScheduleMap.Both]: 'Both',
+} as const;
+
 /** Early-leave request status (RequestStatus / update-status). Swagger values: 1–3. */
 export type EarlyLeaveRequestStatus = 1 | 2 | 3;
 export const EARLY_LEAVE_REQUEST_STATUS_VALUES: EarlyLeaveRequestStatus[] = [1, 2, 3];
