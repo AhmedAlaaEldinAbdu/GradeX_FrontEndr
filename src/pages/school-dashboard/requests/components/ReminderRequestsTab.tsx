@@ -42,6 +42,19 @@ const emptyWhenMissing = (value?: string | null) => {
   return trimmed && trimmed !== '-' ? trimmed : '';
 };
 
+const REMINDER_STATUS_FILTER = {
+  Viewed: 'viewed',
+  Pending: 'pending',
+} as const;
+
+type ReminderStatusFilter = (typeof REMINDER_STATUS_FILTER)[keyof typeof REMINDER_STATUS_FILTER];
+
+const getIsViewedFilterValue = (status: ReminderStatusFilter | ''): boolean | undefined => {
+  if (status === REMINDER_STATUS_FILTER.Viewed) return true;
+  if (status === REMINDER_STATUS_FILTER.Pending) return false;
+  return undefined;
+};
+
 const STATUS_BADGE_CLASSES: Record<StudentRequestStatus, string> = {
   [StudentRequestStatus.Sent]: 'bg-purple-100 text-purple-700',
   [StudentRequestStatus.Viewed]: 'bg-green-100 text-green-700',
@@ -67,7 +80,7 @@ const ReminderRequestsTab: React.FC = () => {
   );
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<ReminderStatusFilter | ''>('');
   const [selectedDate, setSelectedDate] = useState('');
   const [page, setPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState<StudentRequestDto | null>(null);
@@ -86,9 +99,7 @@ const ReminderRequestsTab: React.FC = () => {
         const studentName = emptyWhenMissing(appointment.studentName);
         const requestStatus = appointment.isViewed
           ? StudentRequestStatus.Viewed
-          : receiverIsSchool
-            ? StudentRequestStatus.Pending
-            : StudentRequestStatus.Sent;
+          : StudentRequestStatus.Pending;
 
         return {
           id: appointment.id,
@@ -126,30 +137,18 @@ const ReminderRequestsTab: React.FC = () => {
         limit: PAGE_SIZE,
         studentName: searchTerm.trim() || undefined,
         date: selectedDate || undefined,
+        isViewed: getIsViewedFilterValue(selectedStatus),
       })
     );
-  }, [dispatch, page, searchTerm, selectedDate]);
+  }, [dispatch, page, searchTerm, selectedDate, selectedStatus]);
 
   const requests = useMemo(
     () => appointments.map(mapAppointmentToRequest),
     [appointments, mapAppointmentToRequest]
   );
 
-  const filteredRequests = useMemo(
-    () =>
-      requests.filter((request) => {
-        const matchesStatus = !selectedStatus || request.status === Number(selectedStatus);
-
-        return matchesStatus;
-      }),
-    [requests, selectedStatus]
-  );
-
-  const hasClientFilters = Boolean(selectedStatus);
-  const totalPages = hasClientFilters
-    ? Math.max(1, Math.ceil(filteredRequests.length / PAGE_SIZE))
-    : Math.max(1, pagination.totalPages);
-  const totalItems = hasClientFilters ? filteredRequests.length : pagination.totalItems;
+  const totalPages = Math.max(1, pagination.totalPages);
+  const totalItems = pagination.totalItems;
 
   useEffect(() => {
     if (page > totalPages) {
@@ -172,6 +171,7 @@ const ReminderRequestsTab: React.FC = () => {
         limit: PAGE_SIZE,
         studentName: searchTerm.trim() || undefined,
         date: selectedDate || undefined,
+        isViewed: getIsViewedFilterValue(selectedStatus),
       })
     );
   };
@@ -331,12 +331,16 @@ const ReminderRequestsTab: React.FC = () => {
         <CustomSelect
           value={selectedStatus}
           onChange={(value) => {
-            setSelectedStatus(Array.isArray(value) ? (value[0] ?? '') : (value as string));
+            setSelectedStatus(
+              Array.isArray(value)
+                ? ((value[0] ?? '') as ReminderStatusFilter | '')
+                : (value as ReminderStatusFilter | '')
+            );
             setPage(1);
           }}
           options={[
-            { value: StudentRequestStatus.Pending.toString(), label: t('requests.status.pending') },
-            { value: StudentRequestStatus.Sent.toString(), label: t('requests.status.sent') },
+            { value: REMINDER_STATUS_FILTER.Pending, label: t('requests.status.pending') },
+            { value: REMINDER_STATUS_FILTER.Viewed, label: t('requests.status.viewed') },
           ]}
           placeholder={t('requests.filters.status')}
           showSearch={false}
@@ -373,7 +377,7 @@ const ReminderRequestsTab: React.FC = () => {
   return (
     <Card className="rounded-2xl" padding="lg">
       <DataTable
-        data={filteredRequests}
+        data={requests}
         columns={columns}
         keyExtractor={(row) => row.id}
         filters={filterConfigs}
