@@ -17,6 +17,7 @@ export async function getRequestAppointments(
 
   if (params?.StudentName) requestParams.StudentName = params.StudentName;
   if (params?.Date) requestParams.Date = params.Date;
+  if (params?.isViewed !== undefined) requestParams.isViewed = params.isViewed;
 
   const response = await axiosClient.get<ApiResponseModel<RequestAppointmentsData>>(
     RequestAppointmentEndpoints.getAll,
