@@ -5,7 +5,8 @@ export const LessonsEndpoints = {
   getLessonById: (id: string) => `${Lessons}/${id}`,
   createLesson: Lessons,
   updateLesson: Lessons,
-  deleteLesson: (id: string) => `${Lessons}?Id=${id}`,
+  deleteLesson: (id: string, applyToAllWeeks: boolean) =>
+    `${Lessons}?Id=${id}&ApplyToAllWeeks=${applyToAllWeeks}`,
 };
 
 export default LessonsEndpoints;

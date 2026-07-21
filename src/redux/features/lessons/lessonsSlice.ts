@@ -168,11 +168,14 @@ export const updateLessonWithAttachments = createAsyncThunk<
   }
 });
 
-export const deleteLessonById = createAsyncThunk<string, string>(
+export const deleteLessonById = createAsyncThunk<
+  string,
+  { id: string; applyToAllWeeks: boolean }
+>(
   'lessons/deleteLesson',
-  async (id, { rejectWithValue }) => {
+  async ({ id, applyToAllWeeks }, { rejectWithValue }) => {
     try {
-      await lessonsApiService.deleteLesson(id);
+      await lessonsApiService.deleteLesson(id, applyToAllWeeks);
       return id;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));

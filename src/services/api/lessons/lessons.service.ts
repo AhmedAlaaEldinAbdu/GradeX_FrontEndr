@@ -313,9 +313,12 @@ export async function bulkUpdateLessons(
   return response.data;
 }
 
-export async function deleteLesson(id: string): Promise<ApiResponseModel<null>> {
+export async function deleteLesson(
+  id: string,
+  applyToAllWeeks: boolean
+): Promise<ApiResponseModel<null>> {
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.delete(
-    LessonsEndpoints.deleteLesson(id)
+    LessonsEndpoints.deleteLesson(id, applyToAllWeeks)
   );
   return response.data;
 }
