@@ -195,11 +195,11 @@ export const fetchTeachers = createAsyncThunk<FetchTeachersResponse, FetchTeache
             payload.filters.schoolBranchesId
 
           if (payload.filters.SearchTerm) params.SearchTerm = payload.filters.SearchTerm;
-          if (payload.filters.subjectId) params.SubjectId = payload.filters.subjectId;
           if (payload.filters.Language) params.Language = payload.filters.Language;
-          if (payload.filters.educationalStageId)
-            params.EducationalStageId = payload.filters.educationalStageId;
           if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
+          if (payload.filters.gradeId) params.GradeId = payload.filters.gradeId;
+          if (payload.filters.materialId) params.MaterialId = payload.filters.materialId;
+          if (payload.filters.qualificationType) params.QualificationType = payload.filters.qualificationType;
           if (normalizedSchoolBranchId) {
             params.SchoolBranchId = normalizedSchoolBranchId;
           }
