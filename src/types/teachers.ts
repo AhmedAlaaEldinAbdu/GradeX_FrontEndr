@@ -1,3 +1,27 @@
+/**
+ * Centralized Teacher Constants
+ * Single source of truth for all teacher-related constants in the application
+ */
+
+export const QualificationType = {
+  TYPE_1: 1,
+  TYPE_2: 2,
+} as const;
+
+export type QualificationTypeValue = (typeof QualificationType)[keyof typeof QualificationType];
+
+/**
+ * Qualification Type display names for UI
+ */
+export const QualificationTypeDisplayNames: Record<QualificationTypeValue, string> = {
+  [QualificationType.TYPE_1]: 'Qualification Type 1',
+  [QualificationType.TYPE_2]: 'Qualification Type 2',
+};
+
+// ============================================================================
+// Types
+// ============================================================================
+
 export interface TeacherSubject {
   id: string;
   nameAr: string;
@@ -81,18 +105,20 @@ export interface TeacherQueryParams {
   PageIndex?: number;
   PageSize?: number;
   SearchTerm?: string;
-  SubjectId?: string;
-  EducationalStageId?: string;
   ClassroomId?: string;
   SchoolBranchId?: string;
+  QualificationType?: number;
+  GradeId?: string;
+  MaterialId?: string;
   Language?: string;
 }
 
 export interface TeacherFilters {
   SearchTerm?: string;
-  subjectId?: string;
-  educationalStageId?: string;
   classroomId?: string;
+  gradeId?: string;
+  materialId?: string;
+  qualificationType?: number;
   schoolBranchId?: string;
   schoolBranchesId?: string;
   SchoolBranchId?: string;
