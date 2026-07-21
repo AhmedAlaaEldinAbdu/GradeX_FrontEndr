@@ -71,7 +71,7 @@ const SelectStudentsPopup: React.FC<SelectStudentsPopupProps> = ({
       fetchedRef.current.add(classroom.id);
       setLoadingClassroom((prev) => ({ ...prev, [classroom.id]: true }));
       studentsApiService
-        .getStudentsByClassroomId(classroom.id)
+        .getStudentsByClassroomId(classroom.id, '')
         .then((students) =>
           setStudentsByClassroom((prev) => ({ ...prev, [classroom.id]: students }))
         )
