@@ -211,6 +211,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const watchedGradeId = watch('gradeId');
   const watchedClassroomId = watch('classroomId');
   const watchedMaterialId = watch('materialId');
+  const isGradeSelectLocked =
+    mode === 'edit' ? Boolean(normalizedInitialData?.gradeId) : Boolean(gradeIdParam);
+  const isClassroomSelectLocked =
+    mode === 'edit' ? Boolean(normalizedInitialData?.classroomId) : Boolean(classroomIdParam);
 
   // Initial data fetches (teachers and grades are independent of classroom)
   useEffect(() => {
@@ -619,7 +623,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                       placeholder={
                         isLoadingGrades ? t('lesson.loadingGrades') : t('lesson.selectGrade')
                       }
-                      disabled={isLoadingGrades}
+                      disabled={isGradeSelectLocked || isLoadingGrades}
                     />
                   )}
                 />
@@ -649,7 +653,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                               ? t('lesson.noClassroomsAvailable')
                               : t('lesson.selectClassroom')
                       }
-                      disabled={!watchedGradeId || isLoadingClassrooms}
+                      disabled={isClassroomSelectLocked || !watchedGradeId || isLoadingClassrooms}
                     />
                   )}
                 />
