@@ -40,8 +40,8 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
     }
 
     dispatch(fetchClassroomById(id));
-    dispatch(fetchStudentsByClassroomId(id));
-  }, [dispatch, id]);
+    dispatch(fetchStudentsByClassroomId({ classroomId: id, search: studentSearchTerm }));
+  }, [dispatch, id, studentSearchTerm]);
 
   const classroomImageSrc = currentClassroom?.imagePath
     ? `${baseUrl}/${currentClassroom.imagePath}`

@@ -193,11 +193,14 @@ export const searchStudentsByName = createAsyncThunk<
   }
 );
 
-export const fetchStudentsByClassroomId = createAsyncThunk<StudentDto[], string>(
+export const fetchStudentsByClassroomId = createAsyncThunk<
+  StudentDto[],
+  { classroomId: string; search?: string }
+>(
   'students/fetchStudentsByClassroomId',
-  async (classroomId, { rejectWithValue }) => {
+  async ({ classroomId, search }, { rejectWithValue }) => {
     try {
-      return await studentsApiService.getStudentsByClassroomId(classroomId);
+      return await studentsApiService.getStudentsByClassroomId(classroomId, search);
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
