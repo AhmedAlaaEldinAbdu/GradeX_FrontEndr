@@ -12,7 +12,7 @@ import WeeklyScheduleCalendar, {
 } from '@/shared/components/WeeklyScheduleCalendar';
 import CustomSelect from '@/shared/components/CustomSelect';
 import LessonDetailsPopup from '../popups/LessonDetailsPopup';
-import DeletePopup from '@/shared/popups/DeletePopup';
+import DeleteLessonPopup from '../popups/DeleteLessonPopup';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import {
@@ -40,7 +40,6 @@ import {
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
-import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useLanguage } from '@/hooks/useLanguage';
 import { addMinutesToTime } from '@/lib/utils/date-utils';
 import { tokenManager } from '@/lib/auth/token-manager';
@@ -1054,12 +1053,22 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
     setLessonPendingDelete(null);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (applyToAllWeeks: boolean) => {
     if (!lessonPendingDelete) return;
 
     try {
       setIsDeleting(true);
-      await dispatch(deleteLessonById(lessonPendingDelete.id)).unwrap();
+      await dispatch(deleteLessonById({ id: lessonPendingDelete.id, applyToAllWeeks })).unwrap();
+
+      dispatch(
+        fetchLessons({
+          filters: {
+            gradeId: stage || undefined,
+            classroomId: grade || undefined,
+            schoolBranchesId: schoolBranchId,
+          },
+        })
+      );
 
       showToast({
         message: t('weeklyCalendar.lessonDeletedSuccessfully'),
@@ -1381,13 +1390,11 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         lesson={selectedLesson}
       />
 
-      <DeletePopup
+      <DeleteLessonPopup
         open={showDeletePopup}
-        message="weeklyCalendar.confirmDeleteLesson"
-        itemName={lessonPendingDelete?.subject ?? ''}
+        lessonName={lessonPendingDelete?.subject ?? ''}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
-        iconSrc={BigTrashIcon}
         isProcessing={isDeleting}
       />
     </>
