@@ -211,6 +211,10 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const watchedGradeId = watch('gradeId');
   const watchedClassroomId = watch('classroomId');
   const watchedMaterialId = watch('materialId');
+  const isGradeSelectLocked =
+    mode === 'edit' ? Boolean(normalizedInitialData?.gradeId) : Boolean(gradeIdParam);
+  const isClassroomSelectLocked =
+    mode === 'edit' ? Boolean(normalizedInitialData?.classroomId) : Boolean(classroomIdParam);
 
   // Initial data fetches (teachers and grades are independent of classroom)
   useEffect(() => {
@@ -464,13 +468,6 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
     <>
       <Card>
         <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)}>
-          {/* Hidden date field */}
-          <Controller
-            name="date"
-            control={control}
-            render={({ field }) => <input {...field} type="hidden" />}
-          />
-
           {/* Main Info Section */}
           <div className="mb-6">
             {/* Lesson Type */}
@@ -512,6 +509,24 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                         <span className="text-base text-black-800">{t('lesson.remote')}</span>
                       </label>
                     </div>
+                  )}
+                />
+              </FormField>
+            </div>
+
+            <div className="mb-4">
+              <FormField
+                label={t('lesson.date')}
+                required
+                error={errors.date?.message}
+                htmlFor="date"
+              >
+                <Controller
+                  name="date"
+                  control={control}
+                  rules={{ required: t('common.required') }}
+                  render={({ field }) => (
+                    <Input {...field} type="date" id="date" placeholder={t('common.chooseDate')} />
                   )}
                 />
               </FormField>
@@ -619,7 +634,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                       placeholder={
                         isLoadingGrades ? t('lesson.loadingGrades') : t('lesson.selectGrade')
                       }
-                      disabled={isLoadingGrades}
+                      disabled={isGradeSelectLocked || isLoadingGrades}
                     />
                   )}
                 />
@@ -649,7 +664,7 @@ export default function LessonForm({ mode, initialData }: LessonFormProps) {
                               ? t('lesson.noClassroomsAvailable')
                               : t('lesson.selectClassroom')
                       }
-                      disabled={!watchedGradeId || isLoadingClassrooms}
+                      disabled={isClassroomSelectLocked || !watchedGradeId || isLoadingClassrooms}
                     />
                   )}
                 />
