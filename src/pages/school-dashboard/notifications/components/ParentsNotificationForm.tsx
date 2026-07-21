@@ -304,7 +304,7 @@ export default function ParentsNotificationForm({
         </FormField>
 
         <FormField
-          label={t('notifications.parentNames')}
+          label={t('notifications.studentNames')}
           optional
           error={errors.studentIds}
           name="studentIds"
