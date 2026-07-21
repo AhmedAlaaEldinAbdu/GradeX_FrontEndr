@@ -23,6 +23,92 @@
       "student": "طالب",
       "exam": "أختبار"
     },
+    "liveClasses": {
+      "title": "الحصص المباشرة",
+      "metrics": {
+        "totalRemoteClasses": "إجمالي حصص عن بعد",
+        "liveClassesNow": "حصص مباشرة الآن",
+        "attendanceRate": "نسبة الحضور"
+      },
+      "emptyTitle": "لم يتم إضافة حصص عن بعد",
+      "searchPlaceholder": "إبحث عن اسم المادة",
+      "startNow": "أبدء الآن",
+      "filters": {
+        "teacher": "اسم المعلم",
+        "classroom": "الصف الدراسي",
+        "status": "الحالة",
+        "date": "التاريخ"
+      },
+      "status": {
+        "completed": "منتهية",
+        "active": "تعمل الآن",
+        "upcoming": "قادمة",
+        "closed": "مغلقة"
+      },
+      "table": {
+        "management": "إدارة",
+        "subject": "اسم المادة",
+        "teacherName": "اسم المعلم",
+        "status": "الحالة",
+        "stage": "المرحلة التعليمية",
+        "classroom": "الصف الدراسية",
+        "date": "التاريخ",
+        "startsAt": "موعد الحصة (من)",
+        "endsAt": "موعد الحصة (إلي)"
+      },
+      "popup": {
+        "title": "بدء حصة من بعد",
+        "subjectTitle": "مادة {{subject}}",
+        "teacherName": "المعلم {{teacher}}",
+        "linkLabel": "رابط الحصة",
+        "linkPlaceholder": "أدخل رابط الحصة"
+      },
+      "add": {
+        "title": "إضافة حصة",
+        "classType": "نوع الحصة",
+        "inPerson": "حضوري",
+        "remote": "عن بعد",
+        "fromTime": "موعد الحصة (من)",
+        "toTime": "موعد الحصة (إلي)",
+        "subject": "اسم المادة",
+        "subjectPlaceholder": "اختر اسم المادة",
+        "teacher": "اسم المعلم",
+        "teacherPlaceholder": "اسم المعلم",
+        "stage": "المرحلة التعليمية",
+        "stagePlaceholder": "اختر المرحلة التعليمية",
+        "grade": "الصف الدراسي",
+        "gradePlaceholder": "أختر الصف الدراسي",
+        "book": "اسم الكتاب",
+        "bookPlaceholder": "اختر اسم الكتاب",
+        "classWork": "عمل الصف",
+        "homework": "الواجب المنزلي",
+        "fromPage": "من صفحة",
+        "toPage": "الي صفحة",
+        "pagePlaceholder": "رقم الصفحة",
+        "descAr": "وصف (باللغة العربية)",
+        "descEn": "وصف (باللغة الانجليزية)",
+        "descPlaceholder": "ادخل وصف للواجب",
+        "sendHomeworkTo": "ارسال الواجب الي",
+        "all": "الكل",
+        "specificStudents": "تحديد طلاب",
+        "attachments": "مرفقات",
+        "uploadText": "اضغط هنا للإضافة صورة أو ملف",
+        "selectStudentsButton": "تحديد طلاب",
+        "validation": {
+          "classTypeRequired": "يرجى اختيار نوع الحصة",
+          "fromTimeRequired": "يرجى تحديد موعد بداية الحصة",
+          "toTimeRequired": "يرجى تحديد موعد نهاية الحصة",
+          "toTimeAfterFrom": "يجب أن يكون موعد النهاية بعد موعد البداية",
+          "subjectRequired": "يرجى اختيار المادة",
+          "teacherRequired": "يرجى اختيار المعلم",
+          "stageRequired": "يرجى اختيار المرحلة التعليمية",
+          "gradeRequired": "يرجى اختيار الصف الدراسي",
+          "sendToRequired": "يرجى تحديد مستلمي الواجب",
+          "studentsRequired": "يرجى اختيار طالب واحد على الأقل"
+        },
+        "editTitle": "تعديل حصة"
+      }
+    },
     "moodle": {
       "name": "Moodle LMS",
       "connected": "متصل",
@@ -2106,6 +2192,7 @@
     "searchParentName": "ابحث عن اسم ولي الأمر",
     "employeeNames": "أسماء الموظفين",
     "parentNames": "أسماء أولياء الأمور",
+    "studentNames": "أسماء الطلاب",
     "dateFilter": "التاريخ",
     "educationalStageFilter": "المرحلة التعليمية",
     "classroomFilter": "الصف الدراسي",

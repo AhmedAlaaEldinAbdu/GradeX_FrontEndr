@@ -23,6 +23,92 @@
       "student": "student",
       "exam": "exam"
     },
+    "liveClasses": {
+      "title": "Live Classes",
+      "metrics": {
+        "totalRemoteClasses": "Total Remote Classes",
+        "liveClassesNow": "Live Classes Now",
+        "attendanceRate": "Attendance Rate"
+      },
+      "emptyTitle": "No remote classes have been added",
+      "searchPlaceholder": "Search by subject name",
+      "startNow": "Start now",
+      "filters": {
+        "teacher": "Teacher name",
+        "classroom": "Class",
+        "status": "Status",
+        "date": "Date"
+      },
+      "status": {
+        "completed": "Completed",
+        "active": "Active now",
+        "upcoming": "Upcoming",
+        "closed": "Closed"
+      },
+      "table": {
+        "management": "Management",
+        "subject": "Subject name",
+        "teacherName": "Teacher name",
+        "status": "Status",
+        "stage": "Educational stage",
+        "classroom": "Class",
+        "date": "Date",
+        "startsAt": "Class time (from)",
+        "endsAt": "Class time (to)"
+      },
+      "popup": {
+        "title": "Start remote class",
+        "subjectTitle": "{{subject}} subject",
+        "teacherName": "Teacher {{teacher}}",
+        "linkLabel": "Class link",
+        "linkPlaceholder": "Enter class link"
+      },
+      "add": {
+        "title": "Add Class",
+        "classType": "Class type",
+        "inPerson": "In-person",
+        "remote": "Remote",
+        "fromTime": "Class time (from)",
+        "toTime": "Class time (to)",
+        "subject": "Subject name",
+        "subjectPlaceholder": "Choose subject name",
+        "teacher": "Teacher name",
+        "teacherPlaceholder": "Teacher name",
+        "stage": "Educational stage",
+        "stagePlaceholder": "Choose educational stage",
+        "grade": "Class",
+        "gradePlaceholder": "Choose class",
+        "book": "Book name",
+        "bookPlaceholder": "Choose book name",
+        "classWork": "Class work",
+        "homework": "Homework",
+        "fromPage": "From page",
+        "toPage": "To page",
+        "pagePlaceholder": "Page number",
+        "descAr": "Description (Arabic)",
+        "descEn": "Description (English)",
+        "descPlaceholder": "Enter homework description",
+        "sendHomeworkTo": "Send homework to",
+        "all": "All",
+        "specificStudents": "Select students",
+        "attachments": "Attachments",
+        "uploadText": "Click here to add an image or file",
+        "selectStudentsButton": "Select students",
+        "validation": {
+          "classTypeRequired": "Please select the class type",
+          "fromTimeRequired": "Please select the start time",
+          "toTimeRequired": "Please select the end time",
+          "toTimeAfterFrom": "End time must be after start time",
+          "subjectRequired": "Please select the subject",
+          "teacherRequired": "Please select the teacher",
+          "stageRequired": "Please select the educational stage",
+          "gradeRequired": "Please select the class",
+          "sendToRequired": "Please select the homework recipients",
+          "studentsRequired": "Please select at least one student"
+        },
+        "editTitle": "Edit Class"
+      }
+    },
     "moodle": {
       "name": "Moodle LMS",
       "connected": "Connected",
@@ -2096,6 +2182,7 @@
     "searchParentName": "Search by parent name",
     "employeeNames": "Employee names",
     "parentNames": "Parent names",
+    "studentNames": "Student names",
     "dateFilter": "Date",
     "educationalStageFilter": "Educational stage",
     "classroomFilter": "Classroom",

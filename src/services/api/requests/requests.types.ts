@@ -417,4 +417,5 @@ export interface RequestAppointmentsQueryParams {
   PageSize?: number;
   StudentName?: string;
   Date?: string;
+  isViewed?: boolean;
 }
