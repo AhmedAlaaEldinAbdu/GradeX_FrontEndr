@@ -235,3 +235,18 @@ export const NoteType = {
 } as const;
 export type NoteType = (typeof NoteType)[keyof typeof NoteType];
 
+export const WorkSchedule = {
+  FullTime: 1,
+  PartTime: 2,
+  Both: 3
+} as const;
+export type WorkSchedule = (typeof WorkSchedule)[keyof typeof WorkSchedule];
+
+export const TrainingCourseStatus = {
+  ActiveCompleted: 1,      // نشط ومكتمل
+  ActiveInCompleted: 2,    // نشط وغير مكتمل
+  EndedCompleted: 3,       // منتهي ومكتمل
+  EndedInCompleted: 4,     // منتهي وغير مكتمل
+  NotStarted: 5            // لم يبدأ بعد
+} as const;
+export type TrainingCourseStatus = (typeof TrainingCourseStatus)[keyof typeof TrainingCourseStatus];
