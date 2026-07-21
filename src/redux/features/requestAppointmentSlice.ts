@@ -36,6 +36,7 @@ export interface FetchRequestAppointmentsPayload {
   limit?: number;
   studentName?: string;
   date?: string;
+  isViewed?: boolean;
 }
 
 export const fetchRequestAppointments = createAsyncThunk<
@@ -51,6 +52,7 @@ export const fetchRequestAppointments = createAsyncThunk<
 
     if (payload?.studentName) params.StudentName = payload.studentName;
     if (payload?.date) params.Date = payload.date;
+    if (payload?.isViewed !== undefined) params.isViewed = payload.isViewed;
 
     return await requestAppointmentApiService.getRequestAppointments(params);
   } catch (error) {
