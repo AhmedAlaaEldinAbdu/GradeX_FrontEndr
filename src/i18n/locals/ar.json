@@ -89,6 +89,7 @@
         "noBooksAvailable": "لا توجد كتب متاحة للمادة والصف المحددين",
         "classWork": "عمل الصف",
         "homework": "الواجب المنزلي",
+        "addHomework": "إضافة واجب",
         "fromPage": "من صفحة",
         "toPage": "الي صفحة",
         "pagePlaceholder": "رقم الصفحة",
@@ -114,7 +115,9 @@
           "gradeRequired": "يرجى اختيار الصف الدراسي",
           "bookRequired": "يرجى اختيار الكتاب",
           "sendToRequired": "يرجى تحديد مستلمي الواجب",
-          "studentsRequired": "يرجى اختيار طالب واحد على الأقل"
+          "studentsRequired": "يرجى اختيار طالب واحد على الأقل",
+          "homeworkNameRequired": "يرجى إدخال بيانات الواجب",
+          "homeworkPageGreaterThanZero": "يجب أن تكون صفحات الواجب أكبر من صفر"
         },
         "editTitle": "تعديل حصة"
       }

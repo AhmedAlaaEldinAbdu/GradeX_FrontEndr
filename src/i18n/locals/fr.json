@@ -89,6 +89,7 @@
         "noBooksAvailable": "Aucun livre disponible pour la matière et la classe sélectionnées",
         "classWork": "Travail en classe",
         "homework": "Devoirs",
+        "addHomework": "Ajouter un devoir",
         "fromPage": "De la page",
         "toPage": "À la page",
         "pagePlaceholder": "Numéro de page",
@@ -114,7 +115,9 @@
           "gradeRequired": "Veuillez sélectionner la classe",
           "bookRequired": "Veuillez sélectionner le livre",
           "sendToRequired": "Veuillez sélectionner les destinataires des devoirs",
-          "studentsRequired": "Veuillez sélectionner au moins un élève"
+          "studentsRequired": "Veuillez sélectionner au moins un élève",
+          "homeworkNameRequired": "Veuillez saisir les détails du devoir",
+          "homeworkPageGreaterThanZero": "Les pages du devoir doivent être supérieures à zéro"
         },
         "editTitle": "Modifier le cours"
       }

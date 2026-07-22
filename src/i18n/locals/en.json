@@ -89,6 +89,7 @@
         "noBooksAvailable": "No books available for the selected subject and class",
         "classWork": "Class work",
         "homework": "Homework",
+        "addHomework": "Add homework",
         "fromPage": "From page",
         "toPage": "To page",
         "pagePlaceholder": "Page number",
@@ -114,7 +115,9 @@
           "gradeRequired": "Please select the class",
           "bookRequired": "Please select the book",
           "sendToRequired": "Please select the homework recipients",
-          "studentsRequired": "Please select at least one student"
+          "studentsRequired": "Please select at least one student",
+          "homeworkNameRequired": "Please enter homework details",
+          "homeworkPageGreaterThanZero": "Homework pages must be greater than zero"
         },
         "editTitle": "Edit Class"
       }

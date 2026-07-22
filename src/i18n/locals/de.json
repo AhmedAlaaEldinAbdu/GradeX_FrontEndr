@@ -89,6 +89,7 @@
         "noBooksAvailable": "Keine Bücher für das ausgewählte Fach und die Klasse verfügbar",
         "classWork": "Klassenarbeit",
         "homework": "Hausaufgaben",
+        "addHomework": "Hausaufgabe hinzufügen",
         "fromPage": "Von Seite",
         "toPage": "Bis Seite",
         "pagePlaceholder": "Seitenzahl",
@@ -114,7 +115,9 @@
           "gradeRequired": "Bitte wählen Sie die Klasse",
           "bookRequired": "Bitte wählen Sie das Buch",
           "sendToRequired": "Bitte wählen Sie die Empfänger der Hausaufgaben",
-          "studentsRequired": "Bitte wählen Sie mindestens einen Schüler"
+          "studentsRequired": "Bitte wählen Sie mindestens einen Schüler",
+          "homeworkNameRequired": "Bitte geben Sie Hausaufgabendetails ein",
+          "homeworkPageGreaterThanZero": "Hausaufgabenseiten müssen größer als null sein"
         },
         "editTitle": "Unterricht bearbeiten"
       }
