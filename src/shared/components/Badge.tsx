@@ -23,7 +23,7 @@ const Badge: React.FC<BadgeProps> = ({ children, variant = 'default', size = 'md
 
   return (
     <span
-      className={`inline-flex items-center rounded-full font-medium ${variants[variant]} ${sizes[size]}`}
+      className={`inline-flex items-center justify-center rounded-full font-medium ${variants[variant]} ${sizes[size]}`}
     >
       {children}
     </span>
