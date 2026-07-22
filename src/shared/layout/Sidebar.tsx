@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -58,8 +58,12 @@ const ICON_GROUP_HOVER_WHITE = 'group-hover:[filter:brightness(0)_saturate(100%)
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(' ');
 
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
 const SIDEBAR_FONT = "font-['IBM_Plex_Sans_Arabic',sans-serif]";
 const SIDEBAR_COLLAPSE_STORAGE_KEY = 'gradex.sidebar.collapsed';
+const SIDEBAR_SCROLL_TRACK_INSET = 14;
+const SIDEBAR_SCROLL_THUMB_MIN_HEIGHT = 28;
 const ACTIVE_ROW_BG_RTL =
   'bg-[linear-gradient(90deg,rgba(35,114,71,0.53)_0%,rgba(18,52,34,0.85)_92.788%)]';
 const ACTIVE_ROW_BG_LTR =
@@ -670,11 +674,20 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   };
 
   const navRef = useRef<HTMLElement | null>(null);
+  const scrollbarThumbRef = useRef<HTMLDivElement | null>(null);
+  const pendingExpandedKeyRef = useRef<string | null>(null);
+  const scrollDragRef = useRef<{
+    startY: number;
+    startScrollTop: number;
+    scrollable: number;
+    movable: number;
+  } | null>(null);
   const [scroll, setScroll] = useState<{
     visible: boolean;
     thumbTop: number;
     thumbHeight: number;
   }>({ visible: false, thumbTop: 0, thumbHeight: 0 });
+  const [isScrollbarDragging, setIsScrollbarDragging] = useState(false);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -687,10 +700,13 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         setScroll({ visible: false, thumbTop: 0, thumbHeight: 0 });
         return;
       }
-      const trackInset = 14;
-      const trackHeight = Math.max(0, clientHeight - trackInset * 2);
-      const thumbHeight = Math.max(28, (clientHeight / scrollHeight) * trackHeight);
-      const thumbTop = trackInset + (scrollTop / overflow) * (trackHeight - thumbHeight);
+      const trackHeight = Math.max(0, clientHeight - SIDEBAR_SCROLL_TRACK_INSET * 2);
+      const thumbHeight = Math.max(
+        SIDEBAR_SCROLL_THUMB_MIN_HEIGHT,
+        (clientHeight / scrollHeight) * trackHeight
+      );
+      const thumbTop =
+        SIDEBAR_SCROLL_TRACK_INSET + (scrollTop / overflow) * (trackHeight - thumbHeight);
       setScroll({ visible: true, thumbTop, thumbHeight });
     };
 
@@ -705,6 +721,104 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       ro.disconnect();
     };
   }, [isCollapsed]);
+
+  useEffect(() => {
+    if (!isScrollbarDragging) return;
+
+    const handleMouseMove = (event: MouseEvent) => {
+      const drag = scrollDragRef.current;
+      const nav = navRef.current;
+      if (!drag || !nav || drag.movable <= 0) return;
+
+      const scrollDelta = ((event.clientY - drag.startY) / drag.movable) * drag.scrollable;
+      nav.scrollTop = clamp(drag.startScrollTop + scrollDelta, 0, drag.scrollable);
+    };
+
+    const handleMouseUp = () => {
+      scrollDragRef.current = null;
+      setIsScrollbarDragging(false);
+    };
+
+    const previousUserSelect = document.body.style.userSelect;
+    const previousCursor = document.body.style.cursor;
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'grabbing';
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.body.style.userSelect = previousUserSelect;
+      document.body.style.cursor = previousCursor;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isScrollbarDragging]);
+
+  const startScrollbarDrag = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const { scrollHeight, clientHeight } = nav;
+    const scrollable = scrollHeight - clientHeight;
+    const trackHeight = Math.max(0, clientHeight - SIDEBAR_SCROLL_TRACK_INSET * 2);
+    const movable = trackHeight - scroll.thumbHeight;
+    if (scrollable <= 1 || movable <= 0) return;
+
+    const trackRect = event.currentTarget.getBoundingClientRect();
+    const thumbRect = scrollbarThumbRef.current?.getBoundingClientRect();
+    const clickedThumb =
+      !!thumbRect && event.clientY >= thumbRect.top && event.clientY <= thumbRect.bottom;
+
+    if (!clickedThumb) {
+      const nextThumbTop = clamp(
+        event.clientY - trackRect.top - scroll.thumbHeight / 2,
+        SIDEBAR_SCROLL_TRACK_INSET,
+        SIDEBAR_SCROLL_TRACK_INSET + movable
+      );
+      nav.scrollTop = ((nextThumbTop - SIDEBAR_SCROLL_TRACK_INSET) / movable) * scrollable;
+    }
+
+    scrollDragRef.current = {
+      startY: event.clientY,
+      startScrollTop: nav.scrollTop,
+      scrollable,
+      movable,
+    };
+    setIsScrollbarDragging(true);
+    event.preventDefault();
+  };
+
+  const scrollExpandedMenuIntoView = useCallback((key: string) => {
+    const nav = navRef.current;
+    const menu = nav?.querySelector<HTMLElement>(`[data-sidebar-menu-key="${key}"]`);
+    if (!nav || !menu) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const menuRect = menu.getBoundingClientRect();
+    const viewportPadding = 12;
+    const topDelta = menuRect.top - navRect.top;
+    const bottomDelta = menuRect.bottom - navRect.bottom;
+
+    if (topDelta < viewportPadding) {
+      nav.scrollBy({ top: topDelta - viewportPadding, behavior: 'smooth' });
+    } else if (bottomDelta > -viewportPadding) {
+      nav.scrollBy({ top: bottomDelta + viewportPadding, behavior: 'smooth' });
+    }
+  }, []);
+
+  useEffect(() => {
+    const key = pendingExpandedKeyRef.current;
+    if (!key || isCollapsed || !expandedItems.includes(key)) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      scrollExpandedMenuIntoView(key);
+      pendingExpandedKeyRef.current = null;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [expandedItems, isCollapsed, scrollExpandedMenuIntoView]);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 1023px)');
@@ -774,6 +888,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     if (isExpanded) {
       setExpandedItems((prev) => prev.filter((k) => k !== key));
     } else {
+      pendingExpandedKeyRef.current = key;
       setExpandedItems([key]);
     }
   };
@@ -924,7 +1039,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       const isActive = isAnySubItemActive;
 
       return (
-        <div key={item.key}>
+        <div key={item.key} data-sidebar-menu-key={item.key}>
           <button
             type="button"
             onClick={() => toggleExpand(item.key)}
@@ -1078,15 +1193,19 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
           {scroll.visible && (
             <div
-              aria-hidden
               className={cn(
-                'pointer-events-none absolute inset-y-0 z-[4] w-[3px]',
-                isRTL ? 'left-[2px]' : 'right-[2px]'
+                'absolute inset-y-0 z-[4] w-[12px] cursor-pointer',
+                isRTL ? 'left-0' : 'right-0'
               )}
+              onMouseDown={startScrollbarDrag}
             >
-              <div className="absolute inset-y-[14px] left-0 w-[3px] rounded-[8px] bg-[rgba(0,81,46,0.4)]" />
+              <div className="absolute inset-y-[14px] left-[4px] w-[3px] rounded-[8px] bg-[rgba(0,81,46,0.4)]" />
               <div
-                className="absolute left-0 w-[3px] rounded-[8px] bg-[#8FA89A] transition-colors"
+                ref={scrollbarThumbRef}
+                className={cn(
+                  'absolute left-[4px] w-[3px] rounded-[8px] bg-[#8FA89A] transition-colors hover:bg-white',
+                  isScrollbarDragging && 'bg-white'
+                )}
                 style={{
                   top: scroll.thumbTop,
                   height: scroll.thumbHeight,
