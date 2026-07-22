@@ -42,6 +42,7 @@ export const INITIAL_LECTURES_DATA: LecturesData = {
   selectedCourseId: '',
 };
 
+// File and image formats for attachments
 const FILE_FORMATS = [
   'GIF',
   'SVG',
@@ -57,6 +58,10 @@ const FILE_FORMATS = [
   'PPTX',
 ];
 const FILE_ACCEPT = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.ppt,.pptx';
+
+// Video formats
+const VIDEO_FORMATS = ['MP4', 'AVI', 'MOV', 'MKV', 'WEBM', 'FLV', 'WMV'];
+const VIDEO_ACCEPT = 'video/*,.mp4,.avi,.mov,.mkv,.webm,.flv,.wmv';
 
 const DURATION_VALUES = ['15', '30', '45', '60'];
 
@@ -120,97 +125,97 @@ export default function CourseLecturesStep({
                   </button>
                 )}
 
-              <div className="grid grid-cols-1 gap-x-6 gap-y-5 pt-2 md:grid-cols-2">
-                <FormField
-                  label={t('eLearning.courses.add.lectures.nameAr')}
-                  required
-                  name={`items.${index}.nameAr`}
-                  error={lectureErrors.nameAr}
-                >
-                  <Input
-                    value={lecture.nameAr}
-                    onChange={(e) => updateLecture(lecture.id, { nameAr: e.target.value })}
-                    placeholder={t('eLearning.courses.add.lectures.nameArPlaceholder')}
-                  />
-                </FormField>
-                <FormField
-                  label={t('eLearning.courses.add.lectures.nameEn')}
-                  required
-                  name={`items.${index}.nameEn`}
-                  error={lectureErrors.nameEn}
-                >
-                  <Input
-                    value={lecture.nameEn}
-                    onChange={(e) => updateLecture(lecture.id, { nameEn: e.target.value })}
-                    placeholder={t('eLearning.courses.add.lectures.nameEnPlaceholder')}
-                  />
-                </FormField>
-              </div>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-5 pt-2 md:grid-cols-2">
+                  <FormField
+                    label={t('eLearning.courses.add.lectures.nameAr')}
+                    required
+                    name={`items.${index}.nameAr`}
+                    error={lectureErrors.nameAr}
+                  >
+                    <Input
+                      value={lecture.nameAr}
+                      onChange={(e) => updateLecture(lecture.id, { nameAr: e.target.value })}
+                      placeholder={t('eLearning.courses.add.lectures.nameArPlaceholder')}
+                    />
+                  </FormField>
+                  <FormField
+                    label={t('eLearning.courses.add.lectures.nameEn')}
+                    required
+                    name={`items.${index}.nameEn`}
+                    error={lectureErrors.nameEn}
+                  >
+                    <Input
+                      value={lecture.nameEn}
+                      onChange={(e) => updateLecture(lecture.id, { nameEn: e.target.value })}
+                      placeholder={t('eLearning.courses.add.lectures.nameEnPlaceholder')}
+                    />
+                  </FormField>
+                </div>
 
-              <div className="mt-5">
-                <FormField
-                  label={t('eLearning.courses.add.lectures.duration')}
-                  optional
-                  name={`items.${index}.duration`}
-                  error={lectureErrors.duration}
-                >
-                  <CustomSelect
-                    value={lecture.duration}
-                    onChange={(v) => updateLecture(lecture.id, { duration: v as string })}
-                    options={buildDurationOptions(lecture.duration)}
-                    placeholder={t('eLearning.courses.add.lectures.durationPlaceholder')}
-                    showSearch={false}
-                    error={!!lectureErrors.duration}
+                <div className="mt-5">
+                  <FormField
+                    label={t('eLearning.courses.add.lectures.duration')}
+                    optional
+                    name={`items.${index}.duration`}
+                    error={lectureErrors.duration}
+                  >
+                    <CustomSelect
+                      value={lecture.duration}
+                      onChange={(v) => updateLecture(lecture.id, { duration: v as string })}
+                      options={buildDurationOptions(lecture.duration)}
+                      placeholder={t('eLearning.courses.add.lectures.durationPlaceholder')}
+                      showSearch={false}
+                      error={!!lectureErrors.duration}
+                    />
+                  </FormField>
+                </div>
+
+                <div className="mt-5" data-form-field={`items.${index}.video`}>
+                  <FileUpload
+                    id={`lecture-video-${lecture.id}`}
+                    label={t('eLearning.courses.add.lectures.video')}
+                    required
+                    uploadText={t('eLearning.courses.add.uploadText')}
+                    formatHints={VIDEO_FORMATS}
+                    accept={VIDEO_ACCEPT}
+                    maxSize={10}
+                    fileName={lecture.videoName}
+                    fileUrl={lecture.videoUrl}
+                    error={!!lectureErrors.video}
+                    onChange={(e) =>
+                      updateLecture(lecture.id, { video: e.target.files?.[0] ?? null })
+                    }
+                    onDelete={() =>
+                      updateLecture(lecture.id, {
+                        video: null,
+                        videoUrl: undefined,
+                        videoName: undefined,
+                      })
+                    }
                   />
-                </FormField>
-              </div>
+                  {lectureErrors.video && (
+                    <p className="mt-1 text-start text-sm text-red-500">{t(lectureErrors.video)}</p>
+                  )}
+                </div>
 
-              <div className="mt-5" data-form-field={`items.${index}.video`}>
-                <FileUpload
-                  id={`lecture-video-${lecture.id}`}
-                  label={t('eLearning.courses.add.lectures.video')}
-                  required
-                  uploadText={t('eLearning.courses.add.uploadText')}
-                  formatHints={FILE_FORMATS}
-                  accept={FILE_ACCEPT}
-                  maxSize={10}
-                  fileName={lecture.videoName}
-                  fileUrl={lecture.videoUrl}
-                  error={!!lectureErrors.video}
-                  onChange={(e) =>
-                    updateLecture(lecture.id, { video: e.target.files?.[0] ?? null })
-                  }
-                  onDelete={() =>
-                    updateLecture(lecture.id, {
-                      video: null,
-                      videoUrl: undefined,
-                      videoName: undefined,
-                    })
-                  }
-                />
-                {lectureErrors.video && (
-                  <p className="mt-1 text-start text-sm text-red-500">{t(lectureErrors.video)}</p>
-                )}
+                <div className="mt-5">
+                  <FileUpload
+                    id={`lecture-attachments-${lecture.id}`}
+                    label={t('eLearning.courses.add.lectures.attachments')}
+                    optional
+                    multiple
+                    uploadText={t('eLearning.courses.add.uploadText')}
+                    formatHints={FILE_FORMATS}
+                    accept={FILE_ACCEPT}
+                    maxSize={10}
+                    attachments={lecture.existingAttachments?.map((a) => ({
+                      fileName: a.fileName,
+                      filePath: a.fileUrl,
+                    }))}
+                    onFilesChange={(files) => updateLecture(lecture.id, { attachments: files })}
+                  />
+                </div>
               </div>
-
-              <div className="mt-5">
-                <FileUpload
-                  id={`lecture-attachments-${lecture.id}`}
-                  label={t('eLearning.courses.add.lectures.attachments')}
-                  optional
-                  multiple
-                  uploadText={t('eLearning.courses.add.uploadText')}
-                  formatHints={FILE_FORMATS}
-                  accept={FILE_ACCEPT}
-                  maxSize={10}
-                  attachments={lecture.existingAttachments?.map((a) => ({
-                    fileName: a.fileName,
-                    filePath: a.fileUrl,
-                  }))}
-                  onFilesChange={(files) => updateLecture(lecture.id, { attachments: files })}
-                />
-              </div>
-            </div>
 
               <CustomImage
                 onClick={addLecture}
