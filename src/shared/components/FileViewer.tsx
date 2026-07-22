@@ -12,8 +12,8 @@ interface FileViewerProps {
 }
 
 /**
- * FileViewer component - Opens files (PDFs, images, etc.) in a modal
- * Supports various file types including PDF, images (jpg, png, gif, svg, webp), etc.
+ * FileViewer component - Opens files (PDFs, images, videos, etc.) in a modal
+ * Supports various file types including PDF, images (jpg, png, gif, svg, webp), and videos (mp4, avi, mov, mkv, webm, flv, wmv, wav)
  */
 const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, fileName, title }) => {
   const { t } = useTranslation();
@@ -38,6 +38,9 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
 
   // Check if file is a PDF
   const isPdf = extension === 'pdf';
+
+  // Check if file is a video
+  const isVideo = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', 'wav'].includes(extension);
 
   // Reset states when modal opens
   useEffect(() => {
@@ -84,7 +87,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
             href={fullUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
+            className="bg-primary-600 hover:bg-primary-700 mt-4 rounded-lg px-4 py-2 text-white"
           >
             {t('common.openInNewTab', 'Open in new tab')}
           </a>
@@ -97,7 +100,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
         <div className="flex items-center justify-center">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent"></div>
+              <div className="border-primary-600 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
             </div>
           )}
           <CustomImage
@@ -116,7 +119,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
         <div className="relative h-[70vh] w-full">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent"></div>
+              <div className="border-primary-600 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
             </div>
           )}
           <iframe
@@ -126,6 +129,28 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
             onLoad={handleLoad}
             onError={handleError}
           />
+        </div>
+      );
+    }
+
+    if (isVideo) {
+      return (
+        <div className="relative w-full">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div className="border-primary-600 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
+            </div>
+          )}
+          <video
+            controls
+            className="bg-black h-auto max-h-[70vh] w-full rounded-lg"
+            title={fileName || 'Video Preview'}
+            onLoadedMetadata={handleLoad}
+            onError={handleError}
+          >
+            <source src={fullUrl} type={`video/${extension}`} />
+            {t('common.browserVideoNotSupported')}
+          </video>
         </div>
       );
     }
@@ -151,7 +176,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
           href={fullUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
+          className="bg-primary-600 hover:bg-primary-700 rounded-lg px-4 py-2 text-white"
         >
           {t('common.openFile', 'Open File')}
         </a>
@@ -172,5 +197,3 @@ const FileViewer: React.FC<FileViewerProps> = ({ isOpen, onClose, filePath, file
 };
 
 export default FileViewer;
-
-
