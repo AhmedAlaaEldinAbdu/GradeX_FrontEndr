@@ -13,6 +13,8 @@ type StartLiveClassPopupProps = {
   isOpen: boolean;
   liveClass: LiveClassRow | null;
   onClose: () => void;
+  onStart: (meetingLink: string) => Promise<void> | void;
+  isStarting?: boolean;
 };
 
 function DetailItem({ icon, value }: { icon: string; value: string }) {
@@ -41,17 +43,32 @@ export default function StartLiveClassPopup({
   isOpen,
   liveClass,
   onClose,
+  onStart,
+  isStarting = false,
 }: StartLiveClassPopupProps) {
   const { t } = useTranslation();
   const [classLink, setClassLink] = useState('');
+  const [linkError, setLinkError] = useState('');
 
   const handleClose = () => {
     setClassLink('');
+    setLinkError('');
     onClose();
   };
 
-  const handleStart = () => {
-    handleClose();
+  const handleStart = async () => {
+    const meetingLink = classLink.trim();
+    if (!meetingLink) {
+      setLinkError(t('eLearning.liveClasses.popup.linkRequired'));
+      return;
+    }
+
+    try {
+      await onStart(meetingLink);
+      handleClose();
+    } catch {
+      // Keep the popup open so the user can correct the link or retry.
+    }
   };
 
   return (
@@ -113,10 +130,17 @@ export default function StartLiveClassPopup({
               <input
                 type="url"
                 value={classLink}
-                onChange={(event) => setClassLink(event.target.value)}
+                onChange={(event) => {
+                  setClassLink(event.target.value);
+                  setLinkError('');
+                }}
                 placeholder={t('eLearning.liveClasses.popup.linkPlaceholder')}
-                className="h-12 w-full rounded-2xl border border-[#DDE0E0] bg-white px-4 text-right text-sm font-normal text-[#3A3A3A] placeholder:text-[#646969] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                disabled={isStarting}
+                className={`h-12 w-full rounded-2xl border bg-white px-4 text-right text-sm font-normal text-[#3A3A3A] placeholder:text-[#646969] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  linkError ? 'border-red-500' : 'border-[#DDE0E0]'
+                }`}
               />
+              {linkError && <span className="text-sm font-normal text-red-500">{linkError}</span>}
             </label>
           </div>
         )}
@@ -125,16 +149,20 @@ export default function StartLiveClassPopup({
           <button
             type="button"
             onClick={handleClose}
+            disabled={isStarting}
             className="h-11 rounded-2xl border border-green-500 bg-white px-8 text-sm font-medium text-green-500 transition-colors hover:bg-green-50"
           >
             {t('common.cancel')}
           </button>
           <button
             type="button"
-            onClick={handleStart}
-            className="h-11 rounded-2xl bg-green-500 px-8 text-base font-medium text-white transition-colors hover:bg-green-600"
+            onClick={() => void handleStart()}
+            disabled={isStarting}
+            className="h-11 rounded-2xl bg-green-500 px-8 text-base font-medium text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {t('eLearning.liveClasses.startNow')}
+            {isStarting
+              ? t('eLearning.liveClasses.popup.starting')
+              : t('eLearning.liveClasses.startNow')}
           </button>
         </div>
       </div>
