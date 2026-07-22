@@ -11,15 +11,14 @@ import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
 import EditFillIcon from '@gradex/assets/icons/EditFill.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import LearningCover from '@gradex/assets/images/Learning.png';
-
-export type CourseStatus = 'active' | 'completed' | 'ended';
+import { TrainingCourseStatus } from '@/shared/enums/enums';
 
 export type CourseItem = {
   id: string;
   title: string;
   description: string;
   instructor: string;
-  status: CourseStatus;
+  status: TrainingCourseStatus;
   progress: number;
   studentsCount: number;
   subject: string;
@@ -31,11 +30,50 @@ export type CourseItem = {
   coverImage?: string | null;
 };
 
-const STATUS_VARIANT: Record<CourseStatus, 'success' | 'info' | 'default'> = {
-  active: 'success',
-  completed: 'info',
-  ended: 'default',
+type StatusBadgeInfo = {
+  badges: Array<{ label: string; variant: 'success' | 'info' | 'default' }>;
 };
+
+function getStatusBadges(status: TrainingCourseStatus): StatusBadgeInfo {
+  switch (status) {
+    case TrainingCourseStatus.ActiveCompleted:
+      return {
+        badges: [
+          { label: 'eLearning.courses.status.active', variant: 'success' },
+          { label: 'eLearning.courses.status.completed', variant: 'success' },
+        ],
+      };
+    case TrainingCourseStatus.ActiveInCompleted:
+      return {
+        badges: [
+          { label: 'eLearning.courses.status.active', variant: 'success' },
+          { label: 'eLearning.courses.status.incomplete', variant: 'info' },
+        ],
+      };
+    case TrainingCourseStatus.EndedCompleted:
+      return {
+        badges: [
+          { label: 'eLearning.courses.status.ended', variant: 'default' },
+          { label: 'eLearning.courses.status.completed', variant: 'success' },
+        ],
+      };
+    case TrainingCourseStatus.EndedInCompleted:
+      return {
+        badges: [
+          { label: 'eLearning.courses.status.ended', variant: 'default' },
+          { label: 'eLearning.courses.status.incomplete', variant: 'info' },
+        ],
+      };
+    case TrainingCourseStatus.NotStarted:
+      return {
+        badges: [{ label: 'eLearning.courses.status.notStarted', variant: 'default' }],
+      };
+    default:
+      return {
+        badges: [{ label: 'eLearning.courses.status.unknown', variant: 'default' }],
+      };
+  }
+}
 
 function CourseInfoBox({ icon, text }: { icon: string; text: string }) {
   return (
@@ -125,9 +163,13 @@ export default function CourseCard({ course, onView, onEdit, onDelete }: CourseC
               {course.instructor}
             </div>
           </div>
-          <Badge variant={STATUS_VARIANT[course.status]}>
-            {t(`eLearning.courses.status.${course.status}`)}
-          </Badge>
+          <div className="flex gap-2">
+            {getStatusBadges(course.status).badges.map((badge, idx) => (
+              <Badge key={idx} variant={badge.variant}>
+                {t(badge.label)}
+              </Badge>
+            ))}
+          </div>
         </div>
 
         {/* Progress */}
