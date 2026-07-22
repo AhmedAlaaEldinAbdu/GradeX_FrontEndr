@@ -8,6 +8,7 @@ import Loading from '@/shared/components/Loading';
 import Badge from '@/shared/components/Badge';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
+import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchSchoolCourseById } from '@/redux/features/school-course/schoolCourseSlice';
 import CourseStudentsViewPopup from './popups/CourseStudentsViewPopup';
@@ -184,8 +185,69 @@ export default function CourseDetailsPage() {
             </InfoRow>
           </div>
         </Card>
+
+        {/* Lectures */}
+        {(course.lectures?.length ?? 0) > 0 && (
+          <Card className="rounded-3xl border border-[#E6E6E6]" padding="lg">
+            <div className="flex flex-col gap-6">
+              <h3 className="text-start text-base font-medium text-[#0E1F1F]">
+                {t('eLearning.courses.details.lectures')}
+              </h3>
+
+              <div className="space-y-6">
+                {course.lectures?.map((lecture) => (
+                  <div key={lecture.id} className="rounded-xl border border-[#E6E6E6] p-4">
+                    <div className="mb-4 flex items-center gap-2">
+                      <h4 className="text-sm font-medium text-[#0E1F1F]">
+                        {isArabic ? lecture.nameAr : lecture.nameEn}
+                      </h4>
+                      |
+                      {lecture.durationInMinutes && (
+                        <p className="text-xs text-[#646969]">
+                          {lecture.durationInMinutes}{' '}
+                          {t('eLearning.courses.details.perLessonDuration')}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Video */}
+                    {lecture.videoUrl && (
+                      <div className="mb-4">
+                        <ExistingFileDisplay
+                          filePath={lecture.videoUrl}
+                          fileName={lecture.videoName || 'Video'}
+                          className="mb-2"
+                          showDownloadButton={false}
+                        />
+                      </div>
+                    )}
+
+                    {/* Attachments */}
+                    {(lecture.attachments?.length ?? 0) > 0 && (
+                      <div className="space-y-2">
+                        <p className="flex text-xs font-medium text-[#0E1F1F]">
+                          {t('common.attachments')}
+                        </p>
+                        {lecture.attachments?.map((attachment, idx) => (
+                          <ExistingFileDisplay
+                            key={idx}
+                            filePath={attachment.fileUrl}
+                            fileName={attachment.fileName}
+                            className="mb-2"
+                            showViewButton={true}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
 
+      {/* Modals */}
       <CourseStudentsViewPopup
         isOpen={studentsOpen}
         onClose={() => setStudentsOpen(false)}
