@@ -22,16 +22,10 @@ import {
   type SchoolCourse,
   type SchoolCourseQueryParams,
 } from '@/services/api/types/school-course.types';
-import CourseCard, { type CourseItem, type CourseStatus } from './CourseCard';
+import CourseCard, { type CourseItem } from './CourseCard';
 import BookOpenBadgeIcon from '@gradex/assets/icons/BookOpenBadge.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
-
-const STATUS_FROM_API: Record<number, CourseStatus> = {
-  [SchoolCourseStatus.Active]: 'active',
-  [SchoolCourseStatus.Completed]: 'completed',
-  [SchoolCourseStatus.Ended]: 'ended',
-};
 
 function formatDate(value?: string | null): string {
   if (!value) return '';
@@ -50,7 +44,7 @@ function toCourseItem(course: SchoolCourse, isArabic: boolean): CourseItem {
     title: (isArabic ? course.nameAr : course.nameEn) || course.nameAr || course.nameEn || '',
     description: (isArabic ? course.descriptionAr : course.descriptionEn) || '',
     instructor: course.teacherName || '',
-    status: (course.status && STATUS_FROM_API[course.status]) || 'active',
+    status: (course.status as any) ?? 1, // Default to ActiveCompleted if not provided
     progress: course.progressPercentage ?? 0,
     studentsCount: course.studentsCount ?? 0,
     subject: (isArabic ? course.materialNameAr : course.materialNameEn) || '',
@@ -116,9 +110,11 @@ export default function TrainingCoursesList() {
     [classrooms, isArabic]
   );
   const statusOptions = [
-    { value: String(SchoolCourseStatus.Active), label: t('eLearning.courses.status.active') },
-    { value: String(SchoolCourseStatus.Completed), label: t('eLearning.courses.status.completed') },
-    { value: String(SchoolCourseStatus.Ended), label: t('eLearning.courses.status.ended') },
+    { value: String(1), label: t('eLearning.courses.status.activeCompleted') },
+    { value: String(2), label: t('eLearning.courses.status.activeIncomplete') },
+    { value: String(3), label: t('eLearning.courses.status.endedCompleted') },
+    { value: String(4), label: t('eLearning.courses.status.endedIncomplete') },
+    { value: String(5), label: t('eLearning.courses.status.notStarted') },
   ];
 
   const hasActiveFilters = Boolean(search || subject || grade || status);
