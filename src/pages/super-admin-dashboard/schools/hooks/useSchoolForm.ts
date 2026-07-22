@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm, type UseFormReturn } from 'react-hook-form';
+import { useForm, type Resolver, type UseFormReturn } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { SchoolFormData } from '../types/school.types';
 import { initialSchoolFormData } from '../types/school.types';
@@ -22,9 +22,12 @@ interface FileErrors {
   logo?: string;
 }
 
+interface UseSchoolFormOptions {
+  disableValidation?: boolean;
+}
+
 interface UseSchoolFormReturn {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<SchoolFormData, any, SchoolFormData>;
+  form: UseFormReturn<SchoolFormData>;
   files: FileState;
   fileErrors: FileErrors;
   handleFileUpload: (type: keyof FileState) => (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -40,7 +43,10 @@ interface UseSchoolFormReturn {
  * @param initialData - Optional initial data for edit mode
  * @returns Form methods, file state, and helper functions
  */
-export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn => {
+export const useSchoolForm = (
+  initialData?: SchoolFormData,
+  options: UseSchoolFormOptions = {}
+): UseSchoolFormReturn => {
   const [files, setFiles] = useState<FileState>({
     license: [],
     image: [],
@@ -52,8 +58,9 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
 
   // Initialize react-hook-form with yup resolver
   const form = useForm<SchoolFormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: yupResolver(schoolFormSchema) as any, // Type assertion for yup compatibility
+    resolver: options.disableValidation
+      ? undefined
+      : (yupResolver(schoolFormSchema) as unknown as Resolver<SchoolFormData>),
     defaultValues: initialData || initialSchoolFormData,
     mode: 'onTouched', // Only validate after user interacts with field
     reValidateMode: 'onChange', // Re-validate on change after first validation
@@ -73,6 +80,11 @@ export const useSchoolForm = (initialData?: SchoolFormData): UseSchoolFormReturn
    * @returns Promise resolving to validation result
    */
   const validateCurrentStep = async (step: number): Promise<boolean> => {
+    if (options.disableValidation) {
+      form.clearErrors();
+      return true;
+    }
+
     const schema = getStepValidationSchema(step);
     const currentValues = form.getValues();
 

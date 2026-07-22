@@ -39,6 +39,8 @@ import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import CustomImage from '@/shared/components/CustomImage';
 
+const TEMP_DISABLE_EDIT_SCHOOL_VALIDATION = true;
+
 interface SchoolFormProps {
   mode: 'add' | 'edit' | 'view';
   initialData?: SchoolFormData & {
@@ -118,6 +120,7 @@ const SchoolForm = ({
   const isSubmitting = isCreating || isUpdating;
   const validationErrors = useSelector(selectValidationErrors);
   const lookupFacilities = useSelector(selectFacilities);
+  const isEditValidationDisabled = mode === 'edit' && TEMP_DISABLE_EDIT_SCHOOL_VALIDATION;
 
   // Initialize branches from initialData when in edit/view mode
   useEffect(() => {
@@ -187,7 +190,7 @@ const SchoolForm = ({
     validateCurrentStep,
     validateFiles,
     getFileNames,
-  } = useSchoolForm(initialData);
+  } = useSchoolForm(initialData, { disableValidation: isEditValidationDisabled });
 
   const scrollToFirstError = useScrollToFirstError<SchoolFormData>();
 
@@ -412,22 +415,24 @@ const SchoolForm = ({
     }
 
     console.log('✅ On step 4, proceeding with submission');
-    setShowValidationErrors(true);
-    await form.trigger([
-      'facilities',
-      'hasOtherFacility',
-      'otherFacilityName',
-      'otherFacilityNameAr',
-      'otherFacilityNameEn',
-    ]);
-    const isValid = await validateCurrentStep(4);
-    // In edit mode the license/certificate files already exist on the server,
-    // so re-uploading them is optional and should not block submission.
-    const filesValid = mode === 'edit' ? true : validateFiles();
-    if (!isValid || !filesValid) {
-      console.error('Form validation failed');
-      scrollToFirstError(form.formState.errors);
-      return;
+    if (!isEditValidationDisabled) {
+      setShowValidationErrors(true);
+      await form.trigger([
+        'facilities',
+        'hasOtherFacility',
+        'otherFacilityName',
+        'otherFacilityNameAr',
+        'otherFacilityNameEn',
+      ]);
+      const isValid = await validateCurrentStep(4);
+      // In edit mode the license/certificate files already exist on the server,
+      // so re-uploading them is optional and should not block submission.
+      const filesValid = mode === 'edit' ? true : validateFiles();
+      if (!isValid || !filesValid) {
+        console.error('Form validation failed');
+        scrollToFirstError(form.formState.errors);
+        return;
+      }
     }
     form.handleSubmit(onFormSubmit, scrollToFirstError)(e);
   };
