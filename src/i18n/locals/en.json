@@ -163,7 +163,14 @@
       "status": {
         "active": "Active",
         "completed": "Completed",
-        "ended": "Ended"
+        "ended": "Ended",
+        "incomplete": "Incomplete",
+        "notStarted": "Not Started Yet",
+        "unknown": "Unknown",
+        "activeCompleted": "Active - Completed",
+        "activeIncomplete": "Active - Incomplete",
+        "endedCompleted": "Ended - Completed",
+        "endedIncomplete": "Ended - Incomplete"
       },
       "metrics": {
         "attendanceRate": "Attendance Rate",
@@ -189,7 +196,8 @@
         "subjectName": "Subject Name",
         "description": "Description",
         "grade": "Class",
-        "perLessonDuration": "min per lesson"
+        "perLessonDuration": "min per lesson",
+        "lectures": "Lectures"
       },
       "edit": {
         "title": "Edit Training Course"
@@ -890,6 +898,10 @@
     "fileLoadError": "Unable to load file",
     "openFile": "Open File",
     "openInNewTab": "Open in new tab",
+    "attachments": "Attachments",
+    "view": "View",
+    "viewVideo": "View Video",
+    "browserVideoNotSupported": "Your browser does not support the video tag.",
     "confirm": "Confirm",
     "processing": "Processing...",
     "showAll": "Show All",

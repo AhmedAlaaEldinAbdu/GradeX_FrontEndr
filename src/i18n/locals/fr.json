@@ -163,7 +163,14 @@
       "status": {
         "active": "Actif",
         "completed": "Terminé",
-        "ended": "Clôturé"
+        "ended": "Clôturé",
+        "incomplete": "Incomplet",
+        "notStarted": "Non commencé",
+        "unknown": "Inconnu",
+        "activeCompleted": "Actif - Terminé",
+        "activeIncomplete": "Actif - Incomplet",
+        "endedCompleted": "Clôturé - Terminé",
+        "endedIncomplete": "Clôturé - Incomplet"
       },
       "metrics": {
         "attendanceRate": "Taux de présence",
@@ -189,7 +196,8 @@
         "subjectName": "Nom de la matière",
         "description": "Description",
         "grade": "Classe",
-        "perLessonDuration": "min par leçon"
+        "perLessonDuration": "min par leçon",
+        "lectures": "Cours magistraux"
       },
       "edit": {
         "title": "Modifier le cours de formation"
@@ -890,6 +898,10 @@
     "fileLoadError": "Impossible de charger le fichier",
     "openFile": "Ouvrir le fichier",
     "openInNewTab": "Ouvrir dans un nouvel onglet",
+    "attachments": "Pièces jointes",
+    "view": "Afficher",
+    "viewVideo": "Afficher la vidéo",
+    "browserVideoNotSupported": "Votre navigateur ne supporte pas la balise vidéo.",
     "confirm": "Confirmer",
     "processing": "Traitement en cours...",
     "showAll": "Tout afficher",

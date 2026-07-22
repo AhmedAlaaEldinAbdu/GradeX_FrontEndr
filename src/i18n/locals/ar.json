@@ -163,7 +163,14 @@
       "status": {
         "active": "نشط",
         "completed": "مكتمل",
-        "ended": "انتهت"
+        "ended": "منتهي",
+        "incomplete": "غير مكتمل",
+        "notStarted": "لم يبدأ بعد",
+        "unknown": "غير معروف",
+        "activeCompleted": "نشط ومكتمل",
+        "activeIncomplete": "نشط وغير مكتمل",
+        "endedCompleted": "منتهي ومكتمل",
+        "endedIncomplete": "منتهي وغير مكتمل"
       },
       "metrics": {
         "attendanceRate": "معدل الحضور",
@@ -189,7 +196,8 @@
         "subjectName": "اسم المادة",
         "description": "الوصف",
         "grade": "الصف الدراسي",
-        "perLessonDuration": "دقيقة لكل درس"
+        "perLessonDuration": "دقيقة لكل درس",
+        "lectures": "المحاضرات"
       },
       "edit": {
         "title": "تعديل الدورة التدريبية"
@@ -899,6 +907,10 @@
     "fileLoadError": "تعذر تحميل الملف",
     "openFile": "فتح الملف",
     "openInNewTab": "فتح في علامة تبويب جديدة",
+    "attachments": "المرفقات",
+    "view": "عرض",
+    "viewVideo": "عرض الفيديو",
+    "browserVideoNotSupported": "متصفحك لا يدعم علامة الفيديو.",
     "confirm": "تأكيد",
     "processing": "جار المعالجة...",
     "showAll": "عرض الكل",

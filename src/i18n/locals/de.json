@@ -163,7 +163,14 @@
       "status": {
         "active": "Aktiv",
         "completed": "Abgeschlossen",
-        "ended": "Beendet"
+        "ended": "Beendet",
+        "incomplete": "Unvollständig",
+        "notStarted": "Noch nicht gestartet",
+        "unknown": "Unbekannt",
+        "activeCompleted": "Aktiv - Abgeschlossen",
+        "activeIncomplete": "Aktiv - Unvollständig",
+        "endedCompleted": "Beendet - Abgeschlossen",
+        "endedIncomplete": "Beendet - Unvollständig"
       },
       "metrics": {
         "attendanceRate": "Anwesenheitsrate",
@@ -189,7 +196,8 @@
         "subjectName": "Fachname",
         "description": "Beschreibung",
         "grade": "Klasse",
-        "perLessonDuration": "Min. pro Lektion"
+        "perLessonDuration": "Min. pro Lektion",
+        "lectures": "Vorträge"
       },
       "edit": {
         "title": "Schulungskurs bearbeiten"
@@ -890,6 +898,10 @@
     "fileLoadError": "Datei konnte nicht geladen werden",
     "openFile": "Datei öffnen",
     "openInNewTab": "In neuem Tab öffnen",
+    "attachments": "Anhänge",
+    "view": "Ansicht",
+    "viewVideo": "Video anzeigen",
+    "browserVideoNotSupported": "Ihr Browser unterstützt das Video-Tag nicht.",
     "confirm": "Bestätigen",
     "processing": "Wird verarbeitet...",
     "showAll": "Alle anzeigen",

@@ -163,7 +163,14 @@
       "status": {
         "active": "Активный",
         "completed": "Завершён",
-        "ended": "Окончен"
+        "ended": "Окончен",
+        "incomplete": "Не завершён",
+        "notStarted": "Ещё не начат",
+        "unknown": "Неизвестно",
+        "activeCompleted": "Активный - Завершён",
+        "activeIncomplete": "Активный - Не завершён",
+        "endedCompleted": "Окончен - Завершён",
+        "endedIncomplete": "Окончен - Не завершён"
       },
       "metrics": {
         "attendanceRate": "Посещаемость",
@@ -189,7 +196,8 @@
         "subjectName": "Название предмета",
         "description": "Описание",
         "grade": "Класс",
-        "perLessonDuration": "мин. на урок"
+        "perLessonDuration": "мин. на урок",
+        "lectures": "Лекции"
       },
       "edit": {
         "title": "Редактировать учебный курс"
@@ -904,6 +912,10 @@
     "fileLoadError": "Не удалось загрузить файл",
     "openFile": "Открыть файл",
     "openInNewTab": "Открыть в новой вкладке",
+    "attachments": "Вложения",
+    "view": "Просмотр",
+    "viewVideo": "Просмотреть видео",
+    "browserVideoNotSupported": "Ваш браузер не поддерживает тег видео.",
     "confirm": "Подтвердить",
     "processing": "Обработка...",
     "showAll": "Показать всё",
