@@ -31,6 +31,9 @@
         "attendanceRate": "Taux de présence"
       },
       "emptyTitle": "Aucun cours à distance n'a encore été ajouté",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer le cours en direct",
+      "deletedSuccessfully": "Cours en direct supprimé avec succès",
+      "startedSuccessfully": "Cours en direct démarré avec succès",
       "searchPlaceholder": "Rechercher par nom de matière",
       "startNow": "Démarrer",
       "filters": {
@@ -61,7 +64,9 @@
         "subjectTitle": "Matière {{subject}}",
         "teacherName": "Enseignant {{teacher}}",
         "linkLabel": "Lien du cours",
-        "linkPlaceholder": "Saisir le lien du cours"
+        "linkPlaceholder": "Saisir le lien du cours",
+        "linkRequired": "Veuillez saisir le lien du cours",
+        "starting": "Démarrage..."
       },
       "add": {
         "title": "Ajouter un cours",
@@ -80,13 +85,15 @@
         "gradePlaceholder": "Choisir la classe",
         "book": "Nom du livre",
         "bookPlaceholder": "Choisir le nom du livre",
+        "loadingBooks": "Chargement des livres...",
+        "noBooksAvailable": "Aucun livre disponible pour la matière et la classe sélectionnées",
         "classWork": "Travail en classe",
         "homework": "Devoirs",
         "fromPage": "De la page",
         "toPage": "À la page",
         "pagePlaceholder": "Numéro de page",
-        "descAr": "Description (arabe)",
-        "descEn": "Description (anglais)",
+        "descAr": "Description (Première Langue)",
+        "descEn": "Description (Deuxième Langue)",
         "descPlaceholder": "Saisir la description des devoirs",
         "sendHomeworkTo": "Envoyer les devoirs à",
         "all": "Tous",
@@ -94,6 +101,8 @@
         "attachments": "Pièces jointes",
         "uploadText": "Cliquez ici pour ajouter une image ou un fichier",
         "selectStudentsButton": "Sélectionner des élèves",
+        "createdSuccessfully": "Cours en direct ajouté avec succès",
+        "updatedSuccessfully": "Cours en direct mis à jour avec succès",
         "validation": {
           "classTypeRequired": "Veuillez sélectionner le type de cours",
           "fromTimeRequired": "Veuillez sélectionner l’heure de début",
@@ -103,6 +112,7 @@
           "teacherRequired": "Veuillez sélectionner l’enseignant",
           "stageRequired": "Veuillez sélectionner le niveau scolaire",
           "gradeRequired": "Veuillez sélectionner la classe",
+          "bookRequired": "Veuillez sélectionner le livre",
           "sendToRequired": "Veuillez sélectionner les destinataires des devoirs",
           "studentsRequired": "Veuillez sélectionner au moins un élève"
         },

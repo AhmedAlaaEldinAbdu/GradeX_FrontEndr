@@ -31,6 +31,9 @@
         "attendanceRate": "Посещаемость"
       },
       "emptyTitle": "Дистанционные уроки ещё не добавлены",
+      "confirmDelete": "Вы уверены, что хотите удалить онлайн-урок",
+      "deletedSuccessfully": "Онлайн-урок успешно удалён",
+      "startedSuccessfully": "Онлайн-урок успешно начат",
       "searchPlaceholder": "Поиск по названию предмета",
       "startNow": "Начать",
       "filters": {
@@ -61,7 +64,9 @@
         "subjectTitle": "Предмет {{subject}}",
         "teacherName": "Учитель {{teacher}}",
         "linkLabel": "Ссылка на урок",
-        "linkPlaceholder": "Введите ссылку на урок"
+        "linkPlaceholder": "Введите ссылку на урок",
+        "linkRequired": "Пожалуйста, введите ссылку на урок",
+        "starting": "Запуск..."
       },
       "add": {
         "title": "Добавить занятие",
@@ -80,13 +85,15 @@
         "gradePlaceholder": "Выберите класс",
         "book": "Название книги",
         "bookPlaceholder": "Выберите название книги",
+        "loadingBooks": "Загрузка книг...",
+        "noBooksAvailable": "Нет доступных книг для выбранного предмета и класса",
         "classWork": "Классная работа",
         "homework": "Домашнее задание",
         "fromPage": "Со страницы",
         "toPage": "До страницы",
         "pagePlaceholder": "Номер страницы",
-        "descAr": "Описание (арабский)",
-        "descEn": "Описание (английский)",
+        "descAr": "Описание (на первом языке)",
+        "descEn": "Описание (на втором языке)",
         "descPlaceholder": "Введите описание задания",
         "sendHomeworkTo": "Отправить задание",
         "all": "Всем",
@@ -94,6 +101,8 @@
         "attachments": "Вложения",
         "uploadText": "Нажмите здесь, чтобы добавить изображение или файл",
         "selectStudentsButton": "Выбрать учеников",
+        "createdSuccessfully": "Онлайн-урок успешно добавлен",
+        "updatedSuccessfully": "Онлайн-урок успешно обновлен",
         "validation": {
           "classTypeRequired": "Пожалуйста, выберите тип занятия",
           "fromTimeRequired": "Пожалуйста, выберите время начала",
@@ -103,6 +112,7 @@
           "teacherRequired": "Пожалуйста, выберите преподавателя",
           "stageRequired": "Пожалуйста, выберите уровень образования",
           "gradeRequired": "Пожалуйста, выберите класс",
+          "bookRequired": "Пожалуйста, выберите книгу",
           "sendToRequired": "Пожалуйста, выберите получателей задания",
           "studentsRequired": "Пожалуйста, выберите хотя бы одного ученика"
         },

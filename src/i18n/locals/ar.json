@@ -31,6 +31,9 @@
         "attendanceRate": "نسبة الحضور"
       },
       "emptyTitle": "لم يتم إضافة حصص عن بعد",
+      "confirmDelete": "هل أنت متأكد من حذف الحصة المباشرة",
+      "deletedSuccessfully": "تم حذف الحصة المباشرة بنجاح",
+      "startedSuccessfully": "تم بدء الحصة المباشرة بنجاح",
       "searchPlaceholder": "إبحث عن اسم المادة",
       "startNow": "أبدء الآن",
       "filters": {
@@ -61,7 +64,9 @@
         "subjectTitle": "مادة {{subject}}",
         "teacherName": "المعلم {{teacher}}",
         "linkLabel": "رابط الحصة",
-        "linkPlaceholder": "أدخل رابط الحصة"
+        "linkPlaceholder": "أدخل رابط الحصة",
+        "linkRequired": "يرجى إدخال رابط الحصة",
+        "starting": "جاري البدء..."
       },
       "add": {
         "title": "إضافة حصة",
@@ -80,13 +85,15 @@
         "gradePlaceholder": "أختر الصف الدراسي",
         "book": "اسم الكتاب",
         "bookPlaceholder": "اختر اسم الكتاب",
+        "loadingBooks": "جاري تحميل الكتب...",
+        "noBooksAvailable": "لا توجد كتب متاحة للمادة والصف المحددين",
         "classWork": "عمل الصف",
         "homework": "الواجب المنزلي",
         "fromPage": "من صفحة",
         "toPage": "الي صفحة",
         "pagePlaceholder": "رقم الصفحة",
-        "descAr": "وصف (باللغة العربية)",
-        "descEn": "وصف (باللغة الانجليزية)",
+        "descAr": "وصف (اللغة الأولى)",
+        "descEn": "وصف (اللغة الثانية)",
         "descPlaceholder": "ادخل وصف للواجب",
         "sendHomeworkTo": "ارسال الواجب الي",
         "all": "الكل",
@@ -94,6 +101,8 @@
         "attachments": "مرفقات",
         "uploadText": "اضغط هنا للإضافة صورة أو ملف",
         "selectStudentsButton": "تحديد طلاب",
+        "createdSuccessfully": "تم إضافة الحصة المباشرة بنجاح",
+        "updatedSuccessfully": "تم تحديث الحصة المباشرة بنجاح",
         "validation": {
           "classTypeRequired": "يرجى اختيار نوع الحصة",
           "fromTimeRequired": "يرجى تحديد موعد بداية الحصة",
@@ -103,6 +112,7 @@
           "teacherRequired": "يرجى اختيار المعلم",
           "stageRequired": "يرجى اختيار المرحلة التعليمية",
           "gradeRequired": "يرجى اختيار الصف الدراسي",
+          "bookRequired": "يرجى اختيار الكتاب",
           "sendToRequired": "يرجى تحديد مستلمي الواجب",
           "studentsRequired": "يرجى اختيار طالب واحد على الأقل"
         },
