@@ -6,6 +6,9 @@ import type {
   LessonsQueryParams,
   CreateLessonRequest,
   UpdateLessonRequest,
+  StartLessonRequest,
+  DirectLessonsQueryParams,
+  DirectLessonsData,
 } from '@/services/api/types/lessons.types';
 import { addMinutesToTime } from '@/lib/utils/date-utils';
 import type { ApiResponseModel } from '@/services/api';
@@ -24,11 +27,24 @@ export interface LessonsFilters {
 
 export interface LessonsState {
   lessons: Lesson[];
+  directLessons: Lesson[];
+  directLessonsStats: {
+    startedNow: number;
+    attendance: number;
+  };
+  directLessonsPagination: {
+    pageIndex: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
   currentLesson: Lesson | null;
   filters: LessonsFilters;
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
+  isStarting: boolean;
+  isLoadingDirectLessons: boolean;
   isDeleting: boolean;
   error: string | null;
   validationErrors: Record<string, string> | null;
@@ -47,11 +63,24 @@ export interface FetchLessonsResponse {
 
 const initialState: LessonsState = {
   lessons: [],
+  directLessons: [],
+  directLessonsStats: {
+    startedNow: 0,
+    attendance: 0,
+  },
+  directLessonsPagination: {
+    pageIndex: 1,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+  },
   currentLesson: null,
   filters: {},
   isLoading: false,
   isCreating: false,
   isUpdating: false,
+  isStarting: false,
+  isLoadingDirectLessons: false,
   isDeleting: false,
   error: null,
   validationErrors: null,
@@ -101,6 +130,29 @@ export const fetchLessons = createAsyncThunk<FetchLessonsResponse, FetchLessonsP
       return {
         data: response.data.lessons || [],
       };
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const fetchDirectLessons = createAsyncThunk<DirectLessonsData, DirectLessonsQueryParams>(
+  'lessons/fetchDirectLessons',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await lessonsApiService.getDirectLessons(params);
+
+      return (
+        response.data || {
+          lessons: [],
+          startedNow: 0,
+          attendance: 0,
+          pageIndex: params.pageIndex,
+          totalPages: 0,
+          totalItems: 0,
+          pageSize: params.pageSize,
+        }
+      );
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
@@ -167,6 +219,18 @@ export const updateLessonWithAttachments = createAsyncThunk<
     return rejectWithValue(getErrorMessage(error));
   }
 });
+
+export const startLesson = createAsyncThunk<ApiResponseModel<null>, StartLessonRequest>(
+  'lessons/startLesson',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await lessonsApiService.startLesson(data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
 
 export const deleteLessonById = createAsyncThunk<
   string,
@@ -276,6 +340,30 @@ const lessonsSlice = createSlice({
         state.isInitialized = true;
       });
 
+    builder
+      .addCase(fetchDirectLessons.pending, (state) => {
+        state.isLoadingDirectLessons = true;
+        state.error = null;
+      })
+      .addCase(fetchDirectLessons.fulfilled, (state, action) => {
+        state.isLoadingDirectLessons = false;
+        state.directLessons = action.payload.lessons || [];
+        state.directLessonsStats = {
+          startedNow: action.payload.startedNow ?? 0,
+          attendance: action.payload.attendance ?? 0,
+        };
+        state.directLessonsPagination = {
+          pageIndex: action.payload.pageIndex ?? 1,
+          pageSize: action.payload.pageSize ?? 10,
+          totalItems: action.payload.totalItems ?? 0,
+          totalPages: action.payload.totalPages ?? 0,
+        };
+      })
+      .addCase(fetchDirectLessons.rejected, (state, action) => {
+        state.isLoadingDirectLessons = false;
+        state.error = action.payload as string;
+      });
+
     // Fetch lesson by ID
     builder
       .addCase(fetchLessonById.pending, (state) => {
@@ -345,6 +433,19 @@ const lessonsSlice = createSlice({
       })
       .addCase(updateLessonWithAttachments.rejected, (state, action) => {
         state.isUpdating = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(startLesson.pending, (state) => {
+        state.isStarting = true;
+        state.error = null;
+      })
+      .addCase(startLesson.fulfilled, (state) => {
+        state.isStarting = false;
+      })
+      .addCase(startLesson.rejected, (state, action) => {
+        state.isStarting = false;
         state.error = action.payload as string;
       });
 

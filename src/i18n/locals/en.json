@@ -31,6 +31,9 @@
         "attendanceRate": "Attendance Rate"
       },
       "emptyTitle": "No remote classes have been added",
+      "confirmDelete": "Are you sure you want to delete the live class",
+      "deletedSuccessfully": "Live class deleted successfully",
+      "startedSuccessfully": "Live class started successfully",
       "searchPlaceholder": "Search by subject name",
       "startNow": "Start now",
       "filters": {
@@ -61,7 +64,9 @@
         "subjectTitle": "{{subject}} subject",
         "teacherName": "Teacher {{teacher}}",
         "linkLabel": "Class link",
-        "linkPlaceholder": "Enter class link"
+        "linkPlaceholder": "Enter class link",
+        "linkRequired": "Please enter the class link",
+        "starting": "Starting..."
       },
       "add": {
         "title": "Add Class",
@@ -80,13 +85,16 @@
         "gradePlaceholder": "Choose class",
         "book": "Book name",
         "bookPlaceholder": "Choose book name",
+        "loadingBooks": "Loading books...",
+        "noBooksAvailable": "No books available for the selected subject and class",
         "classWork": "Class work",
         "homework": "Homework",
+        "addHomework": "Add homework",
         "fromPage": "From page",
         "toPage": "To page",
         "pagePlaceholder": "Page number",
-        "descAr": "Description (Arabic)",
-        "descEn": "Description (English)",
+        "descAr": "Description (First Language)",
+        "descEn": "Description (Second Language)",
         "descPlaceholder": "Enter homework description",
         "sendHomeworkTo": "Send homework to",
         "all": "All",
@@ -94,6 +102,8 @@
         "attachments": "Attachments",
         "uploadText": "Click here to add an image or file",
         "selectStudentsButton": "Select students",
+        "createdSuccessfully": "Live class added successfully",
+        "updatedSuccessfully": "Live class updated successfully",
         "validation": {
           "classTypeRequired": "Please select the class type",
           "fromTimeRequired": "Please select the start time",
@@ -103,8 +113,11 @@
           "teacherRequired": "Please select the teacher",
           "stageRequired": "Please select the educational stage",
           "gradeRequired": "Please select the class",
+          "bookRequired": "Please select the book",
           "sendToRequired": "Please select the homework recipients",
-          "studentsRequired": "Please select at least one student"
+          "studentsRequired": "Please select at least one student",
+          "homeworkNameRequired": "Please enter homework details",
+          "homeworkPageGreaterThanZero": "Homework pages must be greater than zero"
         },
         "editTitle": "Edit Class"
       }

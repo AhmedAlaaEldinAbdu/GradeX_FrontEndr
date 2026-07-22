@@ -31,6 +31,9 @@
         "attendanceRate": "Anwesenheitsrate"
       },
       "emptyTitle": "Es wurden noch keine Remote-Unterrichtsstunden hinzugefügt",
+      "confirmDelete": "Sind Sie sicher, dass Sie den Live-Unterricht löschen möchten",
+      "deletedSuccessfully": "Live-Unterricht erfolgreich gelöscht",
+      "startedSuccessfully": "Live-Unterricht erfolgreich gestartet",
       "searchPlaceholder": "Nach Fachnamen suchen",
       "startNow": "Jetzt starten",
       "filters": {
@@ -61,7 +64,9 @@
         "subjectTitle": "Fach {{subject}}",
         "teacherName": "Lehrer {{teacher}}",
         "linkLabel": "Unterrichtslink",
-        "linkPlaceholder": "Unterrichtslink eingeben"
+        "linkPlaceholder": "Unterrichtslink eingeben",
+        "linkRequired": "Bitte geben Sie den Unterrichtslink ein",
+        "starting": "Wird gestartet..."
       },
       "add": {
         "title": "Unterricht hinzufügen",
@@ -80,13 +85,16 @@
         "gradePlaceholder": "Klasse auswählen",
         "book": "Buchname",
         "bookPlaceholder": "Buchname auswählen",
+        "loadingBooks": "Bücher werden geladen...",
+        "noBooksAvailable": "Keine Bücher für das ausgewählte Fach und die Klasse verfügbar",
         "classWork": "Klassenarbeit",
         "homework": "Hausaufgaben",
+        "addHomework": "Hausaufgabe hinzufügen",
         "fromPage": "Von Seite",
         "toPage": "Bis Seite",
         "pagePlaceholder": "Seitenzahl",
-        "descAr": "Beschreibung (Arabisch)",
-        "descEn": "Beschreibung (Englisch)",
+        "descAr": "Beschreibung (Erste Sprache)",
+        "descEn": "Beschreibung (Zweite Sprache)",
         "descPlaceholder": "Hausaufgabenbeschreibung eingeben",
         "sendHomeworkTo": "Hausaufgaben senden an",
         "all": "Alle",
@@ -94,6 +102,8 @@
         "attachments": "Anhänge",
         "uploadText": "Hier klicken, um ein Bild oder eine Datei hinzuzufügen",
         "selectStudentsButton": "Schüler auswählen",
+        "createdSuccessfully": "Live-Unterricht erfolgreich hinzugefügt",
+        "updatedSuccessfully": "Live-Unterricht erfolgreich aktualisiert",
         "validation": {
           "classTypeRequired": "Bitte wählen Sie die Unterrichtsart",
           "fromTimeRequired": "Bitte wählen Sie die Startzeit",
@@ -103,8 +113,11 @@
           "teacherRequired": "Bitte wählen Sie den Lehrer",
           "stageRequired": "Bitte wählen Sie die Bildungsstufe",
           "gradeRequired": "Bitte wählen Sie die Klasse",
+          "bookRequired": "Bitte wählen Sie das Buch",
           "sendToRequired": "Bitte wählen Sie die Empfänger der Hausaufgaben",
-          "studentsRequired": "Bitte wählen Sie mindestens einen Schüler"
+          "studentsRequired": "Bitte wählen Sie mindestens einen Schüler",
+          "homeworkNameRequired": "Bitte geben Sie Hausaufgabendetails ein",
+          "homeworkPageGreaterThanZero": "Hausaufgabenseiten müssen größer als null sein"
         },
         "editTitle": "Unterricht bearbeiten"
       }

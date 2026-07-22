@@ -26,11 +26,16 @@ export interface Lesson {
   teacherName: string;
   bookId: string;
   bookName: string;
+  bookNote?: string | null;
+  lessonStatus?: number | null;
   schoolBranchesId: string;
   classworkFromPage: number;
   classworkToPage: number;
+  classworkNote?: string | null;
   homeworkFromPage: number;
   homeworkToPage: number;
+  homeworkName?: string | null;
+  homeworkDescription?: string | null;
   homeworkDescriptionAr: string | null;
   homeworkDescriptionEn: string | null;
   startTime: string; // "HH:mm:ss"
@@ -58,6 +63,35 @@ export interface LessonsListResponse {
   isSuccess: boolean;
   message: string;
   validationErrors: Record<string, string[]> | null;
+}
+
+export interface DirectLessonsData {
+  lessons: Lesson[];
+  startedNow: number;
+  attendance: number;
+  pageIndex: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+}
+
+export interface DirectLessonsResponse {
+  data: DirectLessonsData | null;
+  isSuccess: boolean;
+  message: string;
+  errorCode?: string | null;
+  validationErrors: Record<string, string[]> | null;
+}
+
+export interface DirectLessonsQueryParams {
+  classroomId?: string;
+  teacherId?: string;
+  matieralName?: string;
+  lessonStatus?: number;
+  date?: string;
+  schoolBranchesId: string;
+  pageIndex: number;
+  pageSize: number;
 }
 
 export interface LessonsQueryParams {
@@ -114,6 +148,12 @@ export interface CreateLessonRequest {
   teacherId: string;
   homeworkDescriptionAr?: string;
   schoolBranchesId: string;
+  isDirectLesson?: boolean;
+  addHomework?: boolean;
+  homeworkDescription?: string;
+  homeworkName?: string;
+  bookNote?: string;
+  classworkNote?: string;
 }
 
 /**
@@ -142,4 +182,9 @@ export interface LessonFormValues {
 
 export interface UpdateLessonRequest extends Partial<CreateLessonRequest> {
   id: string;
+}
+
+export interface StartLessonRequest {
+  lessonId: string;
+  meetingLink: string;
 }

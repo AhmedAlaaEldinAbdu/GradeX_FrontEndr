@@ -12,9 +12,12 @@ import type {
   Lesson,
   CreateLessonRequest,
   UpdateLessonRequest,
+  StartLessonRequest,
+  DirectLessonsQueryParams,
+  DirectLessonsResponse,
 } from '../types/lessons.types';
 
-const serializeParams = (params?: LessonsQueryParams) => {
+const serializeParams = (params?: Record<string, unknown>) => {
   const searchParams = new URLSearchParams();
 
   if (!params) {
@@ -67,6 +70,37 @@ export async function getLessonById(id: string): Promise<Lesson> {
   return response.data.value as Lesson;
 }
 
+export async function getDirectLessons(
+  params: DirectLessonsQueryParams
+): Promise<DirectLessonsResponse> {
+  const response: AxiosResponse<DirectLessonsResponse> = await axiosClient.get(
+    LessonsEndpoints.getDirectLessons,
+    {
+      params,
+      paramsSerializer: { serialize: serializeParams },
+    }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      data: {
+        lessons: [],
+        startedNow: 0,
+        attendance: 0,
+        pageIndex: params.pageIndex,
+        totalPages: 0,
+        totalItems: 0,
+        pageSize: params.pageSize,
+      },
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
+
 /**
  * Build FormData from CreateLessonRequest
  * The API expects multipart/form-data with PascalCase field names
@@ -90,6 +124,12 @@ function buildLessonFormData(data: CreateLessonRequest, attachmentFiles?: File[]
   formData.append('HomeworkToPage', String(data.homeworkToPage));
   formData.append('IsHomeworkForAllStudents', String(data.isHomeworkForAllStudents));
   formData.append('ApplyToAllWeeks', String(data.applyToAllWeeks ?? false));
+  if (data.isDirectLesson !== undefined) {
+    formData.append('IsDirectLesson', String(data.isDirectLesson));
+  }
+  if (data.addHomework !== undefined) {
+    formData.append('AddHomework', String(data.addHomework));
+  }
 
   // Optional fields
   if (data.lessonsStudent && data.lessonsStudent.length > 0) {
@@ -102,6 +142,18 @@ function buildLessonFormData(data: CreateLessonRequest, attachmentFiles?: File[]
   }
   if (data.homeworkDescriptionEn) {
     formData.append('HomeworkDescriptionEn', data.homeworkDescriptionEn);
+  }
+  if (data.homeworkDescription) {
+    formData.append('HomeworkDescription', data.homeworkDescription);
+  }
+  if (data.homeworkName) {
+    formData.append('HomeworkName', data.homeworkName);
+  }
+  if (data.bookNote) {
+    formData.append('BookNote', data.bookNote);
+  }
+  if (data.classworkNote) {
+    formData.append('ClassworkNote', data.classworkNote);
   }
 
   // Handle attachments - can be files or attachment metadata
@@ -186,10 +238,21 @@ export async function updateLesson(
   // Boolean and descriptions
   formData.append('dto[0].isHomeworkForAllStudents', String(data.isHomeworkForAllStudents ?? true));
   formData.append('dto[0].ApplyToAllWeeks', String(data.applyToAllWeeks ?? false));
+  if (data.isDirectLesson !== undefined) {
+    formData.append('dto[0].IsDirectLesson', String(data.isDirectLesson));
+  }
+  if (data.addHomework !== undefined) {
+    formData.append('dto[0].AddHomework', String(data.addHomework));
+  }
   if (data.homeworkDescriptionEn)
     formData.append('dto[0].homeworkDescriptionEn', data.homeworkDescriptionEn);
   if (data.homeworkDescriptionAr)
     formData.append('dto[0].homeworkDescriptionAr', data.homeworkDescriptionAr);
+  if (data.homeworkDescription)
+    formData.append('dto[0].HomeworkDescription', data.homeworkDescription);
+  if (data.homeworkName) formData.append('dto[0].HomeworkName', data.homeworkName);
+  if (data.bookNote) formData.append('dto[0].BookNote', data.bookNote);
+  if (data.classworkNote) formData.append('dto[0].ClassworkNote', data.classworkNote);
 
   // Handle lessonsStudent array
   if (data.lessonsStudent && data.lessonsStudent.length > 0) {
@@ -313,6 +376,14 @@ export async function bulkUpdateLessons(
   return response.data;
 }
 
+export async function startLesson(data: StartLessonRequest): Promise<ApiResponseModel<null>> {
+  const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
+    LessonsEndpoints.startLesson,
+    data
+  );
+  return response.data;
+}
+
 export async function deleteLesson(
   id: string,
   applyToAllWeeks: boolean
@@ -326,9 +397,11 @@ export async function deleteLesson(
 export const lessonsApiService = {
   getLessons,
   getLessonById,
+  getDirectLessons,
   createLesson,
   updateLesson,
   bulkUpdateLessons,
+  startLesson,
   deleteLesson,
 };
 

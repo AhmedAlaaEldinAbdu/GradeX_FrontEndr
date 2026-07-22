@@ -3,6 +3,7 @@ import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
+import { useAppSelector } from '@/hooks/useRedux';
 import LiveClassesList from './components/LiveClassesList';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
@@ -31,6 +32,8 @@ function MaskIcon({ src, color }: { src: string; color: string }) {
 
 export default function LiveClassesPage() {
   const { t } = useTranslation();
+  const directLessonsStats = useAppSelector((state) => state.lessons.directLessonsStats);
+  const directLessonsPagination = useAppSelector((state) => state.lessons.directLessonsPagination);
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
@@ -61,19 +64,19 @@ export default function LiveClassesPage() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <MetricCard
             title={t('eLearning.liveClasses.metrics.totalRemoteClasses')}
-            value="12"
+            value={String(directLessonsPagination.totalItems)}
             icon={<MaskIcon src={PeopleOutlineIcon} color="#117BD7" />}
             iconClassName="bg-[#117BD7]/[0.16]"
           />
           <MetricCard
             title={t('eLearning.liveClasses.metrics.liveClassesNow')}
-            value="8"
+            value={String(directLessonsStats.startedNow)}
             icon={<CustomImage src={CheckMarkIcon} alt="" className="h-6 w-6" />}
             iconClassName="bg-[#1A9F58]/[0.16]"
           />
           <MetricCard
             title={t('eLearning.liveClasses.metrics.attendanceRate')}
-            value="60%"
+            value={`${directLessonsStats.attendance}%`}
             icon={<CustomImage src={StudentYellowIcon} alt="" className="h-6 w-6" />}
             iconClassName="bg-[#F6CB3B]/[0.16]"
           />

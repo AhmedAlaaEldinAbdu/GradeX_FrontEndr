@@ -1,4 +1,4 @@
-import { array, object, string } from 'yup';
+import { array, boolean, object, string } from 'yup';
 
 const V = 'eLearning.liveClasses.add.validation';
 
@@ -17,12 +17,15 @@ export const LiveClassSchema = object({
   teacher: string().required(`${V}.teacherRequired`),
   stage: string().required(`${V}.stageRequired`),
   grade: string().required(`${V}.gradeRequired`),
+  book: string().required(`${V}.bookRequired`),
+  addHomework: boolean().default(false),
   sendHomeworkTo: string().oneOf(['all', 'specific']).required(`${V}.sendToRequired`),
   selectedStudents: array()
     .of(object({ id: string().required(), name: string().required() }))
     .default([])
-    .when('sendHomeworkTo', {
-      is: 'specific',
+    .when(['addHomework', 'sendHomeworkTo'], {
+      is: (addHomework: boolean, sendHomeworkTo: string) =>
+        addHomework && sendHomeworkTo === 'specific',
       then: (schema) => schema.min(1, `${V}.studentsRequired`),
     }),
 });
