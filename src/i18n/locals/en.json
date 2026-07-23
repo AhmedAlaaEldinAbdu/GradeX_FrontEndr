@@ -119,6 +119,8 @@
           "homeworkNameRequired": "Please enter homework details",
           "homeworkFromPageRequired": "Please enter the homework start page",
           "homeworkToPageRequired": "Please enter the homework end page",
+          "pageGreaterThanZero": "Page numbers must be greater than zero",
+          "toPageAfterFrom": "To page must be greater than or equal to from page",
           "homeworkPageGreaterThanZero": "Homework pages must be greater than zero"
         },
         "editTitle": "Edit Class"

@@ -119,6 +119,8 @@
           "homeworkNameRequired": "Veuillez saisir les détails du devoir",
           "homeworkFromPageRequired": "Veuillez saisir la page de début du devoir",
           "homeworkToPageRequired": "Veuillez saisir la page de fin du devoir",
+          "pageGreaterThanZero": "Les numéros de page doivent être supérieurs à zéro",
+          "toPageAfterFrom": "La page de fin doit être supérieure ou égale à la page de début",
           "homeworkPageGreaterThanZero": "Les pages du devoir doivent être supérieures à zéro"
         },
         "editTitle": "Modifier le cours"

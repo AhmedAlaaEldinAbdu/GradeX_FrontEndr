@@ -119,6 +119,8 @@
           "homeworkNameRequired": "يرجى إدخال بيانات الواجب",
           "homeworkFromPageRequired": "يرجى إدخال صفحة بداية الواجب",
           "homeworkToPageRequired": "يرجى إدخال صفحة نهاية الواجب",
+          "pageGreaterThanZero": "يجب أن تكون أرقام الصفحات أكبر من صفر",
+          "toPageAfterFrom": "يجب أن تكون صفحة النهاية أكبر من أو تساوي صفحة البداية",
           "homeworkPageGreaterThanZero": "يجب أن تكون صفحات الواجب أكبر من صفر"
         },
         "editTitle": "تعديل حصة"

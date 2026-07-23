@@ -119,6 +119,8 @@
           "homeworkNameRequired": "Bitte geben Sie Hausaufgabendetails ein",
           "homeworkFromPageRequired": "Bitte geben Sie die Startseite der Hausaufgabe ein",
           "homeworkToPageRequired": "Bitte geben Sie die Endseite der Hausaufgabe ein",
+          "pageGreaterThanZero": "Seitenzahlen müssen größer als null sein",
+          "toPageAfterFrom": "Bis Seite muss größer oder gleich Von Seite sein",
           "homeworkPageGreaterThanZero": "Hausaufgabenseiten müssen größer als null sein"
         },
         "editTitle": "Unterricht bearbeiten"
