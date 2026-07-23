@@ -43,10 +43,10 @@
         "date": "Datum"
       },
       "status": {
+        "draft": "Entwurf",
+        "started": "Gestartet",
         "completed": "Abgeschlossen",
-        "active": "Läuft jetzt",
-        "upcoming": "Bevorstehend",
-        "closed": "Geschlossen"
+        "cancelled": "Storniert"
       },
       "table": {
         "management": "Verwaltung",

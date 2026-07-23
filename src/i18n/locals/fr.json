@@ -43,10 +43,10 @@
         "date": "Date"
       },
       "status": {
+        "draft": "Brouillon",
+        "started": "Démarré",
         "completed": "Terminé",
-        "active": "En cours",
-        "upcoming": "À venir",
-        "closed": "Fermé"
+        "cancelled": "Annulé"
       },
       "table": {
         "management": "Gestion",
