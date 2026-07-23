@@ -63,10 +63,11 @@
         "title": "Start remote class",
         "subjectTitle": "{{subject}} subject",
         "teacherName": "Teacher {{teacher}}",
-        "linkLabel": "Class link",
-        "linkPlaceholder": "Enter class link",
-        "linkRequired": "Please enter the class link",
-        "starting": "Starting..."
+    "linkLabel": "Class link",
+    "linkPlaceholder": "Enter class link",
+    "linkRequired": "Please enter the class link",
+    "linkInvalid": "Please enter a valid link",
+    "starting": "Starting..."
       },
       "add": {
         "title": "Add Class",

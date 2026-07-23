@@ -63,10 +63,11 @@
         "title": "Démarrer le cours à distance",
         "subjectTitle": "Matière {{subject}}",
         "teacherName": "Enseignant {{teacher}}",
-        "linkLabel": "Lien du cours",
-        "linkPlaceholder": "Saisir le lien du cours",
-        "linkRequired": "Veuillez saisir le lien du cours",
-        "starting": "Démarrage..."
+    "linkLabel": "Lien du cours",
+    "linkPlaceholder": "Saisir le lien du cours",
+    "linkRequired": "Veuillez saisir le lien du cours",
+    "linkInvalid": "Veuillez saisir un lien valide",
+    "starting": "Démarrage..."
       },
       "add": {
         "title": "Ajouter un cours",

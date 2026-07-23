@@ -63,10 +63,11 @@
         "title": "Remote-Unterricht starten",
         "subjectTitle": "Fach {{subject}}",
         "teacherName": "Lehrer {{teacher}}",
-        "linkLabel": "Unterrichtslink",
-        "linkPlaceholder": "Unterrichtslink eingeben",
-        "linkRequired": "Bitte geben Sie den Unterrichtslink ein",
-        "starting": "Wird gestartet..."
+    "linkLabel": "Unterrichtslink",
+    "linkPlaceholder": "Unterrichtslink eingeben",
+    "linkRequired": "Bitte geben Sie den Unterrichtslink ein",
+    "linkInvalid": "Bitte geben Sie einen gültigen Link ein",
+    "starting": "Wird gestartet..."
       },
       "add": {
         "title": "Unterricht hinzufügen",

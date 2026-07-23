@@ -63,10 +63,11 @@
         "title": "بدء حصة من بعد",
         "subjectTitle": "مادة {{subject}}",
         "teacherName": "المعلم {{teacher}}",
-        "linkLabel": "رابط الحصة",
-        "linkPlaceholder": "أدخل رابط الحصة",
-        "linkRequired": "يرجى إدخال رابط الحصة",
-        "starting": "جاري البدء..."
+    "linkLabel": "رابط الحصة",
+    "linkPlaceholder": "أدخل رابط الحصة",
+    "linkRequired": "يرجى إدخال رابط الحصة",
+    "linkInvalid": "يرجى إدخال رابط صحيح",
+    "starting": "جاري البدء..."
       },
       "add": {
         "title": "إضافة حصة",

@@ -63,10 +63,11 @@
         "title": "Начать дистанционный урок",
         "subjectTitle": "Предмет {{subject}}",
         "teacherName": "Учитель {{teacher}}",
-        "linkLabel": "Ссылка на урок",
-        "linkPlaceholder": "Введите ссылку на урок",
-        "linkRequired": "Пожалуйста, введите ссылку на урок",
-        "starting": "Запуск..."
+    "linkLabel": "Ссылка на урок",
+    "linkPlaceholder": "Введите ссылку на урок",
+    "linkRequired": "Пожалуйста, введите ссылку на урок",
+    "linkInvalid": "Пожалуйста, введите действительную ссылку",
+    "starting": "Запуск..."
       },
       "add": {
         "title": "Добавить занятие",
