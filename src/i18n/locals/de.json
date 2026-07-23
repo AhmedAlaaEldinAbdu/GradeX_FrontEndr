@@ -117,6 +117,8 @@
           "sendToRequired": "Bitte wählen Sie die Empfänger der Hausaufgaben",
           "studentsRequired": "Bitte wählen Sie mindestens einen Schüler",
           "homeworkNameRequired": "Bitte geben Sie Hausaufgabendetails ein",
+          "homeworkFromPageRequired": "Bitte geben Sie die Startseite der Hausaufgabe ein",
+          "homeworkToPageRequired": "Bitte geben Sie die Endseite der Hausaufgabe ein",
           "homeworkPageGreaterThanZero": "Hausaufgabenseiten müssen größer als null sein"
         },
         "editTitle": "Unterricht bearbeiten"

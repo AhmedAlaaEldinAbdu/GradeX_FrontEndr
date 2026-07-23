@@ -117,6 +117,8 @@
           "sendToRequired": "يرجى تحديد مستلمي الواجب",
           "studentsRequired": "يرجى اختيار طالب واحد على الأقل",
           "homeworkNameRequired": "يرجى إدخال بيانات الواجب",
+          "homeworkFromPageRequired": "يرجى إدخال صفحة بداية الواجب",
+          "homeworkToPageRequired": "يرجى إدخال صفحة نهاية الواجب",
           "homeworkPageGreaterThanZero": "يجب أن تكون صفحات الواجب أكبر من صفر"
         },
         "editTitle": "تعديل حصة"

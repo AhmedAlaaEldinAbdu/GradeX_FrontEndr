@@ -117,6 +117,8 @@
           "sendToRequired": "Veuillez sélectionner les destinataires des devoirs",
           "studentsRequired": "Veuillez sélectionner au moins un élève",
           "homeworkNameRequired": "Veuillez saisir les détails du devoir",
+          "homeworkFromPageRequired": "Veuillez saisir la page de début du devoir",
+          "homeworkToPageRequired": "Veuillez saisir la page de fin du devoir",
           "homeworkPageGreaterThanZero": "Les pages du devoir doivent être supérieures à zéro"
         },
         "editTitle": "Modifier le cours"

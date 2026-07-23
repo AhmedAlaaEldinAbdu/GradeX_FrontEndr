@@ -117,6 +117,8 @@
           "sendToRequired": "Please select the homework recipients",
           "studentsRequired": "Please select at least one student",
           "homeworkNameRequired": "Please enter homework details",
+          "homeworkFromPageRequired": "Please enter the homework start page",
+          "homeworkToPageRequired": "Please enter the homework end page",
           "homeworkPageGreaterThanZero": "Homework pages must be greater than zero"
         },
         "editTitle": "Edit Class"
