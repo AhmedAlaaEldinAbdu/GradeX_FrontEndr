@@ -18,6 +18,7 @@ import {
   fetchDirectLessons,
   startLesson,
 } from '@/redux/features/lessons/lessonsSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 import type { DirectLessonsQueryParams, Lesson } from '@/services/api/types/lessons.types';
 import VideoConferenceIcon from '@gradex/assets/icons/VideoConference.svg';
@@ -121,6 +122,7 @@ export default function LiveClassesList() {
   const isDeleting = useAppSelector((state) => state.lessons.isDeleting);
   const isStarting = useAppSelector((state) => state.lessons.isStarting);
   const teachers = useAppSelector((state) => state.teachers.teachers);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
 
   const [search, setSearch] = useState('');
   const [teacher, setTeacher] = useState('');
@@ -149,13 +151,14 @@ export default function LiveClassesList() {
 
   const classroomOptions = useMemo(() => {
     const options = new Map<string, string>();
-    rows.forEach((row) => {
-      if (row.classroomId && row.classroom) {
-        options.set(row.classroomId, row.classroom);
+    classrooms.forEach((classroomItem) => {
+      const label = (isArabic ? classroomItem.name : classroomItem.nameEn) || classroomItem.name;
+      if (classroomItem.id && label) {
+        options.set(classroomItem.id, label);
       }
     });
     return Array.from(options, ([value, label]) => ({ value, label }));
-  }, [rows]);
+  }, [classrooms, isArabic]);
 
   const statusOptions = [
     { value: String(STATUS_TO_API.draft), label: t('eLearning.liveClasses.status.draft') },
@@ -192,6 +195,13 @@ export default function LiveClassesList() {
         page: 1,
         limit: 1000,
         filters: { schoolBranchesId: schoolBranchId },
+      })
+    );
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchId },
       })
     );
   }, [dispatch, schoolBranchId]);
