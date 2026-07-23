@@ -6,6 +6,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
+import Input from '@/shared/components/Input';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
@@ -18,7 +19,6 @@ import {
   startLesson,
 } from '@/redux/features/lessons/lessonsSlice';
 import type { DirectLessonsQueryParams, Lesson } from '@/services/api/types/lessons.types';
-import CalendarInputIcon from '@gradex/assets/icons/CalendarInput.svg';
 import VideoConferenceIcon from '@gradex/assets/icons/VideoConference.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import StartLiveClassPopup from '../popups/StartLiveClassPopup';
@@ -92,7 +92,9 @@ const mapLessonToRow = (lesson: Lesson, isArabic: boolean, locale: string): Live
   teacherName: lesson.teacherName || '',
   status: getStatusFromLesson(lesson),
   stage:
-    (isArabic ? lesson.gradeNameAr : lesson.gradeNameEn) || lesson.gradeNameAr || lesson.gradeNameEn,
+    (isArabic ? lesson.gradeNameAr : lesson.gradeNameEn) ||
+    lesson.gradeNameAr ||
+    lesson.gradeNameEn,
   classroom:
     (isArabic ? lesson.classroomNameAr : lesson.classroomNameEn) ||
     lesson.classroomNameAr ||
@@ -378,19 +380,15 @@ export default function LiveClassesList() {
       onChange: () => {},
       width: '20%',
       customComponent: (
-        <label className="flex h-[48px] w-full items-center justify-center gap-2 rounded-2xl border border-[#DDE0E0] bg-white px-4 text-sm font-normal text-[#646969]">
-          <CustomImage src={CalendarInputIcon} alt="" className="h-4 w-4" />
-          <input
-            type="date"
-            value={date}
-            onChange={(event) => {
-              setDate(event.target.value);
-              setPage(1);
-            }}
-            className="w-full bg-transparent text-sm font-normal text-[#646969] outline-none"
-            aria-label={t('eLearning.liveClasses.filters.date')}
-          />
-        </label>
+        <Input
+          type="date"
+          value={date}
+          onChange={(event) => {
+            setDate(event.target.value);
+            setPage(1);
+          }}
+          aria-label={t('eLearning.liveClasses.filters.date')}
+        />
       ),
     },
   ];
