@@ -53,8 +53,8 @@ type LiveClassFormData = {
   classWorkToPage: string;
   homeworkFromPage: string;
   homeworkToPage: string;
-  homeworkDescAr: string;
-  homeworkDescEn: string;
+  homeworkName: string;
+  homeworkDescription: string;
   addHomework: boolean;
   sendHomeworkTo: HomeworkAudience;
   selectedStudents: SelectedStudent[];
@@ -74,8 +74,8 @@ const INITIAL_DATA: LiveClassFormData = {
   classWorkToPage: '',
   homeworkFromPage: '',
   homeworkToPage: '',
-  homeworkDescAr: '',
-  homeworkDescEn: '',
+  homeworkName: '',
+  homeworkDescription: '',
   addHomework: false,
   sendHomeworkTo: 'all',
   selectedStudents: [],
@@ -147,8 +147,9 @@ const BACKEND_FIELD_TO_FORM_FIELD: Record<string, string> = {
   HomeworkName: 'homeworkName',
   HomeworkFromPage: 'homeworkFromPage',
   HomeworkToPage: 'homeworkToPage',
-  HomeworkDescriptionAr: 'homeworkDescAr',
-  HomeworkDescriptionEn: 'homeworkDescEn',
+  HomeworkDescription: 'homeworkDescription',
+  HomeworkDescriptionAr: 'homeworkDescription',
+  HomeworkDescriptionEn: 'homeworkDescription',
 };
 
 const BACKEND_ERROR_MESSAGES: Record<string, string> = {
@@ -292,8 +293,12 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
       classWorkToPage: String(initialData.classworkToPage ?? ''),
       homeworkFromPage: String(initialData.homeworkFromPage ?? ''),
       homeworkToPage: String(initialData.homeworkToPage ?? ''),
-      homeworkDescAr: initialData.homeworkDescriptionAr || '',
-      homeworkDescEn: initialData.homeworkDescriptionEn || '',
+      homeworkName: initialData.homeworkName || '',
+      homeworkDescription:
+        initialData.homeworkDescription ||
+        initialData.homeworkDescriptionAr ||
+        initialData.homeworkDescriptionEn ||
+        '',
       addHomework: hasExistingHomework(initialData),
       sendHomeworkTo: initialData.isHomeworkForAllStudents ? 'all' : 'specific',
       selectedStudents,
@@ -356,8 +361,8 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
           key === 'classWorkToPage' ||
           key === 'homeworkFromPage' ||
           key === 'homeworkToPage' ||
-          key === 'homeworkDescAr' ||
-          key === 'homeworkDescEn'
+          key === 'homeworkName' ||
+          key === 'homeworkDescription'
         ) {
           delete next.homeworkName;
         }
@@ -397,8 +402,8 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
       ...(!checked && {
         homeworkFromPage: '',
         homeworkToPage: '',
-        homeworkDescAr: '',
-        homeworkDescEn: '',
+        homeworkName: '',
+        homeworkDescription: '',
         sendHomeworkTo: 'all' as HomeworkAudience,
         selectedStudents: [],
       }),
@@ -410,10 +415,9 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
       const next = { ...prev };
       delete next.addHomework;
       delete next.homeworkName;
+      delete next.homeworkDescription;
       delete next.homeworkFromPage;
       delete next.homeworkToPage;
-      delete next.homeworkDescAr;
-      delete next.homeworkDescEn;
       delete next.sendHomeworkTo;
       delete next.selectedStudents;
       delete next.form;
@@ -434,12 +438,8 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
         return;
       }
 
-      const homeworkDescription = data.addHomework
-        ? data.homeworkDescAr || data.homeworkDescEn || ''
-        : '';
-      const selectedSubjectName =
-        subjectOptions.find((option) => option.value === data.subject)?.label ||
-        t(`${base}.homework`);
+      const homeworkName = data.addHomework ? data.homeworkName.trim() : undefined;
+      const homeworkDescription = data.addHomework ? data.homeworkDescription.trim() : '';
       const request: CreateLessonRequest = {
         lessonsStudent:
           data.addHomework && data.sendHomeworkTo === 'specific'
@@ -454,9 +454,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
         isHomeworkForAllStudents: !data.addHomework || data.sendHomeworkTo === 'all',
         isDirectLesson: true,
         homeworkDescription,
-        homeworkDescriptionAr: data.addHomework ? data.homeworkDescAr || undefined : undefined,
-        homeworkDescriptionEn: data.addHomework ? data.homeworkDescEn || undefined : undefined,
-        homeworkName: data.addHomework ? homeworkDescription || selectedSubjectName : undefined,
+        homeworkName,
         classroomId: data.grade,
         date: buildLiveClassDateTime(data.fromTime, initialData?.date),
         startTime: data.fromTime,
@@ -705,10 +703,35 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
 
             {data.addHomework && (
               <div className="flex flex-col gap-5">
-                <div data-form-field="homeworkName">
-                  <FormErrorMessage message={errors.homeworkName || errors.form} />
+                <div>
+                  <FormErrorMessage message={errors.form} />
                 </div>
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+                  <FormField
+                    label={t(`${base}.homeworkName`)}
+                    required
+                    name="homeworkName"
+                    error={errors.homeworkName}
+                  >
+                    <Input
+                      value={data.homeworkName}
+                      onChange={(e) => set('homeworkName')(e.target.value)}
+                      placeholder={t(`${base}.homeworkNamePlaceholder`)}
+                    />
+                  </FormField>
+                  <FormField
+                    label={t(`${base}.homeworkDescription`)}
+                    optional
+                    name="homeworkDescription"
+                    error={errors.homeworkDescription}
+                  >
+                    <TextArea
+                      value={data.homeworkDescription}
+                      onChange={(e) => set('homeworkDescription')(e.target.value)}
+                      placeholder={t(`${base}.homeworkDescriptionPlaceholder`)}
+                    />
+                  </FormField>
+
                   <FormField
                     label={t(`${base}.fromPage`)}
                     required
@@ -735,31 +758,6 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
                       value={data.homeworkToPage}
                       onChange={(e) => set('homeworkToPage')(e.target.value)}
                       placeholder={t(`${base}.pagePlaceholder`)}
-                    />
-                  </FormField>
-
-                  <FormField
-                    label={t(`${base}.descAr`)}
-                    optional
-                    name="homeworkDescAr"
-                    error={errors.homeworkDescAr}
-                  >
-                    <TextArea
-                      value={data.homeworkDescAr}
-                      onChange={(e) => set('homeworkDescAr')(e.target.value)}
-                      placeholder={t(`${base}.descPlaceholder`)}
-                    />
-                  </FormField>
-                  <FormField
-                    label={t(`${base}.descEn`)}
-                    optional
-                    name="homeworkDescEn"
-                    error={errors.homeworkDescEn}
-                  >
-                    <TextArea
-                      value={data.homeworkDescEn}
-                      onChange={(e) => set('homeworkDescEn')(e.target.value)}
-                      placeholder={t(`${base}.descPlaceholder`)}
                     />
                   </FormField>
                 </div>
