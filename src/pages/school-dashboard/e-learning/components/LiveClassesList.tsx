@@ -268,7 +268,14 @@ export default function LiveClassesList() {
     {
       header: 'eLearning.liveClasses.table.teacherName',
       accessor: (row) => (
-        <UserAvatarName name={row.teacherName} align="between" onView={() => {}} />
+        <UserAvatarName
+          name={row.teacherName}
+          align="between"
+          onView={() => {
+            if (!row.teacherId) return;
+            navigate(`/teaching-staff/teachers/${row.teacherId}`);
+          }}
+        />
       ),
       headerClassName: 'min-w-[260px]',
       className: 'text-center',
