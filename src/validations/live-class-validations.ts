@@ -32,6 +32,11 @@ export const LiveClassSchema = object({
       return isPageRangeValid(this.parent.classWorkFromPage, value);
     }),
   addHomework: boolean().default(false),
+  homeworkName: string().when('addHomework', {
+    is: true,
+    then: (schema) => schema.trim().required(`${V}.homeworkNameRequired`),
+  }),
+  homeworkDescription: string(),
   homeworkFromPage: string().when('addHomework', {
     is: true,
     then: (schema) =>
