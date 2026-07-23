@@ -19,6 +19,22 @@ export const LiveClassSchema = object({
   grade: string().required(`${V}.gradeRequired`),
   book: string().required(`${V}.bookRequired`),
   addHomework: boolean().default(false),
+  homeworkFromPage: string().when('addHomework', {
+    is: true,
+    then: (schema) =>
+      schema
+        .trim()
+        .required(`${V}.homeworkFromPageRequired`)
+        .test('greater-than-zero', `${V}.homeworkPageGreaterThanZero`, (value) => Number(value) > 0),
+  }),
+  homeworkToPage: string().when('addHomework', {
+    is: true,
+    then: (schema) =>
+      schema
+        .trim()
+        .required(`${V}.homeworkToPageRequired`)
+        .test('greater-than-zero', `${V}.homeworkPageGreaterThanZero`, (value) => Number(value) > 0),
+  }),
   sendHomeworkTo: string().oneOf(['all', 'specific']).required(`${V}.sendToRequired`),
   selectedStudents: array()
     .of(object({ id: string().required(), name: string().required() }))
