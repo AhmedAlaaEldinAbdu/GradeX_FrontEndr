@@ -178,7 +178,7 @@ const getApiValidationErrors = (result: LessonMutationResult): Record<string, st
       const backendField = item.propertyName || item.identifier || '';
       const formField = BACKEND_FIELD_TO_FORM_FIELD[backendField] || 'form';
       if (!next[formField]) {
-        next[formField] = getBackendErrorMessage(item.errorMessage || item.errorCode);
+        next[formField] = getBackendErrorMessage(item.errorMessage || item.errorCode || undefined);
       }
     });
     return next;
