@@ -1,4 +1,4 @@
-export type LiveClassStatus = 'completed' | 'active' | 'upcoming' | 'closed';
+export type LiveClassStatus = 'draft' | 'started' | 'completed' | 'cancelled';
 
 export type LiveClassRow = {
   id: string;
