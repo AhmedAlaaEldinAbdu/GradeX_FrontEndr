@@ -198,15 +198,7 @@ const getApiValidationErrors = (result: LessonMutationResult): Record<string, st
 };
 
 const hasExistingHomework = (lesson: Lesson): boolean =>
-  Boolean(
-    (lesson.homeworkFromPage ?? 0) > 0 ||
-      (lesson.homeworkToPage ?? 0) > 0 ||
-      lesson.homeworkName ||
-      lesson.homeworkDescription ||
-      lesson.homeworkDescriptionAr ||
-      lesson.homeworkDescriptionEn ||
-      lesson.lessonsStudent?.length
-  );
+  (lesson.homeworkFromPage ?? 0) > 0 && (lesson.homeworkToPage ?? 0) > 0;
 
 type LiveClassFormProps = {
   mode: 'add' | 'edit';
@@ -695,7 +687,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
                   <FormField
                     label={t(`${base}.fromPage`)}
-                    optional
+                    required
                     name="homeworkFromPage"
                     error={errors.homeworkFromPage}
                   >
@@ -709,7 +701,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
                   </FormField>
                   <FormField
                     label={t(`${base}.toPage`)}
-                    optional
+                    required
                     name="homeworkToPage"
                     error={errors.homeworkToPage}
                   >
