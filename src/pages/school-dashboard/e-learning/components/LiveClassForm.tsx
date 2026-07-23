@@ -352,12 +352,26 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
         delete next.form;
 
         if (
+          key === 'classWorkFromPage' ||
+          key === 'classWorkToPage' ||
           key === 'homeworkFromPage' ||
           key === 'homeworkToPage' ||
           key === 'homeworkDescAr' ||
           key === 'homeworkDescEn'
         ) {
           delete next.homeworkName;
+        }
+        if (key === 'classWorkFromPage') {
+          delete next.classWorkToPage;
+        }
+        if (key === 'classWorkToPage') {
+          delete next.classWorkFromPage;
+        }
+        if (key === 'homeworkFromPage') {
+          delete next.homeworkToPage;
+        }
+        if (key === 'homeworkToPage') {
+          delete next.homeworkFromPage;
         }
 
         return next;
@@ -628,7 +642,12 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
               {t(`${base}.classWork`)}
             </h3>
             <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
-              <FormField label={t(`${base}.fromPage`)} optional name="classWorkFromPage">
+              <FormField
+                label={t(`${base}.fromPage`)}
+                optional
+                name="classWorkFromPage"
+                error={errors.classWorkFromPage}
+              >
                 <Input
                   type="number"
                   min={1}
@@ -637,7 +656,12 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
                   placeholder={t(`${base}.pagePlaceholder`)}
                 />
               </FormField>
-              <FormField label={t(`${base}.toPage`)} optional name="classWorkToPage">
+              <FormField
+                label={t(`${base}.toPage`)}
+                optional
+                name="classWorkToPage"
+                error={errors.classWorkToPage}
+              >
                 <Input
                   type="number"
                   min={1}
