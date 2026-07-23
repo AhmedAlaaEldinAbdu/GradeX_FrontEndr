@@ -889,6 +889,7 @@
     "ok": "OK",
     "existingFile": "Vorhandene Datei",
     "saving": "Wird gespeichert...",
+    "updating": "Wird aktualisiert...",
     "generating": "Wird generiert...",
     "type": "Typ",
     "chooseDate": "Datum wählen",

@@ -889,6 +889,7 @@
     "ok": "Ok",
     "existingFile": "Existing file",
     "saving": "Saving...",
+    "updating": "Updating...",
     "generating": "Generating...",
     "type": "Type",
     "chooseDate": "Choose Date",

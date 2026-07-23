@@ -889,6 +889,7 @@
     "ok": "OK",
     "existingFile": "Fichier existant",
     "saving": "Enregistrement...",
+    "updating": "Mise à jour...",
     "generating": "Génération...",
     "type": "Type",
     "chooseDate": "Choisir une date",
