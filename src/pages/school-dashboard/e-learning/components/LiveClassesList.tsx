@@ -18,6 +18,7 @@ import {
   fetchDirectLessons,
   startLesson,
 } from '@/redux/features/lessons/lessonsSlice';
+import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 import type { DirectLessonsQueryParams, Lesson } from '@/services/api/types/lessons.types';
 import VideoConferenceIcon from '@gradex/assets/icons/VideoConference.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
@@ -119,6 +120,7 @@ export default function LiveClassesList() {
   const isLoadingDirectLessons = useAppSelector((state) => state.lessons.isLoadingDirectLessons);
   const isDeleting = useAppSelector((state) => state.lessons.isDeleting);
   const isStarting = useAppSelector((state) => state.lessons.isStarting);
+  const teachers = useAppSelector((state) => state.teachers.teachers);
 
   const [search, setSearch] = useState('');
   const [teacher, setTeacher] = useState('');
@@ -137,13 +139,13 @@ export default function LiveClassesList() {
 
   const teacherOptions = useMemo(() => {
     const options = new Map<string, string>();
-    rows.forEach((row) => {
-      if (row.teacherId && row.teacherName) {
-        options.set(row.teacherId, row.teacherName);
+    teachers.forEach((teacherItem) => {
+      if (teacherItem.id && teacherItem.fullName) {
+        options.set(teacherItem.id, teacherItem.fullName);
       }
     });
     return Array.from(options, ([value, label]) => ({ value, label }));
-  }, [rows]);
+  }, [teachers]);
 
   const classroomOptions = useMemo(() => {
     const options = new Map<string, string>();
@@ -182,6 +184,17 @@ export default function LiveClassesList() {
     if (!requestParams) return;
     dispatch(fetchDirectLessons(requestParams));
   }, [dispatch, requestParams]);
+
+  useEffect(() => {
+    if (!schoolBranchId) return;
+    dispatch(
+      fetchTeachers({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchesId: schoolBranchId },
+      })
+    );
+  }, [dispatch, schoolBranchId]);
 
   const filteredClasses = useMemo(
     () => rows.filter((item) => !deletedIds.includes(item.id)),
