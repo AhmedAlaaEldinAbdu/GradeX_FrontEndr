@@ -10,7 +10,6 @@ import EducationalContentCard from './components/EducationalContentCard';
 import ExamsList from './components/ExamsList';
 import TrainingCoursesList from './components/TrainingCoursesList';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
-import TeachersLightBlueIcon from '@gradex/assets/icons/TeachersLightBlue.svg';
 import StudentYellowIcon from '@gradex/assets/icons/StudentYellow.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
@@ -34,7 +33,7 @@ export default function ELearningOverviewPage() {
       {/* Main Content */}
       <div className="space-y-6">
         {/* Summary metrics */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <MetricCard
             title={t('eLearning.metrics.activeExams')}
             value={`0 ${t('eLearning.units.exam')}`}
@@ -46,14 +45,6 @@ export default function ELearningOverviewPage() {
             value={`0 ${t('eLearning.units.student')}`}
             icon={<CustomImage src={StudentYellowIcon} alt="Total students" className="h-5 w-5" />}
             iconClassName="bg-[#F6CB3B]/10"
-          />
-          <MetricCard
-            title={t('eLearning.metrics.questionBank')}
-            value={`0 ${t('eLearning.units.question')}`}
-            icon={
-              <CustomImage src={TeachersLightBlueIcon} alt="Question bank" className="h-5 w-5" />
-            }
-            iconClassName="bg-[#25BDD7]/10"
           />
           <MetricCard
             title={t('eLearning.metrics.successRate')}
