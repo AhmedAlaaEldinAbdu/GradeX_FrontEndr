@@ -42,6 +42,7 @@ type HomeworkAudience = 'all' | 'specific';
 
 type LiveClassFormData = {
   classType: ClassType;
+  date: string;
   fromTime: string;
   toTime: string;
   subject: string;
@@ -63,6 +64,7 @@ type LiveClassFormData = {
 
 const INITIAL_DATA: LiveClassFormData = {
   classType: 'remote',
+  date: '',
   fromTime: '',
   toTime: '',
   subject: '',
@@ -109,6 +111,14 @@ const parseArabicTime = (time?: string): string => {
 };
 
 const buildLiveClassDateTime = (time: string, sourceDate?: string): string => {
+  const explicitDatePart = sourceDate?.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
+  if (explicitDatePart) {
+    const timePart = time.split(':').length === 3 ? time : `${time}:00`;
+    const date = new Date(`${explicitDatePart}T${timePart}`);
+
+    return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+  }
+
   const parsedSourceDate = sourceDate ? new Date(sourceDate) : null;
   const now =
     parsedSourceDate && !Number.isNaN(parsedSourceDate.getTime()) ? parsedSourceDate : new Date();
@@ -142,6 +152,7 @@ const BACKEND_FIELD_TO_FORM_FIELD: Record<string, string> = {
   GradeId: 'stage',
   ClassroomId: 'grade',
   BookId: 'book',
+  Date: 'date',
   StartTime: 'fromTime',
   EndTime: 'toTime',
   HomeworkName: 'homeworkName',
@@ -287,6 +298,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
       stage: initialData.gradeId || '',
       grade: initialData.classroomId || '',
       book: initialData.bookId || '',
+      date: initialData.date ? initialData.date.slice(0, 10) : '',
       fromTime: parseArabicTime(initialData.startTime),
       toTime: parseArabicTime(initialData.endTime),
       classWorkFromPage: String(initialData.classworkFromPage ?? ''),
@@ -456,7 +468,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
         homeworkDescription,
         homeworkName,
         classroomId: data.grade,
-        date: buildLiveClassDateTime(data.fromTime, initialData?.date),
+        date: buildLiveClassDateTime(data.fromTime, data.date),
         startTime: data.fromTime,
         addHomework: data.addHomework,
         gradeId: data.stage,
@@ -532,6 +544,16 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
         <div className="flex flex-col gap-6">
           {/* Timing + subject/teacher + stage/grade */}
           <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <FormField label={t(`${base}.date`)} required name="date" error={errors.date}>
+                <Input
+                  type="date"
+                  value={data.date}
+                  onChange={(e) => set('date')(e.target.value)}
+                  placeholder={t(`${base}.datePlaceholder`)}
+                />
+              </FormField>
+            </div>
             <FormField
               label={t(`${base}.fromTime`)}
               required
