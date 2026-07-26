@@ -11,6 +11,7 @@ const isPageRangeValid = (from?: string | null, to?: string | null): boolean =>
 
 export const LiveClassSchema = object({
   classType: string().oneOf(['inPerson', 'remote']).required(`${V}.classTypeRequired`),
+  date: string().trim().required(`${V}.dateRequired`),
   fromTime: string().trim().required(`${V}.fromTimeRequired`),
   toTime: string()
     .trim()
