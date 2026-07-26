@@ -74,6 +74,8 @@
         "classType": "نوع الحصة",
         "inPerson": "حضوري",
         "remote": "عن بعد",
+        "date": "تاريخ الحصة",
+        "datePlaceholder": "اختر تاريخ الحصة",
         "fromTime": "موعد الحصة (من)",
         "toTime": "موعد الحصة (إلي)",
         "subject": "اسم المادة",
@@ -111,6 +113,7 @@
         "updatedSuccessfully": "تم تحديث الحصة المباشرة بنجاح",
         "validation": {
           "classTypeRequired": "يرجى اختيار نوع الحصة",
+          "dateRequired": "يرجى تحديد تاريخ الحصة",
           "fromTimeRequired": "يرجى تحديد موعد بداية الحصة",
           "toTimeRequired": "يرجى تحديد موعد نهاية الحصة",
           "toTimeAfterFrom": "يجب أن يكون موعد النهاية بعد موعد البداية",

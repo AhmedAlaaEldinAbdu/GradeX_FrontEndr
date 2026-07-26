@@ -74,6 +74,8 @@
         "classType": "Unterrichtsart",
         "inPerson": "Präsenz",
         "remote": "Fernunterricht",
+        "date": "Unterrichtsdatum",
+        "datePlaceholder": "Unterrichtsdatum auswählen",
         "fromTime": "Unterrichtszeit (von)",
         "toTime": "Unterrichtszeit (bis)",
         "subject": "Fachname",
@@ -111,6 +113,7 @@
         "updatedSuccessfully": "Live-Unterricht erfolgreich aktualisiert",
         "validation": {
           "classTypeRequired": "Bitte wählen Sie die Unterrichtsart",
+          "dateRequired": "Bitte wählen Sie das Unterrichtsdatum",
           "fromTimeRequired": "Bitte wählen Sie die Startzeit",
           "toTimeRequired": "Bitte wählen Sie die Endzeit",
           "toTimeAfterFrom": "Die Endzeit muss nach der Startzeit liegen",

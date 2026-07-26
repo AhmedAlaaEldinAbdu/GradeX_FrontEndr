@@ -74,6 +74,8 @@
         "classType": "Class type",
         "inPerson": "In-person",
         "remote": "Remote",
+        "date": "Class date",
+        "datePlaceholder": "Select class date",
         "fromTime": "Class time (from)",
         "toTime": "Class time (to)",
         "subject": "Subject name",
@@ -111,6 +113,7 @@
         "updatedSuccessfully": "Live class updated successfully",
         "validation": {
           "classTypeRequired": "Please select the class type",
+          "dateRequired": "Please select the class date",
           "fromTimeRequired": "Please select the start time",
           "toTimeRequired": "Please select the end time",
           "toTimeAfterFrom": "End time must be after start time",

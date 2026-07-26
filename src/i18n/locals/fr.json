@@ -74,6 +74,8 @@
         "classType": "Type de cours",
         "inPerson": "Présentiel",
         "remote": "À distance",
+        "date": "Date du cours",
+        "datePlaceholder": "Sélectionnez la date du cours",
         "fromTime": "Heure du cours (de)",
         "toTime": "Heure du cours (à)",
         "subject": "Nom de la matière",
@@ -111,6 +113,7 @@
         "updatedSuccessfully": "Cours en direct mis à jour avec succès",
         "validation": {
           "classTypeRequired": "Veuillez sélectionner le type de cours",
+          "dateRequired": "Veuillez sélectionner la date du cours",
           "fromTimeRequired": "Veuillez sélectionner l’heure de début",
           "toTimeRequired": "Veuillez sélectionner l’heure de fin",
           "toTimeAfterFrom": "L’heure de fin doit être postérieure à l’heure de début",
