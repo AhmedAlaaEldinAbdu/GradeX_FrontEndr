@@ -1053,6 +1053,14 @@
     "redirectingToLogin": "Перенаправление на страницу входа через {{seconds}} сек...",
     "goToLogin": "Перейти к входу"
   },
+  "account": {
+    "deleteAccount": "Удалить учётную запись",
+    "delete": "Удалить",
+    "deleteAccountInprogress": "Удаление учётной записи",
+    "deleteAccountConfirmation": "Вы уверены, что хотите удалить свою учётную запись?",
+    "deleteAccountSuccess": "Учётная запись успешно удалена",
+    "deleteAccountError": "Произошла ошибка при удалении учётной записи"
+  },
   "academicSystem": {
     "title": "Учебная система",
     "addAcademicSystem": "Добавить учебную систему",
