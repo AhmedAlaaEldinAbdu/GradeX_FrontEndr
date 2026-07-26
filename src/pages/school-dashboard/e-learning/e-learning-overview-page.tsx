@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
@@ -14,6 +15,7 @@ import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
 export default function ELearningOverviewPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
@@ -64,7 +66,11 @@ export default function ELearningOverviewPage() {
           <div className="mb-6 flex items-center justify-between gap-4">
             <h3 className="text-base font-medium text-[#3A3A3A]">{t('eLearning.exams.title')}</h3>
 
-            <button type="button" className="text-base font-medium text-green-500">
+            <button
+              type="button"
+              onClick={() => navigate('/lms/online-exams')}
+              className="text-base font-medium text-green-500"
+            >
               {t('eLearning.exams.viewAll')}
             </button>
           </div>
