@@ -6,6 +6,7 @@ export const TeacherEndpoints = {
   getTeacherById: (id: string) => `${Teacher}/${id}`,
   getPersonalDataById: `${Teacher}/GetPersonalDateById`,
   deleteTeacher: (id: string) => `${Teacher}/${id}`,
+  deleteTeacherAccount: `${Teacher}/DeleteAccount`,
 };
 
 export const TeacherAssignmentEndpoints = {
