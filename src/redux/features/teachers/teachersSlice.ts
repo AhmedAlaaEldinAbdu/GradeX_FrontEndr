@@ -179,6 +179,12 @@ const initialState: TeachersState = {
   isInitialized: false,
 };
 
+export interface DeleteTeacherAccountRequest {
+  phoneNumber: string;
+  countryCode: string;
+  password: string;
+}
+
 export const fetchTeachers = createAsyncThunk<FetchTeachersResponse, FetchTeachersPayload | void>(
   'teachers/fetchTeachers',
   async (payload, { rejectWithValue }) => {
@@ -405,6 +411,26 @@ export const updateTeacherAssignment = createAsyncThunk<
   }
 });
 
+export interface DeleteTeacherAccountPayload {
+  phoneNumber: string;
+  countryCode: string;
+  password: string;
+}
+
+export const deleteTeacherAccount = createAsyncThunk<
+  void,
+  DeleteTeacherAccountPayload
+>(
+  'teachers/deleteTeacherAccount',
+  async (payload, { rejectWithValue }) => {
+    try {
+      await teacherApiService.deleteTeacherAccount(payload);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 const teachersSlice = createSlice({
   name: 'teachers',
   initialState,
@@ -613,6 +639,20 @@ const teachersSlice = createSlice({
       .addCase(updateTeacherAttendance.rejected, (state, action) => {
         state.isLoadingAttendance = false;
         state.attendanceError = action.payload as string;
+      });
+      
+    // Delete Teacher Account
+    builder
+      .addCase(deleteTeacherAccount.pending, (state) => {
+        state.isDeleting = true;
+        state.error = null;
+      })
+      .addCase(deleteTeacherAccount.fulfilled, (state) => {
+        state.isDeleting = false;
+      })
+      .addCase(deleteTeacherAccount.rejected, (state, action) => {
+        state.isDeleting = false;
+        state.error = action.payload as string;
       });
   },
 });
