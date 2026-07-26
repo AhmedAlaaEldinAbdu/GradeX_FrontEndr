@@ -16,6 +16,7 @@ import {
   ResetPasswordPage,
   PasswordResetSuccessPage,
   AuthCallbackPage,
+  DeleteAccountPage,
 } from '@gradex/pages/auth';
 import AddSchoolPage from '@/pages/super-admin-dashboard/schools/add-school-page';
 import MainContainer from '@/shared/layout/Container';
@@ -59,6 +60,8 @@ const RoleBasedRouter: React.FC = () => {
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
         <Route path="/auth/password-reset-success" element={<PasswordResetSuccessPage />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="/delete-account" element={<DeleteAccountPage />} />
+
         <Route
           path="/schools/add-school"
           element={

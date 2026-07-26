@@ -1052,6 +1052,14 @@
     "redirectingToLogin": "Redirection vers la page de connexion dans {{seconds}} secondes...",
     "goToLogin": "Aller à la connexion"
   },
+  "account": {
+    "deleteAccount": "Supprimer le compte",
+    "delete": "Supprimer",
+    "deleteAccountInprogress": "Suppression du compte en cours",
+    "deleteAccountConfirmation": "Êtes-vous sûr de vouloir supprimer votre compte ?",
+    "deleteAccountSuccess": "Votre compte a été supprimé avec succès. Nous sommes désolés de vous voir partir.",
+    "deleteAccountError": "Une erreur est survenue lors de la suppression de votre compte. Veuillez réessayer plus tard."
+  },
   "academicSystem": {
     "title": "Système scolaire",
     "addAcademicSystem": "Ajouter un système scolaire",

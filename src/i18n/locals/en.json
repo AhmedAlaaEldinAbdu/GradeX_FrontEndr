@@ -1052,6 +1052,14 @@
     "redirectingToLogin": "Redirecting to login page in {{seconds}} seconds...",
     "goToLogin": "Go to Login"
   },
+  "account": {
+    "deleteAccount": "Delete Account",
+    "delete": "Delete",
+    "deleteAccountInprogress": "Deleting your account",
+    "deleteAccountConfirmation": "Are you sure you want to delete your account?",
+    "deleteAccountSuccess": "Your account has been deleted successfully.",
+    "deleteAccountError": "An error occurred while trying to delete your account. Please try again later."
+  },
   "academicSystem": {
     "title": "Academic System",
     "addAcademicSystem": "Add Academic System",

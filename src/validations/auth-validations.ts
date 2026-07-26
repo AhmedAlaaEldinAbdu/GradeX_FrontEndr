@@ -39,7 +39,12 @@ export const ChangeMyPasswordSchema = object({
     .typeError('login.passwordInvalid'),
 });
 
+export const DeleteAccountSchema = object({
+  password: string().min(6, 'login.passwordInvalid').required('login.passwordRequired'),
+});
+
 export type LoginProps = InferType<typeof LoginSchema>;
 export type EmaileProps = InferType<typeof EmailSchema>;
 export type ChangePasswordProps = InferType<typeof ChangePasswordSchema>;
 export type ChangeMyPasswordProps = InferType<typeof ChangeMyPasswordSchema>;
+export type DeleteAccountProps = InferType<typeof DeleteAccountSchema>;

@@ -1061,6 +1061,14 @@
     "redirectingToLogin": "سيتم توجيهك إلى صفحة تسجيل الدخول خلال {{seconds}} ثواني...",
     "goToLogin": "الذهاب إلى تسجيل الدخول"
   },
+  "account": {
+    "deleteAccount": "حذف الحساب",
+    "delete": "حذف",
+    "deleteAccountInprogress": "جار حذف الحساب",
+    "deleteAccountConfirmation": "هل أنت متأكد أنك تريد حذف حساب",
+    "deleteAccountSuccess": "تم حذف الحساب بنجاح",
+    "deleteAccountError": "حدث خطأ أثناء محاولة حذف الحساب. يرجى المحاولة مرة أخرى."
+  },
   "academicSystem": {
     "title": "النظام الأكاديمي",
     "addAcademicSystem": "إضافة نظام أكاديمي",

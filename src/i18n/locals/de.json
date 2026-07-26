@@ -1052,6 +1052,14 @@
     "redirectingToLogin": "Weiterleitung zur Anmeldeseite in {{seconds}} Sekunden...",
     "goToLogin": "Zur Anmeldung"
   },
+  "account": {
+    "deleteAccount": "Konto löschen",
+    "delete": "Löschen",
+    "deleteAccountInprogress": "Konto wird gelöscht",
+    "deleteAccountConfirmation": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
+    "deleteAccountSuccess": "Ihr Konto wurde erfolgreich gelöscht. Wir bedauern, dass Sie uns verlassen, und hoffen, Sie in Zukunft wieder begrüßen zu dürfen.",
+    "deleteAccountError": "Beim Löschen Ihres Kontos ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support."
+  },
   "academicSystem": {
     "title": "Akademisches System",
     "addAcademicSystem": "Akademisches System hinzufügen",

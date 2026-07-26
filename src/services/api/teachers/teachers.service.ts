@@ -21,6 +21,7 @@ import type {
   TeacherPersonalDataDetails,
 } from '@/types/teacherPersonalData';
 import type { TeacherAttendanceUpdateRequest } from '@/types/teacherAttendance';
+import type { DeleteTeacherAccountRequest } from '@/redux/features/teachers/teachersSlice';
 
 /**
  * Get list of teachers with pagination and filters
@@ -249,6 +250,26 @@ export async function updateTeacherAssignment(
   };
 }
 
+/**
+ * Delete teacher account
+ */
+export async function deleteTeacherAccount(
+  data: DeleteTeacherAccountRequest
+): Promise<void> {
+  const response: AxiosResponse<{
+    data: null;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.delete(TeacherEndpoints.deleteTeacherAccount, {
+    data,
+  });
+
+  if (!response?.data?.isSuccess) {
+    throw new Error(response?.data?.message || 'Failed to delete teacher account');
+  }
+}
+
 // ============================================================================
 // Export Service Object
 // ============================================================================
@@ -258,6 +279,7 @@ export const teacherApiService = {
   getTeacherById,
   getTeacherPersonalData,
   deleteTeacher,
+  deleteTeacherAccount,
   getTeacherAssignment,
   getTeacherAssignmentById,
   getTeacherAssignmentList,
