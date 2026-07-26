@@ -47,6 +47,20 @@ const getClassroomsDisplay = (
     .join(', ');
 };
 
+const getGradesDisplay = (attendance: TeacherAttendance, currentLang: 'ar' | 'en'): string => {
+  if (attendance.grades && attendance.grades.length > 0) {
+    const gradeNames = attendance.grades
+      .map((grade) => (currentLang === 'ar' ? grade.gradeNameAr : grade.gradeNameEn) || '-')
+      .filter((gradeName, index, names) => gradeName !== '-' && names.indexOf(gradeName) === index);
+
+    return gradeNames.length > 0 ? gradeNames.join(', ') : '-';
+  }
+
+  return currentLang === 'ar'
+    ? attendance.lkSchoolStageNameAr || '-'
+    : attendance.lkSchoolStageNameEn || '-';
+};
+
 interface EmployeesAttendanceTabProps {
   filterComponent?: React.ReactNode;
   isActive?: boolean;
@@ -391,13 +405,7 @@ export default function EmployeesAttendanceTab({
     },
     {
       header: 'attendance.educationalStage',
-      accessor: (row) => (
-        <span>
-          {currentLang === 'ar'
-            ? row.lkSchoolStageNameAr || "-"
-            : row.lkSchoolStageNameEn || "-"}
-        </span>
-      ),
+      accessor: (row) => <span>{getGradesDisplay(row, currentLang)}</span>,
       headerClassName: 'min-w-[210px]',
       className: 'text-center',
     },
@@ -433,9 +441,14 @@ export default function EmployeesAttendanceTab({
         }
         return (
           <span className="text-sm">
-            {row.createdBy.createdByFullName || "-"}
-            {row.createdBy.administrativePositionNameAr || row.createdBy.administrativePositionNameEn
-              ? ` (${currentLang === 'ar' ? row.createdBy.administrativePositionNameAr : row.createdBy.administrativePositionNameEn})`
+            {row.createdBy.createdByFullName || '-'}
+            {row.createdBy.administrativePositionNameAr ||
+            row.createdBy.administrativePositionNameEn
+              ? ` (${
+                  currentLang === 'ar'
+                    ? row.createdBy.administrativePositionNameAr
+                    : row.createdBy.administrativePositionNameEn
+                })`
               : ''}
           </span>
         );
