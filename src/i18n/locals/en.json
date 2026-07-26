@@ -149,7 +149,6 @@
     "content": {
       "title": "Educational Content",
       "filters": {
-        "term": "Term",
         "month": "Month",
         "week": "Week",
         "day": "Day"
@@ -160,6 +159,12 @@
         "tue": "Tue",
         "wed": "Wed",
         "thu": "Thu"
+      },
+      "weeks": {
+        "week1": "Week 1",
+        "week2": "Week 2",
+        "week3": "Week 3",
+        "week4": "Week 4"
       }
     },
     "exams": {

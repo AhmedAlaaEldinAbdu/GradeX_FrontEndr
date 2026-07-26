@@ -149,7 +149,6 @@
     "content": {
       "title": "Lerninhalte",
       "filters": {
-        "term": "Semester",
         "month": "Monat",
         "week": "Woche",
         "day": "Tag"
@@ -160,6 +159,12 @@
         "tue": "Di",
         "wed": "Mi",
         "thu": "Do"
+      },
+      "weeks": {
+        "week1": "Woche 1",
+        "week2": "Woche 2",
+        "week3": "Woche 3",
+        "week4": "Woche 4"
       }
     },
     "exams": {
