@@ -43,10 +43,10 @@
         "date": "Datum"
       },
       "status": {
+        "draft": "Entwurf",
+        "started": "Gestartet",
         "completed": "Abgeschlossen",
-        "active": "Läuft jetzt",
-        "upcoming": "Bevorstehend",
-        "closed": "Geschlossen"
+        "cancelled": "Storniert"
       },
       "table": {
         "management": "Verwaltung",
@@ -63,10 +63,11 @@
         "title": "Remote-Unterricht starten",
         "subjectTitle": "Fach {{subject}}",
         "teacherName": "Lehrer {{teacher}}",
-        "linkLabel": "Unterrichtslink",
-        "linkPlaceholder": "Unterrichtslink eingeben",
-        "linkRequired": "Bitte geben Sie den Unterrichtslink ein",
-        "starting": "Wird gestartet..."
+    "linkLabel": "Unterrichtslink",
+    "linkPlaceholder": "Unterrichtslink eingeben",
+    "linkRequired": "Bitte geben Sie den Unterrichtslink ein",
+    "linkInvalid": "Bitte geben Sie einen gültigen Link ein",
+    "starting": "Wird gestartet..."
       },
       "add": {
         "title": "Unterricht hinzufügen",
@@ -90,6 +91,10 @@
         "classWork": "Klassenarbeit",
         "homework": "Hausaufgaben",
         "addHomework": "Hausaufgabe hinzufügen",
+        "homeworkName": "Hausaufgabenname",
+        "homeworkNamePlaceholder": "Hausaufgabenname eingeben",
+        "homeworkDescription": "Hausaufgabenbeschreibung",
+        "homeworkDescriptionPlaceholder": "Hausaufgabenbeschreibung eingeben",
         "fromPage": "Von Seite",
         "toPage": "Bis Seite",
         "pagePlaceholder": "Seitenzahl",
@@ -117,6 +122,10 @@
           "sendToRequired": "Bitte wählen Sie die Empfänger der Hausaufgaben",
           "studentsRequired": "Bitte wählen Sie mindestens einen Schüler",
           "homeworkNameRequired": "Bitte geben Sie Hausaufgabendetails ein",
+          "homeworkFromPageRequired": "Bitte geben Sie die Startseite der Hausaufgabe ein",
+          "homeworkToPageRequired": "Bitte geben Sie die Endseite der Hausaufgabe ein",
+          "pageGreaterThanZero": "Seitenzahlen müssen größer als null sein",
+          "toPageAfterFrom": "Bis Seite muss größer oder gleich Von Seite sein",
           "homeworkPageGreaterThanZero": "Hausaufgabenseiten müssen größer als null sein"
         },
         "editTitle": "Unterricht bearbeiten"
@@ -889,6 +898,7 @@
     "ok": "OK",
     "existingFile": "Vorhandene Datei",
     "saving": "Wird gespeichert...",
+    "updating": "Wird aktualisiert...",
     "generating": "Wird generiert...",
     "type": "Typ",
     "chooseDate": "Datum wählen",

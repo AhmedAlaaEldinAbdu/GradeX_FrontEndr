@@ -13,7 +13,6 @@ import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
 import FileUpload from '@/shared/components/FileUpload';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
-import ToggleSwitch from '@/shared/components/ToggleSwitch';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
@@ -54,8 +53,8 @@ type LiveClassFormData = {
   classWorkToPage: string;
   homeworkFromPage: string;
   homeworkToPage: string;
-  homeworkDescAr: string;
-  homeworkDescEn: string;
+  homeworkName: string;
+  homeworkDescription: string;
   addHomework: boolean;
   sendHomeworkTo: HomeworkAudience;
   selectedStudents: SelectedStudent[];
@@ -75,8 +74,8 @@ const INITIAL_DATA: LiveClassFormData = {
   classWorkToPage: '',
   homeworkFromPage: '',
   homeworkToPage: '',
-  homeworkDescAr: '',
-  homeworkDescEn: '',
+  homeworkName: '',
+  homeworkDescription: '',
   addHomework: false,
   sendHomeworkTo: 'all',
   selectedStudents: [],
@@ -148,8 +147,9 @@ const BACKEND_FIELD_TO_FORM_FIELD: Record<string, string> = {
   HomeworkName: 'homeworkName',
   HomeworkFromPage: 'homeworkFromPage',
   HomeworkToPage: 'homeworkToPage',
-  HomeworkDescriptionAr: 'homeworkDescAr',
-  HomeworkDescriptionEn: 'homeworkDescEn',
+  HomeworkDescription: 'homeworkDescription',
+  HomeworkDescriptionAr: 'homeworkDescription',
+  HomeworkDescriptionEn: 'homeworkDescription',
 };
 
 const BACKEND_ERROR_MESSAGES: Record<string, string> = {
@@ -179,7 +179,7 @@ const getApiValidationErrors = (result: LessonMutationResult): Record<string, st
       const backendField = item.propertyName || item.identifier || '';
       const formField = BACKEND_FIELD_TO_FORM_FIELD[backendField] || 'form';
       if (!next[formField]) {
-        next[formField] = getBackendErrorMessage(item.errorMessage || item.errorCode);
+        next[formField] = getBackendErrorMessage(item.errorMessage || item.errorCode || undefined);
       }
     });
     return next;
@@ -199,15 +199,7 @@ const getApiValidationErrors = (result: LessonMutationResult): Record<string, st
 };
 
 const hasExistingHomework = (lesson: Lesson): boolean =>
-  Boolean(
-    (lesson.homeworkFromPage ?? 0) > 0 ||
-      (lesson.homeworkToPage ?? 0) > 0 ||
-      lesson.homeworkName ||
-      lesson.homeworkDescription ||
-      lesson.homeworkDescriptionAr ||
-      lesson.homeworkDescriptionEn ||
-      lesson.lessonsStudent?.length
-  );
+  (lesson.homeworkFromPage ?? 0) > 0 && (lesson.homeworkToPage ?? 0) > 0;
 
 type LiveClassFormProps = {
   mode: 'add' | 'edit';
@@ -301,8 +293,12 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
       classWorkToPage: String(initialData.classworkToPage ?? ''),
       homeworkFromPage: String(initialData.homeworkFromPage ?? ''),
       homeworkToPage: String(initialData.homeworkToPage ?? ''),
-      homeworkDescAr: initialData.homeworkDescriptionAr || '',
-      homeworkDescEn: initialData.homeworkDescriptionEn || '',
+      homeworkName: initialData.homeworkName || '',
+      homeworkDescription:
+        initialData.homeworkDescription ||
+        initialData.homeworkDescriptionAr ||
+        initialData.homeworkDescriptionEn ||
+        '',
       addHomework: hasExistingHomework(initialData),
       sendHomeworkTo: initialData.isHomeworkForAllStudents ? 'all' : 'specific',
       selectedStudents,
@@ -361,12 +357,26 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
         delete next.form;
 
         if (
+          key === 'classWorkFromPage' ||
+          key === 'classWorkToPage' ||
           key === 'homeworkFromPage' ||
           key === 'homeworkToPage' ||
-          key === 'homeworkDescAr' ||
-          key === 'homeworkDescEn'
+          key === 'homeworkName' ||
+          key === 'homeworkDescription'
         ) {
           delete next.homeworkName;
+        }
+        if (key === 'classWorkFromPage') {
+          delete next.classWorkToPage;
+        }
+        if (key === 'classWorkToPage') {
+          delete next.classWorkFromPage;
+        }
+        if (key === 'homeworkFromPage') {
+          delete next.homeworkToPage;
+        }
+        if (key === 'homeworkToPage') {
+          delete next.homeworkFromPage;
         }
 
         return next;
@@ -392,8 +402,8 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
       ...(!checked && {
         homeworkFromPage: '',
         homeworkToPage: '',
-        homeworkDescAr: '',
-        homeworkDescEn: '',
+        homeworkName: '',
+        homeworkDescription: '',
         sendHomeworkTo: 'all' as HomeworkAudience,
         selectedStudents: [],
       }),
@@ -405,10 +415,9 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
       const next = { ...prev };
       delete next.addHomework;
       delete next.homeworkName;
+      delete next.homeworkDescription;
       delete next.homeworkFromPage;
       delete next.homeworkToPage;
-      delete next.homeworkDescAr;
-      delete next.homeworkDescEn;
       delete next.sendHomeworkTo;
       delete next.selectedStudents;
       delete next.form;
@@ -429,12 +438,8 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
         return;
       }
 
-      const homeworkDescription = data.addHomework
-        ? data.homeworkDescAr || data.homeworkDescEn || ''
-        : '';
-      const selectedSubjectName =
-        subjectOptions.find((option) => option.value === data.subject)?.label ||
-        t(`${base}.homework`);
+      const homeworkName = data.addHomework ? data.homeworkName.trim() : undefined;
+      const homeworkDescription = data.addHomework ? data.homeworkDescription.trim() : '';
       const request: CreateLessonRequest = {
         lessonsStudent:
           data.addHomework && data.sendHomeworkTo === 'specific'
@@ -449,9 +454,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
         isHomeworkForAllStudents: !data.addHomework || data.sendHomeworkTo === 'all',
         isDirectLesson: true,
         homeworkDescription,
-        homeworkDescriptionAr: data.addHomework ? data.homeworkDescAr || undefined : undefined,
-        homeworkDescriptionEn: data.addHomework ? data.homeworkDescEn || undefined : undefined,
-        homeworkName: data.addHomework ? homeworkDescription || selectedSubjectName : undefined,
+        homeworkName,
         classroomId: data.grade,
         date: buildLiveClassDateTime(data.fromTime, initialData?.date),
         startTime: data.fromTime,
@@ -637,7 +640,12 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
               {t(`${base}.classWork`)}
             </h3>
             <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
-              <FormField label={t(`${base}.fromPage`)} optional name="classWorkFromPage">
+              <FormField
+                label={t(`${base}.fromPage`)}
+                optional
+                name="classWorkFromPage"
+                error={errors.classWorkFromPage}
+              >
                 <Input
                   type="number"
                   min={1}
@@ -646,7 +654,12 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
                   placeholder={t(`${base}.pagePlaceholder`)}
                 />
               </FormField>
-              <FormField label={t(`${base}.toPage`)} optional name="classWorkToPage">
+              <FormField
+                label={t(`${base}.toPage`)}
+                optional
+                name="classWorkToPage"
+                error={errors.classWorkToPage}
+              >
                 <Input
                   type="number"
                   min={1}
@@ -660,29 +673,68 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
 
           {/* Homework */}
           <div className="rounded-2xl border border-[#DDE0E0] p-4">
-            <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="mb-4 flex flex-col items-start gap-2">
               <h3 className="text-start text-lg font-medium text-[#0E1F1F]">
                 {t(`${base}.homework`)}
               </h3>
-              <label className="flex items-center gap-3 text-base font-normal text-black-800">
+              <div className="flex flex-col items-start gap-2 text-base font-normal text-black-800">
                 <span>{t(`${base}.addHomework`)}</span>
-                <ToggleSwitch
-                  checked={data.addHomework}
-                  onChange={handleAddHomeworkChange}
-                  ariaLabel={t(`${base}.addHomework`)}
-                />
-              </label>
+                <div className="flex gap-6 text-right">
+                  <div className="flex items-center justify-end">
+                    <label
+                      htmlFor="addHomeworkSwitch"
+                      className="relative inline-flex h-6 w-11 cursor-pointer items-center"
+                    >
+                      <input
+                        id="addHomeworkSwitch"
+                        type="checkbox"
+                        checked={data.addHomework}
+                        onChange={(event) => handleAddHomeworkChange(event.target.checked)}
+                        className="peer sr-only"
+                        aria-label={t(`${base}.addHomework`)}
+                      />
+                      <div className="peer-unchecked:bg-gray-200 h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600"></div>
+                      <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {data.addHomework && (
               <div className="flex flex-col gap-5">
-                <div data-form-field="homeworkName">
-                  <FormErrorMessage message={errors.homeworkName || errors.form} />
+                <div>
+                  <FormErrorMessage message={errors.form} />
                 </div>
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
                   <FormField
-                    label={t(`${base}.fromPage`)}
+                    label={t(`${base}.homeworkName`)}
+                    required
+                    name="homeworkName"
+                    error={errors.homeworkName}
+                  >
+                    <Input
+                      value={data.homeworkName}
+                      onChange={(e) => set('homeworkName')(e.target.value)}
+                      placeholder={t(`${base}.homeworkNamePlaceholder`)}
+                    />
+                  </FormField>
+                  <FormField
+                    label={t(`${base}.homeworkDescription`)}
                     optional
+                    name="homeworkDescription"
+                    error={errors.homeworkDescription}
+                  >
+                    <TextArea
+                      value={data.homeworkDescription}
+                      onChange={(e) => set('homeworkDescription')(e.target.value)}
+                      placeholder={t(`${base}.homeworkDescriptionPlaceholder`)}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label={t(`${base}.fromPage`)}
+                    required
                     name="homeworkFromPage"
                     error={errors.homeworkFromPage}
                   >
@@ -696,7 +748,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
                   </FormField>
                   <FormField
                     label={t(`${base}.toPage`)}
-                    optional
+                    required
                     name="homeworkToPage"
                     error={errors.homeworkToPage}
                   >
@@ -706,31 +758,6 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
                       value={data.homeworkToPage}
                       onChange={(e) => set('homeworkToPage')(e.target.value)}
                       placeholder={t(`${base}.pagePlaceholder`)}
-                    />
-                  </FormField>
-
-                  <FormField
-                    label={t(`${base}.descAr`)}
-                    optional
-                    name="homeworkDescAr"
-                    error={errors.homeworkDescAr}
-                  >
-                    <TextArea
-                      value={data.homeworkDescAr}
-                      onChange={(e) => set('homeworkDescAr')(e.target.value)}
-                      placeholder={t(`${base}.descPlaceholder`)}
-                    />
-                  </FormField>
-                  <FormField
-                    label={t(`${base}.descEn`)}
-                    optional
-                    name="homeworkDescEn"
-                    error={errors.homeworkDescEn}
-                  >
-                    <TextArea
-                      value={data.homeworkDescEn}
-                      onChange={(e) => set('homeworkDescEn')(e.target.value)}
-                      placeholder={t(`${base}.descPlaceholder`)}
                     />
                   </FormField>
                 </div>

@@ -6,6 +6,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable, { type DataTableColumn, type FilterConfig } from '@/shared/components/DataTable';
 import IconButton from '@/shared/components/IconButton';
+import Input from '@/shared/components/Input';
 import UserAvatarName from '@/shared/components/UserAvatarName';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import { useToast } from '@/shared/context/ToastContext';
@@ -17,8 +18,9 @@ import {
   fetchDirectLessons,
   startLesson,
 } from '@/redux/features/lessons/lessonsSlice';
+import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
+import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 import type { DirectLessonsQueryParams, Lesson } from '@/services/api/types/lessons.types';
-import CalendarInputIcon from '@gradex/assets/icons/CalendarInput.svg';
 import VideoConferenceIcon from '@gradex/assets/icons/VideoConference.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import StartLiveClassPopup from '../popups/StartLiveClassPopup';
@@ -27,17 +29,17 @@ import { type LiveClassRow, type LiveClassStatus } from './live-classes-data';
 const PAGE_SIZE = 10;
 
 const statusClassName: Record<LiveClassStatus, string> = {
+  draft: 'bg-[#FEF8E6] text-[#C89004]',
+  started: 'bg-[#DFF8ED] text-[#1A9F58]',
   completed: 'bg-[#E6F3FE] text-[#117BD7]',
-  active: 'bg-[#DFF8ED] text-[#1A9F58]',
-  upcoming: 'bg-[#FEF8E6] text-[#C89004]',
-  closed: 'bg-red-100 text-red-500',
+  cancelled: 'bg-red-100 text-red-500',
 };
 
 const STATUS_TO_API: Record<LiveClassStatus, number> = {
-  upcoming: 1,
-  active: 2,
+  draft: 1,
+  started: 2,
   completed: 3,
-  closed: 4,
+  cancelled: 4,
 };
 
 const toTimeValue = (time?: string): string => {
@@ -57,20 +59,20 @@ const buildDateTime = (date?: string, time?: string): Date | null => {
 const getStatusFromLesson = (lesson: Lesson): LiveClassStatus => {
   const lessonStatus = Number(lesson.lessonStatus);
 
-  if (lessonStatus === STATUS_TO_API.upcoming) return 'upcoming';
-  if (lessonStatus === STATUS_TO_API.active) return 'active';
+  if (lessonStatus === STATUS_TO_API.draft) return 'draft';
+  if (lessonStatus === STATUS_TO_API.started) return 'started';
   if (lessonStatus === STATUS_TO_API.completed) return 'completed';
-  if (lessonStatus === STATUS_TO_API.closed) return 'closed';
+  if (lessonStatus === STATUS_TO_API.cancelled) return 'cancelled';
 
   const now = new Date();
   const startsAt = buildDateTime(lesson.date, lesson.startTime);
   const endsAt = buildDateTime(lesson.date, lesson.endTime);
 
-  if (startsAt && endsAt && now >= startsAt && now <= endsAt) return 'active';
-  if (startsAt && now < startsAt) return 'upcoming';
+  if (startsAt && endsAt && now >= startsAt && now <= endsAt) return 'started';
+  if (startsAt && now < startsAt) return 'draft';
   if (endsAt && now > endsAt) return 'completed';
 
-  return 'upcoming';
+  return 'draft';
 };
 
 const formatDate = (value: string, locale: string): string => {
@@ -92,7 +94,9 @@ const mapLessonToRow = (lesson: Lesson, isArabic: boolean, locale: string): Live
   teacherName: lesson.teacherName || '',
   status: getStatusFromLesson(lesson),
   stage:
-    (isArabic ? lesson.gradeNameAr : lesson.gradeNameEn) || lesson.gradeNameAr || lesson.gradeNameEn,
+    (isArabic ? lesson.gradeNameAr : lesson.gradeNameEn) ||
+    lesson.gradeNameAr ||
+    lesson.gradeNameEn,
   classroom:
     (isArabic ? lesson.classroomNameAr : lesson.classroomNameEn) ||
     lesson.classroomNameAr ||
@@ -117,6 +121,8 @@ export default function LiveClassesList() {
   const isLoadingDirectLessons = useAppSelector((state) => state.lessons.isLoadingDirectLessons);
   const isDeleting = useAppSelector((state) => state.lessons.isDeleting);
   const isStarting = useAppSelector((state) => state.lessons.isStarting);
+  const teachers = useAppSelector((state) => state.teachers.teachers);
+  const classrooms = useAppSelector((state) => state.classrooms.classrooms);
 
   const [search, setSearch] = useState('');
   const [teacher, setTeacher] = useState('');
@@ -135,29 +141,30 @@ export default function LiveClassesList() {
 
   const teacherOptions = useMemo(() => {
     const options = new Map<string, string>();
-    rows.forEach((row) => {
-      if (row.teacherId && row.teacherName) {
-        options.set(row.teacherId, row.teacherName);
+    teachers.forEach((teacherItem) => {
+      if (teacherItem.id && teacherItem.fullName) {
+        options.set(teacherItem.id, teacherItem.fullName);
       }
     });
     return Array.from(options, ([value, label]) => ({ value, label }));
-  }, [rows]);
+  }, [teachers]);
 
   const classroomOptions = useMemo(() => {
     const options = new Map<string, string>();
-    rows.forEach((row) => {
-      if (row.classroomId && row.classroom) {
-        options.set(row.classroomId, row.classroom);
+    classrooms.forEach((classroomItem) => {
+      const label = (isArabic ? classroomItem.name : classroomItem.nameEn) || classroomItem.name;
+      if (classroomItem.id && label) {
+        options.set(classroomItem.id, label);
       }
     });
     return Array.from(options, ([value, label]) => ({ value, label }));
-  }, [rows]);
+  }, [classrooms, isArabic]);
 
   const statusOptions = [
+    { value: String(STATUS_TO_API.draft), label: t('eLearning.liveClasses.status.draft') },
+    { value: String(STATUS_TO_API.started), label: t('eLearning.liveClasses.status.started') },
     { value: String(STATUS_TO_API.completed), label: t('eLearning.liveClasses.status.completed') },
-    { value: String(STATUS_TO_API.active), label: t('eLearning.liveClasses.status.active') },
-    { value: String(STATUS_TO_API.upcoming), label: t('eLearning.liveClasses.status.upcoming') },
-    { value: String(STATUS_TO_API.closed), label: t('eLearning.liveClasses.status.closed') },
+    { value: String(STATUS_TO_API.cancelled), label: t('eLearning.liveClasses.status.cancelled') },
   ];
 
   const requestParams = useMemo<DirectLessonsQueryParams | null>(() => {
@@ -180,6 +187,24 @@ export default function LiveClassesList() {
     if (!requestParams) return;
     dispatch(fetchDirectLessons(requestParams));
   }, [dispatch, requestParams]);
+
+  useEffect(() => {
+    if (!schoolBranchId) return;
+    dispatch(
+      fetchTeachers({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchesId: schoolBranchId },
+      })
+    );
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchId },
+      })
+    );
+  }, [dispatch, schoolBranchId]);
 
   const filteredClasses = useMemo(
     () => rows.filter((item) => !deletedIds.includes(item.id)),
@@ -211,15 +236,27 @@ export default function LiveClassesList() {
     },
     {
       header: 'eLearning.liveClasses.table.management',
-      accessor: (row) => (
-        <button
-          type="button"
-          onClick={() => setSelectedLiveClass(row)}
-          className="inline-flex min-w-[112px] items-center justify-center rounded-2xl border border-green-500 bg-white px-5 py-2 text-sm font-medium text-green-500 transition-colors hover:bg-green-50"
-        >
-          {t('eLearning.liveClasses.startNow')}
-        </button>
-      ),
+      accessor: (row) => {
+        const canStartLesson = row.status === 'draft' && !isStarting;
+
+        return (
+          <button
+            type="button"
+            disabled={!canStartLesson}
+            onClick={() => {
+              if (!canStartLesson) return;
+              setSelectedLiveClass(row);
+            }}
+            className={`inline-flex min-w-[112px] items-center justify-center rounded-2xl border px-5 py-2 text-sm font-medium transition-colors ${
+              canStartLesson
+                ? 'border-green-500 bg-white text-green-500 hover:bg-green-50'
+                : 'cursor-not-allowed border-[#DDE0E0] bg-gray-100 text-[#9AA0A0]'
+            }`}
+          >
+            {t('eLearning.liveClasses.startNow')}
+          </button>
+        );
+      },
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
     },
@@ -231,7 +268,14 @@ export default function LiveClassesList() {
     {
       header: 'eLearning.liveClasses.table.teacherName',
       accessor: (row) => (
-        <UserAvatarName name={row.teacherName} align="between" onView={() => {}} />
+        <UserAvatarName
+          name={row.teacherName}
+          align="between"
+          onView={() => {
+            if (!row.teacherId) return;
+            navigate(`/teaching-staff/teachers/${row.teacherId}`);
+          }}
+        />
       ),
       headerClassName: 'min-w-[260px]',
       className: 'text-center',
@@ -378,19 +422,15 @@ export default function LiveClassesList() {
       onChange: () => {},
       width: '20%',
       customComponent: (
-        <label className="flex h-[48px] w-full items-center justify-center gap-2 rounded-2xl border border-[#DDE0E0] bg-white px-4 text-sm font-normal text-[#646969]">
-          <CustomImage src={CalendarInputIcon} alt="" className="h-4 w-4" />
-          <input
-            type="date"
-            value={date}
-            onChange={(event) => {
-              setDate(event.target.value);
-              setPage(1);
-            }}
-            className="w-full bg-transparent text-sm font-normal text-[#646969] outline-none"
-            aria-label={t('eLearning.liveClasses.filters.date')}
-          />
-        </label>
+        <Input
+          type="date"
+          value={date}
+          onChange={(event) => {
+            setDate(event.target.value);
+            setPage(1);
+          }}
+          aria-label={t('eLearning.liveClasses.filters.date')}
+        />
       ),
     },
   ];

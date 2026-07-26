@@ -4,6 +4,12 @@ export interface TeacherAttendanceClassroom {
   classroomNameEn: string;
 }
 
+export interface TeacherAttendanceGrade {
+  gradeId: string;
+  gradeNameAr: string;
+  gradeNameEn: string;
+}
+
 export interface TeacherAttendanceCreatedBy {
   createdById: string;
   createdByFullNane: string | null;
@@ -20,6 +26,7 @@ export interface TeacherAttendance {
   lkSchoolStageId: string | null;
   lkSchoolStageNameAr: string | null;
   lkSchoolStageNameEn: string | null;
+  grades?: TeacherAttendanceGrade[];
   classRooms: TeacherAttendanceClassroom[];
   job: number;
   date: string;

@@ -43,10 +43,10 @@
         "date": "Date"
       },
       "status": {
+        "draft": "Draft",
+        "started": "Started",
         "completed": "Completed",
-        "active": "Active now",
-        "upcoming": "Upcoming",
-        "closed": "Closed"
+        "cancelled": "Cancelled"
       },
       "table": {
         "management": "Management",
@@ -63,10 +63,11 @@
         "title": "Start remote class",
         "subjectTitle": "{{subject}} subject",
         "teacherName": "Teacher {{teacher}}",
-        "linkLabel": "Class link",
-        "linkPlaceholder": "Enter class link",
-        "linkRequired": "Please enter the class link",
-        "starting": "Starting..."
+    "linkLabel": "Class link",
+    "linkPlaceholder": "Enter class link",
+    "linkRequired": "Please enter the class link",
+    "linkInvalid": "Please enter a valid link",
+    "starting": "Starting..."
       },
       "add": {
         "title": "Add Class",
@@ -90,6 +91,10 @@
         "classWork": "Class work",
         "homework": "Homework",
         "addHomework": "Add homework",
+        "homeworkName": "Homework name",
+        "homeworkNamePlaceholder": "Enter homework name",
+        "homeworkDescription": "Homework description",
+        "homeworkDescriptionPlaceholder": "Enter homework description",
         "fromPage": "From page",
         "toPage": "To page",
         "pagePlaceholder": "Page number",
@@ -117,6 +122,10 @@
           "sendToRequired": "Please select the homework recipients",
           "studentsRequired": "Please select at least one student",
           "homeworkNameRequired": "Please enter homework details",
+          "homeworkFromPageRequired": "Please enter the homework start page",
+          "homeworkToPageRequired": "Please enter the homework end page",
+          "pageGreaterThanZero": "Page numbers must be greater than zero",
+          "toPageAfterFrom": "To page must be greater than or equal to from page",
           "homeworkPageGreaterThanZero": "Homework pages must be greater than zero"
         },
         "editTitle": "Edit Class"
@@ -889,6 +898,7 @@
     "ok": "Ok",
     "existingFile": "Existing file",
     "saving": "Saving...",
+    "updating": "Updating...",
     "generating": "Generating...",
     "type": "Type",
     "chooseDate": "Choose Date",

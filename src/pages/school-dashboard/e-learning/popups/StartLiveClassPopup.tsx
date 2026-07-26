@@ -39,6 +39,15 @@ function DetailItem({ icon, value }: { icon: string; value: string }) {
   );
 }
 
+const isValidMeetingLink = (value: string): boolean => {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 export default function StartLiveClassPopup({
   isOpen,
   liveClass,
@@ -60,6 +69,10 @@ export default function StartLiveClassPopup({
     const meetingLink = classLink.trim();
     if (!meetingLink) {
       setLinkError(t('eLearning.liveClasses.popup.linkRequired'));
+      return;
+    }
+    if (!isValidMeetingLink(meetingLink)) {
+      setLinkError(t('eLearning.liveClasses.popup.linkInvalid'));
       return;
     }
 

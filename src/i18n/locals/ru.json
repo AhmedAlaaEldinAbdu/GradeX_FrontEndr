@@ -43,10 +43,10 @@
         "date": "Дата"
       },
       "status": {
+        "draft": "Черновик",
+        "started": "Начат",
         "completed": "Завершено",
-        "active": "Идет сейчас",
-        "upcoming": "Предстоит",
-        "closed": "Закрыто"
+        "cancelled": "Отменено"
       },
       "table": {
         "management": "Управление",
@@ -63,10 +63,11 @@
         "title": "Начать дистанционный урок",
         "subjectTitle": "Предмет {{subject}}",
         "teacherName": "Учитель {{teacher}}",
-        "linkLabel": "Ссылка на урок",
-        "linkPlaceholder": "Введите ссылку на урок",
-        "linkRequired": "Пожалуйста, введите ссылку на урок",
-        "starting": "Запуск..."
+    "linkLabel": "Ссылка на урок",
+    "linkPlaceholder": "Введите ссылку на урок",
+    "linkRequired": "Пожалуйста, введите ссылку на урок",
+    "linkInvalid": "Пожалуйста, введите действительную ссылку",
+    "starting": "Запуск..."
       },
       "add": {
         "title": "Добавить занятие",
@@ -90,6 +91,10 @@
         "classWork": "Классная работа",
         "homework": "Домашнее задание",
         "addHomework": "Добавить домашнее задание",
+        "homeworkName": "Название домашнего задания",
+        "homeworkNamePlaceholder": "Введите название домашнего задания",
+        "homeworkDescription": "Описание домашнего задания",
+        "homeworkDescriptionPlaceholder": "Введите описание домашнего задания",
         "fromPage": "Со страницы",
         "toPage": "До страницы",
         "pagePlaceholder": "Номер страницы",
@@ -117,6 +122,10 @@
           "sendToRequired": "Пожалуйста, выберите получателей задания",
           "studentsRequired": "Пожалуйста, выберите хотя бы одного ученика",
           "homeworkNameRequired": "Пожалуйста, введите данные домашнего задания",
+          "homeworkFromPageRequired": "Пожалуйста, введите начальную страницу домашнего задания",
+          "homeworkToPageRequired": "Пожалуйста, введите конечную страницу домашнего задания",
+          "pageGreaterThanZero": "Номера страниц должны быть больше нуля",
+          "toPageAfterFrom": "Конечная страница должна быть больше или равна начальной странице",
           "homeworkPageGreaterThanZero": "Страницы домашнего задания должны быть больше нуля"
         },
         "editTitle": "Редактировать занятие"
@@ -903,6 +912,7 @@
     "ok": "OK",
     "existingFile": "Существующий файл",
     "saving": "Сохранение...",
+    "updating": "Обновление...",
     "generating": "Генерация...",
     "type": "Тип",
     "chooseDate": "Выбрать дату",
