@@ -82,7 +82,11 @@ export default function ELearningOverviewPage() {
           <div className="mb-6 flex items-center justify-between gap-4">
             <h3 className="text-base font-medium text-[#3A3A3A]">{t('eLearning.courses.title')}</h3>
 
-            <button type="button" className="text-base font-medium text-green-500">
+            <button
+              type="button"
+              onClick={() => navigate('/lms/courses')}
+              className="text-base font-medium text-green-500"
+            >
               {t('eLearning.courses.viewAll')}
             </button>
           </div>
