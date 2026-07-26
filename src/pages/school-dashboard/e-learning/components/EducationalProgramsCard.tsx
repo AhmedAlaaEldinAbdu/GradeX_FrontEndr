@@ -18,7 +18,6 @@ export default function EducationalProgramsCard() {
   const programs: ProgramDatum[] = [
     { key: 'exams', label: t('eLearning.programs.exams'), value: 0, color: '#117BD7' },
     { key: 'courses', label: t('eLearning.programs.courses'), value: 0, color: '#1BD867' },
-    { key: 'workshops', label: t('eLearning.programs.workshops'), value: 0, color: '#A353DD' },
   ];
 
   const total = programs.reduce((sum, program) => sum + program.value, 0);
