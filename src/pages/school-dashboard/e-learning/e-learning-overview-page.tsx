@@ -4,7 +4,6 @@ import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
-import MoodleSyncBanner from './components/MoodleSyncBanner';
 import EducationalProgramsCard from './components/EducationalProgramsCard';
 import EducationalContentCard from './components/EducationalContentCard';
 import ExamsList from './components/ExamsList';
@@ -53,9 +52,6 @@ export default function ELearningOverviewPage() {
             iconClassName="bg-[#1A9F58]/10"
           />
         </div>
-
-        {/* Moodle sync banner */}
-        <MoodleSyncBanner />
 
         {/* Educational content + programs */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_309px]">
