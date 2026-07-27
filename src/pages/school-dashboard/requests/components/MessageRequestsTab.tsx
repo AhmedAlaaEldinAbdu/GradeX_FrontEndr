@@ -198,6 +198,7 @@ const MessageRequestsTab: React.FC = () => {
           viewedAt: message.viewedAt,
           viewedByUserId: message.viewedByUserId,
           viewedByName: message.viewedByName,
+          attachments: message.attachments,
         };
       },
     [schoolLabel]
