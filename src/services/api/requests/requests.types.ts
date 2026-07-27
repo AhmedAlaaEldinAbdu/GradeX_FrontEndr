@@ -83,6 +83,7 @@ export interface CreateSchoolMessageRequest {
   students: string[];
   classrooms: string[];
   grades: string[];
+  attachments?: File[];
 }
 
 export const MessageStatus = {
