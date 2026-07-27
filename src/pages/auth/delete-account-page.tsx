@@ -8,7 +8,6 @@ import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useForm } from 'react-hook-form';
 import { DeleteAccountSchema, type DeleteAccountProps } from '@/validations/auth-validations';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { logger } from '@/lib/utils/logger';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CustomImage from '@/shared/components/CustomImage';
@@ -18,10 +17,13 @@ import PhoneInput from '@/shared/components/PhoneInput';
 import FormField from '@/shared/components/FormField';
 import { deleteTeacherAccount } from '@/redux/features/teachers/teachersSlice';
 import { normalizePhoneForApi } from '@/lib/utils/phone-utils';
+import { deleteParentAccount } from '@/redux/features/parent/parentSlice';
+import { useToast } from '@/shared/context/ToastContext';
 
 const DeleteAccountPage: React.FC = () => {
   const { t } = useTranslation();
   const { isRTL, direction } = useLanguage();
+  const { showToast } = useToast();
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -30,6 +32,9 @@ const DeleteAccountPage: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [deleteAccountError, setDeleteAccountError] = useState<string | null>(null);
+  const [accountType, setAccountType] = useState<'parentAccount' | 'teacherAccount'>(
+    'parentAccount'
+  );
 
   const {
     register,
@@ -44,7 +49,6 @@ const DeleteAccountPage: React.FC = () => {
   const scrollToFirstError = useScrollToFirstError<DeleteAccountProps>();
 
   const onSubmit = async (data: DeleteAccountProps) => {
-    debugger;
     try {
       setPhoneError(null);
 
@@ -61,26 +65,28 @@ const DeleteAccountPage: React.FC = () => {
         return;
       }
 
+      const action = accountType === 'parentAccount' ? deleteParentAccount : deleteTeacherAccount;
+
       const resultAction = await dispatch(
-        deleteTeacherAccount({
+        action({
           phoneNumber: normalizedPhone.phoneNumber,
           countryCode: normalizedPhone.countryCode,
           password: data.password,
         })
       );
 
-      if (deleteTeacherAccount.fulfilled.match(resultAction)) {
-        logger.success('Account deleted successfully');
+      if (action.fulfilled.match(resultAction)) {
+        showToast({
+          message: t('account.deleteAccountSuccess'),
+          type: 'success',
+        });
+
         navigate('/login');
       } else {
         setDeleteAccountError(resultAction.payload as string);
       }
     } catch (error) {
-      setDeleteAccountError(
-        typeof error === 'string'
-          ? error
-          : t('account.deleteAccountFailed') || 'Failed to delete account.'
-      );
+      setDeleteAccountError(typeof error === 'string' ? error : t('account.deleteAccountError'));
     }
   };
 
@@ -114,6 +120,26 @@ const DeleteAccountPage: React.FC = () => {
                 noValidate={true}
                 className="w-full max-w-sm space-y-6"
               >
+                {/* Radio Account */}
+                <div className="flex items-center gap-10">
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={accountType === 'parentAccount'}
+                      onChange={() => setAccountType('parentAccount')}
+                    />
+                    <span className="text-base text-black-800">{t('account.parentAccount')}</span>
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={accountType === 'teacherAccount'}
+                      onChange={() => setAccountType('teacherAccount')}
+                    />
+                    <span className="text-base text-black-800">{t('account.teacherAccount')}</span>
+                  </label>
+                </div>
+
                 {/* Country Code + Phone Number */}
                 <PhoneInput
                   label={t('rolesManagement.phoneNumber')}
@@ -126,42 +152,6 @@ const DeleteAccountPage: React.FC = () => {
                   required
                   showDialCodeInField={true}
                 />
-
-                {/* Email Field */}
-                {/* <FormField label={t('login.emailLabel')} required error={errors?.email?.message}>
-                  <div className="relative">
-                    <Input
-                      id="email"
-                      type="email"
-                      inputMode="email"
-                      autoComplete="email"
-                      {...register('email')}
-                      placeholder={t('login.emailInput')}
-                    />
-                    <div
-                      className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${
-                        isRTL ? 'left-4' : 'right-4'
-                      }`}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="text-gray-400"
-                      >
-                        <path
-                          d="M3.33333 5.83333L9.05544 9.86652C9.62167 10.252 10.3783 10.252 10.9446 9.86652L16.6667 5.83333M4.16667 15H15.8333C16.7538 15 17.5 14.2538 17.5 13.3333V6.66667C17.5 5.74619 16.7538 5 15.8333 5H4.16667C3.24619 5 2.5 5.74619 2.5 6.66667V13.3333C2.5 14.2538 3.24619 15 4.16667 15Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </FormField> */}
-
                 {/* Password Field */}
                 <FormField
                   label={t('login.passwordLabel')}
@@ -225,7 +215,6 @@ const DeleteAccountPage: React.FC = () => {
                     </button>
                   </div>
                 </FormField>
-
                 {/* Submit Button */}
                 <Button
                   variant="outlineDanger"
@@ -242,7 +231,6 @@ const DeleteAccountPage: React.FC = () => {
                     <span>{t('account.deleteAccount')}</span>
                   )}
                 </Button>
-
                 <Button
                   variant="primary"
                   type="submit"
@@ -252,7 +240,6 @@ const DeleteAccountPage: React.FC = () => {
                 >
                   <span>{t('login.back')}</span>
                 </Button>
-
                 {/* Error Message */}
                 {deleteAccountError && (
                   <div className="rounded-lg border border-red-200 bg-red-100 p-3 text-sm text-red-500">
