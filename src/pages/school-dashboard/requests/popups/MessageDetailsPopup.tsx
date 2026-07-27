@@ -6,12 +6,9 @@ import Button from '@/shared/components/Button';
 import IconButton from '@/shared/components/IconButton';
 import CustomImage from '@/shared/components/CustomImage';
 import UserAvatarName from '@/shared/components/UserAvatarName';
+import ExistingFileDisplay from '@/shared/components/ExistingFileDisplay';
 import EyeStyledIcon from '@gradex/assets/icons/EyeStyled.svg';
-import FileIcon from '@gradex/assets/icons/File.svg';
-import DownloadIcon from '@gradex/assets/icons/Download.svg';
 import FilesGreenIcon from '@gradex/assets/icons/FilesGreen.svg';
-import ImageIcon from '@gradex/assets/icons/Image.svg';
-import PdfIcon from '@gradex/assets/icons/Pdf.svg';
 
 import type { StudentRequestDto } from '@/services/api/requests/requests.types';
 import {
@@ -36,37 +33,6 @@ const STATUS_LABEL_KEYS: Record<StudentRequestStatus, string> = {
 const formatRequestDate = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-GB');
-};
-
-const resolveAttachmentUrl = (fileUrl: string) => {
-  if (fileUrl.startsWith('http') || fileUrl.startsWith('blob:') || fileUrl.startsWith('data:')) {
-    return fileUrl;
-  }
-
-  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
-  const relativeUrl = fileUrl.startsWith('/') ? fileUrl : `/${fileUrl}`;
-  return `${baseUrl}${relativeUrl}`;
-};
-
-const getFileExtension = (fileName: string) => fileName.split('.').pop()?.toUpperCase() || 'FILE';
-
-const isImageAttachment = (fileName: string) =>
-  ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp'].includes(
-    getFileExtension(fileName).toLowerCase()
-  );
-
-const getAttachmentIcon = (fileName: string) => {
-  const extension = getFileExtension(fileName).toLowerCase();
-
-  if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp'].includes(extension)) {
-    return ImageIcon;
-  }
-
-  if (extension === 'pdf') {
-    return PdfIcon;
-  }
-
-  return FileIcon;
 };
 
 type DetailRowProps = {
@@ -206,61 +172,14 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
 
             <div className="flex flex-col gap-2">
               {request.attachments.map((attachment) => (
-                <div
+                <ExistingFileDisplay
                   key={attachment.id || attachment.fileUrl}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-[#EEF0F0] bg-[#F8FAFA] px-3 py-3 transition-colors hover:bg-[#F2F7F5]"
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm">
-                      {isImageAttachment(attachment.fileName) ? (
-                        <CustomImage
-                          src={resolveAttachmentUrl(attachment.fileUrl)}
-                          fallbackSrc={ImageIcon}
-                          alt={attachment.fileName}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <CustomImage
-                          src={getAttachmentIcon(attachment.fileName)}
-                          alt=""
-                          className="h-5 w-5"
-                        />
-                      )}
-                    </span>
-                    <div className="min-w-0 flex-1 text-start">
-                      <p className="truncate text-sm font-medium text-[#0E1F1F]">
-                        {attachment.fileName}
-                      </p>
-                      <span className="mt-1 inline-flex rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-[#646969]">
-                        {getFileExtension(attachment.fileName)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-2">
-                    <a
-                      href={resolveAttachmentUrl(attachment.fileUrl)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#DDE0E0] bg-white transition-colors hover:border-blue-200 hover:bg-blue-50"
-                      title={t('common.view')}
-                      aria-label={t('common.view')}
-                    >
-                      <CustomImage src={EyeStyledIcon} alt="" className="h-5 w-5" />
-                    </a>
-                    <a
-                      href={resolveAttachmentUrl(attachment.fileUrl)}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#DDE0E0] bg-white transition-colors hover:border-green-200 hover:bg-[#E8F4EE]"
-                      title={t('common.download')}
-                      aria-label={t('common.download')}
-                    >
-                      <CustomImage src={DownloadIcon} alt="" className="h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
+                  filePath={attachment.fileUrl}
+                  fileName={attachment.fileName}
+                  showViewButton
+                  showDownloadButton
+                  className="!mb-0 !rounded-xl !border-[#EEF0F0] !bg-[#F8FAFA] transition-colors hover:!bg-[#F2F7F5]"
+                />
               ))}
             </div>
           </div>
