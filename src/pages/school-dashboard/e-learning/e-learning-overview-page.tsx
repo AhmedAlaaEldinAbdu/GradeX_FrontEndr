@@ -5,10 +5,12 @@ import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
+import { useAppSelector } from '@/hooks/useRedux';
 import EducationalProgramsCard from './components/EducationalProgramsCard';
 import EducationalContentCard from './components/EducationalContentCard';
 import ExamsList from './components/ExamsList';
 import TrainingCoursesList from './components/TrainingCoursesList';
+import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
 import StudentYellowIcon from '@gradex/assets/icons/StudentYellow.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
@@ -16,6 +18,7 @@ import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 export default function ELearningOverviewPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const activeCoursesCount = useAppSelector((s) => s.schoolCourses.activeCoursesCount);
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
@@ -34,12 +37,18 @@ export default function ELearningOverviewPage() {
       {/* Main Content */}
       <div className="space-y-6">
         {/* Summary metrics */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title={t('eLearning.metrics.activeExams')}
             value={`0 ${t('eLearning.units.exam')}`}
             icon={<CustomImage src={TaskBlueIcon} alt="Active exams" className="h-5 w-5" />}
             iconClassName="bg-[#42ADFF]/10"
+          />
+          <MetricCard
+            title={t('eLearning.courses.title')}
+            value={`${activeCoursesCount} ${t('eLearning.courses.units.course')}`}
+            icon={<CustomImage src={BookBlueIcon} alt="" className="h-5 w-5" />}
+            iconClassName="bg-[#117BD7]/10"
           />
           <MetricCard
             title={t('eLearning.metrics.totalStudents')}
