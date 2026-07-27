@@ -13,6 +13,7 @@ export const ParentEndpoints = {
   likeFavorite: `${Parent}/LikeFavoriteSchoolBranch`,
   dislikeFavorite: `${Parent}/DisLikeFavoriteSchoolBranch`,
   getByBranchId: (schoolBranchId: string) => `${Parent}/by-branchId/${schoolBranchId}`,
+  deleteParentAccount: `${Parent}/DeleteAccount`,
 };
 
 export default ParentEndpoints;
