@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import BarChart from '@/shared/components/BarChart';
 
-type ContentFilter = 'term' | 'month' | 'week' | 'day';
+type ContentFilter = 'month' | 'week' | 'day';
 
-const FILTERS: ContentFilter[] = ['day', 'week', 'month', 'term'];
+const FILTERS: ContentFilter[] = ['day', 'week', 'month'];
+const HOURS = ['08:00', '10:00', '12:00', '14:00', '16:00'] as const;
 const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu'] as const;
+const WEEKS = ['week1', 'week2', 'week3', 'week4'] as const;
 
 const CONTENT_MAX = 400;
 const Y_TICKS = [400, 350, 300, 250, 200, 150, 100, 50, 0];
@@ -34,9 +36,14 @@ export default function EducationalContentCard() {
     </div>
   );
 
-  const data = DAYS.map((day) => ({
-    key: day,
-    label: t(`eLearning.content.days.${day}`),
+  const data = (
+    filter === 'day'
+      ? HOURS.map((hour) => ({ key: hour, label: hour }))
+      : filter === 'month'
+        ? WEEKS.map((week) => ({ key: week, label: t(`eLearning.content.weeks.${week}`) }))
+        : DAYS.map((day) => ({ key: day, label: t(`eLearning.content.days.${day}`) }))
+  ).map((item) => ({
+    ...item,
     value: 0,
     tooltip: renderTooltip(),
   }));

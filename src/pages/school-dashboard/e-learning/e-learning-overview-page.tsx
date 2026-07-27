@@ -1,21 +1,24 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Card from '@/shared/components/Card';
 import MetricCard from '@/shared/components/MetricCard';
 import CustomImage from '@/shared/components/CustomImage';
-import MoodleSyncBanner from './components/MoodleSyncBanner';
+import { useAppSelector } from '@/hooks/useRedux';
 import EducationalProgramsCard from './components/EducationalProgramsCard';
 import EducationalContentCard from './components/EducationalContentCard';
 import ExamsList from './components/ExamsList';
 import TrainingCoursesList from './components/TrainingCoursesList';
+import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
 import CheckMarkIcon from '@gradex/assets/icons/CheckMark.svg';
-import TeachersLightBlueIcon from '@gradex/assets/icons/TeachersLightBlue.svg';
 import StudentYellowIcon from '@gradex/assets/icons/StudentYellow.svg';
 import TaskBlueIcon from '@gradex/assets/icons/TaskBlue.svg';
 
 export default function ELearningOverviewPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const activeCoursesCount = useAppSelector((s) => s.schoolCourses.activeCoursesCount);
 
   const breadcrumbItems = [
     { label: t('sidebar.academicAffairs') },
@@ -42,18 +45,16 @@ export default function ELearningOverviewPage() {
             iconClassName="bg-[#42ADFF]/10"
           />
           <MetricCard
+            title={t('eLearning.courses.title')}
+            value={`${activeCoursesCount} ${t('eLearning.courses.units.course')}`}
+            icon={<CustomImage src={BookBlueIcon} alt="" className="h-5 w-5" />}
+            iconClassName="bg-[#117BD7]/10"
+          />
+          <MetricCard
             title={t('eLearning.metrics.totalStudents')}
             value={`0 ${t('eLearning.units.student')}`}
             icon={<CustomImage src={StudentYellowIcon} alt="Total students" className="h-5 w-5" />}
             iconClassName="bg-[#F6CB3B]/10"
-          />
-          <MetricCard
-            title={t('eLearning.metrics.questionBank')}
-            value={`0 ${t('eLearning.units.question')}`}
-            icon={
-              <CustomImage src={TeachersLightBlueIcon} alt="Question bank" className="h-5 w-5" />
-            }
-            iconClassName="bg-[#25BDD7]/10"
           />
           <MetricCard
             title={t('eLearning.metrics.successRate')}
@@ -62,9 +63,6 @@ export default function ELearningOverviewPage() {
             iconClassName="bg-[#1A9F58]/10"
           />
         </div>
-
-        {/* Moodle sync banner */}
-        <MoodleSyncBanner />
 
         {/* Educational content + programs */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_309px]">
@@ -77,7 +75,11 @@ export default function ELearningOverviewPage() {
           <div className="mb-6 flex items-center justify-between gap-4">
             <h3 className="text-base font-medium text-[#3A3A3A]">{t('eLearning.exams.title')}</h3>
 
-            <button type="button" className="text-base font-medium text-green-500">
+            <button
+              type="button"
+              onClick={() => navigate('/lms/online-exams')}
+              className="text-base font-medium text-green-500"
+            >
               {t('eLearning.exams.viewAll')}
             </button>
           </div>
@@ -89,7 +91,11 @@ export default function ELearningOverviewPage() {
           <div className="mb-6 flex items-center justify-between gap-4">
             <h3 className="text-base font-medium text-[#3A3A3A]">{t('eLearning.courses.title')}</h3>
 
-            <button type="button" className="text-base font-medium text-green-500">
+            <button
+              type="button"
+              onClick={() => navigate('/lms/courses')}
+              className="text-base font-medium text-green-500"
+            >
               {t('eLearning.courses.viewAll')}
             </button>
           </div>

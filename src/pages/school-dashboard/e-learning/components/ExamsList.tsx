@@ -1,127 +1,133 @@
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import EmptyState from '@/shared/components/EmptyState';
+import ErrorMessage from '@/shared/components/ErrorMessage';
+import Loading from '@/shared/components/Loading';
 import CustomImage from '@/shared/components/CustomImage';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { useLanguage } from '@/hooks/useLanguage';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import { fetchAIExams } from '@/redux/features/ai-exam/aiExamSlice';
+import {
+  AIExamDifficulty,
+  AIExamStatus,
+  type AIExamListItem,
+} from '@/services/api/types/ai-exam.types';
+import OnlineExamCard, {
+  type ExamDifficulty,
+  type ExamSource,
+  type ExamStatus,
+  type OnlineExamItem,
+} from './OnlineExamCard';
 import MathIcon from '@gradex/assets/icons/Math.svg';
-import InstituteIcon from '@gradex/assets/icons/Institute.svg';
-import GroupLearningIcon from '@gradex/assets/icons/GroupLearning.svg';
-import CompletedIcon from '@gradex/assets/icons/Completed.svg';
-import CalendarIcon from '@gradex/assets/icons/calendar.svg';
-import SparklesIcon from '@gradex/assets/icons/Sparkles.svg';
-import WritingIcon from '@gradex/assets/icons/Writing.svg';
-import IdeaIcon from '@gradex/assets/icons/Idea.svg';
 
-type ExamSource = 'ai' | 'questionBank' | 'manual';
-type ExamStatus = 'scheduled' | 'pending';
+const OVERVIEW_PAGE_SIZE = 4;
 
-type ExamItem = {
-  id: string;
-  source: ExamSource;
-  title: string;
-  stage: string;
-  studentsCount: number;
-  completedCount: number;
-  date: string;
-  time: string;
-  progress?: number;
-  status?: ExamStatus;
+const DIFFICULTY_FROM_API: Record<number, ExamDifficulty> = {
+  [AIExamDifficulty.Easy]: 'easy',
+  [AIExamDifficulty.Medium]: 'medium',
+  [AIExamDifficulty.Hard]: 'hard',
 };
 
-const SOURCE_STYLES: Record<ExamSource, { boxClass: string; labelClass: string; icon: string }> = {
-  ai: { boxClass: 'bg-[#E5F3FF]', labelClass: 'text-[#117BD7]', icon: SparklesIcon },
-  questionBank: { boxClass: 'bg-[#F4E5FF]', labelClass: 'text-[#A353DD]', icon: IdeaIcon },
-  manual: { boxClass: 'bg-[#E5FFF4]', labelClass: 'text-[#02804A]', icon: WritingIcon },
+const STATUS_FROM_API: Record<number, ExamStatus> = {
+  [AIExamStatus.Active]: 'active',
+  [AIExamStatus.Scheduled]: 'scheduled',
 };
 
-// Progress ring geometry (viewBox is 66×66).
-const RING_RADIUS = 29;
-const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+function formatDate(value: string | null | undefined, locale: string): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
 
-// Mock data — replaced by the API once the LMS integration is wired up.
-const EXAMS: ExamItem[] = [
-  {
-    id: '1',
-    source: 'ai',
-    title: 'اختبار الرياضيات - الفصل الثالث',
-    stage: 'المرحلة الاعدادية - الصف الأول',
-    studentsCount: 45,
-    completedCount: 38,
-    date: '22/4/2024',
-    time: '2:00 مساءا',
-    progress: 85,
-  },
-  {
-    id: '2',
-    source: 'questionBank',
-    title: 'اختبار الرياضيات - الفصل الثالث',
-    stage: 'المرحلة الاعدادية - الصف الأول',
-    studentsCount: 45,
-    completedCount: 38,
-    date: '22/4/2024',
-    time: '2:00 مساءا',
-    progress: 85,
-  },
-  {
-    id: '3',
-    source: 'questionBank',
-    title: 'اختبار الرياضيات - الفصل الثالث',
-    stage: 'المرحلة الاعدادية - الصف الأول',
-    studentsCount: 45,
-    completedCount: 38,
-    date: '22/4/2024',
-    time: '2:00 مساءا',
-    progress: 85,
-  },
-  {
-    id: '4',
-    source: 'manual',
-    title: 'اختبار الرياضيات - الفصل الثالث',
-    stage: 'المرحلة الاعدادية - الصف الأول',
-    studentsCount: 45,
-    completedCount: 38,
-    date: '22/4/2024',
-    time: '2:00 مساءا',
-    status: 'scheduled',
-  },
-];
-
-function ExamProgressRing({ value }: { value: number }) {
-  const filled = (Math.min(100, Math.max(0, value)) / 100) * RING_CIRCUMFERENCE;
-
-  return (
-    <div className="relative h-[66px] w-[66px] shrink-0">
-      <svg viewBox="0 0 66 66" className="h-full w-full -rotate-90">
-        <circle cx="33" cy="33" r={RING_RADIUS} fill="none" stroke="#DCDBDB" strokeWidth="3.67" />
-        <circle
-          cx="33"
-          cy="33"
-          r={RING_RADIUS}
-          fill="none"
-          stroke="#1A9F58"
-          strokeWidth="3.67"
-          strokeLinecap="round"
-          strokeDasharray={`${filled} ${RING_CIRCUMFERENCE - filled}`}
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-[#1A9F58]">
-        {value}%
-      </span>
-    </div>
-  );
+  return new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(date);
 }
 
-function ExamMetaItem({ icon, text }: { icon: string; text: string }) {
-  return (
-    <span className="flex items-center gap-1.5 text-sm font-normal text-[#646969]">
-      <CustomImage src={icon} alt="" className="h-4 w-4" />
-      {text}
-    </span>
-  );
+function formatTime(value: string | null | undefined, locale: string): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  return new Intl.DateTimeFormat(locale, {
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date);
+}
+
+function getExamSource(exam: AIExamListItem): ExamSource {
+  return exam.isAIGenerated ? 'ai' : 'manual';
+}
+
+function getTitleSuffix(title: string, gradeName: string): string | undefined {
+  if (!gradeName || title.includes(gradeName)) return undefined;
+  return gradeName;
+}
+
+function toOnlineExamItem(exam: AIExamListItem, isArabic: boolean, locale: string): OnlineExamItem {
+  const title = (isArabic ? exam.titleAr : exam.titleEn) || exam.titleAr || exam.titleEn || '';
+  const gradeName = exam.gradeName || '';
+
+  return {
+    id: exam.id,
+    source: getExamSource(exam),
+    difficulty: DIFFICULTY_FROM_API[exam.difficulty] ?? 'easy',
+    status: STATUS_FROM_API[exam.status] ?? 'scheduled',
+    title,
+    titleSuffix: getTitleSuffix(title, gradeName),
+    titleDirection: isArabic ? 'rtl' : 'ltr',
+    stage: gradeName,
+    subject: exam.materialName || '',
+    studentsCount: exam.studentsCount ?? 0,
+    completedCount: exam.submittedCount ?? 0,
+    date: formatDate(exam.startDate, locale),
+    time: formatTime(exam.startDate, locale),
+    progress: exam.successRate ?? 0,
+  };
 }
 
 export default function ExamsList() {
   const { t } = useTranslation();
+  const { currentLanguage, isArabic } = useLanguage();
+  const dispatch = useAppDispatch();
+  const schoolBranchId = getCurrentSchoolBranchId();
 
-  if (EXAMS.length === 0) {
+  const exams = useAppSelector((state) => state.aiExam.exams);
+  const isLoading = useAppSelector((state) => state.aiExam.isLoadingList);
+  const error = useAppSelector((state) => state.aiExam.error);
+
+  useEffect(() => {
+    if (!schoolBranchId) return;
+
+    dispatch(
+      fetchAIExams({
+        SchoolBranchId: schoolBranchId,
+        PageNumber: 1,
+        PageSize: OVERVIEW_PAGE_SIZE,
+      })
+    );
+  }, [dispatch, schoolBranchId]);
+
+  const examItems = useMemo(
+    () => exams.map((exam) => toOnlineExamItem(exam, isArabic, currentLanguage)),
+    [currentLanguage, exams, isArabic]
+  );
+
+  if (!schoolBranchId) {
+    return <ErrorMessage message="common.errorOccurred" />;
+  }
+
+  if (error && !isLoading) {
+    return <ErrorMessage message={error || 'common.errorOccurred'} />;
+  }
+
+  if (isLoading && examItems.length === 0) {
+    return <Loading />;
+  }
+
+  if (examItems.length === 0) {
     return (
       <EmptyState
         icon={
@@ -137,54 +143,10 @@ export default function ExamsList() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {EXAMS.map((exam) => {
-        const source = SOURCE_STYLES[exam.source];
-
-        return (
-          <div
-            key={exam.id}
-            className="flex items-center justify-between gap-4 rounded-2xl border border-[#DDE0E0] p-4"
-          >
-            <div className="flex items-center gap-4">
-              <div
-                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${source.boxClass}`}
-              >
-                <CustomImage src={source.icon} alt="" className="h-6 w-6" />
-              </div>
-
-              <div className="flex flex-col gap-2 text-right">
-                <span className={`text-sm font-normal ${source.labelClass}`}>
-                  {t(`eLearning.exams.sources.${exam.source}`)}
-                </span>
-                <span className="text-base font-normal text-[#0E1F1F]">{exam.title}</span>
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                  <ExamMetaItem icon={InstituteIcon} text={exam.stage} />
-                  <ExamMetaItem
-                    icon={GroupLearningIcon}
-                    text={`${exam.studentsCount} ${t('eLearning.units.student')}`}
-                  />
-                  <ExamMetaItem
-                    icon={CompletedIcon}
-                    text={`${exam.completedCount} ${t('eLearning.exams.completed')}`}
-                  />
-                  <ExamMetaItem icon={CalendarIcon} text={`${exam.date} - ${exam.time}`} />
-                </div>
-              </div>
-            </div>
-
-            {exam.progress != null ? (
-              <ExamProgressRing value={exam.progress} />
-            ) : (
-              exam.status && (
-                <span className="shrink-0 rounded-3xl bg-[#F2960C]/10 px-4 py-1 text-sm font-medium text-[#A96908]">
-                  {t(`eLearning.exams.status.${exam.status}`)}
-                </span>
-              )
-            )}
-          </div>
-        );
-      })}
+    <div className={isLoading ? 'flex flex-col gap-4 opacity-60' : 'flex flex-col gap-4'}>
+      {examItems.map((exam) => (
+        <OnlineExamCard key={exam.id} exam={exam} />
+      ))}
     </div>
   );
 }

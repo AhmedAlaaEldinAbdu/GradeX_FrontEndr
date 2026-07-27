@@ -149,7 +149,6 @@
     "content": {
       "title": "Educational Content",
       "filters": {
-        "term": "Term",
         "month": "Month",
         "week": "Week",
         "day": "Day"
@@ -160,6 +159,12 @@
         "tue": "Tue",
         "wed": "Wed",
         "thu": "Thu"
+      },
+      "weeks": {
+        "week1": "Week 1",
+        "week2": "Week 2",
+        "week3": "Week 3",
+        "week4": "Week 4"
       }
     },
     "exams": {
@@ -2496,7 +2501,7 @@
       "maxStudentsRequired": "Maximum number of students is required",
       "maxStudentsMustBePositive": "Maximum students must be a positive number",
       "maxStudentsMustBeInteger": "Maximum students must be an integer",
-      "maxStudentsExceeded": "Maximum number of students cannot exceed 100",
+      "maxStudentsExceeded": "Maximum number of students cannot exceed 10",
       "requiredList": "Classrooms list is required",
       "atLeastOne": "At least one classroom must be added"
     }

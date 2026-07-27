@@ -149,7 +149,6 @@
     "content": {
       "title": "Contenu éducatif",
       "filters": {
-        "term": "Trimestre",
         "month": "Mois",
         "week": "Semaine",
         "day": "Jour"
@@ -160,6 +159,12 @@
         "tue": "Mar",
         "wed": "Mer",
         "thu": "Jeu"
+      },
+      "weeks": {
+        "week1": "Semaine 1",
+        "week2": "Semaine 2",
+        "week3": "Semaine 3",
+        "week4": "Semaine 4"
       }
     },
     "exams": {
@@ -2366,7 +2371,7 @@
       "maxStudentsRequired": "Le nombre maximum d'élèves est requis",
       "maxStudentsMustBePositive": "Le nombre maximum d'élèves doit être un nombre positif",
       "maxStudentsMustBeInteger": "Le nombre maximum d'élèves doit être un entier",
-      "maxStudentsExceeded": "Le nombre maximum d'élèves ne peut pas dépasser 100",
+      "maxStudentsExceeded": "Le nombre maximum d'élèves ne peut pas dépasser 10",
       "requiredList": "La liste des classes est requise",
       "atLeastOne": "Au moins une classe doit être ajoutée"
     }
