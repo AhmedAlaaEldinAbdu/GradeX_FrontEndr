@@ -18,6 +18,7 @@ import type {
   DisLikeFavoriteSchoolBranchRequest,
   ParentProfile,
   ParentListItem,
+  DeleteParentAccountRequest,
 } from '@/services/api/types/parent.types';
 import { getErrorMessage } from '@/lib/http';
 
@@ -42,6 +43,7 @@ export interface ParentState {
   isSubmitting: boolean;
 
   error: string | null;
+  isDeleting: boolean;
 }
 
 export interface FetchParentsByBranchPayload {
@@ -65,6 +67,7 @@ const initialState: ParentState = {
   isParentsLoading: false,
   isSubmitting: false,
   error: null,
+  isDeleting: false,
 };
 
 // ============================================================================
@@ -217,6 +220,21 @@ export const fetchParentsByBranch = createAsyncThunk<
   }
 });
 
+
+export const deleteParentAccount = createAsyncThunk<
+  void,
+  DeleteParentAccountRequest
+>(
+  'parent/deleteParentAccount',
+  async (payload, { rejectWithValue }) => {
+    try {
+      await parentApiService.deleteParentAccount(payload);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 // ============================================================================
 // Slice
 // ============================================================================
@@ -287,6 +305,19 @@ const parentSlice = createSlice({
       })
       .addCase(fetchParentsByBranch.rejected, (state, action) => {
         state.isParentsLoading = false;
+        state.error = action.payload as string;
+      });
+    // Delete Parent Account
+    builder
+      .addCase(deleteParentAccount.pending, (state) => {
+        state.isDeleting = true;
+        state.error = null;
+      })
+      .addCase(deleteParentAccount.fulfilled, (state) => {
+        state.isDeleting = false;
+      })
+      .addCase(deleteParentAccount.rejected, (state, action) => {
+        state.isDeleting = false;
         state.error = action.payload as string;
       });
   },
