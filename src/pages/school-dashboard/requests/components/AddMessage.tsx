@@ -9,6 +9,7 @@ import TextArea from '@/shared/components/TextArea';
 import FormField from '@/shared/components/FormField';
 import CustomSelect from '@/shared/components/CustomSelect';
 import CustomImage from '@/shared/components/CustomImage';
+import FileUpload from '@/shared/components/FileUpload';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { useAppDispatch } from '@/hooks/useRedux';
@@ -35,6 +36,22 @@ interface AddMessageFormValues {
   content: string;
 }
 
+const FILE_FORMATS = [
+  'GIF',
+  'SVG',
+  'JPG',
+  'PNG',
+  'PDF',
+  'DOC',
+  'DOCX',
+  'XLS',
+  'XLSX',
+  'TXT',
+  'PPT',
+  'PPTX',
+];
+const FILE_ACCEPT = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.ppt,.pptx';
+
 const AddMessage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -60,6 +77,7 @@ const AddMessage: React.FC = () => {
   const [directedTo, setDirectedTo] = useState<DirectedTo>('all');
   const [isStudentsPopupOpen, setIsStudentsPopupOpen] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState<MockStudentOption[]>([]);
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [studentsError, setStudentsError] = useState<string | undefined>();
 
   const [gradeItems, setGradeItems] = useState<EducationalStageResponse[]>([]);
@@ -207,6 +225,7 @@ const AddMessage: React.FC = () => {
           students: directedTo === 'selected' ? selectedStudents.map((student) => student.id) : [],
           classrooms: values.classrooms,
           grades: values.grades,
+          attachments,
         })
       ).unwrap();
 
@@ -381,6 +400,19 @@ const AddMessage: React.FC = () => {
                   )}
                 />
               </FormField>
+            </div>
+
+            <div className="w-full">
+              <FileUpload
+                id="message-attachments"
+                label={t('common.attachments')}
+                optional
+                multiple
+                formatHints={FILE_FORMATS}
+                accept={FILE_ACCEPT}
+                maxSize={10}
+                onFilesChange={(files) => setAttachments(files)}
+              />
             </div>
 
             <div className="flex w-full items-center justify-end gap-4">
