@@ -22,10 +22,22 @@ export async function createSchoolMessage(
   data: CreateSchoolMessageRequest
 ): Promise<ApiResponseModel<null>> {
   const schoolBranchId = getCurrentSchoolBranchId();
+  const formData = new FormData();
+
+  formData.append('message', data.message);
+  formData.append('SendType', String(data.sendType));
+  data.students.forEach((studentId) => formData.append('Students', studentId));
+  data.classrooms.forEach((classroomId) => formData.append('Classrooms', classroomId));
+  data.grades.forEach((gradeId) => formData.append('Grades', gradeId));
+  data.attachments?.forEach((file) => formData.append('Attachments', file));
+
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
     SchoolMessageEndpoints.create,
-    data,
-    { params: { schoolBranchId } }
+    formData,
+    {
+      params: { schoolBranchId },
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }
   );
   return response.data;
 }
