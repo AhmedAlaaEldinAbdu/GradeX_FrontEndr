@@ -63,11 +63,11 @@
         "title": "Démarrer le cours à distance",
         "subjectTitle": "Matière {{subject}}",
         "teacherName": "Enseignant {{teacher}}",
-    "linkLabel": "Lien du cours",
-    "linkPlaceholder": "Saisir le lien du cours",
-    "linkRequired": "Veuillez saisir le lien du cours",
-    "linkInvalid": "Veuillez saisir un lien valide",
-    "starting": "Démarrage..."
+        "linkLabel": "Lien du cours",
+        "linkPlaceholder": "Saisir le lien du cours",
+        "linkRequired": "Veuillez saisir le lien du cours",
+        "linkInvalid": "Veuillez saisir un lien valide",
+        "starting": "Démarrage..."
       },
       "add": {
         "title": "Ajouter un cours",
@@ -1063,7 +1063,9 @@
     "deleteAccountInprogress": "Suppression du compte en cours",
     "deleteAccountConfirmation": "Êtes-vous sûr de vouloir supprimer votre compte ?",
     "deleteAccountSuccess": "Votre compte a été supprimé avec succès. Nous sommes désolés de vous voir partir.",
-    "deleteAccountError": "Une erreur est survenue lors de la suppression de votre compte. Veuillez réessayer plus tard."
+    "deleteAccountError": "Une erreur est survenue lors de la suppression de votre compte. Veuillez réessayer plus tard.",
+    "parentAccount": "Compte parent",
+    "teacherAccount": "Compte enseignant"
   },
   "academicSystem": {
     "title": "Système scolaire",

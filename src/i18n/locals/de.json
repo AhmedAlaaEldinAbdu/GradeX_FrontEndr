@@ -63,11 +63,11 @@
         "title": "Remote-Unterricht starten",
         "subjectTitle": "Fach {{subject}}",
         "teacherName": "Lehrer {{teacher}}",
-    "linkLabel": "Unterrichtslink",
-    "linkPlaceholder": "Unterrichtslink eingeben",
-    "linkRequired": "Bitte geben Sie den Unterrichtslink ein",
-    "linkInvalid": "Bitte geben Sie einen gültigen Link ein",
-    "starting": "Wird gestartet..."
+        "linkLabel": "Unterrichtslink",
+        "linkPlaceholder": "Unterrichtslink eingeben",
+        "linkRequired": "Bitte geben Sie den Unterrichtslink ein",
+        "linkInvalid": "Bitte geben Sie einen gültigen Link ein",
+        "starting": "Wird gestartet..."
       },
       "add": {
         "title": "Unterricht hinzufügen",
@@ -1063,7 +1063,9 @@
     "deleteAccountInprogress": "Konto wird gelöscht",
     "deleteAccountConfirmation": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
     "deleteAccountSuccess": "Ihr Konto wurde erfolgreich gelöscht. Wir bedauern, dass Sie uns verlassen, und hoffen, Sie in Zukunft wieder begrüßen zu dürfen.",
-    "deleteAccountError": "Beim Löschen Ihres Kontos ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support."
+    "deleteAccountError": "Beim Löschen Ihres Kontos ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
+    "parentAccount": "Elternkonto",
+    "teacherAccount": "Lehrerkonto"
   },
   "academicSystem": {
     "title": "Akademisches System",

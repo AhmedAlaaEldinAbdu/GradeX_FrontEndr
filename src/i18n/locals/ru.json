@@ -63,11 +63,11 @@
         "title": "Начать дистанционный урок",
         "subjectTitle": "Предмет {{subject}}",
         "teacherName": "Учитель {{teacher}}",
-    "linkLabel": "Ссылка на урок",
-    "linkPlaceholder": "Введите ссылку на урок",
-    "linkRequired": "Пожалуйста, введите ссылку на урок",
-    "linkInvalid": "Пожалуйста, введите действительную ссылку",
-    "starting": "Запуск..."
+        "linkLabel": "Ссылка на урок",
+        "linkPlaceholder": "Введите ссылку на урок",
+        "linkRequired": "Пожалуйста, введите ссылку на урок",
+        "linkInvalid": "Пожалуйста, введите действительную ссылку",
+        "starting": "Запуск..."
       },
       "add": {
         "title": "Добавить занятие",
@@ -1077,7 +1077,9 @@
     "deleteAccountInprogress": "Удаление учётной записи",
     "deleteAccountConfirmation": "Вы уверены, что хотите удалить свою учётную запись?",
     "deleteAccountSuccess": "Учётная запись успешно удалена",
-    "deleteAccountError": "Произошла ошибка при удалении учётной записи"
+    "deleteAccountError": "Произошла ошибка при удалении учётной записи",
+    "parentAccount": "Учётная запись родителя",
+    "teacherAccount": "Учётная запись учителя"
   },
   "academicSystem": {
     "title": "Учебная система",

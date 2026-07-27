@@ -1072,7 +1072,9 @@
     "deleteAccountInprogress": "جار حذف الحساب",
     "deleteAccountConfirmation": "هل أنت متأكد أنك تريد حذف حساب",
     "deleteAccountSuccess": "تم حذف الحساب بنجاح",
-    "deleteAccountError": "حدث خطأ أثناء محاولة حذف الحساب. يرجى المحاولة مرة أخرى."
+    "deleteAccountError": "حدث خطأ أثناء محاولة حذف الحساب. يرجى المحاولة مرة أخرى.",
+    "parentAccount": "حساب ولي الأمر",
+    "teacherAccount": "حساب المعلم"
   },
   "academicSystem": {
     "title": "النظام الأكاديمي",

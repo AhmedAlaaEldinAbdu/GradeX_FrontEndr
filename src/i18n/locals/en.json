@@ -63,11 +63,11 @@
         "title": "Start remote class",
         "subjectTitle": "{{subject}} subject",
         "teacherName": "Teacher {{teacher}}",
-    "linkLabel": "Class link",
-    "linkPlaceholder": "Enter class link",
-    "linkRequired": "Please enter the class link",
-    "linkInvalid": "Please enter a valid link",
-    "starting": "Starting..."
+        "linkLabel": "Class link",
+        "linkPlaceholder": "Enter class link",
+        "linkRequired": "Please enter the class link",
+        "linkInvalid": "Please enter a valid link",
+        "starting": "Starting..."
       },
       "add": {
         "title": "Add Class",
@@ -1063,7 +1063,9 @@
     "deleteAccountInprogress": "Deleting your account",
     "deleteAccountConfirmation": "Are you sure you want to delete your account?",
     "deleteAccountSuccess": "Your account has been deleted successfully.",
-    "deleteAccountError": "An error occurred while trying to delete your account. Please try again later."
+    "deleteAccountError": "An error occurred while trying to delete your account. Please try again later.",
+    "parentAccount": "Parent Account",
+    "teacherAccount": "Teacher Account"
   },
   "academicSystem": {
     "title": "Academic System",
