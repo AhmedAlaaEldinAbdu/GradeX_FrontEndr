@@ -22,6 +22,8 @@ import { getEducationalStages } from '@/redux/features/educational-stages/educat
 import CustomImage from '@/shared/components/CustomImage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 
+const MAX_STUDENTS_LIMIT = 10;
+
 export default function AddClassroom() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -70,7 +72,7 @@ export default function AddClassroom() {
           aliasEn: '',
           note: '',
           noteEn: '',
-          maxStudents: 0,
+          maxStudents: MAX_STUDENTS_LIMIT,
         },
       ],
     },
@@ -145,7 +147,9 @@ export default function AddClassroom() {
   };
 
   const handleAddClassroom = () => {
-    setNumOfClassrooms((prev) => [...prev, prev.length + 1]);
+    const nextIndex = numOfClassrooms.length;
+    setValue(`classrooms.${nextIndex}.maxStudents`, MAX_STUDENTS_LIMIT);
+    setNumOfClassrooms((prev) => [...prev, nextIndex + 1]);
   };
 
   const handleDeleteClassroom = (selectedIdx: number) => {
@@ -416,7 +420,7 @@ export default function AddClassroom() {
                                 const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                   const val = e.target.value;
 
-                                  if (/^[0-9]*$/.test(val) && Number(val) <= 100) {
+                                  if (/^[0-9]*$/.test(val) && Number(val) <= MAX_STUDENTS_LIMIT) {
                                     field.onChange(val);
                                   }
                                 };
@@ -429,6 +433,7 @@ export default function AddClassroom() {
                                     className="w-full"
                                     id={`classrooms.${index}.maxStudents`}
                                     inputMode="numeric"
+                                    max={MAX_STUDENTS_LIMIT}
                                     onChange={handleChange}
                                   />
                                 );
