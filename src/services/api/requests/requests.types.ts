@@ -67,6 +67,7 @@ export interface StudentRequestDto {
   viewedAt?: string | null;
   viewedByUserId?: string | null;
   viewedByName?: string | null;
+  attachments?: SchoolMessageAttachmentDto[];
 }
 
 export const SendType = {
@@ -120,6 +121,12 @@ export interface SchoolMessageClassroomDto {
   classroomNameEN: string | null;
 }
 
+export interface SchoolMessageAttachmentDto {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+}
+
 export interface SchoolMessageDto {
   messageId: string;
   message: string;
@@ -135,6 +142,7 @@ export interface SchoolMessageDto {
   students: SchoolMessageStudentDto[];
   grades: SchoolMessageGradeDto[];
   classrooms: SchoolMessageClassroomDto[];
+  attachments: SchoolMessageAttachmentDto[];
   isViewed: boolean;
   viewedAt: string | null;
   viewedByUserId: string | null;
