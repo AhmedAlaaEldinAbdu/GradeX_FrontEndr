@@ -155,3 +155,9 @@ export interface ParentsByBranchQueryParams {
   pageIndex?: number;
   pageSize?: number;
 }
+
+export interface DeleteParentAccountRequest {
+  phoneNumber: string;
+  countryCode: string;
+  password: string;
+}
