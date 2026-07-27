@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
 import FileViewer from '@/shared/components/FileViewer';
 import FileIcon from '@gradex/assets/icons/File.svg';
+import DownloadIcon from '@gradex/assets/icons/Download.svg';
+import EyeIcon from '@gradex/assets/icons/EyeStyled.svg';
 
 interface ExistingFileDisplayProps {
   filePath: string;
@@ -54,7 +56,7 @@ const ExistingFileDisplay = ({
   const extension = getFileExtension(fileName);
   const isVideo = isVideoFile(extension);
   const canViewFile = isViewableFile(extension);
-  
+
   // Auto-enable view button for videos if not explicitly disabled
   const shouldShowViewButton = isVideo ? true : showViewButton;
 
@@ -72,7 +74,7 @@ const ExistingFileDisplay = ({
               ({t('officialHolidays.currentFile')})
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {canViewFile && shouldShowViewButton && (
               <button
                 type="button"
@@ -82,8 +84,13 @@ const ExistingFileDisplay = ({
                     ? 'text-blue-600 hover:text-blue-800'
                     : 'text-indigo-600 hover:text-indigo-800'
                 }`}
+                title={isVideo ? t('common.viewVideo') : t('common.view')}
               >
-                {isVideo ? t('common.viewVideo') : t('common.view')}
+                {isVideo ? (
+                  <CustomImage src={EyeIcon} alt={t('common.viewVideo')} className="h-5 w-5" />
+                ) : (
+                  <CustomImage src={EyeIcon} alt={t('common.view')} className="h-5 w-5" />
+                )}
               </button>
             )}
             {showDownloadButton && (
@@ -92,8 +99,9 @@ const ExistingFileDisplay = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-green-600 hover:text-green-800 hover:underline"
+                title={t('common.download')}
               >
-                {t('common.download')}
+                <CustomImage src={DownloadIcon} alt={t('common.download')} className="h-5 w-5" />
               </a>
             )}
           </div>
