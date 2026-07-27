@@ -2371,7 +2371,7 @@
       "maxStudentsRequired": "Le nombre maximum d'élèves est requis",
       "maxStudentsMustBePositive": "Le nombre maximum d'élèves doit être un nombre positif",
       "maxStudentsMustBeInteger": "Le nombre maximum d'élèves doit être un entier",
-      "maxStudentsExceeded": "Le nombre maximum d'élèves ne peut pas dépasser 100",
+      "maxStudentsExceeded": "Le nombre maximum d'élèves ne peut pas dépasser 10",
       "requiredList": "La liste des classes est requise",
       "atLeastOne": "Au moins une classe doit être ajoutée"
     }
