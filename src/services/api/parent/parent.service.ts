@@ -15,6 +15,7 @@ import type {
   ParentProfile,
   ParentsByBranchResponse,
   ParentsByBranchQueryParams,
+  DeleteParentAccountRequest
 } from '../types/parent.types';
 
 const MULTIPART = { headers: { 'Content-Type': 'multipart/form-data' } };
@@ -172,6 +173,27 @@ export async function getParentsByBranchId(
 }
 
 // ============================================================================
+// Delete parent account
+// ============================================================================
+
+export async function deleteParentAccount(
+  data: DeleteParentAccountRequest
+): Promise<void> {
+  const response: AxiosResponse<{
+    data: null;
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.delete(ParentEndpoints.deleteParentAccount, {
+    data,
+  });
+
+  if (!response?.data?.isSuccess) {
+    throw new Error(response?.data?.message || 'Failed to delete parent account');
+  }
+}
+
+// ============================================================================
 // Export Service Object
 // ============================================================================
 
@@ -187,6 +209,7 @@ export const parentApiService = {
   likeFavoriteSchoolBranch,
   dislikeFavoriteSchoolBranch,
   getParentsByBranchId,
+  deleteParentAccount
 };
 
 export default parentApiService;
