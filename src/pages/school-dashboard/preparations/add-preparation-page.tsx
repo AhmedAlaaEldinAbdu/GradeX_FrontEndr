@@ -7,6 +7,8 @@ export default function AddPreparationPage() {
   const { t } = useTranslation();
 
   const breadcrumbItems = [
+    { label: t('sidebar.academicAffairs') },
+    { label: t('sidebar.lms') },
     { label: t('preparations.title'), path: '/calendar/preparations' },
     { label: t('preparations.form.addTitle') },
   ];
