@@ -240,6 +240,21 @@ export interface SchoolDetailResponse {
   data: SchoolDetail;
 }
 
+export interface SchoolBranchMobileInfo {
+  schoolBranchId: string;
+  schoolId: string;
+  nameBranch: string;
+  city?: string;
+  codeSchoolCity?: string;
+  neighborhood?: string;
+  region?: string;
+  street?: string;
+  email?: string;
+  webSite?: string;
+  phoneNumber?: string;
+  landlineNumber?: string;
+}
+
 export interface BulkOperationResponse {
   success: boolean;
   successCount: number;

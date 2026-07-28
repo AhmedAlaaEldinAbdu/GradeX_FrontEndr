@@ -21,6 +21,7 @@ import {
 } from '../utils/school-form.transformer';
 import { fetchExistingFileAsUpload } from '../utils/existing-file-upload';
 import { logFormData } from '@/shared/common/common';
+import { logger } from '@/lib/utils/logger';
 import {
   createSchoolWithFormData,
   updateSchoolWithFormData,
@@ -67,6 +68,8 @@ interface SchoolFormProps {
   schoolId?: string;
   showRejectedLabel?: boolean;
   showPendingLabel?: boolean;
+  returnPath?: string;
+  showBackButton?: boolean;
 }
 
 const SchoolForm = ({
@@ -75,6 +78,8 @@ const SchoolForm = ({
   schoolId,
   showRejectedLabel = false,
   showPendingLabel = false,
+  returnPath = '/schools',
+  showBackButton = true,
 }: SchoolFormProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -125,7 +130,7 @@ const SchoolForm = ({
   // Initialize branches from initialData when in edit/view mode
   useEffect(() => {
     if (initialData?.branches && initialData.branches.length > 0) {
-      console.log('📋 SchoolForm: Initializing branches from initialData:', initialData.branches);
+      logger.debug('SchoolForm: Initializing branches from initialData', initialData.branches);
       setBranches(initialData.branches);
     }
   }, [initialData]);
@@ -229,7 +234,7 @@ const SchoolForm = ({
    * Handle moving to next step with validation
    */
   const handleNext = async () => {
-    console.log('▶️ handleNext called, currentStep:', currentStep);
+    logger.debug('SchoolForm: handleNext called', { currentStep });
     if (currentStep < 4) {
       // In view mode, skip validation and just move to next step
       if (mode === 'view') {
@@ -249,7 +254,7 @@ const SchoolForm = ({
       if (isValid && filesValid) {
         // Clear all errors before moving to next step
         form.clearErrors();
-        console.log('✅ Moving to step:', currentStep + 1);
+        logger.debug('SchoolForm: moving to step', { nextStep: currentStep + 1 });
 
         // If moving to step 4, set guard to prevent accidental submission
         if (currentStep === 3) {
@@ -389,7 +394,7 @@ const SchoolForm = ({
         }
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      logger.error('Error submitting form', error);
     }
   };
 
@@ -400,21 +405,21 @@ const SchoolForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('🚀 handleSubmit called, currentStep:', currentStep);
+    logger.debug('SchoolForm: handleSubmit called', { currentStep });
 
     // Only allow submission when on the final step (step 4)
     if (currentStep !== 4) {
-      console.log('❌ Not on step 4, blocking submission');
+      logger.debug('SchoolForm: blocking submit before final step', { currentStep });
       return;
     }
 
     // Block accidental submission immediately after navigating to step 4
     if (justNavigatedToStep4Ref.current) {
-      console.log('❌ Just navigated to step 4, blocking accidental submission');
+      logger.debug('SchoolForm: blocking accidental submit immediately after step navigation');
       return;
     }
 
-    console.log('✅ On step 4, proceeding with submission');
+    logger.debug('SchoolForm: final-step submit continuing');
     if (!isEditValidationDisabled) {
       setShowValidationErrors(true);
       await form.trigger([
@@ -429,7 +434,7 @@ const SchoolForm = ({
       // so re-uploading them is optional and should not block submission.
       const filesValid = mode === 'edit' ? true : validateFiles();
       if (!isValid || !filesValid) {
-        console.error('Form validation failed');
+        logger.error('Form validation failed', form.formState.errors);
         scrollToFirstError(form.formState.errors);
         return;
       }
@@ -439,7 +444,7 @@ const SchoolForm = ({
 
   const handleCloseSuccessPopup = () => {
     setShowPopupMessage({ ...showPopupMessage, show: false });
-    navigate('/schools');
+    navigate(returnPath);
   };
 
   return (
@@ -542,9 +547,11 @@ const SchoolForm = ({
               {mode === 'view' ? (
                 // View mode - show Next button and Back to list
                 <>
-                  <Button type="button" variant="outline" onClick={() => navigate('/schools')}>
-                    {t('common.backToList')}
-                  </Button>
+                  {showBackButton && (
+                    <Button type="button" variant="outline" onClick={() => navigate(returnPath)}>
+                      {t('common.backToList')}
+                    </Button>
+                  )}
                   {currentStep < 4 && (
                     <Button type="button" variant="primary" onClick={handleNext}>
                       {t('common.next')}
@@ -554,7 +561,7 @@ const SchoolForm = ({
               ) : (
                 // Add/Edit mode - show Cancel and Next/Save buttons
                 <>
-                  <Button type="button" variant="outline" onClick={() => navigate('/schools')}>
+                  <Button type="button" variant="outline" onClick={() => navigate(returnPath)}>
                     {t('common.cancel')}
                   </Button>
 

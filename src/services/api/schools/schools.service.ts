@@ -15,6 +15,8 @@ import type {
   SchoolStatisticsResponse,
   BulkOperationResponse,
   SchoolQueryParams,
+  SchoolFilters,
+  SchoolBranchMobileInfo,
 } from '@/services/api/types/school.types';
 import type { ApiSuccessResponse, ApiResponseModel } from '../config';
 
@@ -37,10 +39,12 @@ export async function getSchools(params?: SchoolQueryParams): Promise<SchoolList
           Object.entries(params).forEach(([key, value]) => {
             if (value === undefined || value === null) return;
 
+            const paramKey = key === 'schoolStatus' ? 'SchoolStatuses' : key;
+
             if (Array.isArray(value)) {
-              value.forEach((v) => searchParams.append(key, String(v)));
+              value.forEach((v) => searchParams.append(paramKey, String(v)));
             } else {
-              searchParams.append(key, String(value));
+              searchParams.append(paramKey, String(value));
             }
           });
 
@@ -264,6 +268,17 @@ export async function getLocationFilters(): Promise<{
   return response.data.data;
 }
 
+/**
+ * Get current school branch mobile summary and parent school id.
+ */
+export async function getSchoolBranchMobile(id: string): Promise<SchoolBranchMobileInfo | null> {
+  const response: AxiosResponse<
+    ApiSuccessResponse<SchoolBranchMobileInfo> & ApiResponseModel<SchoolBranchMobileInfo>
+  > = await axiosClient.get(SchoolsEndpoints.getSchoolBranchMobile(id));
+
+  return response.data.data ?? response.data.value ?? null;
+}
+
 // ============================================================================
 // Filtered Lists
 // ============================================================================
@@ -388,6 +403,40 @@ export async function exportSchools(
   return response.data;
 }
 
+/**
+ * Export schools Excel file using the backend filtered export endpoint.
+ */
+export async function exportSchoolsExcel(filters?: SchoolFilters): Promise<Blob> {
+  const response: AxiosResponse<Blob> = await axiosClient.get(SchoolsEndpoints.exportSchoolsExcel, {
+    params: filters,
+    responseType: 'blob',
+    headers: {
+      Accept: '*/*',
+    },
+    paramsSerializer: {
+      serialize: (params) => {
+        const searchParams = new URLSearchParams();
+
+        Object.entries(params).forEach(([key, value]) => {
+          if (value === undefined || value === null || value === '') return;
+
+          const paramKey = key === 'schoolStatus' ? 'SchoolStatuses' : key;
+
+          if (Array.isArray(value)) {
+            value.forEach((v) => searchParams.append(paramKey, String(v)));
+          } else {
+            searchParams.append(paramKey, String(value));
+          }
+        });
+
+        return searchParams.toString();
+      },
+    },
+  });
+
+  return response.data;
+}
+
 // ============================================================================
 // File Upload
 // ============================================================================
@@ -494,6 +543,7 @@ export const schoolsApiService = {
   rejectSchool,
   addSchoolUpdateRequest,
   getLocationFilters,
+  getSchoolBranchMobile,
 
   // Filtered Lists
   getPendingSchools,
@@ -511,6 +561,7 @@ export const schoolsApiService = {
   // Statistics & Reports
   getSchoolStatistics,
   exportSchools,
+  exportSchoolsExcel,
 
   // File Upload
   uploadSchoolLogo,

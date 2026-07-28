@@ -18,6 +18,7 @@ export interface StoredUserData {
   avatar?: string;
   isAuthenticated: boolean;
   permissions?: string[];
+  schoolId?: string | null;
   // Backend uses `schoolBrancheId` (typo). Keep both for compatibility.
   schoolBrancheId?: string | null;
   schoolBranchId?: string | null;
@@ -123,6 +124,7 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       payload.schoolBranchId ||
       payload.SchoolBranchId ||
       null;
+    const schoolId = payload.schoolId || payload.SchoolId || payload.schoolID || null;
 
     const userData: StoredUserData = {
       id: userId,
@@ -131,6 +133,7 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       role: userRole,
       isAuthenticated: true,
       permissions,
+      schoolId,
       schoolBrancheId: branchId,
       schoolBranchId: branchId,
     };

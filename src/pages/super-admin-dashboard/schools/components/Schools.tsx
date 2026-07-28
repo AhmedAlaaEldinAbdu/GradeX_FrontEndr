@@ -7,6 +7,7 @@ import { logger } from '@/lib/utils/logger';
 import RegisteredSchoolsTab from './RegisteredSchoolsTab';
 import PendingSchoolsTab from './PendingSchoolsTab';
 import DeletedSchoolsTab from './DeletedSchoolsTab';
+import ExcelFileIcon from '@gradex/assets/icons/ExcelFile.svg';
 import {
   fetchCountries,
   fetchAllRegions,
@@ -27,15 +28,20 @@ import {
   selectAcademicSystems,
   selectIsLoadingAcademicSystems,
 } from '@gradex/redux/features/academic-system';
-import { resetPagination, clearSchools } from '@gradex/redux/features/schools';
+import { resetPagination, clearSchools, exportSchoolsExcel } from '@gradex/redux/features/schools';
 import Tabs from '@/shared/components/Tabs';
+import Button from '@/shared/components/Button';
+import { useToast } from '@/shared/context/ToastContext';
 import type { FilterConfig } from '@/shared/components/DataTable';
+import { SchoolStatusEnum, type SchoolFilters } from '@/services/api';
 
 export default function Schools() {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const { showToast } = useToast();
 
   const [activeTab, setActiveTab] = useState('RegisteredSchools');
+  const [isExporting, setIsExporting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [academicSystem, setAcademicSystem] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
@@ -130,6 +136,80 @@ export default function Schools() {
     dispatch(fetchAllRegions());
     dispatch(fetchAllCities());
   };
+
+  const getActiveTabStatus = (): SchoolFilters['schoolStatus'] => {
+    if (activeTab === 'PendingSchools') return SchoolStatusEnum.PENDING;
+    if (activeTab === 'DeletedSchools') {
+      return [SchoolStatusEnum.REJECTED, SchoolStatusEnum.DELETED];
+    }
+    return SchoolStatusEnum.ACTIVE;
+  };
+
+  const getActiveTabFileName = () => {
+    const tabName =
+      activeTab === 'PendingSchools'
+        ? 'pending-schools'
+        : activeTab === 'DeletedSchools'
+          ? 'deleted-schools'
+          : 'registered-schools';
+
+    return `${tabName}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+  };
+
+  const downloadBlob = (blob: Blob, fileName: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportSchools = async () => {
+    if (isExporting) return;
+
+    setIsExporting(true);
+    try {
+      const blob = await dispatch(
+        exportSchoolsExcel({
+          schoolStatus: getActiveTabStatus(),
+          searchTerm: searchTerm || undefined,
+          academicSystemId: academicSystem || undefined,
+          lKCountryId: selectedCountry || undefined,
+          region: selectedRegion || undefined,
+          neighborhood: selectedCity || undefined,
+        })
+      ).unwrap();
+
+      downloadBlob(blob, getActiveTabFileName());
+      showToast({ message: 'invoices.exportSuccess', type: 'success' });
+    } catch (error) {
+      showToast({
+        message: typeof error === 'string' ? error : 'common.error',
+        type: 'error',
+        isRaw: typeof error === 'string',
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportAction = (
+    <div className="flex justify-end">
+      <Button
+        variant="outline"
+        size="sm"
+        imgSrc={ExcelFileIcon}
+        imgClassName="h-4 w-4"
+        onClick={handleExportSchools}
+        loading={isExporting}
+      >
+        {isExporting ? t('common.processing') : t('studentManagement.exportExcel')}
+      </Button>
+    </div>
+  );
 
   const filterConfigs: FilterConfig[] = [
     {
@@ -253,6 +333,7 @@ export default function Schools() {
           filterConfigs={filterConfigs}
           onResetFilters={handleResetFilters}
           isActive={activeTab === 'RegisteredSchools'}
+          exportAction={exportAction}
         />
       ),
     },
@@ -271,6 +352,7 @@ export default function Schools() {
           filterConfigs={filterConfigs}
           onResetFilters={handleResetFilters}
           isActive={activeTab === 'PendingSchools'}
+          exportAction={exportAction}
         />
       ),
     },
@@ -289,6 +371,7 @@ export default function Schools() {
           filterConfigs={filterConfigs}
           onResetFilters={handleResetFilters}
           isActive={activeTab === 'DeletedSchools'}
+          exportAction={exportAction}
         />
       ),
     },
