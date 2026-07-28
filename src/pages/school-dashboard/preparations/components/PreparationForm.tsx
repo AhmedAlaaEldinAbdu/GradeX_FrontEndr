@@ -540,7 +540,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
           </div>
         </form>
 
-        <div className="mt-8 flex justify-end gap-3">
+        <div className="mt-8 flex items-center justify-end gap-3">
           <Button
             variant="outline"
             onClick={(e) => {
