@@ -8,6 +8,7 @@ export interface User {
   avatar?: string;
   permissions?: string[];
   isAuthenticated?: boolean;
+  schoolId?: string | null;
   schoolBrancheId?: string | null;
 }
 
