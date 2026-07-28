@@ -25,7 +25,7 @@ import { useToast } from '@/shared/context/ToastContext';
 // import CustomImage from '@/shared/components/CustomImage';
 
 export default function PreparationsList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { preparations, pagination, isLoading, isDeleting } = useSelector(
@@ -150,7 +150,9 @@ export default function PreparationsList() {
       accessor: (row) => (
         <span className="text-gray-500">
           {row.classRooms && row.classRooms.length > 0
-            ? row.classRooms.map((c) => `${c.nameAr || ''} ${c.nameEn || ''}`.trim()).join(', ')
+            ? row.classRooms
+                .map((c) => `${i18n.language === 'ar' ? c.nameAr : c.nameEn}`.trim())
+                .join(', ')
             : '-'}
         </span>
       ),
