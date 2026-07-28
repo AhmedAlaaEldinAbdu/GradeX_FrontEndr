@@ -433,8 +433,6 @@ export default function AttendanceManagement() {
                   e.stopPropagation();
                   handleIndividualAction(studentKey, studentName, editType);
                 }}
-                className="h-8 w-8 p-0 shadow-none"
-                imgClassName="h-4 w-4"
               />
             </div>
           );

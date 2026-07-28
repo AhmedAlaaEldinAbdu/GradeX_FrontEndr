@@ -17,6 +17,8 @@ export default function TeacherPlacementPage() {
   // Check if coming from job-announcements
   const locationState = location.state as LocationState | null;
   const isFromJobAnnouncements = locationState?.comeFrom === 'job-announcements';
+  // Check if coming from job-application-details
+  const isFromJobApplicationDetails = locationState?.comeFrom === 'job-application-details';
 
   const isViewMode = location.pathname.includes('placement-details');
 
@@ -27,12 +29,22 @@ export default function TeacherPlacementPage() {
         { label: t('teachers.jobAnnouncements'), path: '/job-announcements' },
         { label: t('teachers.placement.breadcrumb') },
       ]
-    : [
-        { label: t('sidebar.humanResources') },
-        { label: t('sidebar.teachingStaff') },
-        { label: t('sidebar.teachers'), path: '/teachers' },
-        { label: t('teachers.placement.breadcrumb') },
-      ];
+    : isFromJobApplicationDetails
+      ? [
+          { label: t('sidebar.humanResources') },
+          { label: t('sidebar.adminRequests'), path: '/admin-requests' },
+          {
+            label: t('adminRequests.jobApplication.detailsTitle'),
+            path: `/admin-requests/job-application/${id}`,
+          },
+          { label: t('teachers.placement.breadcrumb') },
+        ]
+      : [
+          { label: t('sidebar.humanResources') },
+          { label: t('sidebar.teachingStaff') },
+          { label: t('sidebar.teachers'), path: '/teachers' },
+          { label: t('teachers.placement.breadcrumb') },
+        ];
 
   return (
     <div>

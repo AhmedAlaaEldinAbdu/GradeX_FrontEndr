@@ -479,8 +479,6 @@ export default function EmployeesAttendanceTab({
                   e.stopPropagation();
                   handleIndividualAction(row.teacherId, row.teacherFullName, editType);
                 }}
-                className="h-8 w-8 p-0 shadow-none"
-                imgClassName="h-4 w-4"
               />
             </div>
           );
