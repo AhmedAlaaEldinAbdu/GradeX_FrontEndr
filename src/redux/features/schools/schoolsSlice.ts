@@ -14,6 +14,7 @@ import {
   schoolsApiService,
   type CreateSchoolRequest,
   type SchoolDetail,
+  type SchoolFilters,
   type SchoolQueryParams,
   type SchoolStatisticsResponse,
   type UpdateSchoolRequest,
@@ -474,6 +475,17 @@ export const fetchSchoolStatistics = createAsyncThunk<SchoolStatisticsResponse, 
     try {
       const statistics = await schoolsApiService.getSchoolStatistics();
       return statistics;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const exportSchoolsExcel = createAsyncThunk<Blob, SchoolFilters>(
+  'schools/exportSchoolsExcel',
+  async (filters, { rejectWithValue }) => {
+    try {
+      return await schoolsApiService.exportSchoolsExcel(filters);
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));
     }
