@@ -170,6 +170,12 @@ export default function PreparationsList() {
       accessor: (row) => (
         <div className="flex items-center justify-center gap-2">
           <IconButton
+            status="edit"
+            variant="success"
+            onClick={() => navigate(`/calendar/preparations/edit-preparation/${row.id}`)}
+            ariaLabel={t('common.edit')}
+          />
+          <IconButton
             status="delete"
             variant="danger"
             onClick={() => {
@@ -177,12 +183,6 @@ export default function PreparationsList() {
               setShowDeletePopup(true);
             }}
             ariaLabel={t('common.delete')}
-          />
-          <IconButton
-            status="edit"
-            variant="success"
-            onClick={() => navigate(`/calendar/preparations/edit-preparation/${row.id}`)}
-            ariaLabel={t('common.edit')}
           />
         </div>
       ),
