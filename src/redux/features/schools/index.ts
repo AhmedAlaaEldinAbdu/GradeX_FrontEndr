@@ -28,6 +28,7 @@ export {
   activateSchool,
   deactivateSchool,
   fetchSchoolStatistics,
+  exportSchoolsExcel,
   setPagination,
   resetPagination,
   clearSchools,
