@@ -10,4 +10,5 @@ export const SchoolsEndpoints = {
   getLocationFilters: `${SCHOOLS}/location/filters`,
   updateWorkingHours: (id: string) => `${SCHOOLS}/${id}/WorkingHours`,
   getSchoolBranchMobile: (id: string) => `${SCHOOLS}/schoolBranchMobile/${id}`,
+  exportSchoolsExcel: '/School/ExportSchoolsExcel',
 };
