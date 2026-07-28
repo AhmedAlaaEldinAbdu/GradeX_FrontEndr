@@ -420,12 +420,10 @@ export async function exportSchoolsExcel(filters?: SchoolFilters): Promise<Blob>
         Object.entries(params).forEach(([key, value]) => {
           if (value === undefined || value === null || value === '') return;
 
-          const paramKey = key === 'schoolStatus' ? 'SchoolStatuses' : key;
-
           if (Array.isArray(value)) {
-            value.forEach((v) => searchParams.append(paramKey, String(v)));
+            value.forEach((v) => searchParams.append(key, String(v)));
           } else {
-            searchParams.append(paramKey, String(value));
+            searchParams.append(key, String(value));
           }
         });
 
