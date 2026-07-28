@@ -97,6 +97,7 @@ import JobApplicationDetailsPage from '@/pages/school-dashboard/admin-requests/j
 import SchoolNotificationsPage from '@/pages/school-dashboard/notifications/notifications-page';
 import AddEmployeesNotificationPage from '@/pages/school-dashboard/notifications/add-employees-notification-page';
 import AddParentsNotificationPage from '@/pages/school-dashboard/notifications/add-parents-notification-page';
+import SchoolDataPage from '@/pages/school-dashboard/settings/school-data/school-data-page';
 
 const SchoolRouter: React.FC = () => {
   const { t } = useTranslation();
@@ -869,10 +870,17 @@ const SchoolRouter: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
             <MainLayout>
-              <div className="py-16 text-center">
-                <h2 className="text-2xl font-bold text-gray-800">{t('sidebar.schoolData')}</h2>
-                <p className="mt-4 text-gray-600">{t('common.noAccessPermission')}</p>
-              </div>
+              <SchoolDataPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/school-data/edit"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.SCHOOL_ADMIN]}>
+            <MainLayout>
+              <SchoolDataPage mode="edit" />
             </MainLayout>
           </ProtectedRoute>
         }
