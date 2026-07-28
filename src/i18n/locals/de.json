@@ -1233,6 +1233,7 @@
     "editSchool": "Schule bearbeiten",
     "viewSchool": "Schule anzeigen",
     "noSchoolsMessage": "Es wurden noch keine Schulen hinzugefügt. Sie können damit beginnen, Schulen hinzuzufügen, um Lehrpläne effektiver zu organisieren und Fächer zu verwalten.",
+    "schoolPendingApproval": "Ihre Schule ist ausstehend. Bitte warten Sie, bis der Administrator die Änderungen akzeptiert.",
     "registeredSchools": "Registrierte Schulen",
     "pendingSchools": "Ausstehende Schulen",
     "deletedSchools": "Gelöschte Schulen",
