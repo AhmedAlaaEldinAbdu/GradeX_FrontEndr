@@ -50,6 +50,7 @@ export const restoreSession = createAsyncThunk('auth/restoreSession', async () =
     avatar: userData.avatar,
     isAuthenticated: true,
     permissions: userData.permissions ?? [],
+    schoolId: userData.schoolId ?? null,
     schoolBrancheId: userData.schoolBrancheId ?? userData.schoolBranchId ?? null,
   };
 
@@ -117,6 +118,7 @@ export const login = createAsyncThunk(
           role: derivedRole,
           isAuthenticated: true,
           permissions: userData.permissions ?? [],
+          schoolId: userData.schoolId ?? null,
           schoolBrancheId: branchId,
         },
         token: response.token,
@@ -179,6 +181,7 @@ export const loginWithCallbackToken = createAsyncThunk(
           role: derivedRole,
           isAuthenticated: true,
           permissions: userData.permissions ?? [],
+          schoolId: userData.schoolId ?? null,
           schoolBrancheId: branchId,
         },
         token: jwt,
