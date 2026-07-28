@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import DataTable, { type DataTableColumn } from '@gradex/shared/components/DataTable';
@@ -35,6 +35,7 @@ interface PendingSchoolsTabProps {
   filterConfigs?: FilterConfig[];
   onResetFilters?: () => void;
   isActive?: boolean;
+  exportAction?: ReactNode;
 }
 
 export default function PendingSchoolsTab({
@@ -42,6 +43,7 @@ export default function PendingSchoolsTab({
   filterConfigs,
   onResetFilters,
   isActive = true,
+  exportAction,
 }: PendingSchoolsTabProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
@@ -283,6 +285,7 @@ export default function PendingSchoolsTab({
         showFilters={true}
         filters={filterConfigs}
         onResetFilters={onResetFilters}
+        bulkActions={exportAction}
         isLoading={isLoading}
         emptyMessage={t('schools.noSchoolsFound')}
         t={t}
