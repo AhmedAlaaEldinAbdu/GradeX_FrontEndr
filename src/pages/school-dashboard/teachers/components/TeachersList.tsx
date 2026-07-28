@@ -28,6 +28,8 @@ export default function TeachersList() {
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
   const schoolBranchId = getCurrentSchoolBranchId();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -67,8 +69,8 @@ export default function TeachersList() {
   useEffect(() => {
     dispatch(
       fetchTeachers({
-        page: pagination.page,
-        limit: pagination.limit,
+        page: currentPage,
+        limit: pageSize,
         filters: {
           SearchTerm: searchTerm || undefined,
           classroomId: selectedClassroom || undefined,
@@ -88,24 +90,8 @@ export default function TeachersList() {
     selectedGrade,
     selectedMaterial,
     schoolBranchId,
+    currentPage,
   ]);
-
-  const handlePageChange = (page: number) => {
-    dispatch(
-      fetchTeachers({
-        page,
-        limit: pagination.limit,
-        filters: {
-          SearchTerm: searchTerm || undefined,
-          classroomId: selectedClassroom || undefined,
-          gradeId: selectedGrade || undefined,
-          materialId: selectedMaterial || undefined,
-          schoolBranchesId: schoolBranchId || undefined,
-          Language: currentLang || undefined,
-        },
-      })
-    );
-  };
 
   const hasActiveFilters = searchTerm || selectedClassroom || selectedGrade || selectedMaterial;
   const shouldShowEmptyState = !isLoading && teachers.length === 0 && !hasActiveFilters;
@@ -383,6 +369,7 @@ export default function TeachersList() {
     setSearchTerm('');
     setSelectedClassroom('');
     setSelectedGrade('');
+    setCurrentPage(1);
     setSelectedMaterial('');
   };
 
@@ -454,7 +441,7 @@ export default function TeachersList() {
               total: pagination.total,
               totalPages: pagination.totalPages,
             }}
-            onPageChange={handlePageChange}
+            onPageChange={setCurrentPage}
             filters={filterConfigs}
             showFilters={true}
             onResetFilters={handleResetFilters}
