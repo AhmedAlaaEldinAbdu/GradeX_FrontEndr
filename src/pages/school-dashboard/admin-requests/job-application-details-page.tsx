@@ -59,17 +59,18 @@ const JobApplicationDetailsPage: React.FC = () => {
     )
       .unwrap()
       .then((data) => {
+        if (cancelled) return;
         const assignments = data.data;
-
         setHasAssignment(assignments.length > 0);
-
         if (assignments.length > 0) {
           setFirstAssignmentId(assignments[0].id);
         }
       })
       .catch(() => {
-        setHasAssignment(false);
-        setFirstAssignmentId(null);
+        if (!cancelled) {
+          setHasAssignment(false);
+          setFirstAssignmentId(null);
+        }
       });
     return () => {
       cancelled = true;
