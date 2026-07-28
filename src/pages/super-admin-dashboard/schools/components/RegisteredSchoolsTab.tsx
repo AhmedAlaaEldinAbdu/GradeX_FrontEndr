@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, type ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@gradex/redux/store/store';
 import DataTable, { type DataTableColumn } from '@gradex/shared/components/DataTable';
@@ -37,6 +37,7 @@ interface RegisteredSchoolsTabProps {
   filterConfigs?: FilterConfig[];
   onResetFilters?: () => void;
   isActive?: boolean;
+  exportAction?: ReactNode;
 }
 
 export default function RegisteredSchoolsTab({
@@ -44,6 +45,7 @@ export default function RegisteredSchoolsTab({
   filterConfigs,
   onResetFilters,
   isActive = true,
+  exportAction,
 }: RegisteredSchoolsTabProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
@@ -317,6 +319,7 @@ export default function RegisteredSchoolsTab({
         showFilters={true}
         filters={filterConfigs}
         onResetFilters={onResetFilters}
+        bulkActions={exportAction}
         isLoading={isLoading}
         emptyMessage={t('schools.noSchoolsFound')}
         t={t}
