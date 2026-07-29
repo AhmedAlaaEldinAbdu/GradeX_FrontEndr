@@ -158,7 +158,9 @@
         "mon": "Mo",
         "tue": "Di",
         "wed": "Mi",
-        "thu": "Do"
+        "thu": "Do",
+        "fri": "Fr",
+        "sat": "Sa"
       },
       "weeks": {
         "week1": "Woche 1",
