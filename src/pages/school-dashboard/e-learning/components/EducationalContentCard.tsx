@@ -1,31 +1,39 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '@/shared/components/Card';
 import BarChart from '@/shared/components/BarChart';
+import Loading from '@/shared/components/Loading';
+import type { SchoolCourseEducationalContentItem } from '@/services/api/types/school-course.types';
 
-type ContentFilter = 'month' | 'week' | 'day';
+export type ContentFilter = 'month' | 'week' | 'day';
+
+type EducationalContentCardProps = {
+  filter: ContentFilter;
+  isLoading: boolean;
+  educationalContent: SchoolCourseEducationalContentItem[];
+  onFilterChange: (filter: ContentFilter) => void;
+};
 
 const FILTERS: ContentFilter[] = ['day', 'week', 'month'];
-const HOURS = ['08:00', '10:00', '12:00', '14:00', '16:00'] as const;
-const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu'] as const;
+const HOURS = Array.from({ length: 24 }, (_, index) => `${String(index).padStart(2, '0')}:00`);
+const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 const WEEKS = ['week1', 'week2', 'week3', 'week4'] as const;
+const CONTENT_MAX = 100;
+const Y_TICKS = [100, 80, 60, 40, 20];
 
-const CONTENT_MAX = 400;
-const Y_TICKS = [400, 350, 300, 250, 200, 150, 100, 50, 0];
-
-const TOOLTIP_ROWS = [
-  { key: 'exams', color: '#178D4E', value: 0 },
-  { key: 'courses', color: '#117BD7', value: 0 },
-  { key: 'workshops', color: '#A353DD', value: 0 },
-] as const;
-
-export default function EducationalContentCard() {
+export default function EducationalContentCard({
+  filter,
+  isLoading,
+  educationalContent,
+  onFilterChange,
+}: EducationalContentCardProps) {
   const { t } = useTranslation();
-  const [filter, setFilter] = useState<ContentFilter>('week');
 
-  const renderTooltip = () => (
+  const renderTooltip = (item: SchoolCourseEducationalContentItem) => (
     <div className="flex min-w-[120px] flex-col gap-1">
-      {TOOLTIP_ROWS.map((row) => (
+      {[
+        { key: 'exams', color: '#178D4E', value: item.examsCount },
+        { key: 'courses', color: '#117BD7', value: item.coursesCount },
+      ].map((row) => (
         <div key={row.key} className="flex items-center justify-between gap-4">
           <span className="font-medium" style={{ color: row.color }}>
             {row.value}
@@ -36,20 +44,27 @@ export default function EducationalContentCard() {
     </div>
   );
 
-  const data = (
+  const labels =
     filter === 'day'
       ? HOURS.map((hour) => ({ key: hour, label: hour }))
       : filter === 'month'
         ? WEEKS.map((week) => ({ key: week, label: t(`eLearning.content.weeks.${week}`) }))
-        : DAYS.map((day) => ({ key: day, label: t(`eLearning.content.days.${day}`) }))
-  ).map((item) => ({
-    ...item,
-    value: 0,
-    tooltip: renderTooltip(),
-  }));
+        : DAYS.map((day) => ({ key: day, label: t(`eLearning.content.days.${day}`) }));
+
+  const data = labels.map((label, index) => {
+    const item = educationalContent[index] ?? { examsCount: 0, coursesCount: 0 };
+    return {
+      ...label,
+      value: item.examsCount + item.coursesCount,
+      tooltip: renderTooltip(item),
+    };
+  });
 
   return (
-    <Card className="flex flex-1 flex-col gap-6 rounded-3xl border border-[#DDE0E0]" padding="md">
+    <Card
+      className="flex min-w-0 flex-1 flex-col gap-6 rounded-3xl border border-[#DDE0E0]"
+      padding="md"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-lg font-medium text-[#3A3A3A]">{t('eLearning.content.title')}</h3>
         <div className="flex items-center gap-1 rounded-full border border-[#DDE0E0] p-1">
@@ -57,7 +72,7 @@ export default function EducationalContentCard() {
             <button
               key={option}
               type="button"
-              onClick={() => setFilter(option)}
+              onClick={() => onFilterChange(option)}
               className={`rounded-full px-3 py-1 text-sm transition-colors ${
                 filter === option
                   ? 'bg-green-500 text-white'
@@ -70,12 +85,24 @@ export default function EducationalContentCard() {
         </div>
       </div>
 
-      <BarChart
-        data={data}
-        yTicks={Y_TICKS}
-        max={CONTENT_MAX}
-        renderTick={(tick) => (tick === CONTENT_MAX ? `${tick}+` : tick)}
-      />
+      <div className="min-h-[315px] w-full max-w-full min-w-0">
+        {isLoading ? (
+          <div className="flex min-h-[315px] items-center justify-center">
+            <Loading size="md" />
+          </div>
+        ) : (
+          <div className="w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden pb-2">
+            <div className={filter === 'day' ? 'w-[1120px] max-w-none' : 'w-full min-w-0'}>
+              <BarChart
+                data={data}
+                yTicks={Y_TICKS}
+                max={CONTENT_MAX}
+                renderTick={(tick) => tick}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </Card>
   );
 }
