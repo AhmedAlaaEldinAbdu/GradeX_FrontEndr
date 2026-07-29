@@ -8,20 +8,28 @@ type ProgramDatum = {
   color: string;
 };
 
+type EducationalProgramsCardProps = {
+  examsCount: number;
+  coursesCount: number;
+};
+
 const RADIUS = 70;
 const STROKE = 24;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-export default function EducationalProgramsCard() {
+export default function EducationalProgramsCard({
+  examsCount,
+  coursesCount,
+}: EducationalProgramsCardProps) {
   const { t } = useTranslation();
 
   const programs: ProgramDatum[] = [
-    { key: 'exams', label: t('eLearning.programs.exams'), value: 0, color: '#117BD7' },
-    { key: 'courses', label: t('eLearning.courses.title'), value: 0, color: '#1BD867' },
+    { key: 'exams', label: t('eLearning.programs.exams'), value: examsCount, color: '#117BD7' },
+    { key: 'courses', label: t('eLearning.courses.title'), value: coursesCount, color: '#1BD867' },
   ];
 
   const total = programs.reduce((sum, program) => sum + program.value, 0);
-  const completion = total === 0 ? 0 : Math.round((programs[1].value / total) * 100);
+  const completion = total === 0 ? 0 : Math.round((coursesCount / total) * 100);
 
   let consumed = 0;
   const arcs = programs.map((program) => {
