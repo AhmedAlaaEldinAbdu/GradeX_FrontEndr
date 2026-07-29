@@ -33,6 +33,19 @@ export interface SchoolCourseQueryParams {
   Status?: SchoolCourseStatus;
 }
 
+export const SchoolCourseDashboardPeriodType = {
+  Daily: 0,
+  Weekly: 1,
+  Monthly: 2,
+} as const;
+export type SchoolCourseDashboardPeriodType =
+  (typeof SchoolCourseDashboardPeriodType)[keyof typeof SchoolCourseDashboardPeriodType];
+
+export interface SchoolCourseDashboardOverviewParams {
+  schoolBranchId: string;
+  PeriodType: SchoolCourseDashboardPeriodType;
+}
+
 // ============================================================================
 // Read models
 // ============================================================================
@@ -110,6 +123,25 @@ export interface SchoolCoursesListData {
   totalPages: number;
   totalItems: number;
   pageSize: number;
+}
+
+export interface SchoolCourseEducationalContentItem {
+  examsCount: number;
+  coursesCount: number;
+}
+
+export interface SchoolCourseDashboardOverview {
+  activeExamsCount: number;
+  completedCoursesCount: number;
+  enrolledStudentsCount: number;
+  totalExamsCount: number;
+  totalCoursesCount: number;
+  successRate: number;
+  periodExamsCount: number;
+  periodCoursesCount: number;
+  periodExamsPercentage: number;
+  periodCoursesPercentage: number;
+  educationalContent: SchoolCourseEducationalContentItem[];
 }
 
 /** Envelope shared by the SchoolCourse endpoints. */
