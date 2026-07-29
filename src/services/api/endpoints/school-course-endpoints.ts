@@ -7,6 +7,7 @@ export const SchoolCourseEndpoints = {
   update: (id: string) => `${SchoolCourse}?Id=${id}`,
   getById: (id: string) => `${SchoolCourse}/${id}`,
   delete: (id: string) => `${SchoolCourse}/${id}`,
+  dashboardOverview: `${SchoolCourse}/dashboard-overview`,
 };
 
 export default SchoolCourseEndpoints;
