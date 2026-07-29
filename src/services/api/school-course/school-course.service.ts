@@ -13,6 +13,8 @@ import type {
   SchoolCoursesListResponse,
   SchoolCourseDetailsResponse,
   SchoolCourseApiEnvelope,
+  SchoolCourseDashboardOverview,
+  SchoolCourseDashboardOverviewParams,
 } from '../types/school-course.types';
 
 /**
@@ -125,6 +127,18 @@ export async function getSchoolCourseById(id: string): Promise<SchoolCourseDetai
 }
 
 /**
+ * GET /api/SchoolCourse/dashboard-overview â€” e-learning dashboard metrics.
+ */
+export async function getSchoolCourseDashboardOverview(
+  params: SchoolCourseDashboardOverviewParams
+): Promise<SchoolCourseApiEnvelope<SchoolCourseDashboardOverview>> {
+  const response: AxiosResponse<SchoolCourseApiEnvelope<SchoolCourseDashboardOverview>> =
+    await axiosClient.get(SchoolCourseEndpoints.dashboardOverview, { params });
+
+  return response.data;
+}
+
+/**
  * POST /api/SchoolCourse — create a course (multipart/form-data).
  */
 export async function createSchoolCourse(
@@ -167,6 +181,7 @@ export async function deleteSchoolCourse(
 export const schoolCourseApiService = {
   getSchoolCourses,
   getSchoolCourseById,
+  getSchoolCourseDashboardOverview,
   createSchoolCourse,
   updateSchoolCourse,
   deleteSchoolCourse,

@@ -11,6 +11,8 @@ import type {
   SchoolCoursesListData,
   CreateSchoolCourseRequest,
   UpdateSchoolCourseRequest,
+  SchoolCourseDashboardOverview,
+  SchoolCourseDashboardOverviewParams,
 } from '@/services/api/types/school-course.types';
 import { getErrorMessage } from '@/lib/http';
 
@@ -22,6 +24,7 @@ export interface SchoolCourseState {
   // Data
   courses: SchoolCourse[];
   currentCourse: SchoolCourse | null;
+  dashboardOverview: SchoolCourseDashboardOverview | null;
   activeCoursesCount: number;
   totalStudentsCount: number;
 
@@ -38,6 +41,7 @@ export interface SchoolCourseState {
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
+  isFetchingDashboardOverview: boolean;
 
   // Error
   error: string | null;
@@ -48,6 +52,7 @@ export interface SchoolCourseState {
 const initialState: SchoolCourseState = {
   courses: [],
   currentCourse: null,
+  dashboardOverview: null,
   activeCoursesCount: 0,
   totalStudentsCount: 0,
   pagination: {
@@ -60,6 +65,7 @@ const initialState: SchoolCourseState = {
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
+  isFetchingDashboardOverview: false,
   error: null,
   isInitialized: false,
 };
@@ -91,6 +97,18 @@ export const fetchSchoolCourseById = createAsyncThunk<SchoolCourse, string>(
     }
   }
 );
+
+export const fetchSchoolCourseDashboardOverview = createAsyncThunk<
+  SchoolCourseDashboardOverview,
+  SchoolCourseDashboardOverviewParams
+>('schoolCourses/fetchDashboardOverview', async (params, { rejectWithValue }) => {
+  try {
+    const response = await schoolCourseApiService.getSchoolCourseDashboardOverview(params);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const createSchoolCourse = createAsyncThunk<SchoolCourse, CreateSchoolCourseRequest>(
   'schoolCourses/create',
@@ -192,6 +210,24 @@ const schoolCourseSlice = createSlice({
       })
       .addCase(fetchSchoolCourseById.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch dashboard overview
+    builder
+      .addCase(fetchSchoolCourseDashboardOverview.pending, (state) => {
+        state.isFetchingDashboardOverview = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchSchoolCourseDashboardOverview.fulfilled,
+        (state, action: PayloadAction<SchoolCourseDashboardOverview>) => {
+          state.isFetchingDashboardOverview = false;
+          state.dashboardOverview = action.payload;
+        }
+      )
+      .addCase(fetchSchoolCourseDashboardOverview.rejected, (state, action) => {
+        state.isFetchingDashboardOverview = false;
         state.error = action.payload as string;
       });
 
