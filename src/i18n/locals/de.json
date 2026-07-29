@@ -4154,5 +4154,11 @@
       "communication": "Kommunikation",
       "actions": "Aktionen"
     }
+  },
+  "noAccessPermission": {
+    "title": "Sie haben keine Zugriffsberechtigung",
+    "description": "Es tut uns leid, aber Ihr aktuelles Konto verfügt nicht über die erforderlichen Berechtigungen, um diese Seite anzuzeigen.",
+    "contactSupport": "Bitte wenden Sie sich an den Kundendienst, um die erforderlichen Berechtigungen anzufordern.",
+    "contactCustomerService": "Kundendienst kontaktieren"
   }
 }

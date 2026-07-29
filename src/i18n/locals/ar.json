@@ -63,11 +63,11 @@
         "title": "بدء حصة من بعد",
         "subjectTitle": "مادة {{subject}}",
         "teacherName": "المعلم {{teacher}}",
-    "linkLabel": "رابط الحصة",
-    "linkPlaceholder": "أدخل رابط الحصة",
-    "linkRequired": "يرجى إدخال رابط الحصة",
-    "linkInvalid": "يرجى إدخال رابط صحيح",
-    "starting": "جاري البدء..."
+        "linkLabel": "رابط الحصة",
+        "linkPlaceholder": "أدخل رابط الحصة",
+        "linkRequired": "يرجى إدخال رابط الحصة",
+        "linkInvalid": "يرجى إدخال رابط صحيح",
+        "starting": "جاري البدء..."
       },
       "add": {
         "title": "إضافة حصة",
@@ -4308,5 +4308,11 @@
       "communication": "وسائل التواصل",
       "actions": "الإجراءات"
     }
+  },
+  "noAccessPermission": {
+    "title": "ليس لديك صلاحية للوصول",
+    "description": "نأسف، ولكن يبدو أن حسابك الحالي لا يملك الصلاحية الكافية لعرض هذه الصفحة.",
+    "contactSupport": "يرجى التواصل مع خدمة العملاء لطلب الصلاحيات اللازمة.",
+    "contactCustomerService": "تواصل مع مركز خدمة العملاء"
   }
 }

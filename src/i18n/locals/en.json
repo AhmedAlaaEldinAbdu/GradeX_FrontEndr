@@ -4284,5 +4284,11 @@
       "communication": "Communication",
       "actions": "Actions"
     }
+  },
+  "noAccessPermission": {
+    "title": "You Do Not Have Permission to Access",
+    "description": "We're sorry, but it appears that your current account does not have sufficient permissions to view this page.",
+    "contactSupport": "Please contact Customer Service to request the necessary permissions.",
+    "contactCustomerService": "Contact Customer Service"
   }
 }
