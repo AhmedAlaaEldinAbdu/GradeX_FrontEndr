@@ -29,16 +29,16 @@ export default function EducationalContentCard({
   const { t } = useTranslation();
 
   const renderTooltip = (item: SchoolCourseEducationalContentItem) => (
-    <div className="flex min-w-[120px] flex-col gap-1">
+    <div className="flex min-w-[140px] flex-col gap-2">
       {[
-        { key: 'exams', color: '#178D4E', value: item.examsCount },
-        { key: 'courses', color: '#117BD7', value: item.coursesCount },
+        { key: 'exams', value: item.examsCount },
+        { key: 'courses', value: item.coursesCount },
       ].map((row) => (
-        <div key={row.key} className="flex items-center justify-between gap-4">
-          <span className="font-medium" style={{ color: row.color }}>
-            {row.value}
+        <div key={row.key} className="flex items-center justify-between gap-5">
+          <span className="text-sm font-medium text-white/85">
+            {t(`eLearning.programs.${row.key}`)}
           </span>
-          <span className="text-[#3A3A3A]">{t(`eLearning.programs.${row.key}`)}</span>
+          <span className="text-sm font-semibold text-white">{row.value}</span>
         </div>
       ))}
     </div>
@@ -85,13 +85,13 @@ export default function EducationalContentCard({
         </div>
       </div>
 
-      <div className="min-h-[315px] w-full max-w-full min-w-0">
+      <div className="min-h-[315px] w-full min-w-0 max-w-full">
         {isLoading ? (
           <div className="flex min-h-[315px] items-center justify-center">
             <Loading size="md" />
           </div>
         ) : (
-          <div className="w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden pb-2">
+          <div className="w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden pb-2">
             <div className={filter === 'day' ? 'w-[1120px] max-w-none' : 'w-full min-w-0'}>
               <BarChart
                 data={data}
