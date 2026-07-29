@@ -45,10 +45,13 @@ const BarChart: React.FC<BarChartProps> = ({
     <div dir="ltr" className="flex gap-3">
       {/* Y axis — height matches the plot so "0" lines up with the bar baseline */}
       <div
-        className={`flex ${plotHeightClassName} flex-col justify-between text-xs font-normal text-[#A9A7A7]`}
+        className={`sticky left-0 z-10 flex ${plotHeightClassName} shrink-0 flex-col justify-between bg-white pe-2 text-xs font-normal text-[#A9A7A7]`}
       >
-        {yTicks.map((tick) => (
-          <span key={tick} className="-translate-y-1/2 leading-none">
+        {yTicks.map((tick, index) => (
+          <span
+            key={tick}
+            className={`${index === 0 ? 'translate-y-0' : '-translate-y-1/2'} whitespace-nowrap leading-none`}
+          >
             {renderTick(tick)}
           </span>
         ))}
