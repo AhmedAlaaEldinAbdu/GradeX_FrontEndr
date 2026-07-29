@@ -1233,6 +1233,7 @@
     "editSchool": "Edit School",
     "viewSchool": "View School",
     "noSchoolsMessage": "No schools have been added yet. You can start by adding schools to organize curricula and manage subjects more effectively.",
+    "schoolPendingApproval": "Your school is pending. Please wait until the admin accepts the changes.",
     "registeredSchools": "Registered Schools",
     "pendingSchools": "Pending Schools",
     "deletedSchools": "Deleted Schools",

@@ -1233,6 +1233,7 @@
     "editSchool": "Modifier l'école",
     "viewSchool": "Voir l'école",
     "noSchoolsMessage": "Aucune école n'a encore été ajoutée. Vous pouvez commencer par ajouter des écoles pour organiser les programmes et gérer les matières plus efficacement.",
+    "schoolPendingApproval": "Votre école est en attente. Veuillez patienter jusqu'à ce que l'administrateur accepte les modifications.",
     "registeredSchools": "Écoles enregistrées",
     "pendingSchools": "Écoles en attente",
     "deletedSchools": "Écoles supprimées",

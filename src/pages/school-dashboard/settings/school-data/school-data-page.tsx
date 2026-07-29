@@ -36,6 +36,7 @@ const SchoolDataPage = ({ mode = 'view' }: SchoolDataPageProps) => {
 
   const branchId = user?.schoolBrancheId ?? getCurrentSchoolBranchId() ?? '';
   const isEditMode = mode === 'edit';
+  const pendingApprovalMessage = t('schools.schoolPendingApproval');
 
   useEffect(() => {
     dispatch(fetchFacilities());
@@ -60,10 +61,6 @@ const SchoolDataPage = ({ mode = 'view' }: SchoolDataPageProps) => {
         const resolvedSchoolId = branchInfo?.schoolId ?? '';
 
         if (!resolvedSchoolId) {
-          showToast({
-            message: t('schools.schoolNotFound'),
-            type: 'error',
-          });
           return;
         }
 
@@ -76,10 +73,6 @@ const SchoolDataPage = ({ mode = 'view' }: SchoolDataPageProps) => {
         }
       } catch (error) {
         logger.error('Failed to load school data', error);
-        showToast({
-          message: typeof error === 'string' ? error : t('common.error'),
-          type: 'error',
-        });
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -113,7 +106,7 @@ const SchoolDataPage = ({ mode = 'view' }: SchoolDataPageProps) => {
       <div className="pb-8" dir={direction}>
         <Breadcrumb items={breadcrumbItems} />
         <PageHeader title="sidebar.schoolData" />
-        <NotFoundMessage message="schools.schoolNotFound" />
+        <NotFoundMessage text={pendingApprovalMessage} />
       </div>
     );
   }
