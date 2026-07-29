@@ -4151,5 +4151,11 @@
       "communication": "Communication",
       "actions": "Actions"
     }
+  },
+  "noAccessPermission": {
+    "title": "Vous n'avez pas l'autorisation d'accéder",
+    "description": "Nous sommes désolés, mais il semble que votre compte actuel ne dispose pas des autorisations nécessaires pour afficher cette page.",
+    "contactSupport": "Veuillez contacter le service client afin de demander les autorisations requises.",
+    "contactCustomerService": "Contacter le service client"
   }
 }
