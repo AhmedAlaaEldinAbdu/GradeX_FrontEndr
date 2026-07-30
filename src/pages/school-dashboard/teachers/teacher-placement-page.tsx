@@ -19,9 +19,10 @@ export default function TeacherPlacementPage() {
 
   const locationState = location.state as LocationState | null;
   const isFromJobAnnouncements = locationState?.comeFrom === 'job-announcements';
-  const isFromJobApplicationDetails = locationState?.comeFrom === 'job-application-details';
-  const requestId = locationState?.requestId || (isFromJobApplicationDetails ? id : undefined);
-  const teacherId = locationState?.teacherId || searchParams.get('teacherId') || id || '';
+  const requestId = locationState?.requestId || searchParams.get('requestId') || undefined;
+  const isFromJobApplicationDetails =
+    locationState?.comeFrom === 'job-application-details' || !!requestId;
+  const teacherId = locationState?.teacherId || id || '';
 
   const isViewMode = location.pathname.includes('placement-details');
 

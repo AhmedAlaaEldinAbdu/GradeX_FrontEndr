@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Loading from '@/shared/components/Loading';
@@ -17,10 +17,13 @@ export default function TeacherEditPlacementPage() {
   const { t } = useTranslation();
   const { id, assignmentId } = useParams<{ id: string; assignmentId: string }>();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const locationState = location.state as LocationState | null;
   const requestId =
-    locationState?.comeFrom === 'job-application-details' ? locationState.requestId : undefined;
+    locationState?.comeFrom === 'job-application-details'
+      ? locationState.requestId || searchParams.get('requestId') || undefined
+      : searchParams.get('requestId') || undefined;
 
   const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
   const isLoadingPersonalData = useAppSelector((state) => state.teachers.isLoadingPersonalData);
