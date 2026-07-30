@@ -32,11 +32,13 @@ interface EditTeacherPlacementFormProps {
   // Either an assignmentId OR a gradeId — the form picks the matching teacher
   // assignment to pre-fill.
   assignmentId: string;
+  returnRequestId?: string;
 }
 
 export default function EditTeacherPlacementForm({
   teacherId,
   assignmentId,
+  returnRequestId,
 }: EditTeacherPlacementFormProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -265,7 +267,7 @@ export default function EditTeacherPlacementForm({
       // Filter by both subject (materialId) and grade (gradeId)
       const matchesSubject = gradeBook.materialId === subj;
       const matchesGrade = !grade || gradeBook.gradeId === grade;
-      
+
       if (matchesSubject && matchesGrade) {
         gradeBook.bookDtos.forEach((book) => {
           result.push({ value: book.id, label: book.name });
@@ -318,6 +320,10 @@ export default function EditTeacherPlacementForm({
       }
 
       showToast({ message: result.message || t('common.successEdit'), type: 'success' });
+      if (returnRequestId) {
+        navigate(`/admin-requests/job-application/${returnRequestId}`);
+        return;
+      }
       navigate(`/teaching-staff/teachers/${teacherId}?tab=educational-stages`);
     } catch (error) {
       const errorMessage =
@@ -331,6 +337,10 @@ export default function EditTeacherPlacementForm({
   };
 
   const handleCancel = () => {
+    if (returnRequestId) {
+      navigate(`/admin-requests/job-application/${returnRequestId}`);
+      return;
+    }
     navigate(`/teaching-staff/teachers/${teacherId}?tab=educational-stages`);
   };
 

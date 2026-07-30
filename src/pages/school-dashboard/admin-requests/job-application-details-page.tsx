@@ -39,6 +39,7 @@ const JobApplicationDetailsPage: React.FC = () => {
   }, [dispatch, id]);
 
   const application = currentJobApplication ? mapJobApplication(currentJobApplication) : undefined;
+  const teacherId = application?.teacherId;
 
   const breadcrumbItems = [
     { label: t('sidebar.humanResources') },
@@ -48,11 +49,11 @@ const JobApplicationDetailsPage: React.FC = () => {
 
   // Fetch assignment list to check if teacher has placement
   useEffect(() => {
-    if (!id || !schoolBranchId) return;
+    if (!teacherId || !schoolBranchId) return;
     let cancelled = false;
     dispatch(
       fetchTeacherAssignmentList({
-        teacherId: id,
+        teacherId,
         schoolBranchesId: schoolBranchId,
         page: 1,
       })
@@ -75,15 +76,19 @@ const JobApplicationDetailsPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [id, schoolBranchId]);
+  }, [dispatch, teacherId, schoolBranchId]);
 
   const handlePlacementClick = () => {
+    if (!id || !teacherId) return;
+
     if (hasAssignment && firstAssignmentId) {
-      navigate(`/teaching-staff/teachers/${id}/edit-placement/${firstAssignmentId}`, {
-        state: { comeFrom: 'job-application-details' },
+      navigate(`/teaching-staff/teachers/${teacherId}/edit-placement/${firstAssignmentId}`, {
+        state: { comeFrom: 'job-application-details', requestId: id, teacherId },
       });
     } else {
-      navigate(`/teachers/${id}/add-placement`, { state: { comeFrom: 'job-application-details' } });
+      navigate(`/teachers/${id}/add-placement?teacherId=${teacherId}`, {
+        state: { comeFrom: 'job-application-details', requestId: id, teacherId },
+      });
     }
   };
 

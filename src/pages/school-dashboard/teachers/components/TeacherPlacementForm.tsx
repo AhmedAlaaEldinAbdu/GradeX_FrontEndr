@@ -37,11 +37,15 @@ interface AssignmentRow {
 interface TeacherPlacementFormProps {
   teacherId: string;
   teacherName?: string;
+  returnRequestId?: string;
 }
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-export default function TeacherPlacementForm({ teacherId }: TeacherPlacementFormProps) {
+export default function TeacherPlacementForm({
+  teacherId,
+  returnRequestId,
+}: TeacherPlacementFormProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -319,10 +323,18 @@ export default function TeacherPlacementForm({ teacherId }: TeacherPlacementForm
 
   const handleSuccessClose = () => {
     setShowSuccessPopup(false);
+    if (returnRequestId) {
+      navigate(`/admin-requests/job-application/${returnRequestId}`);
+      return;
+    }
     navigate(`/teachers/${teacherId}/placement-details`);
   };
 
   const handleCancel = () => {
+    if (returnRequestId) {
+      navigate(`/admin-requests/job-application/${returnRequestId}`);
+      return;
+    }
     navigate('/teachers');
   };
 
