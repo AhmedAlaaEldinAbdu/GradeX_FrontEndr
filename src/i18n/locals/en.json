@@ -4047,6 +4047,7 @@
         "preparationNumberMustBeNumber": "Preparation number must be a valid number",
         "preparationNumberMustBeGreaterThanZero": "Preparation number must be greater than 0",
         "dateRequired": "Preparation date is required",
+        "teacherNameRequired": "Teacher name is required",
         "educationalStageRequired": "Please select the educational stage",
         "gradesRequired": "Please select the grade",
         "subjectRequired": "Please select the subject",

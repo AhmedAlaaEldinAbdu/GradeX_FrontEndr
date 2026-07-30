@@ -4070,6 +4070,7 @@
         "preparationNumberMustBeNumber": "رقم التحضير يجب أن يكون رقماً صحيحاً",
         "preparationNumberMustBeGreaterThanZero": "رقم التحضير يجب أن يكون أكبر من 0",
         "dateRequired": "تاريخ التحضير مطلوب",
+        "teacherNameRequired": "اسم المعلم مطلوب",
         "educationalStageRequired": "برجاء اختيار المرحلة التعليمية",
         "gradesRequired": "برجاء اختيار الصف الدراسي",
         "subjectRequired": "برجاء اختيار المادة",

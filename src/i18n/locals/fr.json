@@ -3917,6 +3917,7 @@
         "preparationNumberMustBeNumber": "Le numéro de préparation doit être un nombre valide",
         "preparationNumberMustBeGreaterThanZero": "Le numéro de préparation doit être supérieur à 0",
         "dateRequired": "La date de la préparation est requise",
+        "teacherNameRequired": "Le nom de l'enseignant est requis",
         "educationalStageRequired": "Veuillez sélectionner le niveau scolaire",
         "gradesRequired": "Veuillez sélectionner le niveau",
         "subjectRequired": "Veuillez sélectionner la matière",
