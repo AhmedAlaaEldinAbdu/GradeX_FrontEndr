@@ -23,7 +23,7 @@ const supportContacts: SupportContact[] = [
   {
     countryKey: 'noAccessPermission.countries.egypt',
     flagIcon: FlagEgyptIcon,
-    phone: '+20 10 99016920',
+    phone: '+201099016920',
     whatsappNumber: '201099016920',
   },
   {
