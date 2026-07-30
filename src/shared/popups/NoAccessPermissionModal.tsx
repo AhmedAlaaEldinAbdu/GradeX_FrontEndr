@@ -2,8 +2,8 @@ import React from 'react';
 import Modal from '@/shared/popups/Modal';
 import CustomImage from '@/shared/components/CustomImage';
 import LockIcon from '@/assets/icons/Lock.svg';
-import PhoneGreenSmIcon from '@/assets/icons/PhoneGreenSm.svg';
-import WhatsappGreenSmIcon from '@/assets/icons/WhatsappGreenSm.svg';
+import FlagEgyptIcon from '@/assets/icons/FlagEgypt.svg';
+import FlagSaudiArabiaIcon from '@/assets/icons/FlagSaudiArabia.svg';
 import { useTranslation } from 'react-i18next';
 
 interface NoAccessPermissionModalProps {
@@ -12,23 +12,47 @@ interface NoAccessPermissionModalProps {
   phone?: string;
 }
 
+interface SupportContact {
+  countryKey: string;
+  flagIcon: string;
+  phone: string;
+  whatsappNumber: string;
+}
+
+const supportContacts: SupportContact[] = [
+  {
+    countryKey: 'noAccessPermission.countries.egypt',
+    flagIcon: FlagEgyptIcon,
+    phone: '+20 10 99016920',
+    whatsappNumber: '201099016920',
+  },
+  {
+    countryKey: 'noAccessPermission.countries.saudiArabia',
+    flagIcon: FlagSaudiArabiaIcon,
+    phone: '+966550124712',
+    whatsappNumber: '966550124712',
+  },
+];
+
 const NoAccessPermissionModal: React.FC<NoAccessPermissionModalProps> = ({
   isOpen,
   onClose,
-  phone = '0541558852',
+  phone,
 }) => {
   const { t } = useTranslation();
 
-  const handleCall = () => {
-    window.open(`tel:${phone}`);
-  };
+  const contacts = phone
+    ? [
+        {
+          countryKey: 'noAccessPermission.countries.saudiArabia',
+          flagIcon: FlagSaudiArabiaIcon,
+          phone,
+          whatsappNumber: phone.replace(/\D/g, '').replace(/^0/, '966'),
+        },
+      ]
+    : supportContacts;
 
-  const handleWhatsapp = () => {
-    const cleanPhone = phone.replace(/\D/g, '');
-
-    // لو الرقم سعودي يبدأ بـ 0 حوله إلى 966
-    const whatsappNumber = cleanPhone.startsWith('0') ? `966${cleanPhone.slice(1)}` : cleanPhone;
-
+  const handleWhatsapp = (whatsappNumber: string) => {
     window.open(`https://wa.me/${whatsappNumber}`, '_blank');
   };
 
@@ -59,30 +83,25 @@ const NoAccessPermissionModal: React.FC<NoAccessPermissionModalProps> = ({
         </h3>
 
         {/* Contact Buttons */}
-        <div className="grid w-full gap-4 md:grid-cols-2">
-          <div className="flex items-center gap-2 rounded-xl border border-[#DDE0E0] p-2">
-            <div
-              onClick={handleCall}
-              className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-xl bg-[#E5FFF4]"
+        <div className="grid w-full grid-cols-2 gap-4">
+          {contacts.map((contact) => (
+            <button
+              type="button"
+              key={contact.countryKey}
+              onClick={() => handleWhatsapp(contact.whatsappNumber)}
+              className="flex min-w-0 items-center gap-2 rounded-xl border border-[#DDE0E0] p-2 text-start transition-colors hover:bg-[#F7FFFB]"
             >
-              <CustomImage src={PhoneGreenSmIcon} alt="Phone" />
-            </div>
-            <span onClick={handleCall} className="cursor-pointer text-sm font-normal leading-7">
-              {phone}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 rounded-xl border border-[#DDE0E0] p-2">
-            <div
-              onClick={handleWhatsapp}
-              className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded-xl bg-[#E5FFF4]"
-            >
-              <CustomImage src={WhatsappGreenSmIcon} alt="Whatsapp" />
-            </div>
-            <span onClick={handleWhatsapp} className="cursor-pointer text-sm font-normal leading-7">
-              {phone}
-            </span>
-          </div>
+              <CustomImage src={contact.flagIcon} alt="" className="h-5 w-7 shrink-0 rounded-sm" />
+              <div className="min-w-0">
+                <span className="block text-xs font-medium leading-5 text-[#646969]">
+                  {t(contact.countryKey)}
+                </span>
+                <span className="block truncate text-sm font-normal leading-7 text-black-900">
+                  <bdi>{contact.phone}</bdi>
+                </span>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
     </Modal>
