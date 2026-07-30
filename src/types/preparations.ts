@@ -32,6 +32,8 @@ export interface Preparation {
   attachments: PreparationAttachment[];
   createdby: string;
   createdName: string | null;
+  teacherId: string;
+  teacherName: string | null;
 }
 
 export interface PreparationListData {
@@ -63,6 +65,7 @@ export interface CreatePreparationRequest {
   schoolBranchId: string;
   preparationNumber: number;
   preparationDate: string;
+  teacherId: string;
   gradeId: string;
   classRoomIds: string[];
   materialId: string;
