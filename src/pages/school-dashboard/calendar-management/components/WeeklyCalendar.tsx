@@ -15,6 +15,7 @@ import LessonDetailsPopup from '../popups/LessonDetailsPopup';
 import DeleteLessonPopup from '../popups/DeleteLessonPopup';
 import { useToast } from '@/shared/context/ToastContext';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 import {
   fetchLessons,
   fetchLessonByIdSilent,
@@ -629,6 +630,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { guardMutation } = useRoleAccess();
 
   // Get current language
   const currentLang = i18n.language;
@@ -1212,18 +1214,21 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
 
   const lessonContextActions: LessonContextAction[] = [
     {
+      id: 'view-details',
       label: t('weeklyCalendar.viewDetails'),
       icon: EyeFillIcon,
       onClick: handleViewDetails,
       color: 'primary',
     },
     {
+      id: 'edit-lesson',
       label: t('weeklyCalendar.editLesson'),
       icon: EditFilledIcon,
       onClick: handleEditLesson,
       color: 'success',
     },
     {
+      id: 'delete-lesson',
       label: t('weeklyCalendar.deleteLesson'),
       icon: TrashFillIcon,
       onClick: handleRequestDelete,
@@ -1370,8 +1375,12 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
             specialColumns={specialColumns}
             lessonContextActions={lessonContextActions}
             onLessonClick={handleViewDetails}
-            onEmptyCellClick={handleEmptyCellClick}
-            onChangeDuration={handleChangeDuration}
+            onEmptyCellClick={(...args) => guardMutation(() => handleEmptyCellClick(...args))}
+            onChangeDuration={(lesson, deltaMinutes) =>
+              guardMutation(() => {
+                void handleChangeDuration(lesson, deltaMinutes);
+              })
+            }
             extendingLessonId={extendingLessonId}
             onWeekChange={handleWeekChange}
             weekStart={currentWeekStart}

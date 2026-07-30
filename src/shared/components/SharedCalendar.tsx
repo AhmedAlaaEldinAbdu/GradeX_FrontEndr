@@ -8,6 +8,7 @@ import DotsBlackIcon from '@gradex/assets/icons/DotsBlack.svg';
 import GreenPlusCircleIcon from '@gradex/assets/icons/GreenPlusCircle.svg';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar-styles.css';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 const locales = {
   ar: ar,
@@ -34,6 +35,7 @@ type CalendarEventWithMeta = CalendarEvent & {
 };
 
 export interface ContextMenuAction {
+  id: string;
   label: string;
   icon: string;
   onClick: (date?: Date, event?: CalendarEvent) => void;
@@ -65,6 +67,7 @@ export default function SharedCalendar({
   className = '',
 }: SharedCalendarProps) {
   const { t, i18n } = useTranslation();
+  const { canPerformAction, denyAction } = useRoleAccess();
   const [view, setView] = useState<keyof typeof Views>(defaultView);
   const [date, setDate] = useState(new Date());
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -151,7 +154,18 @@ export default function SharedCalendar({
       return (
         <div
           className="custom-date-cell-wrapper group cursor-pointer rounded-[6px] transition-all duration-150 hover:shadow-[inset_0_0_0_1px_#00512E]"
-          onClick={() => addAction.onClick(value)}
+          onClick={() => {
+            if (
+              !canPerformAction({
+                control: 'menu',
+                actionId: addAction.id,
+              })
+            ) {
+              denyAction();
+              return;
+            }
+            addAction.onClick(value);
+          }}
         >
           {children}
           <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
@@ -160,7 +174,7 @@ export default function SharedCalendar({
         </div>
       );
     };
-  }, [condensedEvents, contextMenuActions]);
+  }, [canPerformAction, condensedEvents, contextMenuActions, denyAction]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -446,10 +460,21 @@ export default function SharedCalendar({
                 action.hidden?.(dropdownContext.date, dropdownContext.event) ?? false;
               return (allowEventAction || allowDateAction) && !isHidden;
             })
-            .map((action, index) => (
+            .map((action) => (
               <button
-                key={index}
+                key={action.id}
                 onClick={() => {
+                  if (
+                    !canPerformAction({
+                      control: 'menu',
+                      actionId: action.id,
+                    })
+                  ) {
+                    denyAction();
+                    setOpenDropdown(null);
+                    setDropdownContext(null);
+                    return;
+                  }
                   action.onClick(dropdownContext.date, dropdownContext.event);
                   setOpenDropdown(null);
                   setDropdownContext(null);

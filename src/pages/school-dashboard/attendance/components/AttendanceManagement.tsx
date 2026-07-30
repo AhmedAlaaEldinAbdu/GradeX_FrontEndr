@@ -30,6 +30,7 @@ import { StudentAttendanceStatus } from '@/types/studentAttendance';
 import { formatTime } from '@/shared/common/common';
 import { useToast } from '@/shared/context/ToastContext';
 import useLanguage from '@/hooks/useLanguage';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 export default function AttendanceManagement() {
   const { t } = useTranslation();
@@ -37,6 +38,7 @@ export default function AttendanceManagement() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+  const { guardMutation } = useRoleAccess();
 
   const schoolBranchId = getCurrentSchoolBranchId();
 
@@ -174,20 +176,24 @@ export default function AttendanceManagement() {
     studentName: string,
     type: 'present' | 'absent' | 'late'
   ) => {
-    setPopupStudentId(studentId);
-    setPopupStudentName(studentName);
-    setPopupType(type);
-    setPopupIsBulk(false);
-    setPopupOpen(true);
+    guardMutation(() => {
+      setPopupStudentId(studentId);
+      setPopupStudentName(studentName);
+      setPopupType(type);
+      setPopupIsBulk(false);
+      setPopupOpen(true);
+    });
   };
 
   // Bulk action handlers
   const handleBulkActionClick = (type: 'present' | 'absent' | 'late') => {
-    setPopupType(type);
-    setPopupIsBulk(true);
-    setPopupStudentId(null);
-    setPopupStudentName('');
-    setPopupOpen(true);
+    guardMutation(() => {
+      setPopupType(type);
+      setPopupIsBulk(true);
+      setPopupStudentId(null);
+      setPopupStudentName('');
+      setPopupOpen(true);
+    });
   };
 
   const handleConfirmAction = async (time?: string) => {

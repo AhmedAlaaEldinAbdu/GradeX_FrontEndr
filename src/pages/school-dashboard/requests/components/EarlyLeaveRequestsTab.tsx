@@ -34,6 +34,7 @@ import {
 import EarlyLeaveDetailsPopup from './EarlyLeaveDetailsPopup';
 import ConfirmActionPopup from './ConfirmActionPopup';
 import { formatEarlyLeaveDuration, formatEarlyLeaveTime } from './earlyLeaveFormatters';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 const PAGE_SIZE = 10;
 
@@ -57,6 +58,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+  const { guardMutation } = useRoleAccess();
   const schoolBranchId = getCurrentSchoolBranchId();
 
   const { requests, isLoading, isUpdating, pagination } = useAppSelector(
@@ -263,7 +265,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
             <button
               type="button"
               aria-label={t('requests.earlyLeave.approve')}
-              onClick={() => setConfirm({ type: 'approve', request: row })}
+              onClick={() => guardMutation(() => setConfirm({ type: 'approve', request: row }))}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 transition-colors hover:bg-green-200"
             >
               <CustomImage src={CheckMarkIcon} alt="" className="h-5 w-5" />
@@ -271,7 +273,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
             <button
               type="button"
               aria-label={t('requests.earlyLeave.delete')}
-              onClick={() => setConfirm({ type: 'delete', request: row })}
+              onClick={() => guardMutation(() => setConfirm({ type: 'delete', request: row }))}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 transition-colors hover:bg-red-100"
             >
               <CustomImage src={TrashIcon} alt="" className="h-5 w-5" />
@@ -282,7 +284,7 @@ const EarlyLeaveRequestsTab: React.FC = () => {
             <button
               type="button"
               aria-label={t('common.edit')}
-              onClick={() => {}}
+              onClick={() => guardMutation(() => {})}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-green-50 transition-colors hover:bg-green-100"
             >
               <CustomImage src={EditGreenIcon} alt="" className="h-5 w-5" />

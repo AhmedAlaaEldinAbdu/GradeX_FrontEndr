@@ -4,6 +4,8 @@ import RefreshSolidIcon from '@gradex/assets/icons/RefreshSolid.svg';
 import MaterialPdfIcon from '@gradex/assets/icons/MaterialPdf.svg';
 import ExcelFileIcon from '@gradex/assets/icons/ExcelFile.svg';
 import PrinterIcon from '@gradex/assets/icons/Printer.svg';
+import type { SchoolRestrictedViewActionKey } from '@/constants/role-access';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 interface TableActionButtonsProps {
   onReload?: () => void;
@@ -26,12 +28,24 @@ const TableActionButtons: React.FC<TableActionButtonsProps> = ({
   labels,
 }) => {
   const { t } = useTranslation();
+  const { guardAction } = useRoleAccess();
+
+  const runAction = (actionKey: SchoolRestrictedViewActionKey, action: () => void) => {
+    guardAction(
+      {
+        control: 'button',
+        actionKey,
+      },
+      action
+    );
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       {onReload && (
         <button
-          onClick={onReload}
+          type="button"
+          onClick={() => runAction('reload', onReload)}
           className="inline-flex items-center gap-2 rounded-[10px] bg-blue-50 px-4 py-2 text-base font-normal text-black-900 transition-colors hover:bg-blue-100"
         >
           <img src={RefreshSolidIcon} alt="" className="h-4 w-4" />
@@ -40,7 +54,8 @@ const TableActionButtons: React.FC<TableActionButtonsProps> = ({
       )}
       {onExportPdf && (
         <button
-          onClick={onExportPdf}
+          type="button"
+          onClick={() => runAction('exportPdf', onExportPdf)}
           className="inline-flex items-center gap-2 rounded-[10px] bg-red-50 px-4 py-2 text-base font-normal text-black-900 transition-colors hover:bg-red-100"
         >
           <img src={MaterialPdfIcon} alt="" className="h-4 w-4" />
@@ -49,7 +64,8 @@ const TableActionButtons: React.FC<TableActionButtonsProps> = ({
       )}
       {onExportExcel && (
         <button
-          onClick={onExportExcel}
+          type="button"
+          onClick={() => runAction('exportExcel', onExportExcel)}
           className="inline-flex items-center gap-2 rounded-[10px] bg-green-50 px-4 py-2 text-base font-normal text-black-900 transition-colors hover:bg-green-100"
         >
           <img src={ExcelFileIcon} alt="" className="h-4 w-4" />
@@ -58,7 +74,8 @@ const TableActionButtons: React.FC<TableActionButtonsProps> = ({
       )}
       {onPrint && (
         <button
-          onClick={onPrint}
+          type="button"
+          onClick={() => runAction('print', onPrint)}
           className="inline-flex items-center gap-2 rounded-[10px] bg-blue-50 px-4 py-2 text-base font-normal text-black-900 transition-colors hover:bg-blue-100"
         >
           <img src={PrinterIcon} alt="" className="h-4 w-4" />

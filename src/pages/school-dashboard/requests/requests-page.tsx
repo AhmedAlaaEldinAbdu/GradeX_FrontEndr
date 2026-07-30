@@ -22,6 +22,7 @@ import ReminderRequestsTab from './components/ReminderRequestsTab';
 // import AddDelegateRequestsTab from './components/AddDelegateRequestsTab';
 // import ContractAuthRequestsTab from './components/ContractAuthRequestsTab';
 import ApplicationsTab from './components/ApplicationsTab';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 type RequestMetricCard = {
   title: string;
@@ -33,6 +34,7 @@ type RequestMetricCard = {
 const RequestsPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { guardMutation } = useRoleAccess();
   const [searchParams] = useSearchParams();
   const { stats: applicationStats } = useAppSelector((state) => state.studentApplications);
   const { stats: earlyLeaveStats } = useAppSelector((state) => state.studentRequestEarlyLeave);
@@ -193,7 +195,7 @@ const RequestsPage: React.FC = () => {
             type="button"
             aria-label={t('common.add')}
             title={t('common.add')}
-            onClick={() => navigate('/requests/add-message')}
+            onClick={() => guardMutation(() => navigate('/requests/add-message'))}
             className="absolute end-0 top-0 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
           >
             <CustomImage src={WhitePlusIcon} alt={t('common.add')} className="h-5 w-5" />

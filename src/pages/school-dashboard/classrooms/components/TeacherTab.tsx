@@ -9,6 +9,7 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import CustomSelect from '@/shared/components/CustomSelect';
 import DataTable from '@/shared/components/DataTable';
 import EditGreenIcon from '@gradex/assets/icons/EditGreen.svg';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 import ProfileImage from '@gradex/assets/images/profile.png';
 
 export type TeacherRow = {
@@ -45,6 +46,7 @@ export default function TeacherTab({
   onResetFilters,
 }: TeacherTabProps) {
   const { t } = useTranslation();
+  const { guardMutation } = useRoleAccess();
   const { id: classId } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const schoolBranchesId = getCurrentSchoolBranchId();
@@ -118,7 +120,7 @@ export default function TeacherTab({
       type="button"
       className={`flex h-12 w-12 items-center justify-center rounded-full ${backgroundClassName}`}
       aria-label={alt}
-      onClick={onClick}
+      onClick={() => guardMutation(onClick ?? (() => {}))}
     >
       <CustomImage src={icon} alt={alt} className="h-6 w-6" />
     </button>

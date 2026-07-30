@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import HeaderControls from './HeaderControls';
 import CustomImage from './CustomImage';
 import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
+import type { SchoolActionKey } from '@/constants/role-access';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 type ActionType = {
   label: string;
@@ -21,6 +23,7 @@ type ActionType = {
   loading?: boolean;
   type?: 'button' | 'submit' | 'reset';
   circle?: boolean;
+  actionKey?: SchoolActionKey;
 };
 
 type StatisticType = {
@@ -48,6 +51,30 @@ const PageHeader = ({
 }: PageHeaderProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { canPerformAction, denyAction } = useRoleAccess();
+
+  const canRunAction = (action: ActionType) =>
+    canPerformAction({
+      control: 'page-header',
+      actionKey: action.actionKey,
+      destination: action.to,
+      buttonType: action.type,
+      variant: action.variant,
+    });
+
+  const runAction = (action: ActionType) => {
+    if (!canRunAction(action)) {
+      denyAction();
+      return;
+    }
+
+    if (action.to) {
+      navigate(action.to);
+      return;
+    }
+
+    action.onClick?.();
+  };
 
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
@@ -61,12 +88,22 @@ const PageHeader = ({
           action.to ? (
             action.circle ? (
               <CustomImage
-                onClick={() => navigate(action.to!)}
+                key={index}
+                onClick={() => runAction(action)}
                 src={GreenPlusIcon}
                 className={`${action.imgClassName} cursor-pointer`}
               />
             ) : (
-              <Link key={index} to={action.to}>
+              <Link
+                key={index}
+                to={action.to}
+                onClick={(event) => {
+                  if (!canRunAction(action)) {
+                    event.preventDefault();
+                    denyAction();
+                  }
+                }}
+              >
                 <Button
                   variant={action.variant}
                   size={action.size}
@@ -78,6 +115,7 @@ const PageHeader = ({
                   disabled={action.disabled}
                   loading={action.loading}
                   type={action.type}
+                  actionKey={action.actionKey}
                 >
                   {action.label ? t(`${action.label}`) : null}
                 </Button>
@@ -85,14 +123,15 @@ const PageHeader = ({
             )
           ) : action.circle ? (
             <CustomImage
-              onClick={action.onClick}
+              key={index}
+              onClick={() => runAction(action)}
               src={GreenPlusIcon}
               className={`${action.imgClassName} cursor-pointer`}
             />
           ) : (
             <Button
               key={index}
-              onClick={action.onClick}
+              onClick={() => runAction(action)}
               variant={action.variant}
               size={action.size}
               icon={action.icon}
@@ -103,6 +142,7 @@ const PageHeader = ({
               disabled={action.disabled}
               loading={action.loading}
               type={action.type}
+              actionKey={action.actionKey}
             >
               {action.label ? t(`${action.label}`) : null}
             </Button>

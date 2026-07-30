@@ -591,6 +591,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const contextMenuActions = useMemo<ContextMenuAction[]>(
     () => [
       {
+        id: 'view-details',
         label: t('monthlyCalendar.actions.viewDetails'),
         icon: EyeFillIcon,
         onClick: (_date, calendarEvent) => {
@@ -609,12 +610,14 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         showOnEvent: true,
       },
       {
+        id: 'add-event',
         label: t('monthlyCalendar.actions.addEvent'),
         icon: GreenPlusIcon,
         onClick: (date) => handleOpenAddPopup(date),
         hidden: (date) => isPastCalendarDate(date),
       },
       {
+        id: 'edit-event',
         label: t('monthlyCalendar.actions.editEvent'),
         icon: EditFilledIcon,
         onClick: (_date, calendarEvent) => {
@@ -634,6 +637,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
         },
       },
       {
+        id: 'delete-event',
         label: t('monthlyCalendar.actions.deleteEvent'),
         icon: TrashFillIcon,
         onClick: (_date, calendarEvent) => {

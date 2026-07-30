@@ -46,6 +46,7 @@ export default function HeaderControls() {
       icon: RefreshSolidBlackIcon,
       onClick: handleReload,
       color: 'bg-gray-100 hover:bg-gray-200',
+      actionKey: 'reload',
     },
     {
       id: 'print',
@@ -53,6 +54,7 @@ export default function HeaderControls() {
       icon: PrinterBlackIcon,
       onClick: handlePrint,
       color: 'bg-blue-100 hover:bg-blue-200',
+      actionKey: 'print',
     },
     {
       id: 'export-pdf',
@@ -60,6 +62,7 @@ export default function HeaderControls() {
       icon: MaterialPdfBlackIcon,
       onClick: handleExportPdf,
       color: 'bg-red-100 hover:bg-red-200',
+      actionKey: 'exportPdf',
     },
     {
       id: 'export-excel',
@@ -67,6 +70,7 @@ export default function HeaderControls() {
       icon: ExcelFileBlackIcon,
       onClick: handleExportExcel,
       color: 'bg-green-100 hover:bg-green-200',
+      actionKey: 'exportExcel',
     },
   ];
 
