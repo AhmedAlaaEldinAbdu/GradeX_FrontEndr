@@ -35,6 +35,7 @@ import { useToast } from '@/shared/context/ToastContext';
 import Loading from '@/shared/components/Loading';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { fetchTeachers } from '@/redux/features/teachers/teachersSlice';
 
 interface PreparationFormProps {
   isEditMode?: boolean;
@@ -50,6 +51,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const dispatch = useDispatch<AppDispatch>();
 
   const { educationalStages } = useSelector((state: RootState) => state.educationalStages);
+  const { teachers } = useSelector((state: RootState) => state.teachers);
   const { classrooms } = useSelector((state: RootState) => state.classrooms);
   const { subjects } = useSelector((state: RootState) => state.subjects);
   const { flattenedBooks } = useSelector((state: RootState) => state.books);
@@ -62,6 +64,13 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   useEffect(() => {
     dispatch(getEducationalStages({ schoolBranchId, pageIndex: 1, pageSize: 1000 }));
+    dispatch(
+      fetchTeachers({
+        page: 1,
+        limit: 1000,
+        filters: { schoolBranchesId: schoolBranchId },
+      })
+    );
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -72,6 +81,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   const [date, setDate] = useState('');
   const [preparationNumber, setPreparationNumber] = useState('');
+  const [teacherName, setTeacherName] = useState('');
   const [educationalStage, setEducationalStage] = useState('');
   const [grades, setGrades] = useState<string[]>([]);
   const [subject, setSubject] = useState('');
@@ -121,6 +131,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   }, [dispatch, educationalStage, subject, schoolBranchId]);
 
   const { draftData, isDraftLoaded, saveDraft, clearDraft } = useFormDraft<{
+    teacherName: string;
     date: string;
     preparationNumber: string;
     educationalStage: string;
@@ -139,6 +150,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
     if (!isEditMode && isDraftLoaded && draftData && !topic) {
       if (draftData.date) setDate(draftData.date);
       if (draftData.preparationNumber) setPreparationNumber(draftData.preparationNumber);
+      if (draftData.teacherName) setTeacherName(draftData.teacherName);
       if (draftData.educationalStage) setEducationalStage(draftData.educationalStage);
       if (draftData.grades) setGrades(draftData.grades);
       if (draftData.subject) setSubject(draftData.subject);
@@ -175,6 +187,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
         setDate(currentPreparation.preparationDate.split('T')[0]);
       }
       setPreparationNumber(currentPreparation.preparationNumber?.toString() || '');
+      setTeacherName(currentPreparation.teacherId || '');
       setEducationalStage(currentPreparation.gradeId || '');
       // Map the array of classrooms to an array of classRoomIds
       if (currentPreparation.classRooms) {
@@ -205,6 +218,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
       const validationResult = await validatePreparationForm({
         date,
         preparationNumber,
+        teacherName,
         educationalStage,
         grades,
         subject,
@@ -226,6 +240,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
         schoolBranchId,
         preparationNumber: parseInt(preparationNumber),
         preparationDate: new Date(date).toISOString(),
+        teacherId: teacherName,
         gradeId: educationalStage,
         classRoomIds: grades,
         materialId: subject,
@@ -268,6 +283,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
   const handleReset = () => {
     setDate('');
     setPreparationNumber('');
+    setTeacherName('');
     setEducationalStage('');
     setGrades([]);
     setSubject('');
@@ -311,21 +327,53 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
               />
             </div>
 
-            <div className="w-full" data-form-field="date">
-              <label className="mb-2 block text-start text-sm font-medium text-gray-700">
-                {t('preparations.form.date')} <span className="text-red-500">*</span>
-              </label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => {
-                  setDate(e.target.value);
-                  if (errors.date) handleBlur('date', e.target.value);
-                }}
-                onBlur={() => handleBlur('date', date)}
-                error={errors.date}
-                placeholder={t('preparations.form.datePlaceholder')}
-              />
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div data-form-field="date">
+                <label className="mb-2 block text-start text-sm font-medium text-gray-700">
+                  {t('preparations.form.date')} <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="date"
+                  value={date}
+                  onChange={(e) => {
+                    setDate(e.target.value);
+                    if (errors.date) handleBlur('date', e.target.value);
+                  }}
+                  onBlur={() => handleBlur('date', date)}
+                  error={errors.date}
+                  placeholder={t('preparations.form.datePlaceholder')}
+                />
+              </div>
+
+              <div data-form-field="teacherName">
+                <label className="mb-2 block text-start text-sm font-medium text-gray-700">
+                  {t('preparations.teacherName')} <span className="text-red-500">*</span>
+                </label>
+                <div
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      handleBlur('teacherName', teacherName);
+                    }
+                  }}
+                >
+                  <CustomSelect
+                    value={teacherName}
+                    onChange={(val) => {
+                      setTeacherName(val as string);
+                      if (errors.teacherName) handleBlur('teacherName', val);
+                    }}
+                    options={teachers.map((teacher) => ({
+                      value: teacher.id,
+                      label: teacher.fullName || '',
+                    }))}
+                    error={!!errors.teacherName}
+                    placeholder={t('preparations.teacherName')}
+                  />
+                  {errors.teacherName && (
+                    <p className="mt-1 text-start text-sm text-red-500">{errors.teacherName}</p>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -572,6 +620,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
                 fromPage,
                 toPage,
                 content,
+                teacherName,
               });
               showToast({ message: t('preparations.form.draftSaved'), type: 'success' });
             }}
