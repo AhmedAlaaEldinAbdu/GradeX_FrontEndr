@@ -68,6 +68,8 @@ export async function createPreparation(
   if (data.preparationDate) formData.append('PreparationDate', data.preparationDate);
   if (data.gradeId) formData.append('GradeId', data.gradeId);
 
+  if (data.teacherId) formData.append('TeacherId', data.teacherId);
+
   if (data.classRoomIds && data.classRoomIds.length > 0) {
     data.classRoomIds.forEach((id) => formData.append('ClassRoomIds', id));
   }
