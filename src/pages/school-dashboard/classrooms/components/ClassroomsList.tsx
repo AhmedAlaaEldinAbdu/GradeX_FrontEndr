@@ -9,12 +9,14 @@ import SchoolYellowIcon from '@gradex/assets/icons/SchoolYellow.svg';
 import BookBlueIcon from '@gradex/assets/icons/BookBlue.svg';
 import StudentGreenIcon from '@gradex/assets/icons/StudentGreen.svg';
 import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchGrades } from '@/redux/features/grades/gradesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import type { GradeDto } from '@/services/api/types/grades.types';
+import { FeatureAccess, featurePermissions } from '@/shared/common/get-feature-permission';
+import NoAccessPermissionModal from '@/shared/popups/NoAccessPermissionModal';
 
 type StageOverview = {
   id: string;
@@ -28,6 +30,9 @@ export default function ClassroomsList() {
   const dispatch = useAppDispatch();
   const currentLang = i18n.language as 'ar' | 'en';
   const schoolBranchId = getCurrentSchoolBranchId();
+
+  const permission = featurePermissions.educationalStages.stagesClassrooms;
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   const searchTerm = '';
   const selectedAcademicSystemId = '';
@@ -105,6 +110,15 @@ export default function ClassroomsList() {
     [grades]
   );
 
+  const handleAddClassroom = (grade: any) => {
+    if (permission === FeatureAccess.VIEW) {
+      setShowPermissionModal(true);
+    } else {
+      navigate(`/classrooms/add-classroom?gradeId=${grade.id}`);
+      return;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -181,7 +195,7 @@ export default function ClassroomsList() {
                           label: t('grades.addClassroom'),
                           iconSrc: WhitePlusIcon,
                           iconAlt: t('grades.addClassroom'),
-                          onClick: () => navigate(`/classrooms/add-classroom?gradeId=${grade.id}`),
+                          onClick: () => handleAddClassroom(grade),
                         }
                       : undefined;
 
@@ -205,6 +219,12 @@ export default function ClassroomsList() {
           ))}
         </div>
       ) : null}
+
+      {/* No Access Permission Modal */}
+      <NoAccessPermissionModal
+        isOpen={showPermissionModal}
+        onClose={() => setShowPermissionModal(false)}
+      />
     </div>
   );
 }
