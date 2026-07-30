@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
 import Loading from '@/shared/components/Loading';
@@ -8,10 +8,19 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchTeacherPersonalData } from '@/redux/features/teachers';
 import EditTeacherPlacementForm from './components/EditTeacherPlacementForm';
 
+interface LocationState {
+  comeFrom?: string;
+  requestId?: string;
+}
+
 export default function TeacherEditPlacementPage() {
   const { t } = useTranslation();
   const { id, assignmentId } = useParams<{ id: string; assignmentId: string }>();
+  const location = useLocation();
   const dispatch = useAppDispatch();
+  const locationState = location.state as LocationState | null;
+  const requestId =
+    locationState?.comeFrom === 'job-application-details' ? locationState.requestId : undefined;
 
   const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
   const isLoadingPersonalData = useAppSelector((state) => state.teachers.isLoadingPersonalData);
@@ -49,7 +58,11 @@ export default function TeacherEditPlacementPage() {
     <div>
       <Breadcrumb items={breadcrumbItems} />
       <PageHeader title={t('teachers.placement.editTitle')} />
-      <EditTeacherPlacementForm teacherId={id || ''} assignmentId={assignmentId || ''} />
+      <EditTeacherPlacementForm
+        teacherId={id || ''}
+        assignmentId={assignmentId || ''}
+        returnRequestId={requestId}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import PageHeader from '@/shared/components/PageHeader';
@@ -7,18 +7,21 @@ import TeacherPlacementDetails from './components/TeacherPlacementDetails';
 
 interface LocationState {
   comeFrom?: string;
+  requestId?: string;
+  teacherId?: string;
 }
 
 export default function TeacherPlacementPage() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
-  // Check if coming from job-announcements
   const locationState = location.state as LocationState | null;
   const isFromJobAnnouncements = locationState?.comeFrom === 'job-announcements';
-  // Check if coming from job-application-details
   const isFromJobApplicationDetails = locationState?.comeFrom === 'job-application-details';
+  const requestId = locationState?.requestId || (isFromJobApplicationDetails ? id : undefined);
+  const teacherId = locationState?.teacherId || searchParams.get('teacherId') || id || '';
 
   const isViewMode = location.pathname.includes('placement-details');
 
@@ -35,7 +38,7 @@ export default function TeacherPlacementPage() {
           { label: t('sidebar.adminRequests'), path: '/admin-requests' },
           {
             label: t('adminRequests.jobApplication.detailsTitle'),
-            path: `/admin-requests/job-application/${id}`,
+            path: requestId ? `/admin-requests/job-application/${requestId}` : '/admin-requests',
           },
           { label: t('teachers.placement.breadcrumb') },
         ]
@@ -51,9 +54,12 @@ export default function TeacherPlacementPage() {
       <Breadcrumb items={breadcrumbItems} />
       <PageHeader title={t('teachers.placement.title')} />
       {isViewMode ? (
-        <TeacherPlacementDetails teacherId={id || ''} />
+        <TeacherPlacementDetails teacherId={teacherId} />
       ) : (
-        <TeacherPlacementForm teacherId={id || ''} />
+        <TeacherPlacementForm
+          teacherId={teacherId}
+          returnRequestId={isFromJobApplicationDetails ? requestId : undefined}
+        />
       )}
     </div>
   );
