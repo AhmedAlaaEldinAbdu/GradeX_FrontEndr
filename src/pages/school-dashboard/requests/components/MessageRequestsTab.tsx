@@ -441,6 +441,7 @@ const MessageRequestsTab: React.FC = () => {
               variant="outline"
               size="sm"
               className="!rounded-2xl px-6"
+              actionKey="reply"
               disabled={!canReply}
               onClick={() => navigate(`/requests/view-message/${row.studentId ?? row.id}`)}
             >

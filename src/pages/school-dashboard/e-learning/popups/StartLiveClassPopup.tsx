@@ -4,6 +4,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import Modal from '@/shared/popups/Modal';
 import CalendarInputIcon from '@gradex/assets/icons/CalendarInput.svg';
 import ClockIcon from '@gradex/assets/icons/Clock.svg';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 import PeopleOutlineIcon from '@gradex/assets/icons/PeopleOutline.svg';
 import UserIcon from '@gradex/assets/icons/User.svg';
 import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
@@ -56,6 +57,7 @@ export default function StartLiveClassPopup({
   isStarting = false,
 }: StartLiveClassPopupProps) {
   const { t } = useTranslation();
+  const { guardMutation } = useRoleAccess();
   const [classLink, setClassLink] = useState('');
   const [linkError, setLinkError] = useState('');
 
@@ -169,7 +171,7 @@ export default function StartLiveClassPopup({
           </button>
           <button
             type="button"
-            onClick={() => void handleStart()}
+            onClick={() => guardMutation(() => void handleStart())}
             disabled={isStarting}
             className="h-11 rounded-2xl bg-green-500 px-8 text-base font-medium text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
           >

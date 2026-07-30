@@ -15,6 +15,7 @@ export interface StoredUserData {
   name: string;
   email: string;
   role: string;
+  backendRole?: string;
   avatar?: string;
   isAuthenticated: boolean;
   permissions?: string[];
@@ -70,10 +71,9 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
     const payload = JSON.parse(jsonString);
 
     // Extract role from JWT and normalize it
-    const rawRole =
-      payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
-      payload.role ||
-      'User';
+    const rawRole = String(
+      payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || ''
+    ).trim();
 
     // Normalize role to match our constants
     // Backend sends: "SuperAdmin" -> we need: "super-admin"
@@ -123,14 +123,17 @@ export const decodeJwtToken = (token: string): StoredUserData | null => {
       payload.SchoolBrancheId ||
       payload.schoolBranchId ||
       payload.SchoolBranchId ||
+      payload.school_branch_id ||
       null;
-    const schoolId = payload.schoolId || payload.SchoolId || payload.schoolID || null;
+    const schoolId =
+      payload.schoolId || payload.SchoolId || payload.schoolID || payload.school_id || null;
 
     const userData: StoredUserData = {
       id: userId,
       name: userName,
       email: userEmail,
       role: userRole,
+      backendRole: rawRole || undefined,
       isAuthenticated: true,
       permissions,
       schoolId,

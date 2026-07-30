@@ -25,6 +25,7 @@ import VideoConferenceIcon from '@gradex/assets/icons/VideoConference.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import StartLiveClassPopup from '../popups/StartLiveClassPopup';
 import { type LiveClassRow, type LiveClassStatus } from './live-classes-data';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 const PAGE_SIZE = 10;
 
@@ -114,6 +115,7 @@ export default function LiveClassesList() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+  const { guardMutation } = useRoleAccess();
   const schoolBranchId = getCurrentSchoolBranchId();
 
   const directLessons = useAppSelector((state) => state.lessons.directLessons);
@@ -245,7 +247,7 @@ export default function LiveClassesList() {
             disabled={!canStartLesson}
             onClick={() => {
               if (!canStartLesson) return;
-              setSelectedLiveClass(row);
+              guardMutation(() => setSelectedLiveClass(row));
             }}
             className={`inline-flex min-w-[112px] items-center justify-center rounded-2xl border px-5 py-2 text-sm font-medium transition-colors ${
               canStartLesson

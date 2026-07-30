@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomImage from '@/shared/components/CustomImage';
 import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 interface ConfirmActionPopupProps {
   open: boolean;
@@ -32,6 +33,7 @@ const ConfirmActionPopup: React.FC<ConfirmActionPopupProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
+  const { guardMutation } = useRoleAccess();
 
   if (!open) return null;
 
@@ -65,7 +67,7 @@ const ConfirmActionPopup: React.FC<ConfirmActionPopupProps> = ({
             {t('common.cancel')}
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => guardMutation(onConfirm)}
             disabled={isProcessing}
             className={`flex-grow rounded-2xl px-5 py-2 text-base font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${CONFIRM_CLASSES[confirmVariant]}`}
           >

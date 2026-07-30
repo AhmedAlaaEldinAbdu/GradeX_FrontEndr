@@ -4,6 +4,7 @@ import UserAvatarName from '@/shared/components/UserAvatarName';
 import DataTable from '@/shared/components/DataTable';
 import EditGreenIcon from '@gradex/assets/icons/EditGreen.svg';
 import { useNavigate } from 'react-router-dom';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 export type StudentRow = {
   id: string;
@@ -38,6 +39,7 @@ export default function StudentsTab({
 }: StudentsTabProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { guardMutation } = useRoleAccess();
 
   const renderPersonCell = (id: string, name: string, imageSrc: string) => (
     <UserAvatarName
@@ -54,6 +56,7 @@ export default function StudentsTab({
       type="button"
       className={`flex h-10 w-10 items-center justify-center rounded-full ${backgroundClassName}`}
       aria-label={alt}
+      onClick={() => guardMutation(() => {})}
     >
       <CustomImage src={icon} alt={alt} className="h-6 w-6" />
     </button>

@@ -186,6 +186,7 @@ const ViewMessage: React.FC = () => {
                 variant="primary"
                 onClick={handleSubmit}
                 disabled={!reply.trim() || isSubmitting}
+                actionKey="reply"
               >
                 {isSubmitting ? t('common.saving') : t('requests.viewMessage.submit')}
               </Button>

@@ -322,6 +322,7 @@ const MessagesTab: React.FC = () => {
               variant="outline"
               size="sm"
               className="!rounded-2xl px-6"
+              actionKey="markViewed"
               disabled={!canMarkViewed || isMarkingViewed}
               onClick={() => {
                 void handleMarkViewed(row);

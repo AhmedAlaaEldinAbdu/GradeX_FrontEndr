@@ -364,6 +364,7 @@ export default function Interviews() {
 
   const contextMenuActions: ContextMenuAction[] = [
     {
+      id: 'view-details',
       label: t('interviews.viewDetails'),
       icon: EyeFillIcon,
       onClick: (_date, event) => {
@@ -380,6 +381,7 @@ export default function Interviews() {
       showOnDate: false,
     },
     {
+      id: 'add-interview',
       label: t('interviews.addInterview'),
       icon: GreenPlusIcon,
       onClick: (date) => {
@@ -389,6 +391,7 @@ export default function Interviews() {
       hidden: (date) => isPastDate(date),
     },
     {
+      id: 'edit-interview',
       label: t('interviews.editInterview'),
       icon: EditFilledIcon,
       onClick: (_date, event) => {
@@ -413,6 +416,7 @@ export default function Interviews() {
       },
     },
     {
+      id: 'delete-interview',
       label: t('interviews.deleteInterview'),
       icon: TrashFillIcon,
       onClick: (_date, event) => {

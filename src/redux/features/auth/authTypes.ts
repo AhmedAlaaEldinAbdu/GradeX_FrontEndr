@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRoleType;
+  backendRole?: string;
   avatar?: string;
   permissions?: string[];
   isAuthenticated?: boolean;

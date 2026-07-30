@@ -186,6 +186,7 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
               </Button>
               <Button
                 variant="primary"
+                actionKey="markViewed"
                 disabled={isMarkingViewed}
                 onClick={async () => {
                   try {

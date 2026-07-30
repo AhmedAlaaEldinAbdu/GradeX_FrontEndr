@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '@gradex/constants';
 import ProtectedRoute from './ProtectedRoutes';
@@ -98,10 +98,13 @@ import SchoolNotificationsPage from '@/pages/school-dashboard/notifications/noti
 import AddEmployeesNotificationPage from '@/pages/school-dashboard/notifications/add-employees-notification-page';
 import AddParentsNotificationPage from '@/pages/school-dashboard/notifications/add-parents-notification-page';
 import SchoolDataPage from '@/pages/school-dashboard/settings/school-data/school-data-page';
+import FeatureAccessRoute from './FeatureAccessRoute';
+import { isSchoolMutationPath } from '@/constants/role-access';
 
 const SchoolRouter: React.FC = () => {
   const { t } = useTranslation();
-  return (
+  const location = useLocation();
+  const routes = (
     <Routes>
       <Route
         path="/dashboard"
@@ -1245,6 +1248,12 @@ const SchoolRouter: React.FC = () => {
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
+
+  if (isSchoolMutationPath(`${location.pathname}${location.search}`)) {
+    return <FeatureAccessRoute>{routes}</FeatureAccessRoute>;
+  }
+
+  return routes;
 };
 
 export default SchoolRouter;
