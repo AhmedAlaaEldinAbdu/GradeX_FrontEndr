@@ -140,6 +140,12 @@ export default function PreparationsList() {
       className: 'text-center',
     },
     {
+      header: 'preparations.teacherName',
+      accessor: (row) => <span className="text-gray-500">{row.teacherName || '-'}</span>,
+      headerClassName: 'min-w-[170px]',
+      className: 'text-center',
+    },
+    {
       header: 'preparations.educationalStage',
       accessor: (row) => <span className="text-gray-500">{row.gradeNameAr}</span>,
       headerClassName: 'min-w-[170px]',
