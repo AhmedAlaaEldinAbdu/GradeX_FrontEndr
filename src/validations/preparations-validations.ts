@@ -11,6 +11,7 @@ export const preparationValidationSchema = yup.object({
       (value) => !value || parseInt(value, 10) > 0
     ),
   date: yup.string().required('preparations.form.validation.dateRequired'),
+  teacherName: yup.string().required('preparations.form.validation.teacherNameRequired'),
   educationalStage: yup.string().required('preparations.form.validation.educationalStageRequired'),
   grades: yup.array().of(yup.string()).min(1, 'preparations.form.validation.gradesRequired'),
   subject: yup.string().required('preparations.form.validation.subjectRequired'),
