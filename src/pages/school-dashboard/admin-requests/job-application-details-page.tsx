@@ -82,11 +82,14 @@ const JobApplicationDetailsPage: React.FC = () => {
     if (!id || !teacherId) return;
 
     if (hasAssignment && firstAssignmentId) {
-      navigate(`/teaching-staff/teachers/${teacherId}/edit-placement/${firstAssignmentId}`, {
-        state: { comeFrom: 'job-application-details', requestId: id, teacherId },
-      });
+      navigate(
+        `/teaching-staff/teachers/${teacherId}/edit-placement/${firstAssignmentId}?requestId=${id}`,
+        {
+          state: { comeFrom: 'job-application-details', requestId: id, teacherId },
+        }
+      );
     } else {
-      navigate(`/teachers/${id}/add-placement?teacherId=${teacherId}`, {
+      navigate(`/teachers/${teacherId}/add-placement?requestId=${id}`, {
         state: { comeFrom: 'job-application-details', requestId: id, teacherId },
       });
     }

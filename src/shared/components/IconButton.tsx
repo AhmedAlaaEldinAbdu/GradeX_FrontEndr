@@ -3,6 +3,8 @@ import Image from './CustomImage';
 import EditIcon from '@gradex/assets/icons/Edit.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
 import PlusIcon from '@gradex/assets/icons/Plus.svg';
+import type { SchoolActionKey } from '@/constants/role-access';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 type Variant = 'danger' | 'success' | 'blue' | 'darkBlue' | 'yellow' | 'default';
 
@@ -12,6 +14,7 @@ type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   ariaLabel?: string;
   children?: React.ReactNode;
   imgClassName?: string;
+  actionKey?: SchoolActionKey;
 };
 
 const variantClasses: Record<Variant, string> = {
@@ -32,8 +35,11 @@ const IconButton: React.FC<IconButtonProps> = ({
   disabled,
   children,
   type = 'button',
+  actionKey,
+  onClick,
   ...rest
 }) => {
+  const { canPerformAction, denyAction } = useRoleAccess();
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
 
   const iconSrc =
@@ -60,6 +66,24 @@ const IconButton: React.FC<IconButtonProps> = ({
       aria-label={ariaLabel}
       className={`flex items-center justify-center rounded-full p-2 shadow-md transition-colors ${defaultVariant || variantClasses[variant]} ${disabledClasses} ${className}`}
       disabled={disabled}
+      onClick={(event) => {
+        if (
+          !canPerformAction({
+            control: 'icon-button',
+            actionKey,
+            buttonType: type,
+            variant,
+            status,
+          })
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          denyAction();
+          return;
+        }
+
+        onClick?.(event);
+      }}
       {...rest}
     >
       {children ? (

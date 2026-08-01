@@ -65,11 +65,7 @@ const PartyValue: React.FC<{
 
   return (
     <>
-      <UserAvatarName
-        name={displayValue(party.name)}
-        avatarSrc={party.avatarPath}
-        align="center"
-      />
+      <UserAvatarName name={displayValue(party.name)} avatarSrc={party.avatarPath} align="center" />
       <EyeBadge label={eyeLabel} onClick={onProfilePreview} />
     </>
   );
@@ -137,9 +133,7 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
         </DetailRow>
 
         <DetailRow label={t('adminRequests.teacherNotes.columns.classroom')}>
-          <span className="text-sm font-normal text-[#646969]">
-            {displayValue(note.classroom)}
-          </span>
+          <span className="text-sm font-normal text-[#646969]">{displayValue(note.classroom)}</span>
         </DetailRow>
 
         <DetailRow label={t('adminRequests.teacherNotes.columns.sentDate')}>
@@ -159,6 +153,7 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
             </Button>
             <Button
               variant="primary"
+              actionKey="markViewed"
               disabled={isMarkingViewed}
               onClick={async () => {
                 try {

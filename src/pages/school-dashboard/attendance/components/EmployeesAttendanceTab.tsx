@@ -29,6 +29,7 @@ import { AttendanceStatus } from '@/types/teacherAttendance';
 import { formatTime, formatDateDisplay } from '@/shared/common/common';
 import { useNavigate } from 'react-router-dom';
 import IconButton from '@/shared/components/IconButton';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 const TYPE_OPTIONS = [
   { value: String(AttendanceStatus.Present), labelAr: 'حاضر', labelEn: 'Present' },
@@ -75,6 +76,7 @@ export default function EmployeesAttendanceTab({
   const currentLang = i18n.language as 'ar' | 'en';
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
+  const { guardMutation } = useRoleAccess();
 
   const schoolBranchId = getCurrentSchoolBranchId();
 
@@ -183,20 +185,24 @@ export default function EmployeesAttendanceTab({
     employeeName: string,
     type: 'present' | 'absent' | 'late'
   ) => {
-    setPopupEmployeeId(employeeId);
-    setPopupEmployeeName(employeeName);
-    setPopupType(type);
-    setPopupIsBulk(false);
-    setPopupOpen(true);
+    guardMutation(() => {
+      setPopupEmployeeId(employeeId);
+      setPopupEmployeeName(employeeName);
+      setPopupType(type);
+      setPopupIsBulk(false);
+      setPopupOpen(true);
+    });
   };
 
   // Bulk action handlers
   const handleBulkActionClick = (type: 'present' | 'absent' | 'late') => {
-    setPopupType(type);
-    setPopupIsBulk(true);
-    setPopupEmployeeId(null);
-    setPopupEmployeeName('');
-    setPopupOpen(true);
+    guardMutation(() => {
+      setPopupType(type);
+      setPopupIsBulk(true);
+      setPopupEmployeeId(null);
+      setPopupEmployeeName('');
+      setPopupOpen(true);
+    });
   };
 
   const handleConfirmAction = async (time?: string) => {

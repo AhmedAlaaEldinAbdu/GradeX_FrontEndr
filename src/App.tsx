@@ -6,6 +6,7 @@ import RoleBasedRouter from './routes/RoleBasedRouter';
 import AuthInitializer from './components/AuthInitializer';
 import { useDevRoleMockInitializer } from './hooks/useDevRoleMockInitializer';
 import { ToastProvider } from './shared/context/ToastContext';
+import { RoleAccessProvider } from './shared/context/RoleAccessContext';
 
 function App() {
   useDevRoleMockInitializer();
@@ -13,7 +14,9 @@ function App() {
     <Router>
       <ToastProvider>
         <AuthInitializer>
-          <RoleBasedRouter />
+          <RoleAccessProvider>
+            <RoleBasedRouter />
+          </RoleAccessProvider>
         </AuthInitializer>
       </ToastProvider>
     </Router>

@@ -1,6 +1,7 @@
 import Card from '@/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
 import ActionsDropdown, { type Action } from '@/shared/components/ActionsDropdown';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 type HeaderAction = {
   label: string;
@@ -67,6 +68,7 @@ export default function ProgressSummaryCard({
   className = '',
   headerAction,
 }: ProgressSummaryCardProps) {
+  const { guardMutation } = useRoleAccess();
   const normalizedProgress = clampProgress(progress);
   const isClickable = Boolean(onClick);
   const resolvedProgressColorClassName =
@@ -119,7 +121,7 @@ export default function ProgressSummaryCard({
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
                 onClick={(event) => {
                   event.stopPropagation();
-                  headerAction.onClick();
+                  guardMutation(headerAction.onClick);
                 }}
               >
                 {headerAction.iconSrc ? (

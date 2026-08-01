@@ -141,7 +141,10 @@ export default function ExportInvoicePopup({
               {t('invoices.exportInvoice')}
             </h2>
 
-            <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-4">
+            <form
+              onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)}
+              className="space-y-4"
+            >
               <FormField
                 label={t('invoices.invoiceName')}
                 required
@@ -164,7 +167,7 @@ export default function ExportInvoicePopup({
               </FormField>
 
               <div className="flex flex-row-reverse gap-3 pt-4">
-                <Button type="submit" disabled={isExporting}>
+                <Button type="submit" actionKey="export" disabled={isExporting}>
                   {isExporting ? t('common.processing') : t('invoices.export')}
                 </Button>
                 <Button

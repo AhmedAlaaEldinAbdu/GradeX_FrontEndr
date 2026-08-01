@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomImage from '../components/CustomImage';
 import XmarkCircleGrayIcon from '@gradex/assets/icons/XmarkCircleGray.svg';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 interface DeletePopupProps {
   open: boolean;
@@ -31,6 +32,7 @@ export default function DeletePopup({
   isProcessing,
 }: DeletePopupProps) {
   const { t } = useTranslation();
+  const { guardMutation } = useRoleAccess();
   const popupRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -111,7 +113,7 @@ export default function DeletePopup({
             {t('common.cancel')}
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => guardMutation(onConfirm)}
             disabled={isProcessing}
             className="flex-grow rounded-2xl bg-red-500 px-5 py-2 text-base font-medium text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >

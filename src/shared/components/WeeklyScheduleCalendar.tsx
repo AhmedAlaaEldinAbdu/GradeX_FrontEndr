@@ -74,6 +74,7 @@ export interface SpecialColumn {
 
 // Context menu action for lesson actions
 export interface LessonContextAction {
+  id: string;
   label: string;
   icon?: string;
   onClick: (lesson: ScheduleLesson) => void;
@@ -429,7 +430,7 @@ export default function WeeklyScheduleCalendar({
   // Lesson Card matching the design exactly
   const LessonCard = ({ lesson }: { lesson: ScheduleLesson }) => {
     const dropdownActions: DropdownAction[] = lessonContextActions.map((action) => ({
-      id: `${lesson.id}-${action.label}`,
+      id: `${action.id}-${lesson.id}`,
       label: action.label,
       icon: action.icon,
       color:

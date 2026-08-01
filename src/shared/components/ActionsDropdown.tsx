@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import DotsIcon from '@gradex/assets/icons/Dots.svg';
 import i18n from '@/i18n';
 import CustomImage from '@/shared/components/CustomImage';
+import type { SchoolActionKey } from '@/constants/role-access';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 export interface Action {
   id: string;
@@ -12,6 +14,7 @@ export interface Action {
   onClick: () => void;
   hidden?: boolean;
   disabled?: boolean;
+  actionKey?: SchoolActionKey;
 }
 
 interface ActionsDropdownProps {
@@ -35,6 +38,7 @@ export default function ActionsDropdown({
   onOpen,
   onClose,
 }: ActionsDropdownProps) {
+  const { canPerformAction, denyAction } = useRoleAccess();
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -138,6 +142,19 @@ export default function ActionsDropdown({
   };
 
   const handleActionClick = (action: Action) => {
+    if (
+      !canPerformAction({
+        control: 'menu',
+        actionKey: action.actionKey,
+        actionId: action.id,
+      })
+    ) {
+      denyAction();
+      setOpen(false);
+      onClose?.();
+      return;
+    }
+
     action.onClick();
     setOpen(false);
     onClose?.();

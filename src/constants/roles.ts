@@ -10,6 +10,13 @@ export const UserRole = {
 
 export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 
+export const BackendRole = {
+  SCHOOL_OWNER: 'SchoolOwner',
+  SCHOOL_ADMIN: 'SchoolAdmin',
+} as const;
+
+export type BackendRoleType = (typeof BackendRole)[keyof typeof BackendRole];
+
 /**
  * Role display names for UI
  */
