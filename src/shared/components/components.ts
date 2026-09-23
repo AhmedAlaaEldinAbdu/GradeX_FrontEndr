@@ -3,10 +3,10 @@ export { default as Card } from './Card';
 export { default as EmptyState } from './EmptyState';
 export { default as Input } from './Input';
 export {
-	getBookStatusBadgeColor,
-	getLevelBadgeColor,
-	getTaskCorrectionBadgeColor,
-	getTaskTypeBadgeColor,
+  getBookStatusBadgeColor,
+  getLevelBadgeColor,
+  getTaskCorrectionBadgeColor,
+  getTaskTypeBadgeColor,
 } from './SharedBadges';
 export { default as Table } from './Table';
 export { default as Loading } from './Loading';

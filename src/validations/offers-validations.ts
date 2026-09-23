@@ -20,7 +20,10 @@ export const OfferSchema = yup
     schoolBranchId: yup.string().trim().required('common.validation.required'),
     nameAr: yup.string().trim().required('common.validation.required'),
     nameEn: yup.string().trim().required('common.validation.required'),
-    offerType: yup.number().typeError('common.validation.required').required('common.validation.required'),
+    offerType: yup
+      .number()
+      .typeError('common.validation.required')
+      .required('common.validation.required'),
     applyOn: yup
       .number()
       .oneOf(Object.values(OfferApplyOn) as number[], 'common.validation.required')

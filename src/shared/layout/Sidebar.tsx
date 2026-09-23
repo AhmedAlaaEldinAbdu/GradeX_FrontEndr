@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSchoolBranchName } from '@/hooks/useSchoolBranchName';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchTeacherRequestsSummary } from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import { UserRole, type UserRoleType } from '@gradex/constants';
 import CustomImage from '@/shared/components/CustomImage';
 
@@ -36,6 +38,7 @@ import UserIcon from '@gradex/assets/icons/User.svg';
 import ImageIcon from '@gradex/assets/icons/Image.svg';
 import AnalyticsIcon from '@gradex/assets/icons/Analytics.svg';
 import SideArrow from '@/assets/icons/SideArrow.svg';
+import profileImage from '@gradex/assets/images/profile.png';
 
 /* ── Figma tokens — Classti / "Aside - Main Navigation Sidebar" (node 107:539) ──
    accent  #1E7A52  active label + icon
@@ -149,11 +152,6 @@ const getSuperAdminSections = (): MenuSection[] => [
         path: '/notifications',
       },
       { key: 'messages', icon: renderIcon(SettingsIcon, 'Messages'), path: '/messages' },
-      {
-        key: 'settings',
-        icon: renderIcon(SettingsIcon, 'Settings'),
-        path: '/settings',
-      },
     ],
   },
 ];
@@ -292,23 +290,6 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
     ],
   },
-  {
-    titleKey: 'systemSettings',
-    items: [
-      {
-        key: 'settings',
-        icon: renderIcon(SettingsIcon, 'Settings'),
-        subItems: [
-          { key: 'schoolData', path: '/settings/school-data' },
-          { key: 'jobRoles', path: '/settings/job-roles' },
-          { key: 'paymentChannels', path: '/settings/payment-channels' },
-          { key: 'holidaysSettings', path: '/settings/holidays' },
-          { key: 'siteSettings', path: '/settings/site' },
-          { key: 'notifications', path: '/settings/notifications' },
-        ],
-      },
-    ],
-  },
 ];
 
 const getSectionsForDashboard = (dashboardType: UserRoleType): MenuSection[] => {
@@ -425,7 +406,13 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const flyoutRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | null>(null);
-  const [coords, setCoords] = useState<{ top: number; left?: number; right?: number } | null>(null);
+  const [coords, setCoords] = useState<{
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+    maxHeight: number;
+  } | null>(null);
 
   const cancelClose = () => {
     if (closeTimerRef.current !== null) {
@@ -456,10 +443,22 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
     const compute = () => {
       const rect = wrapperRef.current?.getBoundingClientRect();
       if (!rect) return;
+      const margin = 8;
+      const minPreferredHeight = 200;
+      const spaceBelow = window.innerHeight - rect.top - margin;
+      const spaceAbove = rect.bottom - margin;
+      // If there isn't enough room below the trigger, flip the flyout upward
+      // (anchored to the trigger's bottom) so long submenus stay reachable
+      // instead of running off the bottom of the viewport.
+      const openUpward = spaceBelow < minPreferredHeight && spaceAbove > spaceBelow;
+      const maxHeight = Math.max(160, openUpward ? spaceAbove : spaceBelow);
+      const vertical = openUpward
+        ? { bottom: window.innerHeight - rect.bottom }
+        : { top: rect.top };
       if (isRTL) {
-        setCoords({ top: rect.top, right: window.innerWidth - rect.left + 8 });
+        setCoords({ ...vertical, right: window.innerWidth - rect.left + 8, maxHeight });
       } else {
-        setCoords({ top: rect.top, left: rect.right + 8 });
+        setCoords({ ...vertical, left: rect.right + 8, maxHeight });
       }
     };
     compute();
@@ -511,11 +510,13 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
             dir={isRTL ? 'rtl' : 'ltr'}
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
-            className="fixed z-1000 min-w-[220px] rounded-[12px] border border-[#E2E8F0] bg-white p-[8px] shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]"
+            className="fixed z-1000 min-w-[220px] overflow-y-auto rounded-[12px] border border-[#E2E8F0] bg-white p-[8px] shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]"
             style={{
               top: coords.top,
+              bottom: coords.bottom,
               left: coords.left,
               right: coords.right,
+              maxHeight: coords.maxHeight,
             }}
           >
             <div
@@ -577,6 +578,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const dispatch = useAppDispatch();
   const adminRequestsSummary = useAppSelector((state) => state.teacherRequests.summary);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const settingsDropdownRef = useRef<HTMLDivElement>(null);
 
   // Pull the admin-requests summary so the sidebar badge can show the pending count.
   useEffect(() => {
@@ -586,10 +588,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [dispatch, dashboardType]);
 
   // Shared cached fetch — Header consumes the same hook so the network call is deduped.
-  // The locals are kept named so the (currently commented) JSX block that displays them
-  // stays compatible if it's restored.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name: _schoolName, isLoading: _isLoadingSchoolName } = useSchoolBranchName();
+  // Powers the "Sidebar Bottom: Settings" user profile card.
+  const { name: schoolName } = useSchoolBranchName();
+  const user = useSelector(selectUser);
   const [hasUserOverride, setHasUserOverride] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem(SIDEBAR_COLLAPSE_STORAGE_KEY) !== null;
@@ -630,6 +631,17 @@ const Sidebar: React.FC<SidebarProps> = ({
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [isMobile, isMobileOpen, onMobileClose]);
+
+  useEffect(() => {
+    if (!expandedItems.includes('settings')) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (settingsDropdownRef.current && !settingsDropdownRef.current.contains(e.target as Node)) {
+        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [expandedItems]);
 
   // Which parent's flyout panel is currently open (collapsed mode only).
   const [flyoutKey, setFlyoutKey] = useState<string | null>(null);
@@ -835,6 +847,21 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const flatItems = sections.flatMap((s) => s.items);
   const firstTitledIdx = sections.findIndex((s) => !!s.titleKey);
+
+  // Collapsed-rail-only entry mirroring the footer's Settings dropdown, so the rail keeps
+  // a Settings icon (with the same flyout submenu) like every other top-level item.
+  const settingsMenuItem: MenuItem = {
+    key: 'settings',
+    icon: renderIcon(SettingsIcon, 'Settings'),
+    subItems: [
+      { key: 'schoolData', path: '/settings/school-data' },
+      { key: 'jobRoles', path: '/settings/job-roles' },
+      { key: 'paymentChannels', path: '/settings/payment-channels' },
+      { key: 'holidaysSettings', path: '/settings/holidays' },
+      { key: 'siteSettings', path: '/settings/site' },
+      { key: 'notifications', path: '/settings/notifications' },
+    ],
+  };
 
   // Auto-expand parent of active sub-item
   useEffect(() => {
@@ -1240,6 +1267,197 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
         </div>
+
+        {/* Collapsed rail: Settings sits as the last icon, same treatment as any other
+            top-level item (active/hover state + hover flyout with the settings sub-links). */}
+        {isCollapsed && (
+          <div className="z-3 flex shrink-0 flex-col items-stretch gap-[4px] border-t border-solid border-[#F1F5F9] px-[12px] py-[8px]">
+            {renderCollapsedItem(settingsMenuItem)}
+          </div>
+        )}
+
+        {/* Figma "Sidebar Bottom: Settings" (node 225:2564) — settings dropdown button +
+            current user card. No collapsed-rail design exists for this block, so it only shows
+            in the full-width sidebar / mobile drawer. */}
+        {!isCollapsed && (
+          <div className="z-3 flex shrink-0 flex-col gap-[16px] border-t border-solid border-[#F1F5F9] px-[12px] pt-[13px] pb-[12px]">
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedItems((prev) =>
+                    prev.includes('settings')
+                      ? prev.filter((k) => k !== 'settings')
+                      : [...prev, 'settings']
+                  );
+                }}
+                className={cn(
+                  'flex w-full items-center gap-[8px] rounded-[8px] p-[8px] text-[14px] leading-[16px] font-semibold text-[#1E7A52] transition-colors hover:bg-[#ECFDF5]',
+                  rowDirectionClass
+                )}
+              >
+                <CustomImage
+                  src={SettingsIcon}
+                  alt=""
+                  className={cn('h-5 w-5 shrink-0', ICON_FILTER_ACTIVE_CLASS)}
+                />
+                <span className={cn('flex-1 truncate', textAlignClass)}>
+                  {t('sidebar.settings')}
+                </span>
+              </button>
+
+              {expandedItems.includes('settings') && (
+                <div
+                  ref={settingsDropdownRef}
+                  className={cn(
+                    'absolute bottom-full z-50 mb-1 w-56 overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]',
+                    isRTL ? 'right-0' : 'left-0'
+                  )}
+                >
+                  <div className="py-1">
+                    <NavLink
+                      to="/settings/school-data"
+                      onClick={() => {
+                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                        if (isMobile) onMobileClose?.();
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                        location.pathname === '/settings/school-data' ||
+                          location.pathname.startsWith('/settings/school-data/')
+                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                        isRTL ? 'text-right' : 'text-left'
+                      )}
+                    >
+                      <span>{t('sidebar.schoolData')}</span>
+                    </NavLink>
+
+                    <hr className="my-1 border-[#F1F5F9]" />
+
+                    <NavLink
+                      to="/settings/job-roles"
+                      onClick={() => {
+                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                        if (isMobile) onMobileClose?.();
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                        location.pathname === '/settings/job-roles' ||
+                          location.pathname.startsWith('/settings/job-roles/')
+                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                        isRTL ? 'text-right' : 'text-left'
+                      )}
+                    >
+                      <span>{t('sidebar.jobRoles')}</span>
+                    </NavLink>
+
+                    <hr className="my-1 border-[#F1F5F9]" />
+
+                    <NavLink
+                      to="/settings/payment-channels"
+                      onClick={() => {
+                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                        if (isMobile) onMobileClose?.();
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                        location.pathname === '/settings/payment-channels' ||
+                          location.pathname.startsWith('/settings/payment-channels/')
+                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                        isRTL ? 'text-right' : 'text-left'
+                      )}
+                    >
+                      <span>{t('sidebar.paymentChannels')}</span>
+                    </NavLink>
+
+                    <hr className="my-1 border-[#F1F5F9]" />
+
+                    <NavLink
+                      to="/settings/holidays"
+                      onClick={() => {
+                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                        if (isMobile) onMobileClose?.();
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                        location.pathname === '/settings/holidays' ||
+                          location.pathname.startsWith('/settings/holidays/')
+                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                        isRTL ? 'text-right' : 'text-left'
+                      )}
+                    >
+                      <span>{t('sidebar.holidaysSettings')}</span>
+                    </NavLink>
+
+                    <hr className="my-1 border-[#F1F5F9]" />
+
+                    <NavLink
+                      to="/settings/site"
+                      onClick={() => {
+                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                        if (isMobile) onMobileClose?.();
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                        location.pathname === '/settings/site' ||
+                          location.pathname.startsWith('/settings/site/')
+                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                        isRTL ? 'text-right' : 'text-left'
+                      )}
+                    >
+                      <span>{t('sidebar.siteSettings')}</span>
+                    </NavLink>
+
+                    <hr className="my-1 border-[#F1F5F9]" />
+
+                    <NavLink
+                      to="/settings/notifications"
+                      onClick={() => {
+                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                        if (isMobile) onMobileClose?.();
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                        location.pathname === '/settings/notifications' ||
+                          location.pathname.startsWith('/settings/notifications/')
+                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                        isRTL ? 'text-right' : 'text-left'
+                      )}
+                    >
+                      <span>{t('sidebar.notifications')}</span>
+                    </NavLink>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {user && (
+              <div className={cn('flex w-full items-center gap-[8px]', rowDirectionClass)}>
+                <CustomImage
+                  src={profileImage}
+                  alt={user.name}
+                  className="h-[40px] w-[40px] shrink-0 rounded-[8px] object-cover"
+                />
+                <div className={cn('flex min-w-0 flex-1 flex-col', textAlignClass)}>
+                  <p className="truncate text-[14px] leading-[18.2px] font-semibold text-[#1E293B]">
+                    {user.name}
+                  </p>
+                  {schoolName && (
+                    <p className="truncate text-[12px] leading-[15.6px] font-medium text-[#1E7A52]">
+                      {schoolName}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </aside>
 
       {!isMobile && (

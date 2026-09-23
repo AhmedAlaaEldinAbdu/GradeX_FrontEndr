@@ -138,7 +138,11 @@ export default function EditDiscountOfferPage() {
         iconSrc={showPopupMessage.type === 'success' ? BigSuccessIcon : XMarkDangerIcon}
         autoClose={showPopupMessage.type === 'success'}
         onClose={() => setShowPopupMessage({ ...showPopupMessage, show: false })}
-        navigateAfterClose={showPopupMessage.type === 'success' ? '/financial-management/fees?tab=discounts' : undefined}
+        navigateAfterClose={
+          showPopupMessage.type === 'success'
+            ? '/financial-management/fees?tab=discounts'
+            : undefined
+        }
       />
     </div>
   );

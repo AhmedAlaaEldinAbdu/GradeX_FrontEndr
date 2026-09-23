@@ -20,9 +20,7 @@ const AddRegistrationAnnouncementPage: React.FC = () => {
       />
 
       {/* Page Header */}
-      <PageHeader
-        title={'registrationAnnouncement.addPageTitle'}
-      />
+      <PageHeader title={'registrationAnnouncement.addPageTitle'} />
 
       {/* Main Content */}
       <RegistrationAnnouncementForm />

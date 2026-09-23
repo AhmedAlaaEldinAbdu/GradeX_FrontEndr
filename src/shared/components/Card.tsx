@@ -15,9 +15,7 @@ const Card: React.FC<CardProps> = ({ children, className = '', padding = 'sm' })
   };
 
   return (
-    <div
-      className={`rounded-2xl bg-white app-card-shadow ${paddingStyles[padding]} ${className}`}
-    >
+    <div className={`app-card-shadow rounded-2xl bg-white ${paddingStyles[padding]} ${className}`}>
       {children}
     </div>
   );

@@ -51,16 +51,16 @@ const primitiveApplicationFields: Array<{
   key: keyof CreateApplicationsJobAdvertisementRequest;
   formKey: string;
 }> = [
-    { key: 'jobAdvertisementId', formKey: 'JobAdvertisementId' },
-    { key: 'teacherId', formKey: 'TeacherId' },
-    { key: 'workShedule', formKey: 'WorkShedule' },
-    { key: 'lkSchoolStageId', formKey: 'LKSchoolStageId' },
-    { key: 'useProfileResume', formKey: 'UseProfileResume' },
-    { key: 'worksInAnotherSchool', formKey: 'WorksInAnotherSchool' },
-    { key: 'transferDuration', formKey: 'TransferDuration' },
-    { key: 'experienceYears', formKey: 'ExperienceYears' },
-    { key: 'meetingLink', formKey: 'MeetingLink' },
-  ];
+  { key: 'jobAdvertisementId', formKey: 'JobAdvertisementId' },
+  { key: 'teacherId', formKey: 'TeacherId' },
+  { key: 'workShedule', formKey: 'WorkShedule' },
+  { key: 'lkSchoolStageId', formKey: 'LKSchoolStageId' },
+  { key: 'useProfileResume', formKey: 'UseProfileResume' },
+  { key: 'worksInAnotherSchool', formKey: 'WorksInAnotherSchool' },
+  { key: 'transferDuration', formKey: 'TransferDuration' },
+  { key: 'experienceYears', formKey: 'ExperienceYears' },
+  { key: 'meetingLink', formKey: 'MeetingLink' },
+];
 
 const buildApplicationsJobAdvertisementFormData = (
   data: CreateApplicationsJobAdvertisementRequest
@@ -103,13 +103,13 @@ export async function getApplicationsJobAdvertisements(
   const normalizedResponse = isWrappedApplicationsResponse(payload)
     ? payload
     : payload
-    ? {
-        data: payload,
-        isSuccess: true,
-        message: '',
-        validationErrors: null,
-      }
-    : null;
+      ? {
+          data: payload,
+          isSuccess: true,
+          message: '',
+          validationErrors: null,
+        }
+      : null;
 
   if (!normalizedResponse?.data?.applicationsJobAdvertisementDtos) {
     return {

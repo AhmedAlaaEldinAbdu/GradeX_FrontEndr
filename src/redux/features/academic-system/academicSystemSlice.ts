@@ -5,15 +5,17 @@ import {
   type ActionReducerMapBuilder,
 } from '@reduxjs/toolkit';
 import type {
-  AcademicSystemDetailsValue, AcademicSystemListValue, AcademicSubSystemParams,
-  CreateAcademicSystem, UpdateAcademicSystemRequest,
-  AcademicSubSystemResponse
+  AcademicSystemDetailsValue,
+  AcademicSystemListValue,
+  AcademicSubSystemParams,
+  CreateAcademicSystem,
+  UpdateAcademicSystemRequest,
+  AcademicSubSystemResponse,
 } from '@/services/api/types/academic-system.types';
 import AcademicSystemsApiService from '@/services/api/academic-system/academic-system.service';
 import { getErrorMessage } from '@/lib/http';
 import type { ApiResponseModel, ValidationErrorResponse } from '@/services/api/config';
 import type { Pagination } from '@/types/Pagination';
-
 
 interface AcademicSystemsState {
   academicSystems: AcademicSubSystemResponse[];
@@ -44,7 +46,6 @@ const initialState: AcademicSystemsState = {
   validationErrors: null,
 };
 
-
 export const getAcademicSystems = createAsyncThunk<
   AcademicSystemListValue,
   AcademicSubSystemParams | undefined
@@ -57,17 +58,17 @@ export const getAcademicSystems = createAsyncThunk<
   }
 });
 
-export const getAcademicSystemById = createAsyncThunk<
-  AcademicSystemDetailsValue,
-  string
->('academicSystems/fetchById', async (id, { rejectWithValue }) => {
-  try {
-    const response = await AcademicSystemsApiService.getAcademicSystemById(id);
-    return response;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+export const getAcademicSystemById = createAsyncThunk<AcademicSystemDetailsValue, string>(
+  'academicSystems/fetchById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await AcademicSystemsApiService.getAcademicSystemById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 export const addAcademicSystem = createAsyncThunk<
   ApiResponseModel<null>,
@@ -93,17 +94,17 @@ export const editAcademicSystem = createAsyncThunk<
   }
 });
 
-export const deleteAcademicSystem = createAsyncThunk<
-  ApiResponseModel<string>,
-  string
->('academicSystems/delete', async (id, { rejectWithValue }) => {
-  try {
-    const response = await AcademicSystemsApiService.deleteAcademicSystem(id);
-    return response;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+export const deleteAcademicSystem = createAsyncThunk<ApiResponseModel<string>, string>(
+  'academicSystems/delete',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await AcademicSystemsApiService.deleteAcademicSystem(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 const academicSystemsSlice = createSlice({
   name: 'academicSystems',
@@ -116,29 +117,31 @@ const academicSystemsSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getAcademicSystems.fulfilled, (state, action: PayloadAction<AcademicSystemListValue>) => {
-        state.isLoading = false;
-        if (action.payload && action.payload.academicSubSystemResponse) {
-          state.academicSystems = Array.isArray(action.payload.academicSubSystemResponse) 
-            ? action.payload.academicSubSystemResponse 
-            : [];
-          state.pagination = {
-            pageIndex: action.payload.pageIndex || 1,
-            pageSize: action.payload.pageSize || 10,
-            totalItems: action.payload.totalItems || 0,
-            totalPages: action.payload.totalPages || 0,
-          };
-        } else {
-          state.academicSystems = [];
-          state.pagination = {
-            pageIndex: 1,
-            pageSize: 10,
-            totalItems: 0,
-            totalPages: 0,
-          };
+      .addCase(
+        getAcademicSystems.fulfilled,
+        (state, action: PayloadAction<AcademicSystemListValue>) => {
+          state.isLoading = false;
+          if (action.payload && action.payload.academicSubSystemResponse) {
+            state.academicSystems = Array.isArray(action.payload.academicSubSystemResponse)
+              ? action.payload.academicSubSystemResponse
+              : [];
+            state.pagination = {
+              pageIndex: action.payload.pageIndex || 1,
+              pageSize: action.payload.pageSize || 10,
+              totalItems: action.payload.totalItems || 0,
+              totalPages: action.payload.totalPages || 0,
+            };
+          } else {
+            state.academicSystems = [];
+            state.pagination = {
+              pageIndex: 1,
+              pageSize: 10,
+              totalItems: 0,
+              totalPages: 0,
+            };
+          }
         }
-
-      })
+      )
       .addCase(getAcademicSystems.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
@@ -148,10 +151,13 @@ const academicSystemsSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getAcademicSystemById.fulfilled, (state, action: PayloadAction<AcademicSystemDetailsValue>) => {
-        state.isLoading = false;
-        state.academicSystemDetails = action.payload as AcademicSystemDetailsValue;
-      })
+      .addCase(
+        getAcademicSystemById.fulfilled,
+        (state, action: PayloadAction<AcademicSystemDetailsValue>) => {
+          state.isLoading = false;
+          state.academicSystemDetails = action.payload as AcademicSystemDetailsValue;
+        }
+      )
       .addCase(getAcademicSystemById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;

@@ -39,7 +39,8 @@ export const EmployeeApplicationStatus = {
   InterviewScheduled: 6,
 } as const;
 
-export type EmployeeApplicationStatus = (typeof EmployeeApplicationStatus)[keyof typeof EmployeeApplicationStatus];
+export type EmployeeApplicationStatus =
+  (typeof EmployeeApplicationStatus)[keyof typeof EmployeeApplicationStatus];
 
 export interface JobApplicationCourse {
   id?: string;

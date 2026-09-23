@@ -17,12 +17,14 @@ export const GENERAL_TEXT_REGEX = /^(?! )[A-Za-z\u0600-\u06FF0-9\-&/\\() ]{1,100
 // Triple Name (exactly 3 words)
 export const ARABIC_USERNAME_TRIPLE_REGEX = /^[\u0600-\u06FF]+ [\u0600-\u06FF]+ [\u0600-\u06FF]+$/;
 export const ENGLISH_USERNAME_TRIPLE_REGEX = /^[A-Za-z]+ [A-Za-z]+ [A-Za-z]+$/;
-export const GENERAL_USERNAME_TRIPLE_REGEX = /^[A-Za-z\u0600-\u06FF]+ [A-Za-z\u0600-\u06FF]+ [A-Za-z\u0600-\u06FF]+$/;
+export const GENERAL_USERNAME_TRIPLE_REGEX =
+  /^[A-Za-z\u0600-\u06FF]+ [A-Za-z\u0600-\u06FF]+ [A-Za-z\u0600-\u06FF]+$/;
 
 // Triple Name or more (>=3 words)
 export const ARABIC_USERNAME_REGEX = /^(?! )[\u0600-\u06FF]+( [\u0600-\u06FF]+){2,}(?<! )$/;
 export const ENGLISH_USERNAME_REGEX = /^(?! )[A-Za-z]+( [A-Za-z]+){2,}(?<! )$/;
-export const GENERAL_USERNAME_REGEX = /^(?! )[A-Za-z\u0600-\u06FF]+( [A-Za-z\u0600-\u06FF]+){2,}(?<! )$/;
+export const GENERAL_USERNAME_REGEX =
+  /^(?! )[A-Za-z\u0600-\u06FF]+( [A-Za-z\u0600-\u06FF]+){2,}(?<! )$/;
 
 // ===================== Password =====================
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[^\s]{8,64}$/;

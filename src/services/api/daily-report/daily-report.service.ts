@@ -131,8 +131,9 @@ export async function updateDailyReport(
  * Delete a daily report by ID.
  */
 export async function deleteDailyReport(id: string): Promise<{ success: boolean }> {
-  const response: AxiosResponse<{ isSuccess: boolean; message: string }> =
-    await axiosClient.delete(DailyReportEndpoints.delete(id));
+  const response: AxiosResponse<{ isSuccess: boolean; message: string }> = await axiosClient.delete(
+    DailyReportEndpoints.delete(id)
+  );
 
   return { success: !!response?.data?.isSuccess };
 }

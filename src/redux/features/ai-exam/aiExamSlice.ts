@@ -131,21 +131,21 @@ export const fetchAIExams = createAsyncThunk<AIExamsListData, AIExamsListQueryPa
   }
 );
 
-export const fetchAIExamSummary = createAsyncThunk<
-  AIExamSummary | null,
-  AIExamDetailsQueryParams
->('aiExam/fetchSummary', async (params, { rejectWithValue }) => {
-  try {
-    const response = await aiExamApiService.getAIExamSummary(params);
-    if (!response.isSuccess) {
-      return rejectWithValue(response.message || 'Failed to fetch AI exam summary');
-    }
+export const fetchAIExamSummary = createAsyncThunk<AIExamSummary | null, AIExamDetailsQueryParams>(
+  'aiExam/fetchSummary',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await aiExamApiService.getAIExamSummary(params);
+      if (!response.isSuccess) {
+        return rejectWithValue(response.message || 'Failed to fetch AI exam summary');
+      }
 
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 export const fetchAIExamQuestionsStats = createAsyncThunk<
   AIExamQuestionStats[],

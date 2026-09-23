@@ -48,9 +48,7 @@ export async function getCustomerById(id: string): Promise<CustomerDto> {
   return (response.data.data ?? response.data.value) as CustomerDto;
 }
 
-export async function createCustomer(
-  data: CreateCustomerRequest
-): Promise<ApiResponseModel<null>> {
+export async function createCustomer(data: CreateCustomerRequest): Promise<ApiResponseModel<null>> {
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.post(
     CustomerEndpoints.create,
     data
@@ -59,9 +57,7 @@ export async function createCustomer(
   return response.data;
 }
 
-export async function updateCustomer(
-  data: UpdateCustomerRequest
-): Promise<ApiResponseModel<null>> {
+export async function updateCustomer(data: UpdateCustomerRequest): Promise<ApiResponseModel<null>> {
   const response: AxiosResponse<ApiResponseModel<null>> = await axiosClient.put(
     CustomerEndpoints.update(data.id),
     data

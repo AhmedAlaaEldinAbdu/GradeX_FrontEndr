@@ -299,7 +299,9 @@ export default function TasksManagement() {
     {
       header: 'tasksManagement.table.taskType',
       accessor: (row) => (
-        <span className={getTaskTypeBadgeColor(row.taskType)}>{getTaskTypeLabel(row.taskType)}</span>
+        <span className={getTaskTypeBadgeColor(row.taskType)}>
+          {getTaskTypeLabel(row.taskType)}
+        </span>
       ),
       headerClassName: 'min-w-[180px]',
       className: 'text-center',

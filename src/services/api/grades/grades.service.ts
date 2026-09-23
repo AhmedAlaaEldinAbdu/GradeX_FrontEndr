@@ -14,8 +14,9 @@ export async function getGrades(params?: GradeQueryParams): Promise<GradeListRes
 }
 
 export async function getGradeById(id: string): Promise<GradeDetailsDto> {
-  const response: AxiosResponse<GradeDetailsResponse> =
-    await axiosClient.get(GradeEndpoints.getGradeById(id));
+  const response: AxiosResponse<GradeDetailsResponse> = await axiosClient.get(
+    GradeEndpoints.getGradeById(id)
+  );
   return response.data.value;
 }
 

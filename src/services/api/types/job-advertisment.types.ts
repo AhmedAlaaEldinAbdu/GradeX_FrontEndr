@@ -16,9 +16,8 @@ export const JobType = {
 
 export type JobAdvertismentWorkShedule =
   (typeof JobAdvertismentWorkShedule)[keyof typeof JobAdvertismentWorkShedule];
-  
-export type JobType =
-  (typeof JobType)[keyof typeof JobType];
+
+export type JobType = (typeof JobType)[keyof typeof JobType];
 
 export interface JobAdvertismentTechnicalSkillDto {
   id?: string;

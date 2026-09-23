@@ -104,9 +104,7 @@ export async function resetPassword(data: ResetPasswordRequest): Promise<ResetPa
 /**
  * Change password for the currently authenticated user.
  */
-export async function changePassword(
-  data: ChangePasswordRequest
-): Promise<ChangePasswordResponse> {
+export async function changePassword(data: ChangePasswordRequest): Promise<ChangePasswordResponse> {
   const response: AxiosResponse<ChangePasswordResponse> = await axiosClient.post(
     AuthEndpoints.changePassword,
     data

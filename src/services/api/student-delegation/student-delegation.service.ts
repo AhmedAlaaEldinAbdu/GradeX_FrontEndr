@@ -119,8 +119,9 @@ export async function updateStudentDelegation(
  * Delete a student delegation by ID.
  */
 export async function deleteStudentDelegation(id: string): Promise<{ success: boolean }> {
-  const response: AxiosResponse<{ isSuccess: boolean; message: string }> =
-    await axiosClient.delete(StudentDelegationEndpoints.delete(id));
+  const response: AxiosResponse<{ isSuccess: boolean; message: string }> = await axiosClient.delete(
+    StudentDelegationEndpoints.delete(id)
+  );
 
   return { success: !!response?.data?.isSuccess };
 }

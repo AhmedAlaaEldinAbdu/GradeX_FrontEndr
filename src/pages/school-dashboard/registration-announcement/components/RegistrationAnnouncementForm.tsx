@@ -30,9 +30,7 @@ interface RegistrationAnnouncementFormProps {
   registrationId?: string;
 }
 
-const normalizeGradeIds = (
-  gradeIds: unknown
-): RegistrationAnnouncementProps['gradeIds'] => {
+const normalizeGradeIds = (gradeIds: unknown): RegistrationAnnouncementProps['gradeIds'] => {
   if (!Array.isArray(gradeIds)) return [];
 
   return gradeIds
@@ -191,7 +189,11 @@ const RegistrationAnnouncementForm: React.FC<RegistrationAnnouncementFormProps> 
 
   return (
     <Card className="p-6">
-      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} noValidate className="space-y-6">
+      <form
+        onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)}
+        noValidate
+        className="space-y-6"
+      >
         {/* Educational Stages (Multi Select) */}
         <FormField
           label={t('registrationAnnouncement.educationalStagesLabel')}

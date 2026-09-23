@@ -245,9 +245,7 @@ export default function EditClassroom() {
                         : []
                     }
                     placeholder={
-                      isLoadingEducationalStages
-                        ? t('common.loading')
-                        : t('common.selectAnOption')
+                      isLoadingEducationalStages ? t('common.loading') : t('common.selectAnOption')
                     }
                     disabled={true}
                     error={!!errors.educationalStage}

@@ -6,9 +6,7 @@ import PageHeader from '@/shared/components/PageHeader';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
-import AddEditContractForm, {
-  type ContractFormValues,
-} from './components/AddEditContractForm';
+import AddEditContractForm, { type ContractFormValues } from './components/AddEditContractForm';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { createContract } from '@/redux/features/contracts/contractsSlice';
 import { tokenManager } from '@/lib/auth/token-manager';
@@ -36,8 +34,7 @@ const buildCreatePayload = (
   schoolBranchId: string
 ): CreateSchoolContractRequest => ({
   schoolBranchId,
-  description:
-    values.schoolKind === 'foundation' ? SchoolKind.Foundation : SchoolKind.Company,
+  description: values.schoolKind === 'foundation' ? SchoolKind.Foundation : SchoolKind.Company,
   commercialRegister: values.commercialRegister,
   nationalAddress: values.shortNationalAddress,
   representativeName: values.representativeName,
@@ -72,9 +69,7 @@ export default function AddContractPage() {
   const dispatch = useAppDispatch();
 
   const schoolBranchId =
-    tokenManager.getUserData()?.schoolBrancheId ??
-    tokenManager.getUserData()?.schoolBranchId ??
-    '';
+    tokenManager.getUserData()?.schoolBrancheId ?? tokenManager.getUserData()?.schoolBranchId ?? '';
 
   const [showPopupMessage, setShowPopupMessage] = useState<{
     show: boolean;

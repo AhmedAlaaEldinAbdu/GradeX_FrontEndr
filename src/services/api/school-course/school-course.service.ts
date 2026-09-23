@@ -58,7 +58,10 @@ const buildSchoolCourseFormData = (
       fd.append(`Lectures[${index}].DurationInMinutes`, String(lecture.durationInMinutes));
     }
     if (lecture.videoDurationInSeconds != null) {
-      fd.append(`Lectures[${index}].VideoDurationInSeconds`, String(lecture.videoDurationInSeconds));
+      fd.append(
+        `Lectures[${index}].VideoDurationInSeconds`,
+        String(lecture.videoDurationInSeconds)
+      );
     }
     fd.append(`Lectures[${index}].SortOrder`, String(lecture.sortOrder ?? index));
     if (lecture.sourceType != null) {
@@ -169,9 +172,7 @@ export async function updateSchoolCourse(
 /**
  * DELETE /api/SchoolCourse/{Id} — remove a course.
  */
-export async function deleteSchoolCourse(
-  id: string
-): Promise<SchoolCourseApiEnvelope<unknown>> {
+export async function deleteSchoolCourse(id: string): Promise<SchoolCourseApiEnvelope<unknown>> {
   const response: AxiosResponse<SchoolCourseApiEnvelope<unknown>> = await axiosClient.delete(
     SchoolCourseEndpoints.delete(id)
   );

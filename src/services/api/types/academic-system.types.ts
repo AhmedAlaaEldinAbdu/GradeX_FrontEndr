@@ -2,7 +2,6 @@ import type { Pagination } from '@/types/Pagination';
 import type { Country } from './lookup.types';
 import type { ApiResponse } from '../config';
 
-
 export interface AcademicSystemListValue extends Pagination {
   academicSubSystemResponse: AcademicSubSystemResponse[];
 }

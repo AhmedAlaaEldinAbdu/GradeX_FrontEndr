@@ -257,7 +257,7 @@ const InvoiceDetails = forwardRef<InvoiceDetailsHandle>((_, ref) => {
               {t('invoices.table.paymentDocument')}:
             </span>
             {invoice.receiptUrl ? (
-              <div className="w-100 flex items-center justify-between rounded-xl border border-gray-200 px-5 py-4">
+              <div className="flex w-100 items-center justify-between rounded-xl border border-gray-200 px-5 py-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-100 bg-gray-50">
                     <CustomImage src={PdfIcon} alt="Pdf" className="h-8 w-8 object-contain" />

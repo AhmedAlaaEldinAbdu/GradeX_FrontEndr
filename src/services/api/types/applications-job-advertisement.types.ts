@@ -57,7 +57,9 @@ export interface ApplicationsJobAdvertisementListResponse {
   data: ApplicationsJobAdvertisementListData;
   isSuccess: boolean;
   message: string;
-  validationErrors: string[] | ApiResponseModel<ApplicationsJobAdvertisementListData>['validationErrors'];
+  validationErrors:
+    | string[]
+    | ApiResponseModel<ApplicationsJobAdvertisementListData>['validationErrors'];
 }
 
 export interface ApplicationsJobAdvertisementQueryParams {

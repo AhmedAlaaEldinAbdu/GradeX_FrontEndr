@@ -1,7 +1,8 @@
+import type { CreateOfficialHolidayRequest } from '@/services/api/types/official-holidays.types';
 import type {
-  CreateOfficialHolidayRequest,
-} from '@/services/api/types/official-holidays.types';
-import type { AddHolidaysProps, AddFixedHolidayProps } from '@/validations/official-holidays-validations';
+  AddHolidaysProps,
+  AddFixedHolidayProps,
+} from '@/validations/official-holidays-validations';
 
 // ============================================================================
 // Main Transform Functions
@@ -75,17 +76,15 @@ export function transformFixedHolidayToFormData(
 /**
  * Transform update holiday data to FormData for API request
  */
-export function transformUpdateHolidayToFormData(
-  data: {
-    startDate?: string;
-    endDate?: string;
-    day?: number;
-    leaveCategory: number;
-    reason: string;
-    countryId: string;
-    file?: File;
-  }
-): FormData {
+export function transformUpdateHolidayToFormData(data: {
+  startDate?: string;
+  endDate?: string;
+  day?: number;
+  leaveCategory: number;
+  reason: string;
+  countryId: string;
+  file?: File;
+}): FormData {
   const backendFormData = new FormData();
   if (data.startDate !== undefined) {
     backendFormData.append('StartDate', new Date(data.startDate).toISOString());
@@ -220,9 +219,10 @@ export function transformBackendToHolidayForm(
     }
   };
 
-  const leaveCategory = typeof backendData.leaveCategory === 'string'
-    ? parseInt(backendData.leaveCategory)
-    : backendData.leaveCategory;
+  const leaveCategory =
+    typeof backendData.leaveCategory === 'string'
+      ? parseInt(backendData.leaveCategory)
+      : backendData.leaveCategory;
 
   return {
     holidayType: leaveCategory,
@@ -241,9 +241,10 @@ export function transformBackendToHolidayForm(
 export function transformBackendToFixedHolidayForm(
   backendData: BackendHolidayResponse
 ): AddFixedHolidayProps {
-  const leaveCategory = typeof backendData.leaveCategory === 'string'
-    ? parseInt(backendData.leaveCategory)
-    : backendData.leaveCategory;
+  const leaveCategory =
+    typeof backendData.leaveCategory === 'string'
+      ? parseInt(backendData.leaveCategory)
+      : backendData.leaveCategory;
 
   return {
     holidayType: leaveCategory,

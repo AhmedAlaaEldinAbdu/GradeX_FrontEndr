@@ -85,13 +85,13 @@ export default function EducationalContentCard({
         </div>
       </div>
 
-      <div className="min-h-[315px] w-full min-w-0 max-w-full">
+      <div className="min-h-[315px] w-full max-w-full min-w-0">
         {isLoading ? (
           <div className="flex min-h-[315px] items-center justify-center">
             <Loading size="md" />
           </div>
         ) : (
-          <div className="w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden pb-2">
+          <div className="w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden pb-2">
             <div className={filter === 'day' ? 'w-[1120px] max-w-none' : 'w-full min-w-0'}>
               <BarChart
                 data={data}

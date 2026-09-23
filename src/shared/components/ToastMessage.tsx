@@ -113,7 +113,7 @@ export default function ToastMessage({
   return (
     <div
       dir={isRTL ? 'rtl' : 'ltr'}
-      className={`fixed z-50 flex max-w-[400px] items-center gap-2 rounded-xl border p-4 shadow-md transition-all duration-300 ${current.bg} ${current.border} ${current.text} ${finalPosition === 'top-right' ? 'right-4 top-4' : finalPosition === 'top-left' ? 'left-4 top-4' : finalPosition === 'bottom-right' ? 'bottom-4 right-4' : 'bottom-4 left-4'} `}
+      className={`fixed z-50 flex max-w-[400px] items-center gap-2 rounded-xl border p-4 shadow-md transition-all duration-300 ${current.bg} ${current.border} ${current.text} ${finalPosition === 'top-right' ? 'top-4 right-4' : finalPosition === 'top-left' ? 'top-4 left-4' : finalPosition === 'bottom-right' ? 'right-4 bottom-4' : 'bottom-4 left-4'} `}
     >
       <span>{current.icon}</span>
       <span className="font-medium">{isRaw ? message : t(`${message}`)}</span>

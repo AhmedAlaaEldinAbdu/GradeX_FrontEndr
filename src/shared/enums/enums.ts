@@ -4,8 +4,7 @@ export const RequestStatus = {
   succeeded: 2,
   failed: 3,
 } as const;
-export type RequestStatus = typeof RequestStatus[keyof typeof RequestStatus];
-
+export type RequestStatus = (typeof RequestStatus)[keyof typeof RequestStatus];
 
 export const ResponseStatus = {
   FailedToSave: 0,
@@ -16,22 +15,19 @@ export const ResponseStatus = {
   FailedToFindTheObject: 5,
   AlreadyExisting: 6,
 } as const;
-export type ResponseStatus = typeof ResponseStatus[keyof typeof ResponseStatus];
-
+export type ResponseStatus = (typeof ResponseStatus)[keyof typeof ResponseStatus];
 
 export const StatusENum = {
   Draft: 1,
   Published: 2,
 } as const;
-export type StatusENum = typeof StatusENum[keyof typeof StatusENum];
-
+export type StatusENum = (typeof StatusENum)[keyof typeof StatusENum];
 
 export const State = {
   NotDeleted: 0,
   Deleted: 1,
 } as const;
-export type State = typeof State[keyof typeof State];
-
+export type State = (typeof State)[keyof typeof State];
 
 export const Days = {
   Sunday: 1,
@@ -40,25 +36,23 @@ export const Days = {
   Wednesday: 4,
   Thursday: 5,
   Friday: 6,
-  Saturday: 7
+  Saturday: 7,
 } as const;
-export type Days = typeof Days[keyof typeof Days];
+export type Days = (typeof Days)[keyof typeof Days];
 
 export const MonthlyCalendarDuration = {
   Day: 1,
   SpecificTime: 2,
 } as const;
 export type MonthlyCalendarDuration =
-  typeof MonthlyCalendarDuration[keyof typeof MonthlyCalendarDuration];
-
+  (typeof MonthlyCalendarDuration)[keyof typeof MonthlyCalendarDuration];
 
 export const OfferApplyOn = {
   ApplicationFees: 1,
   TuitionFees: 2,
   Both: 3,
 } as const;
-export type OfferApplyOn = typeof OfferApplyOn[keyof typeof OfferApplyOn];
-
+export type OfferApplyOn = (typeof OfferApplyOn)[keyof typeof OfferApplyOn];
 
 export const OfferField = {
   // ===============================
@@ -107,8 +101,7 @@ export const OfferField = {
 
   AlwaysTrue: 200, // true // عرض عام بدون شروط
 } as const;
-export type OfferField = typeof OfferField[keyof typeof OfferField];
-
+export type OfferField = (typeof OfferField)[keyof typeof OfferField];
 
 export const OfferOperator = {
   Equals: 1,
@@ -124,32 +117,27 @@ export const OfferOperator = {
 
   Between: 9,
 } as const;
-export type OfferOperator = typeof OfferOperator[keyof typeof OfferOperator];
-
+export type OfferOperator = (typeof OfferOperator)[keyof typeof OfferOperator];
 
 export const InvoicePaymentType = {
   Cash: 1,
   Deferred: 2,
 } as const;
-export type InvoicePaymentType = typeof InvoicePaymentType[keyof typeof InvoicePaymentType];
-
+export type InvoicePaymentType = (typeof InvoicePaymentType)[keyof typeof InvoicePaymentType];
 
 export const DelegationDurationType = {
   Permanent: 1, // دائم
   Temporary: 2, // مؤقت
 } as const;
 export type DelegationDurationType =
-  typeof DelegationDurationType[keyof typeof DelegationDurationType];
-
+  (typeof DelegationDurationType)[keyof typeof DelegationDurationType];
 
 export const AttendanceFilterType = {
   Day: 1,
   Week: 2,
   Month: 3,
 } as const;
-export type AttendanceFilterType =
-  typeof AttendanceFilterType[keyof typeof AttendanceFilterType];
-
+export type AttendanceFilterType = (typeof AttendanceFilterType)[keyof typeof AttendanceFilterType];
 
 export const DelegationPersonType = {
   Father: 1, // والد
@@ -159,9 +147,7 @@ export const DelegationPersonType = {
   Nanny: 5, // مربية
   Other: 6, // أخرى
 } as const;
-export type DelegationPersonType =
-  typeof DelegationPersonType[keyof typeof DelegationPersonType];
-
+export type DelegationPersonType = (typeof DelegationPersonType)[keyof typeof DelegationPersonType];
 
 // ============================================================================
 // School Contract enums
@@ -200,53 +186,54 @@ export const SocialStatus = {
   Single: 1,
   Married: 2,
   Divorced: 3,
-  Widowed: 4
+  Widowed: 4,
 } as const;
 export type SocialStatus = (typeof SocialStatus)[keyof typeof SocialStatus];
 
 export const ApplicantIdentityType = {
   National: 1,
-  ResidenceID: 2
+  ResidenceID: 2,
 } as const;
-export type ApplicantIdentityType = (typeof ApplicantIdentityType)[keyof typeof ApplicantIdentityType];
+export type ApplicantIdentityType =
+  (typeof ApplicantIdentityType)[keyof typeof ApplicantIdentityType];
 
 export const JobApplicationStatus = {
-  Accept: 1,           // مقبول
-  Reject: 2,           // مرفوض
-  Pending: 3,          // قيد المراجعة
-  Cancelled: 4,        // تم الالغاء
-  Archived: 5,         // مؤرشف
-  InterviewScheduled: 6 // تم تحديد مقابلة
+  Accept: 1, // مقبول
+  Reject: 2, // مرفوض
+  Pending: 3, // قيد المراجعة
+  Cancelled: 4, // تم الالغاء
+  Archived: 5, // مؤرشف
+  InterviewScheduled: 6, // تم تحديد مقابلة
 } as const;
 export type JobApplicationStatus = (typeof JobApplicationStatus)[keyof typeof JobApplicationStatus];
 
 export const MessageStatus = {
-  Pending: 1,  // تم الإنشاء ولم يُرسل
-  Sent: 2,     // تم الإرسال
-  Viewed: 3,   // تم فتح الرسالة
-  Replied: 4   // تم الرد عليها
+  Pending: 1, // تم الإنشاء ولم يُرسل
+  Sent: 2, // تم الإرسال
+  Viewed: 3, // تم فتح الرسالة
+  Replied: 4, // تم الرد عليها
 } as const;
 export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus];
 
 export const NoteType = {
   Behavioral: 1, // سلوكيًا
-  Academic: 2,   // أكاديميًا
-  Medical: 3     // صحيًا
+  Academic: 2, // أكاديميًا
+  Medical: 3, // صحيًا
 } as const;
 export type NoteType = (typeof NoteType)[keyof typeof NoteType];
 
 export const WorkSchedule = {
   FullTime: 1,
   PartTime: 2,
-  Both: 3
+  Both: 3,
 } as const;
 export type WorkSchedule = (typeof WorkSchedule)[keyof typeof WorkSchedule];
 
 export const TrainingCourseStatus = {
-  ActiveCompleted: 1,      // نشط ومكتمل
-  ActiveInCompleted: 2,    // نشط وغير مكتمل
-  EndedCompleted: 3,       // منتهي ومكتمل
-  EndedInCompleted: 4,     // منتهي وغير مكتمل
-  NotStarted: 5            // لم يبدأ بعد
+  ActiveCompleted: 1, // نشط ومكتمل
+  ActiveInCompleted: 2, // نشط وغير مكتمل
+  EndedCompleted: 3, // منتهي ومكتمل
+  EndedInCompleted: 4, // منتهي وغير مكتمل
+  NotStarted: 5, // لم يبدأ بعد
 } as const;
 export type TrainingCourseStatus = (typeof TrainingCourseStatus)[keyof typeof TrainingCourseStatus];

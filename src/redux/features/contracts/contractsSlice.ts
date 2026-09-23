@@ -107,7 +107,8 @@ export const createContract = createAsyncThunk<SchoolContractDto, CreateSchoolCo
       const response = await contractsApiService.createSchoolContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue({
-          message: response.message ?? response.errors?.join(', ') ?? response.successMessage ?? null,
+          message:
+            response.message ?? response.errors?.join(', ') ?? response.successMessage ?? null,
           validationErrors: response.validationErrors ?? null,
         });
       }
@@ -125,7 +126,8 @@ export const updateContract = createAsyncThunk<SchoolContractDto, UpdateSchoolCo
       const response = await contractsApiService.updateSchoolContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue({
-          message: response.message ?? response.errors?.join(', ') ?? response.successMessage ?? null,
+          message:
+            response.message ?? response.errors?.join(', ') ?? response.successMessage ?? null,
           validationErrors: response.validationErrors ?? null,
         });
       }
@@ -143,7 +145,10 @@ export const requestSignContract = createAsyncThunk<unknown, RequestSignContract
       const response = await contractsApiService.requestSignContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue(
-          response.message ?? response.errors?.join(', ') ?? response.successMessage ?? 'common.errorOccurred'
+          response.message ??
+            response.errors?.join(', ') ??
+            response.successMessage ??
+            'common.errorOccurred'
         );
       }
       return response.data ?? response.value;
@@ -160,7 +165,10 @@ export const confirmSignContract = createAsyncThunk<unknown, ConfirmSignContract
       const response = await contractsApiService.confirmSignContract(payload);
       if (response.isSuccess === false) {
         return rejectWithValue(
-          response.message ?? response.errors?.join(', ') ?? response.successMessage ?? 'common.errorOccurred'
+          response.message ??
+            response.errors?.join(', ') ??
+            response.successMessage ??
+            'common.errorOccurred'
         );
       }
       return response.data ?? response.value;
@@ -247,7 +255,10 @@ const contractsSlice = createSlice({
       .addCase(createContract.rejected, (state, action) => {
         state.isCreating = false;
         const payload = action.payload as
-          | { message?: string | null; validationErrors?: ValidationErrorResponse[] | string[] | null }
+          | {
+              message?: string | null;
+              validationErrors?: ValidationErrorResponse[] | string[] | null;
+            }
           | string
           | undefined;
         if (typeof payload === 'string') {
@@ -271,7 +282,10 @@ const contractsSlice = createSlice({
       .addCase(updateContract.rejected, (state, action) => {
         state.isUpdating = false;
         const payload = action.payload as
-          | { message?: string | null; validationErrors?: ValidationErrorResponse[] | string[] | null }
+          | {
+              message?: string | null;
+              validationErrors?: ValidationErrorResponse[] | string[] | null;
+            }
           | string
           | undefined;
         if (typeof payload === 'string') {
@@ -310,11 +324,7 @@ const contractsSlice = createSlice({
   },
 });
 
-export const {
-  clearContracts,
-  clearCurrentContract,
-  clearContractByStudent,
-  clearContractsError,
-} = contractsSlice.actions;
+export const { clearContracts, clearCurrentContract, clearContractByStudent, clearContractsError } =
+  contractsSlice.actions;
 
 export default contractsSlice.reducer;

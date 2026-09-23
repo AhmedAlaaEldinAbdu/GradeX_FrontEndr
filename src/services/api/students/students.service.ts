@@ -73,7 +73,10 @@ export async function getStudentById(id: string): Promise<StudentDto> {
 /**
  * Get students by classroom ID
  */
-export async function getStudentsByClassroomId(classroomId: string, search: string | undefined): Promise<StudentDto[]> {
+export async function getStudentsByClassroomId(
+  classroomId: string,
+  search: string | undefined
+): Promise<StudentDto[]> {
   const response: AxiosResponse<ApiResponseModel<StudentDto[]>> = await axiosClient.get(
     StudentEndpoints.getByClassroomId,
     {

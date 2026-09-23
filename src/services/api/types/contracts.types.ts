@@ -1,10 +1,5 @@
 import type { ApiResponseModel } from '../config';
-import {
-  SchoolKind,
-  IdentityType,
-  Semester,
-  WithdrawalTime,
-} from '@/shared/enums/enums';
+import { SchoolKind, IdentityType, Semester, WithdrawalTime } from '@/shared/enums/enums';
 
 // ============================================================================
 // Enums — re-exported from the shared enums module so call sites can keep

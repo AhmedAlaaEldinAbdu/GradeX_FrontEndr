@@ -277,7 +277,6 @@ const studentDelegationSlice = createSlice({
 // Exports
 // ============================================================================
 
-export const { setPagination, setSelectedDelegation, clearError } =
-  studentDelegationSlice.actions;
+export const { setPagination, setSelectedDelegation, clearError } = studentDelegationSlice.actions;
 
 export default studentDelegationSlice.reducer;

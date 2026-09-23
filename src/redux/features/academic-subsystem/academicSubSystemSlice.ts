@@ -58,17 +58,17 @@ export const getAcademicSubSystems = createAsyncThunk<
   }
 });
 
-export const getAcademicSubSystemById = createAsyncThunk<
-  AcademicSubSystemDetailsValue,
-  string
->('academicSubSystems/fetchById', async (id, { rejectWithValue }) => {
-  try {
-    const response = await AcademicSubSystemsApiService.getAcademicSubSystemById(id);
-    return response;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+export const getAcademicSubSystemById = createAsyncThunk<AcademicSubSystemDetailsValue, string>(
+  'academicSubSystems/fetchById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await AcademicSubSystemsApiService.getAcademicSubSystemById(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 export const addAcademicSubSystem = createAsyncThunk<
   ApiResponseModel<null>,
@@ -94,17 +94,17 @@ export const editAcademicSubSystem = createAsyncThunk<
   }
 });
 
-export const deleteAcademicSubSystem = createAsyncThunk<
-  ApiResponseModel<string>,
-  string
->('academicSubSystems/delete', async (id, { rejectWithValue }) => {
-  try {
-    const response = await AcademicSubSystemsApiService.deleteAcademicSubSystem(id);
-    return response;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+export const deleteAcademicSubSystem = createAsyncThunk<ApiResponseModel<string>, string>(
+  'academicSubSystems/delete',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await AcademicSubSystemsApiService.deleteAcademicSubSystem(id);
+      return response;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 const academicSubSystemsSlice = createSlice({
   name: 'academicSubSystems',
@@ -116,28 +116,31 @@ const academicSubSystemsSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getAcademicSubSystems.fulfilled, (state, action: PayloadAction<AcademicSubSystemListValue>) => {
-        state.isLoading = false;
-        if (action.payload && action.payload.academicSubSystemDto) {
-          state.academicSubSystems = Array.isArray(action.payload.academicSubSystemDto) 
-            ? action.payload.academicSubSystemDto 
-            : [];
-          state.pagination = {
-            pageIndex: action.payload.pageIndex || 1,
-            pageSize: action.payload.pageSize || 10,
-            totalItems: action.payload.totalItems || 0,
-            totalPages: action.payload.totalPages || 0,
-          };
-        } else {
-          state.academicSubSystems = [];
-          state.pagination = {
-            pageIndex: 1,
-            pageSize: 10,
-            totalItems: 0,
-            totalPages: 0,
-          };
+      .addCase(
+        getAcademicSubSystems.fulfilled,
+        (state, action: PayloadAction<AcademicSubSystemListValue>) => {
+          state.isLoading = false;
+          if (action.payload && action.payload.academicSubSystemDto) {
+            state.academicSubSystems = Array.isArray(action.payload.academicSubSystemDto)
+              ? action.payload.academicSubSystemDto
+              : [];
+            state.pagination = {
+              pageIndex: action.payload.pageIndex || 1,
+              pageSize: action.payload.pageSize || 10,
+              totalItems: action.payload.totalItems || 0,
+              totalPages: action.payload.totalPages || 0,
+            };
+          } else {
+            state.academicSubSystems = [];
+            state.pagination = {
+              pageIndex: 1,
+              pageSize: 10,
+              totalItems: 0,
+              totalPages: 0,
+            };
+          }
         }
-      })
+      )
       .addCase(getAcademicSubSystems.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
@@ -147,10 +150,13 @@ const academicSubSystemsSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getAcademicSubSystemById.fulfilled, (state, action: PayloadAction<AcademicSubSystemDetailsValue>) => {
-        state.isLoading = false;
-        state.academicSubSystemDetails = action.payload as AcademicSubSystemDetailsValue;
-      })
+      .addCase(
+        getAcademicSubSystemById.fulfilled,
+        (state, action: PayloadAction<AcademicSubSystemDetailsValue>) => {
+          state.isLoading = false;
+          state.academicSubSystemDetails = action.payload as AcademicSubSystemDetailsValue;
+        }
+      )
       .addCase(getAcademicSubSystemById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
@@ -176,11 +182,14 @@ const academicSubSystemsSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(editAcademicSubSystem.fulfilled, (state, action: PayloadAction<ApiResponseModel>) => {
-        state.isUpdating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess) state.validationErrors = validationErrors;
-      })
+      .addCase(
+        editAcademicSubSystem.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel>) => {
+          state.isUpdating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess) state.validationErrors = validationErrors;
+        }
+      )
       .addCase(editAcademicSubSystem.rejected, (state, action) => {
         state.isUpdating = false;
         state.error = action.payload as string;
@@ -190,14 +199,17 @@ const academicSubSystemsSlice = createSlice({
         state.isDeleting = true;
         state.error = null;
       })
-      .addCase(deleteAcademicSubSystem.fulfilled, (state, action: PayloadAction<ApiResponseModel>) => {
-        state.isDeleting = false;
-        const { isSuccess, value } = action.payload;
-        if (isSuccess) {
-          state.academicSubSystems = state.academicSubSystems?.filter((s) => s?.id !== value);
-          state.pagination.totalItems -= 1;
+      .addCase(
+        deleteAcademicSubSystem.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel>) => {
+          state.isDeleting = false;
+          const { isSuccess, value } = action.payload;
+          if (isSuccess) {
+            state.academicSubSystems = state.academicSubSystems?.filter((s) => s?.id !== value);
+            state.pagination.totalItems -= 1;
+          }
         }
-      })
+      )
       .addCase(deleteAcademicSubSystem.rejected, (state, action) => {
         state.isDeleting = false;
         state.error = action.payload as string;

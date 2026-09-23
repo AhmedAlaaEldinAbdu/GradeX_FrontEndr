@@ -17,9 +17,9 @@ export const ContractFormSchema = object({
     .required('contracts.validation.commercialRegisterRequired')
     .typeError('contracts.validation.commercialRegisterRequired'),
   // adminFees: number(),
-    // .typeError('contracts.validation.adminFeesRequired')
-    // .required('contracts.validation.adminFeesRequired')
-    // .min(0, 'contracts.validation.adminFeesPositive'),
+  // .typeError('contracts.validation.adminFeesRequired')
+  // .required('contracts.validation.adminFeesRequired')
+  // .min(0, 'contracts.validation.adminFeesPositive'),
   taxNumber: string()
     .required('contracts.validation.taxNumberRequired')
     .typeError('contracts.validation.taxNumberRequired'),
@@ -45,10 +45,7 @@ export const ContractFormSchema = object({
     .required('contracts.validation.nationalityRequired')
     .typeError('contracts.validation.nationalityRequired'),
   withdrawalType: string()
-    .oneOf(
-      ['beforeTerm', 'afterTerm'],
-      'contracts.validation.withdrawalTypeRequired'
-    )
+    .oneOf(['beforeTerm', 'afterTerm'], 'contracts.validation.withdrawalTypeRequired')
     .required('contracts.validation.withdrawalTypeRequired'),
   term: string()
     .required('contracts.validation.termRequired')

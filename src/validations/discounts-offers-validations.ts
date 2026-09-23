@@ -38,17 +38,13 @@ export const DiscountOfferSchema = yup.object().shape({
   endDate: yup
     .string()
     .required('common.validation.required')
-    .test(
-      'end-after-start',
-      'fees.discounts.modal.invalidEndDate',
-      function (endDate) {
-        const parent = this.parent as { startDate?: string };
-        const startDate = parent?.startDate;
-        if (!startDate || !endDate) return true;
-        // Dates come in ISO format (YYYY-MM-DD), so lexicographical compare works.
-        return endDate >= startDate;
-      }
-    ),
+    .test('end-after-start', 'fees.discounts.modal.invalidEndDate', function (endDate) {
+      const parent = this.parent as { startDate?: string };
+      const startDate = parent?.startDate;
+      if (!startDate || !endDate) return true;
+      // Dates come in ISO format (YYYY-MM-DD), so lexicographical compare works.
+      return endDate >= startDate;
+    }),
   isActive: yup.boolean().required(),
   matchAllConditions: yup.boolean().required('common.validation.required'),
 });

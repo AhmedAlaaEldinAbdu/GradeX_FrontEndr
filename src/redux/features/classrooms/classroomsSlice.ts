@@ -122,8 +122,7 @@ export const fetchClassrooms = createAsyncThunk<
         if (payload.filters.academicSystemId)
           params.AcademicSystemId = payload.filters.academicSystemId;
         if (payload.filters.gradeId) params.GradeId = payload.filters.gradeId;
-        if (payload.filters.schoolBranchId)
-          params.SchoolBranchId = payload.filters.schoolBranchId;
+        if (payload.filters.schoolBranchId) params.SchoolBranchId = payload.filters.schoolBranchId;
       }
     }
 
