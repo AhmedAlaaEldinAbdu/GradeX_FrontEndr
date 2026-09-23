@@ -21,7 +21,7 @@ export const ChangePasswordSchema = object({
   newPassword: string().required('login.passwordInvalid').typeError('login.passwordInvalid'),
   confirmPassword: string()
     .required('login.confirmPassword')
-    .oneOf([ref('login.newPassword')], 'login.passwordsNotMatch')
+    .oneOf([ref('newPassword')], 'login.passwordsNotMatch')
     .typeError('login.passwordInvalid'),
 });
 
