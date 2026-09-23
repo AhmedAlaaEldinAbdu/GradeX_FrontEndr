@@ -11,6 +11,8 @@ import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
 import CustomImage from '@/shared/components/CustomImage';
+import { authApiService } from '@/services/api/auth/auth.service';
+import { getErrorMessage } from '@/lib/http';
 
 const VerifyOtpPage: React.FC = () => {
   const { t } = useTranslation();
@@ -88,13 +90,15 @@ const VerifyOtpPage: React.FC = () => {
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await authApiService.verifyOtp({ email, otp: otpValue });
+
       // Check if coming from forgot password flow
       if (fromForgotPassword) {
-        // Navigate to reset password page
-        navigate('/auth/reset-password', { state: { email, verified: true } });
+        // Navigate to reset password page, carrying the reset token forward
+        navigate('/auth/reset-password', {
+          state: { email, token: response.token, verified: true },
+        });
       } else {
         // Coming from login - authenticate the user with token
         const mockToken = generateMockToken(email, UserRole.SUPER_ADMIN);
@@ -113,19 +117,26 @@ const VerifyOtpPage: React.FC = () => {
         // Navigate to dashboard - router will handle the redirect based on role
         navigate('/dashboard');
       }
-    }, 1500);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (!canResend) return;
 
     setCountdown(60);
     setCanResend(false);
-    setOtp(['', '', '', '', '', '']);
+    setOtp(['', '', '', '']);
     inputRefs.current[0]?.focus();
 
-    // Simulate resend API call
-    console.log('Resending OTP to:', email);
+    try {
+      await authApiService.forgotPassword({ email });
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
   };
 
   return (

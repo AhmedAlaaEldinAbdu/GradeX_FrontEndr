@@ -11,12 +11,14 @@ import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CustomImage from '@/shared/components/CustomImage';
+import { authApiService } from '@/services/api/auth/auth.service';
+import { getErrorMessage } from '@/lib/http';
 
 const ForgotPasswordPage: React.FC = () => {
   const { t } = useTranslation();
   const { isRTL, direction } = useLanguage();
   const navigate = useNavigate();
-  const [error] = useState('');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -33,13 +35,17 @@ const ForgotPasswordPage: React.FC = () => {
 
   const onSubmit = async (data: EmaileProps) => {
     setIsLoading(true);
+    setError('');
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await authApiService.forgotPassword({ email: data.email });
       // Navigate to OTP verification for password reset
       navigate('/auth/verify-otp', { state: { email: data.email, fromForgotPassword: true } });
-    }, 1500);
+    } catch (err) {
+      setError(getErrorMessage(err) || t('common.errorOccurred'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -137,6 +143,8 @@ const ForgotPasswordPage: React.FC = () => {
                 </div>
                 <FormErrorMessage message={errors?.email?.message} />
               </div>
+
+              {error && <FormErrorMessage message={error} />}
 
               {/* Submit Button */}
               <button

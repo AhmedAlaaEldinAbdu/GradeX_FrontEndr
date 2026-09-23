@@ -11,6 +11,8 @@ import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CustomImage from '@/shared/components/CustomImage';
+import { authApiService } from '@/services/api/auth/auth.service';
+import { getErrorMessage } from '@/lib/http';
 
 const ResetPasswordPage: React.FC = () => {
   const { t } = useTranslation();
@@ -18,10 +20,12 @@ const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || '';
+  const token = location.state?.token || '';
 
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const {
     register,
@@ -35,15 +39,23 @@ const ResetPasswordPage: React.FC = () => {
 
   const scrollToFirstError = useScrollToFirstError<ChangePasswordProps>();
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: ChangePasswordProps) => {
     setIsLoading(true);
+    setError('');
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Navigate to success page or login
+    try {
+      await authApiService.resetPassword({
+        email,
+        token,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
+      });
       navigate('/auth/password-reset-success');
-    }, 1500);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -303,6 +315,8 @@ const ResetPasswordPage: React.FC = () => {
                 </div>
                 <FormErrorMessage message={errors?.confirmPassword?.message} />
               </div>
+
+              {error && <FormErrorMessage message={error} />}
 
               {/* Submit Button */}
               <button
