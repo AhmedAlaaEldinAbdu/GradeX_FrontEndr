@@ -53,7 +53,7 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
   const gradeCount = system.gradeCount;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
+    <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
       <div
         ref={popupRef}
         className={`relative w-[550px] transform rounded-2xl bg-white p-6 py-7 text-center shadow-lg transition-all duration-300 ease-out ${
@@ -62,32 +62,30 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
       >
         <button
           onClick={handleClose}
-          className="absolute left-3 top-2 text-xl text-gray-400 hover:text-gray-600"
+          className="absolute top-2 left-3 text-xl text-gray-400 hover:text-gray-600"
         >
           ✕
         </button>
 
         <div className="my-6 flex flex-col justify-start gap-7 py-3">
-          <div className="w-[100%] text-2xl font-medium text-gray-800">{systemName}</div>
+          <div className="w-full text-2xl font-medium text-gray-800">{systemName}</div>
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3 font-semibold text-gray-800">
-              <span className="flex flex-shrink-0">{t('academicSystem.academicSystemName')}:</span>
+              <span className="flex shrink-0">{t('academicSystem.academicSystemName')}:</span>
               <span className="py-1 text-base text-black-800">
                 {currentLang === 'ar' ? system.nameAr : system.nameEn}
               </span>
             </div>
             <div className="flex items-start gap-3 font-semibold text-gray-800">
-              <span className="flex flex-shrink-0">{t('academicSystem.systemType')}:</span>{' '}
+              <span className="flex shrink-0">{t('academicSystem.systemType')}:</span>{' '}
               <span className="flex py-1 text-base text-black-800">
                 {systemTypes?.join(' - ') || '-'}
               </span>
             </div>
             <div className="flex items-start gap-3 font-semibold text-gray-800">
-              <span className="flex flex-shrink-0">
-                {t('academicSystem.educationalStagesCount')}:
-              </span>{' '}
+              <span className="flex shrink-0">{t('academicSystem.educationalStagesCount')}:</span>{' '}
               <span className="py-1 text-base text-black-800">{gradeCount}</span>
-              {/* <span className="flex flex-shrink-0">{t('academicSystem.educationalStages')}:</span>{' '}
+              {/* <span className="flex shrink-0">{t('academicSystem.educationalStages')}:</span>{' '}
               <span className="flex flex-wrap items-start gap-2">
                 {dummyData.eduStages?.map((stage) => (
                   <span className="flex items-center justify-center gap-2 rounded-md bg-green-100 p-2 text-base text-black-800">
@@ -98,7 +96,7 @@ export default function AcademicDetailsPopup({ open, system, onClose }: Academic
               </span> */}
             </div>
             <div className="flex items-center gap-3 font-semibold text-gray-800">
-              <span className="flex flex-shrink-0">{t('academicSystem.countries')}:</span>{' '}
+              <span className="flex shrink-0">{t('academicSystem.countries')}:</span>{' '}
               <span className="flex flex-wrap items-center gap-2 py-1">
                 {countries && countries.length > 0 ? (
                   countries.map((country, index) => (

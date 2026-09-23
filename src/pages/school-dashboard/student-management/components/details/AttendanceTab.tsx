@@ -117,14 +117,14 @@ export default function AttendanceTab({ studentId }: AttendanceTabProps) {
     };
     return (
       <span
-        className={`${getAttendanceStatusBadgeColor(status)} text-sm font-medium leading-[1.7251]`}
+        className={`${getAttendanceStatusBadgeColor(status)} text-sm leading-[1.7251] font-medium`}
       >
         {labels[status]}
       </span>
     );
   };
 
-  const headerCls = 'text-base font-normal leading-[1.7251] text-[#0E1F1F]';
+  const headerCls = 'text-base font-normal leading-[1.7251] text-black-900';
   const cellCls = 'text-sm font-normal leading-[1.7251] text-[#646969]';
 
   const columns: DataTableColumn<AttendanceRecord>[] = [

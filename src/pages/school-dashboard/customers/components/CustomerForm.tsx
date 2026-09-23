@@ -307,7 +307,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
+      <Card className="rounded-[28px] border border-gray-100 shadow-xs" padding="lg">
         <h3 className="mb-6 text-start text-lg font-semibold text-gray-800">
           {t('customers.clientData')}
         </h3>
@@ -325,12 +325,12 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
                     onBlur={field.onBlur}
                     onFocus={() => studentSuggestions.length > 0 && setShowSuggestions(true)}
                     placeholder={t('customers.enterClientName')}
-                    className="!bg-white"
+                    className="bg-white!"
                   />
                 )}
               />
               {isSearchingStudents && (
-                <div className="absolute end-3 top-1/2 -translate-y-1/2">
+                <div className="absolute inset-e-3 top-1/2 -translate-y-1/2">
                   <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-green-600" />
                 </div>
               )}
@@ -406,7 +406,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
                   <Input
                     {...field}
                     placeholder={t('customers.enterIdNumber')}
-                    className="!bg-white"
+                    className="bg-white!"
                   />
                 )}
               />
@@ -443,7 +443,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         </div>
       </Card>
 
-      <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
+      <Card className="rounded-[28px] border border-gray-100 shadow-xs" padding="lg">
         <h3 className="mb-6 text-start text-lg font-semibold text-gray-800">
           {t('customers.contactInfo')}
         </h3>
@@ -459,7 +459,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
                     {...field}
                     type="email"
                     placeholder={t('customers.enterEmail')}
-                    className="!bg-white"
+                    className="bg-white!"
                   />
                 )}
               />
@@ -480,7 +480,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
         </div>
       </Card>
 
-      <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
+      <Card className="rounded-[28px] border border-gray-100 shadow-xs" padding="lg">
         <h3 className="mb-6 text-start text-lg font-semibold text-gray-800">
           {t('customers.address')}
         </h3>
@@ -533,7 +533,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
               value={streetName}
               onChange={(e) => setStreetName(e.target.value)}
               placeholder={t('customers.enterStreetName')}
-              className="!bg-white"
+              className="bg-white!"
             />
           </FormField>
 
@@ -542,7 +542,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
               value={districtName}
               onChange={(e) => setDistrictName(e.target.value)}
               placeholder={t('customers.enterDistrictName')}
-              className="!bg-white"
+              className="bg-white!"
             />
           </FormField>
 
@@ -552,7 +552,7 @@ export default function CustomerForm({ isEditMode = false }: ClientFormProps) {
                 value={buildingNumber}
                 onChange={(e) => setBuildingNumber(e.target.value)}
                 placeholder={t('customers.enterBuildingNumber')}
-                className="!bg-white"
+                className="bg-white!"
               />
             </FormField>
           </div>

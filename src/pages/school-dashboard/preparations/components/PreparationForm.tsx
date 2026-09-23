@@ -306,7 +306,7 @@ export default function PreparationForm({ isEditMode = false }: PreparationFormP
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-xl bg-white p-6 shadow-sm">
+      <Card className="rounded-xl bg-white p-6 shadow-xs">
         <form className="space-y-8">
           <div className="space-y-6">
             <div className="w-full" data-form-field="preparationNumber">

@@ -292,7 +292,7 @@ export default function AttendanceManagement() {
           indeterminate={someCurrentPageSelected}
           onChange={(checked) => handleSelectAll(checked)}
           disabled={allStudentsDisabled}
-          className="!gap-0 !py-0"
+          className="gap-0! py-0!"
         />
       ),
       accessor: (row) => {
@@ -305,7 +305,7 @@ export default function AttendanceManagement() {
             checked={selectedAttendanceIds.includes(studentKey)}
             onChange={(checked) => handleSelectStudent(studentKey, checked)}
             disabled={hasStatus}
-            className="!gap-0 !py-0"
+            className="gap-0! py-0!"
             inputProps={{ id: `checkbox-${studentKey}` }}
           />
         );

@@ -183,7 +183,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                               <button
                                 type="button"
                                 onClick={() => handleAddDetailsClick(facility.id, facilityName)}
-                                className="whitespace-nowrap rounded-lg py-1 text-xs font-bold text-green-700 transition-colors"
+                                className="rounded-lg py-1 text-xs font-bold whitespace-nowrap text-green-700 transition-colors"
                               >
                                 {hasDetails ? '✓ ' : ''}
                                 {t('schools.addData')}
@@ -195,7 +195,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                               <button
                                 type="button"
                                 onClick={() => handleViewDetailsClick(facility.id, facilityName)}
-                                className="whitespace-nowrap rounded-lg bg-green-700 px-3 py-1 text-xs font-bold text-white transition-colors hover:bg-green-800"
+                                className="rounded-lg bg-green-700 px-3 py-1 text-xs font-bold whitespace-nowrap text-white transition-colors hover:bg-green-800"
                               >
                                 {t('schools.viewData')}
                               </button>
@@ -253,7 +253,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                               nameField.value || t('schools.otherFacility')
                             )
                           }
-                          className="whitespace-nowrap rounded-lg py-1 text-xs font-bold text-green-700 transition-colors"
+                          className="rounded-lg py-1 text-xs font-bold whitespace-nowrap text-green-700 transition-colors"
                         >
                           {facilityDetails['other'] ? '✓ ' : ''}
                           {t('schools.addData')}
@@ -276,7 +276,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                               nameField.value || t('schools.otherFacility')
                             )
                           }
-                          className="whitespace-nowrap rounded-lg bg-green-700 px-3 py-1 text-xs font-bold text-white transition-colors hover:bg-green-800"
+                          className="rounded-lg bg-green-700 px-3 py-1 text-xs font-bold whitespace-nowrap text-white transition-colors hover:bg-green-800"
                         >
                           {t('schools.viewData')}
                         </button>
@@ -295,7 +295,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                 render={({ field: hasOtherField }) => (
                   <>
                     {hasOtherField.value && (
-                      <div className="mr-8 mt-2">
+                      <div className="mt-2 mr-8">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                           {/* Arabic Name Input */}
                           <Controller
@@ -320,7 +320,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                                   }}
                                   onBlur={nameArField.onBlur}
                                   placeholder={t('schools.enterFacilityNameAr')}
-                                  className={`w-full rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                                  className={`w-full rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden ${
                                     errors.otherFacilityNameAr && nameArFieldState.isTouched
                                       ? 'border-red-500'
                                       : 'border-gray-300'
@@ -357,7 +357,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                                   }}
                                   onBlur={nameEnField.onBlur}
                                   placeholder={t('schools.enterFacilityNameEn')}
-                                  className={`w-full rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                                  className={`w-full rounded-lg border px-4 py-2 text-right text-gray-700 transition-all focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden ${
                                     errors.otherFacilityNameEn && nameEnFieldState.isTouched
                                       ? 'border-red-500'
                                       : 'border-gray-300'
@@ -388,7 +388,7 @@ const FacilitiesStep: React.FC<FacilitiesStepProps> = ({
                 render={({ field: hasOtherField }) => (
                   <>
                     {hasOtherField.value && (
-                      <div className="mr-8 mt-2 space-y-2">
+                      <div className="mt-2 mr-8 space-y-2">
                         {/* Facility Names */}
                         <Controller
                           name="otherFacilityNameAr"

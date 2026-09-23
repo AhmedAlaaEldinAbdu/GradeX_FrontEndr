@@ -176,7 +176,7 @@ const ApplicationStatusBanner: React.FC<ApplicationStatusBannerProps> = ({
             </span>
             <span
               role="tooltip"
-              className="pointer-events-none absolute end-0 top-full z-10 mt-2 hidden w-64 whitespace-pre-wrap rounded-lg bg-gray-900 px-3 py-2 text-start text-xs font-normal leading-relaxed text-white shadow-lg group-hover:block"
+              className="pointer-events-none absolute inset-e-0 top-full z-10 mt-2 hidden w-64 rounded-lg bg-gray-900 px-3 py-2 text-start text-xs leading-relaxed font-normal whitespace-pre-wrap text-white shadow-lg group-hover:block"
             >
               {editRequestTooltip}
             </span>

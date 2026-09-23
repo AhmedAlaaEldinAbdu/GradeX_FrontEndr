@@ -23,7 +23,7 @@ export default function MetricCard({
 }: MetricCardProps) {
   return (
     <Card
-      className={`flex gap-4 ${className} app-card-shadow rounded-3xl border border-[#E6E6E6] p-4`}
+      className={`flex gap-4 ${className} app-card-shadow rounded-3xl border border-black-100 p-4`}
     >
       <div
         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconClassName}`}

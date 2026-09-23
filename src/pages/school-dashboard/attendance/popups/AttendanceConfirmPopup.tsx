@@ -47,9 +47,7 @@ export default function AttendanceConfirmPopup({
 
   const getMessage = () => {
     if (type === 'late') {
-      return isBulk
-        ? t('attendance.confirmAllLateTitle')
-        : t('attendance.confirmLateTitle');
+      return isBulk ? t('attendance.confirmAllLateTitle') : t('attendance.confirmLateTitle');
     }
 
     if (isBulk) {
@@ -73,7 +71,7 @@ export default function AttendanceConfirmPopup({
     <Modal isOpen={open} onClose={onCancel} size="sm" showHeader={false}>
       <button
         onClick={onCancel}
-        className="absolute end-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+        className="absolute inset-e-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
         aria-label={t('common.cancel')}
       >
         <CustomImage src={XmarkCircleGrayIcon} alt="Close" className="h-5 w-5" />
@@ -81,14 +79,14 @@ export default function AttendanceConfirmPopup({
 
       <div className="flex flex-col">
         <p
-          className={`my-6 ${type === 'late' ? 'py-3' : 'py-6'} text-center text-sm font-medium text-[#0E1F1F] md:text-base`}
+          className={`my-6 ${type === 'late' ? 'py-3' : 'py-6'} text-center text-sm font-medium text-black-900 md:text-base`}
         >
           {getMessage()}
         </p>
 
         {type === 'late' && (
           <div className="mb-6">
-            <label className="mb-2 block text-start text-sm font-medium text-[#0E1F1F]">
+            <label className="mb-2 block text-start text-sm font-medium text-black-900">
               {t('attendance.time')} <span className="text-red-500">*</span>
             </label>
             <Input

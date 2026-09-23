@@ -32,8 +32,8 @@ export type OnlineExamItem = {
 };
 
 const SOURCE_STYLES: Record<ExamSource, { boxClass: string; labelClass: string; icon: string }> = {
-  ai: { boxClass: 'bg-[#E5F3FF]', labelClass: 'text-[#117BD7]', icon: SparklesIcon },
-  questionBank: { boxClass: 'bg-[#F4E5FF]', labelClass: 'text-[#A353DD]', icon: IdeaIcon },
+  ai: { boxClass: 'bg-[#E5F3FF]', labelClass: 'text-blue-500', icon: SparklesIcon },
+  questionBank: { boxClass: 'bg-[#F4E5FF]', labelClass: 'text-purple-500', icon: IdeaIcon },
   manual: { boxClass: 'bg-[#E5FFF4]', labelClass: 'text-[#02804A]', icon: WritingIcon },
 };
 
@@ -65,7 +65,7 @@ function ExamProgressRing({ value }: { value: number }) {
           strokeDasharray={`${filled} ${RING_CIRCUMFERENCE - filled}`}
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-[#1A9F58]">
+      <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-lightGreen-500">
         {value}%
       </span>
     </div>
@@ -114,7 +114,7 @@ export default function OnlineExamCard({ exam }: { exam: OnlineExamItem }) {
           <div className="flex flex-wrap items-center gap-3">
             <span
               dir={exam.titleDirection}
-              className="inline-flex flex-wrap items-center gap-1 text-base font-normal text-[#0E1F1F]"
+              className="inline-flex flex-wrap items-center gap-1 text-base font-normal text-black-900"
             >
               <span>{exam.title}</span>
               {exam.titleSuffix && (
@@ -146,7 +146,7 @@ export default function OnlineExamCard({ exam }: { exam: OnlineExamItem }) {
       {exam.progress != null ? (
         <ExamProgressRing value={exam.progress} />
       ) : (
-        <span className="shrink-0 rounded-3xl bg-[#F2960C]/10 px-4 py-1 text-sm font-medium text-[#A96908]">
+        <span className="shrink-0 rounded-3xl bg-[#F2960C]/10 px-4 py-1 text-sm font-medium text-orange-500">
           {t('eLearning.onlineExams.status.scheduled')}
         </span>
       )}

@@ -51,7 +51,7 @@ export default function RejectSchoolPopup({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
+    <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
       <div
         ref={popupRef}
         className={`relative w-[420px] transform rounded-2xl bg-white p-8 text-center shadow-lg transition-all duration-300 ease-out ${
@@ -60,7 +60,7 @@ export default function RejectSchoolPopup({
       >
         <button
           onClick={handleClose}
-          className="absolute left-3 top-2 text-xl text-gray-400 hover:text-gray-600"
+          className="absolute top-2 left-3 text-xl text-gray-400 hover:text-gray-600"
         >
           ✕
         </button>
@@ -87,14 +87,14 @@ export default function RejectSchoolPopup({
           <div className="flex w-full justify-center gap-3">
             <button
               onClick={handleClose}
-              className="flex-grow rounded-xl border border-green-700 px-5 py-2 text-green-700 transition-colors duration-200 hover:bg-green-50"
+              className="grow rounded-xl border border-green-700 px-5 py-2 text-green-700 transition-colors duration-200 hover:bg-green-50"
             >
               {t('common.cancel')}
             </button>
             <button
               onClick={handleConfirm}
               disabled={isProcessing}
-              className="flex-grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:opacity-50"
+              className="grow rounded-xl bg-red-600 px-5 py-2 text-white transition-colors duration-200 hover:bg-red-700 disabled:opacity-50"
             >
               {isProcessing ? t('common.rejecting') : t('actions.reject')}
             </button>

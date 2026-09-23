@@ -25,7 +25,7 @@ const STATUS_LABEL_KEYS: Record<EarlyLeaveStatus, string> = {
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm font-medium text-[#0E1F1F]">{label}:</span>
+      <span className="text-sm font-medium text-black-900">{label}:</span>
       <div className="text-sm font-normal text-[#646969]">{children}</div>
     </div>
   );

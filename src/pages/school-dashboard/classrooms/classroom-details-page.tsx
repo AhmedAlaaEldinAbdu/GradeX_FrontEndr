@@ -42,7 +42,6 @@ export default function ClassroomDetailsPage() {
   const grade = useAppSelector((state) => state.grades.currentGrade);
   const teacherPersonalData = useAppSelector((state) => state.teachers.teacherPersonalData);
 
-
   useEffect(() => {
     if (!id) {
       return;
@@ -118,7 +117,6 @@ export default function ClassroomDetailsPage() {
     },
   ];
 
-
   const breadcrumbItems = isFromTeacherDetails
     ? [
         { label: t('sidebar.humanResources') },
@@ -151,7 +149,7 @@ export default function ClassroomDetailsPage() {
             {
               label: '',
               to: id ? `/classrooms/add-classroom?gradeId=${id}` : '/classrooms/add-classroom',
-              className: 'h-10 w-10 !rounded-full !p-0',
+              className: 'h-10 w-10 rounded-full! p-0!',
               imgSrc: WhitePlusIcon,
               imgClassName: 'h-5 w-5',
             },

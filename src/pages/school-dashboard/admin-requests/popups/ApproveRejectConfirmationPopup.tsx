@@ -81,7 +81,7 @@ const ApproveRejectConfirmationPopup: React.FC<ApproveRejectConfirmationPopupPro
         </div>
 
         {/* Message */}
-        <p className="text-center text-base font-semibold text-[#0E1F1F]">{current.message}</p>
+        <p className="text-center text-base font-semibold text-black-900">{current.message}</p>
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3 sm:flex-row-reverse sm:gap-3">

@@ -39,13 +39,13 @@ const RecallApplicantPopup = ({
         type="button"
         onClick={handleClose}
         disabled={isProcessing}
-        className="absolute start-4 top-4 text-2xl text-gray-400 transition hover:text-gray-600 disabled:cursor-not-allowed"
+        className="absolute inset-s-4 top-4 text-2xl text-gray-400 transition hover:text-gray-600 disabled:cursor-not-allowed"
         aria-label={t('common.close')}
       >
         ✕
       </button>
 
-      <div className="flex flex-col gap-3 pb-8 pt-6">
+      <div className="flex flex-col gap-3 pt-6 pb-8">
         <p className="text-xl font-semibold text-gray-900">
           {t('jobAnnouncement.applicantsPage.confirmRecall')}
         </p>

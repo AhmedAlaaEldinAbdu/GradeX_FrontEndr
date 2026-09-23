@@ -23,9 +23,9 @@ export type ReviewQuestion = {
 };
 
 const DIFFICULTY_BADGE: Record<ReviewDifficulty, string> = {
-  easy: 'bg-[#1A9F58]/10 text-[#1A9F58]',
-  medium: 'bg-[#F8951B]/10 text-[#F8951B]',
-  hard: 'bg-[#DD0417]/10 text-[#DD0417]',
+  easy: 'bg-lightGreen-500/10 text-lightGreen-500',
+  medium: 'bg-yellow-400/10 text-yellow-400',
+  hard: 'bg-red-500/10 text-red-500',
 };
 
 // Recolours a monochrome SVG to the given colour via CSS mask (same approach as other icon chips).
@@ -52,7 +52,7 @@ function MaskIcon({ src, color, className }: { src: string; color: string; class
 function CorrectAnswerIcon() {
   return (
     <svg
-      className="h-4 w-4 text-[#1A9F58]"
+      className="h-4 w-4 text-lightGreen-500"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -68,7 +68,7 @@ function CorrectAnswerIcon() {
 function ExplanationCheckIcon() {
   return (
     <svg
-      className="h-[18px] w-[18px] shrink-0 text-[#0E1F1F]"
+      className="h-[18px] w-[18px] shrink-0 text-black-900"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -98,10 +98,10 @@ export default function ExamReviewQuestionCard({
   const isMultipleChoice = question.questionType === 'multipleChoice';
   const isEssay = question.questionType === 'essay';
   const typeBadgeClass = isMultipleChoice
-    ? 'bg-[#117BD7]/10 text-[#117BD7]'
+    ? 'bg-blue-500/10 text-blue-500'
     : isEssay
       ? 'bg-[#5B5BD6]/10 text-[#5B5BD6]'
-      : 'bg-[#A353DD]/10 text-[#A353DD]';
+      : 'bg-purple-500/10 text-purple-500';
   const typeBadgeLabel = isMultipleChoice
     ? t('eLearning.onlineExams.addAI.classifications.multipleChoice')
     : isEssay
@@ -114,7 +114,7 @@ export default function ExamReviewQuestionCard({
         key={answer.id}
         className="flex items-center justify-between rounded-[14px] border-[0.5px] border-green-500 bg-[#E9F6EF] px-3 py-3"
       >
-        <span className="text-base font-normal text-[#0E1F1F]">{answer.text}</span>
+        <span className="text-base font-normal text-black-900">{answer.text}</span>
 
         <div className="flex items-center gap-1.5">
           <CorrectAnswerIcon />
@@ -126,9 +126,9 @@ export default function ExamReviewQuestionCard({
     ) : (
       <div
         key={answer.id}
-        className="flex items-center rounded-[14px] border border-[#DDE0E0] bg-[#F6F8F9] px-3 py-3"
+        className="flex items-center rounded-[14px] border border-[#DDE0E0] bg-gray-50 px-3 py-3"
       >
-        <span className="flex-1 text-start text-base font-normal text-[#0E1F1F]">
+        <span className="flex-1 text-start text-base font-normal text-black-900">
           {answer.text}
         </span>
       </div>
@@ -136,7 +136,7 @@ export default function ExamReviewQuestionCard({
 
   return (
     <div
-      className={`space-y-6 rounded-2xl border p-6 ${selected ? 'border-[#00512E]/50' : 'border-[#E6E6E6]'}`}
+      className={`space-y-6 rounded-2xl border p-6 ${selected ? 'border-green-500/50' : 'border-black-100'}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-1 flex-col items-start gap-3">
@@ -151,7 +151,7 @@ export default function ExamReviewQuestionCard({
             </span>
           </div>
           <div className="flex w-full items-center gap-2">
-            <span className="text-sm font-normal text-[#00512E]">#{question.number}</span>
+            <span className="text-sm font-normal text-green-500">#{question.number}</span>
             <p className="flex-1 text-start text-base font-medium text-[#101828]">
               <bdi>{question.text}</bdi>
             </p>
@@ -165,7 +165,7 @@ export default function ExamReviewQuestionCard({
                 type="button"
                 onClick={onEdit}
                 aria-label={t('common.edit')}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1A9F58]/10 transition-opacity hover:opacity-80"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-lightGreen-500/10 transition-opacity hover:opacity-80"
               >
                 <MaskIcon src={EditIcon} color="#1A9F58" className="h-6 w-6" />
               </button>
@@ -175,7 +175,7 @@ export default function ExamReviewQuestionCard({
                 type="button"
                 onClick={onDelete}
                 aria-label={t('common.delete')}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#DD0417]/10 transition-opacity hover:opacity-80"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/10 transition-opacity hover:opacity-80"
               >
                 <MaskIcon src={TrashIcon} color="#DD0417" className="h-6 w-6" />
               </button>

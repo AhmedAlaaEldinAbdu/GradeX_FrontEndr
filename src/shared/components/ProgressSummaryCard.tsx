@@ -76,7 +76,7 @@ export default function ProgressSummaryCard({
 
   return (
     <Card
-      className={`app-card-shadow rounded-3xl border border-[#E6E6E6] p-4 ${
+      className={`app-card-shadow rounded-3xl border border-black-100 p-4 ${
         isClickable ? 'cursor-pointer' : ''
       } ${className}`}
       padding="none"

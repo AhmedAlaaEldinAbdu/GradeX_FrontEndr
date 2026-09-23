@@ -117,7 +117,11 @@ export default function ExamStudentsList({
     {
       header: 'eLearning.onlineExams.details.studentsTable.reviewCorrection',
       accessor: (row) => (
-        <EyeButton color="#0909B1" bgClass="bg-[#0909B1]/10" onClick={() => openReview(row.id)} />
+        <EyeButton
+          color="#0909B1"
+          bgClass="bg-darkBlue-500/10"
+          onClick={() => openReview(row.id)}
+        />
       ),
       headerClassName: 'min-w-[150px]',
       className: 'text-center',
@@ -132,7 +136,7 @@ export default function ExamStudentsList({
           <span className="font-normal text-[#646969]" title={row.name}>
             {row.name}
           </span>
-          <EyeButton color="#117BD7" bgClass="bg-[#117BD7]/10" onClick={() => openReview(row.id)} />
+          <EyeButton color="#117BD7" bgClass="bg-blue-500/10" onClick={() => openReview(row.id)} />
         </div>
       ),
       headerClassName: 'min-w-[280px]',

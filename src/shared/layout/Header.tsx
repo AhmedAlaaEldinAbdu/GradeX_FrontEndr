@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaKey, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { FaBars, FaKey, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { clearUser } from '@gradex/redux/features/auth/authSlice';
 import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import profileImage from '@gradex/assets/images/profile.png';
@@ -17,7 +17,12 @@ import { useSchoolBranchName } from '@/hooks/useSchoolBranchName';
 import CustomImage from '@/shared/components/CustomImage';
 import ChangePasswordModal from '@/shared/components/ChangePasswordModal';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  /** Opens the mobile navigation drawer. The menu button only shows below `lg`. */
+  onMenuClick?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const navigate = useNavigate();
@@ -38,9 +43,9 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="border-b border-[#DDE0E0] bg-white shadow-[0px_4px_12px_0px_#0000000A]">
-      <div className="flex flex-row-reverse items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3">
+    <header className="bg-white drop-shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_1px_2px_rgba(12,12,13,0.05)]">
+      <div className="flex flex-row-reverse items-center justify-between px-[16px] py-[16px] md:px-[24px]">
+        <div className="flex shrink-0 items-center gap-[8px] sm:gap-[16px]">
           {/* TODO(TEST TEAM): Role Switcher (QA/dev) - remove later */}
           <RoleSwitcher variant="icon-only" size="md" />
 
@@ -49,9 +54,15 @@ const Header: React.FC = () => {
 
           {/* Notifications */}
           <div className="relative">
-            <button className="flex h-10 w-10 items-center justify-center rounded-[20px] border border-[#DDE0E0] bg-[#F1F1F1] transition-colors hover:bg-black-50">
-              <img src={NotificationDarkIcon} alt="" aria-hidden="true" className="h-5 w-5" />
-              <span className="absolute right-1 top-3 flex h-3.5 w-[14px] items-center justify-center rounded-full bg-[#B80817] text-[10px] font-bold text-white shadow-sm">
+            {/* Figma "Group 1": 32px bell offset 3px down, 14px badge at its top, 16px in. */}
+            <button className="relative flex h-[35px] w-[32px] items-end justify-center rounded-[8px] transition-colors hover:bg-[#ECFDF5]">
+              <img
+                src={NotificationDarkIcon}
+                alt=""
+                aria-hidden="true"
+                className="h-[32px] w-[32px]"
+              />
+              <span className="absolute inset-s-[16px] top-0 flex h-[14px] w-[14px] items-center justify-center rounded-[7px] bg-[#EF4444] px-[4px] pt-px text-[10px] leading-[13px] font-medium text-white">
                 1
               </span>
             </button>
@@ -61,20 +72,28 @@ const Header: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="flex h-10 items-center gap-3 rounded-[20px] border border-[#DDE0E0] bg-[#F1F1F1] px-4 py-1 transition-colors hover:bg-black-50"
+              className="flex items-center gap-[8px] rounded-[8px] p-[4px] transition-colors hover:bg-[#ECFDF5]"
             >
-              <div className="flex items-center justify-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-[#DDE0E0] bg-gray-200">
+              <div className="flex items-center justify-center gap-[8px]">
+                <div className="relative flex h-[50px] w-[50px] items-center justify-center">
                   <CustomImage
                     src={profileImage}
                     alt="User Avatar"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full rounded-[24px] object-cover"
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute inset-e-0 bottom-0 h-[12px] w-[12px] rounded-full border-2 border-white bg-[#22C55E]"
                   />
                 </div>
-                <div className="flex flex-col items-start text-start leading-tight">
-                  <span className="text-xs font-medium text-[#0E1F1F]">{user?.name}</span>
+                <div className="hidden flex-col items-start text-start leading-tight sm:flex">
+                  <span className="text-[14px] leading-[18.2px] font-semibold text-[#1E293B]">
+                    {user?.name}
+                  </span>
                   {schoolName && (
-                    <span className="text-xs font-normal text-[#646969]">{schoolName}</span>
+                    <span className="text-[12px] leading-[15.6px] font-medium text-[#1E7A52]">
+                      {schoolName}
+                    </span>
                   )}
                 </div>
               </div>
@@ -88,35 +107,35 @@ const Header: React.FC = () => {
 
             {/* Dropdown Menu */}
             {showDropdown && (
-              <div className="absolute left-0 top-full z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+              <div className="absolute top-full left-0 z-50 mt-2 w-48 overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]">
                 <div className="py-1">
                   <button
                     onClick={() => {
                       setShowDropdown(false);
                       // Navigate to profile page if exists
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-gray-500 transition-colors hover:bg-gray-100"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-[14px] font-medium text-[#9D9D9D] transition-colors hover:bg-[#ECFDF5] hover:text-[#1E7A52]"
                   >
-                    <FaUser className="text-gray-500" />
+                    <FaUser className="text-[#9D9D9D]" />
                     <span>{t('header.profile') || 'الملف الشخصي'}</span>
                   </button>
-                  <hr className="my-1 border-gray-200" />
+                  <hr className="my-1 border-[#F1F5F9]" />
                   <button
                     onClick={openChangePassword}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-gray-500 transition-colors hover:bg-gray-100"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-[14px] font-medium text-[#9D9D9D] transition-colors hover:bg-[#ECFDF5] hover:text-[#1E7A52]"
                   >
-                    <FaKey className="text-gray-500" />
+                    <FaKey className="text-[#9D9D9D]" />
                     <span>{t('header.changePassword')}</span>
                   </button>
-                  <hr className="my-1 border-gray-200" />
+                  <hr className="my-1 border-[#F1F5F9]" />
                   <button
                     onClick={() => {
                       setShowDropdown(false);
                       handleLogout();
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-sm text-red-500 transition-colors hover:bg-red-100"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-[14px] font-medium text-[#EF4444] transition-colors hover:bg-[#FEF2F2]"
                   >
-                    <FaSignOutAlt className="text-red-500" />
+                    <FaSignOutAlt className="text-[#EF4444]" />
                     <span>{t('header.logout') || 'تسجيل الخروج'}</span>
                   </button>
                 </div>
@@ -125,13 +144,13 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        <div className="max-w-md flex-1">
+        <div className="max-w-md min-w-0 flex-1">
           <div className="relative">
             <input
               type="text"
               placeholder={t('header.search')}
-              className={`w-full rounded-xl border border-[#DDE0E0] bg-white p-3 text-sm font-normal text-[#3A3A3A] placeholder:text-[#646969] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                isRTL ? 'pl-4 pr-10' : 'pl-10 pr-4'
+              className={`h-[42px] w-full rounded-[8px] border border-[#1E7A52] bg-white p-[8px] text-[14px] leading-[18.2px] font-semibold text-[#1E7A52] transition-colors placeholder:font-medium placeholder:text-[#9D9D9D] focus:ring-1 focus:ring-[#1E7A52] focus:outline-hidden ${
+                isRTL ? 'pr-10 pl-4' : 'pr-4 pl-10'
               }`}
             />
             <img
@@ -144,6 +163,19 @@ const Header: React.FC = () => {
             />
           </div>
         </div>
+
+        {/* Mobile menu toggle — last child, so with flex-row-reverse it sits on the sidebar side. */}
+        {onMenuClick && (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            aria-label={t('sidebar.expand')}
+            title={t('sidebar.expand')}
+            className="me-[12px] flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[8px] border border-[#E2E8F0] text-[#1E293B] transition-colors hover:border-[#1E7A52] hover:bg-[#ECFDF5] hover:text-[#1E7A52] lg:hidden"
+          >
+            <FaBars className="h-[18px] w-[18px]" />
+          </button>
+        )}
       </div>
 
       <ChangePasswordModal

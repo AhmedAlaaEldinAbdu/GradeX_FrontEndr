@@ -109,7 +109,7 @@ const ViewMessage: React.FC = () => {
       {/* Message details */}
       <Card className="rounded-2xl border border-[#DDE0E0]" padding="md">
         <div className="flex flex-col items-start gap-6">
-          <h3 className="text-base font-normal text-[#0E1F1F]">
+          <h3 className="text-base font-normal text-black-900">
             {t('requests.viewMessage.messageTitle')}
           </h3>
 
@@ -157,11 +157,11 @@ const ViewMessage: React.FC = () => {
           <div className="w-full">
             <label className="mb-2 flex items-center gap-1 text-sm font-normal text-[#3A3A3A]">
               <span className="text-[#3A3A3A]">{t('requests.viewMessage.replyLabel')}</span>
-              {!hasReply ? <span className="text-[#DD0417]">*</span> : null}
+              {!hasReply ? <span className="text-red-500">*</span> : null}
             </label>
 
             {hasReply ? (
-              <p className="w-full rounded-2xl border border-[#DDE0E0] bg-[#F6F8F9] px-4 py-3 text-sm font-normal text-[#646969]">
+              <p className="w-full rounded-2xl border border-[#DDE0E0] bg-gray-50 px-4 py-3 text-sm font-normal text-[#646969]">
                 {message.messageReply}
               </p>
             ) : (

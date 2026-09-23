@@ -178,7 +178,7 @@ const MultiSelectTagInput: React.FC<MultiSelectTagInputProps> = ({
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder={t('common.search') || 'Search...'}
-                  className={`w-full rounded-md border border-gray-300 py-2 pl-4 pr-7 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                  className={`w-full rounded-md border border-gray-300 py-2 pr-7 pl-4 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-hidden ${
                     isRTL ? 'text-right' : 'text-left'
                   }`}
                 />

@@ -56,13 +56,13 @@ export default function TransactionsPage() {
       <PageHeader title="financialManagement.transactions" />
 
       {/* Tabs Layout */}
-      <div className="mb-5 mt-6 w-full px-1">
+      <div className="mt-6 mb-5 w-full px-1">
         <Tabs
           items={tabItems}
           value={activeTab}
           onChange={handleTabChange}
           variant="underline"
-          listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+          listClassName="flex w-full md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
           lazy={true}
           searchParamKey="tab"
         />

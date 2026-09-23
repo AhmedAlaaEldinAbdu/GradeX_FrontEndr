@@ -166,7 +166,7 @@ export default function HomeworkTab({ studentId }: HomeworkTabProps) {
         }
         return (
           <span className="text-sm">
-            <span className="font-medium text-[#1A9F58]">{row.studentScore}</span>
+            <span className="font-medium text-lightGreen-500">{row.studentScore}</span>
             <span className="text-[#646969]">/{row.maxScore}</span>
           </span>
         );
@@ -243,7 +243,7 @@ export default function HomeworkTab({ studentId }: HomeworkTabProps) {
   return (
     <Card>
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex w-full items-center justify-center gap-3 text-sm text-[#0E1F1F]">
+        <div className="flex w-full items-center justify-center gap-3 text-sm text-black-900">
           <button
             type="button"
             onClick={() => shiftSelectedDate(-1)}
@@ -265,7 +265,7 @@ export default function HomeworkTab({ studentId }: HomeworkTabProps) {
         <button
           type="button"
           onClick={clearSelectedDate}
-          className="flex-shrink-0 text-sm font-medium text-green-500 hover:text-green-700"
+          className="shrink-0 text-sm font-medium text-green-500 hover:text-green-700"
         >
           {t('common.showAll')}
         </button>

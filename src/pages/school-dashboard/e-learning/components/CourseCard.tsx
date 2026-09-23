@@ -77,7 +77,7 @@ function getStatusBadges(status: TrainingCourseStatus): StatusBadgeInfo {
 
 function CourseInfoBox({ icon, text }: { icon: string; text: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-[#E6E6E6] p-3">
+    <div className="flex items-center gap-3 rounded-xl border border-black-100 p-3">
       {/* Tint any monochrome icon green via a CSS mask (keeps the SVG file untouched). */}
       <span
         aria-hidden
@@ -133,7 +133,7 @@ export default function CourseCard({ course, onView, onEdit, onDelete }: CourseC
   ];
 
   return (
-    <div className="app-card-shadow flex flex-col overflow-hidden rounded-3xl border border-[#E6E6E6] bg-white">
+    <div className="app-card-shadow flex flex-col overflow-hidden rounded-3xl border border-black-100 bg-white">
       {/* Cover (falls back to a default image when the course has none) */}
       <div className="relative h-[163px] w-full overflow-hidden">
         <CustomImage
@@ -143,11 +143,11 @@ export default function CourseCard({ course, onView, onEdit, onDelete }: CourseC
           className="h-full w-full object-cover"
         />
         <div className="bg-black/30 absolute inset-0" />
-        <div className="absolute left-3 top-3">
+        <div className="absolute top-3 left-3">
           <ActionsDropdown
             actions={actions}
             iconClassName="h-4 w-4"
-            triggerClassName="flex h-8 w-8 items-center justify-center rounded-full bg-[#F6F8F9]/60 transition-colors hover:bg-[#F6F8F9]"
+            triggerClassName="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50/60 transition-colors hover:bg-gray-50"
           />
         </div>
       </div>
@@ -156,7 +156,7 @@ export default function CourseCard({ course, onView, onEdit, onDelete }: CourseC
       <div className="flex flex-col gap-6 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col items-start gap-1.5 text-start">
-            <h4 className="text-base font-normal text-[#0E1F1F]">{course.title}</h4>
+            <h4 className="text-base font-normal text-black-900">{course.title}</h4>
             <p className="text-xs font-normal text-[#3A3A3A]">{course.description}</p>
             <div className="flex items-center gap-2 text-sm font-normal text-[#646969]">
               <CustomImage src={UserIcon} alt="" className="h-4 w-4" />
@@ -174,9 +174,12 @@ export default function CourseCard({ course, onView, onEdit, onDelete }: CourseC
 
         {/* Progress */}
         <div className="flex items-center gap-3">
-          <span className="text-base font-medium text-[#1A9F58]">{progress}%</span>
+          <span className="text-base font-medium text-lightGreen-500">{progress}%</span>
           <div className="h-2 flex-1 rounded-full bg-[#E8E9E9]/60">
-            <div className="h-full rounded-full bg-[#1A9F58]" style={{ width: `${progress}%` }} />
+            <div
+              className="h-full rounded-full bg-lightGreen-500"
+              style={{ width: `${progress}%` }}
+            />
           </div>
           <span className="text-sm font-normal text-[#646969]">
             {t('eLearning.courses.progress')}

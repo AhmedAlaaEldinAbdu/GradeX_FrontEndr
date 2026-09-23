@@ -155,11 +155,15 @@ export default function EditAcademicSystem() {
             <Loading />
           </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
+          <form
+            onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+            noValidate={true}
+            className="flex flex-col gap-8"
+          >
             <div className="grid grid-cols-1 gap-6 rounded-md border p-4">
               <div className="flex">
-                <div className="flex flex-grow flex-col gap-5 md:flex-row">
-                  <div className="flex-grow">
+                <div className="flex grow flex-col gap-5 md:flex-row">
+                  <div className="grow">
                     <FormField
                       label={t('academicSystem.academicSystemAr')}
                       htmlFor="nameAr"
@@ -180,7 +184,7 @@ export default function EditAcademicSystem() {
                       />
                     </FormField>
                   </div>
-                  <div className="flex-grow">
+                  <div className="grow">
                     <FormField
                       label={t('academicSystem.academicSystemEn')}
                       required
@@ -208,7 +212,7 @@ export default function EditAcademicSystem() {
               </div>
 
               <div className="flex">
-                <div className="flex-grow">
+                <div className="grow">
                   <FormField
                     label={t('academicSystem.systemType')}
                     required
@@ -255,7 +259,7 @@ export default function EditAcademicSystem() {
               </div>
 
               <div className="flex">
-                <div className="flex-grow">
+                <div className="grow">
                   <FormField
                     label={t('academicSystem.countryName')}
                     required

@@ -72,7 +72,7 @@ const LeaveRequestDetailsPopup: React.FC<LeaveRequestDetailsPopupProps> = ({
     >
       <div className="space-y-8">
         <div className="flex items-center gap-3">
-          <span className="text-lg font-semibold text-[#0E1F1F]">
+          <span className="text-lg font-semibold text-black-900">
             {t('adminRequests.leave.statusLabel')}:
           </span>
           <span
@@ -85,7 +85,7 @@ const LeaveRequestDetailsPopup: React.FC<LeaveRequestDetailsPopupProps> = ({
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="text-lg font-semibold text-[#0E1F1F]">
+          <span className="text-lg font-semibold text-black-900">
             {t('adminRequests.leave.employeeName')}:
           </span>
 
@@ -98,14 +98,14 @@ const LeaveRequestDetailsPopup: React.FC<LeaveRequestDetailsPopupProps> = ({
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="text-lg font-semibold text-[#0E1F1F]">
+          <span className="text-lg font-semibold text-black-900">
             {t('adminRequests.leave.requestDate')}:
           </span>
           <span className="text-lg text-[#646969]">{displayValue(request.leaveFrom)}</span>
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="text-lg font-semibold text-[#0E1F1F]">
+          <span className="text-lg font-semibold text-black-900">
             {t('adminRequests.leave.time')}:
           </span>
           <span className="text-lg text-[#646969]">{displayValue(request.time)}</span>

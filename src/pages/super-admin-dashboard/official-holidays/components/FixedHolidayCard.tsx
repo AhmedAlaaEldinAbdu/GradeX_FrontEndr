@@ -100,7 +100,7 @@ export default function FixedHolidayCard({ holiday }: FixedHolidayCardProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-all hover:shadow-sm">
+      <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-all hover:shadow-xs">
         <div className="flex w-full items-center gap-3 text-start">
           <div className="flex w-full flex-col gap-2">
             <div className="flex justify-between">

@@ -29,8 +29,8 @@ export default function ToggleSwitch({
 
   const thumbTranslateClass = isRTL
     ? checked
-      ? '-translate-x-[2px]'
-      : '-translate-x-[22px]'
+      ? 'translate-x-[-2px]'
+      : 'translate-x-[-22px]'
     : checked
       ? 'translate-x-[22px]'
       : 'translate-x-[2px]';
@@ -46,7 +46,7 @@ export default function ToggleSwitch({
         if (disabled) return;
         onChange(!checked);
       }}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-hidden ${
         checked ? 'bg-green-500' : 'bg-gray-300'
       } ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${className}`}
     >

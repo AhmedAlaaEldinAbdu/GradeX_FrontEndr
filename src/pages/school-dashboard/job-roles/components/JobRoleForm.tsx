@@ -54,13 +54,13 @@ const RoleCheckbox = ({
         name={name}
         checked={checked}
         onChange={onChange}
-        className="peer h-6 w-6 appearance-none rounded-lg border border-[#DDE0E0] bg-white transition checked:border-[#00512E] focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="peer h-6 w-6 appearance-none rounded-lg border border-[#DDE0E0] bg-white transition checked:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-hidden"
       />
       <svg
         viewBox="0 0 14 14"
         fill="none"
         aria-hidden="true"
-        className="pointer-events-none absolute hidden h-3.5 w-3.5 text-[#00512E] peer-checked:block"
+        className="pointer-events-none absolute hidden h-3.5 w-3.5 text-green-500 peer-checked:block"
       >
         <path
           d="M11.5 3.5L5.25 10L2.5 7.25"
@@ -549,9 +549,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
                     {/* Group header */}
                     <div
                       className={`flex items-center justify-between gap-4 rounded-xl px-3 ${
-                        expanded
-                          ? 'min-h-[3.75rem] border border-[#E5FFF4] bg-[#EEFDF6] py-2'
-                          : 'min-h-6'
+                        expanded ? 'min-h-15 border border-[#E5FFF4] bg-[#EEFDF6] py-2' : 'min-h-6'
                       }`}
                     >
                       <RoleCheckbox
@@ -559,7 +557,7 @@ export default function JobRoleForm({ mode, initialData }: JobRoleFormProps) {
                         checked={groupFullyChecked}
                         onChange={() => toggleGroup(group)}
                         label={group.name}
-                        labelClassName="text-base font-normal text-[#0E1F1F]"
+                        labelClassName="text-base font-normal text-black-900"
                       />
                       <div className="flex items-center gap-6">
                         {expanded && (

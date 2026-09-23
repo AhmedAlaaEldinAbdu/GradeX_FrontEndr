@@ -85,7 +85,7 @@ export default function Notifications() {
             value={metric.value}
             icon={metric.icon}
             iconClassName={metric.iconClassName}
-            className="min-h-[6.875rem]"
+            className="min-h-27.5"
           />
         ))}
       </div>

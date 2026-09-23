@@ -141,7 +141,7 @@ export default function HolidayCard({
         </div>
 
         {/* Holiday Card */}
-        <div className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white p-4 transition-all hover:shadow-sm">
+        <div className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white p-4 transition-all hover:shadow-xs">
           {/* Card Content */}
           <div className="flex justify-between">
             <div className="space-y-3">

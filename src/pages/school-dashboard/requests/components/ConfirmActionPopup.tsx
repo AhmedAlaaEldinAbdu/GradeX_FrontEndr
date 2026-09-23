@@ -48,7 +48,7 @@ const ConfirmActionPopup: React.FC<ConfirmActionPopupProps> = ({
       >
         <button
           onClick={onCancel}
-          className="absolute end-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+          className="absolute inset-e-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
           aria-label={t('common.cancel')}
         >
           <CustomImage src={XmarkCircleGrayIcon} alt="" className="h-6 w-6" />
@@ -56,20 +56,20 @@ const ConfirmActionPopup: React.FC<ConfirmActionPopupProps> = ({
 
         <div className="my-6 flex flex-col items-center gap-7 py-6">
           <CustomImage src={iconSrc} alt="" className="h-[80px] w-[80px]" />
-          <p className="w-full text-base font-medium text-[#0E1F1F]">{message}</p>
+          <p className="w-full text-base font-medium text-black-900">{message}</p>
         </div>
 
         <div className="flex justify-center gap-3">
           <button
             onClick={onCancel}
-            className="flex-grow rounded-2xl border border-green-500 px-5 py-2 text-base font-medium text-green-500 transition-colors hover:bg-green-50"
+            className="grow rounded-2xl border border-green-500 px-5 py-2 text-base font-medium text-green-500 transition-colors hover:bg-green-50"
           >
             {t('common.cancel')}
           </button>
           <button
             onClick={() => guardMutation(onConfirm)}
             disabled={isProcessing}
-            className={`flex-grow rounded-2xl px-5 py-2 text-base font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${CONFIRM_CLASSES[confirmVariant]}`}
+            className={`grow rounded-2xl px-5 py-2 text-base font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${CONFIRM_CLASSES[confirmVariant]}`}
           >
             {confirmLabel}
           </button>

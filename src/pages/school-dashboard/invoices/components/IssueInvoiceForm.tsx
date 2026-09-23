@@ -320,7 +320,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             value={currentLang === 'ar' ? row.nameAr : (row.nameEn ?? row.nameAr)}
             onChange={(e) => handleRowChange(row.id, 'nameAr', e.target.value)}
             placeholder={t('invoices.chooseItem')}
-            className="!bg-white"
+            className="bg-white!"
           />
         </div>
       ),
@@ -339,7 +339,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             onChange={(e) => handleRowChange(row.id, 'discount', e.target.value)}
             onBlur={() => handleNumericRowBlur(row.id, 'discount')}
             placeholder={t('invoices.chooseDiscount')}
-            className="!bg-white"
+            className="bg-white!"
           />
         </div>
       ),
@@ -358,7 +358,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             onChange={(e) => handleRowChange(row.id, 'amount', e.target.value)}
             onBlur={() => handleNumericRowBlur(row.id, 'amount')}
             placeholder={t('invoices.enterAmount')}
-            className="!bg-white"
+            className="bg-white!"
           />
         </div>
       ),
@@ -472,7 +472,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
+      <Card className="rounded-[28px] border border-gray-100 shadow-xs" padding="lg">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <FormField label={t('invoices.customerName')} required error={errors.customerId?.message}>
             <Controller
@@ -495,12 +495,12 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
             <Input
               value={invoiceNumber}
               readOnly
-              className="cursor-default !bg-gray-50 !text-gray-500"
+              className="cursor-default bg-gray-50! text-gray-500!"
             />
           </FormField>
 
           <FormField label={t('invoices.email')}>
-            <Input value={email} readOnly className="cursor-default !bg-gray-50 !text-gray-500" />
+            <Input value={email} readOnly className="cursor-default bg-gray-50! text-gray-500!" />
           </FormField>
 
           <FormField label={t('invoices.mobileNumber')}>
@@ -523,7 +523,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
                     icon={
                       <CustomImage src={StyledCalendarIcon} alt="Calendar" className="h-5 w-5" />
                     }
-                    className="!bg-white"
+                    className="bg-white!"
                   />
                 )}
               />
@@ -532,13 +532,13 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
         </div>
       </Card>
 
-      <Card className="rounded-[28px] border border-gray-100 px-0 py-0 shadow-sm" padding="none">
+      <Card className="rounded-[28px] border border-gray-100 px-0 py-0 shadow-xs" padding="none">
         <div className="flex items-center justify-between px-6 py-5">
           <h2 className="text-lg font-semibold text-gray-800">{t('invoices.classifications')}</h2>
           <Button
             variant="outline"
             size="sm"
-            className="!rounded-full !px-5 !py-2 !text-sm"
+            className="rounded-full! px-5! py-2! text-sm!"
             onClick={handleAddRow}
           >
             {t('invoices.addClassification')}
@@ -561,7 +561,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
         </div>
       </Card>
 
-      <Card className="rounded-[28px] border border-gray-100 shadow-sm" padding="lg">
+      <Card className="rounded-[28px] border border-gray-100 shadow-xs" padding="lg">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <FormField
             label={t('invoices.paymentMethod')}
@@ -628,7 +628,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
               value={String(calculatedAmount || 0)}
               readOnly
               icon={currencyIcon}
-              className="cursor-default !bg-gray-50 !text-gray-500"
+              className="cursor-default bg-gray-50! text-gray-500!"
             />
           </FormField>
 
@@ -676,7 +676,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
                   icon={
                     <CustomImage src={PercentIcon} alt="Percent" className="h-4 w-4 opacity-60" />
                   }
-                  className="!bg-white"
+                  className="bg-white!"
                 />
               )}
             />
@@ -687,7 +687,7 @@ export default function IssueInvoiceForm({ onCancel }: IssueInvoiceFormProps) {
               value={String(totalAmount || 0)}
               readOnly
               icon={currencyIcon}
-              className="cursor-default !bg-gray-50 !text-gray-500"
+              className="cursor-default bg-gray-50! text-gray-500!"
             />
           </FormField>
         </div>

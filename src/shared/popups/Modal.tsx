@@ -59,7 +59,7 @@ const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
       <div
-        className="bg-black/60 absolute inset-0 bg-opacity-50 transition-opacity"
+        className="bg-black/60 bg-opacity-50 absolute inset-0 transition-opacity"
         onClick={handleOverlayClick}
       ></div>
 
@@ -74,7 +74,7 @@ const Modal: React.FC<ModalProps> = ({
             {title && (
               <div className="flex-1 text-center">
                 {typeof title === 'string' ? (
-                  <h2 className={`text-lg font-medium text-[#0E1F1F] ${titleClassName}`}>
+                  <h2 className={`text-lg font-medium text-black-900 ${titleClassName}`}>
                     {title}
                   </h2>
                 ) : (
@@ -86,7 +86,7 @@ const Modal: React.FC<ModalProps> = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="absolute end-6 transition-opacity hover:opacity-80"
+                className="absolute inset-e-6 transition-opacity hover:opacity-80"
                 aria-label="Close"
               >
                 <CustomImage src={XmarkCircleRedIcon} alt="Close" className="h-6 w-6" />

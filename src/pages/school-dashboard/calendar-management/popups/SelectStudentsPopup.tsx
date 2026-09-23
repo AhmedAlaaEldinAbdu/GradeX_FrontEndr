@@ -154,11 +154,11 @@ export default function SelectStudentsPopup({
                         label=""
                         checked={isSelected}
                         onChange={() => handleStudentToggle(student.id)}
-                        className="!gap-0 !py-0"
+                        className="gap-0! py-0!"
                       />
                     </div>
                     {/* Student Avatar (rounded square) */}
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
                       <CustomImage
                         src={student.avatar || DefaultAvatar}
                         alt={student.name}

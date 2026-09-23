@@ -197,7 +197,7 @@ export default function TrainingCoursesList() {
       {isLoading && courseItems.length === 0 ? (
         <Loading />
       ) : courseItems.length === 0 ? (
-        <Card className="rounded-3xl border border-[#E6E6E6]" padding="md">
+        <Card className="rounded-3xl border border-black-100" padding="md">
           <EmptyState
             icon={
               <CustomImage

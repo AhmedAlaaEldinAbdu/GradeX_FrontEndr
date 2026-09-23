@@ -186,7 +186,7 @@ export default function AddRole() {
 
   if (isLoadingPermissions) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
         <Loading />
       </div>
     );
@@ -196,7 +196,7 @@ export default function AddRole() {
     <FormProvider {...form}>
       <form
         onSubmit={handleSubmit}
-        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+        className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs"
       >
         {/* Role Name Field */}
         <div className="mb-4">

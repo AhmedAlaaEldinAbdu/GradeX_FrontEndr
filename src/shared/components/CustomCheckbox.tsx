@@ -61,7 +61,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
           src={CheckMarkWhiteIcon}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute start-1 top-1 hidden h-3 w-3 peer-checked:block"
+          className="pointer-events-none absolute inset-s-1 top-1 hidden h-3 w-3 peer-checked:block"
         />
       </div>
       <span className={`${textClassName || 'text-sm text-gray-500'} `}>{label}</span>

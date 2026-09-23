@@ -53,13 +53,13 @@ const AcceptPopup: React.FC<AcceptPopupProps> = ({
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute start-4 top-4 text-gray-400 transition-colors hover:text-gray-600"
+          className="absolute inset-s-4 top-4 text-gray-400 transition-colors hover:text-gray-600"
         >
           <FaTimes className="text-xl" />
         </button>
 
         {/* Title */}
-        <h2 className="mb-8 mt-4 text-center text-2xl font-bold text-gray-900">
+        <h2 className="mt-4 mb-8 text-center text-2xl font-bold text-gray-900">
           {t('studentApplications.modals.acceptConfirm')}
         </h2>
 

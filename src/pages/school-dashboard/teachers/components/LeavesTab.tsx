@@ -55,11 +55,11 @@ export default function LeavesTab({ teacherId, isActive = true }: LeavesTabProps
   return (
     <div className="flex flex-col gap-6 pb-8">
       {/* Total Annual Leaves Card */}
-      <div className="rounded-2xl border border-[#E6E6E6] bg-white p-4 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
+      <div className="rounded-2xl border border-black-100 bg-white p-4 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
         <div className="flex items-center justify-between gap-4">
           {/* Right (start in RTL): icon + label */}
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded border border-[#D3EAFF] bg-[rgba(103,181,255,0.12)]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-[#D3EAFF] bg-[rgba(103,181,255,0.12)]">
               <HolidayIcon />
             </div>
             <span className="text-base font-normal text-[#646969]">
@@ -68,7 +68,7 @@ export default function LeavesTab({ teacherId, isActive = true }: LeavesTabProps
           </div>
 
           {/* Left (end in RTL): total days */}
-          <span className="text-[18px] font-normal text-[#0E1F1F]">
+          <span className="text-[18px] font-normal text-black-900">
             {TOTAL_ANNUAL_LEAVES_MOCK.totalDays} {t('teachers.details.leavesTab.daysUnit')}
           </span>
         </div>
@@ -80,7 +80,7 @@ export default function LeavesTab({ teacherId, isActive = true }: LeavesTabProps
             <span className="text-base font-normal text-[#3A3A3A]">
               {t('teachers.details.leavesTab.used')}:
             </span>
-            <span className="text-base font-normal text-[#0E1F1F]">
+            <span className="text-base font-normal text-black-900">
               {TOTAL_ANNUAL_LEAVES_MOCK.used}
             </span>
           </div>
@@ -89,7 +89,7 @@ export default function LeavesTab({ teacherId, isActive = true }: LeavesTabProps
             <span className="text-base font-normal text-[#3A3A3A]">
               {t('teachers.details.leavesTab.remaining')}:
             </span>
-            <span className="text-base font-normal text-[#0E1F1F]">
+            <span className="text-base font-normal text-black-900">
               {TOTAL_ANNUAL_LEAVES_MOCK.remaining}
             </span>
           </div>
@@ -103,16 +103,16 @@ export default function LeavesTab({ teacherId, isActive = true }: LeavesTabProps
             type="button"
             key={leave.key}
             onClick={() => navigate(`/teaching-staff/teachers/${teacherId}/leaves/${leave.key}`)}
-            className="rounded-xl border border-[#E6E6E6] bg-white p-3 text-start shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0px_4px_16px_2px_rgba(0,0,0,0.08)]"
+            className="rounded-xl border border-black-100 bg-white p-3 text-start shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0px_4px_16px_2px_rgba(0,0,0,0.08)]"
           >
             <div className="flex items-center justify-between gap-2">
               {/* Right (start in RTL): leave type name */}
-              <span className="text-base font-normal text-[#0E1F1F]">
+              <span className="text-base font-normal text-black-900">
                 {t(`teachers.details.leavesTab.${leave.key}`)}
               </span>
               {/* Left (end in RTL): total badge */}
               <div className="flex h-[35px] min-w-[33px] items-center justify-center rounded-[10px] bg-[rgba(0,224,127,0.08)] px-2">
-                <span className="text-base font-normal text-[#0E1F1F]">{leave.total}</span>
+                <span className="text-base font-normal text-black-900">{leave.total}</span>
               </div>
             </div>
 
@@ -121,14 +121,14 @@ export default function LeavesTab({ teacherId, isActive = true }: LeavesTabProps
                 <span className="text-base font-normal text-[#3A3A3A]">
                   {t('teachers.details.leavesTab.used')}:
                 </span>
-                <span className="text-base font-normal text-[#0E1F1F]">{leave.used}</span>
+                <span className="text-base font-normal text-black-900">{leave.used}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-base font-normal text-[#3A3A3A]">
                   {t('teachers.details.leavesTab.remaining')}:
                 </span>
-                <span className="text-base font-normal text-[#0E1F1F]">{leave.remaining}</span>
+                <span className="text-base font-normal text-black-900">{leave.remaining}</span>
               </div>
             </div>
           </button>

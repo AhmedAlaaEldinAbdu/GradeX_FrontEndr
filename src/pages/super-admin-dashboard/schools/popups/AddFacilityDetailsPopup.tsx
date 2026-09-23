@@ -146,7 +146,7 @@ export default function AddFacilityDetailsPopup({
       >
         <button
           onClick={handleClose}
-          className="absolute left-3 top-2 text-xl text-gray-400 hover:text-gray-600"
+          className="absolute top-2 left-3 text-xl text-gray-400 hover:text-gray-600"
         >
           ✕
         </button>
@@ -274,7 +274,7 @@ export default function AddFacilityDetailsPopup({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {/* File Preview */}
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white">
                       {isPdfFile(imageFileName) ? (
                         <svg
                           className="h-6 w-6 text-red-600"
@@ -410,7 +410,7 @@ export default function AddFacilityDetailsPopup({
             {readOnly ? (
               <button
                 onClick={handleClose}
-                className="flex-grow rounded-xl bg-green-700 px-5 py-2 text-white transition-colors duration-200 hover:bg-green-800"
+                className="grow rounded-xl bg-green-700 px-5 py-2 text-white transition-colors duration-200 hover:bg-green-800"
               >
                 {t('common.close')}
               </button>
@@ -418,13 +418,13 @@ export default function AddFacilityDetailsPopup({
               <>
                 <button
                   onClick={handleClose}
-                  className="flex-grow rounded-xl border border-green-700 px-5 py-2 text-green-700 transition-colors duration-200 hover:bg-green-50"
+                  className="grow rounded-xl border border-green-700 px-5 py-2 text-green-700 transition-colors duration-200 hover:bg-green-50"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="flex-grow rounded-xl bg-green-700 px-5 py-2 text-white transition-colors duration-200 hover:bg-green-800"
+                  className="grow rounded-xl bg-green-700 px-5 py-2 text-white transition-colors duration-200 hover:bg-green-800"
                 >
                   {t('common.add')}
                 </button>

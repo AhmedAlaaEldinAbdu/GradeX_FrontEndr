@@ -181,7 +181,7 @@ export default function ExamsTab({ studentId }: ExamsTabProps) {
         }
         return (
           <span className="text-sm">
-            <span className="font-medium text-[#1A9F58]">{row.studentScore}</span>
+            <span className="font-medium text-lightGreen-500">{row.studentScore}</span>
             <span className="text-[#646969]">/{row.maxScore}</span>
           </span>
         );
@@ -270,7 +270,7 @@ export default function ExamsTab({ studentId }: ExamsTabProps) {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
-          <h3 className="mb-4 text-base font-medium text-[#0E1F1F]">
+          <h3 className="mb-4 text-base font-medium text-black-900">
             {t('exams.performanceTitle')}
           </h3>
           <PerformanceGauge
@@ -281,7 +281,7 @@ export default function ExamsTab({ studentId }: ExamsTabProps) {
           <div className="mt-4 space-y-2">
             {monthlyPerformance.map((m) => (
               <div key={m.labelEn} className="flex items-center justify-between py-2 text-sm">
-                <span className="text-[#0E1F1F]">{currentLang === 'ar' ? m.label : m.labelEn}</span>
+                <span className="text-black-900">{currentLang === 'ar' ? m.label : m.labelEn}</span>
                 <span className="font-medium text-[#646969]">{m.value}%</span>
               </div>
             ))}
@@ -289,10 +289,10 @@ export default function ExamsTab({ studentId }: ExamsTabProps) {
         </Card>
         <Card className="md:col-span-2">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base font-medium text-[#0E1F1F]">
+            <h3 className="text-base font-medium text-black-900">
               {t('exams.subjectGradesAverage')}
             </h3>
-            <div className="flex items-center gap-1 text-xs font-medium text-[#1A9F58]">
+            <div className="flex items-center gap-1 text-xs font-medium text-lightGreen-500">
               <span>+18%</span>
               <CustomImage src={SupplyCurveIcon} alt="" className="h-3 w-3" />
               <span className="text-[#646969]">{t('exams.vsLastMonth')}</span>
@@ -309,14 +309,14 @@ export default function ExamsTab({ studentId }: ExamsTabProps) {
             max={100}
             renderTick={(tick) => `${tick}%`}
             barWidthClassName="w-8"
-            plotHeightClassName="h-[22rem]"
+            plotHeightClassName="h-88"
           />
         </Card>
       </div>
 
       <Card>
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex w-full items-center justify-center gap-3 text-sm text-[#0E1F1F]">
+          <div className="flex w-full items-center justify-center gap-3 text-sm text-black-900">
             <button
               type="button"
               onClick={() => shiftSelectedDate(-1)}
@@ -338,7 +338,7 @@ export default function ExamsTab({ studentId }: ExamsTabProps) {
           <button
             type="button"
             onClick={clearSelectedDate}
-            className="flex-shrink-0 text-sm font-medium text-green-500 hover:text-green-700"
+            className="shrink-0 text-sm font-medium text-green-500 hover:text-green-700"
           >
             {t('common.showAll')}
           </button>
@@ -400,9 +400,9 @@ function PerformanceGauge({
         />
       </svg>
       <div className="absolute inset-x-0 top-1/2 -translate-y-2 text-center">
-        <p className="text-xl font-semibold text-[#1A9F58]">{value}%</p>
-        <p className="text-xs font-medium text-[#1A9F58]">{captionTop}</p>
-        <p className="text-xs text-[#1A9F58]">{captionBottom}</p>
+        <p className="text-xl font-semibold text-lightGreen-500">{value}%</p>
+        <p className="text-xs font-medium text-lightGreen-500">{captionTop}</p>
+        <p className="text-xs text-lightGreen-500">{captionBottom}</p>
       </div>
     </div>
   );

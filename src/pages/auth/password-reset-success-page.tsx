@@ -21,7 +21,7 @@ const PasswordResetSuccessPage: React.FC = () => {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#1FAD6C] to-[#15885a] px-6 py-12"
+      className="flex min-h-screen items-center justify-center bg-linear-to-br from-[#1FAD6C] to-[#15885a] px-6 py-12"
       dir={direction}
     >
       <div className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-2xl">
@@ -60,7 +60,7 @@ const PasswordResetSuccessPage: React.FC = () => {
         {/* Action Button */}
         <button
           onClick={() => navigate('/login')}
-          className="w-full rounded-lg bg-[#1FAD6C] px-6 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2"
+          className="w-full rounded-lg bg-[#1FAD6C] px-6 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 focus:outline-hidden"
         >
           {t('login.goToLogin')}
         </button>

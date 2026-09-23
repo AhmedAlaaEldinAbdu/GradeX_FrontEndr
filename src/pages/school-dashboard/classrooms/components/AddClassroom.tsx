@@ -267,12 +267,12 @@ export default function AddClassroom() {
 
           <div className="rounded-md border p-4">
             <div className="flex flex-col-reverse items-end gap-1 md:flex-row md:items-start">
-              <div className="flex-grow space-y-6">
+              <div className="grow space-y-6">
                 {numOfClassrooms.map((_, index) => (
                   <div key={index} className="rounded-lg border border-gray-200 p-4">
                     <div className="flex flex-col-reverse items-end gap-1 md:flex-row md:items-start">
-                      <div className="flex flex-grow flex-col gap-4">
-                        <div className="grid flex-grow grid-cols-1 gap-4 lg:grid-cols-2">
+                      <div className="flex grow flex-col gap-4">
+                        <div className="grid grow grid-cols-1 gap-4 lg:grid-cols-2">
                           {/* Classroom Name Arabic */}
                           <FormField
                             label={t('classrooms.classroomNameAr')}
@@ -405,7 +405,7 @@ export default function AddClassroom() {
                             />
                           </FormField>
                         </div>
-                        <div className="grid flex-grow grid-cols-1 gap-4">
+                        <div className="grid grow grid-cols-1 gap-4">
                           {/* Max Students */}
                           <FormField
                             label={t('grades.maxStudents')}

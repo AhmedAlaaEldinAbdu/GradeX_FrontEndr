@@ -250,7 +250,7 @@ const ApplicationDetailsContent: React.FC<ApplicationDetailsContentProps> = ({ a
       </div>
 
       {/* Single white card container for all sections */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs">
         {/* Profile Image - centered at top */}
         <div className="mb-6 flex flex-col items-center justify-center">
           <CustomImage

@@ -44,9 +44,9 @@ const MOCK_CATEGORIES: ClassificationCategory[] = [
 ];
 
 const DIFFICULTY_BADGE: Record<ReviewDifficulty, string> = {
-  easy: 'bg-[#1A9F58]/10 text-[#1A9F58]',
-  medium: 'bg-[#F8951B]/10 text-[#F8951B]',
-  hard: 'bg-[#DD0417]/10 text-[#DD0417]',
+  easy: 'bg-lightGreen-500/10 text-lightGreen-500',
+  medium: 'bg-yellow-400/10 text-yellow-400',
+  hard: 'bg-red-500/10 text-red-500',
 };
 
 function WhiteCheckIcon() {
@@ -67,7 +67,7 @@ function WhiteCheckIcon() {
 function CorrectAnswerIcon() {
   return (
     <svg
-      className="h-4 w-4 text-[#1A9F58]"
+      className="h-4 w-4 text-lightGreen-500"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -147,14 +147,14 @@ export default function ClassificationsPopup({
           </span>
           <CorrectAnswerIcon />
         </div>
-        <span className="text-base font-normal text-[#0E1F1F]">{answer.text}</span>
+        <span className="text-base font-normal text-black-900">{answer.text}</span>
       </div>
     ) : (
       <div
         key={answer.id}
-        className="flex items-center rounded-[14px] border border-[#DDE0E0] bg-[#F6F8F9] px-3 py-3"
+        className="flex items-center rounded-[14px] border border-[#DDE0E0] bg-gray-50 px-3 py-3"
       >
-        <span className="flex-1 text-start text-base font-normal text-[#0E1F1F]">
+        <span className="flex-1 text-start text-base font-normal text-black-900">
           {answer.text}
         </span>
       </div>
@@ -175,7 +175,7 @@ export default function ClassificationsPopup({
           {isSelected && <WhiteCheckIcon />}
         </button>
 
-        <div className="flex-1 space-y-4 rounded-2xl border border-[#E6E6E6] p-6">
+        <div className="flex-1 space-y-4 rounded-2xl border border-black-100 p-6">
           {/* Badges */}
           <div className="flex items-center gap-3">
             <span
@@ -183,14 +183,14 @@ export default function ClassificationsPopup({
             >
               {t(`eLearning.onlineExams.difficulty.${question.difficulty}`)}
             </span>
-            <span className="rounded-3xl bg-[#117BD7]/10 px-4 py-1 text-sm font-medium text-[#117BD7]">
+            <span className="rounded-3xl bg-blue-500/10 px-4 py-1 text-sm font-medium text-blue-500">
               {t('eLearning.onlineExams.addAI.classifications.multipleChoice')}
             </span>
           </div>
 
           {/* Question */}
           <div className="flex items-center gap-2">
-            <span className="text-sm font-normal text-[#00512E]">#{question.number}</span>
+            <span className="text-sm font-normal text-green-500">#{question.number}</span>
             <p className="flex-1 text-start text-base font-medium text-[#101828]">
               {question.text}
             </p>
@@ -230,7 +230,7 @@ export default function ClassificationsPopup({
                   aria-expanded={isExpanded}
                   className="flex w-full items-center justify-between"
                 >
-                  <span className="text-base font-medium text-[#0E1F1F]">{category.title}</span>
+                  <span className="text-base font-medium text-black-900">{category.title}</span>
                   <CustomImage
                     src={ChevronDownIcon}
                     alt=""

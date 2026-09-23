@@ -446,7 +446,7 @@ export default function AttendanceTab({
       {!isFromAttendance && (
         <div className="flex hidden items-center justify-start gap-3 rounded-2xl border border-[#FFEBB1] bg-[#FFF8E3] px-4 py-3 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
           <CustomImage src={NotificationIcon} alt="" className="h-6 w-6 shrink-0" />
-          <span className="text-base font-normal text-[#0E1F1F]">
+          <span className="text-base font-normal text-black-900">
             {t('teachers.details.leaveRequestReminder', { date: '22/2/2025' })}
           </span>
         </div>

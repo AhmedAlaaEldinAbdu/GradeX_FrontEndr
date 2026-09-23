@@ -3,7 +3,11 @@ import { useState } from 'react';
 import AcademicSystemTab from './AcademicSystemTab';
 import EducationalStagesTab from './EducationalStagesTab';
 import Tabs from '@/shared/components/Tabs';
-import { ACADEMICSYSTEM, EDUCATIONALSTAGES, type IAcademicSystemProps } from '../types/academicSystem.types';
+import {
+  ACADEMICSYSTEM,
+  EDUCATIONALSTAGES,
+  type IAcademicSystemProps,
+} from '../types/academicSystem.types';
 
 export default function AcademicSystem({ setSelectedTab }: IAcademicSystemProps) {
   const { t } = useTranslation();
@@ -36,7 +40,7 @@ export default function AcademicSystem({ setSelectedTab }: IAcademicSystemProps)
               setSelectedTab(id as typeof ACADEMICSYSTEM | typeof EDUCATIONALSTAGES);
             }}
             variant="underline"
-            listClassName="flex w-[100%] md:w-[75%] lg:w-[35%] gap-2 mb-5 px-1 flex-wrap"
+            listClassName="flex w-full md:w-[75%] lg:w-[35%] gap-2 mb-5 px-1 flex-wrap"
             lazy={true}
             searchParamKey="tab"
           />

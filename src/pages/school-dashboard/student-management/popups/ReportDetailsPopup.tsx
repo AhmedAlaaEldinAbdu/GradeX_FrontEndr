@@ -44,27 +44,18 @@ const statusKey: Record<EvaluationStatus, string> = {
   unsatisfactory: 'performance.unsatisfactory',
 };
 
-export default function ReportDetailsPopup({
-  isOpen,
-  onClose,
-  report,
-}: ReportDetailsPopupProps) {
+export default function ReportDetailsPopup({ isOpen, onClose, report }: ReportDetailsPopupProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'ar' | 'en';
 
-  const reportName =
-    report && (currentLang === 'ar' ? report.reportName : report.reportNameEn);
+  const reportName = report && (currentLang === 'ar' ? report.reportName : report.reportNameEn);
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       size="sm"
-      title={
-        reportName
-          ? t('performance.reportDetailsTitle', { name: reportName })
-          : ''
-      }
+      title={reportName ? t('performance.reportDetailsTitle', { name: reportName }) : ''}
     >
       <div className="flex flex-col">
         {report?.evaluations.map((evaluation, idx) => (
@@ -72,12 +63,12 @@ export default function ReportDetailsPopup({
             key={evaluation.kind}
             className={`py-5 ${idx > 0 ? 'border-t border-[#EDEDED]' : ''}`}
           >
-            <h3 className="mb-4 text-start text-base font-medium text-[#0E1F1F]">
+            <h3 className="mb-4 text-start text-base font-medium text-black-900">
               {t(kindTitleKey[evaluation.kind])}
             </h3>
 
             <div className="mb-3 flex items-center gap-2 text-sm">
-              <span className="font-medium text-[#0E1F1F]">{t('performance.notes')}:</span>
+              <span className="font-medium text-black-900">{t('performance.notes')}:</span>
               <span className="text-[#646969]">
                 {currentLang === 'ar' ? evaluation.notes : evaluation.notesEn}
               </span>
@@ -85,7 +76,7 @@ export default function ReportDetailsPopup({
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm">
-                <span className="font-medium text-[#0E1F1F]">{t('performance.evaluation')}:</span>
+                <span className="font-medium text-black-900">{t('performance.evaluation')}:</span>
                 <span className={getEvaluationStatusBadgeColor(evaluation.status)}>
                   {t(statusKey[evaluation.status])}
                 </span>

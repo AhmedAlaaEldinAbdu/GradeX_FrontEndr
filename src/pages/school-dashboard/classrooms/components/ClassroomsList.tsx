@@ -143,13 +143,13 @@ export default function ClassroomsList() {
       </div>
 
       {shouldShowEmptyState ? (
-        <Card className="rounded-3xl border border-[#E6E6E6]" padding="lg">
+        <Card className="rounded-3xl border border-black-100" padding="lg">
           <EmptyState imgSrc={MathIcon} description={t('grades.noGradesMessage')} blend={true} />
         </Card>
       ) : shouldShowContent ? (
         <div className="space-y-8">
           {stageOverview.map((stage) => (
-            <Card key={stage.id} className="rounded-3xl border border-[#E6E6E6] p-4">
+            <Card key={stage.id} className="rounded-3xl border border-black-100 p-4">
               <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
                 <div className="text-base font-medium text-black-900">{stage.title}</div>
                 {/* <span className="text-sm font-normal text-[#646969]">

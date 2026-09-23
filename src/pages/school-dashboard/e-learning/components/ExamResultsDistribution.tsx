@@ -42,7 +42,7 @@ export default function ExamResultsDistribution({
             <div className="flex items-center gap-2 text-sm font-normal">
               <span
                 className={`flex items-center gap-1 ${
-                  comparisonPercentage >= 0 ? 'text-[#1A9F58]' : 'text-[#DD0417]'
+                  comparisonPercentage >= 0 ? 'text-lightGreen-500' : 'text-red-500'
                 }`}
               >
                 {Math.round(comparisonPercentage)}%
@@ -78,7 +78,7 @@ export default function ExamResultsDistribution({
                   />
                 </div>
                 <span
-                  className="w-16 shrink-0 whitespace-nowrap text-base font-medium"
+                  className="w-16 shrink-0 text-base font-medium whitespace-nowrap"
                   style={{ color: bucket.color }}
                 >
                   {bucket.studentsCount} {t('eLearning.units.student')}

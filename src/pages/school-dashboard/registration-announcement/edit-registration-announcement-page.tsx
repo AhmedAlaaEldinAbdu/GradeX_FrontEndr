@@ -73,7 +73,7 @@ const EditRegistrationAnnouncementPage: React.FC = () => {
         <div className="text-red-500">{error}</div>
         <button
           onClick={() => window.location.reload()}
-          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          className="rounded-sm bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
         >
           {t('common.retry')}
         </button>

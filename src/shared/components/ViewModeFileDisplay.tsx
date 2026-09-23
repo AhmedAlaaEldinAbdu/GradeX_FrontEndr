@@ -82,7 +82,7 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
               <div className="flex items-center gap-3">
                 {/* File Preview or Icon */}
                 <div
-                  className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white ${
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white ${
                     isImage
                       ? 'cursor-pointer overflow-hidden ring-2 ring-green-100'
                       : isPdfFile(fileName)
@@ -150,12 +150,12 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
                   <div className="flex items-center justify-start gap-2 py-2">
                     <p className="text-xs text-gray-500">{t('common.uploaded')}</p>
                     {isImage && (
-                      <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                      <span className="rounded-sm bg-green-100 px-2 py-0.5 text-xs text-green-700">
                         {t('common.image')}
                       </span>
                     )}
                     {isPdfFile(fileName) && (
-                      <span className="rounded bg-red-100 px-2 py-0.5 text-xs text-red-700">
+                      <span className="rounded-sm bg-red-100 px-2 py-0.5 text-xs text-red-700">
                         PDF
                       </span>
                     )}
@@ -249,14 +249,14 @@ const ViewModeFileDisplay: React.FC<ViewModeFileDisplayProps> = ({
       {/* Image Modal */}
       {selectedImage && (
         <div
-          className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center bg-opacity-75 p-4"
+          className="bg-black/60 bg-opacity-75 fixed inset-0 z-50 flex items-center justify-center p-4"
           onClick={closeModal}
         >
           <div className="relative max-h-[90vh] max-w-[90vw]">
             {/* Close Button */}
             <button
               onClick={closeModal}
-              className="absolute -right-4 -top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-700 shadow-lg transition-colors hover:bg-gray-100"
+              className="absolute -top-4 -right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-700 shadow-lg transition-colors hover:bg-gray-100"
               title={t('common.close')}
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

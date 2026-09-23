@@ -26,7 +26,10 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   variant = 'error',
 }) => {
   const { t } = useTranslation();
-  const color = variant === 'warning' ? 'text-yellow-700 bg-yellow-50 border-yellow-200' : 'text-red-700 bg-red-50 border-red-200';
+  const color =
+    variant === 'warning'
+      ? 'text-yellow-700 bg-yellow-50 border-yellow-200'
+      : 'text-red-700 bg-red-50 border-red-200';
 
   return (
     <div
@@ -49,7 +52,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-2 inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mt-2 inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-xs hover:bg-gray-50 focus:ring-2 focus:ring-green-500 focus:outline-hidden"
           >
             {t('common.retry')}
           </button>

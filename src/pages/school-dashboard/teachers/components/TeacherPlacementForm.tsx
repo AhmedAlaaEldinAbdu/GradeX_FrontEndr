@@ -344,10 +344,10 @@ export default function TeacherPlacementForm({
         {assignments.map((row) => (
           <div
             key={row.id}
-            className="flex items-start gap-4 rounded-2xl border border-[#E6E6E6] px-4 py-3"
+            className="flex items-start gap-4 rounded-2xl border border-black-100 px-4 py-3"
           >
             {/* Inner bordered section containing the form fields */}
-            <div className="flex flex-1 items-start gap-4 rounded-2xl border border-[#E6E6E6] px-4 py-3">
+            <div className="flex flex-1 items-start gap-4 rounded-2xl border border-black-100 px-4 py-3">
               <div className="flex-1 space-y-8">
                 {/* Subject and Stage Row */}
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">

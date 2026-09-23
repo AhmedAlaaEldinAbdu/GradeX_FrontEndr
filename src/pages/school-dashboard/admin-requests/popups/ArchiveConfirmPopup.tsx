@@ -32,14 +32,14 @@ const ArchiveConfirmPopup: React.FC<ArchiveConfirmPopupProps> = ({
       >
         <button
           onClick={onCancel}
-          className="absolute start-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+          className="absolute inset-s-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
           aria-label={t('common.cancel')}
         >
           <CustomImage src={XmarkCircleGrayIcon} alt="" className="h-6 w-6" />
         </button>
 
-        <div className="mb-8 mt-6 flex flex-col items-center gap-2">
-          <p className="text-lg font-semibold text-[#0E1F1F]">
+        <div className="mt-6 mb-8 flex flex-col items-center gap-2">
+          <p className="text-lg font-semibold text-black-900">
             {t('adminRequests.jobApplication.archivePopup.title')}
           </p>
           <p className="text-sm font-normal text-[#646969]">
@@ -48,20 +48,10 @@ const ArchiveConfirmPopup: React.FC<ArchiveConfirmPopupProps> = ({
         </div>
 
         <div className="flex justify-center gap-3">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            disabled={isProcessing}
-            fullWidth
-          >
+          <Button variant="outline" onClick={onCancel} disabled={isProcessing} fullWidth>
             {t('common.cancel')}
           </Button>
-          <Button
-            variant="success"
-            onClick={onConfirm}
-            loading={isProcessing}
-            fullWidth
-          >
+          <Button variant="success" onClick={onConfirm} loading={isProcessing} fullWidth>
             {t('adminRequests.jobApplication.archivePopup.confirm')}
           </Button>
         </div>

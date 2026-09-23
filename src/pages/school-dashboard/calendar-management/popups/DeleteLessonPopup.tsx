@@ -70,7 +70,7 @@ export default function DeleteLessonPopup({
           type="button"
           onClick={handleClose}
           disabled={isProcessing}
-          className="absolute end-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
+          className="absolute inset-e-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
           aria-label={t('common.close')}
         >
           <CustomImage src={XmarkCircleGrayIcon} alt="" className="h-6 w-6" />
@@ -81,14 +81,14 @@ export default function DeleteLessonPopup({
             <CustomImage src={BigTrashIcon} alt="" className="h-[80px] w-[80px]" />
           </div>
 
-          <p className="w-full text-sm font-medium text-[#0E1F1F]">
+          <p className="w-full text-sm font-medium text-black-900">
             {t('weeklyCalendar.confirmDeleteLessonWithName', {
               lessonName: lessonName || t('weeklyCalendar.lesson'),
             })}
           </p>
 
           <div className="w-full text-start">
-            <p className="text-sm font-medium text-[#0E1F1F]">
+            <p className="text-sm font-medium text-black-900">
               {t('weeklyCalendar.deleteLessonScope')}
             </p>
 
@@ -125,7 +125,7 @@ export default function DeleteLessonPopup({
             type="button"
             onClick={handleClose}
             disabled={isProcessing}
-            className="flex-grow rounded-2xl border border-green-500 px-5 py-2 text-base font-medium text-green-500 transition-colors duration-200 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="grow rounded-2xl border border-green-500 px-5 py-2 text-base font-medium text-green-500 transition-colors duration-200 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('common.cancel')}
           </button>
@@ -134,7 +134,7 @@ export default function DeleteLessonPopup({
             type="button"
             onClick={() => guardMutation(() => onConfirm(applyToAllWeeks))}
             disabled={isProcessing}
-            className="flex-grow rounded-2xl bg-red-500 px-5 py-2 text-base font-medium text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="grow rounded-2xl bg-red-500 px-5 py-2 text-base font-medium text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isProcessing ? t('common.deleting') : t('common.delete')}
           </button>

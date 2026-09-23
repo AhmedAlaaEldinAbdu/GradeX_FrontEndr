@@ -53,7 +53,7 @@ const AuthCallbackPage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0]">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0]">
       <div className="w-full max-w-md px-6 text-center">
         <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-[#1FAD6C] border-t-transparent" />
         <p className="text-lg font-medium text-[#1FAD6C]">

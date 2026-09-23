@@ -217,7 +217,7 @@ export default function TransactionsOverview() {
           {/* Chart Wrapper */}
           <div className="relative mt-auto flex h-64 w-full items-end justify-around border-b border-gray-200 pb-6">
             {/* Y-axis Labels */}
-            <div className="absolute bottom-6 left-0 top-0 flex w-8 flex-col justify-between pr-2 text-xs text-gray-400">
+            <div className="absolute top-0 bottom-6 left-0 flex w-8 flex-col justify-between pr-2 text-xs text-gray-400">
               <span>400+</span>
               <span>350</span>
               <span>300</span>
@@ -269,11 +269,11 @@ export default function TransactionsOverview() {
           <div className="mt-6 flex items-center justify-center gap-6">
             <div className="flex items-center gap-2">
               <span className="font-medium text-gray-600">{t('financialManagement.expenses')}</span>
-              <div className="h-4 w-4 rounded bg-green-600"></div>
+              <div className="h-4 w-4 rounded-sm bg-green-600"></div>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium text-gray-600">{t('financialManagement.revenues')}</span>
-              <div className="h-4 w-4 rounded bg-yellow-400"></div>
+              <div className="h-4 w-4 rounded-sm bg-yellow-400"></div>
             </div>
           </div>
         </Card>

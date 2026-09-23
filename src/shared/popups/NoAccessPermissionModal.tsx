@@ -78,7 +78,7 @@ const NoAccessPermissionModal: React.FC<NoAccessPermissionModalProps> = ({
         <div className="my-3 h-px w-full bg-[#E5FFF4]" />
 
         {/* Contact Title */}
-        <h3 className="mb-4 text-sm font-medium leading-7 text-green-500">
+        <h3 className="mb-4 text-sm leading-7 font-medium text-green-500">
           {t('noAccessPermission.contactCustomerService')}
         </h3>
 
@@ -91,12 +91,12 @@ const NoAccessPermissionModal: React.FC<NoAccessPermissionModalProps> = ({
               onClick={() => handleWhatsapp(contact.whatsappNumber)}
               className="flex min-w-0 items-center gap-2 rounded-xl border border-[#DDE0E0] p-2 text-start transition-colors hover:bg-[#F7FFFB]"
             >
-              <CustomImage src={contact.flagIcon} alt="" className="h-5 w-7 shrink-0 rounded-sm" />
+              <CustomImage src={contact.flagIcon} alt="" className="h-5 w-7 shrink-0 rounded-xs" />
               <div className="min-w-0">
-                <span className="block text-xs font-medium leading-5 text-[#646969]">
+                <span className="block text-xs leading-5 font-medium text-[#646969]">
                   {t(contact.countryKey)}
                 </span>
-                <span className="block truncate text-sm font-normal leading-7 text-black-900">
+                <span className="block truncate text-sm leading-7 font-normal text-black-900">
                   <bdi>{contact.phone}</bdi>
                 </span>
               </div>

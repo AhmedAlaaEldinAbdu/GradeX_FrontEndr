@@ -168,7 +168,7 @@ export default function SharedCalendar({
           }}
         >
           {children}
-          <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+          <div className="pointer-events-none absolute inset-0 z-1 flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover:opacity-100">
             <img src={GreenPlusCircleIcon} alt="Add" className="h-9 w-9" />
           </div>
         </div>
@@ -277,7 +277,7 @@ export default function SharedCalendar({
       <div className="relative flex items-center justify-center">
         <button
           onClick={handleToggle}
-          className="relative z-10 rounded p-1 hover:bg-gray-100"
+          className="relative z-10 rounded-sm p-1 hover:bg-gray-100"
           aria-label="Options"
         >
           <CustomImage
@@ -444,7 +444,7 @@ export default function SharedCalendar({
       {openDropdown && dropdownPosition && dropdownContext && (
         <div
           ref={dropdownRef}
-          className="absolute z-[9999] w-max min-w-[7rem] max-w-[10rem] rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+          className="absolute z-9999 w-max max-w-40 min-w-28 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,

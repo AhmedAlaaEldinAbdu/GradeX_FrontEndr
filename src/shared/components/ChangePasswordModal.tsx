@@ -109,7 +109,11 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
     <Modal isOpen={isOpen} onClose={onClose} title={t('changePassword.title')} size="sm">
       <p className="mb-6 text-center text-sm text-gray-500">{t('changePassword.subtitle')}</p>
 
-      <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate className="space-y-4 text-start">
+      <form
+        onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+        noValidate
+        className="space-y-4 text-start"
+      >
         {fields.map((field) => {
           const error = errors[field.key]?.message;
           const isVisible = visible[field.key];
@@ -136,9 +140,9 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
                   {...register(field.key)}
                   className={`w-full rounded-lg border ${
                     error ? 'border-red-500' : 'border-gray-300'
-                  } bg-white py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
+                  } bg-white py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:ring-2 focus:outline-hidden ${
                     error ? 'focus:ring-red-500' : 'focus:ring-[#1FAD6C]'
-                  } ${isRTL ? 'pl-12 pr-11 text-right' : 'pl-11 pr-12 text-left'}`}
+                  } ${isRTL ? 'pr-11 pl-12 text-right' : 'pr-12 pl-11 text-left'}`}
                   placeholder={t(field.placeholderKey)}
                 />
                 <button

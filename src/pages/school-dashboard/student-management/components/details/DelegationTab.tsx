@@ -55,10 +55,10 @@ export default function DelegationTab({ studentId }: DelegationTabProps) {
                   src={delegate.identityImagePath || DefaultAvatar}
                   fallbackSrc={DefaultAvatar}
                   alt={delegate.fullName}
-                  className="h-12 w-12 flex-shrink-0 rounded-full object-cover"
+                  className="h-12 w-12 shrink-0 rounded-full object-cover"
                 />
                 <div className="text-start">
-                  <p className="text-sm font-medium text-[#0E1F1F]">{delegate.fullName}</p>
+                  <p className="text-sm font-medium text-black-900">{delegate.fullName}</p>
                   <p className="mt-1 text-xs font-normal text-[#646969]">
                     {getRelationship(delegate)}
                   </p>

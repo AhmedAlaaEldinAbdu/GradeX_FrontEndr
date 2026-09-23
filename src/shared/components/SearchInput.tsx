@@ -50,7 +50,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   const inputClasses = useMemo(
     () =>
       className ??
-      `w-full h-[48px] w-full rounded-2xl py-1 border border-[#DDE0E0] placeholder:font-light placeholder:text-[#646969] text-sm font-normal text-[#3A3A3A] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+      `w-full h-[48px] w-full rounded-2xl py-1 border border-[#DDE0E0] placeholder:font-light placeholder:text-[#646969] text-sm font-normal text-[#3A3A3A] focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-green-500 ${
         isRTL ? 'pl-4 pr-10' : 'pl-10 pr-4'
       }`,
     [className, isRTL]

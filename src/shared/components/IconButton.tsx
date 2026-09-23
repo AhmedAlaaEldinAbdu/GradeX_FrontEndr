@@ -21,7 +21,7 @@ const variantClasses: Record<Variant, string> = {
   danger: 'bg-red-100 text-red-600 hover:bg-red-200',
   success: 'bg-[#30B97E]/10 text-green-600 hover:bg-green-200',
   blue: 'bg-[#E6F3FE] text-blue-600 hover:bg-blue-300',
-  darkBlue: 'bg-[#0909B1]/10 text-[#0909B1] hover:bg-[#0909B1]/20',
+  darkBlue: 'bg-darkBlue-500/10 text-darkBlue-500 hover:bg-darkBlue-500/20',
   yellow: 'bg-[#FEF8E6] text-yellow-600 hover:bg-yellow-300',
   default: 'bg-gray-50 text-gray-700 hover:bg-gray-100',
 };

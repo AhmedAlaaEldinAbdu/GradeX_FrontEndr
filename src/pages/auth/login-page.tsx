@@ -115,7 +115,7 @@ const LoginPage: React.FC = () => {
                     {...register('email')}
                     className={`w-full rounded-lg border ${
                       errors.email ? 'border-red-500' : 'border-gray-300'
-                    } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
+                    } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:ring-2 focus:outline-hidden ${
                       errors.email ? 'focus:ring-red-500' : 'focus:ring-[#1FAD6C]'
                     }`}
                     placeholder={t('login.emailInput')}
@@ -161,7 +161,7 @@ const LoginPage: React.FC = () => {
                     {...register('password')}
                     className={`w-full rounded-lg border ${
                       errors.password ? 'border-red-500' : 'border-gray-300'
-                    } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
+                    } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:ring-2 focus:outline-hidden ${
                       errors.password ? 'focus:ring-red-500' : 'focus:ring-[#1FAD6C]'
                     } ${isRTL ? 'pl-12' : 'pr-12'}`}
                     placeholder={t('login.passwordInput')}
@@ -231,7 +231,7 @@ const LoginPage: React.FC = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-[#1FAD6C] focus:ring-[#1FAD6C]"
+                    className="h-4 w-4 rounded-sm border-gray-300 text-[#1FAD6C] focus:ring-[#1FAD6C]"
                   />
                   <span className={`text-base text-black-800 ${isRTL ? 'mr-2' : 'ml-2'}`}>
                     {t('login.saveLoginData')}
@@ -250,7 +250,7 @@ const LoginPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-lg bg-green-500 px-4 py-3 font-medium text-white transition-all hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-lg bg-green-500 px-4 py-3 font-medium text-white transition-all hover:bg-green-800 focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <div className="flex items-center justify-center gap-2">
@@ -274,7 +274,7 @@ const LoginPage: React.FC = () => {
       </div>
 
       {/* Right Side - Illustration */}
-      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
+      <div className="hidden w-1/2 bg-linear-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
         <div className="flex flex-col gap-24">
           <div className="flex items-center justify-center">
             <CustomImage src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />

@@ -77,7 +77,7 @@ const EditReviewQuestionForm = ({ question, onSave, onCancel }: EditReviewQuesti
   };
 
   return (
-    <div className="space-y-6 rounded-2xl border border-[#E6E6E6] p-6">
+    <div className="space-y-6 rounded-2xl border border-black-100 p-6">
       {/* Question */}
       <FormField
         label={t('eLearning.onlineExams.addAI.review.editForm.question')}

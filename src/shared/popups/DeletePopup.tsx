@@ -83,7 +83,7 @@ export default function DeletePopup({
       >
         <button
           onClick={handleClose}
-          className="absolute end-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+          className="absolute inset-e-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
           aria-label="Close"
         >
           <CustomImage src={XmarkCircleGrayIcon} alt="Close" className="h-6 w-6" />
@@ -94,11 +94,11 @@ export default function DeletePopup({
             <CustomImage src={iconSrc} alt="Delete Icon" className="h-[80px] w-[80px]" />
           </div>
 
-          <p className="w-[100%] text-sm font-medium text-[#0E1F1F]">
+          <p className="w-full text-sm font-medium text-black-900">
             {resolvedMessage} "{resolvedItemName}"
           </p>
           {resolvedExtraMessage && (
-            <p className="mt-4 w-[100%] text-sm font-normal text-[#3A3A3A]">
+            <p className="mt-4 w-full text-sm font-normal text-[#3A3A3A]">
               {resolvedExtraMessage}
               {resolvedExtraItemName ? ` "${resolvedExtraItemName}"` : ''}
             </p>
@@ -108,14 +108,14 @@ export default function DeletePopup({
         <div className="flex justify-center gap-3">
           <button
             onClick={handleClose}
-            className="flex-grow rounded-2xl border border-green-500 px-5 py-2 text-base font-medium text-green-500 transition-colors duration-200 hover:bg-green-50"
+            className="grow rounded-2xl border border-green-500 px-5 py-2 text-base font-medium text-green-500 transition-colors duration-200 hover:bg-green-50"
           >
             {t('common.cancel')}
           </button>
           <button
             onClick={() => guardMutation(onConfirm)}
             disabled={isProcessing}
-            className="flex-grow rounded-2xl bg-red-500 px-5 py-2 text-base font-medium text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="grow rounded-2xl bg-red-500 px-5 py-2 text-base font-medium text-white transition-colors duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isProcessing ? t('common.deleting') : t('common.delete')}
           </button>

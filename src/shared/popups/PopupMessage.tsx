@@ -96,7 +96,7 @@ export default function PopupMessage({
       >
         <button
           onClick={handleClose}
-          className="absolute end-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+          className="absolute inset-e-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
           aria-label="Close"
         >
           <CustomImage src={XmarkCircleGrayIcon} alt="Close" className="h-6 w-6" />
@@ -104,7 +104,7 @@ export default function PopupMessage({
 
         <div className="my-6 flex flex-col items-center gap-7 py-6">
           {iconSrc && <CustomImage src={iconSrc} alt="Popup Icon" className="h-[80px] w-[80px]" />}
-          <p className="w-[100%] text-sm font-medium text-[#0E1F1F]">{resolvedMessage}</p>
+          <p className="w-full text-sm font-medium text-black-900">{resolvedMessage}</p>
         </div>
 
         {!autoClose && (

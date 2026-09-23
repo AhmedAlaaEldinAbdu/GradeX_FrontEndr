@@ -46,7 +46,7 @@ export default function EducationalProgramsCard({
 
   return (
     <Card className="flex flex-col gap-6 rounded-3xl border border-[#DDE0E0]" padding="md">
-      <h3 className="text-base font-medium text-[#0E1F1F]">{t('eLearning.programs.title')}</h3>
+      <h3 className="text-base font-medium text-black-900">{t('eLearning.programs.title')}</h3>
 
       {/* Donut */}
       <div className="relative mx-auto h-[200px] w-[200px]">
@@ -66,7 +66,7 @@ export default function EducationalProgramsCard({
           ))}
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="rounded-lg border border-[#E6E6E6] bg-white px-3 py-1 text-sm font-normal text-[#0E1F1F] shadow-sm">
+          <span className="rounded-lg border border-black-100 bg-white px-3 py-1 text-sm font-normal text-black-900 shadow-xs">
             {completion}%
           </span>
         </div>

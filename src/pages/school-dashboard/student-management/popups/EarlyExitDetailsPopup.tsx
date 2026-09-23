@@ -25,7 +25,7 @@ export default function EarlyExitDetailsPopup({
 
   const Row = ({ label, value }: { label: string; value: string }) => (
     <div className="flex items-center gap-2 text-sm">
-      <span className="font-medium text-[#0E1F1F]">{label}:</span>
+      <span className="font-medium text-black-900">{label}:</span>
       <span className="font-normal text-[#646969]">{value}</span>
     </div>
   );

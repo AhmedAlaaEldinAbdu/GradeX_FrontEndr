@@ -18,9 +18,9 @@ type MethodConfig = {
 };
 
 const METHODS: MethodConfig[] = [
-  // { key: 'manual', icon: WritingIcon, color: '#00512E', boxClass: 'bg-[#00512E]/[0.12]' },
-  // { key: 'questionBank', icon: IdeaIcon, color: '#A353DD', boxClass: 'bg-[#A353DD]/[0.12]' },
-  { key: 'ai', icon: SparklesIcon, color: '#117BD7', boxClass: 'bg-[#117BD7]/[0.12]' },
+  // { key: 'manual', icon: WritingIcon, color: '#00512E', boxClass: 'bg-green-500/12' },
+  // { key: 'questionBank', icon: IdeaIcon, color: '#A353DD', boxClass: 'bg-purple-500/12' },
+  { key: 'ai', icon: SparklesIcon, color: '#117BD7', boxClass: 'bg-blue-500/12' },
 ];
 
 function MaskIcon({ src, color }: { src: string; color: string }) {
@@ -82,7 +82,7 @@ export default function CreateExamPopup({ isOpen, onClose }: CreateExamPopupProp
                 >
                   <CustomImage src={method.icon} alt="" className="h-6 w-6" />
                 </div>
-                <span className="text-base font-medium text-[#0E1F1F]">{t(`${base}.title`)}</span>
+                <span className="text-base font-medium text-black-900">{t(`${base}.title`)}</span>
                 <span className="text-sm font-normal text-[#3A3A3A]">{t(`${base}.subtitle`)}</span>
               </div>
 

@@ -120,7 +120,7 @@ export default function TeachersList() {
           }}
         />
       ),
-      headerClassName: 'min-w-[15rem]',
+      headerClassName: 'min-w-60',
     },
     {
       header: 'teachers.mobile',
@@ -134,7 +134,7 @@ export default function TeachersList() {
 
         return <span dir="ltr">{`${countryCode} ${phone}`}</span>;
       },
-      headerClassName: 'min-w-[12rem]',
+      headerClassName: 'min-w-48',
       className: 'text-center',
     },
     {
@@ -167,7 +167,7 @@ export default function TeachersList() {
           </div>
         );
       },
-      headerClassName: 'min-w-[9rem]',
+      headerClassName: 'min-w-36',
       className: 'text-center',
     },
     {
@@ -198,7 +198,7 @@ export default function TeachersList() {
           <span className="text-gray-400">-</span>
         );
       },
-      headerClassName: 'min-w-[7rem]',
+      headerClassName: 'min-w-28',
     },
     {
       header: 'teachers.educationalStages',
@@ -221,7 +221,7 @@ export default function TeachersList() {
           <span className="text-gray-400">-</span>
         );
       },
-      headerClassName: 'min-w-[14rem] whitespace-nowrap',
+      headerClassName: 'min-w-56 whitespace-nowrap',
     },
     {
       header: 'teachers.classrooms',
@@ -258,7 +258,7 @@ export default function TeachersList() {
           </div>
         );
       },
-      headerClassName: 'min-w-[14rem] whitespace-nowrap',
+      headerClassName: 'min-w-56 whitespace-nowrap',
     },
     {
       header: 'common.actions',
@@ -276,7 +276,7 @@ export default function TeachersList() {
           />
         </div>
       ),
-      headerClassName: 'min-w-[7.5rem]',
+      headerClassName: 'min-w-30',
       className: 'text-center',
     },
   ];

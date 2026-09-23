@@ -118,7 +118,7 @@ const ResetPasswordPage: React.FC = () => {
                     {...register('newPassword')}
                     className={`w-full rounded-lg border ${
                       errors.newPassword ? 'border-red-500' : 'border-gray-300'
-                    } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
+                    } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:ring-2 focus:outline-hidden ${
                       errors.newPassword ? 'focus:ring-red-500' : 'focus:ring-[#1FAD6C]'
                     } ${isRTL ? 'pl-12' : 'pr-12'}`}
                     placeholder={t('login.passwordInput')}
@@ -247,7 +247,7 @@ const ResetPasswordPage: React.FC = () => {
                     {...register('confirmPassword')}
                     className={`w-full rounded-lg border ${
                       errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-                    } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:outline-none focus:ring-2 ${
+                    } px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-transparent focus:ring-2 focus:outline-hidden ${
                       errors.confirmPassword ? 'focus:ring-red-500' : 'focus:ring-[#1FAD6C]'
                     } ${isRTL ? 'pl-12' : 'pr-12'}`}
                     placeholder={t('login.passwordInput')}
@@ -308,7 +308,7 @@ const ResetPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting || isLoading}
-                className="w-full rounded-lg bg-[#1FAD6C] px-4 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:outline-none focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-lg bg-[#1FAD6C] px-4 py-3 font-medium text-white transition-all hover:bg-[#178f5a] focus:ring-2 focus:ring-[#1FAD6C] focus:ring-offset-2 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
@@ -334,7 +334,7 @@ const ResetPasswordPage: React.FC = () => {
       </div>
 
       {/* Right Side - Illustration */}
-      <div className="hidden w-1/2 bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
+      <div className="hidden w-1/2 bg-linear-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0] lg:flex lg:items-start lg:justify-center lg:p-12">
         <div className="flex flex-col gap-24">
           <div className="flex items-center justify-center">
             <CustomImage src={GradeXLogo} alt="GradeX" className="h-[25px] w-[300px]" />

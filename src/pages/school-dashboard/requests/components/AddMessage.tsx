@@ -326,7 +326,7 @@ const AddMessage: React.FC = () => {
                       setDirectedTo('all');
                       setStudentsError(undefined);
                     }}
-                    className="h-4 w-4 accent-[#00512E]"
+                    className="h-4 w-4 accent-green-500"
                   />
                 </label>
                 <label
@@ -342,7 +342,7 @@ const AddMessage: React.FC = () => {
                     checked={directedTo === 'selected'}
                     onChange={handleSelectedRadio}
                     disabled={!hasClassroom}
-                    className="h-4 w-4 accent-[#00512E]"
+                    className="h-4 w-4 accent-green-500"
                   />
                 </label>
               </div>
@@ -357,14 +357,14 @@ const AddMessage: React.FC = () => {
                     src={selectedStudents[0].avatarPath || DefaultAvatar}
                     fallbackSrc={DefaultAvatar}
                     alt={selectedStudents[0].name}
-                    className="h-[52px] w-[52px] rounded-lg border border-[#E6E6E6] object-cover"
+                    className="h-[52px] w-[52px] rounded-lg border border-black-100 object-cover"
                   />
                   <span className="flex items-center gap-3 text-xl/[34px] font-normal opacity-95">
-                    <span className="text-[#4D4D4D]">
+                    <span className="text-black-700">
                       <bdi>{selectedStudents[0].name}</bdi>
                     </span>
                     {selectedStudents.length > 1 ? (
-                      <span className="text-[#00512E]">
+                      <span className="text-green-500">
                         <bdi>
                           {t('requests.addMessage.studentsSummary', {
                             count: selectedStudents.length - 1,

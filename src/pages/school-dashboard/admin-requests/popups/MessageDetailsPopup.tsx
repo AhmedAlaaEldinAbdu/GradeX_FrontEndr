@@ -47,7 +47,7 @@ type DetailRowProps = {
 
 const DetailRow: React.FC<DetailRowProps> = ({ label, children }) => (
   <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-    <span className="text-base font-semibold text-[#0E1F1F]">{label}:</span>
+    <span className="text-base font-semibold text-black-900">{label}:</span>
     <div className="flex items-center gap-2 text-[#646969]">{children}</div>
   </div>
 );

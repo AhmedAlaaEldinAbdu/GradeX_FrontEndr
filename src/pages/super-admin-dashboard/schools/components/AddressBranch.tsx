@@ -243,7 +243,7 @@ const AddressBranch: React.FC<AddressBranchProps> = ({
             </div>
           ) : branch.logo ? (
             <FormField label={t('schools.branchLogo')}>
-              <Input value={branch.logo} readOnly className="!bg-gray-50 !text-gray-500" />
+              <Input value={branch.logo} readOnly className="bg-gray-50! text-gray-500!" />
             </FormField>
           ) : null}
 

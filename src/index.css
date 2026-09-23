@@ -1,61 +1,172 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  src: url('./assets/fonts/IBMPlexSansArabic-Thin.woff2') format('woff2');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
+@theme {
+  --font-sans: IBM Plex Sans Arabic, ui-sans-serif, system-ui, sans-serif;
+
+  --color-green-100: #00512e1a;
+  --color-green-500: #00512e;
+
+  --color-lightGreen-100: #1a9f581a;
+  --color-lightGreen-500: #1a9f58;
+
+  --color-red-100: #dd04171a;
+  --color-red-500: #dd0417;
+
+  --color-blue-100: #117bd71a;
+  --color-blue-500: #117bd7;
+
+  --color-darkBlue-100: #0909b11a;
+  --color-darkBlue-500: #0909b1;
+
+  --color-sky-100: #0491dd1a;
+  --color-sky-500: #0491dd;
+
+  --color-gray-50: #f6f8f9;
+  --color-gray-500: #6e7575;
+
+  /* Keep `black` as a shade scale only (no plain `black`), exactly as the v3 config behaved.
+     Without this, existing `text-black`, `border-black` and `bg-black` classes, which were
+     silently no-ops, would start rendering and change the current look. (`bg-black/60` is
+     unaffected: it has its own hand-written rule further down.) Remove this line to make
+     plain `black` available again. */
+  --color-black: initial;
+  --color-black-50: #f2f2f2;
+  --color-black-100: #e6e6e6;
+  --color-black-600: #666666;
+  --color-black-700: #4d4d4d;
+  --color-black-800: #333333;
+  --color-black-900: #0e1f1f;
+
+  --color-orange-100: #f2960c1a;
+  --color-orange-500: #a96908;
+
+  --color-yellow-100: #f8951b1a;
+  --color-yellow-400: #f8951b;
+  --color-yellow-500: #c8a713;
+
+  --color-purple-100: #a353dd1a;
+  --color-purple-500: #a353dd;
+
+  --color-teal-100: #25bdd729;
+  --color-teal-500: #16aac4;
+
+  --shadow-card: 0px 1px 12px 1px #0000000f;
 }
 
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  src: url('./assets/fonts/IBMPlexSansArabic-ExtraLight.woff2') format('woff2');
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  /* v4 preflight changed these two defaults; restore the v3 behaviour. */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
 }
 
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  src: url('./assets/fonts/IBMPlexSansArabic-Light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
+@utility scrollbar-thin {
+  /* Custom scrollbar styles */
+  &::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  &::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-gray-300;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
 }
 
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  src: url('./assets/fonts/IBMPlexSansArabic-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+@utility sidebar-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge / IE */
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
 }
 
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  src: url('./assets/fonts/IBMPlexSansArabic-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
+@layer utilities {
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    src: url('./assets/fonts/IBMPlexSansArabic-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  src: url('./assets/fonts/IBMPlexSansArabic-SemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    src: url('./assets/fonts/IBMPlexSansArabic-ExtraLight.woff2') format('woff2');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans Arabic';
-  src: url('./assets/fonts/IBMPlexSansArabic-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    src: url('./assets/fonts/IBMPlexSansArabic-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    src: url('./assets/fonts/IBMPlexSansArabic-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    src: url('./assets/fonts/IBMPlexSansArabic-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    src: url('./assets/fonts/IBMPlexSansArabic-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    src: url('./assets/fonts/IBMPlexSansArabic-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
 }
 
 @layer base {
@@ -122,35 +233,6 @@
   * {
     scrollbar-width: auto;
     scrollbar-color: #7ba694 #f3f4f6;
-  }
-}
-
-@layer components {
-  /* Custom scrollbar styles */
-  .scrollbar-thin::-webkit-scrollbar {
-    @apply w-2;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    @apply bg-gray-100;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-gray-300;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
-  }
-
-  .sidebar-scroll {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* old Edge / IE */
-  }
-  .sidebar-scroll::-webkit-scrollbar {
-    width: 0 !important;
-    height: 0 !important;
-    display: none !important;
   }
 }
 

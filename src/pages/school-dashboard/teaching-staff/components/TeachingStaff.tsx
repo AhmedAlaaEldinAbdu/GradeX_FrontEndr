@@ -46,8 +46,8 @@ export default function TeachingStaff({ onTabChange }: TeachingStaffProps) {
             value={activeTab}
             onChange={handleTabChange}
             variant="underline"
-            // listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
-            listClassName="flex w-[100%] md:w-[50%] lg:w-[20%] gap-2 mb-5 px-1 flex-wrap"
+            // listClassName="flex w-full md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+            listClassName="flex w-full md:w-[50%] lg:w-[20%] gap-2 mb-5 px-1 flex-wrap"
             lazy={true}
             searchParamKey="tab"
           />

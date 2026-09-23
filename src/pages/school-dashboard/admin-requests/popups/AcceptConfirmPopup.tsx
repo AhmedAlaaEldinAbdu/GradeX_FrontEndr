@@ -33,7 +33,7 @@ const AcceptConfirmPopup: React.FC<AcceptConfirmPopupProps> = ({
       >
         <button
           onClick={onCancel}
-          className="absolute start-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+          className="absolute inset-s-4 top-4 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
           aria-label={t('common.cancel')}
         >
           <CustomImage src={XmarkCircleGrayIcon} alt="" className="h-6 w-6" />
@@ -41,26 +41,16 @@ const AcceptConfirmPopup: React.FC<AcceptConfirmPopupProps> = ({
 
         <div className="my-6 flex flex-col items-center gap-7 py-2">
           <CustomImage src={BigSuccessIcon} alt="" className="h-[80px] w-[80px]" />
-          <p className="w-full text-base font-medium text-[#0E1F1F]">
+          <p className="w-full text-base font-medium text-black-900">
             {t('adminRequests.jobApplication.acceptPopup.title')}
           </p>
         </div>
 
         <div className="flex justify-center gap-3">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            disabled={isProcessing}
-            fullWidth
-          >
+          <Button variant="outline" onClick={onCancel} disabled={isProcessing} fullWidth>
             {t('common.cancel')}
           </Button>
-          <Button
-            variant="success"
-            onClick={onConfirm}
-            loading={isProcessing}
-            fullWidth
-          >
+          <Button variant="success" onClick={onConfirm} loading={isProcessing} fullWidth>
             {t('adminRequests.jobApplication.acceptPopup.confirm')}
           </Button>
         </div>

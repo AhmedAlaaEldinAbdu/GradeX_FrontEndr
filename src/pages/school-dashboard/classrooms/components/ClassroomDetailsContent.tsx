@@ -103,7 +103,7 @@ export default function ClassroomDetailsContent({ currentLang }: ClassroomDetail
 
   return (
     <>
-      <Card className="rounded-3xl border border-[#E6E6E6] p-6">
+      <Card className="rounded-3xl border border-black-100 p-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {classrooms.map((classroom) => {
             const name = currentLang === 'ar' ? classroom.name : classroom.nameEn;

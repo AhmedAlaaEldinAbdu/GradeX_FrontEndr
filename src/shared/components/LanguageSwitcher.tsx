@@ -86,7 +86,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   const isMinimal = variant === 'minimal';
 
   const baseTriggerClasses =
-    'flex items-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2';
+    'flex items-center font-medium transition-all focus:outline-hidden focus:ring-2 focus:ring-green-500 focus:ring-offset-2';
 
   const triggerLabel = LANGUAGE_NATIVE_NAMES[currentLanguage];
 
@@ -101,7 +101,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
         title={triggerLabel}
         className={
           isIconOnly
-            ? `${baseTriggerClasses} flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#DDE0E0] bg-white p-0 transition-colors hover:opacity-90`
+            ? `${baseTriggerClasses} flex h-[32px] w-[32px] items-center justify-center overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white p-0 transition-colors hover:border-[#1E7A52]`
             : isMinimal
               ? `${baseTriggerClasses} ${triggerSizeClasses[size]} rounded-lg text-gray-500 hover:text-green-500`
               : `${baseTriggerClasses} ${triggerSizeClasses[size]} rounded-lg border border-gray-300 bg-white text-gray-700 hover:border-green-500`

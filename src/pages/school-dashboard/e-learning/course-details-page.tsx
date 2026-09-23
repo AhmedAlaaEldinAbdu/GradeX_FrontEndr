@@ -30,7 +30,7 @@ const formatDate = (value?: string | null): string => {
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="shrink-0 text-sm font-medium text-[#0E1F1F]">{label}:</span>
+      <span className="shrink-0 text-sm font-medium text-black-900">{label}:</span>
       <div className="text-sm font-normal text-[#646969]">{children}</div>
     </div>
   );
@@ -74,7 +74,7 @@ export default function CourseDetailsPage() {
     return (
       <div>
         <Breadcrumb items={breadcrumbItems} />
-        <Card className="rounded-3xl border border-[#E6E6E6]" padding="md">
+        <Card className="rounded-3xl border border-black-100" padding="md">
           <p className="py-10 text-center text-sm text-[#646969]">{t('common.noDataFound')}</p>
         </Card>
       </div>
@@ -109,9 +109,9 @@ export default function CourseDetailsPage() {
         </div>
 
         {/* Info */}
-        <Card className="rounded-3xl border border-[#E6E6E6]" padding="lg">
+        <Card className="rounded-3xl border border-black-100" padding="lg">
           <div className="flex flex-col gap-6">
-            <h3 className="text-start text-base font-medium text-[#0E1F1F]">{name}</h3>
+            <h3 className="text-start text-base font-medium text-black-900">{name}</h3>
 
             <div className="grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
               <InfoRow label={t('eLearning.courses.add.fields.teacher')}>
@@ -188,17 +188,17 @@ export default function CourseDetailsPage() {
 
         {/* Lectures */}
         {(course.lectures?.length ?? 0) > 0 && (
-          <Card className="rounded-3xl border border-[#E6E6E6]" padding="lg">
+          <Card className="rounded-3xl border border-black-100" padding="lg">
             <div className="flex flex-col gap-6">
-              <h3 className="text-start text-base font-medium text-[#0E1F1F]">
+              <h3 className="text-start text-base font-medium text-black-900">
                 {t('eLearning.courses.details.lectures')}
               </h3>
 
               <div className="space-y-6">
                 {course.lectures?.map((lecture) => (
-                  <div key={lecture.id} className="rounded-xl border border-[#E6E6E6] p-4">
+                  <div key={lecture.id} className="rounded-xl border border-black-100 p-4">
                     <div className="mb-4 flex items-center gap-2">
-                      <h4 className="text-sm font-medium text-[#0E1F1F]">
+                      <h4 className="text-sm font-medium text-black-900">
                         {isArabic ? lecture.nameAr : lecture.nameEn}
                       </h4>
                       |
@@ -225,7 +225,7 @@ export default function CourseDetailsPage() {
                     {/* Attachments */}
                     {(lecture.attachments?.length ?? 0) > 0 && (
                       <div className="space-y-2">
-                        <p className="flex text-xs font-medium text-[#0E1F1F]">
+                        <p className="flex text-xs font-medium text-black-900">
                           {t('common.attachments')}
                         </p>
                         {lecture.attachments?.map((attachment, idx) => (

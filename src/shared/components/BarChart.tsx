@@ -50,7 +50,7 @@ const BarChart: React.FC<BarChartProps> = ({
         {yTicks.map((tick, index) => (
           <span
             key={tick}
-            className={`${index === 0 ? 'translate-y-0' : '-translate-y-1/2'} whitespace-nowrap leading-none`}
+            className={`${index === 0 ? 'translate-y-0' : '-translate-y-1/2'} leading-none whitespace-nowrap`}
           >
             {renderTick(tick)}
           </span>
@@ -67,10 +67,7 @@ const BarChart: React.FC<BarChartProps> = ({
           </div>
           <div className="relative flex h-full items-end justify-around gap-4">
             {data.map((bar) => (
-              <div
-                key={bar.key}
-                className="flex h-full flex-1 flex-col items-center justify-end"
-              >
+              <div key={bar.key} className="flex h-full flex-1 flex-col items-center justify-end">
                 <div
                   className={barWidthClassName}
                   style={{ height: `${Math.min(100, (bar.value / max) * 100)}%` }}
@@ -80,9 +77,7 @@ const BarChart: React.FC<BarChartProps> = ({
                     placement={tooltipPlacement}
                     wrapperClassName="block h-full w-full"
                   >
-                    <div
-                      className={`h-full w-full rounded-t-md transition-all ${barClassName}`}
-                    />
+                    <div className={`h-full w-full rounded-t-md transition-all ${barClassName}`} />
                   </Tooltip>
                 </div>
               </div>
@@ -93,7 +88,7 @@ const BarChart: React.FC<BarChartProps> = ({
           {data.map((bar) => (
             <div key={bar.key} className="flex flex-1 justify-center">
               <Tooltip content={bar.tooltip} placement={tooltipPlacement}>
-                <span className="cursor-default text-sm font-normal text-[#0E1F1F]">
+                <span className="cursor-default text-sm font-normal text-black-900">
                   {bar.label}
                 </span>
               </Tooltip>

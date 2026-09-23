@@ -196,7 +196,7 @@ const RequestsPage: React.FC = () => {
             aria-label={t('common.add')}
             title={t('common.add')}
             onClick={() => guardMutation(() => navigate('/requests/add-message'))}
-            className="absolute end-0 top-0 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
+            className="absolute inset-e-0 top-0 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-500/90"
           >
             <CustomImage src={WhitePlusIcon} alt={t('common.add')} className="h-5 w-5" />
           </button>

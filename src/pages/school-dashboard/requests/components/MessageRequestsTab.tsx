@@ -305,7 +305,7 @@ const MessageRequestsTab: React.FC = () => {
     if (!isGroup && display.role === RequestParticipantRole.School) {
       return (
         <div className="flex w-full items-center justify-center">
-          <span className="text-sm font-medium text-[#0E1F1F]">{display.name}</span>
+          <span className="text-sm font-medium text-black-900">{display.name}</span>
         </div>
       );
     }
@@ -338,7 +338,7 @@ const MessageRequestsTab: React.FC = () => {
           <span className="h-10 w-10 shrink-0" aria-hidden="true" />
         )}
 
-        <span className="w-9 shrink-0 text-center text-lg/[31px] font-normal text-[#00512E]">
+        <span className="w-9 shrink-0 text-center text-lg/[31px] font-normal text-green-500">
           <bdi>{extraCount > 0 ? `${extraCount}+` : ''}</bdi>
         </span>
       </div>
@@ -440,7 +440,7 @@ const MessageRequestsTab: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              className="!rounded-2xl px-6"
+              className="rounded-2xl! px-6"
               actionKey="reply"
               disabled={!canReply}
               onClick={() => navigate(`/requests/view-message/${row.studentId ?? row.id}`)}

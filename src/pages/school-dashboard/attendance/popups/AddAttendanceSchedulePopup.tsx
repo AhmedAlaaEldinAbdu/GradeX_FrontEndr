@@ -80,7 +80,7 @@ export default function AddAttendanceSchedulePopup({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 transition-opacity duration-300">
+    <div className="bg-black/60 fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300">
       <div
         ref={popupRef}
         className={`relative w-[420px] transform rounded-2xl bg-white p-6 py-7 shadow-lg transition-all duration-300 ease-out ${
@@ -91,7 +91,7 @@ export default function AddAttendanceSchedulePopup({
         <button
           onClick={handleClose}
           disabled={isLoading}
-          className="absolute start-3 top-3 text-xl text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed"
+          className="absolute inset-s-3 top-3 text-xl text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed"
         >
           ✕
         </button>

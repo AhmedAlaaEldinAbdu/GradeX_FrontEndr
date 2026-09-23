@@ -1239,12 +1239,12 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
   return (
     <>
       {/* Calendar Component with Filters Inside */}
-      <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl bg-white shadow-xs">
         {/* Filters Row - Inside calendar frame, above the calendar */}
         <div className="flex flex-wrap items-center gap-3 p-4">
           {/* Group 1: Education System */}
-          <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
+          <div className="relative inline-flex grow items-center rounded-xl border border-gray-200 bg-white">
+            <span className="px-4 py-2.5 text-sm font-normal whitespace-nowrap text-[#646969]">
               {t('weeklyCalendar.filters.educationSystem')}
             </span>
             <div className="h-full border-e border-gray-200" />
@@ -1279,8 +1279,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           </div>
 
           {/* Group 2: Stage Selection */}
-          <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
+          <div className="relative inline-flex grow items-center rounded-xl border border-gray-200 bg-white">
+            <span className="px-4 py-2.5 text-sm font-normal whitespace-nowrap text-[#646969]">
               {t('weeklyCalendar.filters.selectStage')}
             </span>
             <div className="h-full border-e border-gray-200" />
@@ -1308,8 +1308,8 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
           </div>
 
           {/* Group 3: Classroom Selection */}
-          <div className="relative inline-flex flex-grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="whitespace-nowrap px-4 py-2.5 text-sm font-normal text-[#646969]">
+          <div className="relative inline-flex grow items-center rounded-xl border border-gray-200 bg-white">
+            <span className="px-4 py-2.5 text-sm font-normal whitespace-nowrap text-[#646969]">
               {t('weeklyCalendar.filters.classroom')}
             </span>
             <div className="h-full border-e border-gray-200" />
@@ -1345,7 +1345,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
                 setStage('');
                 setGrade('');
               }}
-              className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden"
               title={t('actions.clearFilter')}
             >
               <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />
@@ -1357,7 +1357,7 @@ const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
         {/* Calendar Content */}
         {!grade ? (
           <div className="flex h-96 flex-col items-center justify-center gap-2 text-center">
-            <p className="text-base font-medium text-[#0E1F1F]">
+            <p className="text-base font-medium text-black-900">
               {t('weeklyCalendar.filters.classroom')}
             </p>
             <p className="text-sm text-[#646969]">{t('weeklyCalendar.selectClassroomPrompt')}</p>

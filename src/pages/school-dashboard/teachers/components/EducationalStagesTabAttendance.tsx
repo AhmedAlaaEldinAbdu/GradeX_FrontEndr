@@ -160,18 +160,18 @@ export default function EducationalStagesTabAttendance({
             {/* Subject + Grade row */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:items-center md:gap-8">
               <div className="flex items-center gap-1 md:justify-self-start">
-                <span className="text-base font-normal leading-[19px] text-[#3A3A3A]">
+                <span className="text-base leading-[19px] font-normal text-[#3A3A3A]">
                   {t('teachers.details.subject')}:
                 </span>
-                <span className="text-sm font-normal leading-[22px] text-[#646969]">
+                <span className="text-sm leading-[22px] font-normal text-[#646969]">
                   {grade.materialBooks.map((m) => m.materialName).join(' - ')}
                 </span>
               </div>
               <div className="flex items-center gap-1 md:justify-self-center">
-                <span className="text-base font-normal leading-[19px] text-[#3A3A3A]">
+                <span className="text-base leading-[19px] font-normal text-[#3A3A3A]">
                   {t('teachers.details.educationalStage')}:
                 </span>
-                <span className="text-sm font-normal leading-[22px] text-[#646969]">
+                <span className="text-sm leading-[22px] font-normal text-[#646969]">
                   {grade.gradeName}
                 </span>
               </div>
@@ -179,7 +179,7 @@ export default function EducationalStagesTabAttendance({
 
             {/* Classrooms section */}
             <div className="flex flex-col gap-3">
-              <span className="text-start text-base font-normal leading-[19px] text-[#0E1F1F]">
+              <span className="text-start text-base leading-[19px] font-normal text-black-900">
                 {t('teachers.details.classrooms')}:
               </span>
               <div className="flex flex-wrap items-start gap-x-2 gap-y-[26px]">
@@ -187,7 +187,7 @@ export default function EducationalStagesTabAttendance({
                   grade.classrooms.map((classroom, cIdx) => (
                     <span
                       key={`${classroom.id}-${cIdx}`}
-                      className="inline-flex h-[34px] items-center justify-center rounded-lg bg-[#DFF8ED] px-3 text-sm font-normal leading-[22px] text-[#3A3A3A]"
+                      className="inline-flex h-[34px] items-center justify-center rounded-lg bg-[#DFF8ED] px-3 text-sm leading-[22px] font-normal text-[#3A3A3A]"
                     >
                       {getClassroomName(classroom)}
                     </span>
@@ -206,16 +206,16 @@ export default function EducationalStagesTabAttendance({
                     key={`${book.id}-${idx}`}
                     className="flex flex-1 flex-col gap-4 rounded-xl border border-[#DDE0E0] p-3 text-start md:min-w-80"
                   >
-                    <p className="text-base font-normal leading-[19px] text-[#0E1F1F]">
+                    <p className="text-base leading-[19px] font-normal text-black-900">
                       {t('teachers.details.bookName')}
                       {showOrdinal &&
                         ` ${t('teachers.placement.details.materialPrefix')} ${getOrdinal(idx + 1)}`}
                     </p>
                     <div className="flex items-center gap-1">
-                      <span className="text-base font-normal leading-[19px] text-[#3A3A3A]">
+                      <span className="text-base leading-[19px] font-normal text-[#3A3A3A]">
                         {t('teachers.details.bookName')}:
                       </span>
-                      <span className="text-sm font-normal leading-[22px] text-[#646969]">
+                      <span className="text-sm leading-[22px] font-normal text-[#646969]">
                         {book.name}
                       </span>
                     </div>

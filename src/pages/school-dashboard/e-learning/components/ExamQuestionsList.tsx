@@ -56,12 +56,12 @@ function QuestionRing({ value, color }: { value: number; color: string }) {
 
 function StatBox({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="flex flex-1 flex-col gap-1 rounded-2xl border border-[#DDE0E0] bg-[#F6F8F9] p-3">
+    <div className="flex flex-1 flex-col gap-1 rounded-2xl border border-[#DDE0E0] bg-gray-50 p-3">
       <div className="flex items-center justify-start gap-1.5">
         <CustomImage src={icon} alt="" className="h-4 w-4" />
         <span className="text-sm font-normal text-[#646969]">{label}</span>
       </div>
-      <span className="text-start text-base font-normal text-[#0E1F1F]">{value}</span>
+      <span className="text-start text-base font-normal text-black-900">{value}</span>
     </div>
   );
 }
@@ -70,14 +70,14 @@ function QuestionCard({ question }: { question: ExamQuestionItem }) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-[#E6E6E6] bg-white p-6">
+    <div className="flex flex-col gap-4 rounded-2xl border border-black-100 bg-white p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-1 flex-col items-start gap-3">
           <Badge variant={DIFFICULTY_VARIANT[question.difficulty]} size="sm">
             {t(`eLearning.onlineExams.difficulty.${question.difficulty}`)}
           </Badge>
           <div className="flex w-full items-center gap-2">
-            <span className="text-sm font-normal text-[#00512E]">#{question.number}</span>
+            <span className="text-sm font-normal text-green-500">#{question.number}</span>
             <span className="flex-1 text-start text-base font-medium text-[#101828]">
               <bdi>{question.text}</bdi>
             </span>

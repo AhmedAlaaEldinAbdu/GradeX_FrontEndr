@@ -160,9 +160,7 @@ export default function ExamDetailsPage() {
   const questionsStats = useAppSelector((state) => state.aiExam.examQuestionsStats);
   const resultsDistribution = useAppSelector((state) => state.aiExam.examResultsDistribution);
   const studentsResults = useAppSelector((state) => state.aiExam.examStudentsResults);
-  const studentsResultsPagination = useAppSelector(
-    (state) => state.aiExam.examStudentsPagination
-  );
+  const studentsResultsPagination = useAppSelector((state) => state.aiExam.examStudentsPagination);
   const isLoadingSummary = useAppSelector((state) => state.aiExam.isLoadingExamSummary);
   const isLoadingQuestions = useAppSelector((state) => state.aiExam.isLoadingExamQuestionsStats);
   const isLoadingResultsDistribution = useAppSelector(
@@ -306,7 +304,7 @@ export default function ExamDetailsPage() {
     return (
       <div>
         <Breadcrumb items={breadcrumbItems} />
-        <Card className="rounded-3xl border border-[#E6E6E6]" padding="md">
+        <Card className="rounded-3xl border border-black-100" padding="md">
           <p className="py-10 text-center text-sm text-[#646969]">{t('common.noDataFound')}</p>
         </Card>
       </div>
@@ -339,7 +337,7 @@ export default function ExamDetailsPage() {
     return (
       <div>
         <Breadcrumb items={breadcrumbItems} />
-        <Card className="rounded-3xl border border-[#E6E6E6]" padding="md">
+        <Card className="rounded-3xl border border-black-100" padding="md">
           <p className="py-10 text-center text-sm text-[#646969]">{t('common.noDataFound')}</p>
         </Card>
       </div>
