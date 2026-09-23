@@ -12,6 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CustomImage from '@/shared/components/CustomImage';
 import { authApiService } from '@/services/api/auth/auth.service';
+import { getErrorMessage } from '@/lib/http';
 
 const ForgotPasswordPage: React.FC = () => {
   const { t } = useTranslation();
@@ -40,8 +41,8 @@ const ForgotPasswordPage: React.FC = () => {
       await authApiService.forgotPassword({ email: data.email });
       // Navigate to OTP verification for password reset
       navigate('/auth/verify-otp', { state: { email: data.email, fromForgotPassword: true } });
-    } catch {
-      setError(t('common.errorOccurred'));
+    } catch (err) {
+      setError(getErrorMessage(err) || t('common.errorOccurred'));
     } finally {
       setIsLoading(false);
     }

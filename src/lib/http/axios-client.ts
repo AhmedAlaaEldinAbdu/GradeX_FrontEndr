@@ -18,6 +18,26 @@ const API_CONFIG = {
 } as const;
 
 // ============================================================================
+// Public Auth Endpoints (no session yet — a 401 here is a credentials/
+// validation error, not an expired session, so it must never trigger the
+// global refresh-token-then-redirect-to-login flow below)
+// ============================================================================
+
+const PUBLIC_AUTH_URL_FRAGMENTS = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/forgot-password',
+  '/auth/verify-otp',
+  '/auth/reset-password',
+];
+
+function isPublicAuthRequest(url?: string): boolean {
+  if (!url) return false;
+  const normalized = url.toLowerCase();
+  return PUBLIC_AUTH_URL_FRAGMENTS.some((fragment) => normalized.includes(fragment));
+}
+
+// ============================================================================
 // Request Deduplication System (DEV environment only)
 // ============================================================================
 
@@ -281,6 +301,17 @@ baseAxiosClient.interceptors.response.use(
 
       switch (status) {
         case 401: {
+          // A 401 on a public auth endpoint (login, forgot-password, verify-otp,
+          // reset-password, register) means bad credentials/OTP/email, not an
+          // expired session — let it reject normally so the caller's own
+          // try/catch can show an inline error instead of bouncing to /login.
+          if (isPublicAuthRequest(error.config?.url)) {
+            logger.warn('Unauthorized on public auth endpoint - not redirecting', {
+              url: error.config?.url,
+            });
+            break;
+          }
+
           logger.warn('Unauthorized request - Attempting token refresh', {
             url: error.config?.url,
           });

@@ -12,6 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CustomImage from '@/shared/components/CustomImage';
 import { authApiService } from '@/services/api/auth/auth.service';
+import { getErrorMessage } from '@/lib/http';
 
 const ResetPasswordPage: React.FC = () => {
   const { t } = useTranslation();
@@ -50,8 +51,8 @@ const ResetPasswordPage: React.FC = () => {
         confirmPassword: data.confirmPassword,
       });
       navigate('/auth/password-reset-success');
-    } catch {
-      setError(t('common.errorOccurred'));
+    } catch (err) {
+      setError(getErrorMessage(err));
     } finally {
       setIsLoading(false);
     }

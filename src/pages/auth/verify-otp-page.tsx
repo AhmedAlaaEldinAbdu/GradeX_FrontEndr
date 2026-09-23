@@ -12,6 +12,7 @@ import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
 import CustomImage from '@/shared/components/CustomImage';
 import { authApiService } from '@/services/api/auth/auth.service';
+import { getErrorMessage } from '@/lib/http';
 
 const VerifyOtpPage: React.FC = () => {
   const { t } = useTranslation();
@@ -116,8 +117,8 @@ const VerifyOtpPage: React.FC = () => {
         // Navigate to dashboard - router will handle the redirect based on role
         navigate('/dashboard');
       }
-    } catch {
-      setError(t('common.errorOccurred'));
+    } catch (err) {
+      setError(getErrorMessage(err));
     } finally {
       setIsLoading(false);
     }
@@ -133,8 +134,8 @@ const VerifyOtpPage: React.FC = () => {
 
     try {
       await authApiService.forgotPassword({ email });
-    } catch {
-      setError(t('common.errorOccurred'));
+    } catch (err) {
+      setError(getErrorMessage(err));
     }
   };
 
