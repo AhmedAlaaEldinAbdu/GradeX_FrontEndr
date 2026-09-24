@@ -5,6 +5,7 @@ import type {
   GradeDetailsDto,
   GradeDto,
   GradeQueryParams,
+  StageWithGradesDto,
 } from '@/services/api/types/grades.types';
 
 // ============================================================================
@@ -19,6 +20,15 @@ export interface GradesState {
   currentGrade: GradeDetailsDto | null;
   currentGradeLoading: boolean;
   currentGradeError: string | null;
+  stages: StageWithGradesDto[];
+  stagesTotals: {
+    totalStages: number;
+    totalGrades: number;
+    totalClassrooms: number;
+    totalStudents: number;
+  };
+  isLoadingStages: boolean;
+  stagesError: string | null;
 }
 
 // ============================================================================
@@ -85,6 +95,45 @@ export const fetchGradeById = createAsyncThunk<GradeDetailsDto, string>(
   }
 );
 
+interface FetchStagesWithGradesResult {
+  stages: StageWithGradesDto[];
+  totalStages: number;
+  totalGrades: number;
+  totalClassrooms: number;
+  totalStudents: number;
+}
+
+export const fetchStagesWithGrades = createAsyncThunk<FetchStagesWithGradesResult, string | void>(
+  'grades/fetchStagesWithGrades',
+  async (schoolBranchId, { rejectWithValue }) => {
+    try {
+      const response = await gradeApiService.getStagesWithGrades({
+        SchoolBranchId: normalizeOptionalParam(schoolBranchId || undefined),
+      });
+
+      if (!response?.isSuccess || !response.data) {
+        return {
+          stages: [],
+          totalStages: 0,
+          totalGrades: 0,
+          totalClassrooms: 0,
+          totalStudents: 0,
+        };
+      }
+
+      return {
+        stages: response.data.stages || [],
+        totalStages: response.data.totalStages || 0,
+        totalGrades: response.data.totalGrades || 0,
+        totalClassrooms: response.data.totalClassrooms || 0,
+        totalStudents: response.data.totalStudents || 0,
+      };
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 // ============================================================================
 // Slice
 // ============================================================================
@@ -97,6 +146,15 @@ const initialState: GradesState = {
   currentGrade: null,
   currentGradeLoading: false,
   currentGradeError: null,
+  stages: [],
+  stagesTotals: {
+    totalStages: 0,
+    totalGrades: 0,
+    totalClassrooms: 0,
+    totalStudents: 0,
+  },
+  isLoadingStages: false,
+  stagesError: null,
 };
 
 const gradesSlice = createSlice({
@@ -129,6 +187,24 @@ const gradesSlice = createSlice({
       .addCase(fetchGradeById.rejected, (state, action) => {
         state.currentGradeLoading = false;
         state.currentGradeError = action.payload as string;
+      })
+      .addCase(fetchStagesWithGrades.pending, (state) => {
+        state.isLoadingStages = true;
+        state.stagesError = null;
+      })
+      .addCase(fetchStagesWithGrades.fulfilled, (state, action) => {
+        state.isLoadingStages = false;
+        state.stages = action.payload.stages;
+        state.stagesTotals = {
+          totalStages: action.payload.totalStages,
+          totalGrades: action.payload.totalGrades,
+          totalClassrooms: action.payload.totalClassrooms,
+          totalStudents: action.payload.totalStudents,
+        };
+      })
+      .addCase(fetchStagesWithGrades.rejected, (state, action) => {
+        state.isLoadingStages = false;
+        state.stagesError = action.payload as string;
       });
   },
 });

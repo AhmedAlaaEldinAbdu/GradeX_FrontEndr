@@ -51,3 +51,46 @@ export interface GradeQueryParams {
   AcdemicsystemId?: string;
   SchoolBranchId?: string;
 }
+
+// ============================================================================
+// Stages With Grades (grouped overview)
+// ============================================================================
+
+export interface StageGradeDto {
+  gradeId: string;
+  gradeName: string;
+  academicSubSystemId: string;
+  academicSubSystemName: string;
+  classroomsCount: number;
+  studentsCount: number;
+  classroomsPercentage: number;
+}
+
+export interface StageWithGradesDto {
+  lkSchoolStageId: string;
+  stageName: string;
+  gradesCount: number;
+  classroomsCount: number;
+  studentsCount: number;
+  grades: StageGradeDto[];
+}
+
+export interface StagesWithGradesData {
+  totalStages: number;
+  totalGrades: number;
+  totalClassrooms: number;
+  totalStudents: number;
+  stages: StageWithGradesDto[];
+}
+
+export interface StagesWithGradesResponse {
+  data: StagesWithGradesData;
+  isSuccess: boolean;
+  message: string;
+  errorCode: string | null;
+  validationErrors: unknown;
+}
+
+export interface StagesWithGradesQueryParams {
+  SchoolBranchId?: string;
+}

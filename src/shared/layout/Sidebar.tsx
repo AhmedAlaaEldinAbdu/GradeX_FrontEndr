@@ -1268,19 +1268,30 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Collapsed rail: Settings sits as the last icon, same treatment as any other
-            top-level item (active/hover state + hover flyout with the settings sub-links). */}
+        {/* Collapsed rail: Settings gets the same treatment as any other top-level item
+            (active/hover state + hover flyout), with the current user's avatar beneath it. */}
         {isCollapsed && (
           <div className="z-3 flex shrink-0 flex-col items-stretch gap-[4px] border-t border-solid border-[#F1F5F9] px-[12px] py-[8px]">
             {renderCollapsedItem(settingsMenuItem)}
+
+            {user && (
+              <div className="flex justify-center">
+                <CustomImage
+                  src={profileImage}
+                  alt={user.name}
+                  title={schoolName ? `${user.name} - ${schoolName}` : user.name}
+                  className="h-[40px] w-[40px] shrink-0 rounded-[8px] object-cover"
+                />
+              </div>
+            )}
           </div>
         )}
 
         {/* Figma "Sidebar Bottom: Settings" (node 225:2564) — settings dropdown button +
-            current user card. No collapsed-rail design exists for this block, so it only shows
-            in the full-width sidebar / mobile drawer. */}
+            current user card. The rail has no room for the name/school text, so it shows the
+            avatar alone (above) and this full card only in the full-width sidebar / mobile drawer. */}
         {!isCollapsed && (
-          <div className="z-3 flex shrink-0 flex-col gap-[16px] border-t border-solid border-[#F1F5F9] px-[12px] pt-[13px] pb-[12px]">
+          <div className="z-3 flex shrink-0 flex-col gap-[16px] border-t border-solid border-[#F1F5F9] px-[12px] pt-[12px] pb-[14px]">
             <div className="relative">
               <button
                 type="button"

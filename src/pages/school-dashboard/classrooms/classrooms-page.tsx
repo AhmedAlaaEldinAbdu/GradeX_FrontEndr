@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
-import PageHeader from '@/shared/components/PageHeader';
+import CustomImage from '@/shared/components/CustomImage';
 import ClassroomsList from './components/ClassroomsList';
-import PlusIcon from '@gradex/assets/icons/Plus.svg';
+import BookOutlineGreenIcon from '@gradex/assets/icons/BookOutlineGreen.svg';
 
 export default function ClassroomsPage() {
   const { t } = useTranslation();
@@ -19,18 +19,17 @@ export default function ClassroomsPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Page Header */}
-      <PageHeader
-        title={t('grades.title')}
-        actions={[
-          {
-            label: 'grades.addClassroom',
-            to: '/classrooms/add-classroom',
-            imgSrc: PlusIcon,
-            imgClassName: 'w-10 h-10',
-            circle: true,
-          },
-        ]}
-      />
+      <div className="mb-6 flex items-center gap-4">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[#1E7A52] bg-[#ECFDF5]">
+          <CustomImage src={BookOutlineGreenIcon} alt="" className="h-6 w-6" />
+        </div>
+        <div className="flex flex-col items-start justify-center gap-1">
+          <h1 className="text-2xl leading-8 font-bold tracking-[-0.6px] text-[black]">
+            {t('grades.title')}
+          </h1>
+          <p className="text-sm leading-[19.6px] text-[#9D9D9D]">{t('grades.subtitle')}</p>
+        </div>
+      </div>
 
       {/* Main Content */}
       <ClassroomsList />
