@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,14 +6,10 @@ import { FaBars, FaKey, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { clearUser } from '@gradex/redux/features/auth/authSlice';
 import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import profileImage from '@gradex/assets/images/profile.png';
-import ArrowDownXsIcon from '@gradex/assets/icons/ArrowDownXs.svg';
-import NotificationDarkIcon from '@gradex/assets/icons/NotificationDark.svg';
-import SearchDarkIcon from '@gradex/assets/icons/SearchDark.svg';
-import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
+import BellOutlineIcon from '@gradex/assets/icons/BellOutline.svg';
+import MenuKebabVerticalIcon from '@gradex/assets/icons/MenuKebabVertical.svg';
 // TODO(TEST TEAM): Temporary role switcher (remove later)
 import RoleSwitcher from '@/shared/components/RoleSwitcher';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useSchoolBranchName } from '@/hooks/useSchoolBranchName';
 import CustomImage from '@/shared/components/CustomImage';
 import ChangePasswordModal from '@/shared/components/ChangePasswordModal';
 
@@ -22,15 +18,37 @@ interface HeaderProps {
   onMenuClick?: () => void;
 }
 
+/**
+ * Figma "Frame 116" (node 245:588) — 77px bar holding only the avatar, the kebab menu
+ * and the notification bell, grouped at the inline-end of the page (the side away from
+ * the sidebar). The kebab is the account menu trigger.
+ */
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { t } = useTranslation();
-  const { isRTL } = useLanguage();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const { name: schoolName } = useSchoolBranchName();
+  const accountMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setShowDropdown(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [showDropdown]);
 
   const handleLogout = () => {
     dispatch(clearUser());
@@ -44,124 +62,99 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
   return (
     <header className="bg-white drop-shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_1px_2px_rgba(12,12,13,0.05)]">
-      <div className="flex flex-row-reverse items-center justify-between px-[16px] py-[16px] md:px-[24px]">
-        <div className="flex shrink-0 items-center gap-[8px] sm:gap-[16px]">
-          {/* TODO(TEST TEAM): Role Switcher (QA/dev) - remove later */}
-          <RoleSwitcher variant="icon-only" size="md" />
+      {/* Figma: 24px inline padding, 13.5px block padding around the 50px avatar -> 77px tall. */}
+      <div className="flex flex-row-reverse items-center justify-between px-[16px] py-[13.5px] md:px-[24px]">
+        {/* Figma "Frame 114": avatar, kebab, bell — 16px gap, reading avatar-first from the
+            page edge outwards. */}
+        <div className="flex shrink-0 flex-row-reverse items-center gap-[8px] sm:gap-[16px]">
+          {/* Avatar with the 12px presence dot (Figma "Group 2"). */}
+          <div className="relative flex h-[50px] w-[50px] shrink-0 items-center justify-center">
+            <CustomImage
+              src={profileImage}
+              alt={user?.name ?? ''}
+              className="h-full w-full rounded-[24px] object-cover"
+            />
+            <span
+              aria-hidden
+              className="absolute inset-e-[4px] bottom-0 h-[12px] w-[12px] rounded-full bg-[#22C55E]"
+            />
+          </div>
 
-          {/* Language Switcher */}
-          <LanguageSwitcher variant="icon-only" size="sm" />
-
-          {/* Notifications */}
-          <div className="relative">
-            {/* Figma "Group 1": 32px bell offset 3px down, 14px badge at its top, 16px in. */}
-            <button className="relative flex h-[35px] w-[32px] items-end justify-center rounded-[8px] transition-colors hover:bg-[#ECFDF5]">
+          {/* Account menu — Figma "iconamoon:menu-kebab-vertical-bold". */}
+          <div className="relative" ref={accountMenuRef}>
+            <button
+              type="button"
+              onClick={() => setShowDropdown((prev) => !prev)}
+              aria-haspopup="menu"
+              aria-expanded={showDropdown}
+              aria-label={t('header.profile')}
+              className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] transition-colors hover:bg-[#ECFDF5]"
+            >
               <img
-                src={NotificationDarkIcon}
+                src={MenuKebabVerticalIcon}
                 alt=""
                 aria-hidden="true"
                 className="h-[32px] w-[32px]"
               />
-              <span className="absolute inset-s-[16px] top-0 flex h-[14px] w-[14px] items-center justify-center rounded-[7px] bg-[#EF4444] px-[4px] pt-px text-[10px] leading-[13px] font-medium text-white">
-                1
-              </span>
-            </button>
-          </div>
-
-          {/* User Profile Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="flex items-center gap-[8px] rounded-[8px] p-[4px] transition-colors hover:bg-[#ECFDF5]"
-            >
-              <div className="flex items-center justify-center gap-[8px]">
-                <div className="relative flex h-[50px] w-[50px] items-center justify-center">
-                  <CustomImage
-                    src={profileImage}
-                    alt="User Avatar"
-                    className="h-full w-full rounded-[24px] object-cover"
-                  />
-                  <span
-                    aria-hidden
-                    className="absolute inset-e-0 bottom-0 h-[12px] w-[12px] rounded-full border-2 border-white bg-[#22C55E]"
-                  />
-                </div>
-                <div className="hidden flex-col items-start text-start leading-tight sm:flex">
-                  <span className="text-[14px] leading-[18.2px] font-semibold text-[#1E293B]">
-                    {user?.name}
-                  </span>
-                  {schoolName && (
-                    <span className="text-[12px] leading-[15.6px] font-medium text-[#1E7A52]">
-                      {schoolName}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <img
-                src={ArrowDownXsIcon}
-                alt=""
-                aria-hidden="true"
-                className={`h-4 w-4 transition-transform ${showDropdown ? 'rotate-180' : ''}`}
-              />
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Anchored to the button's inline-END so the menu opens towards the page centre —
+                the cluster sits at the very edge of the viewport, and opening the other way
+                clipped the items. */}
             {showDropdown && (
-              <div className="absolute top-full left-0 z-50 mt-2 w-48 overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]">
+              <div
+                role="menu"
+                className="absolute inset-e-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]"
+              >
                 <div className="py-1">
                   <button
+                    role="menuitem"
                     onClick={() => {
                       setShowDropdown(false);
                       // Navigate to profile page if exists
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-[14px] font-medium text-[#9D9D9D] transition-colors hover:bg-[#ECFDF5] hover:text-[#1E7A52]"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-start text-[14px] font-medium text-[#9D9D9D] transition-colors hover:bg-[#ECFDF5] hover:text-[#1E7A52]"
                   >
-                    <FaUser className="text-[#9D9D9D]" />
-                    <span>{t('header.profile') || 'الملف الشخصي'}</span>
+                    <FaUser className="shrink-0" />
+                    <span>{t('header.profile')}</span>
                   </button>
                   <hr className="my-1 border-[#F1F5F9]" />
                   <button
+                    role="menuitem"
                     onClick={openChangePassword}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-[14px] font-medium text-[#9D9D9D] transition-colors hover:bg-[#ECFDF5] hover:text-[#1E7A52]"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-start text-[14px] font-medium text-[#9D9D9D] transition-colors hover:bg-[#ECFDF5] hover:text-[#1E7A52]"
                   >
-                    <FaKey className="text-[#9D9D9D]" />
+                    <FaKey className="shrink-0" />
                     <span>{t('header.changePassword')}</span>
                   </button>
                   <hr className="my-1 border-[#F1F5F9]" />
                   <button
+                    role="menuitem"
                     onClick={() => {
                       setShowDropdown(false);
                       handleLogout();
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-2 text-right text-[14px] font-medium text-[#EF4444] transition-colors hover:bg-[#FEF2F2]"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-start text-[14px] font-medium text-[#EF4444] transition-colors hover:bg-[#FEF2F2]"
                   >
-                    <FaSignOutAlt className="text-[#EF4444]" />
-                    <span>{t('header.logout') || 'تسجيل الخروج'}</span>
+                    <FaSignOutAlt className="shrink-0" />
+                    <span>{t('header.logout')}</span>
                   </button>
                 </div>
               </div>
             )}
           </div>
-        </div>
 
-        <div className="max-w-md min-w-0 flex-1">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder={t('header.search')}
-              className={`h-[42px] w-full rounded-[8px] border border-[#1E7A52] bg-white p-[8px] text-[14px] leading-[18.2px] font-semibold text-[#1E7A52] transition-colors placeholder:font-medium placeholder:text-[#9D9D9D] focus:ring-1 focus:ring-[#1E7A52] focus:outline-hidden ${
-                isRTL ? 'pr-10 pl-4' : 'pr-4 pl-10'
-              }`}
-            />
-            <img
-              src={SearchDarkIcon}
-              alt=""
-              aria-hidden="true"
-              className={`absolute top-1/2 -translate-y-1/2 transform ${
-                isRTL ? 'right-3' : 'left-3'
-              }`}
-            />
-          </div>
+          {/* Notifications — Figma "Group 1": 32px bell offset 3px down, 14px badge at its
+              top, 16px in from the bell's inline start. */}
+          <button className="relative flex h-[35px] w-[32px] shrink-0 items-end justify-center rounded-[8px] transition-colors hover:bg-[#ECFDF5]">
+            <img src={BellOutlineIcon} alt="" aria-hidden="true" className="h-[32px] w-[32px]" />
+            <span className="absolute inset-s-[16px] top-0 flex h-[14px] w-[14px] items-center justify-center rounded-[7px] bg-[#EF4444] px-[4px] pt-px text-[10px] leading-[13px] font-medium text-white">
+              1
+            </span>
+          </button>
+
+          {/* TODO(TEST TEAM): Role Switcher (QA/dev) - remove later */}
+          <RoleSwitcher variant="icon-only" size="md" />
         </div>
 
         {/* Mobile menu toggle — last child, so with flex-row-reverse it sits on the sidebar side. */}
@@ -171,7 +164,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             onClick={onMenuClick}
             aria-label={t('sidebar.expand')}
             title={t('sidebar.expand')}
-            className="me-[12px] flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[8px] border border-[#E2E8F0] text-[#1E293B] transition-colors hover:border-[#1E7A52] hover:bg-[#ECFDF5] hover:text-[#1E7A52] lg:hidden"
+            className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[8px] border border-[#E2E8F0] text-[#1E293B] transition-colors hover:border-[#1E7A52] hover:bg-[#ECFDF5] hover:text-[#1E7A52] lg:hidden"
           >
             <FaBars className="h-[18px] w-[18px]" />
           </button>

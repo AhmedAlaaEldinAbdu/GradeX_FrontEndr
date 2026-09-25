@@ -10,6 +10,7 @@ import { fetchTeacherRequestsSummary } from '@/redux/features/teacher-requests/t
 import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import { UserRole, type UserRoleType } from '@gradex/constants';
 import CustomImage from '@/shared/components/CustomImage';
+import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 
 // Icons
 import HomeIcon from '@gradex/assets/icons/Home.svg';
@@ -494,7 +495,7 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
           cancelClose();
           onToggle();
         }}
-        className={`group flex w-full items-center justify-center rounded-[8px] py-3 transition-colors ${
+        className={`group flex w-full items-center justify-center rounded-[8px] ${item.key === 'settings' ? 'py-1' : 'py-2'} transition-colors ${
           isActive ? 'bg-[#ECFDF5]' : isOpen ? 'bg-[#F1F5F9]' : 'hover:bg-[#ECFDF5]'
         }`}
       >
@@ -579,6 +580,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   const adminRequestsSummary = useAppSelector((state) => state.teacherRequests.summary);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const settingsDropdownRef = useRef<HTMLDivElement>(null);
+  // Collapsed-rail avatar tooltip (school name) — portalled, since the `<aside>` clips
+  // anything absolutely positioned outside its own bounds.
+  const avatarRef = useRef<HTMLDivElement>(null);
+  const [avatarTooltipCoords, setAvatarTooltipCoords] = useState<{
+    top: number;
+    left?: number;
+    right?: number;
+  } | null>(null);
 
   // Pull the admin-requests summary so the sidebar badge can show the pending count.
   useEffect(() => {
@@ -609,6 +618,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     return window.matchMedia(SIDEBAR_MOBILE_QUERY).matches;
   });
   const isCollapsed = isCollapsedPref && !isMobile;
+
+  // Dismiss the collapsed-rail avatar tooltip if the rail expands (or the viewport
+  // switches to mobile) while it's showing — its anchor is about to move or disappear.
+  useEffect(() => {
+    if (!isCollapsed) setAvatarTooltipCoords(null);
+  }, [isCollapsed]);
 
   useEffect(() => {
     const mq = window.matchMedia(SIDEBAR_MOBILE_QUERY);
@@ -1274,14 +1289,66 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="z-3 flex shrink-0 flex-col items-stretch gap-[4px] border-t border-solid border-[#F1F5F9] px-[12px] py-[8px]">
             {renderCollapsedItem(settingsMenuItem)}
 
+            {/* Extra breathing room before the language switcher, and again before the
+                avatar below it — collapsed rail only, so these three icons don't read as
+                a single stacked block. */}
+            <div className="mt-[8px] flex justify-center">
+              <LanguageSwitcher variant="icon-only" size="sm" placement="top" portal />
+            </div>
+
             {user && (
-              <div className="flex justify-center">
+              <div
+                ref={avatarRef}
+                className="mt-[8px] flex justify-center"
+                onMouseEnter={() => {
+                  const rect = avatarRef.current?.getBoundingClientRect();
+                  if (!rect) return;
+                  const margin = 8;
+                  const top = rect.top + rect.height / 2;
+                  // The sidebar sits flush against the viewport's start edge, so the
+                  // tooltip always opens toward the page centre (opposite that edge).
+                  setAvatarTooltipCoords(
+                    isRTL
+                      ? { top, right: window.innerWidth - rect.left + margin }
+                      : { top, left: rect.right + margin }
+                  );
+                }}
+                onMouseLeave={() => setAvatarTooltipCoords(null)}
+                onFocus={() => {
+                  const rect = avatarRef.current?.getBoundingClientRect();
+                  if (!rect) return;
+                  const margin = 8;
+                  const top = rect.top + rect.height / 2;
+                  setAvatarTooltipCoords(
+                    isRTL
+                      ? { top, right: window.innerWidth - rect.left + margin }
+                      : { top, left: rect.right + margin }
+                  );
+                }}
+                onBlur={() => setAvatarTooltipCoords(null)}
+              >
                 <CustomImage
                   src={profileImage}
                   alt={user.name}
-                  title={schoolName ? `${user.name} - ${schoolName}` : user.name}
-                  className="h-[40px] w-[40px] shrink-0 rounded-[8px] object-cover"
+                  tabIndex={0}
+                  className="h-8 w-8 shrink-0 rounded-[8px] object-cover"
                 />
+                {avatarTooltipCoords &&
+                  createPortal(
+                    <div
+                      role="tooltip"
+                      dir={isRTL ? 'rtl' : 'ltr'}
+                      className="fixed z-1000 -translate-y-1/2 rounded-md bg-green-500 px-3 py-2 text-xs whitespace-nowrap text-white shadow-md"
+                      style={{
+                        top: avatarTooltipCoords.top,
+                        left: avatarTooltipCoords.left,
+                        right: avatarTooltipCoords.right,
+                      }}
+                    >
+                      {schoolName ?? user.name}
+                    </div>,
+                    document.body
+                  )}
               </div>
             )}
           </div>
@@ -1292,160 +1359,165 @@ const Sidebar: React.FC<SidebarProps> = ({
             avatar alone (above) and this full card only in the full-width sidebar / mobile drawer. */}
         {!isCollapsed && (
           <div className="z-3 flex shrink-0 flex-col gap-[16px] border-t border-solid border-[#F1F5F9] px-[12px] pt-[12px] pb-[14px]">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setExpandedItems((prev) =>
-                    prev.includes('settings')
-                      ? prev.filter((k) => k !== 'settings')
-                      : [...prev, 'settings']
-                  );
-                }}
-                className={cn(
-                  'flex w-full items-center gap-[8px] rounded-[8px] p-[8px] text-[14px] leading-[16px] font-semibold text-[#1E7A52] transition-colors hover:bg-[#ECFDF5]',
-                  rowDirectionClass
-                )}
-              >
-                <CustomImage
-                  src={SettingsIcon}
-                  alt=""
-                  className={cn('h-5 w-5 shrink-0', ICON_FILTER_ACTIVE_CLASS)}
-                />
-                <span className={cn('flex-1 truncate', textAlignClass)}>
-                  {t('sidebar.settings')}
-                </span>
-              </button>
-
-              {expandedItems.includes('settings') && (
-                <div
-                  ref={settingsDropdownRef}
+            {/* Settings row — the language switcher lives here (moved out of the header). */}
+            <div className={cn('flex items-center gap-[8px]', rowDirectionClass)}>
+              <div className="relative min-w-0 flex-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExpandedItems((prev) =>
+                      prev.includes('settings')
+                        ? prev.filter((k) => k !== 'settings')
+                        : [...prev, 'settings']
+                    );
+                  }}
                   className={cn(
-                    'absolute bottom-full z-50 mb-1 w-56 overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]',
-                    isRTL ? 'right-0' : 'left-0'
+                    'flex w-full items-center gap-[8px] rounded-[8px] p-[8px] text-[14px] leading-[16px] font-semibold text-[#1E7A52] transition-colors hover:bg-[#ECFDF5]',
+                    rowDirectionClass
                   )}
                 >
-                  <div className="py-1">
-                    <NavLink
-                      to="/settings/school-data"
-                      onClick={() => {
-                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
-                        if (isMobile) onMobileClose?.();
-                      }}
-                      className={cn(
-                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
-                        location.pathname === '/settings/school-data' ||
-                          location.pathname.startsWith('/settings/school-data/')
-                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
-                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
-                        isRTL ? 'text-right' : 'text-left'
-                      )}
-                    >
-                      <span>{t('sidebar.schoolData')}</span>
-                    </NavLink>
+                  <CustomImage
+                    src={SettingsIcon}
+                    alt=""
+                    className={cn('h-5 w-5 shrink-0', ICON_FILTER_ACTIVE_CLASS)}
+                  />
+                  <span className={cn('flex-1 truncate', textAlignClass)}>
+                    {t('sidebar.settings')}
+                  </span>
+                </button>
 
-                    <hr className="my-1 border-[#F1F5F9]" />
+                {expandedItems.includes('settings') && (
+                  <div
+                    ref={settingsDropdownRef}
+                    className={cn(
+                      'absolute bottom-full z-50 mb-1 w-56 overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]',
+                      isRTL ? 'right-0' : 'left-0'
+                    )}
+                  >
+                    <div className="py-1">
+                      <NavLink
+                        to="/settings/school-data"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/school-data' ||
+                            location.pathname.startsWith('/settings/school-data/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.schoolData')}</span>
+                      </NavLink>
 
-                    <NavLink
-                      to="/settings/job-roles"
-                      onClick={() => {
-                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
-                        if (isMobile) onMobileClose?.();
-                      }}
-                      className={cn(
-                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
-                        location.pathname === '/settings/job-roles' ||
-                          location.pathname.startsWith('/settings/job-roles/')
-                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
-                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
-                        isRTL ? 'text-right' : 'text-left'
-                      )}
-                    >
-                      <span>{t('sidebar.jobRoles')}</span>
-                    </NavLink>
+                      <hr className="my-1 border-[#F1F5F9]" />
 
-                    <hr className="my-1 border-[#F1F5F9]" />
+                      <NavLink
+                        to="/settings/job-roles"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/job-roles' ||
+                            location.pathname.startsWith('/settings/job-roles/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.jobRoles')}</span>
+                      </NavLink>
 
-                    <NavLink
-                      to="/settings/payment-channels"
-                      onClick={() => {
-                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
-                        if (isMobile) onMobileClose?.();
-                      }}
-                      className={cn(
-                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
-                        location.pathname === '/settings/payment-channels' ||
-                          location.pathname.startsWith('/settings/payment-channels/')
-                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
-                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
-                        isRTL ? 'text-right' : 'text-left'
-                      )}
-                    >
-                      <span>{t('sidebar.paymentChannels')}</span>
-                    </NavLink>
+                      <hr className="my-1 border-[#F1F5F9]" />
 
-                    <hr className="my-1 border-[#F1F5F9]" />
+                      <NavLink
+                        to="/settings/payment-channels"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/payment-channels' ||
+                            location.pathname.startsWith('/settings/payment-channels/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.paymentChannels')}</span>
+                      </NavLink>
 
-                    <NavLink
-                      to="/settings/holidays"
-                      onClick={() => {
-                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
-                        if (isMobile) onMobileClose?.();
-                      }}
-                      className={cn(
-                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
-                        location.pathname === '/settings/holidays' ||
-                          location.pathname.startsWith('/settings/holidays/')
-                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
-                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
-                        isRTL ? 'text-right' : 'text-left'
-                      )}
-                    >
-                      <span>{t('sidebar.holidaysSettings')}</span>
-                    </NavLink>
+                      <hr className="my-1 border-[#F1F5F9]" />
 
-                    <hr className="my-1 border-[#F1F5F9]" />
+                      <NavLink
+                        to="/settings/holidays"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/holidays' ||
+                            location.pathname.startsWith('/settings/holidays/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.holidaysSettings')}</span>
+                      </NavLink>
 
-                    <NavLink
-                      to="/settings/site"
-                      onClick={() => {
-                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
-                        if (isMobile) onMobileClose?.();
-                      }}
-                      className={cn(
-                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
-                        location.pathname === '/settings/site' ||
-                          location.pathname.startsWith('/settings/site/')
-                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
-                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
-                        isRTL ? 'text-right' : 'text-left'
-                      )}
-                    >
-                      <span>{t('sidebar.siteSettings')}</span>
-                    </NavLink>
+                      <hr className="my-1 border-[#F1F5F9]" />
 
-                    <hr className="my-1 border-[#F1F5F9]" />
+                      <NavLink
+                        to="/settings/site"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/site' ||
+                            location.pathname.startsWith('/settings/site/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.siteSettings')}</span>
+                      </NavLink>
 
-                    <NavLink
-                      to="/settings/notifications"
-                      onClick={() => {
-                        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
-                        if (isMobile) onMobileClose?.();
-                      }}
-                      className={cn(
-                        'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
-                        location.pathname === '/settings/notifications' ||
-                          location.pathname.startsWith('/settings/notifications/')
-                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
-                          : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
-                        isRTL ? 'text-right' : 'text-left'
-                      )}
-                    >
-                      <span>{t('sidebar.notifications')}</span>
-                    </NavLink>
+                      <hr className="my-1 border-[#F1F5F9]" />
+
+                      <NavLink
+                        to="/settings/notifications"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/notifications' ||
+                            location.pathname.startsWith('/settings/notifications/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.notifications')}</span>
+                      </NavLink>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
+              <LanguageSwitcher variant="icon-only" size="sm" placement="top" portal />
             </div>
 
             {user && (
