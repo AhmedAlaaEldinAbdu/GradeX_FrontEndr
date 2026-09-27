@@ -24,6 +24,7 @@ interface CustomSelectProps {
   id?: string;
   variant?: 'default' | 'ghost';
   isWrap?: boolean;
+  triggerClassName?: string;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -40,6 +41,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   id = '',
   variant = 'default',
   isWrap = false,
+  triggerClassName = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -139,7 +141,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   ? 'border-red-500 focus-within:ring-2 focus-within:ring-red-500'
                   : 'border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-green-500'
               } ${isOpen ? 'ring-2 ring-green-500' : ''} ${disabled ? 'bg-gray-50' : 'hover:border-gray-400'}`
-        } ${isRTL ? 'text-right' : 'text-left'}`}
+        } ${isRTL ? 'text-right' : 'text-left'} ${triggerClassName}`}
       >
         <div
           className={`flex flex-row${isRTL ? '-reverse' : ''} w-full items-center justify-between ${variant === 'ghost' ? 'gap-1' : 'gap-2'}`}

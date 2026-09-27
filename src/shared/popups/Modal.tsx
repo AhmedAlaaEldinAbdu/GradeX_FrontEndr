@@ -13,6 +13,7 @@ interface ModalProps {
   headerClassName?: string;
   titleClassName?: string;
   contentClassName?: string;
+  panelClassName?: string;
   closeOnOverlayClick?: boolean;
 }
 
@@ -27,6 +28,7 @@ const Modal: React.FC<ModalProps> = ({
   headerClassName = '',
   titleClassName = '',
   contentClassName = '',
+  panelClassName = '',
   closeOnOverlayClick = true,
 }) => {
   useEffect(() => {
@@ -65,7 +67,7 @@ const Modal: React.FC<ModalProps> = ({
 
       {/* Modal */}
       <div
-        className={`relative w-full rounded-3xl bg-white shadow-xl ${sizeClasses[size]} mx-4 flex max-h-[90vh] flex-col`}
+        className={`relative w-full rounded-3xl bg-white shadow-xl ${sizeClasses[size]} mx-4 flex max-h-[90vh] flex-col ${panelClassName}`}
       >
         {/* Header */}
         {showHeader && (title || showCloseButton) && (

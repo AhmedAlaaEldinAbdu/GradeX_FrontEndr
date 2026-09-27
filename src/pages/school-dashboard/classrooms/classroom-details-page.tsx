@@ -1,41 +1,32 @@
 import { useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/hooks/useLanguage';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
-import Card from '@gradex/shared/components/Card';
 import CustomImage from '@/shared/components/CustomImage';
-import PageHeader from '@/shared/components/PageHeader';
+import Button from '@/shared/components/Button';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { fetchGradeById } from '@/redux/features/grades/gradesSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
-import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
-import SchoolPurpleIcon from '@gradex/assets/icons/SchoolPurple.svg';
-import TeachersNewBlueIcon from '@gradex/assets/icons/TeachersNewBlue.svg';
-import FilesTealIcon from '@gradex/assets/icons/FilesTeal.svg';
-import BookYellowIcon from '@gradex/assets/icons/BookYellow.svg';
+import ClassroomManagementOutlineIcon from '@gradex/assets/icons/ClassroomManagementOutline.svg';
+import ClassroomsCountBlueIcon from '@gradex/assets/icons/ClassroomsCountBlue.svg';
+import StudentsGreenOutlineIcon from '@gradex/assets/icons/StudentsGreenOutline.svg';
+import TeacherOrangeOutlineIcon from '@gradex/assets/icons/TeacherOrangeOutline.svg';
+import FilePurpleOutlineIcon from '@gradex/assets/icons/FilePurpleOutline.svg';
+import ArrowLeftGreenIcon from '@gradex/assets/icons/ArrowLeftGreen.svg';
 import ClassroomDetailsContent from './components/ClassroomDetailsContent';
-import {
-  getProgressColorClassName,
-  getProgressTextColorClassName,
-} from '@/shared/components/ProgressSummaryCard';
-
-type ClassroomWithTeacherName = {
-  teacherName?: string | null;
-};
-
-interface LocationState {
-  comeFrom?: string;
-}
 
 export default function ClassroomDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
+  const { isRTL } = useLanguage();
   const currentLang = i18n.language as 'ar' | 'en';
   const schoolBranchId = getCurrentSchoolBranchId();
-  const locationState = location.state as LocationState | null;
+  const locationState = location.state as { comeFrom?: string } | null;
   const isFromTeacherDetails = locationState?.comeFrom === 'teacher-details';
 
   const classrooms = useAppSelector((state) => state.classrooms.classrooms);
@@ -70,12 +61,10 @@ export default function ClassroomDetailsPage() {
   const gradeDetails = classrooms[0];
   const gradeName = grade ? (currentLang === 'ar' ? grade.nameAr : grade.nameEn) : undefined;
   const classroomTitle = gradeName || gradeDetails?.gradeName;
-  const responsibleTeacherName = (gradeDetails as ClassroomWithTeacherName | undefined)
-    ?.teacherName;
-  const MAX_CLASSROOMS = 8;
-  const classroomProgress = Math.max(
-    0,
-    Math.min(100, Math.round((classrooms.length / MAX_CLASSROOMS) * 100))
+
+  const totalStudents = classrooms.reduce(
+    (sum, classroom) => sum + (classroom.foundStudentNumber || 0),
+    0
   );
   const totalTeachers = classrooms.reduce(
     (sum, classroom) => sum + (classroom.teacherNumber || 0),
@@ -85,35 +74,32 @@ export default function ClassroomDetailsPage() {
     (sum, classroom) => sum + (classroom.materialNumber || 0),
     0
   );
-  const totalBooks = classrooms.reduce((sum, classroom) => sum + (classroom.bookNumber || 0), 0);
-  const classroomSummaryItems = [
+
+  // Listed start -> end: in RTL the first entry renders on the right, matching the design.
+  const kpiItems = [
     {
-      icon: SchoolPurpleIcon,
-      alt: t('classrooms.details.classrooms'),
-      value: classrooms.length,
-      label: t('classrooms.details.classrooms'),
-      iconClassName: 'bg-[#ECE5FF]',
-    },
-    {
-      icon: TeachersNewBlueIcon,
-      alt: t('classrooms.details.teacher'),
-      value: totalTeachers,
-      label: t('classrooms.details.teacher'),
-      iconClassName: 'bg-[#DDF1FF]',
-    },
-    {
-      icon: FilesTealIcon,
-      alt: t('classrooms.details.studyMaterials'),
+      icon: FilePurpleOutlineIcon,
       value: totalMaterials,
-      label: t('classrooms.details.studyMaterials'),
-      iconClassName: 'bg-[#D9F5F7]',
+      label: t('grades.materialsCountKpiLabel'),
+      iconBgClassName: 'bg-[#faf5ff]',
     },
     {
-      icon: BookYellowIcon,
-      alt: t('classrooms.details.studyBooks'),
-      value: totalBooks,
-      label: t('classrooms.details.studyBooks'),
-      iconClassName: 'bg-[#FFF6D8]',
+      icon: TeacherOrangeOutlineIcon,
+      value: totalTeachers,
+      label: t('grades.teachersCountKpiLabel'),
+      iconBgClassName: 'bg-[#fffbeb]',
+    },
+    {
+      icon: StudentsGreenOutlineIcon,
+      value: totalStudents,
+      label: t('grades.totalStudents'),
+      iconBgClassName: 'bg-[#ecfdf5]',
+    },
+    {
+      icon: ClassroomsCountBlueIcon,
+      value: classrooms.length,
+      label: t('grades.classroomsCountKpiLabel'),
+      iconBgClassName: 'bg-[#eff6ff]',
     },
   ];
 
@@ -134,68 +120,68 @@ export default function ClassroomDetailsPage() {
     : [
         { label: t('sidebar.academicAffairs') },
         { label: t('sidebar.eduStages') },
-        { label: t('grades.title'), path: '/classrooms' },
-        { label: classroomTitle || t('grades.classroomDetails') },
+        { label: t('sidebar.classrooms'), path: '/classrooms' },
+        { label: classroomTitle || t('grades.classroomDetails'), path: `/classrooms/${id}` },
+        { label: t('grades.classroomsBreadcrumbLabel') },
       ];
 
   return (
-    <div className="space-y-6">
-      <Breadcrumb items={breadcrumbItems} />
+    <div className="space-y-8">
+      {/* Children are ordered start -> end: in RTL the first child renders on the right. */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <Breadcrumb items={breadcrumbItems} />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/classrooms')}
+          imgSrc={ArrowLeftGreenIcon}
+          imgClassName={`h-4 w-4 ${isRTL && 'rotate-180'}`}
+          className="flex-row-reverse rounded-lg! border! border-[#1e7a52]! px-4! py-2! text-xs! text-[#1e7a52]!"
+        >
+          {t('grades.backToGrades')}
+        </Button>
+      </div>
 
-      <Card className="rounded-3xl border border-[#BDEBD9] bg-[#EDFFF8] p-6">
-        <PageHeader
-          title={classroomTitle || 'grades.classroomDetails'}
-          actions={[
-            {
-              label: '',
-              to: id ? `/classrooms/add-classroom?gradeId=${id}` : '/classrooms/add-classroom',
-              className: 'h-10 w-10 rounded-full! p-0!',
-              imgSrc: WhitePlusIcon,
-              imgClassName: 'h-5 w-5',
-            },
-          ]}
-        />
-        <div className="flex flex-col items-start gap-6">
-          {responsibleTeacherName ? (
-            <div className="text-base font-normal text-[#646969]">
-              {t('classrooms.details.responsibleTeacher')}: {responsibleTeacherName}
-            </div>
-          ) : (
-            <div className="p-4"></div>
-          )}
-
-          <div className="flex w-full flex-wrap items-center justify-between gap-4">
-            {classroomSummaryItems.map((item) => (
-              <div key={item.label} className="flex items-center gap-3 text-black-900">
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${item.iconClassName}`}
-                >
-                  <CustomImage src={item.icon} alt={item.alt} className="h-6 w-6" />
-                </div>
-                <span className="text-sm font-normal text-[#646969]">
-                  {item.value} {item.label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex w-full items-center gap-3">
-            <span
-              className={`text-base font-medium ${getProgressTextColorClassName(classroomProgress)}`}
-            >
-              {classroomProgress}%
-            </span>
-            <div className="h-3 flex-1 rounded-full bg-[#EEEEEE]">
-              <div
-                className={`h-full rounded-full ${getProgressColorClassName(classroomProgress)}`}
-                style={{ width: `${classroomProgress}%` }}
-              />
-            </div>
-          </div>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[#1e7a52] bg-[#ecfdf5] p-px">
+          <CustomImage src={ClassroomManagementOutlineIcon} alt="" className="h-6 w-6" />
         </div>
-      </Card>
+        <div className="flex flex-1 flex-col items-start gap-1 text-start">
+          <h1 className="text-2xl leading-8 font-bold tracking-[-0.75px] text-[black]">
+            {t('grades.classroomsManagementTitle', {
+              gradeName: classroomTitle || t('grades.classroomDetails'),
+            })}
+          </h1>
+          <p className="text-sm text-[#9d9d9d]">
+            {t('grades.classroomsManagementSubtitle', {
+              gradeName: classroomTitle || t('grades.classroomDetails'),
+            })}
+          </p>
+        </div>
+      </div>
 
-      <ClassroomDetailsContent currentLang={currentLang} />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        {kpiItems.map((item) => (
+          <div
+            key={item.label}
+            className="flex w-full min-w-[220px] flex-1 items-center justify-between rounded-xl border border-[rgba(226,232,240,0.9)] bg-white p-[17px] sm:w-auto"
+          >
+            <div className="flex flex-col items-start gap-1">
+              <span className="text-[26px] leading-[36.4px] font-bold text-[black]">
+                {item.value}
+              </span>
+              <span className="text-sm font-medium text-[#9d9d9d]">{item.label}</span>
+            </div>
+            <div
+              className={`flex size-12 shrink-0 items-center justify-center rounded-xl shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_1px_2px_rgba(12,12,13,0.05)] ${item.iconBgClassName}`}
+            >
+              <CustomImage src={item.icon} alt="" className="h-6 w-6" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <ClassroomDetailsContent currentLang={currentLang} gradeId={id} />
     </div>
   );
 }
