@@ -985,6 +985,9 @@
     "archive": "Archivieren",
     "recall": "Zurückrufen",
     "clearFilter": "Filter löschen",
+    "print": "Drucken",
+    "exportExcel": "Excel exportieren",
+    "exportPdf": "PDF exportieren",
     "confirmDelete": "Sind Sie sicher, dass Sie löschen möchten?",
     "successAdd": "Erfolgreich hinzugefügt",
     "successEdit": "Erfolgreich bearbeitet",
@@ -2380,6 +2383,8 @@
     "enterClassroomNameAr": "Klassenzimmername auf Erste Sprache eingeben",
     "enterClassroomNameEn": "Klassenzimmername auf Zweite Sprache eingeben",
     "addModalSubtitle": "Geben Sie die Daten der neuen Klasse ein und legen Sie die Kapazität fest",
+    "editModalSubtitle": "Aktualisieren Sie die Daten und die Kapazität der Klasse",
+    "updatedSuccessfully": "Klasse erfolgreich aktualisiert",
     "aliasArLabel": "Spitzname der Klasse (Erste Sprache)",
     "aliasEnLabel": "Spitzname der Klasse (Zweite Sprache)",
     "dragImageHere": "oder ziehen Sie das Bild hierher",
@@ -3336,6 +3341,8 @@
     "title": "Akademischer Kalender",
     "annualCalendar": "Jahreskalender",
     "addTitle": "Kalender hinzufügen",
+    "addSubtitle": "Geben Sie die erforderlichen Daten ein, um den Kalender hinzuzufügen",
+    "editSubtitle": "Aktualisieren Sie die Kalenderdaten und speichern Sie die Änderungen",
     "editTitle": "Kalender bearbeiten",
     "addCalendarButton": "Kalender hinzufügen",
     "searchPlaceholder": "Nach Bildungsstufe suchen",
@@ -3353,7 +3360,8 @@
       "educationalStages": "Bildungsstufen",
       "startDate": "Startdatum",
       "endDate": "Enddatum",
-      "weeksCount": "Anzahl der Wochen"
+      "weeksCount": "Anzahl der Wochen",
+      "status": "Status"
     },
     "daysOfWeek": {
       "sunday": "Sonntag",
@@ -3367,6 +3375,8 @@
     "form": {
       "educationalStagesLabel": "Bildungsstufen",
       "educationalStagesPlaceholder": "Bildungsstufen auswählen",
+      "academicSystemLabel": "Art des akademischen Systems",
+      "academicSystemPlaceholder": "Akademisches System auswählen",
       "studyStartDateLabel": "Datum des Studienbeginns",
       "studyEndDateLabel": "Datum des Studienendes",
       "weeksCountLabel": "Anzahl der Wochen",
@@ -3406,6 +3416,16 @@
         "endDateBeforeStart": "Das Enddatum des Studiums darf nicht vor dem Startdatum liegen",
         "endTimeBeforeStart": "Die Endzeit darf nicht vor der Startzeit liegen"
       }
+    },
+    "addAnnualCalendarButton": "Jahreskalender hinzufügen",
+    "academicSystemPlaceholder": "Akademisches System",
+    "allStatuses": "Alle Status",
+    "moreOptions": "Weitere Optionen",
+    "showingRange": "{{from}} - {{to}} von {{total}} Ergebnissen",
+    "stats": {
+      "stagesCount": "Anzahl der Stufen",
+      "nearestStart": "Nächster Beginn",
+      "nearestEnd": "Nächstes Ende"
     }
   },
   "tasksManagement": {

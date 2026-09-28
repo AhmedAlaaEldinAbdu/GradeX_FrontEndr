@@ -999,6 +999,9 @@
     "archive": "Архивировать",
     "recall": "Отозвать",
     "clearFilter": "Очистить фильтр",
+    "print": "Печать",
+    "exportExcel": "Экспорт Excel",
+    "exportPdf": "Экспорт PDF",
     "confirmDelete": "Вы уверены, что хотите удалить?",
     "successAdd": "Успешно добавлено",
     "successEdit": "Успешно изменено",
@@ -2394,6 +2397,8 @@
     "enterClassroomNameAr": "Введите название кабинета на первом языке",
     "enterClassroomNameEn": "Введите название кабинета на втором языке",
     "addModalSubtitle": "Введите данные новой группы и укажите вместимость",
+    "editModalSubtitle": "Измените данные группы и её вместимость",
+    "updatedSuccessfully": "Группа успешно обновлена",
     "aliasArLabel": "Псевдоним группы (первый язык)",
     "aliasEnLabel": "Псевдоним группы (второй язык)",
     "dragImageHere": "или перетащите изображение сюда",
@@ -3350,6 +3355,8 @@
     "title": "Учебный календарь",
     "annualCalendar": "Годовой календарь",
     "addTitle": "Добавить календарь",
+    "addSubtitle": "Введите необходимые данные для добавления календаря",
+    "editSubtitle": "Измените данные календаря и сохраните изменения",
     "editTitle": "Изменить календарь",
     "addCalendarButton": "Добавить календарь",
     "searchPlaceholder": "Поиск по учебной ступени",
@@ -3367,7 +3374,8 @@
       "educationalStages": "Учебные ступени",
       "startDate": "Дата начала",
       "endDate": "Дата окончания",
-      "weeksCount": "Количество недель"
+      "weeksCount": "Количество недель",
+      "status": "Статус"
     },
     "daysOfWeek": {
       "sunday": "Воскресенье",
@@ -3381,6 +3389,8 @@
     "form": {
       "educationalStagesLabel": "Учебные ступени",
       "educationalStagesPlaceholder": "Выберите учебные ступени",
+      "academicSystemLabel": "Тип академической системы",
+      "academicSystemPlaceholder": "Выберите академическую систему",
       "studyStartDateLabel": "Дата начала учёбы",
       "studyEndDateLabel": "Дата окончания учёбы",
       "weeksCountLabel": "Количество недель",
@@ -3420,6 +3430,16 @@
         "endDateBeforeStart": "Дата окончания обучения не может быть раньше даты начала",
         "endTimeBeforeStart": "Время окончания не может быть раньше времени начала"
       }
+    },
+    "addAnnualCalendarButton": "Добавить годовой календарь",
+    "academicSystemPlaceholder": "Академическая система",
+    "allStatuses": "Все статусы",
+    "moreOptions": "Дополнительные параметры",
+    "showingRange": "Показано {{from}} - {{to}} из {{total}} результатов",
+    "stats": {
+      "stagesCount": "Количество этапов",
+      "nearestStart": "Ближайшее начало",
+      "nearestEnd": "Ближайшее окончание"
     }
   },
   "tasksManagement": {

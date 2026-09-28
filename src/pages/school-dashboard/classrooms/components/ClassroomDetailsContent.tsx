@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { deleteClassroom, fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import AddClassroomModal from '../popups/AddClassroomModal';
+import EditClassroomModal from '../popups/EditClassroomModal';
 import MathIcon from '@gradex/assets/icons/Math.svg';
 import WhitePlusIcon from '@gradex/assets/icons/WhitePlus.svg';
 import StudentsGreenOutlineIcon from '@gradex/assets/icons/StudentsGreenOutline.svg';
@@ -79,6 +80,7 @@ export default function ClassroomDetailsContent({
   const [searchParams, setSearchParams] = useSearchParams();
   const [classroomPendingDelete, setClassroomPendingDelete] = useState<Classroom | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingClassroomId, setEditingClassroomId] = useState<string | null>(null);
   const initialNameParam = useRef(searchParams.get('name') ?? '').current;
   const [searchTerm, setSearchTerm] = useState(initialNameParam);
   const [currentPage, setCurrentPage] = useState(1);
@@ -171,13 +173,27 @@ export default function ClassroomDetailsContent({
     }
   };
 
+  const refreshClassrooms = () =>
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: 10000,
+        filters: {
+          gradeId,
+          schoolBranchId: getCurrentSchoolBranchId(),
+          name: searchTerm || undefined,
+        },
+      })
+    );
+
   const getCardActions = (classroom: Classroom): Action[] => [
     {
       id: `edit-${classroom.id}`,
       label: t('actions.edit'),
       icon: EditFilledIcon,
       color: 'text-gray-500 hover:bg-gray-100',
-      onClick: () => navigate(`/classrooms/edit-classroom/${classroom.id}`),
+      actionKey: 'edit',
+      onClick: () => setEditingClassroomId(classroom.id),
     },
     {
       id: `delete-${classroom.id}`,
@@ -355,15 +371,14 @@ export default function ClassroomDetailsContent({
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         gradeId={gradeId}
-        onSuccess={() =>
-          dispatch(
-            fetchClassrooms({
-              page: 1,
-              limit: 10000,
-              filters: { gradeId, schoolBranchId: getCurrentSchoolBranchId() },
-            })
-          )
-        }
+        onSuccess={refreshClassrooms}
+      />
+
+      <EditClassroomModal
+        isOpen={Boolean(editingClassroomId)}
+        classroomId={editingClassroomId}
+        onClose={() => setEditingClassroomId(null)}
+        onSuccess={refreshClassrooms}
       />
 
       <DeletePopup

@@ -9,6 +9,7 @@ type SearchInputProps = {
   placeholder?: string;
   className?: string; // applied to input element
   iconClass?: string;
+  iconSrc?: string;
   wrapperClassName?: string; // applied to outer wrapper
   debounce?: number; // ms; if provided, delays onChange calls
   disabled?: boolean;
@@ -22,6 +23,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   placeholder,
   className,
   iconClass,
+  iconSrc = SearchDarkIcon,
   wrapperClassName,
   debounce = 300,
   disabled,
@@ -79,7 +81,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         aria-label={placeholder}
       />
       <CustomImage
-        src={SearchDarkIcon}
+        src={iconSrc}
         alt=""
         className={`pointer-events-none absolute top-1/2 -translate-y-1/2 transform text-gray-400 ${iconClass} ${
           isRTL ? 'right-3' : 'left-3'

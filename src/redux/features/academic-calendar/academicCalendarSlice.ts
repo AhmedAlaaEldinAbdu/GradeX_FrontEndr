@@ -9,6 +9,7 @@ import { academicCalendarApiService } from '@/services/api/academic-calendar/aca
 import type {
   AcademicCalendarEntity,
   AcademicCalendarQueryParams,
+  AcademicCalendarStatusType,
   CreateAcademicCalendarRequest,
   UpdateAcademicCalendarRequest,
 } from '@/services/api/types/academic-calendar.types';
@@ -19,6 +20,9 @@ export interface AcademicCalendarFilters {
   searchTerm?: string;
   startDate?: string;
   endDate?: string;
+  gradeId?: string;
+  academicSystemId?: string;
+  status?: AcademicCalendarStatusType;
 }
 
 export interface AcademicCalendarState {
@@ -91,11 +95,22 @@ export const fetchAcademicCalendars = createAsyncThunk<
       if (payload.limit !== undefined) params.PageSize = payload.limit;
 
       if (payload.filters) {
-        const { schoolBranchId, searchTerm, startDate, endDate } = payload.filters;
+        const {
+          schoolBranchId,
+          searchTerm,
+          startDate,
+          endDate,
+          gradeId,
+          academicSystemId,
+          status,
+        } = payload.filters;
         if (schoolBranchId) params.schoolBranchId = schoolBranchId;
         if (searchTerm) params.Search = searchTerm;
         if (startDate) params.StartDate = startDate;
         if (endDate) params.EndDate = endDate;
+        if (gradeId) params.GradeId = gradeId;
+        if (academicSystemId) params.AcademicSystemId = academicSystemId;
+        if (status !== undefined) params.Status = status;
       }
     }
 

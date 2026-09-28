@@ -985,6 +985,9 @@
     "archive": "Archive",
     "recall": "Recall",
     "clearFilter": "Clear Filter",
+    "print": "Print",
+    "exportExcel": "Export Excel",
+    "exportPdf": "Export PDF",
     "confirmDelete": "Are you sure you want to delete?",
     "successAdd": "Added successfully",
     "successEdit": "Edited successfully",
@@ -2515,6 +2518,8 @@
     "enterClassroomNameAr": "Enter classroom name in First Language",
     "enterClassroomNameEn": "Enter classroom name in Second Language",
     "addModalSubtitle": "Enter the new classroom details and set its capacity",
+    "editModalSubtitle": "Update the classroom details and capacity",
+    "updatedSuccessfully": "Classroom updated successfully",
     "aliasArLabel": "Classroom Nickname (First Language)",
     "aliasEnLabel": "Classroom Nickname (Second Language)",
     "dragImageHere": "or drag and drop the image here",
@@ -3471,6 +3476,8 @@
     "title": "Academic Calendar",
     "annualCalendar": "Annual calendar",
     "addTitle": "Add Calendar",
+    "addSubtitle": "Enter the required data to add the calendar",
+    "editSubtitle": "Update the calendar data and save the changes",
     "editTitle": "Edit Calendar",
     "addCalendarButton": "Add Calendar",
     "searchPlaceholder": "Search by educational stage",
@@ -3488,7 +3495,8 @@
       "educationalStages": "Educational stages",
       "startDate": "Start date",
       "endDate": "End date",
-      "weeksCount": "Weeks count"
+      "weeksCount": "Weeks count",
+      "status": "Status"
     },
     "daysOfWeek": {
       "sunday": "Sunday",
@@ -3502,6 +3510,8 @@
     "form": {
       "educationalStagesLabel": "Educational stages",
       "educationalStagesPlaceholder": "Select educational stages",
+      "academicSystemLabel": "Academic system type",
+      "academicSystemPlaceholder": "Select academic system",
       "studyStartDateLabel": "Study start date",
       "studyEndDateLabel": "Study end date",
       "weeksCountLabel": "Weeks count",
@@ -3541,6 +3551,16 @@
         "endDateBeforeStart": "Study end date cannot be earlier than the start date",
         "endTimeBeforeStart": "End time cannot be earlier than the start time"
       }
+    },
+    "addAnnualCalendarButton": "Add annual calendar",
+    "academicSystemPlaceholder": "Academic system",
+    "allStatuses": "All statuses",
+    "moreOptions": "More options",
+    "showingRange": "Showing {{from}} - {{to}} of {{total}} results",
+    "stats": {
+      "stagesCount": "Stages count",
+      "nearestStart": "Nearest start",
+      "nearestEnd": "Nearest end"
     }
   },
   "tasksManagement": {

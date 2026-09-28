@@ -994,6 +994,9 @@
     "archive": "أرشفة",
     "recall": "استرجاع",
     "clearFilter": "مسح الفلتر",
+    "print": "طباعة",
+    "exportExcel": "تصدير Excel",
+    "exportPdf": "تصدير PDF",
     "confirmDelete": "هل أنت متأكد من الحذف؟",
     "successAdd": "تمت الإضافة بنجاح",
     "successEdit": "تم التعديل بنجاح",
@@ -2525,6 +2528,8 @@
     "enterClassroomNameAr": "اسم الفصل",
     "enterClassroomNameEn": "اسم الفصل",
     "addModalSubtitle": "أدخل بيانات الفصل الجديد وحدد الطاقة الاستيعابية",
+    "editModalSubtitle": "عدّل بيانات الفصل والطاقة الاستيعابية",
+    "updatedSuccessfully": "تم تحديث الفصل بنجاح",
     "aliasArLabel": "الاسم المستعار للفصل (اللغة الأولى)",
     "aliasEnLabel": "الاسم المستعار للفصل (اللغة الثانية)",
     "dragImageHere": "أو اسحب الصورة وأفلتها هنا",
@@ -3488,6 +3493,8 @@
     "title": "التقويم الأكاديمي",
     "annualCalendar": "التقويم السنوي",
     "addTitle": "إضافة تقويم",
+    "addSubtitle": "أدخل البيانات المطلوبة لإضافة التقويم",
+    "editSubtitle": "عدّل بيانات التقويم ثم احفظ التغييرات",
     "editTitle": "تعديل تقويم",
     "addCalendarButton": "إضافة تقويم",
     "searchPlaceholder": "ابحث عن اسم المرحلة التعليمية",
@@ -3505,7 +3512,8 @@
       "educationalStages": "المراحل التعليمية",
       "startDate": "تاريخ البداية",
       "endDate": "تاريخ النهاية",
-      "weeksCount": "عدد الأسابيع"
+      "weeksCount": "عدد الأسابيع",
+      "status": "الحالة"
     },
     "daysOfWeek": {
       "sunday": "الأحد",
@@ -3519,6 +3527,8 @@
     "form": {
       "educationalStagesLabel": "المراحل التعليمية",
       "educationalStagesPlaceholder": "اختر المراحل التعليمية",
+      "academicSystemLabel": "نوع النظام الأكاديمي",
+      "academicSystemPlaceholder": "اختر النظام الأكاديمي",
       "studyStartDateLabel": "تاريخ بداية الدراسة",
       "studyEndDateLabel": "تاريخ نهاية الدراسة",
       "weeksCountLabel": "عدد الأسابيع الدراسية",
@@ -3558,6 +3568,16 @@
         "endDateBeforeStart": "لا يمكن أن يكون تاريخ نهاية الدراسة قبل تاريخ البداية",
         "endTimeBeforeStart": "لا يمكن أن يكون وقت النهاية قبل وقت البداية"
       }
+    },
+    "addAnnualCalendarButton": "إضافة تقويم سنوي",
+    "academicSystemPlaceholder": "النظام الأكاديمي",
+    "allStatuses": "جميع الحالات",
+    "moreOptions": "خيارات إضافية",
+    "showingRange": "عرض {{from}} - {{to}} من {{total}} نتائج",
+    "stats": {
+      "stagesCount": "عدد المراحل",
+      "nearestStart": "أقرب بداية",
+      "nearestEnd": "أقرب نهاية"
     }
   },
   "tasksManagement": {
