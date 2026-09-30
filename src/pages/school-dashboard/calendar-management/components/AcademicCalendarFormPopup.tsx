@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
-import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import { getSchoolAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import {
   createAcademicCalendar,
   fetchAcademicCalendarById,
@@ -54,7 +54,7 @@ const MS_PER_WEEK = 1000 * 60 * 60 * 24 * 7;
 
 const DEFAULT_VALUES: AddAcademicCalendarFormValues = {
   gradeId: '',
-  academicSystemId: '',
+  academicSubSystemId: '',
   studyStartDate: '',
   studyEndDate: '',
   weeksCount: '',
@@ -90,7 +90,7 @@ const buildPayload = (
   return {
     schoolBrancheId,
     gradeId: values.gradeId,
-    academicSystemId: values.academicSystemId,
+    academicSubSystemId: values.academicSubSystemId,
     studyStartDate: toApiDate(values.studyStartDate),
     studyEndDate: toApiDate(values.studyEndDate),
     weeksCount: Number(values.weeksCount),
@@ -132,7 +132,7 @@ const entityToFormValues = (
 
   return {
     gradeId: entity.gradeId ?? '',
-    academicSystemId: entity.academicSystemId || stage?.academicSystemsDto?.[0]?.id || '',
+    academicSubSystemId: entity.academicSubSystemId || stage?.academicSubSystemId || '',
     studyStartDate: entity.studyStartDate?.slice(0, 10) ?? '',
     studyEndDate: entity.studyEndDate?.slice(0, 10) ?? '',
     weeksCount: entity.weeksCount ? String(entity.weeksCount) : '',
@@ -171,7 +171,9 @@ export default function AcademicCalendarFormPopup({
   const schoolBranchId = getCurrentSchoolBranchId() ?? '';
 
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
-  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
+  const schoolAcademicSubSystems = useAppSelector(
+    (state) => state.academicSubSystems.schoolAcademicSubSystems
+  );
   const { isCreating, isUpdating } = useAppSelector((state) => state.academicCalendar);
   const isSaving = isCreating || isUpdating;
   const [fetchedCalendar, setFetchedCalendar] = useState<AcademicCalendarEntity | null>(null);
@@ -189,17 +191,17 @@ export default function AcademicCalendarFormPopup({
     defaultValues: DEFAULT_VALUES,
   });
 
-  const academicSystemId = useWatch({ control, name: 'academicSystemId' });
+  const academicSubSystemId = useWatch({ control, name: 'academicSubSystemId' });
 
   useEffect(() => {
     if (!open) return;
     if (educationalStages.length === 0) {
       dispatch(getEducationalStages({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
     }
-    if (academicSystems.length === 0) {
-      dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
+    if (schoolAcademicSubSystems.length === 0) {
+      dispatch(getSchoolAcademicSubSystems({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
     }
-  }, [open, dispatch, educationalStages.length, academicSystems.length, schoolBranchId]);
+  }, [open, dispatch, educationalStages.length, schoolAcademicSubSystems.length, schoolBranchId]);
 
   useEffect(() => {
     if (!open || !calendarId) return;
@@ -237,12 +239,12 @@ export default function AcademicCalendarFormPopup({
     }
   };
 
-  const academicSystemOptions = useMemo<PopupSelectOption[]>(
+  const academicSubSystemOptions = useMemo<PopupSelectOption[]>(
     () =>
-      academicSystems
-        .map((system) => ({ value: system.id, label: localizedName(system, isArabic) }))
+      schoolAcademicSubSystems
+        .map((subSystem) => ({ value: subSystem.id, label: subSystem.name }))
         .filter((option) => option.label),
-    [academicSystems, isArabic]
+    [schoolAcademicSubSystems]
   );
 
   const gradeOptions = useMemo<PopupSelectOption[]>(
@@ -250,13 +252,13 @@ export default function AcademicCalendarFormPopup({
       educationalStages
         .filter(
           (stage) =>
-            !academicSystemId ||
-            !stage.academicSystemsDto?.length ||
-            stage.academicSystemsDto.some((system) => system.id === academicSystemId)
+            !academicSubSystemId ||
+            !stage.academicSubSystemId ||
+            stage.academicSubSystemId === academicSubSystemId
         )
         .map((stage) => ({ value: stage.id, label: localizedName(stage, isArabic) }))
         .filter((option) => option.label),
-    [educationalStages, academicSystemId, isArabic]
+    [educationalStages, academicSubSystemId, isArabic]
   );
 
   useEffect(() => {
@@ -399,13 +401,13 @@ export default function AcademicCalendarFormPopup({
         </PopupField>
 
         <PopupField
-          name="academicSystemId"
+          name="academicSubSystemId"
           label={t('academicCalendar.form.academicSystemLabel')}
           required
-          error={errors.academicSystemId?.message}
+          error={errors.academicSubSystemId?.message}
         >
           <Controller
-            name="academicSystemId"
+            name="academicSubSystemId"
             control={control}
             render={({ field }) => (
               <PopupSelect
@@ -413,9 +415,9 @@ export default function AcademicCalendarFormPopup({
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
-                options={academicSystemOptions}
+                options={academicSubSystemOptions}
                 placeholder={t('academicCalendar.form.academicSystemPlaceholder')}
-                hasError={Boolean(errors.academicSystemId)}
+                hasError={Boolean(errors.academicSubSystemId)}
               />
             )}
           />

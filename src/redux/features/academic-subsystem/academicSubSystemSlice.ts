@@ -11,6 +11,9 @@ import type {
   CreateAcademicSubSystem,
   UpdateAcademicSubSystemRequest,
   AcademicSubSystemItem,
+  SchoolAcademicSubSystemItem,
+  SchoolAcademicSubSystemListValue,
+  SchoolAcademicSubSystemParams,
 } from '@/services/api/types/academic-subsystem.types';
 import AcademicSubSystemsApiService from '@/services/api/academic-subsystem/academic-subsystem.service';
 import { getErrorMessage } from '@/lib/http';
@@ -19,9 +22,11 @@ import type { Pagination } from '@/types/Pagination';
 
 interface AcademicSubSystemsState {
   academicSubSystems: AcademicSubSystemItem[];
+  schoolAcademicSubSystems: SchoolAcademicSubSystemItem[];
   academicSubSystemDetails: AcademicSubSystemDetailsValue | null;
   pagination: Pagination;
   isLoading: boolean;
+  isLoadingSchoolSubSystems: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
@@ -31,6 +36,7 @@ interface AcademicSubSystemsState {
 
 const initialState: AcademicSubSystemsState = {
   academicSubSystems: [],
+  schoolAcademicSubSystems: [],
   academicSubSystemDetails: null,
   pagination: {
     pageIndex: 1,
@@ -39,6 +45,7 @@ const initialState: AcademicSubSystemsState = {
     totalPages: 0,
   },
   isLoading: false,
+  isLoadingSchoolSubSystems: false,
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
@@ -52,6 +59,18 @@ export const getAcademicSubSystems = createAsyncThunk<
 >('academicSubSystems/fetchAll', async (params, { rejectWithValue }) => {
   try {
     const response = await AcademicSubSystemsApiService.getAcademicSubSystems(params);
+    return response;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const getSchoolAcademicSubSystems = createAsyncThunk<
+  SchoolAcademicSubSystemListValue,
+  SchoolAcademicSubSystemParams
+>('academicSubSystems/fetchSchoolAll', async (params, { rejectWithValue }) => {
+  try {
+    const response = await AcademicSubSystemsApiService.getSchoolAcademicSubSystems(params);
     return response;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -143,6 +162,24 @@ const academicSubSystemsSlice = createSlice({
       )
       .addCase(getAcademicSubSystems.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(getSchoolAcademicSubSystems.pending, (state) => {
+        state.isLoadingSchoolSubSystems = true;
+        state.error = null;
+      })
+      .addCase(
+        getSchoolAcademicSubSystems.fulfilled,
+        (state, action: PayloadAction<SchoolAcademicSubSystemListValue>) => {
+          state.isLoadingSchoolSubSystems = false;
+          state.schoolAcademicSubSystems = Array.isArray(action.payload?.academicSubSystemDto)
+            ? action.payload.academicSubSystemDto
+            : [];
+        }
+      )
+      .addCase(getSchoolAcademicSubSystems.rejected, (state, action) => {
+        state.isLoadingSchoolSubSystems = false;
         state.error = action.payload as string;
       })
 

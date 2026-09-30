@@ -18,7 +18,7 @@ const endTimeAfter = (startKey: string) =>
 
 export const AddAcademicCalendarSchema = object({
   gradeId: string().required(REQUIRED),
-  academicSystemId: string().required(REQUIRED),
+  academicSubSystemId: string().required(REQUIRED),
   studyStartDate: string().required(REQUIRED),
   studyEndDate: string()
     .required(REQUIRED)

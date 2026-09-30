@@ -7,6 +7,8 @@ import type {
   CreateAcademicSubSystem,
   UpdateAcademicSubSystemRequest,
   AcademicSubSystemParams,
+  SchoolAcademicSubSystemListValue,
+  SchoolAcademicSubSystemParams,
 } from '../types/academic-subsystem.types';
 import type { ApiResponseModel } from '../config';
 
@@ -15,6 +17,15 @@ export async function getAcademicSubSystems(
 ): Promise<AcademicSubSystemListValue> {
   const response: AxiosResponse<ApiResponseModel<AcademicSubSystemListValue>> =
     await axiosClient.get(AcademicSubSystemEndpoints.getAcademicSubSystem, { params });
+
+  return response.data.value;
+}
+
+export async function getSchoolAcademicSubSystems(
+  params: SchoolAcademicSubSystemParams
+): Promise<SchoolAcademicSubSystemListValue> {
+  const response: AxiosResponse<ApiResponseModel<SchoolAcademicSubSystemListValue>> =
+    await axiosClient.get(AcademicSubSystemEndpoints.getSchoolAcademicSubSystems, { params });
 
   return response.data.value;
 }
@@ -58,6 +69,7 @@ export async function deleteAcademicSubSystem(id: string): Promise<ApiResponseMo
 
 export const AcademicSubSystemsApiService = {
   getAcademicSubSystems,
+  getSchoolAcademicSubSystems,
   getAcademicSubSystemById,
   createAcademicSubSystem,
   updateAcademicSubSystem,
