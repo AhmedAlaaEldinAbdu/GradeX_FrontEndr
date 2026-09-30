@@ -95,6 +95,7 @@ export interface AcademicCalendarQueryParams {
   EndDate?: string;
   GradeId?: string;
   AcademicSystemId?: string;
+  AcademicSubSystemId?: string;
   Status?: AcademicCalendarStatusType;
 }
 
