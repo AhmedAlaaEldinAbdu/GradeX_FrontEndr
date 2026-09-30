@@ -51,6 +51,7 @@ export interface AcademicCalendarEntity {
 
   gradeId: string;
   academicSystemId?: string | null;
+  academicSubSystemId?: string | null;
   gradeNameAr?: string | null;
   gradeNameEn?: string | null;
   studyStartDate: string;
@@ -100,7 +101,7 @@ export interface AcademicCalendarQueryParams {
 export interface CreateAcademicCalendarRequest {
   schoolBrancheId: string;
   gradeId: string;
-  academicSystemId?: string;
+  academicSubSystemId?: string;
   studyStartDate: string;
   studyEndDate: string;
   weeksCount: number;

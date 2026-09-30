@@ -25,6 +25,21 @@ export interface AcademicSubSystemParams {
   nameEn?: string;
 }
 
+export interface SchoolAcademicSubSystemItem {
+  id: string;
+  name: string;
+}
+
+export interface SchoolAcademicSubSystemListValue extends Pagination {
+  academicSubSystemDto: SchoolAcademicSubSystemItem[];
+}
+
+export interface SchoolAcademicSubSystemParams {
+  pageIndex: number;
+  pageSize: number;
+  schoolBranchId: string;
+}
+
 export interface CreateAcademicSubSystem {
   nameAr: string;
   nameEn: string;
