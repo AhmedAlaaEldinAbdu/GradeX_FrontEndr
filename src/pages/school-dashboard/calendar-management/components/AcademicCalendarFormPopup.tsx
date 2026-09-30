@@ -349,7 +349,9 @@ export default function AcademicCalendarFormPopup({
       isOpen={open}
       onClose={handleClose}
       showHeader={false}
-      panelClassName="max-w-[650px]! rounded-2xl! border border-[#E2E8F0]/90 shadow-[0px_25px_50px_-12px_rgba(2,6,23,0.2)]! overflow-hidden"
+      placement="end"
+      closeOnOverlayClick={false}
+      panelClassName="max-w-[650px]! rounded-e-none rounded-s-lg border border-[#E2E8F0]/90 shadow-[0px_25px_50px_-12px_rgba(2,6,23,0.2)]! overflow-hidden"
       contentClassName="flex min-h-0 flex-col overflow-hidden! p-0!"
     >
       <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#F1F5F9] px-8 pt-7 pb-[21px]">
@@ -371,7 +373,7 @@ export default function AcademicCalendarFormPopup({
         </button>
       </div>
 
-      <div className="relative flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-8 py-6">
+      <div className="relative flex min-h-0 flex-1 [scrollbar-width:thin] flex-col gap-5 overflow-y-auto px-8 py-6 [&::-webkit-scrollbar]:w-1.5">
         {isLoadingCalendar ? (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/80 text-sm text-[#9D9D9D]">
             {t('common.loading')}

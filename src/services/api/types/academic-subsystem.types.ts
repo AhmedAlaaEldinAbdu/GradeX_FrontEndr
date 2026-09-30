@@ -37,7 +37,7 @@ export interface SchoolAcademicSubSystemListValue extends Pagination {
 export interface SchoolAcademicSubSystemParams {
   pageIndex: number;
   pageSize: number;
-  schoolBranchId: string;
+  schoolBranchId?: string;
 }
 
 export interface CreateAcademicSubSystem {

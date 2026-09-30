@@ -30,7 +30,7 @@ import {
   fetchAcademicCalendars,
 } from '@/redux/features/academic-calendar/academicCalendarSlice';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
-import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import { getSchoolAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import {
   AcademicCalendarStatus,
   type AcademicCalendarStatusType,
@@ -142,12 +142,14 @@ export default function AcademicCalendarList() {
     (state) => state.academicCalendar
   );
   const educationalStages = useAppSelector((state) => state.educationalStages.educationalStages);
-  const academicSystems = useAppSelector((state) => state.academicSystems.academicSystems);
+  const schoolAcademicSubSystems = useAppSelector(
+    (state) => state.academicSubSystems.schoolAcademicSubSystems
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [academicSystemId, setAcademicSystemId] = useState('');
+  const [academicSubSystemId, setAcademicSubSystemId] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
 
@@ -159,7 +161,7 @@ export default function AcademicCalendarList() {
   const [selectedId, setSelectedId] = useState('');
 
   const hasActiveFilters = Boolean(
-    searchTerm || startDate || endDate || academicSystemId || status
+    searchTerm || startDate || endDate || academicSubSystemId || status
   );
 
   useEffect(() => {
@@ -168,7 +170,7 @@ export default function AcademicCalendarList() {
   }, [dispatch, educationalStages.length, schoolBranchId]);
 
   useEffect(() => {
-    dispatch(getAcademicSystems({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
+    dispatch(getSchoolAcademicSubSystems({ pageIndex: 1, pageSize: 10000, schoolBranchId }));
   }, [dispatch, schoolBranchId]);
 
   useEffect(() => {
@@ -181,7 +183,7 @@ export default function AcademicCalendarList() {
           searchTerm: searchTerm.trim() || undefined,
           startDate: startDate || undefined,
           endDate: endDate || undefined,
-          academicSystemId: academicSystemId || undefined,
+          academicSubSystemId: academicSubSystemId || undefined,
           status: status ? (Number(status) as AcademicCalendarStatusType) : undefined,
         },
       })
@@ -193,7 +195,7 @@ export default function AcademicCalendarList() {
     searchTerm,
     startDate,
     endDate,
-    academicSystemId,
+    academicSubSystemId,
     status,
     refreshKey,
   ]);
@@ -233,13 +235,13 @@ export default function AcademicCalendarList() {
     [tableRows]
   );
 
-  const academicSystemOptions = useMemo(
+  const academicSubSystemOptions = useMemo(
     () =>
-      academicSystems.map((system) => ({
-        value: system.id,
-        label: (isArabic ? system.nameAr : system.nameEn) || system.nameAr || '',
+      schoolAcademicSubSystems.map((subSystem) => ({
+        value: subSystem.id,
+        label: subSystem.name,
       })),
-    [academicSystems, isArabic]
+    [schoolAcademicSubSystems]
   );
 
   const statusOptions = [
@@ -258,7 +260,7 @@ export default function AcademicCalendarList() {
     setSearchTerm('');
     setStartDate('');
     setEndDate('');
-    setAcademicSystemId('');
+    setAcademicSubSystemId('');
     setStatus('');
     setPage(1);
   };
@@ -436,9 +438,9 @@ export default function AcademicCalendarList() {
             className="w-[128px]"
           />
           <FilterSelect
-            value={academicSystemId}
-            onChange={updateFilter(setAcademicSystemId)}
-            options={academicSystemOptions}
+            value={academicSubSystemId}
+            onChange={updateFilter(setAcademicSubSystemId)}
+            options={academicSubSystemOptions}
             placeholder={t('academicCalendar.academicSystemPlaceholder')}
             iconSrc={FilterGrayIcon}
             className="w-[140px]"

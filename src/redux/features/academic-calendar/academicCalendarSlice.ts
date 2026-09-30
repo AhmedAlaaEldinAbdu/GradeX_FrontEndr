@@ -22,6 +22,7 @@ export interface AcademicCalendarFilters {
   endDate?: string;
   gradeId?: string;
   academicSystemId?: string;
+  academicSubSystemId?: string;
   status?: AcademicCalendarStatusType;
 }
 
@@ -102,6 +103,7 @@ export const fetchAcademicCalendars = createAsyncThunk<
           endDate,
           gradeId,
           academicSystemId,
+          academicSubSystemId,
           status,
         } = payload.filters;
         if (schoolBranchId) params.schoolBranchId = schoolBranchId;
@@ -110,6 +112,7 @@ export const fetchAcademicCalendars = createAsyncThunk<
         if (endDate) params.EndDate = endDate;
         if (gradeId) params.GradeId = gradeId;
         if (academicSystemId) params.AcademicSystemId = academicSystemId;
+        if (academicSubSystemId) params.AcademicSubSystemId = academicSubSystemId;
         if (status !== undefined) params.Status = status;
       }
     }

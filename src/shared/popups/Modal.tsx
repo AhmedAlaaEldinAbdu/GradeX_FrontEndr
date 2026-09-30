@@ -15,6 +15,7 @@ interface ModalProps {
   contentClassName?: string;
   panelClassName?: string;
   closeOnOverlayClick?: boolean;
+  placement?: 'center' | 'end';
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -30,6 +31,7 @@ const Modal: React.FC<ModalProps> = ({
   contentClassName = '',
   panelClassName = '',
   closeOnOverlayClick = true,
+  placement = 'center',
 }) => {
   useEffect(() => {
     if (isOpen) {
@@ -43,6 +45,8 @@ const Modal: React.FC<ModalProps> = ({
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const isSidePanel = placement === 'end';
 
   const sizeClasses = {
     sm: 'max-w-md',
@@ -58,16 +62,26 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className={`fixed inset-0 z-50 flex ${
+        isSidePanel ? 'items-stretch justify-end' : 'items-center justify-center'
+      }`}
+    >
       {/* Overlay */}
       <div
-        className="bg-black/60 bg-opacity-50 absolute inset-0 transition-opacity"
+        className={`bg-black/60 bg-opacity-50 absolute inset-0 transition-opacity ${
+          isSidePanel ? 'animate-fade-in motion-reduce:animate-none' : ''
+        }`}
         onClick={handleOverlayClick}
       ></div>
 
       {/* Modal */}
       <div
-        className={`relative w-full rounded-3xl bg-white shadow-xl ${sizeClasses[size]} mx-4 flex max-h-[90vh] flex-col ${panelClassName}`}
+        className={`relative w-full bg-white shadow-xl ${sizeClasses[size]} flex flex-col ${
+          isSidePanel
+            ? 'h-full animate-slide-in-from-right motion-reduce:animate-none rtl:animate-slide-in-from-left'
+            : 'mx-4 max-h-[90vh] rounded-3xl'
+        } ${panelClassName}`}
       >
         {/* Header */}
         {showHeader && (title || showCloseButton) && (
