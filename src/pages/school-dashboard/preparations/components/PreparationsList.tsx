@@ -122,7 +122,7 @@ export default function PreparationsList() {
     //       <IconButton
     //         onClick={() => navigate(`/calendar/preparations/details/${row.id}`)}
     //         ariaLabel="View"
-    //         className="flex h-[32px] w-[32px] items-center justify-center !rounded-full !bg-[#EAF4F4] !shadow-none hover:bg-[#D9EBEB]"
+    //         className="flex h-[32px] w-[32px] items-center justify-center rounded-full! bg-[#EAF4F4]! shadow-none! hover:bg-[#D9EBEB]"
     //       >
     //         <CustomImage src={EyeStyledIcon} alt="View" className="h-[20px] w-[20px]" />
     //       </IconButton>

@@ -30,16 +30,18 @@ const formatDuration = (durationString: string, t: (key: string) => string): str
 
   let result = '';
   if (hoursNum > 0) {
-    const hourLabel = hoursNum === 1
-      ? t('adminRequests.earlyLeave.timeUnits.hour')
-      : t('adminRequests.earlyLeave.timeUnits.hours');
+    const hourLabel =
+      hoursNum === 1
+        ? t('adminRequests.earlyLeave.timeUnits.hour')
+        : t('adminRequests.earlyLeave.timeUnits.hours');
     result += `${hoursNum} ${hourLabel}`;
   }
   if (minutesNum > 0) {
     if (result) result += ` ${t('adminRequests.earlyLeave.timeUnits.and')} `;
-    const minuteLabel = minutesNum === 1
-      ? t('adminRequests.earlyLeave.timeUnits.minute')
-      : t('adminRequests.earlyLeave.timeUnits.minutes');
+    const minuteLabel =
+      minutesNum === 1
+        ? t('adminRequests.earlyLeave.timeUnits.minute')
+        : t('adminRequests.earlyLeave.timeUnits.minutes');
     result += `${minutesNum} ${minuteLabel}`;
   }
   return result || '--';
@@ -66,7 +68,7 @@ type DetailRowProps = {
 
 const DetailRow: React.FC<DetailRowProps> = ({ label, children }) => (
   <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-    <span className="text-base font-semibold text-[#0E1F1F]">{label}:</span>
+    <span className="text-base font-semibold text-black-900">{label}:</span>
     <div className="flex items-center gap-2 text-[#646969]">{children}</div>
   </div>
 );
@@ -155,7 +157,7 @@ const EarlyLeaveDetailsPopup: React.FC<EarlyLeaveDetailsPopupProps> = ({
         {/* Attachments */}
         {request.attachments && request.attachments.length > 0 && (
           <div className="space-y-3">
-            <span className="flex text-base font-semibold text-[#0E1F1F]">
+            <span className="flex text-base font-semibold text-black-900">
               {t('adminRequests.earlyLeave.attachments')}:
             </span>
             {request.attachments.map((attachment) => (

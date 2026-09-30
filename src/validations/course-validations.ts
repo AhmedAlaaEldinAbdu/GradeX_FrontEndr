@@ -24,15 +24,19 @@ export const CourseBasicInfoSchema = object({
   startDate: string().required('eLearning.courses.add.validation.startDateRequired'),
   endDate: string()
     .default('')
-    .test('end-after-start', 'eLearning.courses.add.validation.endDateAfterStart', function (value) {
-      if (!value) return true;
+    .test(
+      'end-after-start',
+      'eLearning.courses.add.validation.endDateAfterStart',
+      function (value) {
+        if (!value) return true;
 
-      const startDate = toDateTime(this.parent.startDate);
-      const endDate = toDateTime(value);
+        const startDate = toDateTime(this.parent.startDate);
+        const endDate = toDateTime(value);
 
-      if (startDate === null || endDate === null) return true;
-      return endDate > startDate;
-    }),
+        if (startDate === null || endDate === null) return true;
+        return endDate > startDate;
+      }
+    ),
   lessonsCount: string()
     .required('eLearning.courses.add.validation.lessonsCountRequired')
     .test('positive-lessons', 'eLearning.courses.add.validation.lessonsCountPositive', (value) => {
@@ -81,14 +85,18 @@ export const CourseLectureSchema = object({
   existingAttachments: array()
     .of(object({ fileName: string().required(), fileUrl: string().required() }))
     .optional(),
-}).test('video-required', 'eLearning.courses.add.validation.lectureVideoRequired', function (value) {
-  if (value?.video || value?.videoUrl) return true;
+}).test(
+  'video-required',
+  'eLearning.courses.add.validation.lectureVideoRequired',
+  function (value) {
+    if (value?.video || value?.videoUrl) return true;
 
-  return this.createError({
-    path: `${this.path}.video`,
-    message: 'eLearning.courses.add.validation.lectureVideoRequired',
-  });
-});
+    return this.createError({
+      path: `${this.path}.video`,
+      message: 'eLearning.courses.add.validation.lectureVideoRequired',
+    });
+  }
+);
 
 export const CourseLecturesSchema = object({
   source: string().oneOf(['manual']).default('manual'),

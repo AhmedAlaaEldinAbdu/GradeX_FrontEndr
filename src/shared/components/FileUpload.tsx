@@ -433,7 +433,7 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
         />
         <div className="flex flex-col items-center gap-2">
           {/* Icon Container */}
-          <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-sm">
+          <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-xs">
             <img src={MultiFiles} alt="Upload Icon" className="h-6 w-6 object-contain" />
           </div>
           <p className="text-base font-normal text-green-500">{displayUploadText}</p>
@@ -464,7 +464,7 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {/* File Preview or Icon */}
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white">
                     {fileInfo.preview ? (
                       <CustomImage
                         src={fileInfo.preview}
@@ -589,7 +589,7 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {/* File Icon or Image Preview */}
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-white">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white">
                         {(() => {
                           const matchingFile = files.find((f) => f.name === name);
                           const actualIndex = displayFiles.indexOf(name);
@@ -779,7 +779,7 @@ const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(function FileUploa
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {/* File Preview or Icon */}
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
                   {filePreview || (singleFileUrl && isImageFile(singleFileName || label)) ? (
                     <CustomImage
                       src={filePreview || resolveUrl(singleFileUrl)}

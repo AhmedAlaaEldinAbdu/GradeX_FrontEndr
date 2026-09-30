@@ -111,15 +111,19 @@ export default function AddEducationalStages() {
             </button>
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
+        <form
+          onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+          noValidate={true}
+          className="flex flex-col gap-8"
+        >
           {numOfStages.map((_, index) => (
             <div
               key={`add-stage-${index + 1}`}
               className="grid grid-cols-1 gap-6 rounded-md border p-4"
             >
               <div className="flex">
-                <div className="flex flex-grow flex-col gap-5 md:flex-row">
-                  <div className="flex-grow">
+                <div className="flex grow flex-col gap-5 md:flex-row">
+                  <div className="grow">
                     <FormField
                       label={t('academicSystem.educationalStageAr')}
                       required
@@ -143,7 +147,7 @@ export default function AddEducationalStages() {
                       />
                     </FormField>
                   </div>
-                  <div className="flex-grow">
+                  <div className="grow">
                     <FormField
                       label={t('academicSystem.educationalStageEn')}
                       required
@@ -187,7 +191,7 @@ export default function AddEducationalStages() {
               </div>
 
               <div className="flex">
-                <div className="flex-grow">
+                <div className="grow">
                   <FormField
                     label={t('academicSystem.academicSystemName')}
                     required

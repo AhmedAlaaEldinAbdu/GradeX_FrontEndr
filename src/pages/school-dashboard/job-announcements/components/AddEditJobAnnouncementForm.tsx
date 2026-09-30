@@ -1457,7 +1457,7 @@ export default function AddEditJobAnnouncementForm({ jobId }: AddEditJobAnnounce
                         <span>{skill}</span>
                         <button
                           type="button"
-                          className="flex h-[20px] w-[20px] items-center justify-center rounded-full text-xs font-semibold text-gray-500 transition hover:bg-red-100 hover:text-red-600 focus:outline-none"
+                          className="flex h-[20px] w-[20px] items-center justify-center rounded-full text-xs font-semibold text-gray-500 transition hover:bg-red-100 hover:text-red-600 focus:outline-hidden"
                           onClick={() => handleSkillRemove('technical', index)}
                           aria-label={`${t('actions.delete')} ${skill}`}
                         >
@@ -1520,7 +1520,7 @@ export default function AddEditJobAnnouncementForm({ jobId }: AddEditJobAnnounce
                         <span>{skill}</span>
                         <button
                           type="button"
-                          className="flex h-[20px] w-[20px] items-center justify-center rounded-full text-xs font-semibold text-gray-500 transition hover:bg-red-100 hover:text-red-600 focus:outline-none"
+                          className="flex h-[20px] w-[20px] items-center justify-center rounded-full text-xs font-semibold text-gray-500 transition hover:bg-red-100 hover:text-red-600 focus:outline-hidden"
                           onClick={() => handleSkillRemove('personal', index)}
                           aria-label={`${t('actions.delete')} ${skill}`}
                         >

@@ -66,19 +66,19 @@ export default function LiveClassesPage() {
             title={t('eLearning.liveClasses.metrics.totalRemoteClasses')}
             value={String(directLessonsPagination.totalItems)}
             icon={<MaskIcon src={PeopleOutlineIcon} color="#117BD7" />}
-            iconClassName="bg-[#117BD7]/[0.16]"
+            iconClassName="bg-blue-500/16"
           />
           <MetricCard
             title={t('eLearning.liveClasses.metrics.liveClassesNow')}
             value={String(directLessonsStats.startedNow)}
             icon={<CustomImage src={CheckMarkIcon} alt="" className="h-6 w-6" />}
-            iconClassName="bg-[#1A9F58]/[0.16]"
+            iconClassName="bg-lightGreen-500/16"
           />
           <MetricCard
             title={t('eLearning.liveClasses.metrics.attendanceRate')}
             value={`${directLessonsStats.attendance}%`}
             icon={<CustomImage src={StudentYellowIcon} alt="" className="h-6 w-6" />}
-            iconClassName="bg-[#F6CB3B]/[0.16]"
+            iconClassName="bg-[#F6CB3B]/16"
           />
         </div>
 

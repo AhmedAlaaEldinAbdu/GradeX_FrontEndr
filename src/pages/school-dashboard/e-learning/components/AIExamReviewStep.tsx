@@ -9,7 +9,7 @@ import EditReviewQuestionForm from './EditReviewQuestionForm';
 function BannerCheckIcon() {
   return (
     <svg
-      className="h-5 w-5 text-[#0E1F1F]"
+      className="h-5 w-5 text-black-900"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -57,7 +57,7 @@ const AIExamReviewStep = ({
         <div className="space-y-6">
           <div className="flex items-center justify-between gap-4 rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
             <div className="flex items-center gap-3">
-              <span className="text-base font-medium text-[#0E1F1F]">
+              <span className="text-base font-medium text-black-900">
                 {t('eLearning.onlineExams.addAI.review.selectedQuestionsCount', {
                   num: generatedQuestions.length,
                 })}

@@ -51,24 +51,24 @@ const Button: React.FC<ButtonProps> = (props) => {
 
   const variants = {
     primary:
-      'bg-green-500 text-white border-2 border-green-500 hover:bg-green-800 hover:border-green-800 active:bg-green-800 shadow-sm hover:shadow-md',
+      'bg-green-500 text-white border-2 border-green-500 hover:bg-green-800 hover:border-green-800 active:bg-green-800 shadow-xs hover:shadow-md',
     outline:
       'bg-white text-green-500 border-2 border-green-500 hover:bg-green-100 active:bg-green-500 active:text-white',
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:bg-gray-400',
     outlineSecondary:
       'bg-white text-gray-800 border-2 border-gray-300 hover:bg-gray-100 active:bg-gray-400',
-    danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm hover:shadow-md',
+    danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-xs hover:shadow-md',
     outlineDanger:
       'bg-white text-red-600 border-2 border-red-600 hover:bg-red-100 active:bg-red-600 active:text-white',
-    info: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm hover:shadow-md',
+    info: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-xs hover:shadow-md',
     outlineInfo:
       'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-100 active:bg-blue-600 active:text-white',
     warning:
-      'bg-[#966C03] text-white hover:bg-[#966C03]/85 active:bg-[#966C03]/85 shadow-sm hover:shadow-md',
+      'bg-[#966C03] text-white hover:bg-[#966C03]/85 active:bg-[#966C03]/85 shadow-xs hover:shadow-md',
     outlineWarning:
       'bg-white text-[#966C03] border-2 border-[#966C03] hover:bg-[#966C03]/15 active:bg-[#966C03] active:text-white',
     success:
-      'bg-green-800 text-white hover:bg-green-900 active:bg-green-950 shadow-sm hover:shadow-md',
+      'bg-green-800 text-white hover:bg-green-900 active:bg-green-950 shadow-xs hover:shadow-md',
     ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 active:bg-gray-200',
   };
 
@@ -106,7 +106,7 @@ const Button: React.FC<ButtonProps> = (props) => {
     >
       {loading ? (
         <svg
-          className="-ml-1 mr-2 h-5 w-5 animate-spin text-current"
+          className="mr-2 -ml-1 h-5 w-5 animate-spin text-current"
           xmlns="http://www.w3000/svg"
           fill="none"
           viewBox="0 0 24 24"

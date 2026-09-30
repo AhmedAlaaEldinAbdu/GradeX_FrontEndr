@@ -205,9 +205,9 @@ const MapLocationModal: React.FC<MapLocationModalProps> = ({
           </GoogleMap>
 
           {/* Address Display - Absolute at bottom of map */}
-          <div className="absolute bottom-0 left-0 right-0 z-10 flex items-start gap-3 bg-white p-4 shadow-lg">
+          <div className="absolute right-0 bottom-0 left-0 z-10 flex items-start gap-3 bg-white p-4 shadow-lg">
             <svg
-              className="mt-0.5 h-5 w-5 flex-shrink-0 text-gray-500"
+              className="mt-0.5 h-5 w-5 shrink-0 text-gray-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -233,7 +233,7 @@ const MapLocationModal: React.FC<MapLocationModalProps> = ({
           {/* My Location Button - Bottom Right */}
           <button
             onClick={handleGetCurrentLocation}
-            className="absolute bottom-20 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg"
+            className="absolute right-4 bottom-20 z-10 flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg"
             aria-label="موقعي"
             title="تحديد موقعي الحالي"
           >

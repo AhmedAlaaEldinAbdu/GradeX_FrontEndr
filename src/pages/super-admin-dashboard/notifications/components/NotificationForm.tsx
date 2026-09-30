@@ -114,7 +114,7 @@ export default function NotificationForm({ mode, initialData }: NotificationForm
     <>
       <form
         onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
-        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+        className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs"
       >
         <div className="mb-6 flex flex-col gap-6">
           {/* مرسلة إلي */}
@@ -217,7 +217,7 @@ export default function NotificationForm({ mode, initialData }: NotificationForm
                   type="date"
                   value={field.value}
                   onChange={field.onChange}
-                  className="h-[42px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="h-[42px] w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden"
                 />
               )}
             />

@@ -8,6 +8,8 @@ type SearchInputProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string; // applied to input element
+  iconClass?: string;
+  iconSrc?: string;
   wrapperClassName?: string; // applied to outer wrapper
   debounce?: number; // ms; if provided, delays onChange calls
   disabled?: boolean;
@@ -20,6 +22,8 @@ const SearchInput: React.FC<SearchInputProps> = ({
   onChange,
   placeholder,
   className,
+  iconClass,
+  iconSrc = SearchDarkIcon,
   wrapperClassName,
   debounce = 300,
   disabled,
@@ -50,7 +54,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   const inputClasses = useMemo(
     () =>
       className ??
-      `w-full h-[48px] w-full rounded-2xl py-1 border border-[#DDE0E0] placeholder:font-light placeholder:text-[#646969] text-sm font-normal text-[#3A3A3A] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 ${
+      `w-full h-[48px] w-full rounded-2xl py-1 border border-[#DDE0E0] placeholder:font-light placeholder:text-[#646969] text-sm font-normal text-[#3A3A3A] focus:border-transparent focus:outline-hidden focus:ring-2 focus:ring-green-500 ${
         isRTL ? 'pl-4 pr-10' : 'pl-10 pr-4'
       }`,
     [className, isRTL]
@@ -77,9 +81,9 @@ const SearchInput: React.FC<SearchInputProps> = ({
         aria-label={placeholder}
       />
       <CustomImage
-        src={SearchDarkIcon}
+        src={iconSrc}
         alt=""
-        className={`pointer-events-none absolute top-1/2 -translate-y-1/2 transform text-gray-400 ${
+        className={`pointer-events-none absolute top-1/2 -translate-y-1/2 transform text-gray-400 ${iconClass} ${
           isRTL ? 'right-3' : 'left-3'
         }`}
         aria-hidden="true"

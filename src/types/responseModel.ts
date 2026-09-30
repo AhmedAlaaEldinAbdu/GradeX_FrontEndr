@@ -1,4 +1,4 @@
-import type { ResponseStatus } from "@/shared/enums/enums";
+import type { ResponseStatus } from '@/shared/enums/enums';
 
 export interface ResponseModel {
   result: object;

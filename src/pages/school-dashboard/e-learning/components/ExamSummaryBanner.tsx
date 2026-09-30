@@ -24,9 +24,9 @@ function StatBox({
   valueClass: string;
 }) {
   return (
-    <div className="flex flex-col items-start gap-3 rounded-3xl border border-[#E6E6E6] bg-white px-6 py-4">
-      <span className="whitespace-nowrap text-sm font-normal text-[#3A3A3A]">{label}</span>
-      <span className={`whitespace-nowrap text-base font-medium ${valueClass}`}>{value}</span>
+    <div className="flex flex-col items-start gap-3 rounded-3xl border border-black-100 bg-white px-6 py-4">
+      <span className="text-sm font-normal whitespace-nowrap text-[#3A3A3A]">{label}</span>
+      <span className={`text-base font-medium whitespace-nowrap ${valueClass}`}>{value}</span>
     </div>
   );
 }
@@ -39,22 +39,22 @@ export default function ExamSummaryBanner({ exam }: { exam: ExamDetailsItem }) {
     {
       label: t('eLearning.onlineExams.details.attendanceCount'),
       value: exam.attendance,
-      valueClass: 'text-[#0E1F1F]',
+      valueClass: 'text-black-900',
     },
     {
       label: t('eLearning.onlineExams.details.questionsCount'),
       value: `${exam.questionsCount} ${t('eLearning.units.question')}`,
-      valueClass: 'text-[#0E1F1F]',
+      valueClass: 'text-black-900',
     },
     {
       label: t('eLearning.onlineExams.details.avgTime'),
       value: `${exam.avgTimeMinutes} ${t('eLearning.onlineExams.details.minuteUnit')}`,
-      valueClass: 'text-[#0E1F1F]',
+      valueClass: 'text-black-900',
     },
     {
       label: t('eLearning.metrics.successRate'),
       value: `${exam.successRate}%`,
-      valueClass: 'text-[#1A9F58]',
+      valueClass: 'text-lightGreen-500',
     },
   ];
 
@@ -65,14 +65,14 @@ export default function ExamSummaryBanner({ exam }: { exam: ExamDetailsItem }) {
         <div className="flex items-center gap-2">
           <OutlineBadge
             text={t(`eLearning.exams.sources.${exam.source}`)}
-            className="border-[#CAACE0] text-[#A353DD]"
+            className="border-[#CAACE0] text-purple-500"
           />
           <OutlineBadge
             text={t(`eLearning.onlineExams.difficulty.${exam.difficulty}`)}
-            className="border-[#DFAFAF] text-[#DD0417]"
+            className="border-[#DFAFAF] text-red-500"
           />
         </div>
-        <h3 className="text-base font-medium text-[#0E1F1F]">
+        <h3 className="text-base font-medium text-black-900">
           <span
             dir={exam.titleDirection}
             className="inline-flex flex-wrap items-center gap-1 text-start"

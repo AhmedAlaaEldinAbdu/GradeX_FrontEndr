@@ -15,7 +15,7 @@ export default function HolidayTimeline({ holidays, isUpcomingHoliday }: Holiday
   return (
     <div className="relative">
       {/* Timeline Container */}
-      <div className="hidden lg:absolute lg:left-1/2 lg:top-[20px] lg:block lg:h-[calc(100%-40px)] lg:-translate-x-1/2"></div>
+      <div className="hidden lg:absolute lg:top-[20px] lg:left-1/2 lg:block lg:h-[calc(100%-40px)] lg:-translate-x-1/2"></div>
 
       {/* Grid Layout */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-x-8">

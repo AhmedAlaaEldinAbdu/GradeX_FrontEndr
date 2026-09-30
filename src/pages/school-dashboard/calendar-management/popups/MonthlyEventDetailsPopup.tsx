@@ -408,7 +408,7 @@ export default function MonthlyEventDetailsPopup({
                     </div>
 
                     <div className="flex gap-2 pb-3">
-                      <span className="flex-shrink-0 text-base font-normal text-[#3A3A3A]">
+                      <span className="shrink-0 text-base font-normal text-[#3A3A3A]">
                         {t('monthlyCalendar.details.stages')}:
                       </span>
                       <div className="flex flex-wrap gap-2">
@@ -428,7 +428,7 @@ export default function MonthlyEventDetailsPopup({
                     </div>
 
                     <div className="flex gap-2">
-                      <span className="flex-shrink-0 text-base font-normal text-[#3A3A3A]">
+                      <span className="shrink-0 text-base font-normal text-[#3A3A3A]">
                         {t('monthlyCalendar.details.classrooms')}:
                       </span>
                       <div className="flex flex-wrap gap-2">

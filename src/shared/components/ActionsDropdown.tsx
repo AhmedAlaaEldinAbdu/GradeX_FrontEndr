@@ -33,7 +33,7 @@ export default function ActionsDropdown({
   triggerIcon = DotsIcon,
   iconClassName = 'h-6 w-6',
   triggerClassName = 'flex items-center justify-center rounded-full bg-gray-50 p-2 hover:bg-gray-100 transition-colors',
-  dropdownClassName = `absolute z-10 mt-2 w-max min-w-[7rem] max-w-[10rem] ${i18n.language === 'ar' ? 'max-w-[10rem]' : 'max-w-[11rem]'} rounded-lg border border-gray-200 bg-white p-1 shadow-lg`,
+  dropdownClassName = `absolute z-10 mt-2 w-max min-w-28 max-w-40 ${i18n.language === 'ar' ? 'max-w-40' : 'max-w-44'} rounded-lg border border-gray-200 bg-white p-1 shadow-lg`,
   // position = 'left',
   onOpen,
   onClose,

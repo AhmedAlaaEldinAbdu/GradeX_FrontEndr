@@ -11,6 +11,14 @@ export const AcademicCalendarTimePeriodScope = {
 export type AcademicCalendarTimePeriodScope =
   (typeof AcademicCalendarTimePeriodScope)[keyof typeof AcademicCalendarTimePeriodScope];
 
+export const AcademicCalendarStatus = {
+  ACTIVE: 1,
+  INACTIVE: 2,
+} as const;
+
+export type AcademicCalendarStatusType =
+  (typeof AcademicCalendarStatus)[keyof typeof AcademicCalendarStatus];
+
 export interface AcademicCalendarDaySchedule {
   id?: string;
   days: number[];
@@ -42,6 +50,7 @@ export interface AcademicCalendarEntity {
   schoolBranchId?: string;
 
   gradeId: string;
+  academicSystemId?: string | null;
   gradeNameAr?: string | null;
   gradeNameEn?: string | null;
   studyStartDate: string;
@@ -52,6 +61,7 @@ export interface AcademicCalendarEntity {
   contentEn?: string | null;
   weeksCount: number;
   lessonDuration: number;
+  status?: AcademicCalendarStatusType | null;
   daySchedules: AcademicCalendarDaySchedule[];
   breaks: AcademicCalendarTimedSchedule[];
   assemblies: AcademicCalendarTimedSchedule[];
@@ -82,11 +92,15 @@ export interface AcademicCalendarQueryParams {
   Search?: string;
   StartDate?: string;
   EndDate?: string;
+  GradeId?: string;
+  AcademicSystemId?: string;
+  Status?: AcademicCalendarStatusType;
 }
 
 export interface CreateAcademicCalendarRequest {
   schoolBrancheId: string;
   gradeId: string;
+  academicSystemId?: string;
   studyStartDate: string;
   studyEndDate: string;
   weeksCount: number;

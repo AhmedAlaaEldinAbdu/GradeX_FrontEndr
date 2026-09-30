@@ -180,7 +180,7 @@ export default function SelectStudentsPopup({
                   </button>
 
                   {isOpenClassroom && (
-                    <div className="flex flex-col gap-3 border-t border-[#E6E6E6] p-4 ps-6">
+                    <div className="flex flex-col gap-3 border-t border-black-100 p-4 ps-6">
                       <SearchInput
                         value={query}
                         onChange={(v) =>

@@ -985,6 +985,9 @@
     "archive": "Archiver",
     "recall": "Rappeler",
     "clearFilter": "Effacer le filtre",
+    "print": "Imprimer",
+    "exportExcel": "Exporter Excel",
+    "exportPdf": "Exporter PDF",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ?",
     "successAdd": "Ajouté avec succès",
     "successEdit": "Modifié avec succès",
@@ -2328,6 +2331,23 @@
     "gradeUpdatedSuccessfully": "Niveau mis à jour avec succès",
     "gradeDeletedSuccessfully": "Niveau supprimé avec succès",
     "confirmDeleteGrade": "Êtes-vous sûr de vouloir supprimer ce niveau ?",
+    "backToGrades": "Retour aux niveaux",
+    "classroomsBreadcrumbLabel": "Classes",
+    "addNewClassroom": "Ajouter une nouvelle classe",
+    "sortByName": "Trier par nom",
+    "searchClassroomsPlaceholder": "Rechercher par nom de classe",
+    "classroomsCountKpiLabel": "Nombre de classes",
+    "teachersCountKpiLabel": "Enseignants",
+    "materialsCountKpiLabel": "Matériels pédagogiques",
+    "capacityLabel": "Capacité",
+    "classroomStatusAvailable": "Disponible",
+    "classroomStatusNearFull": "Presque complet",
+    "classroomStatusFull": "Complet",
+    "showingClassroomsRange": "Affichage de {{from}} - {{to}} sur {{total}} classes",
+    "viewAsList": "Afficher en liste",
+    "viewAsGrid": "Afficher en grille",
+    "classroomsManagementTitle": "Gestion des classes - {{gradeName}}",
+    "classroomsManagementSubtitle": "Consulter et gérer toutes les classes et sections de {{gradeName}}",
     "validation": {
       "academicSystemRequired": "Le système scolaire est requis",
       "educationalStageRequired": "Le niveau scolaire est requis",
@@ -2362,6 +2382,13 @@
     "classroomNameEn": "Nom de la classe (Deuxième Langue)",
     "enterClassroomNameAr": "Saisissez le nom de la classe en Première Langue",
     "enterClassroomNameEn": "Saisissez le nom de la classe en Deuxième Langue",
+    "addModalSubtitle": "Saisissez les informations de la nouvelle classe et définissez sa capacité",
+    "editModalSubtitle": "Modifiez les informations et la capacité de la classe",
+    "updatedSuccessfully": "Classe mise à jour avec succès",
+    "aliasArLabel": "Surnom de la classe (Première Langue)",
+    "aliasEnLabel": "Surnom de la classe (Deuxième Langue)",
+    "dragImageHere": "ou glissez-déposez l'image ici",
+    "imageFormatsHint": "JPG, PNG, GIF ou SVG (max 5 Mo)",
     "validation": {
       "academicSystemRequired": "Le système scolaire est requis",
       "educationalStageRequired": "Le niveau scolaire est requis",
@@ -3314,6 +3341,8 @@
     "title": "Calendrier scolaire",
     "annualCalendar": "Calendrier annuel",
     "addTitle": "Ajouter un calendrier",
+    "addSubtitle": "Entrez les données requises pour ajouter le calendrier",
+    "editSubtitle": "Modifiez les données du calendrier puis enregistrez les modifications",
     "editTitle": "Modifier le calendrier",
     "addCalendarButton": "Ajouter un calendrier",
     "searchPlaceholder": "Rechercher par niveau scolaire",
@@ -3331,7 +3360,8 @@
       "educationalStages": "Niveaux scolaires",
       "startDate": "Date de début",
       "endDate": "Date de fin",
-      "weeksCount": "Nombre de semaines"
+      "weeksCount": "Nombre de semaines",
+      "status": "Statut"
     },
     "daysOfWeek": {
       "sunday": "Dimanche",
@@ -3345,6 +3375,8 @@
     "form": {
       "educationalStagesLabel": "Niveaux scolaires",
       "educationalStagesPlaceholder": "Sélectionnez les niveaux scolaires",
+      "academicSystemLabel": "Type de système académique",
+      "academicSystemPlaceholder": "Sélectionnez le système académique",
       "studyStartDateLabel": "Date de début des cours",
       "studyEndDateLabel": "Date de fin des cours",
       "weeksCountLabel": "Nombre de semaines",
@@ -3384,6 +3416,16 @@
         "endDateBeforeStart": "La date de fin des études ne peut pas être antérieure à la date de début",
         "endTimeBeforeStart": "L'heure de fin ne peut pas être antérieure à l'heure de début"
       }
+    },
+    "addAnnualCalendarButton": "Ajouter un calendrier annuel",
+    "academicSystemPlaceholder": "Système académique",
+    "allStatuses": "Tous les statuts",
+    "moreOptions": "Plus d'options",
+    "showingRange": "Affichage de {{from}} à {{to}} sur {{total}} résultats",
+    "stats": {
+      "stagesCount": "Nombre d'étapes",
+      "nearestStart": "Début le plus proche",
+      "nearestEnd": "Fin la plus proche"
     }
   },
   "tasksManagement": {

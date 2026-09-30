@@ -45,7 +45,7 @@ const AddSchoolPage: React.FC<AddSchoolPageProps> = ({ showBreadcrumb = true }) 
           className="border-green-500 bg-transparent text-green-500 hover:bg-green-50"
           aria-label={t('common.copyAdditionLink')}
         >
-          <span className="flex items-center gap-2 justify-center ">
+          <span className="flex items-center justify-center gap-2">
             <CustomImage src={CopyIcon} alt="" className="h-5 w-5" aria-hidden="true" />
             <span className="whitespace-nowrap">
               {isCopied ? t('common.copied') : t('common.copyAdditionLink')}

@@ -21,7 +21,7 @@ const AuthInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) 
   // Show loading screen while restoring session (before initialization)
   if (!isInitialized) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0]">
+      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-[#E6FBF5] via-[#DFF8EE] to-[#E8F9F0]">
         <div className="text-center">
           <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-[#1FAD6C] border-t-transparent"></div>
           <p className="text-lg font-medium text-[#1FAD6C]">Loading...</p>

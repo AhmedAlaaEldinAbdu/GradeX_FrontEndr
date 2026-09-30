@@ -280,7 +280,7 @@ export default function AddEditUser({ mode }: AddEditUserProps) {
       <form
         onSubmit={onSubmit}
         noValidate
-        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+        className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs"
       >
         <div className="mb-6 grid gap-3 lg:grid-cols-2">
           <div className="col-span-1">

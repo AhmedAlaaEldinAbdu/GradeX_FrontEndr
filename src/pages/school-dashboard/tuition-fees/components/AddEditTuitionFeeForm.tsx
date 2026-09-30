@@ -399,7 +399,7 @@ export default function AddEditTuitionFeeForm({
         <div className="space-y-4">
           {values.includedServices.map((row) => (
             <div key={row.id} className="flex items-start">
-              <div className="grid flex-grow grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grow grid-cols-1 gap-4 md:grid-cols-2">
                 <FormField label={t('fees.tuition.form.serviceArLabel')} required>
                   <Input
                     value={row.nameAr}
@@ -449,8 +449,8 @@ export default function AddEditTuitionFeeForm({
         <div className="space-y-8">
           {values.paidServices.map((row) => (
             <div key={row.id} className="flex items-start">
-              <div className="flex flex-grow flex-col gap-4">
-                <div className="grid flex-grow grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="flex grow flex-col gap-4">
+                <div className="grid grow grid-cols-1 gap-4 md:grid-cols-2">
                   <FormField label={t('fees.tuition.form.serviceArLabel')} required>
                     <Input
                       value={row.nameAr}
@@ -467,7 +467,7 @@ export default function AddEditTuitionFeeForm({
                   </FormField>
                 </div>
 
-                <div className="grid flex-grow grid-cols-1">
+                <div className="grid grow grid-cols-1">
                   <FormField label={t('fees.amount')} required>
                     <Input
                       type="number"

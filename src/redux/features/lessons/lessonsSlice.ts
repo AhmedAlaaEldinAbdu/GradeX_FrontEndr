@@ -232,10 +232,7 @@ export const startLesson = createAsyncThunk<ApiResponseModel<null>, StartLessonR
   }
 );
 
-export const deleteLessonById = createAsyncThunk<
-  string,
-  { id: string; applyToAllWeeks: boolean }
->(
+export const deleteLessonById = createAsyncThunk<string, { id: string; applyToAllWeeks: boolean }>(
   'lessons/deleteLesson',
   async ({ id, applyToAllWeeks }, { rejectWithValue }) => {
     try {

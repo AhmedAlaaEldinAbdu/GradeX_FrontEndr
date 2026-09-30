@@ -687,7 +687,7 @@ export default function AddEditTaskForm({ mode, initialTask }: TaskFormProps) {
                         {primarySelectedStudent?.name || t('tasksManagement.form.selectedStudents')}
                       </span>
                     </div>
-                    <span className="text-[1.25rem] font-semibold leading-none text-green-500">
+                    <span className="text-[1.25rem] leading-none font-semibold text-green-500">
                       +{Math.max(selectedStudents.length, watchedStudentIds.length)}
                       <span className="mx-1">{t('tasksManagement.form.student')}</span>
                     </span>

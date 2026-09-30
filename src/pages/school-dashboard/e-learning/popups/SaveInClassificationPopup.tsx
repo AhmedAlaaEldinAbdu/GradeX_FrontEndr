@@ -151,7 +151,7 @@ export default function SaveInClassificationPopup({
 
         {/* Questions */}
         <div className="rounded-2xl border border-[#DDE0E0] p-4">
-          <p className="mb-4 text-start text-base font-normal text-[#0E1F1F]">
+          <p className="mb-4 text-start text-base font-normal text-black-900">
             {t('eLearning.onlineExams.addAI.saveClassification.questionsTitle')}
           </p>
           <div className="flex flex-col gap-4">

@@ -114,9 +114,8 @@ export const fetchApplicationsJobAdvertisements = createAsyncThunk<
         }
       }
 
-      const response = await applicationsJobAdvertisementApiService.getApplicationsJobAdvertisements(
-        params
-      );
+      const response =
+        await applicationsJobAdvertisementApiService.getApplicationsJobAdvertisements(params);
 
       if (!response?.isSuccess || !response.data) {
         return {
@@ -151,36 +150,42 @@ export const fetchApplicationsJobAdvertisements = createAsyncThunk<
 export const createApplicationsJobAdvertisement = createAsyncThunk<
   ApiResponseModel<null>,
   CreateApplicationsJobAdvertisementRequest
->('applicationsJobAdvertisements/createApplicationsJobAdvertisement', async (payload, { rejectWithValue }) => {
-  try {
-    const response = await applicationsJobAdvertisementApiService.createApplicationsJobAdvertisement(
-      payload
-    );
-    return response;
-  } catch (error: any) {
-    if (error.isValidationError && error.validationErrors) {
-      return rejectWithValue({ validationErrors: error.validationErrors });
+>(
+  'applicationsJobAdvertisements/createApplicationsJobAdvertisement',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response =
+        await applicationsJobAdvertisementApiService.createApplicationsJobAdvertisement(payload);
+      return response;
+    } catch (error: any) {
+      if (error.isValidationError && error.validationErrors) {
+        return rejectWithValue({ validationErrors: error.validationErrors });
+      }
+      return rejectWithValue(getErrorMessage(error));
     }
-    return rejectWithValue(getErrorMessage(error));
   }
-});
+);
 
 export const editApplicationsJobAdvertisementStatus = createAsyncThunk<
   ApiResponseModel<null>,
   UpdateApplicationStatusRequest
->('applicationsJobAdvertisements/editApplicationsJobAdvertisementStatus', async (payload, { rejectWithValue }) => {
-  try {
-    const response = await applicationsJobAdvertisementApiService.editApplicationsJobAdvertisementStatus(
-      payload
-    );
-    return response;
-  } catch (error: any) {
-    if (error.isValidationError && error.validationErrors) {
-      return rejectWithValue({ validationErrors: error.validationErrors });
+>(
+  'applicationsJobAdvertisements/editApplicationsJobAdvertisementStatus',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response =
+        await applicationsJobAdvertisementApiService.editApplicationsJobAdvertisementStatus(
+          payload
+        );
+      return response;
+    } catch (error: any) {
+      if (error.isValidationError && error.validationErrors) {
+        return rejectWithValue({ validationErrors: error.validationErrors });
+      }
+      return rejectWithValue(getErrorMessage(error));
     }
-    return rejectWithValue(getErrorMessage(error));
   }
-});
+);
 
 const applicationsJobAdvertisementsSlice = createSlice({
   name: 'applicationsJobAdvertisements',
@@ -253,29 +258,26 @@ const applicationsJobAdvertisementsSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(
-        editApplicationsJobAdvertisementStatus.fulfilled,
-        (state, action) => {
-          state.isUpdating = false;
-          const { isSuccess, validationErrors } = action.payload;
-          if (!isSuccess && validationErrors) {
-            state.validationErrors = validationErrors as any;
-          } else if (isSuccess && action.meta?.arg) {
-            const { applicationsJobAdvertisementId, applicationStatus } = action.meta.arg;
-            state.applications = state.applications.map((application) =>
-              application.id === applicationsJobAdvertisementId
-                ? { ...application, applicationStatus }
-                : application
-            );
-            if (
-              state.currentApplication &&
-              state.currentApplication.id === applicationsJobAdvertisementId
-            ) {
-              state.currentApplication.applicationStatus = applicationStatus;
-            }
+      .addCase(editApplicationsJobAdvertisementStatus.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        const { isSuccess, validationErrors } = action.payload;
+        if (!isSuccess && validationErrors) {
+          state.validationErrors = validationErrors as any;
+        } else if (isSuccess && action.meta?.arg) {
+          const { applicationsJobAdvertisementId, applicationStatus } = action.meta.arg;
+          state.applications = state.applications.map((application) =>
+            application.id === applicationsJobAdvertisementId
+              ? { ...application, applicationStatus }
+              : application
+          );
+          if (
+            state.currentApplication &&
+            state.currentApplication.id === applicationsJobAdvertisementId
+          ) {
+            state.currentApplication.applicationStatus = applicationStatus;
           }
         }
-      )
+      })
       .addCase(editApplicationsJobAdvertisementStatus.rejected, (state, action) => {
         state.isUpdating = false;
         const payload = action.payload as any;

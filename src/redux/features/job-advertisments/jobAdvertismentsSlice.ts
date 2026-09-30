@@ -261,10 +261,13 @@ const jobAdvertismentsSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchJobAdvertismentById.fulfilled, (state, action: PayloadAction<JobAdvertisment>) => {
-        state.isLoading = false;
-        state.currentJobAdvertisment = action.payload;
-      })
+      .addCase(
+        fetchJobAdvertismentById.fulfilled,
+        (state, action: PayloadAction<JobAdvertisment>) => {
+          state.isLoading = false;
+          state.currentJobAdvertisment = action.payload;
+        }
+      )
       .addCase(fetchJobAdvertismentById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
@@ -274,13 +277,16 @@ const jobAdvertismentsSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(createJobAdvertisment.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isCreating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess && validationErrors) {
-          state.validationErrors = validationErrors as any;
+      .addCase(
+        createJobAdvertisment.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<null>>) => {
+          state.isCreating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess && validationErrors) {
+            state.validationErrors = validationErrors as any;
+          }
         }
-      })
+      )
       .addCase(createJobAdvertisment.rejected, (state, action) => {
         state.isCreating = false;
         const payload = action.payload as any;
@@ -295,13 +301,16 @@ const jobAdvertismentsSlice = createSlice({
         state.error = null;
         state.validationErrors = null;
       })
-      .addCase(editJobAdvertisment.fulfilled, (state, action: PayloadAction<ApiResponseModel<null>>) => {
-        state.isUpdating = false;
-        const { isSuccess, validationErrors } = action.payload;
-        if (!isSuccess && validationErrors) {
-          state.validationErrors = validationErrors as any;
+      .addCase(
+        editJobAdvertisment.fulfilled,
+        (state, action: PayloadAction<ApiResponseModel<null>>) => {
+          state.isUpdating = false;
+          const { isSuccess, validationErrors } = action.payload;
+          if (!isSuccess && validationErrors) {
+            state.validationErrors = validationErrors as any;
+          }
         }
-      })
+      )
       .addCase(editJobAdvertisment.rejected, (state, action) => {
         state.isUpdating = false;
         const payload = action.payload as any;
@@ -317,7 +326,9 @@ const jobAdvertismentsSlice = createSlice({
       })
       .addCase(deleteJobAdvertisment.fulfilled, (state, action: PayloadAction<string>) => {
         state.isDeleting = false;
-        state.jobAdvertisments = state.jobAdvertisments.filter((item) => item.id !== action.payload);
+        state.jobAdvertisments = state.jobAdvertisments.filter(
+          (item) => item.id !== action.payload
+        );
         state.selectedJobAdvertismentIds = state.selectedJobAdvertismentIds.filter(
           (id) => id !== action.payload
         );

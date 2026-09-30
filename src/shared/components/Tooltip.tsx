@@ -55,7 +55,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       <span
         role="tooltip"
         dir={dir}
-        className={`pointer-events-none absolute z-20 flex flex-col justify-start whitespace-nowrap rounded-md bg-green-500 px-3 py-2 text-start text-xs text-white opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100 ${placementClasses[resolvedPlacement]} ${className}`}
+        className={`pointer-events-none absolute z-20 flex flex-col justify-start rounded-md bg-green-500 px-3 py-2 text-start text-xs whitespace-nowrap text-white opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100 ${placementClasses[resolvedPlacement]} ${className}`}
       >
         {content}
       </span>

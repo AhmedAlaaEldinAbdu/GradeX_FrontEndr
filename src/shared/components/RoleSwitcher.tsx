@@ -132,7 +132,7 @@ const RoleSwitcher: React.FC<RoleSwitcherProps> = ({
   };
 
   const baseClasses =
-    'flex items-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2';
+    'flex items-center font-medium transition-all focus:outline-hidden focus:ring-2 focus:ring-green-500 focus:ring-offset-2';
 
   if (!isEnabled) return null;
   const superAdminIocn = (
@@ -160,11 +160,11 @@ const RoleSwitcher: React.FC<RoleSwitcherProps> = ({
       <button
         type="button"
         onClick={onToggle}
-        className={`${baseClasses} flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-green-600 ${className}`}
+        className={`${baseClasses} flex h-[32px] w-[32px] items-center justify-center rounded-[8px] text-[#9D9D9D] transition-colors hover:bg-[#ECFDF5] hover:text-[#1E7A52] ${className}`}
         aria-label={ariaLabel}
         title={title}
       >
-        <span className="flex min-w-[2.25rem] items-center justify-center text-center text-xs font-semibold">
+        <span className="flex min-w-9 items-center justify-center text-center text-xs font-semibold">
           {label}
         </span>
       </button>

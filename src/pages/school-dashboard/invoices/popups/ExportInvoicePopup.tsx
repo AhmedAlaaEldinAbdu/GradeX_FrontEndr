@@ -119,7 +119,7 @@ export default function ExportInvoicePopup({
         <button
           onClick={handleClose}
           disabled={isExporting}
-          className="absolute end-3 top-3 text-xl text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed"
+          className="absolute inset-e-3 top-3 text-xl text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed"
         >
           ✕
         </button>

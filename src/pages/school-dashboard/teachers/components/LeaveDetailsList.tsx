@@ -104,10 +104,10 @@ export default function LeaveDetailsList({ leaveTypeKey }: LeaveDetailsListProps
   return (
     <div className="flex flex-col gap-6 pb-8">
       {/* Top Card — total of this leave type */}
-      <div className="rounded-2xl border border-[#E6E6E6] bg-white p-4 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
+      <div className="rounded-2xl border border-black-100 bg-white p-4 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded border border-[#D3EAFF] bg-[rgba(103,181,255,0.12)]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-[#D3EAFF] bg-[rgba(103,181,255,0.12)]">
               <CustomImage src={VacationIcon} alt="vacation" className="h-6 w-6" />
             </div>
             <span className="text-base font-normal text-[#646969]">
@@ -115,7 +115,7 @@ export default function LeaveDetailsList({ leaveTypeKey }: LeaveDetailsListProps
             </span>
           </div>
 
-          <span className="text-[18px] font-normal text-[#0E1F1F]">
+          <span className="text-[18px] font-normal text-black-900">
             {summary.total} {t('teachers.details.leavesTab.daysUnit')}
           </span>
         </div>
@@ -127,7 +127,7 @@ export default function LeaveDetailsList({ leaveTypeKey }: LeaveDetailsListProps
             <span className="text-base font-normal text-[#3A3A3A]">
               {t('teachers.details.leavesTab.used')}:
             </span>
-            <span className="text-base font-normal text-[#0E1F1F]">{summary.used}</span>
+            <span className="text-base font-normal text-black-900">{summary.used}</span>
           </div>
         </div>
       </div>
@@ -137,11 +137,11 @@ export default function LeaveDetailsList({ leaveTypeKey }: LeaveDetailsListProps
         {LEAVE_RECORDS_MOCK.map((leave) => (
           <div
             key={leave.id}
-            className="flex flex-col gap-6 rounded-xl border border-[#E6E6E6] bg-white p-3 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]"
+            className="flex flex-col gap-6 rounded-xl border border-black-100 bg-white p-3 shadow-[0px_1px_12px_1px_rgba(0,0,0,0.06)]"
           >
             {/* Header) */}
             <div className="flex items-center justify-between gap-2">
-              <span className="text-base font-normal text-[#0E1F1F]">{leaveTypeName}</span>
+              <span className="text-base font-normal text-black-900">{leaveTypeName}</span>
               <span className="text-base font-normal text-[#646969]">
                 {leave.index}/{leave.total}
               </span>
@@ -178,7 +178,7 @@ export default function LeaveDetailsList({ leaveTypeKey }: LeaveDetailsListProps
                   <div className="flex flex-1 items-center justify-start gap-3">
                     <CustomImage src={PdfIcon} alt="pdf" className="h-10 w-10" />
                     <div className="flex flex-col gap-1">
-                      <span className="text-base font-normal text-[#0E1F1F]">
+                      <span className="text-base font-normal text-black-900">
                         {leave.attachment.fileName}
                       </span>
                       <span className="text-sm font-normal text-[#3A3A3A]">

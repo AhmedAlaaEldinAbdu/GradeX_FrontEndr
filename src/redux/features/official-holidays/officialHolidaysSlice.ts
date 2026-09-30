@@ -87,7 +87,8 @@ export const fetchOfficialHolidays = createAsyncThunk<
       if (payload.filters) {
         if (payload.filters.searchTerm) params.searchTerm = payload.filters.searchTerm;
         if (payload.filters.countryId) params.LKCountryId = payload.filters.countryId;
-        if (payload.filters.leaveCategory) params.leaveCategory = payload.filters.leaveCategory.toString();
+        if (payload.filters.leaveCategory)
+          params.leaveCategory = payload.filters.leaveCategory.toString();
         if (payload.filters.startDate) params.startDate = payload.filters.startDate;
         if (payload.filters.endDate) params.endDate = payload.filters.endDate;
       }

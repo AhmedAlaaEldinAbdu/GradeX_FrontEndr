@@ -197,15 +197,15 @@ export const fetchTeachers = createAsyncThunk<FetchTeachersResponse, FetchTeache
 
         if (payload.filters) {
           const normalizedSchoolBranchId =
-            payload.filters.schoolBranchId ||
-            payload.filters.schoolBranchesId
+            payload.filters.schoolBranchId || payload.filters.schoolBranchesId;
 
           if (payload.filters.SearchTerm) params.SearchTerm = payload.filters.SearchTerm;
           if (payload.filters.Language) params.Language = payload.filters.Language;
           if (payload.filters.classroomId) params.ClassroomId = payload.filters.classroomId;
           if (payload.filters.gradeId) params.GradeId = payload.filters.gradeId;
           if (payload.filters.materialId) params.MaterialId = payload.filters.materialId;
-          if (payload.filters.qualificationType) params.QualificationType = payload.filters.qualificationType;
+          if (payload.filters.qualificationType)
+            params.QualificationType = payload.filters.qualificationType;
           if (normalizedSchoolBranchId) {
             params.SchoolBranchId = normalizedSchoolBranchId;
           }
@@ -417,10 +417,7 @@ export interface DeleteTeacherAccountPayload {
   password: string;
 }
 
-export const deleteTeacherAccount = createAsyncThunk<
-  void,
-  DeleteTeacherAccountPayload
->(
+export const deleteTeacherAccount = createAsyncThunk<void, DeleteTeacherAccountPayload>(
   'teachers/deleteTeacherAccount',
   async (payload, { rejectWithValue }) => {
     try {
@@ -640,7 +637,7 @@ const teachersSlice = createSlice({
         state.isLoadingAttendance = false;
         state.attendanceError = action.payload as string;
       });
-      
+
     // Delete Teacher Account
     builder
       .addCase(deleteTeacherAccount.pending, (state) => {

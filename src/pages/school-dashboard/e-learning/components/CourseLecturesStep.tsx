@@ -113,13 +113,13 @@ export default function CourseLecturesStep({
 
           return (
             <div key={lecture.id} className="flex items-start gap-3">
-              <div className="relative flex-1 rounded-3xl border border-[#E6E6E6] p-5">
+              <div className="relative flex-1 rounded-3xl border border-black-100 p-5">
                 {data.items.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeLecture(lecture.id)}
                     aria-label={t('common.delete')}
-                    className="absolute end-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-red-50"
+                    className="absolute inset-e-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-red-50"
                   >
                     <CustomImage src={TrashFillIcon} alt="" className="h-5 w-5" />
                   </button>

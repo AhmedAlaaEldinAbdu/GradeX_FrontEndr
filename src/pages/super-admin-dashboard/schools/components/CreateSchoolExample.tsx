@@ -49,14 +49,14 @@
 //       <h1 className="mb-6 text-2xl font-bold">Create New School</h1>
 
 //       {error && (
-//         <div className="mb-4 rounded border border-red-200 bg-red-50 p-4">
+//         <div className="mb-4 rounded-sm border border-red-200 bg-red-50 p-4">
 //           <p className="text-red-600">{error.message}</p>
 //         </div>
 //       )}
 
 //       <form onSubmit={handleSubmit} className="space-y-6">
 //         {/* Basic Information */}
-//         <div className="rounded-lg bg-white p-6 shadow">
+//         <div className="rounded-lg bg-white p-6 shadow-sm">
 //           <h2 className="mb-4 text-xl font-semibold">Basic Information</h2>
 
 //           <div className="grid grid-cols-2 gap-4">
@@ -67,7 +67,7 @@
 //                 required
 //                 value={formData.schoolName}
 //                 onChange={(e) => handleChange('schoolName', e.target.value)}
-//                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //               />
 //             </div>
 
@@ -79,7 +79,7 @@
 //                 required
 //                 value={formData.academicSystem}
 //                 onChange={(e) => handleChange('academicSystem', e.target.value)}
-//                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //               >
 //                 <option value="">Select System</option>
 //                 <option value="American">American</option>
@@ -98,7 +98,7 @@
 //                 required
 //                 value={formData.foundationDate}
 //                 onChange={(e) => handleChange('foundationDate', e.target.value)}
-//                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //               />
 //             </div>
 
@@ -109,7 +109,7 @@
 //                 required
 //                 value={formData.country}
 //                 onChange={(e) => handleChange('country', e.target.value)}
-//                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //               />
 //             </div>
 //           </div>
@@ -120,13 +120,13 @@
 //               value={formData.aboutSchool}
 //               onChange={(e) => handleChange('aboutSchool', e.target.value)}
 //               rows={4}
-//               className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//               className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //             />
 //           </div>
 //         </div>
 
 //         {/* Contact Information */}
-//         <div className="rounded-lg bg-white p-6 shadow">
+//         <div className="rounded-lg bg-white p-6 shadow-sm">
 //           <h2 className="mb-4 text-xl font-semibold">Contact Information</h2>
 
 //           <div className="grid grid-cols-2 gap-4">
@@ -137,7 +137,7 @@
 //                 required
 //                 value={formData.email}
 //                 onChange={(e) => handleChange('email', e.target.value)}
-//                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //               />
 //             </div>
 
@@ -148,7 +148,7 @@
 //                 required
 //                 value={formData.phoneNumber}
 //                 onChange={(e) => handleChange('phoneNumber', e.target.value)}
-//                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //               />
 //             </div>
 
@@ -158,7 +158,7 @@
 //                 type="tel"
 //                 value={formData.landline}
 //                 onChange={(e) => handleChange('landline', e.target.value)}
-//                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //               />
 //             </div>
 
@@ -168,14 +168,14 @@
 //                 type="url"
 //                 value={formData.website}
 //                 onChange={(e) => handleChange('website', e.target.value)}
-//                 className="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 className="w-full rounded-sm border px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
 //               />
 //             </div>
 //           </div>
 //         </div>
 
 //         {/* Facilities */}
-//         <div className="rounded-lg bg-white p-6 shadow">
+//         <div className="rounded-lg bg-white p-6 shadow-sm">
 //           <h2 className="mb-4 text-xl font-semibold">Facilities</h2>
 
 //           <div className="grid grid-cols-3 gap-4">
@@ -203,7 +203,7 @@
 //           <button
 //             type="submit"
 //             disabled={loading}
-//             className="rounded bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+//             className="rounded-sm bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 //           >
 //             {loading ? 'Creating...' : 'Create School'}
 //           </button>
@@ -211,7 +211,7 @@
 //           <button
 //             type="button"
 //             onClick={() => setFormData(initialSchoolFormData)}
-//             className="rounded border border-gray-300 px-6 py-2 hover:bg-gray-50"
+//             className="rounded-sm border border-gray-300 px-6 py-2 hover:bg-gray-50"
 //           >
 //             Reset
 //           </button>

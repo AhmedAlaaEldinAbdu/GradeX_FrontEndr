@@ -233,8 +233,7 @@ export default function CourseForm({ mode }: CourseFormProps) {
     lectureDuration: basicInfo.lessonDuration ? Number(basicInfo.lessonDuration) : undefined,
     coverImage: basicInfo.coverImage,
     classRoomIds: students.grades,
-    studentIds:
-      students.audience === 'specific' ? students.selectedStudents.map((s) => s.id) : [],
+    studentIds: students.audience === 'specific' ? students.selectedStudents.map((s) => s.id) : [],
     isCourseForAllStudents: students.audience === 'all',
     lectures: lectures.items.map((lecture, index) => ({
       // Temp client ids (newLecture) start with "lec-"; omit so the API creates them.
@@ -335,7 +334,7 @@ export default function CourseForm({ mode }: CourseFormProps) {
 
       <StepIndicator steps={steps} currentStep={currentStep} />
 
-      <Card className="rounded-3xl border border-[#E6E6E6]" padding="md">
+      <Card className="rounded-3xl border border-black-100" padding="md">
         {/*
           All steps stay mounted (inactive ones hidden) so transient widget state —
           e.g. the FileUpload previews for the cover image and lecture videos — survives

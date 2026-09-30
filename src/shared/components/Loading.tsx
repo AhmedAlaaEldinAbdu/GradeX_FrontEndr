@@ -20,7 +20,7 @@ const Loading: React.FC<LoadingProps> = ({ size = 'md', fullScreen = false }) =>
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-75">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/75">
         {spinner}
       </div>
     );

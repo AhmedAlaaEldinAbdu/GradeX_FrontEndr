@@ -87,9 +87,10 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
     () =>
       classroomStudents.map((student) => ({
         id: student.id,
-        name: [student.firstName, student.secondName, student.thirdName, student.fourthName]
-          .filter(Boolean)
-          .join(' ') || student.name,
+        name:
+          [student.firstName, student.secondName, student.thirdName, student.fourthName]
+            .filter(Boolean)
+            .join(' ') || student.name,
         imageSrc: student.image || student.profilePicture || ProfileImage,
       })),
     [classroomStudents]
@@ -165,7 +166,7 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
 
   return (
     <div className="space-y-6">
-      <Card className="app-card-shadow rounded-[2rem] border border-[#E6F5EF] bg-white p-5">
+      <Card className="app-card-shadow rounded-4xl border border-[#E6F5EF] bg-white p-5">
         <div className="rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
           <div className="flex flex-col-reverse gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex items-center justify-between gap-4">
@@ -232,7 +233,7 @@ export default function ClassroomRosterContent({ currentLang }: ClassroomRosterC
       <div className="text-start text-base font-medium text-[#3A3A3A]">
         {t('sidebar.teachingStaff')}
       </div>
-      <Card className="rounded-3xl border border-[#E6E6E6] p-6">
+      <Card className="rounded-3xl border border-black-100 p-6">
         <Tabs
           items={tabItems}
           value={activeTab}

@@ -75,7 +75,7 @@ export default function ELearningOverviewPage() {
             title={t('eLearning.courses.title')}
             value={`${dashboardOverview?.completedCoursesCount ?? 0} ${t('eLearning.courses.units.course')}`}
             icon={<CustomImage src={BookBlueIcon} alt="" className="h-5 w-5" />}
-            iconClassName="bg-[#117BD7]/10"
+            iconClassName="bg-blue-500/10"
           />
           <MetricCard
             title={t('eLearning.metrics.totalStudents')}
@@ -87,7 +87,7 @@ export default function ELearningOverviewPage() {
             title={t('eLearning.metrics.successRate')}
             value={`${dashboardOverview?.successRate ?? 0}%`}
             icon={<CustomImage src={CheckMarkIcon} alt="Success rate" className="h-5 w-5" />}
-            iconClassName="bg-[#1A9F58]/10"
+            iconClassName="bg-lightGreen-500/10"
           />
         </div>
 

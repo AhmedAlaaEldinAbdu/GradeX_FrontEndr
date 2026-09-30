@@ -106,8 +106,8 @@ export async function createClassroom(
       headers:
         data instanceof FormData
           ? {
-            'Content-Type': 'multipart/form-data',
-          }
+              'Content-Type': 'multipart/form-data',
+            }
           : undefined,
     }
   );
@@ -128,8 +128,8 @@ export async function updateClassroom(
       headers:
         data instanceof FormData
           ? {
-            'Content-Type': 'multipart/form-data',
-          }
+              'Content-Type': 'multipart/form-data',
+            }
           : undefined,
     }
   );

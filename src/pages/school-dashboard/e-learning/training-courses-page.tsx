@@ -70,19 +70,19 @@ export default function TrainingCoursesPage() {
             title={t('eLearning.courses.metrics.activeCourses')}
             value={`${activeCoursesCount} ${t('eLearning.courses.units.course')}`}
             icon={<MaskIcon src={TaskIcon} color="#117BD7" />}
-            iconClassName="bg-[#117BD7]/[0.16]"
+            iconClassName="bg-blue-500/16"
           />
           <MetricCard
             title={t('eLearning.courses.metrics.totalStudents')}
             value={`${totalStudentsCount} ${t('eLearning.courses.units.student')}`}
             icon={<MaskIcon src={PeopleOutlineIcon} color="#C8A713" />}
-            iconClassName="bg-[#F6CB3B]/[0.16]"
+            iconClassName="bg-[#F6CB3B]/16"
           />
           <MetricCard
             title={t('eLearning.courses.metrics.attendanceRate')}
             value="78%"
             icon={<CustomImage src={CheckMarkIcon} alt="" className="h-6 w-6" />}
-            iconClassName="bg-[#1A9F58]/[0.16]"
+            iconClassName="bg-lightGreen-500/16"
           />
         </div>
 

@@ -70,7 +70,7 @@ const ExistingFileDisplay = ({
           <div className="flex items-center gap-2">
             <CustomImage src={FileIcon} alt="File" className="h-6 w-6" />
             <span className="text-sm text-gray-700">{fileName}</span>
-            <span className="flex-shrink-0 text-xs text-gray-500">
+            <span className="shrink-0 text-xs text-gray-500">
               ({t('officialHolidays.currentFile')})
             </span>
           </div>

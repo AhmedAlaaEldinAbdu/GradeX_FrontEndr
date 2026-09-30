@@ -135,7 +135,7 @@ const EditFixedHolidayForm = ({
                       {...field}
                       type="text"
                       placeholder={t('officialHolidays.enterReasonInAr')}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-hidden"
                       id="reasonAr"
                     />
                   )}
@@ -156,7 +156,7 @@ const EditFixedHolidayForm = ({
                       {...field}
                       type="text"
                       placeholder={t('officialHolidays.enterReasonInEn')}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-hidden"
                       id="reasonEn"
                     />
                   )}

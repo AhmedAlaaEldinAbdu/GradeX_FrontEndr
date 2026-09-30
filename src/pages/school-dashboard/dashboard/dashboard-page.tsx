@@ -127,7 +127,7 @@ export default function DashboardPage() {
           value: `${t('schoolDashboard.firstTerm')} • ${academicYear}`,
           label: '',
         }}
-        statisticsClassName="!py-1.5 !font-medium !text-[#057746] !bg-[#039958]/10"
+        statisticsClassName="py-1.5! font-medium! text-[#057746]! bg-[#039958]/10!"
       />
 
       {/* Metric cards */}
@@ -148,7 +148,7 @@ export default function DashboardPage() {
           title={t('schoolDashboard.metrics.classroomsCount')}
           value={stats.classrooms}
           icon={<CustomImage src={SchoolPurpleIcon} alt="School" className="h-5 w-5" />}
-          iconClassName="bg-[#A353DD]/10"
+          iconClassName="bg-purple-500/10"
         />
         <MetricCard
           title={t('schoolDashboard.metrics.ordersCount')}
@@ -188,7 +188,7 @@ export default function DashboardPage() {
             <div className="mb-4 flex items-center gap-2 text-sm">
               <span
                 className={`flex items-center gap-1 text-sm font-normal ${
-                  attendanceIsIncrease === false ? 'text-[#DD0417]' : 'text-[#1A9F58]'
+                  attendanceIsIncrease === false ? 'text-red-500' : 'text-lightGreen-500'
                 }`}
               >
                 %{attendanceChangePercentage}
@@ -241,7 +241,7 @@ export default function DashboardPage() {
             title={t('studentApplications.acceptedCount')}
             value={stats.accepted}
             icon={<CustomImage src={CheckCircleIcon} alt="Checkmark" className="h-5 w-5" />}
-            iconClassName="bg-[#1A9F58]/10"
+            iconClassName="bg-lightGreen-500/10"
           />
           <MetricCard
             title={t('studentApplications.status.underReview')}
@@ -253,7 +253,7 @@ export default function DashboardPage() {
             title={t('studentApplications.notPassedCount')}
             value={stats.rejected}
             icon={<CustomImage src={XmarkCircleRedIcon} alt="Xmark" className="h-5 w-5" />}
-            iconClassName="bg-[#DD0417]/10"
+            iconClassName="bg-red-500/10"
           />
           <MetricCard
             title={t('studentApplications.underEditCount')}

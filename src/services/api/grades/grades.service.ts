@@ -6,6 +6,8 @@ import type {
   GradeDetailsResponse,
   GradeListResponse,
   GradeQueryParams,
+  StagesWithGradesQueryParams,
+  StagesWithGradesResponse,
 } from '../types/grades.types';
 
 export async function getGrades(params?: GradeQueryParams): Promise<GradeListResponse> {
@@ -14,10 +16,21 @@ export async function getGrades(params?: GradeQueryParams): Promise<GradeListRes
 }
 
 export async function getGradeById(id: string): Promise<GradeDetailsDto> {
-  const response: AxiosResponse<GradeDetailsResponse> =
-    await axiosClient.get(GradeEndpoints.getGradeById(id));
+  const response: AxiosResponse<GradeDetailsResponse> = await axiosClient.get(
+    GradeEndpoints.getGradeById(id)
+  );
   return response.data.value;
 }
 
-export const gradeApiService = { getGrades, getGradeById };
+export async function getStagesWithGrades(
+  params?: StagesWithGradesQueryParams
+): Promise<StagesWithGradesResponse> {
+  const response: AxiosResponse<StagesWithGradesResponse> = await axiosClient.get(
+    GradeEndpoints.getStagesWithGrades,
+    { params }
+  );
+  return response.data;
+}
+
+export const gradeApiService = { getGrades, getGradeById, getStagesWithGrades };
 export default gradeApiService;

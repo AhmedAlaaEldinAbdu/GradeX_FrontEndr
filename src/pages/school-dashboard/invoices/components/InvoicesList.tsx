@@ -285,7 +285,7 @@ export default function InvoicesList() {
       header: 'invoices.table.paymentDocument',
       accessor: (row) => (
         <div className="flex w-full items-center justify-center">
-          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded border border-gray-200 bg-white p-1 shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-sm border border-gray-200 bg-white p-1 shadow-xs">
             <CustomImage
               src={row.receiptUrl ?? PdfIcon}
               alt="Document"

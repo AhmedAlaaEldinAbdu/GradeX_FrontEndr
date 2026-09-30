@@ -130,7 +130,7 @@ export default function TaskStudentsPopup({
           <button
             type="button"
             onClick={handleClose}
-            className="absolute start-0 flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200"
+            className="absolute inset-s-0 flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200"
             aria-label={t('common.close')}
           >
             <CustomImage src={XmarkCircleGrayIcon} alt={'close icon'} className="w-20px h-20px" />

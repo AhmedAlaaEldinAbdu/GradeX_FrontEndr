@@ -45,7 +45,7 @@ export default function TuitionFees({ setSelectedTab }: TuitionFeesProps) {
         setSelectedTab(next);
       }}
       variant="underline"
-      listClassName="flex w-[100%] md:w-[75%] lg:w-[35%] gap-2 mb-5 px-1 flex-wrap"
+      listClassName="flex w-full md:w-[75%] lg:w-[35%] gap-2 mb-5 px-1 flex-wrap"
       lazy={true}
       searchParamKey="tab"
     />

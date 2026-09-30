@@ -97,7 +97,7 @@ const Pagination: React.FC<PaginationProps> = ({
         {pages &&
           pages?.map((page, index) =>
             page === '...' ? (
-              <span key={`dots-${index}`} className="select-none px-2 text-gray-400">
+              <span key={`dots-${index}`} className="px-2 text-gray-400 select-none">
                 {page}
               </span>
             ) : (

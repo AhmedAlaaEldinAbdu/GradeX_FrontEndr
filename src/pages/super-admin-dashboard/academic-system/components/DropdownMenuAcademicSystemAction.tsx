@@ -59,12 +59,7 @@ export default function DropdownMenuAcademicSystemAction({ id, onActionComplete 
   return (
     <div className="relative inline-block text-left">
       <div className="flex items-center justify-center gap-2">
-        <IconButton
-          status="edit"
-          variant="success"
-          onClick={() => handleEdit()}
-          ariaLabel="Edit"
-        />
+        <IconButton status="edit" variant="success" onClick={() => handleEdit()} ariaLabel="Edit" />
         <IconButton
           status="delete"
           variant="danger"

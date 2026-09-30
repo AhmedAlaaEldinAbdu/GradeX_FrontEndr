@@ -376,7 +376,8 @@ export const fetchLanguages = createAsyncThunk<
 
     if (!options?.force && isLanguagesInitialized) {
       const now = Date.now();
-      const isCacheValid = lastFetchedLanguages && now - lastFetchedLanguages < LOOKUP_CACHE_DURATION;
+      const isCacheValid =
+        lastFetchedLanguages && now - lastFetchedLanguages < LOOKUP_CACHE_DURATION;
 
       if (isCacheValid && languages.length > 0) {
         return languages;
@@ -400,7 +401,8 @@ export const fetchLanguageLevels = createAsyncThunk<
 >('lookups/fetchLanguageLevels', async (options, { getState, rejectWithValue }) => {
   try {
     const state = getState();
-    const { lastFetchedLanguageLevels, isLanguageLevelsInitialized, languageLevels } = state.lookups;
+    const { lastFetchedLanguageLevels, isLanguageLevelsInitialized, languageLevels } =
+      state.lookups;
 
     if (!options?.force && isLanguageLevelsInitialized) {
       const now = Date.now();
@@ -458,7 +460,8 @@ export const fetchQualifications = createAsyncThunk<
 >('lookups/fetchQualifications', async (options, { getState, rejectWithValue }) => {
   try {
     const state = getState();
-    const { lastFetchedQualifications, isQualificationsInitialized, qualifications } = state.lookups;
+    const { lastFetchedQualifications, isQualificationsInitialized, qualifications } =
+      state.lookups;
 
     if (!options?.force && isQualificationsInitialized) {
       const now = Date.now();
@@ -1037,7 +1040,7 @@ const lookupsSlice = createSlice({
         if (!payload.isSuccess) {
           state.lkPaymentMethodsError = Array.isArray(payload.validationErrors)
             ? payload.validationErrors.join(', ')
-            : (payload.validationErrors as unknown as string) ?? null;
+            : ((payload.validationErrors as unknown as string) ?? null);
         }
       })
       .addCase(createLKPaymentMethod.rejected, (state, action) => {
@@ -1056,7 +1059,7 @@ const lookupsSlice = createSlice({
         if (!payload.isSuccess) {
           state.lkPaymentMethodsError = Array.isArray(payload.validationErrors)
             ? payload.validationErrors.join(', ')
-            : (payload.validationErrors as unknown as string) ?? null;
+            : ((payload.validationErrors as unknown as string) ?? null);
         }
       })
       .addCase(updateLKPaymentMethod.rejected, (state, action) => {

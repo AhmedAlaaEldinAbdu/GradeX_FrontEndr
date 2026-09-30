@@ -331,9 +331,9 @@ export default function AddEditDiscountOfferForm({
                         className={
                           offer.discountType === 'percentage'
                             ? isRTL
-                              ? 'pl-10 pr-4'
-                              : 'pl-4 pr-10'
-                            : 'pl-4 pr-4'
+                              ? 'pr-4 pl-10'
+                              : 'pr-10 pl-4'
+                            : 'pr-4 pl-4'
                         }
                       />
                     </FormField>

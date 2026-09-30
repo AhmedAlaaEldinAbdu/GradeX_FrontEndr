@@ -627,18 +627,12 @@ const JobApplicantsTable = ({
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.qualification',
-      accessor: (row) => (
-        <span>{getQualificationLabel(row)}</span>
-      ),
+      accessor: (row) => <span>{getQualificationLabel(row)}</span>,
       headerClassName: 'min-w-[160px]',
     },
     {
       header: 'jobAnnouncement.applicantsPage.table.experience',
-      accessor: (row) => (
-        <span>
-          {(row.experienceYears || 0).toLocaleString(numberLocale)}
-        </span>
-      ),
+      accessor: (row) => <span>{(row.experienceYears || 0).toLocaleString(numberLocale)}</span>,
       headerClassName: 'min-w-[120px]',
       className: 'text-center',
     },
@@ -663,7 +657,7 @@ const JobApplicantsTable = ({
         <div className="flex items-center justify-center gap-3">
           <a
             href={row.phoneNumber ? `tel:${row.phoneNumber}` : undefined}
-            className={`flex h-8 w-8 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition-opacity focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:outline-hidden ${
               row.phoneNumber
                 ? 'bg-green-100 hover:bg-green-300'
                 : 'pointer-events-none cursor-not-allowed bg-gray-100 opacity-50'
@@ -675,7 +669,7 @@ const JobApplicantsTable = ({
           </a>
           <a
             href={row.email ? `mailto:${row.email}` : undefined}
-            className={`flex h-8 w-8 items-center justify-center rounded-full transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition-opacity focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 focus-visible:outline-hidden ${
               row.email
                 ? 'bg-orange-100 hover:bg-orange-200'
                 : 'pointer-events-none cursor-not-allowed bg-gray-100 opacity-50'

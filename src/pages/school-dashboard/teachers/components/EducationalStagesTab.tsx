@@ -142,13 +142,13 @@ export default function EducationalStagesTab({
                   navigateToClassroomRoster(`${classroom.id}`);
                 }
               }}
-              className="inline-flex h-[43px] cursor-pointer flex-row-reverse items-center justify-center gap-2 rounded-lg bg-[#DFF8ED] px-2 py-1.5 text-lg font-normal leading-[172.51%] text-[#3A3A3A]"
+              className="inline-flex h-[43px] cursor-pointer flex-row-reverse items-center justify-center gap-2 rounded-lg bg-[#DFF8ED] px-2 py-1.5 text-lg leading-[172.51%] font-normal text-[#3A3A3A]"
               aria-label={t('teachers.details.viewClassroom') ?? ''}
             >
               <CustomImage
                 src={EyeStyledIcon}
                 alt={t('teachers.details.viewClassroom') ?? ''}
-                className="h-4 w-4 rounded"
+                className="h-4 w-4 rounded-sm"
               />
               {currentLang === 'ar' ? classroom.name : classroom.nameEN}
             </span>
@@ -280,7 +280,7 @@ export default function EducationalStagesTab({
       <Card>
         {/* Title bar — title on the start side (right in RTL), edit icon on the end side (left in RTL) */}
         <div className="mb-6 flex items-center gap-3">
-          <span className="flex-1 text-right text-base font-medium leading-[19px] text-[#3A3A3A]">
+          <span className="flex-1 text-right text-base leading-[19px] font-medium text-[#3A3A3A]">
             {t('teachers.details.educationalStagesAndClassrooms')}
           </span>
           <button

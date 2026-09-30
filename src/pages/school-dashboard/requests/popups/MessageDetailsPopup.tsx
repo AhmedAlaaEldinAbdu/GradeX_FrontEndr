@@ -42,7 +42,7 @@ type DetailRowProps = {
 
 const DetailRow: React.FC<DetailRowProps> = ({ label, children }) => (
   <div className="flex items-start gap-3">
-    <span className="shrink-0 text-base font-semibold text-[#0E1F1F]">{label}:</span>
+    <span className="shrink-0 text-base font-semibold text-black-900">{label}:</span>
     <div className="flex min-w-0 flex-1 items-center gap-2">{children}</div>
   </div>
 );
@@ -160,12 +160,12 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#E8F4EE]">
                   <CustomImage src={FilesGreenIcon} alt="" className="h-5 w-5" />
                 </span>
-                <h3 className="truncate text-base font-semibold text-[#0E1F1F]">
+                <h3 className="truncate text-base font-semibold text-black-900">
                   {t('common.attachments')}
                 </h3>
               </div>
 
-              <span className="shrink-0 rounded-full bg-[#F2F7F5] px-3 py-1 text-xs font-medium text-[#00512E]">
+              <span className="shrink-0 rounded-full bg-[#F2F7F5] px-3 py-1 text-xs font-medium text-green-500">
                 {request.attachments.length}
               </span>
             </div>
@@ -178,7 +178,7 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
                   fileName={attachment.fileName}
                   showViewButton
                   showDownloadButton
-                  className="!mb-0 !rounded-xl !border-[#EEF0F0] !bg-[#F8FAFA] transition-colors hover:!bg-[#F2F7F5]"
+                  className="mb-0! rounded-xl! border-[#EEF0F0]! bg-[#F8FAFA]! transition-colors hover:bg-[#F2F7F5]!"
                 />
               ))}
             </div>

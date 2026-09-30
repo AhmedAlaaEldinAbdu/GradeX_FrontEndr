@@ -199,7 +199,7 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
 
   const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <div className="rounded-2xl border border-[#DDE0E0] p-4">
-      <h3 className="mb-6 text-start text-base font-normal text-[#0E1F1F]">{title}</h3>
+      <h3 className="mb-6 text-start text-base font-normal text-black-900">{title}</h3>
       {children}
     </div>
   );
@@ -264,9 +264,9 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
                 className="flex items-center justify-between gap-4 rounded-2xl border border-[#DDE0E0] bg-white px-3 py-2"
               >
                 <div className="flex items-center gap-4">
-                  <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-10 flex-shrink-0" />
+                  <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-10 shrink-0" />
                   <div className="text-start">
-                    <p className="text-base font-normal text-[#0E1F1F]">
+                    <p className="text-base font-normal text-black-900">
                       {currentLang === 'ar' ? attachment.name : attachment.nameEn}
                     </p>
                     <p className="text-sm font-normal text-[#3A3A3A]">{attachment.size}</p>
@@ -274,7 +274,7 @@ export default function MedicalRecordTab(_props: MedicalRecordTabProps) {
                 </div>
                 <button
                   type="button"
-                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#117BD7]/10 transition-colors hover:bg-[#117BD7]/20"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/10 transition-colors hover:bg-blue-500/20"
                   title={t('common.download')}
                   aria-label={t('common.download')}
                 >

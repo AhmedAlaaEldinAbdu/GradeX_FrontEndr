@@ -220,7 +220,7 @@ export default function ParentsTab() {
       return (
         <button
           type="button"
-          className="mx-auto rounded-lg text-start transition-opacity hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-[#117BD7]/30"
+          className="mx-auto rounded-lg text-start transition-opacity hover:opacity-80 focus:ring-2 focus:ring-[#117BD7]/30 focus:outline-hidden"
           onClick={() => setSelectedParents(parents)}
         >
           <UserAvatarName

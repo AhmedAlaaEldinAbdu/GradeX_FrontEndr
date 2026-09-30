@@ -658,7 +658,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
 
           {/* Class work */}
           <div className="rounded-2xl border border-[#DDE0E0] p-4">
-            <h3 className="mb-4 text-start text-lg font-medium text-[#0E1F1F]">
+            <h3 className="mb-4 text-start text-lg font-medium text-black-900">
               {t(`${base}.classWork`)}
             </h3>
             <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
@@ -696,7 +696,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
           {/* Homework */}
           <div className="rounded-2xl border border-[#DDE0E0] p-4">
             <div className="mb-4 flex flex-col items-start gap-2">
-              <h3 className="text-start text-lg font-medium text-[#0E1F1F]">
+              <h3 className="text-start text-lg font-medium text-black-900">
                 {t(`${base}.homework`)}
               </h3>
               <div className="flex flex-col items-start gap-2 text-base font-normal text-black-800">
@@ -716,7 +716,7 @@ export default function LiveClassForm({ mode, initialData }: LiveClassFormProps)
                         aria-label={t(`${base}.addHomework`)}
                       />
                       <div className="peer-unchecked:bg-gray-200 h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-green-600"></div>
-                      <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+                      <span className="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5"></span>
                     </label>
                   </div>
                 </div>

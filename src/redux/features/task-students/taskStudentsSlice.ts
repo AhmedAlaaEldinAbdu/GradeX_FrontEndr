@@ -99,40 +99,43 @@ export const fetchTaskStudentById = createAsyncThunk<TaskStudent, string>(
 export const fetchStudentMaterialTasks = createAsyncThunk<
   TaskStudent[],
   FetchStudentMaterialTasksPayload
->('taskStudents/fetchStudentMaterialTasks', async ({ studentId, taskDate }, { rejectWithValue }) => {
-  try {
-    const params: StudentMaterialTasksQueryParams = {
-      taskDate,
-    };
+>(
+  'taskStudents/fetchStudentMaterialTasks',
+  async ({ studentId, taskDate }, { rejectWithValue }) => {
+    try {
+      const params: StudentMaterialTasksQueryParams = {
+        taskDate,
+      };
 
-    const response = await taskStudentApiService.getStudentMaterialTasks(studentId, params);
+      const response = await taskStudentApiService.getStudentMaterialTasks(studentId, params);
 
-    if (!response?.isSuccess || !response.data) {
-      return [];
+      if (!response?.isSuccess || !response.data) {
+        return [];
+      }
+
+      return response.data.taskStudents || [];
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
-
-    return response.data.taskStudents || [];
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
   }
-});
+);
 
-export const fetchStudentExams = createAsyncThunk<
-  StudentExamsListData,
-  FetchStudentExamsPayload
->('taskStudents/fetchStudentExams', async ({ studentId, params }, { rejectWithValue }) => {
-  try {
-    const response = await taskStudentApiService.getStudentExams(studentId, params);
+export const fetchStudentExams = createAsyncThunk<StudentExamsListData, FetchStudentExamsPayload>(
+  'taskStudents/fetchStudentExams',
+  async ({ studentId, params }, { rejectWithValue }) => {
+    try {
+      const response = await taskStudentApiService.getStudentExams(studentId, params);
 
-    if (!response?.isSuccess) {
-      return rejectWithValue(response?.message || 'Failed to fetch student exams');
+      if (!response?.isSuccess) {
+        return rejectWithValue(response?.message || 'Failed to fetch student exams');
+      }
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
-
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
   }
-});
+);
 
 export const fetchStudentHomework = createAsyncThunk<
   StudentHomeworkListData,

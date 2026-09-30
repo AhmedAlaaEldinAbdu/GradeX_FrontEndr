@@ -159,7 +159,7 @@ const SelectStudentsPopup: React.FC<SelectStudentsPopupProps> = ({
                         onClick={() => toggleGroup(classroom.id)}
                         className="flex w-full items-center justify-between gap-2 px-4 py-3.5"
                       >
-                        <span className="text-sm font-normal text-[#0E1F1F]">{classroom.name}</span>
+                        <span className="text-sm font-normal text-black-900">{classroom.name}</span>
                         <CustomImage
                           src={isExpanded ? ChevronUpIcon : ChevronDownIcon}
                           alt=""
@@ -196,7 +196,7 @@ const SelectStudentsPopup: React.FC<SelectStudentsPopupProps> = ({
                                     type="checkbox"
                                     checked={checked.includes(student.id)}
                                     onChange={() => toggleStudent(student.id)}
-                                    className="h-4 w-4 accent-[#00512E]"
+                                    className="h-4 w-4 accent-green-500"
                                   />
                                   <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg border border-[#DDE0E0]">
                                     <CustomImage

@@ -274,10 +274,22 @@ export const mapJobApplication = (dto: JobApplicationRequestDto): JobApplication
     ),
     applicantName: str(firstDefined(r.teacherFullName, r.fullName, r.applicantName)),
     applicantAvatarPath: toFileUrl(
-      firstDefined(r.pictureProfilePath, r.teacherPictureProfilePath, r.teacherImagePath, r.imagePath, r.avatarPath)
+      firstDefined(
+        r.pictureProfilePath,
+        r.teacherPictureProfilePath,
+        r.teacherImagePath,
+        r.imagePath,
+        r.avatarPath
+      )
     ),
     teacherPictureProfilePath: toFileUrl(
-      firstDefined(r.pictureProfilePath, r.teacherPictureProfilePath, r.teacherImagePath, r.imagePath, r.avatarPath)
+      firstDefined(
+        r.pictureProfilePath,
+        r.teacherPictureProfilePath,
+        r.teacherImagePath,
+        r.imagePath,
+        r.avatarPath
+      )
     ),
     role: str(
       firstDefined(

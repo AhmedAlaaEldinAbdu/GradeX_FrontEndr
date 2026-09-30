@@ -263,7 +263,7 @@ const QuestionBankBasicInfoStep = () => {
                   onClick={() => setIsStudentsOpen(true)}
                   className="flex items-center gap-3 self-start text-start"
                 >
-                  <div className="h-[52px] w-[52px] shrink-0 overflow-hidden rounded-lg border border-[#E6E6E6]">
+                  <div className="h-[52px] w-[52px] shrink-0 overflow-hidden rounded-lg border border-black-100">
                     <CustomImage
                       src={selectedStudents[0].avatar || StudentAvatar}
                       fallbackSrc={StudentAvatar}
@@ -271,7 +271,7 @@ const QuestionBankBasicInfoStep = () => {
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  <span className="text-xl font-normal text-[#4D4D4D]">
+                  <span className="text-xl font-normal text-black-700">
                     {selectedStudents[0].name}
                   </span>
                   {selectedStudents.length > 1 && (

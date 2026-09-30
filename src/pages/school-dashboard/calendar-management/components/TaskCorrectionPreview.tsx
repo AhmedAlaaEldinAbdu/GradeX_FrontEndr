@@ -10,10 +10,7 @@ import PersonSummaryCard from '@/shared/components/PersonSummaryCard';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import { fetchTaskCorrectionByTaskStudentId } from '@/redux/features/task-corrections/taskCorrectionsSlice';
 import { fetchTaskStudentById } from '@/redux/features/task-students/taskStudentsSlice';
-import {
-  TaskCorrectionEvaluationGrade,
-  TaskCorrectionType,
-} from '@/types/taskCorrections';
+import { TaskCorrectionEvaluationGrade, TaskCorrectionType } from '@/types/taskCorrections';
 import type { TaskStudentAttachment } from '@/types/taskStudents';
 
 const getFileNameFromPath = (filePath?: string) => {

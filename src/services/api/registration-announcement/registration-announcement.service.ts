@@ -67,7 +67,7 @@ export const registrationAnnouncementApi = {
 
   delete: async (id: string) => {
     const response = await axiosClient.delete(`/RegistrationAnouncement`, {
-      params: { Id: id }
+      params: { Id: id },
     });
     return response.data;
   },

@@ -21,7 +21,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
           <div className="relative flex flex-col items-center gap-3">
             {/* Step Circle */}
             <div
-              className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full transition-all ${
+              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full transition-all ${
                 currentStep > step.id
                   ? 'bg-green-500 shadow-md'
                   : currentStep === step.id
@@ -53,7 +53,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ steps, currentStep }) => 
 
             {/* Step Label */}
             <span
-              className={`whitespace-nowrap text-base font-normal ${currentStep === step.id ? 'font-semibold text-green-500' : 'text-gray-500'}`}
+              className={`text-base font-normal whitespace-nowrap ${currentStep === step.id ? 'font-semibold text-green-500' : 'text-gray-500'}`}
             >
               {step.label}
             </span>

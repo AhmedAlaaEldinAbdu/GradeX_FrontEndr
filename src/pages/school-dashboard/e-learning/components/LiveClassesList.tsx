@@ -31,8 +31,8 @@ const PAGE_SIZE = 10;
 
 const statusClassName: Record<LiveClassStatus, string> = {
   draft: 'bg-[#FEF8E6] text-[#C89004]',
-  started: 'bg-[#DFF8ED] text-[#1A9F58]',
-  completed: 'bg-[#E6F3FE] text-[#117BD7]',
+  started: 'bg-[#DFF8ED] text-lightGreen-500',
+  completed: 'bg-[#E6F3FE] text-blue-500',
   cancelled: 'bg-red-100 text-red-500',
 };
 
@@ -504,7 +504,7 @@ export default function LiveClassesList() {
               alt={t('eLearning.liveClasses.emptyTitle')}
               className="h-36 w-36 mix-blend-luminosity"
             />
-            <p className="text-base font-normal leading-5 text-[#3A3A3A]">
+            <p className="text-base leading-5 font-normal text-[#3A3A3A]">
               {t('eLearning.liveClasses.emptyTitle')}
             </p>
           </div>

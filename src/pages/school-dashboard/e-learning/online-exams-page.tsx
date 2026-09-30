@@ -72,7 +72,7 @@ export default function OnlineExamsPage() {
                 className="h-6 w-6"
               />
             }
-            iconClassName="bg-[#1A9F58]/[0.16]"
+            iconClassName="bg-lightGreen-500/16"
           />
           <MetricCard
             title={t('eLearning.metrics.activeExams')}
@@ -80,7 +80,7 @@ export default function OnlineExamsPage() {
             icon={
               <span
                 aria-hidden
-                className="h-6 w-6 bg-[#C8A713]"
+                className="h-6 w-6 bg-yellow-500"
                 style={{
                   maskImage: `url("${TaskIcon}")`,
                   WebkitMaskImage: `url("${TaskIcon}")`,
@@ -93,7 +93,7 @@ export default function OnlineExamsPage() {
                 }}
               />
             }
-            iconClassName="bg-[#F6CB3B]/[0.16]"
+            iconClassName="bg-[#F6CB3B]/16"
           />
         </div>
 
@@ -109,13 +109,13 @@ export default function OnlineExamsPage() {
             icon={IdeaIcon}
             title={t('eLearning.onlineExams.create.questionBank.title')}
             description={t('eLearning.onlineExams.create.questionBank.description')}
-            className="bg-[#A353DD]"
+            className="bg-purple-500"
           /> */}
           <ExamCreationCard
             icon={SparklesIcon}
             title={t('eLearning.onlineExams.create.ai.title')}
             description={t('eLearning.onlineExams.create.ai.description')}
-            className="bg-[#117BD7]"
+            className="bg-blue-500"
           />
         </div>
 

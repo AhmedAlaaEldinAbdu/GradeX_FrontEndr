@@ -137,7 +137,7 @@ export default function DataTable<T>({
             key={`filter-${index}`}
             value={filter.value as string}
             onChange={(e) => (filter.onChange as (value: string) => void)(e.target.value)}
-            className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="h-[40px] w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden"
             disabled={filter.disabled || filter.loading}
           >
             <option value="">
@@ -214,7 +214,7 @@ export default function DataTable<T>({
           <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
             {/* If parent supplied a custom filter component, render it as-is */}
             {filterComponent ? (
-              <div className="w-[100%]">{filterComponent}</div>
+              <div className="w-full">{filterComponent}</div>
             ) : (
               // Otherwise render built-in filter configs
               <>
@@ -224,7 +224,7 @@ export default function DataTable<T>({
                     className={`grid grid-cols-1 gap-4 rounded-lg ${
                       searchFilters.length === 1
                         ? getFilterWidth(searchFilters[0])
-                        : 'w-[100%] xl:w-[60%]'
+                        : 'w-full xl:w-[60%]'
                     }`}
                   >
                     {searchFilters.map((filter, index) => (
@@ -237,7 +237,7 @@ export default function DataTable<T>({
 
                 {/* Other Filters (Select, Custom) */}
                 {otherFilters.length > 0 && (
-                  <div className="flex w-[100%] flex-wrap gap-4 rounded-lg">
+                  <div className="flex w-full flex-wrap gap-4 rounded-lg">
                     {otherFilters.map((filter, index) => (
                       <div key={`other-${index}`} className={getFilterWidth(filter)}>
                         {renderFilter(filter, searchFilters.length + index)}
@@ -259,7 +259,7 @@ export default function DataTable<T>({
             }) && (
               <button
                 onClick={onResetFilters}
-                className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden"
                 title={t('actions.clearFilter')}
               >
                 <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />

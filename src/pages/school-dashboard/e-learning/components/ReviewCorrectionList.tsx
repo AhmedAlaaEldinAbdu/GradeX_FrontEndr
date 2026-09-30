@@ -7,12 +7,12 @@ import { REVIEW_ANSWERS, type ReviewAnswerItem } from './examDetailsData';
 
 function StatBox({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="flex flex-1 flex-col gap-1 rounded-[14px] border border-[#DDE0E0] bg-[#F6F8F9] p-3">
+    <div className="flex flex-1 flex-col gap-1 rounded-[14px] border border-[#DDE0E0] bg-gray-50 p-3">
       <div className="flex items-center justify-start gap-1.5">
         <CustomImage src={icon} alt="" className="h-4 w-4" />
         <span className="text-sm font-normal text-[#646969]">{label}</span>
       </div>
-      <span className="text-start text-base font-normal text-[#0E1F1F]">{value}</span>
+      <span className="text-start text-base font-normal text-black-900">{value}</span>
     </div>
   );
 }
@@ -21,11 +21,13 @@ function CorrectionCard({ answer }: { answer: ReviewAnswerItem }) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-[#E6E6E6] bg-white p-6">
+    <div className="flex flex-col gap-4 rounded-2xl border border-black-100 bg-white p-6">
       <div className="flex flex-col items-start gap-2">
         <span
           className={`inline-flex items-center justify-center rounded-3xl px-4 py-1 text-sm font-medium ${
-            answer.isCorrect ? 'bg-[#1A9F58]/10 text-[#1A9F58]' : 'bg-[#DD0417]/10 text-[#DD0417]'
+            answer.isCorrect
+              ? 'bg-lightGreen-500/10 text-lightGreen-500'
+              : 'bg-red-500/10 text-red-500'
           }`}
         >
           {answer.isCorrect
@@ -33,7 +35,7 @@ function CorrectionCard({ answer }: { answer: ReviewAnswerItem }) {
             : t('eLearning.onlineExams.details.review.wrongAnswer')}
         </span>
         <div className="flex w-full items-center gap-2">
-          <span className="text-sm font-normal text-[#00512E]">#{answer.number}</span>
+          <span className="text-sm font-normal text-green-500">#{answer.number}</span>
           <span className="flex-1 text-start text-base font-medium text-[#101828]">
             {answer.question}
           </span>

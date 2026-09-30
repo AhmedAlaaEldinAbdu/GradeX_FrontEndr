@@ -36,7 +36,7 @@ export default function ArchiveApplicantPopup({
         <button
           onClick={handleClose}
           disabled={isProcessing}
-          className="absolute start-0 top-0 text-xl text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed"
+          className="absolute inset-s-0 top-0 text-xl text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed"
         >
           ✕
         </button>

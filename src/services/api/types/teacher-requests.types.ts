@@ -17,12 +17,12 @@ import type { ApiResponseModel } from '../config';
 export type TeacherApplicationStatus = 1 | 2 | 3 | 4 | 5 | 6;
 export const TEACHER_APPLICATION_STATUS_VALUES: TeacherApplicationStatus[] = [1, 2, 3, 4, 5, 6];
 export const TeacherApplicationStatusMap = {
-  Accept: 1,           // مقبول
-  Reject: 2,           // مرفوض
-  Pending: 3,          // قيد المراجعة
-  Cancelled: 4,        // تم الالغاء
-  Archived: 5,         // مؤرشف
-  InterviewScheduled: 6 // تم تحديد مقابلة
+  Accept: 1, // مقبول
+  Reject: 2, // مرفوض
+  Pending: 3, // قيد المراجعة
+  Cancelled: 4, // تم الالغاء
+  Archived: 5, // مؤرشف
+  InterviewScheduled: 6, // تم تحديد مقابلة
 } as const;
 
 /** Work schedule (WorkShedule). Swagger values: 1–3. */
@@ -31,7 +31,7 @@ export const TEACHER_WORK_SCHEDULE_VALUES: TeacherWorkSchedule[] = [1, 2, 3];
 
 export const TeacherWorkScheduleMap = {
   FullTime: 1,
-  PartTime: 2,    // Note: API schema has "BartTime" but represents part-time
+  PartTime: 2, // Note: API schema has "BartTime" but represents part-time
   Both: 3,
 } as const;
 

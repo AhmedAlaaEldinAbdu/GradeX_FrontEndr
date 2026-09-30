@@ -234,7 +234,7 @@ export default function EditRole() {
     <FormProvider {...form}>
       <form
         onSubmit={handleSubmit}
-        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+        className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs"
       >
         <div className="mb-4">
           <FormField

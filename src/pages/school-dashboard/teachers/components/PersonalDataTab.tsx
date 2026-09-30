@@ -168,8 +168,8 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
   return (
     <div className="space-y-6">
       {/* Profile Banner */}
-      <div className="flex h-[7.875rem] items-center justify-start gap-6 rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
-        <div className="flex h-[5.875rem] w-[5.875rem] shrink-0 items-center overflow-hidden rounded-full border-2 border-[#E6E6E6] bg-white">
+      <div className="flex h-31.5 items-center justify-start gap-6 rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
+        <div className="flex h-23.5 w-23.5 shrink-0 items-center overflow-hidden rounded-full border-2 border-black-100 bg-white">
           <CustomImage
             src={teacherPersonalData.pictureProfilePath || DefaultAvatar}
             alt={teacherPersonalData.fullName}
@@ -177,13 +177,11 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
           />
         </div>
         <div className="flex flex-col gap-1 text-right">
-          <span className="text-lg font-medium leading-[2.5625rem] text-[#0E1F1F]">
+          <span className="text-lg leading-10.25 font-medium text-black-900">
             {teacherPersonalData.fullName}
           </span>
           {teacherTitle && (
-            <span className="text-sm font-normal leading-[1.0625rem] text-[#646969]">
-              {teacherTitle}
-            </span>
+            <span className="text-sm leading-4.25 font-normal text-[#646969]">{teacherTitle}</span>
           )}
         </div>
       </div>
@@ -304,7 +302,7 @@ export default function PersonalDataTab({ teacherId, isActive = true }: Personal
                     target="_blank"
                     rel="noopener noreferrer"
                     download={attachment.name}
-                    className="rounded-lg p-2 text-primary-600 transition-colors hover:bg-gray-200"
+                    className="text-primary-600 rounded-lg p-2 transition-colors hover:bg-gray-200"
                     title={t('common.download')}
                   >
                     <CustomImage src={DownloadIcon} alt="Download" className="h-5 w-5" />

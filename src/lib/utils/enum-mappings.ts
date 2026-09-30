@@ -21,7 +21,10 @@ export const ApplicantIdentityTypeMap: Record<number, string> = {
 /**
  * Get display label for social status
  */
-export const getSocialStatusLabel = (status: number | string | null | undefined, t: any): string => {
+export const getSocialStatusLabel = (
+  status: number | string | null | undefined,
+  t: any
+): string => {
   if (status === null || status === undefined || status === '') return '-';
   const numStatus = typeof status === 'string' ? parseInt(status, 10) : status;
   if (isNaN(numStatus)) return String(status);

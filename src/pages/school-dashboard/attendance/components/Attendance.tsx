@@ -46,7 +46,7 @@ export default function Attendance({ onTabChange }: AttendanceProps) {
             value={activeTab}
             onChange={handleTabChange}
             variant="underline"
-            listClassName="flex w-[100%] md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
+            listClassName="flex w-full md:w-[75%] lg:w-[40%] gap-2 mb-5 px-1 flex-wrap"
             lazy={true}
             searchParamKey="tab"
           />

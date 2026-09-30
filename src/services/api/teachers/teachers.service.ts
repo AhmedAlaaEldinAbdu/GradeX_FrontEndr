@@ -253,9 +253,7 @@ export async function updateTeacherAssignment(
 /**
  * Delete teacher account
  */
-export async function deleteTeacherAccount(
-  data: DeleteTeacherAccountRequest
-): Promise<void> {
+export async function deleteTeacherAccount(data: DeleteTeacherAccountRequest): Promise<void> {
   const response: AxiosResponse<{
     data: null;
     isSuccess: boolean;

@@ -24,7 +24,10 @@ export const InterviewFormSchema = object({
     .required('interviews.validation.endTimeRequired')
     .typeError('interviews.validation.endTimeRequired'),
   interViewType: number()
-    .oneOf([InterviewType.ONLINE, InterviewType.OFFLINE], 'interviews.validation.interViewTypeInvalid')
+    .oneOf(
+      [InterviewType.ONLINE, InterviewType.OFFLINE],
+      'interviews.validation.interViewTypeInvalid'
+    )
     .required('interviews.validation.interViewTypeRequired')
     .typeError('interviews.validation.interViewTypeRequired'),
 });

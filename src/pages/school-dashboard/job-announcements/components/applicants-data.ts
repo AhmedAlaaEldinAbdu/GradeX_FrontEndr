@@ -24,4 +24,3 @@ export const JOB_APPLICATION_STATUS = {
 
 export type JobApplicationStatus =
   (typeof JOB_APPLICATION_STATUS)[keyof typeof JOB_APPLICATION_STATUS];
-

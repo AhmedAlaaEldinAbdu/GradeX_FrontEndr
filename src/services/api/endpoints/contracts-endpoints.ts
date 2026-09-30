@@ -1,7 +1,6 @@
 // Contracts endpoints live at the API root (no `/api` segment), unlike the rest
 // of the app — so the base is an absolute URL derived from VITE_API_BASE_URL.
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://gradexpro.runasp.net/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://gradexpro.runasp.net/api';
 const Contracts = API_BASE_URL.replace(/\/api\/?$/, '');
 
 export const ContractsEndpoints = {

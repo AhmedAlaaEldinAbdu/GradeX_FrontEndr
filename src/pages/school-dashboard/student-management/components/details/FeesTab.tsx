@@ -25,7 +25,7 @@ const formatDate = (value: string) => {
 
 const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="rounded-2xl border border-[#EDEDED] p-5">
-    <h3 className="flex mb-4 text-base font-medium text-[#0E1F1F]">{title}</h3>
+    <h3 className="mb-4 flex text-base font-medium text-black-900">{title}</h3>
     {children}
   </div>
 );
@@ -111,7 +111,7 @@ export default function FeesTab({ gradeId, schoolBranchId }: FeesTabProps) {
         {/* Payment methods */}
         {fees.paymentMethodIds?.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#EDEDED] p-4 text-sm">
-            <span className="font-medium text-[#0E1F1F]">{t('fees.paymentMethods')}:</span>
+            <span className="font-medium text-black-900">{t('fees.paymentMethods')}:</span>
             <span className="text-[#646969]">
               {fees.paymentMethodIds.map((m) => m.name).join('، ')}
             </span>
@@ -127,7 +127,7 @@ export default function FeesTab({ gradeId, schoolBranchId }: FeesTabProps) {
                   key={o.id}
                   className="flex items-center justify-between border-b border-[#F0F0F0] py-2 last:border-0"
                 >
-                  <span className="text-sm text-[#0E1F1F]">{o.name}</span>
+                  <span className="text-sm text-black-900">{o.name}</span>
                   <span className="text-sm text-[#646969]">
                     {o.percentage != null
                       ? `${o.percentage}%`
@@ -154,9 +154,9 @@ export default function FeesTab({ gradeId, schoolBranchId }: FeesTabProps) {
               {fees.books.map((b) => (
                 <div
                   key={b.code || b.name}
-                  className="flex items-center justify-between border-b border-[#F0F0F0] py-2 last:border-0 text-sm"
+                  className="flex items-center justify-between border-b border-[#F0F0F0] py-2 text-sm last:border-0"
                 >
-                  <span className="text-[#0E1F1F]">{b.name}</span>
+                  <span className="text-black-900">{b.name}</span>
                   <span className="text-[#9CA3AF]">
                     {t('fees.code')}: {b.code || '-'}
                   </span>
@@ -174,13 +174,13 @@ export default function FeesTab({ gradeId, schoolBranchId }: FeesTabProps) {
           <SectionCard title={t('fees.installmentPlanTitle')}>
             <div className="mb-4 flex flex-wrap gap-x-12 gap-y-2 text-sm">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[#0E1F1F]">{t('fees.numberOfPayments')}:</span>
+                <span className="font-medium text-black-900">{t('fees.numberOfPayments')}:</span>
                 <span className="text-[#646969]">
                   {plan.installmentsCount} {t('fees.months')}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-[#0E1F1F]">{t('fees.paymentDueOptions')}:</span>
+                <span className="font-medium text-black-900">{t('fees.paymentDueOptions')}:</span>
                 <span className="text-[#646969]">
                   {plan.distributionType === 1
                     ? t('fees.equalPayments')
@@ -197,11 +197,11 @@ export default function FeesTab({ gradeId, schoolBranchId }: FeesTabProps) {
                 >
                   <div className="flex items-center justify-between rounded-xl bg-[#F5F5F5] px-4 py-2 text-sm">
                     <span className="text-[#646969]">{t('fees.dueDate')}</span>
-                    <span className="text-[#0E1F1F]">{formatDate(inst.dueDate)}</span>
+                    <span className="text-black-900">{formatDate(inst.dueDate)}</span>
                   </div>
                   <div className="flex items-center justify-between rounded-xl bg-[#F5F5F5] px-4 py-2 text-sm">
                     <span className="text-[#646969]">{t('fees.percentage')}</span>
-                    <span className="text-[#0E1F1F]">{inst.percentage ?? 0}%</span>
+                    <span className="text-black-900">{inst.percentage ?? 0}%</span>
                   </div>
                 </div>
               ))}

@@ -94,7 +94,7 @@ function ScheduleSection({
       {items.map((item) => (
         <div className="rounded-2xl border border-black-100 p-4">
           <div className="flex gap-1">
-            <div className="flex-grow">
+            <div className="grow">
               <div className="mb-4 grid grid-cols-1 gap-4">
                 <FormField label={daysLabel} required>
                   <CustomSelect

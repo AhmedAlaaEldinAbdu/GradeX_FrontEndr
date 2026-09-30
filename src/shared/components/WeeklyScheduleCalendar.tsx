@@ -452,13 +452,13 @@ export default function WeeklyScheduleCalendar({
           {dropdownActions.length > 0 ? (
             <ActionsDropdown
               actions={dropdownActions}
-              triggerClassName="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+              triggerClassName="flex h-4 w-4 shrink-0 items-center justify-center"
               iconClassName="h-4 w-4"
               dropdownClassName="absolute z-10 mt-2 min-w-[160px] rounded-lg border border-[#DDE0E0] bg-white py-2 shadow-lg"
             />
           ) : (
             <button
-              className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+              className="flex h-4 w-4 shrink-0 items-center justify-center"
               onClick={(e) => {
                 e.stopPropagation();
                 onDotsClick?.(lesson, e);
@@ -485,7 +485,7 @@ export default function WeeklyScheduleCalendar({
                 {t('weeklyCalendar.lessonDuration')}
               </span>
               <span className="text-gray-[#646969] text-[8px] font-normal">
-                <span className="me-0.5 inline-block rounded-sm border-[0.5px] border-[#A9A7A7] p-0.5 text-[8px]">
+                <span className="me-0.5 inline-block rounded-xs border-[0.5px] border-[#A9A7A7] p-0.5 text-[8px]">
                   {lesson.duration}
                 </span>
                 {t('weeklyCalendar.minutes')}
@@ -498,7 +498,7 @@ export default function WeeklyScheduleCalendar({
                 {t('weeklyCalendar.lessonDuration')}
               </span>
               <span className="text-[8px] font-normal text-[#646969]">
-                <span className="me-0.5 inline-block rounded-sm border-[0.5px] border-[#A9A7A7] p-0.5 text-[8px]">
+                <span className="me-0.5 inline-block rounded-xs border-[0.5px] border-[#A9A7A7] p-0.5 text-[8px]">
                   {lesson.duration}
                 </span>
                 {t('weeklyCalendar.minutes')}
@@ -506,7 +506,7 @@ export default function WeeklyScheduleCalendar({
             </div>
           )}
           {extendingLessonId === lesson.id ? (
-            <div className="flex h-5 w-5 items-center justify-center rounded border border-green-500 bg-green-50 text-green-500">
+            <div className="flex h-5 w-5 items-center justify-center rounded-sm border border-green-500 bg-green-50 text-green-500">
               <svg
                 className="h-3 w-3 animate-spin"
                 viewBox="0 0 24 24"
@@ -547,7 +547,7 @@ export default function WeeklyScheduleCalendar({
                       }
                     }}
                     disabled={isIncreaseDisabled}
-                    className={`flex h-3 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-t-sm border border-b-0 transition-colors ${
+                    className={`flex h-3 w-5 shrink-0 cursor-pointer items-center justify-center rounded-t-sm border border-b-0 transition-colors ${
                       isIncreaseDisabled
                         ? 'cursor-not-allowed border-green-500 bg-gray-50 text-gray-300'
                         : 'border-green-500 text-green-500 hover:bg-green-50'
@@ -577,7 +577,7 @@ export default function WeeklyScheduleCalendar({
                       }
                     }}
                     disabled={isDecreaseDisabled}
-                    className={`flex h-3 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-b-sm border border-t-0 transition-colors ${
+                    className={`flex h-3 w-5 shrink-0 cursor-pointer items-center justify-center rounded-b-sm border border-t-0 transition-colors ${
                       isDecreaseDisabled
                         ? 'cursor-not-allowed border-green-500 bg-gray-50 text-gray-300'
                         : 'border-green-500 text-green-500 hover:bg-green-50'
@@ -866,7 +866,7 @@ export default function WeeklyScheduleCalendar({
                         <div
                           key={gapKey}
                           style={{ width: `${widthFraction * 100}%` }}
-                          className={`group relative min-h-[100px] flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
+                          className={`group relative min-h-[100px] shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
                             isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
                           }`}
                         >
@@ -903,7 +903,7 @@ export default function WeeklyScheduleCalendar({
                         node: (
                           <div
                             key={`${periodIndex}-activity-${aIdx}`}
-                            className={`flex min-h-[100px] flex-shrink-0 items-center justify-center ${a.sc.bgColor || 'bg-gray-100'} ${a.roundedClass} ${a.marginClass} ${a.paddingClass}`}
+                            className={`flex min-h-[100px] shrink-0 items-center justify-center ${a.sc.bgColor || 'bg-gray-100'} ${a.roundedClass} ${a.marginClass} ${a.paddingClass}`}
                             style={{
                               width: `${a.width * 100}%`,
                               marginBottom: a.isLastRow ? 0 : undefined,
@@ -935,7 +935,7 @@ export default function WeeklyScheduleCalendar({
                         node: (
                           <div
                             key={`${periodIndex}-lesson`}
-                            className="relative z-10 flex-shrink-0 p-0.5"
+                            className="relative z-10 shrink-0 p-0.5"
                             style={{ width: `${lessonWidth * 100}%` }}
                           >
                             <LessonCard lesson={lessonInCell} />
@@ -1078,7 +1078,7 @@ export default function WeeklyScheduleCalendar({
                         <div
                           key={gapKey}
                           style={{ width: `${widthFraction * 100}%` }}
-                          className={`group relative flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
+                          className={`group relative shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
                             isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
                           }`}
                         >
@@ -1121,7 +1121,7 @@ export default function WeeklyScheduleCalendar({
                               `${periodIndex}-loffset`
                             )}
                             <div
-                              className="relative z-10 flex-shrink-0 p-0.5"
+                              className="relative z-10 shrink-0 p-0.5"
                               style={{ width: widthStyle }}
                             >
                               <LessonCard lesson={lessonStartingHere} />
@@ -1162,7 +1162,7 @@ export default function WeeklyScheduleCalendar({
                           `${periodIndex}-loffset`
                         )}
                         <div
-                          className="relative z-10 flex-shrink-0 p-0.5"
+                          className="relative z-10 shrink-0 p-0.5"
                           style={{ width: `${lessonWidth * 100}%` }}
                         >
                           <LessonCard lesson={lessonStartingHere} />
@@ -1190,13 +1190,10 @@ export default function WeeklyScheduleCalendar({
 
                     return (
                       <div key={periodIndex} className="flex min-h-[100px]" style={{ gap: '4px' }}>
-                        <div
-                          style={{ width: `${fractionalPart * 100}%` }}
-                          className="flex-shrink-0"
-                        />
+                        <div style={{ width: `${fractionalPart * 100}%` }} className="shrink-0" />
                         <div
                           style={{ width: `calc(${remainingPart * 100}% - 8px)` }}
-                          className={`group relative flex-shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
+                          className={`group relative shrink-0 rounded-lg border border-[#DDE0E0] bg-transparent transition-colors ${
                             isWorkingDay(dayIndex) ? 'cursor-pointer hover:border-green-500' : ''
                           }`}
                         >

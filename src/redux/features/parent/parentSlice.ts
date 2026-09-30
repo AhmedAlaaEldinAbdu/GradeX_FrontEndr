@@ -129,16 +129,16 @@ export const changeParentPassword = createAsyncThunk<
   }
 });
 
-export const resetParentPassword = createAsyncThunk<
-  ParentApiResponse,
-  ParentResetPasswordRequest
->('parent/resetParentPassword', async (data, { rejectWithValue }) => {
-  try {
-    return await parentApiService.resetParentPassword(data);
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+export const resetParentPassword = createAsyncThunk<ParentApiResponse, ParentResetPasswordRequest>(
+  'parent/resetParentPassword',
+  async (data, { rejectWithValue }) => {
+    try {
+      return await parentApiService.resetParentPassword(data);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
   }
-});
+);
 
 // ============================================================================
 // Async Thunks — profile / favorites / list
@@ -220,11 +220,7 @@ export const fetchParentsByBranch = createAsyncThunk<
   }
 });
 
-
-export const deleteParentAccount = createAsyncThunk<
-  void,
-  DeleteParentAccountRequest
->(
+export const deleteParentAccount = createAsyncThunk<void, DeleteParentAccountRequest>(
   'parent/deleteParentAccount',
   async (payload, { rejectWithValue }) => {
     try {

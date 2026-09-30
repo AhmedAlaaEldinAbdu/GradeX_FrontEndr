@@ -61,7 +61,9 @@ export default function UserAvatarName({
 
   return (
     <div className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${className}`}>
-      <div className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${specificClassName}`}>
+      <div
+        className={`flex items-center ${ALIGN_CLASSES[align]} ${sizeClasses.gap} ${specificClassName}`}
+      >
         <CustomImage
           src={resolvedAvatarSrc ?? fallbackSrc}
           fallbackSrc={fallbackSrc}

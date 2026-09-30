@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSchoolBranchName } from '@/hooks/useSchoolBranchName';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { fetchTeacherRequestsSummary } from '@/redux/features/teacher-requests/teacherRequestsSlice';
+import { selectUser } from '@gradex/redux/features/auth/authSelectors';
 import { UserRole, type UserRoleType } from '@gradex/constants';
 import CustomImage from '@/shared/components/CustomImage';
+import LanguageSwitcher from '@/shared/components/LanguageSwitcher';
 
 // Icons
 import HomeIcon from '@gradex/assets/icons/Home.svg';
@@ -21,7 +24,7 @@ import ReportsIcon from '@gradex/assets/icons/Reports.svg';
 import SettingsIcon from '@gradex/assets/icons/Settings.svg';
 import ContactIcon from '@gradex/assets/icons/Contact.svg';
 import SchoolRegularIcon from '@gradex/assets/icons/SchoolRegular.svg';
-import MainLogo from '@/assets/identity/MainLogo.svg';
+import MainLogo from '@/assets/identity/classtiSchoolSmartLogo.svg';
 import ClasstiLogo from '@/assets/identity/classtiLogo.svg';
 import DataSourcesIcon from '@gradex/assets/icons/DataSources.svg';
 import DatePickerIcon from '@gradex/assets/icons/DatePicker.svg';
@@ -36,24 +39,29 @@ import UserIcon from '@gradex/assets/icons/User.svg';
 import ImageIcon from '@gradex/assets/icons/Image.svg';
 import AnalyticsIcon from '@gradex/assets/icons/Analytics.svg';
 import SideArrow from '@/assets/icons/SideArrow.svg';
-import SidebarTopVector1 from '@/assets/sidebar-pattern/top-vector-1.svg';
-import SidebarTopVector2 from '@/assets/sidebar-pattern/top-vector-2.svg';
-import SidebarTopVector3 from '@/assets/sidebar-pattern/top-vector-3.svg';
-import SidebarTopVector4 from '@/assets/sidebar-pattern/top-vector-4.svg';
-import SidebarTopVector5 from '@/assets/sidebar-pattern/top-vector-5.svg';
-import SidebarEllipseGlow from '@/assets/sidebar-pattern/ellipse-glow.svg';
+import profileImage from '@gradex/assets/images/profile.png';
 
-const ICON_FILTER_WHITE: React.CSSProperties = {
-  filter: 'brightness(0) saturate(100%) invert(1)',
+/* ── Figma tokens — Classti / "Aside - Main Navigation Sidebar" (node 107:539) ──
+   accent  #1E7A52  active label + icon
+   active  #ECFDF5  active row fill
+   muted   #9D9D9D  idle label + icon
+   heading #1E293B  section header label
+   edge    #E2E8F0  sidebar outer border
+   rule    #F1F5F9  logo/footer dividers                                      */
+const ICON_FILTER_DARK: React.CSSProperties = {
+  filter:
+    'brightness(0) saturate(100%) invert(13%) sepia(19%) saturate(1121%) hue-rotate(184deg) brightness(95%) contrast(92%)',
 };
 
-// Class-based equivalents of the icon filters above, so a row can flip its icon
-// to white on hover via `group-hover:` (inline styles can't be hover-overridden).
+// Class-based equivalents of the icon filters above, so a row can tint its icon
+// on hover via `group-hover:` (inline styles can't be hover-overridden).
 // Keep these as full literal strings — Tailwind only generates classes it can see.
-const ICON_FILTER_WHITE_CLASS = '[filter:brightness(0)_saturate(100%)_invert(1)]';
-const ICON_FILTER_MUTE_CLASS =
-  '[filter:brightness(0)_saturate(100%)_invert(67%)_sepia(11%)_saturate(414%)_hue-rotate(94deg)_brightness(94%)_contrast(89%)]';
-const ICON_GROUP_HOVER_WHITE = 'group-hover:[filter:brightness(0)_saturate(100%)_invert(1)]';
+// ACTIVE ≈ #1E7A52, MUTE ≈ #9D9D9D.
+const ICON_FILTER_ACTIVE_CLASS =
+  'filter-[brightness(0)_saturate(100%)_invert(38%)_sepia(24%)_saturate(1234%)_hue-rotate(114deg)_brightness(93%)_contrast(92%)]';
+const ICON_FILTER_MUTE_CLASS = 'filter-[brightness(0)_saturate(100%)_invert(62%)]';
+const ICON_GROUP_HOVER_ACTIVE =
+  'group-hover:filter-[brightness(0)_saturate(100%)_invert(38%)_sepia(24%)_saturate(1234%)_hue-rotate(114deg)_brightness(93%)_contrast(92%)]';
 
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(' ');
@@ -61,39 +69,21 @@ const cn = (...classes: Array<string | false | null | undefined>) =>
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 const SIDEBAR_FONT = "font-['IBM_Plex_Sans_Arabic',sans-serif]";
+const SIDEBAR_WIDTH_CLASS = 'w-[256px]';
+const SIDEBAR_COLLAPSED_WIDTH_CLASS = 'w-[64px]';
 const SIDEBAR_COLLAPSE_STORAGE_KEY = 'gradex.sidebar.collapsed';
 const SIDEBAR_SCROLL_TRACK_INSET = 14;
 const SIDEBAR_SCROLL_THUMB_MIN_HEIGHT = 28;
-const ACTIVE_ROW_BG_RTL =
-  'bg-[linear-gradient(90deg,rgba(35,114,71,0.53)_0%,rgba(18,52,34,0.85)_92.788%)]';
-const ACTIVE_ROW_BG_LTR =
-  'bg-[linear-gradient(270deg,rgba(35,114,71,0.53)_0%,rgba(18,52,34,0.85)_92.788%)]';
-const SIDEBAR_TOP_PATTERN_LAYERS = [
-  {
-    src: SidebarTopVector1,
-    className: 'absolute inset-[-1.1%_-0.08%_31.9%_14.18%] mix-blend-color-dodge',
-  },
-  {
-    src: SidebarTopVector2,
-    className: 'absolute inset-[-1.1%_6.02%_45.21%_0] mix-blend-color-dodge',
-  },
-  {
-    src: SidebarTopVector3,
-    className: 'absolute inset-[-1.91%_-0.45%_51.28%_22.73%] mix-blend-screen',
-  },
-  {
-    src: SidebarTopVector4,
-    className: 'absolute inset-[-1.1%_-0.08%_46.15%_65.27%] mix-blend-color-dodge',
-  },
-  {
-    src: SidebarTopVector5,
-    className: 'absolute inset-[-1.1%_-0.08%_0_10.72%] mix-blend-color-dodge',
-  },
-] as const;
+// Below the desktop breakpoint (phones + tablets) the sidebar is an off-canvas drawer.
+const SIDEBAR_MOBILE_QUERY = '(max-width: 1023px)';
 
 interface SidebarProps {
   dashboardType: UserRoleType;
   customMenuItems?: MenuItem[];
+  /** Mobile only: whether the off-canvas drawer is open. */
+  isMobileOpen?: boolean;
+  /** Mobile only: called when the drawer should close (backdrop, Esc, nav click). */
+  onMobileClose?: () => void;
 }
 
 interface MenuSubItem {
@@ -118,37 +108,6 @@ interface MenuSection {
 
 const renderIcon = (src: string, alt: string) => (
   <CustomImage src={src} className="h-4 w-4" alt={alt} />
-);
-
-const SidebarPatternLayer: React.FC<{ src: string; className: string }> = ({ src, className }) => (
-  <div className={className}>
-    <img alt="" src={src} className="absolute inset-0 block h-full w-full max-w-none" />
-  </div>
-);
-
-const SidebarPatternBackground: React.FC<{ isRTL: boolean }> = ({ isRTL }) => (
-  <>
-    <div
-      aria-hidden
-      className={cn(
-        'pointer-events-none absolute top-[-10px] z-0 h-[157px] w-[222px] overflow-hidden opacity-30',
-        isRTL ? 'right-[-42px]' : 'left-[-42px] scale-x-[-1]'
-      )}
-    >
-      {SIDEBAR_TOP_PATTERN_LAYERS.map((layer) => (
-        <SidebarPatternLayer key={layer.src} src={layer.src} className={layer.className} />
-      ))}
-    </div>
-
-    <img
-      alt=""
-      src={SidebarEllipseGlow}
-      className={cn(
-        'pointer-events-none absolute top-[-199px] z-[1] h-[400px] w-[401px] max-w-none',
-        isRTL ? 'left-[-164px]' : 'right-[-164px]'
-      )}
-    />
-  </>
 );
 
 /**
@@ -194,11 +153,6 @@ const getSuperAdminSections = (): MenuSection[] => [
         path: '/notifications',
       },
       { key: 'messages', icon: renderIcon(SettingsIcon, 'Messages'), path: '/messages' },
-      {
-        key: 'settings',
-        icon: renderIcon(SettingsIcon, 'Settings'),
-        path: '/settings',
-      },
     ],
   },
 ];
@@ -337,23 +291,6 @@ const getSchoolAdminSections = (): MenuSection[] => [
       },
     ],
   },
-  {
-    titleKey: 'systemSettings',
-    items: [
-      {
-        key: 'settings',
-        icon: renderIcon(SettingsIcon, 'Settings'),
-        subItems: [
-          { key: 'schoolData', path: '/settings/school-data' },
-          { key: 'jobRoles', path: '/settings/job-roles' },
-          { key: 'paymentChannels', path: '/settings/payment-channels' },
-          { key: 'holidaysSettings', path: '/settings/holidays' },
-          { key: 'siteSettings', path: '/settings/site' },
-          { key: 'notifications', path: '/settings/notifications' },
-        ],
-      },
-    ],
-  },
 ];
 
 const getSectionsForDashboard = (dashboardType: UserRoleType): MenuSection[] => {
@@ -390,8 +327,8 @@ const getPendingRequestsCount = (summary: Record<string, unknown> | null): numbe
      RTL expanded  → -90deg (v)
      LTR collapsed → 180deg (>)
      LTR expanded  →  90deg (v)
-   When the row is active the icon is filtered white; otherwise it keeps
-   the asset's native muted #8FA89A so it matches inactive icons. */
+   When the row is active the icon is tinted brand green; otherwise it is
+   filtered to the muted grey used by inactive icons. */
 const Chevron: React.FC<{ expanded: boolean; isRTL: boolean; active: boolean }> = ({
   expanded,
   isRTL,
@@ -411,11 +348,9 @@ const Chevron: React.FC<{ expanded: boolean; isRTL: boolean; active: boolean }> 
       alt=""
       aria-hidden
       className={cn(
-        'h-[9px] w-[5px] shrink-0 object-contain transition-transform duration-200',
+        'h-[10px] w-[6px] shrink-0 object-contain transition-transform duration-200',
         rotationClass,
-        active
-          ? ICON_FILTER_WHITE_CLASS
-          : cn('opacity-80', ICON_GROUP_HOVER_WHITE, 'group-hover:opacity-100')
+        active ? ICON_FILTER_ACTIVE_CLASS : cn(ICON_FILTER_MUTE_CLASS, ICON_GROUP_HOVER_ACTIVE)
       )}
     />
   );
@@ -425,27 +360,21 @@ const BadgeView: React.FC<{ badge: MenuBadge }> = ({ badge }) => {
   if (badge.type === 'tag') {
     // Figma LMS chip: padding 2px 8px, bg #00BC7D, radius 4,
     return (
-      <span className="inline-flex h-[19px] w-[34.362px] flex-shrink-0 items-center justify-center rounded-[4px] bg-[#00bc7d] px-[8px] py-[2px] text-[10px] font-bold leading-[15px] text-white">
+      <span className="inline-flex h-[19px] shrink-0 items-center justify-center rounded-[4px] bg-[#1E7A52] px-[8px] py-[2px] text-[10px] leading-[15px] font-bold text-white">
         {badge.value}
       </span>
     );
   }
-  // Count badge — Figma: 16×16 white circle, dark green text 12 / 700.
+  // Count badge — Figma header bell badge: 14×14, #EF4444, radius 7, 10 / 500 white.
   return (
-    <span className="inline-flex h-[16px] w-[16px] flex-shrink-0 items-center justify-center rounded-full bg-white text-center text-[12px] font-bold leading-none text-[#00512e]">
+    <span className="inline-flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-[7px] bg-[#EF4444] text-center text-[10px] leading-[13px] font-medium text-white">
       {badge.value}
     </span>
   );
 };
 
 const BrandMark: React.FC = () => (
-  // <div className="relative h-[40px] w-[40px] flex-shrink-0 overflow-hidden rounded-[12px] shadow-[0_1px_12px_1px_rgba(255,245,245,0.06)]">
-  <CustomImage
-    src={MainLogo}
-    alt="Classti"
-    // className="absolute left-[-13px] top-[-12px] h-[66px] w-[61px] max-w-none"
-  />
-  // </div>
+  <CustomImage src={MainLogo} alt="Classti" className="h-[30px] w-[100px] object-contain" />
 );
 
 interface CollapsedGroupItemProps {
@@ -478,7 +407,13 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const flyoutRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | null>(null);
-  const [coords, setCoords] = useState<{ top: number; left?: number; right?: number } | null>(null);
+  const [coords, setCoords] = useState<{
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+    maxHeight: number;
+  } | null>(null);
 
   const cancelClose = () => {
     if (closeTimerRef.current !== null) {
@@ -509,10 +444,22 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
     const compute = () => {
       const rect = wrapperRef.current?.getBoundingClientRect();
       if (!rect) return;
+      const margin = 8;
+      const minPreferredHeight = 200;
+      const spaceBelow = window.innerHeight - rect.top - margin;
+      const spaceAbove = rect.bottom - margin;
+      // If there isn't enough room below the trigger, flip the flyout upward
+      // (anchored to the trigger's bottom) so long submenus stay reachable
+      // instead of running off the bottom of the viewport.
+      const openUpward = spaceBelow < minPreferredHeight && spaceAbove > spaceBelow;
+      const maxHeight = Math.max(160, openUpward ? spaceAbove : spaceBelow);
+      const vertical = openUpward
+        ? { bottom: window.innerHeight - rect.bottom }
+        : { top: rect.top };
       if (isRTL) {
-        setCoords({ top: rect.top, right: window.innerWidth - rect.left + 8 });
+        setCoords({ ...vertical, right: window.innerWidth - rect.left + 8, maxHeight });
       } else {
-        setCoords({ top: rect.top, left: rect.right + 8 });
+        setCoords({ ...vertical, left: rect.right + 8, maxHeight });
       }
     };
     compute();
@@ -548,8 +495,8 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
           cancelClose();
           onToggle();
         }}
-        className={`group flex w-full items-center justify-center py-3 transition-colors ${
-          isActive || isOpen ? '' : 'hover:bg-white/[0.03]'
+        className={`group flex w-full items-center justify-center rounded-[8px] ${item.key === 'settings' ? 'py-1' : 'py-2'} transition-colors ${
+          isActive ? 'bg-[#ECFDF5]' : isOpen ? 'bg-[#F1F5F9]' : 'hover:bg-[#ECFDF5]'
         }`}
       >
         {iconCell}
@@ -564,15 +511,17 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
             dir={isRTL ? 'rtl' : 'ltr'}
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
-            className="fixed z-[1000] min-w-[220px] rounded-[12px] bg-[#0f1f17] p-[8px] shadow-[0_12px_36px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)]"
+            className="fixed z-1000 min-w-[220px] overflow-y-auto rounded-[12px] border border-[#E2E8F0] bg-white p-[8px] shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]"
             style={{
               top: coords.top,
+              bottom: coords.bottom,
               left: coords.left,
               right: coords.right,
+              maxHeight: coords.maxHeight,
             }}
           >
             <div
-              className={`mb-1 border-b border-white/10 px-3 pb-2 pt-1 text-[12px] font-semibold text-white ${textAlignClass}`}
+              className={`mb-1 border-b border-[#F1F5F9] px-3 pt-1 pb-2 text-[16px] leading-[22.4px] font-semibold text-[#1E293B] ${textAlignClass}`}
             >
               {t(`sidebar.${item.key}`)}
             </div>
@@ -586,29 +535,21 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
                     to={sub.path}
                     onClick={onClose}
                     className={cn(
-                      'group box-border flex min-h-[28px] items-center gap-[8px] rounded-[8px] px-[16px] py-[1px] text-[11px] font-medium transition-colors',
+                      'group box-border flex items-center gap-[8px] rounded-[8px] p-[8px] text-[14px] leading-[19.6px] font-medium transition-colors',
                       'flex-row',
                       isSubActive
-                        ? 'bg-[rgba(0,224,127,0.08)] text-white'
-                        : 'text-[#8FA89A] hover:bg-white/[0.04]'
+                        ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                        : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]'
                     )}
                   >
                     <span
                       className={cn(
-                        'h-[5px] w-[5px] flex-shrink-0 rounded-full',
-                        isSubActive
-                          ? 'bg-white'
-                          : 'bg-[#8FA89A] opacity-80 group-hover:bg-white group-hover:opacity-100'
+                        'h-[5px] w-[5px] shrink-0 rounded-full transition-colors',
+                        isSubActive ? 'bg-[#1E7A52]' : 'bg-transparent group-hover:bg-[#1E7A52]'
                       )}
                     />
                     <span
-                      className={cn(
-                        'flex-1 truncate',
-                        textAlignClass,
-                        isSubActive
-                          ? 'font-bold'
-                          : 'opacity-80 group-hover:text-white group-hover:opacity-100'
-                      )}
+                      className={cn('flex-1 truncate', textAlignClass, isSubActive && 'font-bold')}
                     >
                       {t(`sidebar.${sub.key}`)}
                     </span>
@@ -626,13 +567,27 @@ const CollapsedGroupItem: React.FC<CollapsedGroupItemProps> = ({
 /**
  * Sidebar Component
  */
-const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  dashboardType,
+  customMenuItems,
+  isMobileOpen = false,
+  onMobileClose,
+}) => {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const adminRequestsSummary = useAppSelector((state) => state.teacherRequests.summary);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const settingsDropdownRef = useRef<HTMLDivElement>(null);
+  // Collapsed-rail avatar tooltip (school name) — portalled, since the `<aside>` clips
+  // anything absolutely positioned outside its own bounds.
+  const avatarRef = useRef<HTMLDivElement>(null);
+  const [avatarTooltipCoords, setAvatarTooltipCoords] = useState<{
+    top: number;
+    left?: number;
+    right?: number;
+  } | null>(null);
 
   // Pull the admin-requests summary so the sidebar badge can show the pending count.
   useEffect(() => {
@@ -642,21 +597,67 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   }, [dispatch, dashboardType]);
 
   // Shared cached fetch — Header consumes the same hook so the network call is deduped.
-  // The locals are kept named so the (currently commented) JSX block that displays them
-  // stays compatible if it's restored.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name: _schoolName, isLoading: _isLoadingSchoolName } = useSchoolBranchName();
+  // Powers the "Sidebar Bottom: Settings" user profile card.
+  const { name: schoolName } = useSchoolBranchName();
+  const user = useSelector(selectUser);
   const [hasUserOverride, setHasUserOverride] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem(SIDEBAR_COLLAPSE_STORAGE_KEY) !== null;
   });
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+  const [isCollapsedPref, setIsCollapsed] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     const stored = window.localStorage.getItem(SIDEBAR_COLLAPSE_STORAGE_KEY);
     if (stored === '1') return true;
     if (stored === '0') return false;
     return window.matchMedia('(max-width: 1023px)').matches;
   });
+  // Phones and tablets get an off-canvas drawer instead of the collapsed rail; the drawer is always
+  // rendered expanded, so the rail preference is ignored there.
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia(SIDEBAR_MOBILE_QUERY).matches;
+  });
+  const isCollapsed = isCollapsedPref && !isMobile;
+
+  // Dismiss the collapsed-rail avatar tooltip if the rail expands (or the viewport
+  // switches to mobile) while it's showing — its anchor is about to move or disappear.
+  useEffect(() => {
+    if (!isCollapsed) setAvatarTooltipCoords(null);
+  }, [isCollapsed]);
+
+  useEffect(() => {
+    const mq = window.matchMedia(SIDEBAR_MOBILE_QUERY);
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  // Drawer state belongs to the parent; make sure it can't stay "open" once we leave mobile.
+  useEffect(() => {
+    if (!isMobile && isMobileOpen) onMobileClose?.();
+  }, [isMobile, isMobileOpen, onMobileClose]);
+
+  useEffect(() => {
+    if (!isMobile || !isMobileOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onMobileClose?.();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isMobile, isMobileOpen, onMobileClose]);
+
+  useEffect(() => {
+    if (!expandedItems.includes('settings')) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (settingsDropdownRef.current && !settingsDropdownRef.current.contains(e.target as Node)) {
+        setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [expandedItems]);
+
   // Which parent's flyout panel is currently open (collapsed mode only).
   const [flyoutKey, setFlyoutKey] = useState<string | null>(null);
 
@@ -862,6 +863,21 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
   const flatItems = sections.flatMap((s) => s.items);
   const firstTitledIdx = sections.findIndex((s) => !!s.titleKey);
 
+  // Collapsed-rail-only entry mirroring the footer's Settings dropdown, so the rail keeps
+  // a Settings icon (with the same flyout submenu) like every other top-level item.
+  const settingsMenuItem: MenuItem = {
+    key: 'settings',
+    icon: renderIcon(SettingsIcon, 'Settings'),
+    subItems: [
+      { key: 'schoolData', path: '/settings/school-data' },
+      { key: 'jobRoles', path: '/settings/job-roles' },
+      { key: 'paymentChannels', path: '/settings/payment-channels' },
+      { key: 'holidaysSettings', path: '/settings/holidays' },
+      { key: 'siteSettings', path: '/settings/site' },
+      { key: 'notifications', path: '/settings/notifications' },
+    ],
+  };
+
   // Auto-expand parent of active sub-item
   useEffect(() => {
     const currentPath = location.pathname;
@@ -883,6 +899,30 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     // eslint-disable-next-line
   }, [location.pathname]);
 
+  // On page load (reload) only — not on later navigations — bring the active row into
+  // view inside the nav scroller. Sub-items only mount once their parent is expanded,
+  // so retry until the row exists.
+  const hasScrolledToActiveRef = useRef(false);
+  useEffect(() => {
+    if (isCollapsed || hasScrolledToActiveRef.current) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const nav = navRef.current;
+      const active = nav?.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!nav || !active) return;
+
+      const navRect = nav.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      const offsetInNav = activeRect.top - navRect.top + nav.scrollTop;
+      nav.scrollTo({
+        top: Math.max(0, offsetInNav - (nav.clientHeight - activeRect.height) / 2),
+      });
+      hasScrolledToActiveRef.current = true;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [expandedItems, isCollapsed]);
+
   const toggleExpand = (key: string) => {
     const isExpanded = expandedItems.includes(key);
     if (isExpanded) {
@@ -895,43 +935,57 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
 
   const textAlignClass = isRTL ? 'text-right' : 'text-left';
   const rowDirectionClass = 'flex-row';
-  const activeBorderClass = isRTL ? 'border-r' : 'border-l';
-  const activeBgClass = isRTL ? ACTIVE_ROW_BG_RTL : ACTIVE_ROW_BG_LTR;
   const menuItemsAlignClass = isRTL ? 'items-start' : 'items-end';
-  const getMainItemClass = (active: boolean) =>
+
+  /* Two row scales from the Figma frame:
+     - `primary` = the "Home Link" (rounded 12, 8/12 padding, 18 / bold, 20px icon)
+       used by the leading untitled section;
+     - `link`    = the "Link" row (rounded 8, 8 padding, 14 / medium, 16px icon)
+       used by every titled section below it.                                    */
+  type RowVariant = 'primary' | 'link';
+  const getMainItemClass = (active: boolean, variant: RowVariant) =>
     cn(
-      'group relative box-border flex h-[32px] w-[199px] shrink-0 items-center justify-between rounded-[8px] border-0 px-[12px] py-[4px] text-start text-[12px] font-medium outline-none transition-colors',
+      'group relative box-border flex w-full shrink-0 items-center justify-between border-0 text-start outline-hidden transition-colors',
+      variant === 'primary'
+        ? 'gap-[12px] rounded-[12px] px-[8px] py-[12px]'
+        : 'rounded-[8px] p-[8px]',
       rowDirectionClass,
       active
-        ? `${activeBorderClass} border-solid border-white ${activeBgClass} text-white`
-        : 'bg-transparent text-[#8FA89A] hover:bg-white/[0.03]'
+        ? 'bg-[#ECFDF5] text-[#1E7A52]'
+        : 'bg-transparent text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]'
     );
 
   const renderRow = (
     item: MenuItem,
-    opts: { active: boolean; hasSubItems: boolean; expanded: boolean }
+    opts: { active: boolean; hasSubItems: boolean; expanded: boolean; variant: RowVariant }
   ) => {
-    const { active, hasSubItems, expanded } = opts;
+    const { active, hasSubItems, expanded, variant } = opts;
     const hasTrailingGroup = !!item.badge || hasSubItems;
+    const isPrimary = variant === 'primary';
     return (
       <div
         className={cn(
-          'flex w-full select-none items-center justify-between gap-[16px] text-[12px] font-medium',
+          'flex w-full items-center justify-between select-none',
+          isPrimary
+            ? 'gap-[12px] text-[18px] leading-[20px] font-bold'
+            : 'gap-[16px] text-[14px] leading-[19.6px] font-medium',
           rowDirectionClass
         )}
       >
-        <div className={cn('flex min-w-0 items-center gap-[8px]', rowDirectionClass)}>
+        <div
+          className={cn(
+            'flex min-w-0 items-center gap-[8px]',
+            isPrimary && 'gap-[12px]',
+            rowDirectionClass
+          )}
+        >
           <span
             className={cn(
-              'grid h-4 w-4 flex-shrink-0 place-items-center',
+              'grid shrink-0 place-items-center',
+              isPrimary ? 'h-5 w-5' : 'h-4 w-4',
               active
-                ? ICON_FILTER_WHITE_CLASS
-                : cn(
-                    ICON_FILTER_MUTE_CLASS,
-                    'opacity-80',
-                    ICON_GROUP_HOVER_WHITE,
-                    'group-hover:opacity-100'
-                  )
+                ? ICON_FILTER_ACTIVE_CLASS
+                : cn(ICON_FILTER_MUTE_CLASS, ICON_GROUP_HOVER_ACTIVE)
             )}
           >
             {item.icon}
@@ -940,9 +994,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             className={cn(
               'truncate',
               textAlignClass,
-              active
-                ? 'font-bold text-white'
-                : 'text-[#8FA89A] opacity-80 group-hover:text-white group-hover:opacity-100'
+              active ? 'text-[#1E7A52]' : 'text-[#9D9D9D] group-hover:text-[#1E7A52]'
             )}
           >
             {t(`sidebar.${item.key}`)}
@@ -950,10 +1002,10 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         </div>
 
         {hasTrailingGroup && (
-          <div className="flex flex-shrink-0 items-center gap-[1px]">
+          <div className="flex shrink-0 items-center gap-px">
             {item.badge && <BadgeView badge={item.badge} />}
             {hasSubItems && (
-              <span className="grid h-[14px] w-[14px] place-items-center">
+              <span className="grid h-[16px] w-[16px] place-items-center">
                 <Chevron expanded={expanded} isRTL={isRTL} active={active} />
               </span>
             )}
@@ -976,14 +1028,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       <span
         className={cn(
           'grid h-6 w-6 place-items-center',
-          isActive
-            ? ICON_FILTER_WHITE_CLASS
-            : cn(
-                ICON_FILTER_MUTE_CLASS,
-                'opacity-80',
-                ICON_GROUP_HOVER_WHITE,
-                'group-hover:opacity-100'
-              )
+          isActive ? ICON_FILTER_ACTIVE_CLASS : cn(ICON_FILTER_MUTE_CLASS, ICON_GROUP_HOVER_ACTIVE)
         )}
       >
         {item.icon}
@@ -996,8 +1041,8 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           key={item.key}
           to={item.path!}
           title={t(`sidebar.${item.key}`)}
-          className={`group flex w-full items-center justify-center py-3 transition-colors ${
-            isActive ? '' : 'hover:bg-white/[0.03]'
+          className={`group flex w-full items-center justify-center rounded-[8px] py-3 transition-colors ${
+            isActive ? 'bg-[#ECFDF5]' : 'hover:bg-[#ECFDF5]'
           }`}
         >
           {iconCell}
@@ -1024,7 +1069,7 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
     );
   };
 
-  const renderMenuItem = (item: MenuItem) => {
+  const renderMenuItem = (item: MenuItem, variant: RowVariant = 'link') => {
     if (isCollapsed) return renderCollapsedItem(item);
 
     const isExpanded = expandedItems.includes(item.key);
@@ -1039,17 +1084,22 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
       const isActive = isAnySubItemActive;
 
       return (
-        <div key={item.key} data-sidebar-menu-key={item.key}>
+        <div key={item.key} data-sidebar-menu-key={item.key} className="w-full">
           <button
             type="button"
             onClick={() => toggleExpand(item.key)}
-            className={cn('cursor-pointer', getMainItemClass(isActive))}
+            className={cn('cursor-pointer', getMainItemClass(isActive, variant))}
           >
-            {renderRow(item, { active: isActive, hasSubItems: true, expanded: isExpanded })}
+            {renderRow(item, {
+              active: isActive,
+              hasSubItems: true,
+              expanded: isExpanded,
+              variant,
+            })}
           </button>
 
           {isExpanded && (
-            <div className="mt-[4px] flex flex-col gap-[4px] overflow-hidden">
+            <div className="mt-[4px] flex flex-col gap-[2px] overflow-hidden px-[8px]">
               {item.subItems!.map((sub) => {
                 const isSubActive =
                   location.pathname === sub.path || location.pathname.startsWith(sub.path + '/');
@@ -1058,29 +1108,21 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
                     key={sub.path}
                     to={sub.path}
                     className={cn(
-                      'group box-border flex h-[28px] w-[199px] cursor-pointer select-none items-center gap-[8px] rounded-[8px] px-[16px] py-[1px] text-[11px] font-medium transition-colors',
+                      'group box-border flex w-full cursor-pointer items-center gap-[8px] rounded-[8px] p-[8px] text-[14px] leading-[19.6px] font-medium transition-colors select-none',
                       rowDirectionClass,
                       isSubActive
-                        ? 'bg-[rgba(0,224,127,0.08)] text-white'
-                        : 'text-[#8FA89A] hover:bg-white/[0.02]'
+                        ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                        : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]'
                     )}
                   >
                     <span
                       className={cn(
-                        'h-[5px] w-[5px] flex-shrink-0 rounded-full',
-                        isSubActive
-                          ? 'bg-white'
-                          : 'bg-[#8FA89A] opacity-80 group-hover:bg-white group-hover:opacity-100'
+                        'h-[5px] w-[5px] shrink-0 rounded-full transition-colors',
+                        isSubActive ? 'bg-[#1E7A52]' : 'bg-transparent group-hover:bg-[#1E7A52]'
                       )}
                     />
                     <span
-                      className={cn(
-                        'flex-1 truncate',
-                        textAlignClass,
-                        isSubActive
-                          ? 'font-bold'
-                          : 'opacity-80 group-hover:text-white group-hover:opacity-100'
-                      )}
+                      className={cn('flex-1 truncate', textAlignClass, isSubActive && 'font-bold')}
                     >
                       {t(`sidebar.${sub.key}`)}
                     </span>
@@ -1098,93 +1140,119 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
         key={item.key}
         to={item.path!}
         onClick={() => setExpandedItems([])}
-        className={({ isActive }) => getMainItemClass(isActive)}
+        className={({ isActive }) => getMainItemClass(isActive, variant)}
       >
         {({ isActive }) =>
-          renderRow(item, { active: isActive, hasSubItems: false, expanded: false })
+          renderRow(item, { active: isActive, hasSubItems: false, expanded: false, variant })
         }
       </NavLink>
     );
   };
 
-  const sidebarWidthClass = isCollapsed ? 'w-[64px]' : 'w-[230px]';
+  const sidebarWidthClass = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH_CLASS : SIDEBAR_WIDTH_CLASS;
 
   return (
     <>
+      {/* Mobile backdrop: darkens the page behind the drawer; tapping it closes the drawer. */}
+      {isMobile && (
+        <div
+          aria-hidden
+          onClick={onMobileClose}
+          className={cn(
+            'fixed inset-0 z-55 bg-[rgba(0,0,0,0.6)] transition-opacity duration-300 ease-out',
+            isMobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+          )}
+        />
+      )}
+
       <aside
         dir={isRTL ? 'rtl' : 'ltr'}
         className={cn(
-          'fixed inset-y-0 z-40 flex h-[100dvh] flex-col gap-[12px] overflow-hidden bg-[#0f1f17] py-[16px] text-white',
-          'transition-[width] duration-300 ease-out',
-          isRTL ? 'right-0' : 'left-0',
+          'fixed inset-y-0 flex h-dvh flex-col overflow-hidden bg-white text-[#1E293B]',
+          'drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] duration-300 ease-out',
+          isRTL ? 'right-0 border-l border-[#E2E8F0]' : 'left-0 border-r border-[#E2E8F0]',
           SIDEBAR_FONT,
-          sidebarWidthClass
+          isMobile
+            ? cn(
+                // Off-canvas drawer, slides in from the sidebar edge:
+                // 85% of the screen on phones, 50% on tablets (md → lg).
+                // Tailwind v4 `translate-x-*` animates the `translate` property, not `transform`.
+                'z-60 w-[85vw] transition-[translate,visibility] md:w-[50vw]',
+                isMobileOpen
+                  ? 'visible translate-x-0'
+                  : cn('invisible', isRTL ? 'translate-x-full' : '-translate-x-full')
+              )
+            : cn('z-40 transition-[width]', sidebarWidthClass)
         )}
         aria-label="Main navigation"
       >
-        <SidebarPatternBackground isRTL={isRTL} />
-
-        <div className="relative z-[4] flex h-[57px] w-full flex-shrink-0 flex-col items-end justify-center gap-[12px] px-[8px]">
+        <div className="relative z-4 flex w-full shrink-0 items-center justify-center border-b border-solid border-[#F1F5F9] px-[16px] pt-[16px] pb-[17px]">
           {isCollapsed ? (
-            // Collapsed: center the Classti logo only.
-            <div className="flex items-center justify-center self-center px-2">
-              <CustomImage src={ClasstiLogo} alt="Classti" className="h-10 w-10 object-contain" />
-            </div>
+            <CustomImage
+              src={ClasstiLogo}
+              alt="Classti"
+              className="h-[30px] w-[30px] object-contain"
+            />
           ) : (
-            <div
-              className={cn(
-                'flex h-[45px] w-[177px] shrink-0 items-center justify-center gap-[12px] self-center',
-                rowDirectionClass
-              )}
-            >
-              <BrandMark />
-            </div>
+            <BrandMark />
           )}
-
-          <div
-            className={cn('h-0 border-t border-white/[0.15]', isCollapsed ? 'w-full' : 'w-[214px]')}
-          />
         </div>
 
         {/* Scroll region wrapper for the custom nav-only scrollbar. */}
-        <div className="relative z-[2] min-h-0 flex-1">
+        <div className="relative z-2 min-h-0 flex-1">
           <nav
             ref={navRef}
-            className="sidebar-scroll absolute inset-0 overflow-y-auto overflow-x-hidden px-[8px]"
+            className="absolute inset-0 sidebar-scroll overflow-x-hidden overflow-y-auto px-[12px] py-[16px]"
             aria-label="primary"
+            // Mobile: choosing a page (any link, even the current one) closes the drawer.
+            // Accordion parents are buttons, so they stay open-able without closing it.
+            onClick={(e) => {
+              if (isMobile && (e.target as HTMLElement).closest('a')) onMobileClose?.();
+            }}
           >
             {sections.map((section, idx) => {
               const showRule = !!section.titleKey && idx > firstTitledIdx;
               // In collapsed mode, titled sections use only a divider.
               const showCollapsedRule = isCollapsed && !!section.titleKey && idx > 0;
+              // Figma's oversized "Home Link" scale belongs to a lone untitled lead
+              // section only — a multi-item untitled section (super admin) stays on
+              // the regular link scale.
+              const isPrimarySection = !section.titleKey && section.items.length === 1;
 
               return (
-                <div key={`section-${idx}`} className={idx > 0 ? 'mt-[12px]' : ''}>
+                <div key={`section-${idx}`} className={idx > 0 ? 'mt-[8px]' : ''}>
                   {showCollapsedRule && (
-                    <div className="mx-auto my-[8px] h-px w-[32px] bg-white/10" />
+                    <div className="mx-auto my-[8px] h-px w-[32px] bg-[#F1F5F9]" />
                   )}
+                  {/* Figma "Line": full-bleed across the 256px aside, 8px gap each side. */}
                   {!isCollapsed && showRule && (
-                    <div className={cn('flex w-full', menuItemsAlignClass)}>
-                      <div className="h-px w-[199px] bg-white/10" />
-                    </div>
+                    <div className="mx-[-12px] mb-[8px] h-px bg-[#F1F5F9]" />
                   )}
                   {!isCollapsed && section.titleKey && (
                     <div
                       className={cn(
-                        'mb-[-2px] px-[8px] text-[10px] font-medium leading-[32px] text-[#8FA89A] opacity-80',
+                        'flex items-center rounded-[8px] px-[12px] py-[8px] text-[16px] leading-[22.4px] font-semibold text-[#1E293B]',
                         textAlignClass
                       )}
                     >
                       {t(`sidebar.${section.titleKey}`)}
                     </div>
                   )}
+                  {/* Figma "Subitems": titled groups are inset 8px with a 2px row gap. */}
                   <div
                     className={cn(
-                      'flex flex-col gap-[8px]',
-                      isCollapsed ? 'items-stretch' : menuItemsAlignClass
+                      'flex flex-col',
+                      isCollapsed
+                        ? 'items-stretch gap-[4px]'
+                        : cn(
+                            menuItemsAlignClass,
+                            section.titleKey ? 'mt-[4px] gap-[2px] px-[8px]' : 'gap-[4px]'
+                          )
                     )}
                   >
-                    {section.items.map(renderMenuItem)}
+                    {section.items.map((menuItem) =>
+                      renderMenuItem(menuItem, isPrimarySection ? 'primary' : 'link')
+                    )}
                   </div>
                 </div>
               );
@@ -1194,17 +1262,17 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
           {scroll.visible && (
             <div
               className={cn(
-                'absolute inset-y-0 z-[4] w-[12px] cursor-pointer',
+                'absolute inset-y-0 z-4 w-[12px] cursor-pointer',
                 isRTL ? 'left-0' : 'right-0'
               )}
               onMouseDown={startScrollbarDrag}
             >
-              <div className="absolute inset-y-[14px] left-[4px] w-[3px] rounded-[8px] bg-[rgba(0,81,46,0.4)]" />
+              <div className="absolute inset-y-[14px] left-[4px] w-[3px] rounded-[8px] bg-[#F1F5F9]" />
               <div
                 ref={scrollbarThumbRef}
                 className={cn(
-                  'absolute left-[4px] w-[3px] rounded-[8px] bg-[#8FA89A] transition-colors hover:bg-white',
-                  isScrollbarDragging && 'bg-white'
+                  'absolute left-[4px] w-[3px] rounded-[8px] bg-[#E2E8F0] transition-colors hover:bg-[#1E7A52]',
+                  isScrollbarDragging && 'bg-[#1E7A52]'
                 )}
                 style={{
                   top: scroll.thumbTop,
@@ -1214,59 +1282,323 @@ const Sidebar: React.FC<SidebarProps> = ({ dashboardType, customMenuItems }) => 
             </div>
           )}
         </div>
+
+        {/* Collapsed rail: Settings gets the same treatment as any other top-level item
+            (active/hover state + hover flyout), with the current user's avatar beneath it. */}
+        {isCollapsed && (
+          <div className="z-3 flex shrink-0 flex-col items-stretch gap-[4px] border-t border-solid border-[#F1F5F9] px-[12px] py-[8px]">
+            {renderCollapsedItem(settingsMenuItem)}
+
+            {/* Extra breathing room before the language switcher, and again before the
+                avatar below it — collapsed rail only, so these three icons don't read as
+                a single stacked block. */}
+            <div className="mt-[8px] flex justify-center">
+              <LanguageSwitcher variant="icon-only" size="sm" placement="top" portal />
+            </div>
+
+            {user && (
+              <div
+                ref={avatarRef}
+                className="mt-[8px] flex justify-center"
+                onMouseEnter={() => {
+                  const rect = avatarRef.current?.getBoundingClientRect();
+                  if (!rect) return;
+                  const margin = 8;
+                  const top = rect.top + rect.height / 2;
+                  // The sidebar sits flush against the viewport's start edge, so the
+                  // tooltip always opens toward the page centre (opposite that edge).
+                  setAvatarTooltipCoords(
+                    isRTL
+                      ? { top, right: window.innerWidth - rect.left + margin }
+                      : { top, left: rect.right + margin }
+                  );
+                }}
+                onMouseLeave={() => setAvatarTooltipCoords(null)}
+                onFocus={() => {
+                  const rect = avatarRef.current?.getBoundingClientRect();
+                  if (!rect) return;
+                  const margin = 8;
+                  const top = rect.top + rect.height / 2;
+                  setAvatarTooltipCoords(
+                    isRTL
+                      ? { top, right: window.innerWidth - rect.left + margin }
+                      : { top, left: rect.right + margin }
+                  );
+                }}
+                onBlur={() => setAvatarTooltipCoords(null)}
+              >
+                <CustomImage
+                  src={profileImage}
+                  alt={user.name}
+                  tabIndex={0}
+                  className="h-8 w-8 shrink-0 rounded-[8px] object-cover"
+                />
+                {avatarTooltipCoords &&
+                  createPortal(
+                    <div
+                      role="tooltip"
+                      dir={isRTL ? 'rtl' : 'ltr'}
+                      className="fixed z-1000 -translate-y-1/2 rounded-md bg-green-500 px-3 py-2 text-xs whitespace-nowrap text-white shadow-md"
+                      style={{
+                        top: avatarTooltipCoords.top,
+                        left: avatarTooltipCoords.left,
+                        right: avatarTooltipCoords.right,
+                      }}
+                    >
+                      {schoolName ?? user.name}
+                    </div>,
+                    document.body
+                  )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Figma "Sidebar Bottom: Settings" (node 225:2564) — settings dropdown button +
+            current user card. The rail has no room for the name/school text, so it shows the
+            avatar alone (above) and this full card only in the full-width sidebar / mobile drawer. */}
+        {!isCollapsed && (
+          <div className="z-3 flex shrink-0 flex-col gap-[16px] border-t border-solid border-[#F1F5F9] px-[12px] pt-[12px] pb-[14px]">
+            {/* Settings row — the language switcher lives here (moved out of the header). */}
+            <div className={cn('flex items-center gap-[8px]', rowDirectionClass)}>
+              <div className="relative min-w-0 flex-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExpandedItems((prev) =>
+                      prev.includes('settings')
+                        ? prev.filter((k) => k !== 'settings')
+                        : [...prev, 'settings']
+                    );
+                  }}
+                  className={cn(
+                    'flex w-full items-center gap-[8px] rounded-[8px] p-[8px] text-[14px] leading-[16px] font-semibold text-[#1E7A52] transition-colors hover:bg-[#ECFDF5]',
+                    rowDirectionClass
+                  )}
+                >
+                  <CustomImage
+                    src={SettingsIcon}
+                    alt=""
+                    className={cn('h-5 w-5 shrink-0', ICON_FILTER_ACTIVE_CLASS)}
+                  />
+                  <span className={cn('flex-1 truncate', textAlignClass)}>
+                    {t('sidebar.settings')}
+                  </span>
+                </button>
+
+                {expandedItems.includes('settings') && (
+                  <div
+                    ref={settingsDropdownRef}
+                    className={cn(
+                      'absolute bottom-full z-50 mb-1 w-56 overflow-hidden rounded-[8px] border border-[#E2E8F0] bg-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_4px_16px_rgba(12,12,13,0.08)]',
+                      isRTL ? 'right-0' : 'left-0'
+                    )}
+                  >
+                    <div className="py-1">
+                      <NavLink
+                        to="/settings/school-data"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/school-data' ||
+                            location.pathname.startsWith('/settings/school-data/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.schoolData')}</span>
+                      </NavLink>
+
+                      <hr className="my-1 border-[#F1F5F9]" />
+
+                      <NavLink
+                        to="/settings/job-roles"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/job-roles' ||
+                            location.pathname.startsWith('/settings/job-roles/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.jobRoles')}</span>
+                      </NavLink>
+
+                      <hr className="my-1 border-[#F1F5F9]" />
+
+                      <NavLink
+                        to="/settings/payment-channels"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/payment-channels' ||
+                            location.pathname.startsWith('/settings/payment-channels/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.paymentChannels')}</span>
+                      </NavLink>
+
+                      <hr className="my-1 border-[#F1F5F9]" />
+
+                      <NavLink
+                        to="/settings/holidays"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/holidays' ||
+                            location.pathname.startsWith('/settings/holidays/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.holidaysSettings')}</span>
+                      </NavLink>
+
+                      <hr className="my-1 border-[#F1F5F9]" />
+
+                      <NavLink
+                        to="/settings/site"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/site' ||
+                            location.pathname.startsWith('/settings/site/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.siteSettings')}</span>
+                      </NavLink>
+
+                      <hr className="my-1 border-[#F1F5F9]" />
+
+                      <NavLink
+                        to="/settings/notifications"
+                        onClick={() => {
+                          setExpandedItems((prev) => prev.filter((k) => k !== 'settings'));
+                          if (isMobile) onMobileClose?.();
+                        }}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-2 text-[14px] font-medium transition-colors',
+                          location.pathname === '/settings/notifications' ||
+                            location.pathname.startsWith('/settings/notifications/')
+                            ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                            : 'text-[#9D9D9D] hover:bg-[#ECFDF5] hover:text-[#1E7A52]',
+                          isRTL ? 'text-right' : 'text-left'
+                        )}
+                      >
+                        <span>{t('sidebar.notifications')}</span>
+                      </NavLink>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <LanguageSwitcher variant="icon-only" size="sm" placement="top" portal />
+            </div>
+
+            {user && (
+              <div className={cn('flex w-full items-center gap-[8px]', rowDirectionClass)}>
+                <CustomImage
+                  src={profileImage}
+                  alt={user.name}
+                  className="h-[40px] w-[40px] shrink-0 rounded-[8px] object-cover"
+                />
+                <div className={cn('flex min-w-0 flex-1 flex-col', textAlignClass)}>
+                  <p className="truncate text-[14px] leading-[18.2px] font-semibold text-[#1E293B]">
+                    {user.name}
+                  </p>
+                  {schoolName && (
+                    <p className="truncate text-[12px] leading-[15.6px] font-medium text-[#1E7A52]">
+                      {schoolName}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </aside>
 
-      <button
-        type="button"
-        onClick={handleToggleCollapsed}
-        aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
-        aria-expanded={!isCollapsed}
-        title={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
-        className={cn(
-          'group fixed top-[60px] z-50 grid h-[26px] w-[26px] place-items-center rounded-full',
-          'border border-white/[0.08] bg-[#182f20] text-white',
-          'shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]',
-          'transition-[left,right,background-color,border-color,box-shadow,transform] duration-300 ease-out',
-          'hover:border-[rgba(0,224,127,0.45)] hover:bg-[#1b3a31]',
-          'hover:shadow-[0_0_0_1px_rgba(0,188,125,0.18),inset_0_1px_0_rgba(255,255,255,0.08)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00bc7d]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1f17]',
-          'active:scale-[0.94]'
-        )}
-        style={{
-          [isRTL ? 'right' : 'left']: isCollapsed ? '51px' : '217px',
-        }}
-      >
-        {/* Soft emerald halo on hover */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-[-4px] rounded-full bg-[radial-gradient(circle_at_center,rgba(0,224,127,0.22),transparent_70%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        />
-        <img
-          src={SideArrow}
-          alt=""
+      {!isMobile && (
+        <button
+          type="button"
+          onClick={handleToggleCollapsed}
+          aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+          aria-expanded={!isCollapsed}
+          title={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+          className={cn(
+            'group fixed top-[60px] z-50 grid h-[26px] w-[26px] place-items-center rounded-full',
+            'border border-[#E2E8F0] bg-white text-[#1E293B]',
+            'shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_1px_2px_rgba(12,12,13,0.05)]',
+            'transition-[left,right,background-color,border-color,box-shadow,transform] duration-300 ease-out',
+            'hover:border-[#1E7A52] hover:bg-[#ECFDF5]',
+            'hover:shadow-[0px_2px_8px_rgba(30,122,82,0.16)]',
+            'focus-visible:ring-2 focus-visible:ring-[#1E7A52]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-hidden',
+            'active:scale-[0.94]'
+          )}
+          style={{
+            [isRTL ? 'right' : 'left']: isCollapsed ? '51px' : '243px',
+          }}
+        >
+          {/* Soft emerald halo on hover */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-[-4px] rounded-full bg-[radial-gradient(circle_at_center,rgba(30,122,82,0.14),transparent_70%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          />
+          <img
+            src={SideArrow}
+            alt=""
+            aria-hidden
+            className={cn(
+              'relative h-[10px] w-[6px] object-contain transition-transform duration-300 ease-out',
+              // SideArrow points LEFT natively. Arrow points in the direction the sidebar will move.
+              isRTL
+                ? isCollapsed
+                  ? 'rotate-0'
+                  : 'rotate-180'
+                : isCollapsed
+                  ? 'rotate-180'
+                  : 'rotate-0'
+            )}
+            style={ICON_FILTER_DARK}
+          />
+        </button>
+      )}
+
+      {/* Layout spacer for the fixed desktop/tablet sidebar; the mobile drawer overlays instead. */}
+      {!isMobile && (
+        <div
           aria-hidden
           className={cn(
-            'relative h-[10px] w-[6px] object-contain transition-transform duration-300 ease-out',
-            // SideArrow points LEFT natively. Arrow points in the direction the sidebar will move.
-            isRTL
-              ? isCollapsed
-                ? 'rotate-0'
-                : 'rotate-180'
-              : isCollapsed
-                ? 'rotate-180'
-                : 'rotate-0'
+            'h-dvh shrink-0 transition-[width] duration-300 ease-out',
+            sidebarWidthClass
           )}
-          style={ICON_FILTER_WHITE}
         />
-      </button>
-
-      <div
-        aria-hidden
-        className={cn(
-          'h-[100dvh] flex-shrink-0 transition-[width] duration-300 ease-out',
-          sidebarWidthClass
-        )}
-      />
+      )}
     </>
   );
 };

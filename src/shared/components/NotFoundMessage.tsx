@@ -26,7 +26,11 @@ const NotFoundMessage: React.FC<NotFoundMessageProps> = ({
   const display = text ?? t(message);
 
   return (
-    <div className={['py-10 text-center text-gray-500 flex flex-col items-center gap-4', className].filter(Boolean).join(' ')}>
+    <div
+      className={['flex flex-col items-center gap-4 py-10 text-center text-gray-500', className]
+        .filter(Boolean)
+        .join(' ')}
+    >
       {iconSrc && (
         <CustomImage
           src={iconSrc}
@@ -34,7 +38,9 @@ const NotFoundMessage: React.FC<NotFoundMessageProps> = ({
           className="mx-auto h-20 w-20 object-contain opacity-80"
         />
       )}
-      <div className="text-lg font-medium" data-testid="not-found-message">{display}</div>
+      <div className="text-lg font-medium" data-testid="not-found-message">
+        {display}
+      </div>
       {actions && <div className="mt-2 flex items-center justify-center gap-3">{actions}</div>}
     </div>
   );

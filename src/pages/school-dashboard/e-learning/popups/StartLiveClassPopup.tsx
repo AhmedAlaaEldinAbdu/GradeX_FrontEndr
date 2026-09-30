@@ -104,7 +104,7 @@ export default function StartLiveClassPopup({
           >
             <CustomImage src={XmarkCircleGrayIcon} alt="" className="h-6 w-6" />
           </button>
-          <h2 className="text-base font-medium text-[#0E1F1F]">
+          <h2 className="text-base font-medium text-black-900">
             {t('eLearning.liveClasses.popup.title')}
           </h2>
         </div>
@@ -112,7 +112,7 @@ export default function StartLiveClassPopup({
         {liveClass && (
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4 rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
-              <h3 className="text-start text-lg font-medium leading-8 text-[#0E1F1F]">
+              <h3 className="text-start text-lg leading-8 font-medium text-black-900">
                 {t('eLearning.liveClasses.popup.subjectTitle', {
                   subject: liveClass.subject,
                 })}
@@ -151,7 +151,7 @@ export default function StartLiveClassPopup({
                 }}
                 placeholder={t('eLearning.liveClasses.popup.linkPlaceholder')}
                 disabled={isStarting}
-                className={`h-12 w-full rounded-2xl border bg-white px-4 text-right text-sm font-normal text-[#3A3A3A] placeholder:text-[#646969] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50 ${
+                className={`h-12 w-full rounded-2xl border bg-white px-4 text-right text-sm font-normal text-[#3A3A3A] placeholder:text-[#646969] focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 ${
                   linkError ? 'border-red-500' : 'border-[#DDE0E0]'
                 }`}
               />

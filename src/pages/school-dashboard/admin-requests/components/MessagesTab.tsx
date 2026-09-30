@@ -217,7 +217,7 @@ const MessagesTab: React.FC = () => {
     if (party.isSchool) {
       return (
         <div className="flex w-full items-center justify-center">
-          <span className="text-sm font-medium text-[#0E1F1F]">
+          <span className="text-sm font-medium text-black-900">
             {getPartyName(party, schoolLabel)}
           </span>
         </div>
@@ -321,7 +321,7 @@ const MessagesTab: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              className="!rounded-2xl px-6"
+              className="rounded-2xl! px-6"
               actionKey="markViewed"
               disabled={!canMarkViewed || isMarkingViewed}
               onClick={() => {

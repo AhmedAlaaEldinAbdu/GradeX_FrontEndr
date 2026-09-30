@@ -46,7 +46,7 @@ export default function JobRoles({ onTabChange }: JobRolesProps) {
             value={activeTab}
             onChange={handleTabChange}
             variant="underline"
-            listClassName="flex w-[100%] md:w-[50%] lg:w-[25%] gap-2 mb-5 px-1 flex-wrap"
+            listClassName="flex w-full md:w-[50%] lg:w-[25%] gap-2 mb-5 px-1 flex-wrap"
             lazy={true}
             searchParamKey="tab"
           />

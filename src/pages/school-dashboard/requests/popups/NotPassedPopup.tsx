@@ -43,13 +43,13 @@ const NotPassedPopup: React.FC<NotPassedPopupProps> = ({
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute start-4 top-4 text-gray-400 transition-colors hover:text-gray-600"
+          className="absolute inset-s-4 top-4 text-gray-400 transition-colors hover:text-gray-600"
         >
           <FaTimes className="text-xl" />
         </button>
 
         {/* Red X icon */}
-        <div className="mb-6 mt-4 flex h-24 w-24 items-center justify-center">
+        <div className="mt-4 mb-6 flex h-24 w-24 items-center justify-center">
           <svg viewBox="0 0 100 100" className="h-24 w-24">
             <path
               d="M20 20 L80 80"
@@ -86,7 +86,7 @@ const NotPassedPopup: React.FC<NotPassedPopupProps> = ({
               if (error) setError(false);
             }}
             placeholder={t('common.enterRejectionReason')}
-            className={`w-full rounded-xl border px-4 py-3 text-start text-sm outline-none transition-colors ${
+            className={`w-full rounded-xl border px-4 py-3 text-start text-sm outline-hidden transition-colors ${
               error
                 ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-200'
                 : 'border-gray-300 focus:border-green-500 focus:ring-1 focus:ring-green-200'

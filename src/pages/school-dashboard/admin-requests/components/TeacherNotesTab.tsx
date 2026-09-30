@@ -299,7 +299,7 @@ const TeacherNotesTab: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              className="!rounded-2xl px-6"
+              className="rounded-2xl! px-6"
               actionKey="markViewed"
               disabled={isViewed || isMarkingViewed}
               onClick={() => {

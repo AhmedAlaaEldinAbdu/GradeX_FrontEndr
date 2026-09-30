@@ -64,12 +64,12 @@
 //   // Render error state
 //   if (error) {
 //     return (
-//       <div className="rounded border border-red-200 bg-red-50 p-4">
+//       <div className="rounded-sm border border-red-200 bg-red-50 p-4">
 //         <h3 className="font-semibold text-red-800">Error Loading Schools</h3>
 //         <p className="text-red-600">{error.message}</p>
 //         <button
 //           onClick={refetch}
-//           className="mt-2 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+//           className="mt-2 rounded-sm bg-red-600 px-4 py-2 text-white hover:bg-red-700"
 //         >
 //           Retry
 //         </button>
@@ -90,14 +90,14 @@
 //             placeholder="Search schools..."
 //             value={search}
 //             onChange={handleSearch}
-//             className="flex-1 rounded border px-4 py-2"
+//             className="flex-1 rounded-sm border px-4 py-2"
 //           />
 
 //           {selectedIds.length > 0 && (
 //             <button
 //               onClick={handleBulkDelete}
 //               disabled={bulkLoading}
-//               className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
+//               className="rounded-sm bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
 //             >
 //               {bulkLoading ? 'Deleting...' : `Delete ${selectedIds.length} Selected`}
 //             </button>
@@ -105,7 +105,7 @@
 
 //           <button
 //             onClick={refetch}
-//             className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+//             className="rounded-sm bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
 //           >
 //             Refresh
 //           </button>
@@ -113,7 +113,7 @@
 //       </div>
 
 //       {/* Schools Table */}
-//       <div className="overflow-hidden rounded-lg bg-white shadow">
+//       <div className="overflow-hidden rounded-lg bg-white shadow-sm">
 //         <table className="min-w-full divide-y divide-gray-200">
 //           <thead className="bg-gray-50">
 //             <tr>
@@ -192,7 +192,7 @@
 //           <button
 //             onClick={() => setPage((p) => Math.max(1, p - 1))}
 //             disabled={page === 1}
-//             className="rounded border px-4 py-2 hover:bg-gray-50 disabled:opacity-50"
+//             className="rounded-sm border px-4 py-2 hover:bg-gray-50 disabled:opacity-50"
 //           >
 //             Previous
 //           </button>
@@ -202,7 +202,7 @@
 //           <button
 //             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
 //             disabled={page === totalPages}
-//             className="rounded border px-4 py-2 hover:bg-gray-50 disabled:opacity-50"
+//             className="rounded-sm border px-4 py-2 hover:bg-gray-50 disabled:opacity-50"
 //           >
 //             Next
 //           </button>

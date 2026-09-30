@@ -128,15 +128,19 @@ export default function AddAcademicSystem() {
             </button>
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit, scrollToFirstError)} noValidate={true} className="flex flex-col gap-8">
+        <form
+          onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+          noValidate={true}
+          className="flex flex-col gap-8"
+        >
           {numOfAcademic.map((_, index) => (
             <div
               key={`add-academic-${index + 1}`}
               className="grid grid-cols-1 gap-6 rounded-md border p-4"
             >
               <div className="flex">
-                <div className="flex flex-grow flex-col gap-5 md:flex-row">
-                  <div className="flex-grow">
+                <div className="flex grow flex-col gap-5 md:flex-row">
+                  <div className="grow">
                     <FormField
                       label={t('academicSystem.academicSystemAr')}
                       required
@@ -160,7 +164,7 @@ export default function AddAcademicSystem() {
                       />
                     </FormField>
                   </div>
-                  <div className="flex-grow">
+                  <div className="grow">
                     <FormField
                       label={t('academicSystem.academicSystemEn')}
                       required
@@ -204,7 +208,7 @@ export default function AddAcademicSystem() {
               </div>
 
               <div className="flex">
-                <div className="flex-grow">
+                <div className="grow">
                   <FormField
                     label={t('academicSystem.systemType')}
                     required
@@ -256,7 +260,7 @@ export default function AddAcademicSystem() {
               </div>
 
               <div className="flex">
-                <div className="flex-grow">
+                <div className="grow">
                   <FormField
                     label={t('academicSystem.countryName')}
                     required

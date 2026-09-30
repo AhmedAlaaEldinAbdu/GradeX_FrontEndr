@@ -15,7 +15,7 @@ import type {
   ParentProfile,
   ParentsByBranchResponse,
   ParentsByBranchQueryParams,
-  DeleteParentAccountRequest
+  DeleteParentAccountRequest,
 } from '../types/parent.types';
 
 const MULTIPART = { headers: { 'Content-Type': 'multipart/form-data' } };
@@ -38,9 +38,7 @@ function toFormData(data: Record<string, unknown>): FormData {
 // Auth / account
 // ============================================================================
 
-export async function registerParent(
-  data: RegisterParentRequest
-): Promise<ParentApiResponse> {
+export async function registerParent(data: RegisterParentRequest): Promise<ParentApiResponse> {
   const response: AxiosResponse<ParentApiResponse> = await axiosClient.post(
     ParentEndpoints.register,
     data
@@ -56,9 +54,7 @@ export async function loginParent(data: ParentLoginRequest): Promise<ParentApiRe
   return response.data;
 }
 
-export async function resendParentOtp(
-  data: ParentResendOtpRequest
-): Promise<ParentApiResponse> {
+export async function resendParentOtp(data: ParentResendOtpRequest): Promise<ParentApiResponse> {
   const response: AxiosResponse<ParentApiResponse> = await axiosClient.post(
     ParentEndpoints.resendOtp,
     data
@@ -66,9 +62,7 @@ export async function resendParentOtp(
   return response.data;
 }
 
-export async function confirmParentOtp(
-  data: ParentConfirmOtpRequest
-): Promise<ParentApiResponse> {
+export async function confirmParentOtp(data: ParentConfirmOtpRequest): Promise<ParentApiResponse> {
   const response: AxiosResponse<ParentApiResponse> = await axiosClient.post(
     ParentEndpoints.confirmOtp,
     data
@@ -100,9 +94,7 @@ export async function resetParentPassword(
 // Profile
 // ============================================================================
 
-export async function updateParent(
-  data: UpdateParentRequest
-): Promise<ParentApiResponse> {
+export async function updateParent(data: UpdateParentRequest): Promise<ParentApiResponse> {
   const response: AxiosResponse<ParentApiResponse> = await axiosClient.put(
     ParentEndpoints.update,
     toFormData(data as unknown as Record<string, unknown>),
@@ -112,8 +104,9 @@ export async function updateParent(
 }
 
 export async function getParentProfile(): Promise<ParentApiResponse<ParentProfile | null>> {
-  const response: AxiosResponse<ParentApiResponse<ParentProfile | null>> =
-    await axiosClient.get(ParentEndpoints.getProfile);
+  const response: AxiosResponse<ParentApiResponse<ParentProfile | null>> = await axiosClient.get(
+    ParentEndpoints.getProfile
+  );
   return response.data;
 }
 
@@ -176,9 +169,7 @@ export async function getParentsByBranchId(
 // Delete parent account
 // ============================================================================
 
-export async function deleteParentAccount(
-  data: DeleteParentAccountRequest
-): Promise<void> {
+export async function deleteParentAccount(data: DeleteParentAccountRequest): Promise<void> {
   const response: AxiosResponse<{
     data: null;
     isSuccess: boolean;
@@ -209,7 +200,7 @@ export const parentApiService = {
   likeFavoriteSchoolBranch,
   dislikeFavoriteSchoolBranch,
   getParentsByBranchId,
-  deleteParentAccount
+  deleteParentAccount,
 };
 
 export default parentApiService;

@@ -41,7 +41,7 @@ const LeaveRequestDecisionPopup: React.FC<LeaveRequestDecisionPopupProps> = ({
         <button
           type="button"
           onClick={onCancel}
-          className="absolute start-6 top-6 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
+          className="absolute inset-s-6 top-6 rounded-xl border border-[#DDE0E0] p-2 transition-opacity hover:opacity-80"
           aria-label={t('common.cancel')}
         >
           <CustomImage src={XmarkCircleGrayIcon} alt="" className="h-6 w-6" />
@@ -54,7 +54,7 @@ const LeaveRequestDecisionPopup: React.FC<LeaveRequestDecisionPopupProps> = ({
             className="h-[96px] w-[96px]"
           />
 
-          <p className="text-lg font-semibold text-[#0E1F1F]">
+          <p className="text-lg font-semibold text-black-900">
             {isApprove
               ? t('adminRequests.leave.approvePopup.title')
               : t('adminRequests.leave.rejectPopup.title')}

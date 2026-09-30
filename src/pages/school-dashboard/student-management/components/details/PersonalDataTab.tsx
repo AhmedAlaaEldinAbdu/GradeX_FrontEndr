@@ -30,7 +30,7 @@ export default function PersonalDataTab({ student }: PersonalDataTabProps) {
 
   const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <div className="rounded-2xl border border-[#DDE0E0] bg-white p-4">
-      <h2 className="mb-6 text-start text-base font-medium text-[#0E1F1F]">{title}</h2>
+      <h2 className="mb-6 text-start text-base font-medium text-black-900">{title}</h2>
       {children}
     </div>
   );
@@ -57,7 +57,7 @@ export default function PersonalDataTab({ student }: PersonalDataTabProps) {
       <div className="space-y-6">
         <div className="rounded-2xl border border-[#C5F0DD] bg-[#EEFDF6] p-4">
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-[#E6E6E6] bg-white">
+            <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-black-100 bg-white">
               <CustomImage
                 src={student.profilePicture || DefaultAvatar}
                 fallbackSrc={DefaultAvatar}
@@ -65,7 +65,7 @@ export default function PersonalDataTab({ student }: PersonalDataTabProps) {
                 className="h-full w-full object-cover"
               />
             </div>
-            <p className="text-start text-base font-medium text-[#0E1F1F]">{studentName}</p>
+            <p className="text-start text-base font-medium text-black-900">{studentName}</p>
           </div>
         </div>
 
@@ -106,9 +106,9 @@ export default function PersonalDataTab({ student }: PersonalDataTabProps) {
                   className="flex items-center justify-between gap-4 rounded-2xl border border-[#DDE0E0] bg-white px-3 py-2"
                 >
                   <div className="flex items-center gap-4">
-                    <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-10 flex-shrink-0" />
+                    <CustomImage src={PdfIcon} alt="PDF" className="h-10 w-10 shrink-0" />
                     <div className="text-start">
-                      <p className="text-base font-normal text-[#0E1F1F]">
+                      <p className="text-base font-normal text-black-900">
                         {currentLang === 'ar'
                           ? attachment.name
                           : attachment.nameEn || attachment.name}
@@ -120,7 +120,7 @@ export default function PersonalDataTab({ student }: PersonalDataTabProps) {
                   </div>
                   <button
                     type="button"
-                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#117BD7]/10 transition-colors hover:bg-[#117BD7]/20"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/10 transition-colors hover:bg-blue-500/20"
                     title={t('common.download')}
                     aria-label={t('common.download')}
                   >
