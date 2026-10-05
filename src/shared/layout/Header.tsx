@@ -157,6 +157,16 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <RoleSwitcher variant="icon-only" size="md" />
         </div>
 
+        {/* <div className="flex items-center gap-4">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-[#1E7A52] bg-[#ECFDF5]">
+            <CustomImage src={CalendarOutlineGreenIcon} alt="" className="size-5" />
+          </div>
+          <div className="flex flex-col items-start justify-center gap-1">
+            <h1 className="text-base font-bold text-[black]">{t('monthlyCalendar.title')}</h1>
+            <p className="text-xs text-[#9D9D9D]">{t('monthlyCalendar.board.subtitle')}</p>
+          </div>
+        </div> */}
+
         {/* Mobile menu toggle — last child, so with flex-row-reverse it sits on the sidebar side. */}
         {onMenuClick && (
           <button

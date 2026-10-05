@@ -19,7 +19,7 @@ export default function ClassroomsPage() {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Page Header */}
-      <div className="mb-6 flex items-center gap-4">
+      <div className="mb-4 flex items-center gap-4">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[#1E7A52] bg-[#ECFDF5]">
           <CustomImage src={BookOutlineGreenIcon} alt="" className="h-6 w-6" />
         </div>

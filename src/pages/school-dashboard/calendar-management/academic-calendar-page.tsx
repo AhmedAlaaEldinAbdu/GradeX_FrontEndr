@@ -16,7 +16,7 @@ export default function AcademicCalendarPage() {
     <div>
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="mb-8 flex items-center gap-4">
+      <div className="mb-4 flex items-center gap-4">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[#1E7A52] bg-[#ECFDF5]">
           <CustomImage src={CalendarOutlineGreenIcon} alt="" className="h-6 w-6" />
         </div>

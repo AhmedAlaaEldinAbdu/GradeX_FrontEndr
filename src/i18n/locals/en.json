@@ -3766,6 +3766,22 @@
     }
   },
   "monthlyCalendar": {
+    "board": {
+      "subtitle": "Create and manage the monthly schedule of classes and events",
+      "eventsCount": "Events",
+      "viewAllDayEvents": "View all events of the day",
+      "noDayEvents": "No events on this day",
+      "typeAll": "All",
+      "typeEvents": "Events",
+      "typeHolidays": "Holidays",
+      "calendarSettings": "Calendar settings",
+      "filter": "Filter",
+      "print": "Print",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "dayActions": "Day options",
+      "moreEvents": "+{{count}} more"
+    },
     "title": "Monthly Calendar",
     "description": "Keep track of academic highlights for the month at a glance.",
     "educationalStages": "Educational stages",
@@ -3828,7 +3844,9 @@
       "startTime": "Start time",
       "endTime": "End time",
       "selectStartTime": "Select start time",
-      "selectEndTime": "Select end time"
+      "selectEndTime": "Select end time",
+      "addSubtitle": "Enter the lesson details and set the date and classroom",
+      "editSubtitle": "Update the lesson details and the date and classroom"
     },
     "details": {
       "title": "Event details",

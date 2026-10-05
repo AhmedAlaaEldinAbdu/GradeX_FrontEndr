@@ -3631,6 +3631,22 @@
     }
   },
   "monthlyCalendar": {
+    "board": {
+      "subtitle": "Créez et gérez le planning mensuel des cours et des événements",
+      "eventsCount": "Événements",
+      "viewAllDayEvents": "Voir tous les événements du jour",
+      "noDayEvents": "Aucun événement ce jour-là",
+      "typeAll": "Tous",
+      "typeEvents": "Événements",
+      "typeHolidays": "Congés",
+      "calendarSettings": "Paramètres du calendrier",
+      "filter": "Filtrer",
+      "print": "Imprimer",
+      "previousMonth": "Mois précédent",
+      "nextMonth": "Mois suivant",
+      "dayActions": "Options du jour",
+      "moreEvents": "+{{count}} de plus"
+    },
     "title": "Calendrier mensuel",
     "description": "Suivez en un coup d'œil les temps forts académiques du mois.",
     "educationalStages": "Niveaux scolaires",
@@ -3693,7 +3709,9 @@
       "startTime": "Heure de début",
       "endTime": "Heure de fin",
       "selectStartTime": "Sélectionnez l'heure de début",
-      "selectEndTime": "Sélectionnez l'heure de fin"
+      "selectEndTime": "Sélectionnez l'heure de fin",
+      "addSubtitle": "Saisissez les données du cours et définissez la date et la classe",
+      "editSubtitle": "Modifiez les données du cours ainsi que la date et la classe"
     },
     "details": {
       "title": "Détails de l'événement",

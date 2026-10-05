@@ -3783,6 +3783,22 @@
     }
   },
   "monthlyCalendar": {
+    "board": {
+      "subtitle": "قم بإنشاء وإدارة الجدول الشهري للحصص والفعاليات",
+      "eventsCount": "عدد الأحداث",
+      "viewAllDayEvents": "عرض كل أحداث اليوم",
+      "noDayEvents": "لا توجد أحداث في هذا اليوم",
+      "typeAll": "الكل",
+      "typeEvents": "الأحداث",
+      "typeHolidays": "الإجازات",
+      "calendarSettings": "إعدادات التقويم",
+      "filter": "تصفية",
+      "print": "طباعة",
+      "previousMonth": "الشهر السابق",
+      "nextMonth": "الشهر التالي",
+      "dayActions": "خيارات اليوم",
+      "moreEvents": "+{{count}} المزيد"
+    },
     "title": "التقويم الشهري",
     "description": "تابع أبرز فعاليات الشهر في لمحة واحدة.",
     "educationalStages": "المراحل التعليمية",
@@ -3845,7 +3861,9 @@
       "startTime": "ساعة البدء",
       "endTime": "ساعة الانتهاء",
       "selectStartTime": "اختر ساعة البدء",
-      "selectEndTime": "اختر ساعة الانتهاء"
+      "selectEndTime": "اختر ساعة الانتهاء",
+      "addSubtitle": "قم بإدخال بيانات الحصة الدراسية و تحديد الموعد و الفصل",
+      "editSubtitle": "قم بتعديل بيانات الحصة الدراسية و تحديد الموعد و الفصل"
     },
     "details": {
       "title": "تفاصيل الحدث",

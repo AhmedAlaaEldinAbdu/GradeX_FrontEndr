@@ -38,6 +38,7 @@ type PopupTextInputProps = {
   onBlur?: () => void;
   hasError?: boolean;
   inputMode?: 'numeric' | 'text';
+  placeholder?: string;
 };
 
 export function PopupTextInput({
@@ -47,12 +48,14 @@ export function PopupTextInput({
   onBlur,
   hasError = false,
   inputMode = 'text',
+  placeholder,
 }: PopupTextInputProps) {
   return (
     <input
       name={name}
       value={value}
       inputMode={inputMode}
+      placeholder={placeholder}
       onChange={(event) =>
         onChange(
           inputMode === 'numeric' ? event.target.value.replace(/\D/g, '') : event.target.value
@@ -72,6 +75,7 @@ type PickerInputProps = {
   onBlur?: () => void;
   placeholder?: string;
   hasError?: boolean;
+  disabled?: boolean;
 };
 
 export function PopupPickerInput({
@@ -82,6 +86,7 @@ export function PopupPickerInput({
   onBlur,
   placeholder,
   hasError = false,
+  disabled = false,
 }: PickerInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const showIcon = type === 'date';
@@ -95,6 +100,7 @@ export function PopupPickerInput({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onBlur={onBlur}
+        disabled={disabled}
         onClick={() => {
           try {
             inputRef.current?.showPicker();
@@ -103,7 +109,7 @@ export function PopupPickerInput({
           }
         }}
         aria-label={placeholder}
-        className={`${FIELD_BASE_CLASS} h-[38px] cursor-pointer ps-[15px] [&::-webkit-calendar-picker-indicator]:hidden ${
+        className={`${FIELD_BASE_CLASS} h-[38px] cursor-pointer ps-[15px] disabled:cursor-not-allowed disabled:opacity-60 [&::-webkit-calendar-picker-indicator]:hidden ${
           showIcon ? 'pe-10' : 'pe-[15px]'
         } ${value ? '' : 'text-transparent'} ${errorBorder(hasError)}`}
       />

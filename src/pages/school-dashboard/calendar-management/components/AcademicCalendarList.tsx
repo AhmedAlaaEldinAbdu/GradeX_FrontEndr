@@ -35,7 +35,12 @@ import {
   AcademicCalendarStatus,
   type AcademicCalendarStatusType,
 } from '@/services/api/types/academic-calendar.types';
-import { FilterDateInput, FilterSelect } from './AcademicCalendarFilterControls';
+import {
+  FILTER_SEARCH_ICON_CLASS,
+  FILTER_SEARCH_INPUT_CLASS,
+  FilterDateInput,
+  FilterSelect,
+} from './AcademicCalendarFilterControls';
 import AcademicCalendarPagination from './AcademicCalendarPagination';
 import AcademicCalendarFormPopup from './AcademicCalendarFormPopup';
 
@@ -416,26 +421,26 @@ export default function AcademicCalendarList() {
       <div
         className={`flex flex-wrap items-center justify-between gap-4 p-[17px] ${PANEL_SURFACE}`}
       >
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 md:justify-start">
           <FilterSelect
             value={status}
             onChange={updateFilter(setStatus)}
             options={statusOptions}
             placeholder={t('academicCalendar.allStatuses')}
             iconSrc={ChevronDownGraySmIcon}
-            className="w-32"
+            className="w-[48%] md:w-36"
           />
           <FilterDateInput
             value={endDate}
             onChange={updateFilter(setEndDate)}
             placeholder={t('academicCalendar.endDatePlaceholder')}
-            className="w-[128px]"
+            className="w-[48%] md:w-[140px]"
           />
           <FilterDateInput
             value={startDate}
             onChange={updateFilter(setStartDate)}
             placeholder={t('academicCalendar.startDatePlaceholder')}
-            className="w-[128px]"
+            className="w-[48%] md:w-[140px]"
           />
           <FilterSelect
             value={academicSubSystemId}
@@ -443,7 +448,7 @@ export default function AcademicCalendarList() {
             options={academicSubSystemOptions}
             placeholder={t('academicCalendar.academicSystemPlaceholder')}
             iconSrc={FilterGrayIcon}
-            className="w-[140px]"
+            className="w-[48%] md:w-[180px]"
           />
           <SearchInput
             name="academic-calendar-search"
@@ -451,9 +456,9 @@ export default function AcademicCalendarList() {
             onChange={updateFilter(setSearchTerm)}
             placeholder={t('academicCalendar.searchPlaceholder')}
             iconSrc={SearchGraySmIcon}
-            iconClass="h-4 w-4 start-[17px]!"
-            wrapperClassName="w-[224px]"
-            className="h-[38px] w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] ps-[41px] pe-4 text-xs text-[#1E293B] placeholder:text-[#9D9D9D] focus:ring-2 focus:ring-green-500 focus:outline-hidden"
+            iconClass={FILTER_SEARCH_ICON_CLASS}
+            wrapperClassName="md:w-[250px] w-full"
+            className={FILTER_SEARCH_INPUT_CLASS}
           />
         </div>
 

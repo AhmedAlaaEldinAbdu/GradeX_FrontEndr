@@ -41,8 +41,8 @@ export interface MonthlyCalendarEvent {
   nameEn: string;
   day: string;
   duration: number;
-  startTime: string;
-  endTime: string;
+  startTime: string | null;
+  endTime: string | null;
   schoolBranchesId: string;
   grade: MonthlyCalendarGradeRef[];
   class: MonthlyCalendarClassRef[];
@@ -72,6 +72,26 @@ export interface MonthlyCalendarQueryParams {
   ClassRoomId?: string;
   Search?: string;
   Date?: string;
+}
+
+export interface MonthlyCalendarDashboardParams {
+  FromDate: string;
+  ToDate: string;
+  SchoolBrancheId?: string;
+  grade?: string;
+  search?: string;
+}
+
+export interface MonthlyCalendarDashboardData {
+  monthlyCalendarDto: MonthlyCalendarEvent[];
+}
+
+export interface MonthlyCalendarDashboardResponse {
+  data: MonthlyCalendarDashboardData | null;
+  isSuccess: boolean;
+  message: string;
+  errorCode: string | null;
+  validationErrors: string[] | null;
 }
 
 export interface BaseMonthlyCalendarRequest {

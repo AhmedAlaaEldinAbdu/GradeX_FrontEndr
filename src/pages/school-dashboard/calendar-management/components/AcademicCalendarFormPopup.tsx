@@ -373,7 +373,7 @@ export default function AcademicCalendarFormPopup({
         </button>
       </div>
 
-      <div className="relative flex min-h-0 flex-1 [scrollbar-width:thin] flex-col gap-5 overflow-y-auto px-8 py-6 [&::-webkit-scrollbar]:w-1.5">
+      <div className="relative flex min-h-0 flex-1 [scrollbar-width:thin] flex-col gap-5 overflow-y-auto px-8 py-6 [&::-webkit-scrollbar]:w-1">
         {isLoadingCalendar ? (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/80 text-sm text-[#9D9D9D]">
             {t('common.loading')}

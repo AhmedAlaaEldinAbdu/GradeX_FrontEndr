@@ -4,10 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Modal from '@/shared/popups/Modal';
-import FormField from '@/shared/components/FormField';
-import Input from '@/shared/components/Input';
-import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
 import Button from '@/shared/components/Button';
+import CustomImage from '@/shared/components/CustomImage';
+import type { CustomSelectOption } from '@/shared/components/CustomSelect';
 import { MonthlyCalendarDuration } from '@/shared/enums/enums';
 import {
   MonthlyEventFormSchema,
@@ -15,6 +14,15 @@ import {
 } from '@/validations/monthly-calendar-validations';
 import type { Classroom } from '@/services/api/types/classrooms.types';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
+import CloseXGreenIcon from '@/assets/icons/CloseXGreen.svg';
+import PlusWhite16Icon from '@/assets/icons/PlusWhite16.svg';
+import RadioDotWhite16Icon from '@/assets/icons/RadioDotWhite16.svg';
+import {
+  PopupField,
+  PopupPickerInput,
+  PopupSelect,
+  PopupTextInput,
+} from '../components/AcademicCalendarPopupFields';
 
 interface AddEditMonthlyEventPopupProps {
   isOpen: boolean;
@@ -28,6 +36,28 @@ interface AddEditMonthlyEventPopupProps {
   schoolBranchId: string;
   gradeOptionsLoading?: boolean;
   classroomOptionsLoading?: boolean;
+}
+
+type DurationRadioProps = {
+  checked: boolean;
+  label: string;
+  onSelect: () => void;
+};
+
+function DurationRadio({ checked, label, onSelect }: DurationRadioProps) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2 text-sm leading-5 font-medium text-[black]">
+      <input type="radio" className="sr-only" checked={checked} onChange={onSelect} />
+      {checked ? (
+        <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[#1E7A52] p-px">
+          <CustomImage src={RadioDotWhite16Icon} alt="" />
+        </span>
+      ) : (
+        <span className="size-4 shrink-0 rounded-full border border-[#CBD5E1] bg-white" />
+      )}
+      {label}
+    </label>
+  );
 }
 
 export default function AddEditMonthlyEventPopup({
@@ -45,6 +75,7 @@ export default function AddEditMonthlyEventPopup({
 }: AddEditMonthlyEventPopupProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language;
+  const isEdit = mode === 'edit';
   const previousGradesKeyRef = useRef<string | null>(null);
 
   const {
@@ -166,205 +197,235 @@ export default function AddEditMonthlyEventPopup({
     <Modal
       isOpen={isOpen}
       onClose={closeAndReset}
-      title={
-        mode === 'edit'
-          ? t('monthlyCalendar.actions.editEvent')
-          : t('monthlyCalendar.addEventButton')
-      }
-      size="lg"
+      showHeader={false}
+      placement="end"
+      closeOnOverlayClick={false}
+      panelClassName="max-w-[650px]! rounded-e-none rounded-s-lg border border-[#E2E8F0]/90 shadow-[0px_25px_50px_-12px_rgba(2,6,23,0.2)]! overflow-hidden"
+      contentClassName="flex min-h-0 flex-col overflow-hidden! p-0!"
     >
-      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
-        <div className="grid grid-cols-1 gap-4">
-          <FormField
-            label={t('monthlyCalendar.form.nameAr')}
-            required
-            error={errors.nameAr?.message}
-            htmlFor="monthly-event-nameAr"
-          >
-            <Controller
-              name="nameAr"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  id="monthly-event-nameAr"
-                  {...field}
-                  placeholder={t('monthlyCalendar.form.nameArPlaceholder')}
-                />
-              )}
-            />
-          </FormField>
-
-          <FormField
-            label={t('monthlyCalendar.form.nameEn')}
-            required
-            error={errors.nameEn?.message}
-            htmlFor="monthly-event-nameEn"
-          >
-            <Controller
-              name="nameEn"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  id="monthly-event-nameEn"
-                  {...field}
-                  placeholder={t('monthlyCalendar.form.nameEnPlaceholder')}
-                />
-              )}
-            />
-          </FormField>
+      <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#F1F5F9] px-8 pt-7 pb-[21px]">
+        <div className="flex flex-col gap-1 text-start">
+          <h2 className="text-xl leading-7 font-bold text-[black]">
+            {isEdit ? t('monthlyCalendar.actions.editEvent') : t('monthlyCalendar.addEventButton')}
+          </h2>
+          <p className="text-xs leading-4 text-[#9D9D9D]">
+            {t(isEdit ? 'monthlyCalendar.form.editSubtitle' : 'monthlyCalendar.form.addSubtitle')}
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={closeAndReset}
+          aria-label={t('common.close')}
+          className="shrink-0 rounded-lg p-2 transition-colors hover:bg-[#F1F5F9]"
+        >
+          <CustomImage src={CloseXGreenIcon} alt="" />
+        </button>
+      </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          <FormField
-            label={t('monthlyCalendar.form.stage')}
-            required
-            error={errors.grades?.message as string}
-            htmlFor="monthly-event-stage"
-          >
-            <Controller
-              name="grades"
-              control={control}
-              render={({ field }) => (
-                <CustomSelect
-                  id="monthly-event-stage"
-                  value={field.value || []}
-                  onChange={(value) => field.onChange(Array.isArray(value) ? value : [value])}
-                  options={gradeOptions}
-                  placeholder={gradePlaceholder}
-                  isMulti
-                  disabled={gradeOptionsLoading}
-                  error={Boolean(errors.grades)}
-                />
-              )}
-            />
-          </FormField>
+      <div className="relative flex min-h-0 flex-1 [scrollbar-width:thin] flex-col gap-5 overflow-y-auto px-8 py-6">
+        <PopupField
+          name="nameAr"
+          label={t('monthlyCalendar.form.nameAr')}
+          required
+          error={errors.nameAr?.message}
+        >
+          <Controller
+            name="nameAr"
+            control={control}
+            render={({ field }) => (
+              <PopupTextInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                placeholder={t('monthlyCalendar.form.nameArPlaceholder')}
+                hasError={Boolean(errors.nameAr)}
+              />
+            )}
+          />
+        </PopupField>
 
-          <FormField
-            label={t('monthlyCalendar.form.classrooms')}
-            required
-            error={errors.classRomms?.message as string}
-            htmlFor="monthly-event-classrooms"
-          >
-            <Controller
-              name="classRomms"
-              control={control}
-              render={({ field }) => (
-                <CustomSelect
-                  id="monthly-event-classrooms"
-                  value={field.value || []}
-                  onChange={(value) => field.onChange(Array.isArray(value) ? value : [value])}
-                  options={filteredClassroomOptions}
-                  placeholder={classroomPlaceholder}
-                  isMulti
-                  disabled={!watchedGrades || watchedGrades.length === 0 || classroomOptionsLoading}
-                  error={Boolean(errors.classRomms)}
-                />
-              )}
-            />
-          </FormField>
-        </div>
+        <PopupField
+          name="nameEn"
+          label={t('monthlyCalendar.form.nameEn')}
+          required
+          error={errors.nameEn?.message}
+        >
+          <Controller
+            name="nameEn"
+            control={control}
+            render={({ field }) => (
+              <PopupTextInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                placeholder={t('monthlyCalendar.form.nameEnPlaceholder')}
+                hasError={Boolean(errors.nameEn)}
+              />
+            )}
+          />
+        </PopupField>
 
-        <div className="grid grid-cols-1 gap-4">
-          <FormField
-            label={t('monthlyCalendar.form.date')}
-            required
-            error={errors.day?.message}
-            htmlFor="monthly-event-date"
-          >
-            <Controller
-              name="day"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  id="monthly-event-date"
-                  type="date"
-                  {...field}
-                  disabled={mode === 'add' && Boolean(selectedDate)}
-                />
-              )}
+        <PopupField
+          name="grades"
+          label={t('monthlyCalendar.form.stage')}
+          required
+          error={errors.grades?.message as string}
+        >
+          <Controller
+            name="grades"
+            control={control}
+            render={({ field }) => (
+              <PopupSelect
+                multiple
+                name={field.name}
+                value={field.value || []}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                options={gradeOptions}
+                placeholder={gradePlaceholder}
+                disabled={gradeOptionsLoading}
+                hasError={Boolean(errors.grades)}
+              />
+            )}
+          />
+        </PopupField>
+
+        <PopupField
+          name="classRomms"
+          label={t('monthlyCalendar.form.classrooms')}
+          required
+          error={errors.classRomms?.message as string}
+        >
+          <Controller
+            name="classRomms"
+            control={control}
+            render={({ field }) => (
+              <PopupSelect
+                multiple
+                name={field.name}
+                value={field.value || []}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                options={filteredClassroomOptions}
+                placeholder={classroomPlaceholder}
+                disabled={!watchedGrades || watchedGrades.length === 0 || classroomOptionsLoading}
+                hasError={Boolean(errors.classRomms)}
+              />
+            )}
+          />
+        </PopupField>
+
+        <PopupField
+          name="day"
+          label={t('monthlyCalendar.form.date')}
+          required
+          error={errors.day?.message}
+        >
+          <Controller
+            name="day"
+            control={control}
+            render={({ field }) => (
+              <PopupPickerInput
+                name={field.name}
+                type="date"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                placeholder={t('common.chooseDate')}
+                disabled={mode === 'add' && Boolean(selectedDate)}
+                hasError={Boolean(errors.day)}
+              />
+            )}
+          />
+        </PopupField>
+
+        <PopupField name="duration" label={t('monthlyCalendar.form.duration')} required>
+          <div className="flex flex-wrap items-center gap-6">
+            <DurationRadio
+              checked={isFullDay}
+              label={t('monthlyCalendar.form.fullDay')}
+              onSelect={() => handleDurationChange(true)}
             />
-          </FormField>
-          <FormField label={t('monthlyCalendar.form.duration')}>
-            <div className="flex flex-wrap gap-3">
-              <label className="flex cursor-pointer items-center gap-2 px-4 py-2 text-base font-normal text-black-800">
-                <input
-                  type="radio"
-                  className="h-4 w-4 accent-green-600 focus:ring-green-500"
-                  checked={isFullDay}
-                  onChange={() => handleDurationChange(true)}
-                />
-                {t('monthlyCalendar.form.fullDay')}
-              </label>
-              <label className="flex cursor-pointer items-center gap-2 px-4 py-2 text-base font-normal text-black-800">
-                <input
-                  type="radio"
-                  className="h-4 w-4 accent-green-600 focus:ring-green-500"
-                  checked={!isFullDay}
-                  onChange={() => handleDurationChange(false)}
-                />
-                {t('monthlyCalendar.form.customDuration')}
-              </label>
-            </div>
-          </FormField>
-        </div>
+            <DurationRadio
+              checked={!isFullDay}
+              label={t('monthlyCalendar.form.customDuration')}
+              onSelect={() => handleDurationChange(false)}
+            />
+          </div>
+        </PopupField>
+
         {isFullDay ? null : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <FormField
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <PopupField
+              name="startTime"
               label={t('monthlyCalendar.form.startTime')}
-              required={!isFullDay}
+              required
               error={errors.startTime?.message}
-              htmlFor="monthly-event-start"
             >
               <Controller
                 name="startTime"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="monthly-event-start"
+                  <PopupPickerInput
+                    name={field.name}
                     type="time"
-                    {...field}
-                    disabled={isFullDay}
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
                     placeholder={t('monthlyCalendar.form.selectStartTime')}
+                    hasError={Boolean(errors.startTime)}
                   />
                 )}
               />
-            </FormField>
+            </PopupField>
 
-            <FormField
+            <PopupField
+              name="endTime"
               label={t('monthlyCalendar.form.endTime')}
-              required={!isFullDay}
+              required
               error={errors.endTime?.message}
-              htmlFor="monthly-event-end"
             >
               <Controller
                 name="endTime"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="monthly-event-end"
+                  <PopupPickerInput
+                    name={field.name}
                     type="time"
-                    {...field}
-                    disabled={isFullDay}
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
                     placeholder={t('monthlyCalendar.form.selectEndTime')}
+                    hasError={Boolean(errors.endTime)}
                   />
                 )}
               />
-            </FormField>
+            </PopupField>
           </div>
         )}
-        <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
-          <Button type="button" variant="outline" onClick={closeAndReset} disabled={isSubmitting}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting
-              ? t('common.saving')
-              : mode === 'edit'
-                ? t('common.save')
-                : t('common.add')}
-          </Button>
-        </div>
-      </form>
+      </div>
+
+      <div className="flex shrink-0 items-center justify-end gap-3 border-t border-[#F1F5F9] bg-[#F8FAFC]/70 px-8 pt-[21px] pb-5">
+        <Button
+          actionKey={isEdit ? 'edit' : 'add'}
+          onClick={handleSubmit(handleFormSubmit, scrollToFirstError)}
+          disabled={isSubmitting}
+          icon={isEdit ? undefined : <CustomImage src={PlusWhite16Icon} alt="" className="block" />}
+          className="h-10 gap-2 rounded-lg! border-0! bg-[#1E7A52]! px-6! py-2.5! text-sm! leading-[19.6px] font-semibold! text-white! shadow-none! drop-shadow-[0px_1px_1px_rgba(5,150,105,0.2)] hover:bg-[#1E7A52]/90!"
+        >
+          {isSubmitting ? t('common.saving') : t(isEdit ? 'common.save' : 'common.add')}
+        </Button>
+        <button
+          type="button"
+          onClick={closeAndReset}
+          disabled={isSubmitting}
+          className="h-[42px] rounded-lg border border-[#1E7A52] bg-white px-[25px] text-sm leading-5 font-medium text-[#1E7A52] transition-colors hover:bg-[#F0FDF4]"
+        >
+          {t('common.cancel')}
+        </button>
+      </div>
     </Modal>
   );
 }
