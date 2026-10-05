@@ -3631,6 +3631,22 @@
     }
   },
   "monthlyCalendar": {
+    "board": {
+      "subtitle": "Erstellen und verwalten Sie den Monatsplan für Unterricht und Veranstaltungen",
+      "eventsCount": "Ereignisse",
+      "viewAllDayEvents": "Alle Ereignisse des Tages anzeigen",
+      "noDayEvents": "Keine Ereignisse an diesem Tag",
+      "typeAll": "Alle",
+      "typeEvents": "Ereignisse",
+      "typeHolidays": "Ferien",
+      "calendarSettings": "Kalendereinstellungen",
+      "filter": "Filtern",
+      "print": "Drucken",
+      "previousMonth": "Vorheriger Monat",
+      "nextMonth": "Nächster Monat",
+      "dayActions": "Tagesoptionen",
+      "moreEvents": "+{{count}} weitere"
+    },
     "title": "Monatskalender",
     "description": "Behalten Sie die akademischen Höhepunkte des Monats auf einen Blick im Überblick.",
     "educationalStages": "Bildungsstufen",
@@ -3693,7 +3709,9 @@
       "startTime": "Startzeit",
       "endTime": "Endzeit",
       "selectStartTime": "Startzeit auswählen",
-      "selectEndTime": "Endzeit auswählen"
+      "selectEndTime": "Endzeit auswählen",
+      "addSubtitle": "Geben Sie die Unterrichtsdaten ein und legen Sie Datum und Klasse fest",
+      "editSubtitle": "Aktualisieren Sie die Unterrichtsdaten sowie Datum und Klasse"
     },
     "details": {
       "title": "Veranstaltungsdetails",

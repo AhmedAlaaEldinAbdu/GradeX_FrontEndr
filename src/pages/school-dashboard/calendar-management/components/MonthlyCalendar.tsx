@@ -1,37 +1,19 @@
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
-import Card from '@/shared/components/Card';
-import SharedCalendar, {
-  type CalendarEvent,
-  type ContextMenuAction,
-} from '@/shared/components/SharedCalendar';
-import SearchInput from '@/shared/components/SearchInput';
-import CustomSelect, { type CustomSelectOption } from '@/shared/components/CustomSelect';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { addMonths, format, isSameMonth, startOfMonth } from 'date-fns';
+import type { CustomSelectOption } from '@/shared/components/CustomSelect';
 import DeletePopup from '@/shared/popups/DeletePopup';
 import AddEditMonthlyEventPopup from '../popups/AddEditMonthlyEventPopup';
 import MonthlyEventDetailsPopup from '../popups/MonthlyEventDetailsPopup';
-import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
-import GreenPlusIcon from '@gradex/assets/icons/GreenPlus.svg';
-import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
-import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
-import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
 import { useToast } from '@/shared/context/ToastContext';
 import {
   createMonthlyCalendarEvent,
   deleteMonthlyCalendarEvent,
-  fetchMonthlyCalendarEvents,
+  fetchMonthlyCalendarDashboardEvents,
   updateMonthlyCalendarEvent,
-  type MonthlyCalendarFilters,
+  type FetchMonthlyCalendarDashboardPayload,
 } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getEducationalStages } from '@/redux/features/educational-stages/educationalStagesSlice';
@@ -46,26 +28,31 @@ import type {
 import type { MonthlyEventFormValues } from '@/validations/monthly-calendar-validations';
 import { getErrorMessage } from '@/lib/http';
 import { MonthlyCalendarDuration } from '@/shared/enums/enums';
-import Loading from '@/shared/components/Loading';
-
-type CalendarMonthlyEvent = CalendarEvent & { meta: MonthlyEventEntity };
-
-export type MonthlyCalendarHandle = {
-  openAddEvent: (date?: Date) => void;
-};
+import MonthlyCalendarToolbar from './MonthlyCalendarToolbar';
+import MonthlyCalendarGrid from './MonthlyCalendarGrid';
+import MonthlyDayPanel from './MonthlyDayPanel';
+import {
+  formatDayRange,
+  formatMonthYear,
+  formatTime,
+  MONTHLY_SEARCH_PARAM,
+  MONTHLY_STAGE_PARAM,
+  fromDayKey,
+  getGridRange,
+  toDayKey,
+  toneForId,
+  type MonthlyCalendarItem,
+  type MonthlyTypeFilter,
+} from './MonthlyCalendarItems';
 
 const DEFAULT_CALENDAR_START = '08:00';
 const DEFAULT_CALENDAR_END = '18:00';
 const CLASSROOM_LOOKUP_LIMIT = 10000;
 const EDUCATIONAL_STAGE_LOOKUP_LIMIT = 10000;
+const MAX_LEAVE_DAYS = 366;
+const PRINT_AREA_ID = 'monthly-calendar-print-area';
 
 const normalizeTime = (time: string) => (time.length === 5 ? `${time}:00` : time);
-
-const buildDateTime = (date: string, time: string) => {
-  if (!date) return new Date();
-  const normalizedTime = time ? normalizeTime(time) : normalizeTime(DEFAULT_CALENDAR_START);
-  return new Date(`${date}T${normalizedTime}`);
-};
 
 const buildLocalIsoString = (date: string, time: string) => {
   if (!date) return '';
@@ -117,8 +104,45 @@ const mapApiEventToEntity = (event: MonthlyCalendarEvent): MonthlyEventEntity =>
   };
 };
 
-const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalendar(_props, ref) {
+const leaveDays = (leave: OfficialHoliday): Date[] => {
+  if (!leave.startDate) return [];
+  const start = new Date(leave.startDate);
+  if (Number.isNaN(start.getTime())) return [];
+  const end = leave.endDate ? new Date(leave.endDate) : start;
+  const cursor = new Date(start);
+  cursor.setHours(0, 0, 0, 0);
+  const last = new Date(Number.isNaN(end.getTime()) ? start : end);
+  last.setHours(0, 0, 0, 0);
+
+  const days: Date[] = [];
+  while (cursor <= last && days.length < MAX_LEAVE_DAYS) {
+    days.push(new Date(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return days;
+};
+
+// Copies the app's styles into a new window so the printed grid keeps its layout.
+const printElement = (element: HTMLElement, title: string) => {
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) return;
+  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    .map((node) => node.outerHTML)
+    .join('');
+  const { dir, lang } = document.documentElement;
+  printWindow.document.write(
+    `<!doctype html><html dir="${dir}" lang="${lang}"><head><meta charset="utf-8"><title>${title}</title>${styles}<style>@page{size:landscape;margin:12mm}body{background:#fff;padding:16px}</style></head><body>${element.outerHTML}</body></html>`
+  );
+  printWindow.document.close();
+  printWindow.onload = () => {
+    printWindow.focus();
+    printWindow.print();
+  };
+};
+
+export default function MonthlyCalendar() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const dispatch = useAppDispatch();
   const userData = localStorage.getItem('userData') || undefined;
@@ -138,8 +162,12 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   const hasRequestedClassroomsRef = useRef(false);
   const hasRequestedLeavesRef = useRef(false);
   const [leaves, setLeaves] = useState<OfficialHoliday[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [stageFilter, setStageFilter] = useState('');
+  const [searchParams] = useSearchParams();
+  const searchTerm = searchParams.get(MONTHLY_SEARCH_PARAM) ?? '';
+  const stageFilter = searchParams.get(MONTHLY_STAGE_PARAM) ?? '';
+  const [typeFilter, setTypeFilter] = useState<MonthlyTypeFilter>('all');
+  const [viewMonth, setViewMonth] = useState(() => startOfMonth(new Date()));
+  const [selectedDay, setSelectedDay] = useState(() => toDayKey(new Date()));
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<MonthlyEventEntity | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -149,10 +177,11 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
   );
   const [selectedDateForEditor, setSelectedDateForEditor] = useState<Date | undefined>(undefined);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [eventIdPendingDelete, setEventIdPendingDelete] = useState<string | null>(null);
+  const [eventPendingDelete, setEventPendingDelete] = useState<MonthlyEventEntity | null>(null);
   const [selectedLeaveDay, setSelectedLeaveDay] = useState<string | null>(null);
 
   const educationalStagesCount = educationalStages.length;
+  const currentLang = i18n.language;
 
   useEffect(() => {
     if (educationalStagesCount > 0) {
@@ -173,6 +202,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
           isRaw: true,
         });
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, educationalStagesCount, showToast]);
 
   useEffect(() => {
@@ -230,27 +260,19 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     loadLeaves();
   }, [dispatch, showToast, schoolBranchId]);
 
-  const buildFilters = useCallback((): MonthlyCalendarFilters => {
-    const filters: MonthlyCalendarFilters = {};
-    if (searchTerm.trim()) {
-      filters.searchTerm = searchTerm.trim();
-    }
-    if (stageFilter) {
-      filters.grade = stageFilter;
-    }
-    if (schoolBranchId) {
-      filters.schoolBranchId = schoolBranchId;
-    }
-
-    return filters;
-  }, [searchTerm, stageFilter]);
+  const buildFilters = useCallback((): FetchMonthlyCalendarDashboardPayload => {
+    const { start, end } = getGridRange(viewMonth);
+    return {
+      fromDate: `${toDayKey(start)}T00:00:00`,
+      toDate: `${toDayKey(end)}T23:59:59`,
+      schoolBranchId,
+      grade: stageFilter || undefined,
+      searchTerm: searchTerm.trim() || undefined,
+    };
+  }, [viewMonth, schoolBranchId, stageFilter, searchTerm]);
 
   const fetchEvents = useCallback(() => {
-    return dispatch(
-      fetchMonthlyCalendarEvents({
-        filters: buildFilters(),
-      })
-    );
+    return dispatch(fetchMonthlyCalendarDashboardEvents(buildFilters()));
   }, [dispatch, buildFilters]);
 
   useEffect(() => {
@@ -262,11 +284,9 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     [apiEvents]
   );
 
-  const currentLang = i18n.language;
-
-  const getLocalizedName = useCallback(
-    (event: MonthlyEventEntity) =>
-      currentLang === 'ar' ? event.nameAr : event.nameEn || event.nameAr,
+  const localizedName = useCallback(
+    (item: { nameAr?: string | null; nameEn?: string | null }) =>
+      (currentLang === 'ar' ? item.nameAr : item.nameEn || item.nameAr) || '',
     [currentLang]
   );
 
@@ -284,69 +304,116 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     [stageOptions, t]
   );
 
-  const calendarEvents = useMemo<CalendarMonthlyEvent[]>(() => {
-    return normalizedEvents.map((event) => {
-      const startTime = event.isFullDay
-        ? DEFAULT_CALENDAR_START
-        : event.startTime || DEFAULT_CALENDAR_START;
-      const endTime = event.isFullDay
-        ? DEFAULT_CALENDAR_END
-        : event.endTime || event.startTime || DEFAULT_CALENDAR_END;
+  const eventItems = useMemo<MonthlyCalendarItem[]>(
+    () =>
+      normalizedEvents
+        .filter((event) => event.day)
+        .map((event) => {
+          const fullDayLabel = t('monthlyCalendar.form.fullDay');
+          const start = event.startTime ? formatTime(event.startTime, currentLang) : '';
+          const end = event.endTime ? formatTime(event.endTime, currentLang) : '';
+          const places = event.classRomms.length ? event.classRomms : event.grades;
+          return {
+            key: `event-${event.id}`,
+            kind: 'event' as const,
+            title: localizedName(event),
+            day: event.day,
+            chipLabel: event.isFullDay || !start ? fullDayLabel : start,
+            timeLabel: event.isFullDay || !start ? fullDayLabel : end ? `${start} - ${end}` : start,
+            locationLabel: places
+              .map(localizedName)
+              .filter(Boolean)
+              .join(currentLang === 'ar' ? '، ' : ', '),
+            tone: toneForId(event.id),
+            event,
+          };
+        }),
+    [normalizedEvents, localizedName, currentLang, t]
+  );
 
-      return {
-        id: event.id,
-        title: getLocalizedName(event),
-        start: buildDateTime(event.day, startTime),
-        end: buildDateTime(event.day, endTime),
-        meta: event,
-      };
-    });
-  }, [normalizedEvents, getLocalizedName]);
-
-  const leaveCalendarEvents = useMemo<CalendarEvent[]>(() => {
-    const result: CalendarEvent[] = [];
-
-    leaves.forEach((leave) => {
-      if (!leave.startDate) return;
-
-      const start = new Date(leave.startDate);
-      if (Number.isNaN(start.getTime())) return;
-
-      const end = leave.endDate ? new Date(leave.endDate) : start;
-      const cursor = new Date(start);
-      cursor.setHours(0, 0, 0, 0);
-      const last = new Date(Number.isNaN(end.getTime()) ? start : end);
-      last.setHours(0, 0, 0, 0);
-
-      let guard = 0;
-      while (cursor <= last && guard < 366) {
-        const dayKey = format(cursor, 'yyyy-MM-dd');
-        result.push({
-          id: `leave-${leave.id}-${dayKey}`,
-          title: currentLang === 'ar' ? leave.reasonAr : leave.reasonEN || leave.reasonAr,
-          start: buildDateTime(dayKey, DEFAULT_CALENDAR_START),
-          end: buildDateTime(dayKey, DEFAULT_CALENDAR_END),
-          isLeave: true,
+  const holidayItems = useMemo<MonthlyCalendarItem[]>(
+    () =>
+      leaves.flatMap((leave) => {
+        const days = leaveDays(leave);
+        if (days.length === 0) return [];
+        const range = formatDayRange(days[0], days[days.length - 1], currentLang);
+        const title =
+          (currentLang === 'ar' ? leave.reasonAr : leave.reasonEN || leave.reasonAr) || '';
+        return days.map((date) => ({
+          key: `leave-${leave.id}-${toDayKey(date)}`,
+          kind: 'holiday' as const,
+          title,
+          day: toDayKey(date),
+          chipLabel: range,
+          timeLabel: range,
+          tone: 'amber' as const,
           leave,
-          leaveDay: dayKey,
-        });
-        cursor.setDate(cursor.getDate() + 1);
-        guard += 1;
-      }
+        }));
+      }),
+    [leaves, currentLang]
+  );
+
+  const itemsByDay = useMemo(() => {
+    const visible = [
+      ...(typeFilter === 'holidays' ? [] : eventItems),
+      ...(typeFilter === 'events' ? [] : holidayItems),
+    ];
+    const map = new Map<string, MonthlyCalendarItem[]>();
+    visible.forEach((item) => {
+      const list = map.get(item.day) ?? [];
+      list.push(item);
+      map.set(item.day, list);
     });
+    // Timed events first in time order, then full-day events, then holidays.
+    const rank = (item: MonthlyCalendarItem) =>
+      item.kind === 'holiday' ? '2' : item.event?.isFullDay ? '1' : `0${item.event?.startTime}`;
+    map.forEach((list) => list.sort((a, b) => rank(a).localeCompare(rank(b))));
+    return map;
+  }, [eventItems, holidayItems, typeFilter]);
 
-    return result;
-  }, [leaves, currentLang]);
-
-  const combinedCalendarEvents = useMemo<CalendarEvent[]>(
-    () => [...calendarEvents, ...leaveCalendarEvents],
-    [calendarEvents, leaveCalendarEvents]
+  const getLeavesForDay = useCallback(
+    (dayKey: string): OfficialHoliday[] => {
+      if (!dayKey) return [];
+      return holidayItems
+        .filter((item) => item.day === dayKey && item.leave)
+        .map((item) => item.leave as OfficialHoliday);
+    },
+    [holidayItems]
   );
 
   const handleViewDetails = useCallback((event: MonthlyEventEntity) => {
     setSelectedEvent(event);
+    setSelectedLeaveDay(null);
     setDetailsOpen(true);
   }, []);
+
+  const handleViewDay = useCallback((dayKey: string) => {
+    setSelectedEvent(null);
+    setSelectedLeaveDay(dayKey);
+    setDetailsOpen(true);
+  }, []);
+
+  const handleSelectDay = useCallback(
+    (date: Date) => {
+      setSelectedDay(toDayKey(date));
+      if (!isSameMonth(date, viewMonth)) {
+        setViewMonth(startOfMonth(date));
+      }
+    },
+    [viewMonth]
+  );
+
+  const handleItemClick = useCallback(
+    (item: MonthlyCalendarItem) => {
+      setSelectedDay(item.day);
+      if (item.event) {
+        handleViewDetails(item.event);
+      } else {
+        handleViewDay(item.day);
+      }
+    },
+    [handleViewDetails, handleViewDay]
+  );
 
   const handleOpenAddPopup = useCallback(
     (date?: Date) => {
@@ -367,16 +434,6 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
     [showToast, t]
   );
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      openAddEvent: (date?: Date) => {
-        handleOpenAddPopup(date);
-      },
-    }),
-    [handleOpenAddPopup]
-  );
-
   const mapEventToFormValues = useCallback(
     (event: MonthlyEventEntity): MonthlyEventFormValues => ({
       nameAr: event.nameAr,
@@ -392,6 +449,7 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       endTime: event.endTime ?? '',
       schoolBranchesId: event.schoolBranchesId || schoolBranchId,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -453,287 +511,136 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
 
       const payload = transformValuesToRequest(values);
       try {
-        if (editorMode === 'edit' && editingEventId) {
-          const res = await dispatch(
-            updateMonthlyCalendarEvent({ id: editingEventId, data: payload })
-          ).unwrap();
-          if (res.isSuccess) {
-            showToast({ message: t('monthlyCalendar.messages.eventUpdated'), type: 'success' });
-            fetchEvents();
-            handleCloseEditor();
-          } else {
-            const errorMessage = res.successMessage || t('common.errorOccurred');
-            showToast({
-              message: errorMessage,
-              type: 'error',
-              isRaw: true,
-            });
+        const res =
+          editorMode === 'edit' && editingEventId
+            ? await dispatch(
+                updateMonthlyCalendarEvent({ id: editingEventId, data: payload })
+              ).unwrap()
+            : await dispatch(createMonthlyCalendarEvent(payload)).unwrap();
+
+        if (res.isSuccess) {
+          showToast({
+            message: t(
+              editorMode === 'edit'
+                ? 'monthlyCalendar.messages.eventUpdated'
+                : 'monthlyCalendar.messages.eventAdded'
+            ),
+            type: 'success',
+          });
+          fetchEvents();
+          handleCloseEditor();
+          if (values.day) {
+            handleSelectDay(fromDayKey(values.day));
           }
         } else {
-          const res = await dispatch(createMonthlyCalendarEvent(payload)).unwrap();
-          if (res.isSuccess) {
-            showToast({ message: t('monthlyCalendar.messages.eventAdded'), type: 'success' });
-            fetchEvents();
-            handleCloseEditor();
-          } else {
-            const errorMessage = res.successMessage || t('common.errorOccurred');
-            showToast({
-              message: errorMessage,
-              type: 'error',
-              isRaw: true,
-            });
-          }
+          showToast({
+            message: res.successMessage || t('common.errorOccurred'),
+            type: 'error',
+            isRaw: true,
+          });
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         const message =
           error?.message || (typeof error === 'string' ? error : t('common.errorOccurred'));
         showToast({ message, type: 'error', isRaw: true });
       }
     },
-    [dispatch, editorMode, editingEventId, fetchEvents, handleCloseEditor, showToast, t]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      dispatch,
+      editorMode,
+      editingEventId,
+      fetchEvents,
+      handleCloseEditor,
+      handleSelectDay,
+      showToast,
+      t,
+    ]
   );
 
-  const handleRequestDelete = useCallback((eventId: string) => {
-    setEventIdPendingDelete(eventId);
-  }, []);
-
   const handleConfirmDelete = useCallback(async () => {
-    if (!eventIdPendingDelete) return;
+    if (!eventPendingDelete) return;
     try {
-      const res: any = await dispatch(deleteMonthlyCalendarEvent(eventIdPendingDelete)).unwrap();
-      if (res.isSuccess || res == eventIdPendingDelete) {
-        setEventIdPendingDelete(null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res: any = await dispatch(deleteMonthlyCalendarEvent(eventPendingDelete.id)).unwrap();
+      if (res.isSuccess || res == eventPendingDelete.id) {
+        setEventPendingDelete(null);
         showToast({ message: t('monthlyCalendar.messages.eventDeleted'), type: 'success' });
         fetchEvents();
       } else {
         const errorMessage = res.successMessage || t('common.errorOccurred');
         showToast({ message: errorMessage, type: 'error', isRaw: true });
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      setEventIdPendingDelete(null);
+      setEventPendingDelete(null);
       const message =
         error?.message || (typeof error === 'string' ? error : t('common.errorOccurred'));
       showToast({ message, type: 'error', isRaw: true });
     }
-  }, [dispatch, eventIdPendingDelete, fetchEvents, showToast, t]);
+  }, [dispatch, eventPendingDelete, fetchEvents, showToast, t]);
 
-  const resolveEvent = useCallback(
-    (calendarEvent?: CalendarEvent) => {
-      if (!calendarEvent) return undefined;
-      const withMeta = calendarEvent as CalendarMonthlyEvent;
-      if (withMeta.meta) return withMeta.meta;
-      return normalizedEvents.find((event) => event.id === calendarEvent.id);
-    },
-    [normalizedEvents]
+  const detailsLeaves = useMemo<OfficialHoliday[]>(
+    () => getLeavesForDay(selectedEvent?.day ?? selectedLeaveDay ?? ''),
+    [selectedEvent?.day, selectedLeaveDay, getLeavesForDay]
   );
 
-  const resolveLeave = useCallback((calendarEvent?: CalendarEvent): OfficialHoliday | undefined => {
-    if (!calendarEvent) return undefined;
-    const candidate = calendarEvent as CalendarEvent & {
-      isLeave?: boolean;
-      leave?: OfficialHoliday;
-    };
-    return candidate.isLeave ? candidate.leave : undefined;
-  }, []);
-
-  const resolveLeaveDay = useCallback((calendarEvent?: CalendarEvent): string | undefined => {
-    if (!calendarEvent) return undefined;
-    const candidate = calendarEvent as CalendarEvent & {
-      isLeave?: boolean;
-      leaveDay?: string;
-    };
-    return candidate.isLeave ? candidate.leaveDay : undefined;
-  }, []);
-
-  const getLeavesForDay = useCallback(
-    (dayKey: string): OfficialHoliday[] => {
-      if (!dayKey) return [];
-
-      const target = new Date(`${dayKey}T00:00:00`);
-      if (Number.isNaN(target.getTime())) return [];
-      target.setHours(0, 0, 0, 0);
-      const targetTime = target.getTime();
-
-      return leaves.filter((leave) => {
-        if (!leave.startDate) return false;
-        const start = new Date(leave.startDate);
-        if (Number.isNaN(start.getTime())) return false;
-        start.setHours(0, 0, 0, 0);
-        const end = leave.endDate ? new Date(leave.endDate) : start;
-        end.setHours(0, 0, 0, 0);
-        return targetTime >= start.getTime() && targetTime <= end.getTime();
-      });
-    },
-    [leaves]
-  );
-
-  const handleViewLeaveDay = useCallback((dayKey: string) => {
-    setSelectedEvent(null);
-    setSelectedLeaveDay(dayKey);
-    setDetailsOpen(true);
-  }, []);
-
-  const detailsLeaves = useMemo<OfficialHoliday[]>(() => {
-    const dayKey = selectedEvent?.day ?? selectedLeaveDay ?? '';
-    return getLeavesForDay(dayKey);
-  }, [selectedEvent?.day, selectedLeaveDay, getLeavesForDay]);
-
-  const hasMultipleItemsOnDay = useCallback(
-    (day: string) => {
-      if (!day) return false;
-      const eventCount = normalizedEvents.filter((event) => event.day === day).length;
-      const leaveCount = getLeavesForDay(day).length;
-      return eventCount + leaveCount > 1;
-    },
-    [normalizedEvents, getLeavesForDay]
-  );
-
-  const contextMenuActions = useMemo<ContextMenuAction[]>(
-    () => [
-      {
-        id: 'view-details',
-        label: t('monthlyCalendar.actions.viewDetails'),
-        icon: EyeFillIcon,
-        onClick: (_date, calendarEvent) => {
-          const leaveDay = resolveLeaveDay(calendarEvent);
-          if (leaveDay) {
-            handleViewLeaveDay(leaveDay);
-            return;
-          }
-          const event = resolveEvent(calendarEvent);
-          if (event) {
-            handleViewDetails(event);
-          }
-        },
-        color: 'primary',
-        showOnDate: false,
-        showOnEvent: true,
-      },
-      {
-        id: 'add-event',
-        label: t('monthlyCalendar.actions.addEvent'),
-        icon: GreenPlusIcon,
-        onClick: (date) => handleOpenAddPopup(date),
-        hidden: (date) => isPastCalendarDate(date),
-      },
-      {
-        id: 'edit-event',
-        label: t('monthlyCalendar.actions.editEvent'),
-        icon: EditFilledIcon,
-        onClick: (_date, calendarEvent) => {
-          if (resolveLeave(calendarEvent)) return;
-          const event = resolveEvent(calendarEvent);
-          if (event && !hasMultipleItemsOnDay(event.day)) {
-            handleOpenEditPopup(event);
-          }
-        },
-        color: 'success',
-        showOnDate: false,
-        showOnEvent: true,
-        hidden: (_date, calendarEvent) => {
-          if (resolveLeave(calendarEvent)) return true;
-          const event = resolveEvent(calendarEvent);
-          return event ? hasMultipleItemsOnDay(event.day) : false;
-        },
-      },
-      {
-        id: 'delete-event',
-        label: t('monthlyCalendar.actions.deleteEvent'),
-        icon: TrashFillIcon,
-        onClick: (_date, calendarEvent) => {
-          if (resolveLeave(calendarEvent)) return;
-          const event = resolveEvent(calendarEvent);
-          if (event) {
-            if (!hasMultipleItemsOnDay(event.day)) {
-              handleRequestDelete(event.id);
-            }
-          }
-        },
-        color: 'danger',
-        showOnDate: false,
-        showOnEvent: true,
-        hidden: (_date, calendarEvent) => {
-          if (resolveLeave(calendarEvent)) return true;
-          const event = resolveEvent(calendarEvent);
-          return event ? hasMultipleItemsOnDay(event.day) : false;
-        },
-      },
-    ],
-    [
-      handleOpenAddPopup,
-      handleOpenEditPopup,
-      handleRequestDelete,
-      handleViewDetails,
-      handleViewLeaveDay,
-      hasMultipleItemsOnDay,
-      resolveEvent,
-      resolveLeave,
-      resolveLeaveDay,
-      t,
-    ]
-  );
-
-  const hasActiveFilters = Boolean(searchTerm.trim() || stageFilter);
-
-  const handleResetFilters = () => {
-    setSearchTerm('');
-    setStageFilter('');
+  const handlePrint = () => {
+    const area = document.getElementById(PRINT_AREA_ID);
+    if (area)
+      printElement(
+        area,
+        `${t('monthlyCalendar.title')} - ${formatMonthYear(viewMonth, currentLang)}`
+      );
   };
 
-  return (
-    <>
-      <Card>
-        <div className="mb-5 flex justify-between gap-3">
-          <div className="mb-6 flex flex-1 flex-wrap gap-4 lg:flex-nowrap">
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder={t('monthlyCalendar.searchPlaceholder')}
-              wrapperClassName="w-[300px]"
-            />
-            <CustomSelect
-              value={stageFilter}
-              onChange={(value) => setStageFilter(Array.isArray(value) ? (value[0] ?? '') : value)}
-              options={stageFilterOptions}
-              placeholder={t('monthlyCalendar.filters.stagePlaceholder')}
-              className="w-[250px]"
-              showSearch={false}
-              disabled={isEducationalStagesLoading}
-            />
-          </div>
-          {hasActiveFilters && (
-            <button
-              onClick={handleResetFilters}
-              className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden"
-              title={t('actions.clearFilter')}
-            >
-              <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />
-              <span>{t('actions.clearFilter')}</span>
-            </button>
-          )}
-        </div>
+  const selectedDayDate = fromDayKey(selectedDay);
 
-        {isLoading ? (
-          <Loading size="lg" />
-        ) : (
-          <SharedCalendar
-            events={combinedCalendarEvents}
-            onSelectEvent={(calendarEvent) => {
-              const leaveDay = resolveLeaveDay(calendarEvent);
-              if (leaveDay) {
-                handleViewLeaveDay(leaveDay);
-                return;
-              }
-              const event = resolveEvent(calendarEvent);
-              if (event) {
-                handleViewDetails(event);
-              }
-            }}
-            contextMenuActions={contextMenuActions}
-            defaultView="month"
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-3">
+        <MonthlyCalendarToolbar
+          monthLabel={formatMonthYear(viewMonth, currentLang)}
+          onPreviousMonth={() => setViewMonth((month) => addMonths(month, -1))}
+          onNextMonth={() => setViewMonth((month) => addMonths(month, 1))}
+          onAddEvent={() =>
+            handleOpenAddPopup(isPastCalendarDate(selectedDayDate) ? undefined : selectedDayDate)
+          }
+          onPrint={handlePrint}
+          onOpenSettings={() => navigate('/calendar/academic')}
+          typeFilter={typeFilter}
+          onTypeFilterChange={setTypeFilter}
+          stageOptions={stageFilterOptions}
+          isStageOptionsLoading={isEducationalStagesLoading}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-12">
+        <div id={PRINT_AREA_ID} className="xl:col-span-9">
+          <MonthlyCalendarGrid
+            month={viewMonth}
+            selectedDay={selectedDay}
+            itemsByDay={itemsByDay}
+            isLoading={isLoading}
+            canAddOn={(date) => !isPastCalendarDate(date)}
+            onSelectDay={handleSelectDay}
+            onItemClick={handleItemClick}
+            onAddEvent={handleOpenAddPopup}
+            onViewDay={handleViewDay}
           />
-        )}
-      </Card>
+        </div>
+        <div className="xl:col-span-3">
+          <MonthlyDayPanel
+            dayKey={selectedDay}
+            items={itemsByDay.get(selectedDay) ?? []}
+            onViewItem={handleItemClick}
+            onEditEvent={handleOpenEditPopup}
+            onDeleteEvent={setEventPendingDelete}
+            onViewAll={handleViewDay}
+          />
+        </div>
+      </div>
 
       <AddEditMonthlyEventPopup
         isOpen={isEditorOpen}
@@ -769,16 +676,14 @@ const MonthlyCalendar = forwardRef<MonthlyCalendarHandle>(function MonthlyCalend
       />
 
       <DeletePopup
-        open={Boolean(eventIdPendingDelete)}
+        open={Boolean(eventPendingDelete)}
         message="monthlyCalendar.actions.confirmDelete"
-        itemName={calendarEvents.find((event) => event.id === eventIdPendingDelete)?.title ?? ''}
+        itemName={eventPendingDelete ? localizedName(eventPendingDelete) : ''}
         onConfirm={handleConfirmDelete}
-        onCancel={() => setEventIdPendingDelete(null)}
+        onCancel={() => setEventPendingDelete(null)}
         iconSrc={BigTrashIcon}
         isProcessing={isDeleting}
       />
-    </>
+    </div>
   );
-});
-
-export default MonthlyCalendar;
+}

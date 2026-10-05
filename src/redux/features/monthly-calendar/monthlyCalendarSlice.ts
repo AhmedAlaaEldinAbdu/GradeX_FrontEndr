@@ -9,6 +9,7 @@ import { monthlyCalendarApiService } from '@/services/api/monthly-calendar/month
 import type {
   MonthlyCalendarEvent,
   MonthlyCalendarQueryParams,
+  MonthlyCalendarDashboardParams,
   CreateMonthlyCalendarRequest,
   UpdateMonthlyCalendarRequest,
 } from '@/services/api/types/monthly-calendar.types';
@@ -133,6 +134,33 @@ export const fetchMonthlyCalendarEvents = createAsyncThunk<
   }
 });
 
+export interface FetchMonthlyCalendarDashboardPayload {
+  fromDate: string;
+  toDate: string;
+  schoolBranchId?: string;
+  grade?: string;
+  searchTerm?: string;
+}
+
+export const fetchMonthlyCalendarDashboardEvents = createAsyncThunk<
+  MonthlyCalendarEvent[],
+  FetchMonthlyCalendarDashboardPayload
+>(
+  'monthlyCalendar/fetchMonthlyCalendarDashboardEvents',
+  async ({ fromDate, toDate, schoolBranchId, grade, searchTerm }, { rejectWithValue }) => {
+    try {
+      const params: MonthlyCalendarDashboardParams = { FromDate: fromDate, ToDate: toDate };
+      if (schoolBranchId) params.SchoolBrancheId = schoolBranchId;
+      if (grade) params.grade = grade;
+      if (searchTerm) params.search = searchTerm;
+
+      return await monthlyCalendarApiService.getMonthlyCalendarDashboardEvents(params);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 export const fetchMonthlyCalendarEventById = createAsyncThunk<MonthlyCalendarEvent, string>(
   'monthlyCalendar/fetchMonthlyCalendarEventById',
   async (id, { rejectWithValue }) => {
@@ -254,6 +282,19 @@ const monthlyCalendarSlice = createSlice({
         } else {
           state.isLoading = false;
         }
+        state.error = action.payload as string;
+      })
+      .addCase(fetchMonthlyCalendarDashboardEvents.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchMonthlyCalendarDashboardEvents.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.events = action.payload;
+        state.isInitialized = true;
+      })
+      .addCase(fetchMonthlyCalendarDashboardEvents.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload as string;
       })
       .addCase(fetchMonthlyCalendarEventById.pending, (state) => {

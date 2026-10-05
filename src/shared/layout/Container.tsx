@@ -18,7 +18,11 @@ const MainContainer: React.FC<ContainerProps> = ({ children, ...rest }) => {
   }, [pathname]);
 
   return (
-    <main ref={mainRef} className="flex-1 overflow-y-auto bg-gray-50 p-6" {...rest}>
+    <main
+      ref={mainRef}
+      className="flex-1 [scrollbar-width:thin] overflow-y-auto bg-gray-50 p-6"
+      {...rest}
+    >
       {children}
     </main>
   );

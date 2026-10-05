@@ -9,6 +9,8 @@ import type { ApiResponseModel } from '../config';
 import type {
   MonthlyCalendarListResponse,
   MonthlyCalendarQueryParams,
+  MonthlyCalendarDashboardParams,
+  MonthlyCalendarDashboardResponse,
   MonthlyCalendarEvent,
   CreateMonthlyCalendarRequest,
   UpdateMonthlyCalendarRequest,
@@ -59,6 +61,17 @@ export async function getMonthlyCalendarEvents(
   }
 
   return response.data;
+}
+
+export async function getMonthlyCalendarDashboardEvents(
+  params: MonthlyCalendarDashboardParams
+): Promise<MonthlyCalendarEvent[]> {
+  const response: AxiosResponse<MonthlyCalendarDashboardResponse> = await axiosClient.get(
+    MonthlyCalendarEndpoints.getMonthlyDashboardEvents,
+    { params }
+  );
+
+  return response.data.data?.monthlyCalendarDto ?? [];
 }
 
 export async function getMonthlyCalendarEventById(id: string): Promise<MonthlyCalendarEvent> {
@@ -114,6 +127,7 @@ export async function deleteMonthlyCalendarEvent(
 
 export const monthlyCalendarApiService = {
   getMonthlyCalendarEvents,
+  getMonthlyCalendarDashboardEvents,
   getMonthlyCalendarEventById,
   createMonthlyCalendarEvent,
   updateMonthlyCalendarEvent,

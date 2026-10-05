@@ -8,6 +8,11 @@ const FILTER_FIELD_CLASS =
 const FILTER_ICON_CLASS =
   'pointer-events-none absolute end-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2';
 
+export const FILTER_SEARCH_INPUT_CLASS =
+  'h-[38px] w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] ps-[41px] pe-4 text-xs text-[#1E293B] placeholder:text-[#9D9D9D] focus:ring-2 focus:ring-green-500 focus:outline-hidden';
+
+export const FILTER_SEARCH_ICON_CLASS = 'h-4 w-4 start-[17px]!';
+
 type FilterDateInputProps = {
   value: string;
   onChange: (value: string) => void;
