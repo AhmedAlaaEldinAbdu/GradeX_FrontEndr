@@ -52,6 +52,7 @@ export default function ReportDetailsPopup({ isOpen, onClose, report }: ReportDe
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={onClose}
       size="sm"

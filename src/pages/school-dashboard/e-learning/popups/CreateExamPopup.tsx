@@ -63,7 +63,13 @@ export default function CreateExamPopup({ isOpen, onClose }: CreateExamPopupProp
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('eLearning.onlineExams.createNew')} size="md">
+    <Modal
+      placement="end"
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('eLearning.onlineExams.createNew')}
+      size="md"
+    >
       <div className="flex flex-col gap-4 sm:flex-row">
         {METHODS.map((method) => {
           const base = `eLearning.onlineExams.popup.methods.${method.key}`;

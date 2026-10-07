@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -116,6 +117,7 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={isMarkingViewed ? () => undefined : onClose}
       title={t('adminRequests.messages.detailsTitle')}
@@ -180,7 +182,7 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
           </DetailRow>
 
           {canMarkViewed && onMarkViewed ? (
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <PopupFooter className="flex items-center justify-end gap-3">
               <Button variant="outline" onClick={onClose} disabled={isMarkingViewed}>
                 {t('common.cancel')}
               </Button>
@@ -201,7 +203,7 @@ const MessageDetailsPopup: React.FC<MessageDetailsPopupProps> = ({
                   ? t('adminRequests.messages.actions.markingViewed')
                   : t('adminRequests.messages.actions.markViewed')}
               </Button>
-            </div>
+            </PopupFooter>
           ) : null}
         </div>
       ) : null}

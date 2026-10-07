@@ -3,6 +3,7 @@ export interface PageHeaderInfo {
   icon?: string;
   title: string;
   description?: string;
+  isRaw?: boolean;
 }
 
 interface PageHeaderState {

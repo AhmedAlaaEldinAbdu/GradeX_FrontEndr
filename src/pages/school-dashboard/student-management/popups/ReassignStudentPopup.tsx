@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
@@ -74,6 +75,7 @@ export default function ReassignStudentPopup({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={onClose}
       title={t('studentManagement.reAssignStudent')}
@@ -108,7 +110,7 @@ export default function ReassignStudentPopup({
           </div>
         )}
 
-        <div className="flex w-full gap-3">
+        <PopupFooter className="flex w-full gap-3">
           <Button variant="outline" fullWidth onClick={onClose} disabled={isProcessing}>
             {t('common.cancel')}
           </Button>
@@ -121,7 +123,7 @@ export default function ReassignStudentPopup({
           >
             {t('common.save')}
           </Button>
-        </div>
+        </PopupFooter>
       </div>
     </Modal>
   );

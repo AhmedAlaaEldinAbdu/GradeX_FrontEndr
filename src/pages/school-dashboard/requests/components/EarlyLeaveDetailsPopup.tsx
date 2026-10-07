@@ -48,6 +48,7 @@ export default function EarlyLeaveDetailsPopup({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={onClose}
       title={t('requests.earlyLeave.detailsTitle')}

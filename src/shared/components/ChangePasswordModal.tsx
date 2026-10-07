@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -106,10 +107,17 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('changePassword.title')} size="sm">
+    <Modal
+      placement="end"
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('changePassword.title')}
+      size="sm"
+    >
       <p className="mb-6 text-center text-sm text-gray-500">{t('changePassword.subtitle')}</p>
 
       <form
+        id="change-password-form"
         onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
         noValidate
         className="space-y-4 text-start"
@@ -165,8 +173,14 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
           );
         })}
 
-        <div className="mt-6 flex flex-row-reverse items-center justify-start gap-3">
-          <Button type="submit" variant="primary" size="md" loading={isSubmitting}>
+        <PopupFooter className="flex flex-row-reverse items-center justify-start gap-3">
+          <Button
+            type="submit"
+            form="change-password-form"
+            variant="primary"
+            size="md"
+            loading={isSubmitting}
+          >
             {t('changePassword.save')}
           </Button>
           <Button
@@ -178,7 +192,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClo
           >
             {t('changePassword.cancel')}
           </Button>
-        </div>
+        </PopupFooter>
       </form>
     </Modal>
   );

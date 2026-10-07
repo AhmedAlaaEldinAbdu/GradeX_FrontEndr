@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
@@ -104,6 +105,7 @@ const HousingPopup: React.FC<HousingPopupProps> = ({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={handleClose}
       title={t('studentApplications.modals.housingTitle')}
@@ -129,7 +131,7 @@ const HousingPopup: React.FC<HousingPopupProps> = ({
         </div>
 
         {/* Action buttons */}
-        <div className="flex w-full gap-3">
+        <PopupFooter className="flex w-full gap-3">
           <Button variant="outline" fullWidth onClick={handleClose}>
             {t('common.cancel')}
           </Button>
@@ -141,7 +143,7 @@ const HousingPopup: React.FC<HousingPopupProps> = ({
           >
             {externalLoading ? t('common.processing') : t('studentApplications.modals.housing')}
           </Button>
-        </div>
+        </PopupFooter>
       </div>
     </Modal>
   );

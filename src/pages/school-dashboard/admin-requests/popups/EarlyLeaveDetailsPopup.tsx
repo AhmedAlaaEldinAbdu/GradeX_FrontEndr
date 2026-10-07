@@ -106,6 +106,7 @@ const EarlyLeaveDetailsPopup: React.FC<EarlyLeaveDetailsPopupProps> = ({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={onClose}
       title={t('adminRequests.earlyLeave.detailsTitle')}

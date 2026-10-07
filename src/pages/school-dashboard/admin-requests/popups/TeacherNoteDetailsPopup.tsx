@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -98,6 +99,7 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={isMarkingViewed ? () => undefined : onClose}
       title={t('adminRequests.teacherNotes.detailsTitle')}
@@ -147,7 +149,7 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
         </DetailRow>
 
         {canMarkViewed ? (
-          <div className="flex items-center justify-end gap-3 pt-2">
+          <PopupFooter className="flex items-center justify-end gap-3">
             <Button variant="outline" onClick={onClose} disabled={isMarkingViewed}>
               {t('common.cancel')}
             </Button>
@@ -168,7 +170,7 @@ const TeacherNoteDetailsPopup: React.FC<TeacherNoteDetailsPopupProps> = ({
                 ? t('adminRequests.teacherNotes.actions.markingViewed')
                 : t('adminRequests.teacherNotes.actions.markViewed')}
             </Button>
-          </div>
+          </PopupFooter>
         ) : null}
       </div>
     </Modal>
