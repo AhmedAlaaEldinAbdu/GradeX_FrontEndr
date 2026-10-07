@@ -59,7 +59,7 @@ export type LessonPopupDefaults = {
 interface AddEditLessonPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaved: () => void;
+  onSaved: (message: string) => void;
   mode: 'add' | 'edit';
   lessonId?: string;
   defaults?: LessonPopupDefaults;
@@ -426,11 +426,7 @@ export default function AddEditLessonPopup({
       } else {
         await dispatch(createLesson({ data: request, attachmentFiles })).unwrap();
       }
-      showToast({
-        message: t(isEdit ? 'lesson.lessonUpdatedSuccessfully' : 'lesson.lessonAddedSuccessfully'),
-        type: 'success',
-      });
-      onSaved();
+      onSaved(t(isEdit ? 'lesson.lessonUpdatedSuccessfully' : 'lesson.lessonAddedSuccessfully'));
       closeAndReset();
     } catch (error) {
       showToast({

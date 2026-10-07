@@ -7,6 +7,7 @@ import LessonDetailsPopup from '../popups/LessonDetailsPopup';
 import DeleteLessonPopup from '../popups/DeleteLessonPopup';
 import AddEditLessonPopup, { type LessonPopupDefaults } from '../popups/AddEditLessonPopup';
 import { useToast } from '@/shared/context/ToastContext';
+import { useSuccessPopup } from '@/hooks/useSuccessPopup';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -90,6 +91,7 @@ export default function WeeklyCalendar() {
   const { t, i18n } = useTranslation();
   const { isArabic } = useLanguage();
   const { showToast } = useToast();
+  const { showSuccess, successPopup } = useSuccessPopup();
   const dispatch = useAppDispatch();
   const { guardMutation } = useRoleAccess();
   const currentLang = i18n.language;
@@ -369,7 +371,7 @@ export default function WeeklyCalendar() {
     try {
       await dispatch(deleteLessonById({ id: lessonPendingDelete.id, applyToAllWeeks })).unwrap();
       reloadLessons();
-      showToast({ message: t('weeklyCalendar.lessonDeletedSuccessfully'), type: 'success' });
+      showSuccess(t('weeklyCalendar.lessonDeletedSuccessfully'));
       setLessonPendingDelete(null);
     } catch (error) {
       showToast({
@@ -419,7 +421,7 @@ export default function WeeklyCalendar() {
             })),
           })
         ).unwrap();
-        showToast({ message: t('weeklyCalendar.lessonUpdatedSuccessfully'), type: 'success' });
+        showSuccess(t('weeklyCalendar.lessonUpdatedSuccessfully'));
         reloadLessons();
       } catch (error) {
         showToast({
@@ -572,11 +574,16 @@ export default function WeeklyCalendar() {
       <AddEditLessonPopup
         isOpen={Boolean(lessonPopup)}
         onClose={() => setLessonPopup(null)}
-        onSaved={reloadLessons}
+        onSaved={(message) => {
+          reloadLessons();
+          showSuccess(message);
+        }}
         mode={lessonPopup?.mode ?? 'add'}
         lessonId={lessonPopup?.lessonId}
         defaults={lessonPopup?.defaults}
       />
+
+      {successPopup}
 
       <DeleteLessonPopup
         open={Boolean(lessonPendingDelete)}
