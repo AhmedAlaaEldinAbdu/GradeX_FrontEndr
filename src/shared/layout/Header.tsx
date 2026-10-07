@@ -12,6 +12,7 @@ import MenuKebabVerticalIcon from '@gradex/assets/icons/MenuKebabVertical.svg';
 import RoleSwitcher from '@/shared/components/RoleSwitcher';
 import CustomImage from '@/shared/components/CustomImage';
 import ChangePasswordModal from '@/shared/components/ChangePasswordModal';
+import HeaderPageInfo from './HeaderPageInfo';
 
 interface HeaderProps {
   /** Opens the mobile navigation drawer. The menu button only shows below `lg`. */
@@ -157,15 +158,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <RoleSwitcher variant="icon-only" size="md" />
         </div>
 
-        {/* <div className="flex items-center gap-4">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-[#1E7A52] bg-[#ECFDF5]">
-            <CustomImage src={CalendarOutlineGreenIcon} alt="" className="size-5" />
-          </div>
-          <div className="flex flex-col items-start justify-center gap-1">
-            <h1 className="text-base font-bold text-[black]">{t('monthlyCalendar.title')}</h1>
-            <p className="text-xs text-[#9D9D9D]">{t('monthlyCalendar.board.subtitle')}</p>
-          </div>
-        </div> */}
+        <div className="flex min-w-0 flex-1 px-3 sm:px-4">
+          <HeaderPageInfo />
+        </div>
 
         {/* Mobile menu toggle — last child, so with flex-row-reverse it sits on the sidebar side. */}
         {onMenuClick && (
