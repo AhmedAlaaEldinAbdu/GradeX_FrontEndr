@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import XmarkCircleRedIcon from '@gradex/assets/icons/XmarkCircleRed.svg';
+import CloseXGreenIcon from '@/assets/icons/CloseXGreen.svg';
 import CustomImage from '@/shared/components/CustomImage';
+import { ModalFooterContext } from './modalFooterContext';
 
 interface ModalProps {
   isOpen: boolean;
@@ -33,6 +35,8 @@ const Modal: React.FC<ModalProps> = ({
   closeOnOverlayClick = true,
   placement = 'center',
 }) => {
+  const [footerSlot, setFooterSlot] = useState<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -79,12 +83,37 @@ const Modal: React.FC<ModalProps> = ({
       <div
         className={`relative w-full bg-white shadow-xl ${sizeClasses[size]} flex flex-col ${
           isSidePanel
-            ? 'h-full animate-slide-in-from-right motion-reduce:animate-none rtl:animate-slide-in-from-left'
+            ? 'h-full animate-slide-in-from-right overflow-hidden rounded-s-lg border border-[#E2E8F0]/90 shadow-[0px_25px_50px_-12px_rgba(2,6,23,0.2)]! motion-reduce:animate-none rtl:animate-slide-in-from-left'
             : 'mx-4 max-h-[90vh] rounded-3xl'
         } ${panelClassName}`}
       >
         {/* Header */}
-        {showHeader && (title || showCloseButton) && (
+        {showHeader && (title || showCloseButton) && isSidePanel && (
+          <div
+            className={`flex shrink-0 items-start justify-between gap-4 border-b border-[#F1F5F9] px-8 pt-7 pb-[21px] ${headerClassName}`}
+          >
+            <div className="min-w-0 text-start">
+              {typeof title === 'string' ? (
+                <h2 className={`text-xl leading-7 font-bold text-[black] ${titleClassName}`}>
+                  {title}
+                </h2>
+              ) : (
+                title
+              )}
+            </div>
+            {showCloseButton && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                className="shrink-0 rounded-lg p-2 transition-colors hover:bg-[#F1F5F9]"
+              >
+                <CustomImage src={CloseXGreenIcon} alt="" />
+              </button>
+            )}
+          </div>
+        )}
+        {showHeader && (title || showCloseButton) && !isSidePanel && (
           <div className={`relative flex items-center p-6 ${headerClassName}`}>
             {/* Title - Centered */}
             {title && (
@@ -112,7 +141,15 @@ const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Content */}
-        <div className={`flex-1 overflow-y-auto p-6 ${contentClassName}`}>{children}</div>
+        <ModalFooterContext.Provider value={isSidePanel ? footerSlot : null}>
+          <div className={`min-h-0 flex-1 overflow-y-auto p-6 ${contentClassName}`}>{children}</div>
+        </ModalFooterContext.Provider>
+        {isSidePanel && (
+          <div
+            ref={setFooterSlot}
+            className="shrink-0 border-t border-[#F1F5F9] bg-[#F8FAFC]/70 px-8 pt-[21px] pb-5 empty:hidden"
+          />
+        )}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
@@ -95,6 +96,7 @@ export default function SaveInClassificationPopup({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={onClose}
       title={t('eLearning.onlineExams.addAI.review.saveInClassification')}
@@ -179,14 +181,14 @@ export default function SaveInClassificationPopup({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-4">
+        <PopupFooter className="flex items-center justify-end gap-4">
           <Button type="button" variant="outline" onClick={onClose}>
             {t('common.cancel')}
           </Button>
           <Button type="button" variant="primary" onClick={handleAdd}>
             {t('eLearning.onlineExams.addAI.addButton')}
           </Button>
-        </div>
+        </PopupFooter>
       </div>
     </Modal>
   );

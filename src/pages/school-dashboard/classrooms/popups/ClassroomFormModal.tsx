@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, type Control, type FieldErrors } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -113,14 +114,14 @@ export default function ClassroomFormModal({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={onClose}
       showHeader={false}
       size="md"
-      panelClassName="rounded-2xl! border border-[rgba(226,232,240,0.9)] shadow-[0px_25px_50px_-12px_rgba(2,6,23,0.2)]"
       contentClassName="p-0!"
     >
-      <div className="flex items-start justify-between border-b border-[#f1f5f9] px-8 pt-7 pb-[21px]">
+      <div className="sticky top-0 z-10 flex items-start justify-between border-b border-[#f1f5f9] bg-white px-8 pt-7 pb-[21px]">
         <div className="flex flex-col items-start justify-start gap-1">
           <h2 className="text-xl leading-7 font-bold text-black-900">{title}</h2>
           <p className="text-xs text-[#9d9d9d]">{subtitle}</p>
@@ -413,7 +414,7 @@ export default function ClassroomFormModal({
         ) : null}
       </div>
 
-      <div className="flex items-center justify-end gap-3 rounded-b-2xl border-t border-[#f1f5f9] bg-[rgba(248,250,252,0.7)] px-8 pt-[21px] pb-5">
+      <PopupFooter className="flex items-center justify-end gap-3">
         <Button
           variant="success"
           actionKey={submitActionKey}
@@ -435,7 +436,7 @@ export default function ClassroomFormModal({
         >
           {t('common.cancel')}
         </Button>
-      </div>
+      </PopupFooter>
     </Modal>
   );
 }

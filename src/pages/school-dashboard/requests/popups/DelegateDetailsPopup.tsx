@@ -29,7 +29,13 @@ export default function DelegateDetailsPopup({
   if (!delegate) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('requests.delegate.detailsTitle')} size="sm">
+    <Modal
+      placement="end"
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('requests.delegate.detailsTitle')}
+      size="sm"
+    >
       <div className="flex flex-col gap-5">
         <DetailRow label={t('requests.delegate.mobile')} value={delegate.mobile} />
         <DetailRow label={t('requests.delegate.whatsapp')} value={delegate.whatsapp} />

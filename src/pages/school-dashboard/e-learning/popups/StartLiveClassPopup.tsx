@@ -88,6 +88,7 @@ export default function StartLiveClassPopup({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={handleClose}
       showHeader={false}

@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -67,13 +68,18 @@ export default function ScheduleStudentAppointmentPopup({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={closeAndReset}
       title={t('studentApplications.scheduleAppointment')}
       closeOnOverlayClick={!isLoading && !isSubmitting}
       size="sm"
     >
-      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
+      <form
+        id="student-appointment-form"
+        onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)}
+        className="space-y-6"
+      >
         {/* {studentName && (
           <div className="rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-600">
             <span className="font-medium text-gray-900">{t('studentManagement.studentName')}:</span>{' '}
@@ -133,7 +139,7 @@ export default function ScheduleStudentAppointmentPopup({
           </FormField>
         </div>
 
-        <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
+        <PopupFooter className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button
             type="button"
             variant="outline"
@@ -142,10 +148,10 @@ export default function ScheduleStudentAppointmentPopup({
           >
             {t('common.cancel')}
           </Button>
-          <Button type="submit" loading={isLoading || isSubmitting}>
+          <Button type="submit" form="student-appointment-form" loading={isLoading || isSubmitting}>
             {t('common.confirm')}
           </Button>
-        </div>
+        </PopupFooter>
       </form>
     </Modal>
   );

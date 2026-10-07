@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -249,12 +250,17 @@ export default function ScheduleInterviewPopup({
 
   return (
     <Modal
+      placement="end"
       isOpen={open}
       onClose={handleClose}
       title={t('jobAnnouncement.applicantsPage.scheduleInterview')}
       closeOnOverlayClick={!isLoading}
     >
-      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
+      <form
+        id="schedule-interview-form"
+        onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)}
+        className="space-y-6"
+      >
         <div className="space-y-5">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
@@ -473,14 +479,14 @@ export default function ScheduleInterviewPopup({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
+        <PopupFooter className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" form="schedule-interview-form" disabled={isLoading}>
             {isLoading ? t('common.processing') : t('jobAnnouncement.applicantsPage.schedule')}
           </Button>
-        </div>
+        </PopupFooter>
       </form>
     </Modal>
   );

@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
@@ -68,6 +69,7 @@ const ChangeAppointmentPopup: React.FC<ChangeAppointmentPopupProps> = ({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={handleClose}
       title={t('studentApplications.modals.changeAppointmentTitle')}
@@ -119,14 +121,14 @@ const ChangeAppointmentPopup: React.FC<ChangeAppointmentPopupProps> = ({
       </div>
 
       {/* Action buttons */}
-      <div className="mt-4 flex w-full gap-3">
+      <PopupFooter className="flex w-full gap-3">
         <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
           {t('common.cancel')}
         </Button>
         <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
           {t('studentApplications.modals.change')}
         </Button>
-      </div>
+      </PopupFooter>
     </Modal>
   );
 };

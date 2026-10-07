@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/hooks/useLanguage';
+import { usePageHeader } from '@/hooks/usePageHeader';
 import Breadcrumb from '@/shared/layout/Breadcrumb';
 import CustomImage from '@/shared/components/CustomImage';
 import Button from '@/shared/components/Button';
@@ -103,6 +104,17 @@ export default function ClassroomDetailsPage() {
     },
   ];
 
+  usePageHeader({
+    icon: ClassroomManagementOutlineIcon,
+    title: t('grades.classroomsManagementTitle', {
+      gradeName: classroomTitle || t('grades.classroomDetails'),
+    }),
+    description: t('grades.classroomsManagementSubtitle', {
+      gradeName: classroomTitle || t('grades.classroomDetails'),
+    }),
+    isRaw: true,
+  });
+
   const breadcrumbItems = isFromTeacherDetails
     ? [
         { label: t('sidebar.humanResources') },
@@ -140,24 +152,6 @@ export default function ClassroomDetailsPage() {
         >
           {t('grades.backToGrades')}
         </Button>
-      </div>
-
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[#1e7a52] bg-[#ecfdf5] p-px">
-          <CustomImage src={ClassroomManagementOutlineIcon} alt="" className="h-6 w-6" />
-        </div>
-        <div className="flex flex-1 flex-col items-start gap-1 text-start">
-          <h1 className="text-2xl leading-8 font-bold tracking-[-0.75px] text-[black]">
-            {t('grades.classroomsManagementTitle', {
-              gradeName: classroomTitle || t('grades.classroomDetails'),
-            })}
-          </h1>
-          <p className="text-sm text-[#9d9d9d]">
-            {t('grades.classroomsManagementSubtitle', {
-              gradeName: classroomTitle || t('grades.classroomDetails'),
-            })}
-          </p>
-        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4">

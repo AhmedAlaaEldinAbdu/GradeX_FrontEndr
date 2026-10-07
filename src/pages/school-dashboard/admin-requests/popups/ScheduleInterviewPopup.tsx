@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -135,6 +136,7 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={handleClose}
       title={t('adminRequests.jobApplication.schedulePopup.title')}
@@ -210,7 +212,7 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
           />
         </FormField>
 
-        <div className="flex w-full gap-3 pt-2">
+        <PopupFooter className="flex w-full gap-3">
           <Button
             variant="outline"
             fullWidth
@@ -227,7 +229,7 @@ const ScheduleInterviewPopup: React.FC<ScheduleInterviewPopupProps> = ({
           >
             {t('adminRequests.jobApplication.schedulePopup.confirm')}
           </Button>
-        </div>
+        </PopupFooter>
       </div>
     </Modal>
   );

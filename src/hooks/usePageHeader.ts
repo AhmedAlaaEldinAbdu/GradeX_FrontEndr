@@ -6,13 +6,13 @@ import {
   type PageHeaderInfo,
 } from '@/redux/features/page-header/pageHeaderSlice';
 
-export function usePageHeader({ icon, title, description }: PageHeaderInfo) {
+export function usePageHeader({ icon, title, description, isRaw }: PageHeaderInfo) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setPageHeader({ icon, title, description }));
+    dispatch(setPageHeader({ icon, title, description, isRaw }));
     return () => {
       dispatch(clearPageHeader());
     };
-  }, [dispatch, icon, title, description]);
+  }, [dispatch, icon, title, description, isRaw]);
 }

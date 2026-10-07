@@ -31,7 +31,13 @@ export default function EarlyExitDetailsPopup({
   );
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="sm" title={t('students.details.earlyExitTitle')}>
+    <Modal
+      placement="end"
+      isOpen={isOpen}
+      onClose={onClose}
+      size="sm"
+      title={t('students.details.earlyExitTitle')}
+    >
       <div className="flex flex-col gap-4 py-2">
         {details ? (
           <>

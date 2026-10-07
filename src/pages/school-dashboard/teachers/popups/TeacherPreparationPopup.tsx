@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -68,12 +69,17 @@ export default function TeacherPreparationPopup({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={closeAndReset}
       title={t('teachers.details.teacherPreparation')}
       size="sm"
     >
-      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
+      <form
+        id="teacher-preparation-form"
+        onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)}
+        className="space-y-6"
+      >
         <div className="space-y-5">
           {/* Date Field */}
           <FormField
@@ -148,14 +154,14 @@ export default function TeacherPreparationPopup({
           </FormField>
         </div>
 
-        <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
+        <PopupFooter className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={closeAndReset} disabled={isSubmitting}>
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" form="teacher-preparation-form" disabled={isSubmitting}>
             {isSubmitting ? t('common.saving') : t('common.confirm')}
           </Button>
-        </div>
+        </PopupFooter>
       </form>
     </Modal>
   );

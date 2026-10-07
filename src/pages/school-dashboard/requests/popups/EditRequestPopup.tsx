@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
@@ -39,6 +40,7 @@ const EditRequestPopup: React.FC<EditRequestPopupProps> = ({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={handleClose}
       title={t('studentApplications.modals.editRequestTitle')}
@@ -65,14 +67,14 @@ const EditRequestPopup: React.FC<EditRequestPopupProps> = ({
         </div>
 
         {/* Action buttons */}
-        <div className="flex w-full gap-3">
+        <PopupFooter className="flex w-full gap-3">
           <Button variant="outline" fullWidth onClick={handleClose} disabled={isProcessing}>
             {t('common.cancel')}
           </Button>
           <Button variant="success" fullWidth onClick={handleConfirm} loading={isProcessing}>
             {t('common.send')}
           </Button>
-        </div>
+        </PopupFooter>
       </div>
     </Modal>
   );

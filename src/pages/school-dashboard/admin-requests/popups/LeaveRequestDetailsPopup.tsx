@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -64,6 +65,7 @@ const LeaveRequestDetailsPopup: React.FC<LeaveRequestDetailsPopupProps> = ({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={onClose}
       title={t('adminRequests.leave.detailsTitle')}
@@ -112,7 +114,7 @@ const LeaveRequestDetailsPopup: React.FC<LeaveRequestDetailsPopupProps> = ({
         </div>
 
         {request.status === 'pending' && (
-          <div className="flex justify-end gap-5 pt-4">
+          <PopupFooter className="flex justify-end gap-5">
             <Button
               variant="outlineDanger"
               className="min-w-[140px]"
@@ -123,7 +125,7 @@ const LeaveRequestDetailsPopup: React.FC<LeaveRequestDetailsPopupProps> = ({
             <Button variant="success" className="min-w-[140px]" onClick={() => onApprove(request)}>
               {t('common.accept')}
             </Button>
-          </div>
+          </PopupFooter>
         )}
       </div>
     </Modal>

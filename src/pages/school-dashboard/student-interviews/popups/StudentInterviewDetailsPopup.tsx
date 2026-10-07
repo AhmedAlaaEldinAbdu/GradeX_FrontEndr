@@ -141,7 +141,7 @@ export default function StudentInterviewDetailsPopup({
   if (!interview) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={formattedDate}>
+    <Modal placement="end" isOpen={isOpen} onClose={onClose} title={formattedDate}>
       <div className="space-y-4 py-4">
         {popupIsLoading ? (
           <Loading size="lg" />

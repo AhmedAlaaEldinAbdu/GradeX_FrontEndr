@@ -1,3 +1,4 @@
+import PopupFooter from '@/shared/popups/PopupFooter';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -192,11 +193,16 @@ export default function AddEditStudentInterviewPopup({
 
   return (
     <Modal
+      placement="end"
       isOpen={isOpen}
       onClose={closeAndReset}
       title={mode === 'edit' ? t('interviews.editInterview') : t('interviews.addInterview')}
     >
-      <form onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)} className="space-y-6">
+      <form
+        id="student-interview-form"
+        onSubmit={handleSubmit(handleFormSubmit, scrollToFirstError)}
+        className="space-y-6"
+      >
         {formattedSelectedDate && (
           <div className="rounded-lg bg-gray-50 p-4 text-center text-base text-gray-500">
             <span className="text-base font-medium text-black-800">
@@ -349,18 +355,18 @@ export default function AddEditStudentInterviewPopup({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
+        <PopupFooter className="flex flex-col gap-3 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={closeAndReset} disabled={isSubmitting}>
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" form="student-interview-form" disabled={isSubmitting}>
             {isSubmitting
               ? t('common.saving')
               : mode === 'edit'
                 ? t('common.save')
                 : t('common.add')}
           </Button>
-        </div>
+        </PopupFooter>
       </form>
     </Modal>
   );
