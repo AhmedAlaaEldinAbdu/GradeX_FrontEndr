@@ -23,6 +23,7 @@ import PrinterBlackIcon from '@/assets/icons/PrinterBlack.svg';
 import ExcelFileBlackIcon from '@/assets/icons/ExcelFileBlack.svg';
 import MaterialPdfBlackIcon from '@/assets/icons/MaterialPdfBlack.svg';
 import { useToast } from '@/shared/context/ToastContext';
+import { useSuccessPopup } from '@/hooks/useSuccessPopup';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import {
@@ -138,6 +139,7 @@ function StatusBadge({ status }: { status: AcademicCalendarStatusType }) {
 export default function AcademicCalendarList() {
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
+  const { showSuccess, successPopup } = useSuccessPopup();
   const dispatch = useAppDispatch();
   const schoolBranchId = getCurrentSchoolBranchId() ?? undefined;
 
@@ -387,7 +389,7 @@ export default function AcademicCalendarList() {
       await dispatch(deleteAcademicCalendar(selectedId)).unwrap();
       setShowDeletePopup(false);
       setSelectedId('');
-      showToast({ message: 'academicCalendar.toast.deleteSuccess', type: 'success' });
+      showSuccess(t('academicCalendar.toast.deleteSuccess'));
     } catch {
       showToast({ message: 'common.errorOccurred', type: 'error' });
     }
@@ -602,11 +604,14 @@ export default function AcademicCalendarList() {
         open={formPopup.open}
         calendarId={formPopup.calendarId}
         onClose={() => setFormPopup({ open: false })}
-        onSuccess={() => {
+        onSuccess={(message) => {
           if (!formPopup.calendarId) setPage(1);
           setRefreshKey((key) => key + 1);
+          showSuccess(message);
         }}
       />
+
+      {successPopup}
     </div>
   );
 }

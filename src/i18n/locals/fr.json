@@ -3816,7 +3816,37 @@
       "division": "Division",
       "global": "Global",
       "chooseEducationSystemFirst": "Veuillez d'abord sélectionner le système éducatif",
-      "chooseStageFirst": "Veuillez d'abord sélectionner le niveau"
+      "chooseStageFirst": "Veuillez d'abord sélectionner le niveau",
+      "systemLabel": "Système :",
+      "stageLabel": "Cycle :",
+      "gradeLabel": "Niveau :",
+      "sectionLabel": "Classe :",
+      "all": "Tous",
+      "choose": "Choisir",
+      "chooseGradeFirst": "Choisissez d'abord un niveau",
+      "noOptions": "Aucune option",
+      "moreFilters": "Plus de filtres",
+      "searchPlaceholder": "Rechercher par matière ou enseignant"
+    },
+    "subtitle": "Créez et gérez l'emploi du temps hebdomadaire des cours et des événements",
+    "toolbar": {
+      "copyWeek": "Copier la semaine",
+      "applyToPeriod": "Appliquer à une période",
+      "restoreDefaults": "Rétablir par défaut",
+      "addLesson": "Ajouter un cours",
+      "currentWeek": "Semaine en cours",
+      "previousWeek": "Semaine précédente",
+      "nextWeek": "Semaine suivante",
+      "settings": "Paramètres",
+      "print": "Imprimer"
+    },
+    "grid": {
+      "time": "Heure",
+      "hasEvents": "Ce jour comporte des événements"
+    },
+    "tip": {
+      "label": "Astuce :",
+      "dragLesson": "Faites glisser un cours pour changer son horaire ou le déplacer vers un autre jour."
     }
   },
   "addLesson": {
@@ -3919,6 +3949,28 @@
       "endTimeMax": "L'heure de fin doit être à 15h15 ou plus tôt",
       "timeEquality": "Les heures de début et de fin ne peuvent pas être identiques",
       "endTimeBeforeStart": "L'heure de fin doit être postérieure à l'heure de début"
+    },
+    "popup": {
+      "subtitleAdd": "Saisissez les détails du cours, l'horaire et la classe",
+      "subtitleEdit": "Modifiez les détails du cours, l'horaire et la classe",
+      "academicSystem": "Système académique",
+      "selectAcademicSystem": "Choisir le système académique",
+      "selectGrade": "Choisir un cycle",
+      "selectClassroom": "Choisir un niveau",
+      "selectTeacher": "Choisir l'enseignant",
+      "selectSubjectFirst": "Veuillez d'abord choisir la matière",
+      "classworkFrom": "Travail en classe (de la page)",
+      "classworkTo": "Travail en classe (jusqu'à la page)",
+      "homeworkFrom": "Devoir (de la page)",
+      "homeworkTo": "Devoir (jusqu'à la page)",
+      "descriptionAr": "Description du devoir (première langue)",
+      "descriptionEn": "Description du devoir (deuxième langue)",
+      "attachments": "Pièces jointes",
+      "clickToUpload": "Cliquez pour téléverser",
+      "dragAndDrop": "ou glissez-déposez le fichier ici",
+      "uploadHint": "JPG, PNG, GIF, SVG ou PDF (max {{size}} Mo)",
+      "fileTooLarge": "Le fichier {{name}} dépasse la taille maximale",
+      "chooseClassroomFirst": "Choisissez d'abord une classe dans les filtres"
     }
   },
   "fileUpload": {

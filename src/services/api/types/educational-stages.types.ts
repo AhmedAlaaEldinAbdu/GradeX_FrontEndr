@@ -23,6 +23,7 @@ export interface EducationalStageResponse {
   academicSubSystemGradeDto?: AcademicSubSystemGradeDto;
   academicSystemsDto?: AcademicSystemRefDto[];
   academicSubSystemId?: string;
+  lkSchoolStageId?: string | null;
   createdDate?: string;
 }
 

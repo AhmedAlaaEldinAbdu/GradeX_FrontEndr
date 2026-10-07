@@ -19,6 +19,23 @@ export type MonthlyCalendarItem = {
 
 export type MonthlyTypeFilter = 'all' | 'events' | 'holidays';
 
+export const printElement = (element: HTMLElement, title: string) => {
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) return;
+  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    .map((node) => node.outerHTML)
+    .join('');
+  const { dir, lang } = document.documentElement;
+  printWindow.document.write(
+    `<!doctype html><html dir="${dir}" lang="${lang}"><head><meta charset="utf-8"><title>${title}</title>${styles}<style>@page{size:landscape;margin:12mm}body{background:#fff;padding:16px}</style></head><body>${element.outerHTML}</body></html>`
+  );
+  printWindow.document.close();
+  printWindow.onload = () => {
+    printWindow.focus();
+    printWindow.print();
+  };
+};
+
 export const TONE_STYLES: Record<
   MonthlyItemTone,
   { chip: string; title: string; label: string; dot: string }

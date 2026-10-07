@@ -1,21 +1,16 @@
-import { forwardRef, useImperativeHandle, useState, useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { startOfWeek, addDays, parseISO, startOfDay, isBefore, isEqual } from 'date-fns';
-import WeeklyScheduleCalendar, {
-  type ScheduleLesson,
-  type ScheduleEvent,
-  type PeriodHeader,
-  type PeriodSlot,
-  type SpecialColumn,
-  type LessonContextAction,
-} from '@/shared/components/WeeklyScheduleCalendar';
-import CustomSelect from '@/shared/components/CustomSelect';
+import { addDays, addWeeks, isSameDay, startOfWeek } from 'date-fns';
+import type { ScheduleLesson } from '@/shared/components/WeeklyScheduleCalendar';
+import CustomImage from '@/shared/components/CustomImage';
 import LessonDetailsPopup from '../popups/LessonDetailsPopup';
 import DeleteLessonPopup from '../popups/DeleteLessonPopup';
+import AddEditLessonPopup, { type LessonPopupDefaults } from '../popups/AddEditLessonPopup';
 import { useToast } from '@/shared/context/ToastContext';
+import { useSuccessPopup } from '@/hooks/useSuccessPopup';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
+import { useLanguage } from '@/hooks/useLanguage';
 import {
   fetchLessons,
   fetchLessonByIdSilent,
@@ -25,1391 +20,578 @@ import {
 } from '@/redux/features/lessons/lessonsSlice';
 import { fetchMonthlyCalendarEvents } from '@/redux/features/monthly-calendar/monthlyCalendarSlice';
 import { fetchAcademicCalendarsForWeek } from '@/redux/features/academic-calendar/academicCalendarSlice';
-import { getAcademicSystems } from '@/redux/features/academic-system/academicSystemSlice';
+import { getSchoolAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import {
   getEducationalStages,
   getEducationalStagesBySubSystemId,
+  getLKSchoolStages,
 } from '@/redux/features/educational-stages/educationalStagesSlice';
 import { fetchClassrooms } from '@/redux/features/classrooms/classroomsSlice';
-import type { Lesson } from '@/services/api/types/lessons.types';
-import type { MonthlyCalendarEvent } from '@/services/api/types/monthly-calendar.types';
-import {
-  AcademicCalendarTimePeriodScope,
-  type AcademicCalendarEntity,
-  type AcademicCalendarTimedSchedule,
-} from '@/services/api/types/academic-calendar.types';
+import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
 import EyeFillIcon from '@gradex/assets/icons/EyeFill.svg';
 import EditFilledIcon from '@gradex/assets/icons/EditFilled.svg';
 import TrashFillIcon from '@gradex/assets/icons/TrashFill.svg';
-import { useLanguage } from '@/hooks/useLanguage';
-import { addMinutesToTime } from '@/lib/utils/date-utils';
-import { tokenManager } from '@/lib/auth/token-manager';
-import CancelXGreenIcon from '@gradex/assets/icons/CancelXGreen.svg';
+import AlertCircleBlue16Icon from '@/assets/icons/AlertCircleBlue16.svg';
+import WeeklyCalendarFilters, { type WeeklyFilterOption } from './WeeklyCalendarFilters';
+import WeeklyCalendarToolbar from './WeeklyCalendarToolbar';
+import WeeklyTimetableGrid, { type LessonMenuAction } from './WeeklyTimetableGrid';
+import { printElement } from './MonthlyCalendarItems';
+import {
+  DEFAULT_WORKING_DAYS,
+  WEEK_STARTS_ON,
+  buildTimetableRows,
+  formatMinutes,
+  formatWeekRange,
+  getWorkingDaysFromSchedules,
+  toDateKey,
+  toTimetableEvents,
+  toTimetableLessons,
+  type TimetableLesson,
+  type TimetableRow,
+} from './WeeklyCalendarItems';
 
-// Default period slots — used when the academic calendar hasn't loaded yet.
-// Each cell is 45 minutes from 08:30 to 15:15.
-const DEFAULT_PERIOD_TIME_SLOTS: PeriodSlot[] = [
-  { periodIndex: 0, label: '1', startHour: 8, startMin: 30, endHour: 9, endMin: 15 },
-  { periodIndex: 1, label: '2', startHour: 9, startMin: 15, endHour: 10, endMin: 0 },
-  { periodIndex: 2, label: '3', startHour: 10, startMin: 0, endHour: 10, endMin: 45 },
-  { periodIndex: 3, label: '4', startHour: 10, startMin: 45, endHour: 11, endMin: 30 },
-  { periodIndex: 4, label: '5', startHour: 11, startMin: 30, endHour: 12, endMin: 15 },
-  { periodIndex: 5, label: '6', startHour: 12, startMin: 15, endHour: 13, endMin: 0 },
-  { periodIndex: 6, label: '7', startHour: 13, startMin: 0, endHour: 13, endMin: 45 },
-  { periodIndex: 7, label: '8', startHour: 13, startMin: 45, endHour: 14, endMin: 30 },
-  { periodIndex: 8, label: '9', startHour: 14, startMin: 30, endHour: 15, endMin: 15 },
-];
+const FILTERS_STORAGE_KEY = 'weeklyCalendar.filters.v2';
+const PRINT_AREA_ID = 'weekly-calendar-print-area';
+const LOOKUP_PAGE_SIZE = 10000;
+const ALL_STAGE_NAMES = ['الكل', 'all'];
 
-/**
- * Build period slots from the academic calendar.
- * Cell duration = `lessonDuration` (minutes). Slots are generated from
- * `dayStartTime` until `dayEndTime`, dropping any final partial cell.
- */
-const buildPeriodSlots = (
-  dayStartTime: string | null | undefined,
-  dayEndTime: string | null | undefined,
-  lessonDuration: number | null | undefined
-): PeriodSlot[] => {
-  if (!dayStartTime || !dayEndTime || !lessonDuration || lessonDuration <= 0) {
-    return DEFAULT_PERIOD_TIME_SLOTS;
-  }
-  const start = parseTimeString(dayStartTime);
-  const end = parseTimeString(dayEndTime);
-  const startMinutes = start.hours * 60 + start.minutes;
-  const endMinutes = end.hours * 60 + end.minutes;
-  if (endMinutes <= startMinutes) {
-    return DEFAULT_PERIOD_TIME_SLOTS;
-  }
-
-  const slots: PeriodSlot[] = [];
-  let cursor = startMinutes;
-  let idx = 0;
-  while (cursor + lessonDuration <= endMinutes) {
-    const slotEnd = cursor + lessonDuration;
-    slots.push({
-      periodIndex: idx,
-      label: String(idx + 1),
-      startHour: Math.floor(cursor / 60),
-      startMin: cursor % 60,
-      endHour: Math.floor(slotEnd / 60),
-      endMin: slotEnd % 60,
-    });
-    cursor = slotEnd;
-    idx += 1;
-  }
-
-  return slots.length > 0 ? slots : DEFAULT_PERIOD_TIME_SLOTS;
+type PersistedFilters = {
+  subSystemId?: string;
+  stageId?: string;
+  gradeId?: string;
+  classroomId?: string;
 };
 
-// Subject color mapping
-const SUBJECT_COLORS: Record<string, ScheduleLesson['color']> = {
-  عربي: 'arabic',
-  'اللغة العربية': 'arabic',
-  ماث: 'math',
-  رياضيات: 'math',
-  علوم: 'science',
-  'اللغة الانجليزية': 'english',
-  انجليزي: 'english',
-  english: 'english',
-};
-
-/**
- * Get the day index (0-6) for a given date
- * Saturday = 0, Sunday = 1, ..., Friday = 6
- */
-const getDayIndexFromDate = (date: Date): number => {
-  const jsDay = date.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
-  // Convert to our format: Saturday=0, Sunday=1, Monday=2, etc.
-  return jsDay === 6 ? 0 : jsDay + 1;
-};
-
-/**
- * Get period index based on time and the active period slots.
- */
-const getPeriodIndexFromTime = (hours: number, minutes: number, slots: PeriodSlot[]): number => {
-  const timeInMinutes = hours * 60 + minutes;
-
-  for (const slot of slots) {
-    const slotStart = slot.startHour * 60 + slot.startMin;
-    const slotEnd = slot.endHour * 60 + slot.endMin;
-
-    if (timeInMinutes >= slotStart && timeInMinutes < slotEnd) {
-      return slot.periodIndex;
-    }
+const readPersistedFilters = (): PersistedFilters => {
+  try {
+    const raw = window.sessionStorage.getItem(FILTERS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PersistedFilters) : {};
+  } catch {
+    return {};
   }
-
-  const firstSlotStart = slots[0].startHour * 60 + slots[0].startMin;
-  if (timeInMinutes < firstSlotStart) {
-    return 0;
-  }
-
-  return slots.length - 1;
 };
 
-/**
- * Parse time string "HH:mm:ss" to hours and minutes
- */
-const parseTimeString = (timeStr: string): { hours: number; minutes: number } => {
-  const parts = timeStr.split(':');
-  return {
-    hours: parseInt(parts[0], 10),
-    minutes: parseInt(parts[1], 10),
-  };
-};
-
-/**
- * Format time from "HH:mm:ss" to "H:mm" display format
- */
-const formatTimeDisplay = (timeStr: string): string => {
-  const { hours, minutes } = parseTimeString(timeStr);
-  return `${hours}:${minutes.toString().padStart(2, '0')}`;
-};
-
-/**
- * Calculate lesson duration in minutes
- */
-const calculateDuration = (startTime: string, endTime: string): number => {
-  const start = parseTimeString(startTime);
-  const end = parseTimeString(endTime);
-  const startMinutes = start.hours * 60 + start.minutes;
-  const endMinutes = end.hours * 60 + end.minutes;
-  return endMinutes - startMinutes;
-};
-
-/**
- * Get color for subject based on subject name
- */
-const getSubjectColor = (subjectName: string): ScheduleLesson['color'] => {
-  // Check for exact match first
-  if (SUBJECT_COLORS[subjectName]) {
-    return SUBJECT_COLORS[subjectName];
-  }
-
-  // Check for partial match
-  const lowerName = subjectName.toLowerCase();
-  for (const [key, color] of Object.entries(SUBJECT_COLORS)) {
-    if (lowerName.includes(key.toLowerCase()) || key.toLowerCase().includes(lowerName)) {
-      return color;
-    }
-  }
-
-  return 'default';
-};
-
-/**
- * Get the date for a specific day index within a week
- * dayIndex: 0=Saturday, 1=Sunday, ..., 6=Friday
- */
-const getDateForDayInWeek = (weekStart: Date, dayIndex: number): Date => {
-  return addDays(weekStart, dayIndex);
-};
-
-/**
- * Find the lesson for a specific day and period within a week.
- */
-const findApplicableLessonForSlot = (
-  lessons: Lesson[],
-  dayIndex: number,
-  periodIndex: number,
-  weekStart: Date,
-  lang: string,
-  periodSlots: PeriodSlot[]
-): ScheduleLesson | null => {
-  const currentDayDate = startOfDay(getDateForDayInWeek(weekStart, dayIndex));
-
-  const matchingLessons = lessons.filter((lesson) => {
-    const lessonDate = startOfDay(parseISO(lesson.date));
-    if (!isEqual(lessonDate, currentDayDate)) {
-      return false;
-    }
-
-    const startTimeParsed = parseTimeString(lesson.startTime);
-    const lessonPeriodIndex = getPeriodIndexFromTime(
-      startTimeParsed.hours,
-      startTimeParsed.minutes,
-      periodSlots
-    );
-    return lessonPeriodIndex === periodIndex;
-  });
-
-  if (matchingLessons.length === 0) {
-    return null;
-  }
-
-  // Defensive tie-breaker if duplicates exist for the same date+slot.
-  matchingLessons.sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
-
-  const mostRecentLesson = matchingLessons[0];
-
-  // Get subject name based on language
-  const subjectName =
-    lang === 'ar'
-      ? mostRecentLesson.materialNameAr
-      : mostRecentLesson.materialNameEn || mostRecentLesson.materialNameAr;
-
-  // Calculate duration in minutes
-  const duration = calculateDuration(mostRecentLesson.startTime, mostRecentLesson.endTime);
-
-  // colSpan is the lesson duration relative to one period cell (any custom
-  // duration). It may be < 1 for lessons shorter than a period (e.g. a 30-min
-  // lesson in a 60-min slot → 0.5) so the card only occupies its real time.
-  const slot = periodSlots[periodIndex];
-  const slotDurationMinutes = slot
-    ? slot.endHour * 60 + slot.endMin - (slot.startHour * 60 + slot.startMin)
-    : 45;
-  const colSpan = duration > 0 && slotDurationMinutes > 0 ? duration / slotDurationMinutes : 1;
-
-  // Calculate start offset for lessons not starting at period boundaries
-  let startOffset = 0;
-  if (slot) {
-    const slotStartMinutes = slot.startHour * 60 + slot.startMin;
-    const lessonStartParts = parseTimeString(mostRecentLesson.startTime);
-    const lessonStartMinutes = lessonStartParts.hours * 60 + lessonStartParts.minutes;
-
-    const diffMinutes = lessonStartMinutes - slotStartMinutes;
-    if (diffMinutes > 0 && diffMinutes < slotDurationMinutes) {
-      startOffset = diffMinutes / slotDurationMinutes;
-    }
-  }
-
-  return {
-    id: mostRecentLesson.id,
-    subject: subjectName,
-    teacherName: mostRecentLesson.teacherName,
-    startTime: formatTimeDisplay(mostRecentLesson.startTime),
-    endTime: formatTimeDisplay(mostRecentLesson.endTime),
-    duration,
-    dayIndex,
-    periodIndex,
-    colSpan,
-    startOffset,
-    color: getSubjectColor(subjectName),
-  };
-};
-
-/**
- * Transform API Lessons to ScheduleLessons for the current week. Each lesson
- * is rendered only on its own exact date — no week-over-week repetition.
- */
-const transformLessonsForWeek = (
-  apiLessons: Lesson[],
-  weekStart: Date,
-  lang: string,
-  periodSlots: PeriodSlot[]
-): ScheduleLesson[] => {
-  const scheduleLessons: ScheduleLesson[] = [];
-  const processedSlots = new Set<string>();
-
-  for (let dayIndex = 0; dayIndex <= 6; dayIndex++) {
-    for (let periodIndex = 0; periodIndex < periodSlots.length; periodIndex++) {
-      const slotKey = `${dayIndex}-${periodIndex}`;
-
-      if (processedSlots.has(slotKey)) {
-        continue;
-      }
-
-      const lesson = findApplicableLessonForSlot(
-        apiLessons,
-        dayIndex,
-        periodIndex,
-        weekStart,
-        lang,
-        periodSlots
-      );
-
-      if (lesson) {
-        scheduleLessons.push(lesson);
-        processedSlots.add(slotKey);
-      }
-    }
-  }
-
-  return scheduleLessons;
-};
-
-// Event color options are limited to the supported shared badge palette.
-const EVENT_COLORS: ScheduleEvent['color'][] = ['green', 'yellow', 'default'];
-
-const getEventColor = (index: number): ScheduleEvent['color'] => {
-  return EVENT_COLORS[index % EVENT_COLORS.length];
-};
-
-const getEventPeriodRange = (
-  startTime: string | null | undefined,
-  duration: number,
-  periodSlots: PeriodSlot[]
-): { startPeriod: number; endPeriod: number } => {
-  if (!startTime || periodSlots.length === 0) {
-    return { startPeriod: 0, endPeriod: 0 };
-  }
-
-  const timeOnly = startTime.includes('T') ? startTime.split('T')[1] : startTime;
-  if (!timeOnly) {
-    return { startPeriod: 0, endPeriod: 0 };
-  }
-
-  const startTimeParsed = parseTimeString(timeOnly);
-  const startPeriod = getPeriodIndexFromTime(
-    startTimeParsed.hours,
-    startTimeParsed.minutes,
-    periodSlots
-  );
-
-  // `duration` is in hours from the API. Convert to minutes, then divide by
-  // the active slot length (which equals the academic-calendar lessonDuration).
-  const firstSlot = periodSlots[0];
-  const slotDurationMinutes =
-    firstSlot.endHour * 60 + firstSlot.endMin - (firstSlot.startHour * 60 + firstSlot.startMin);
-  const durationMinutes = duration * 60;
-  const periodsToSpan = Math.max(1, Math.ceil(durationMinutes / slotDurationMinutes));
-
-  let endPeriod = startPeriod + periodsToSpan - 1;
-  const lastIndex = periodSlots.length - 1;
-  if (endPeriod > lastIndex) {
-    endPeriod = lastIndex;
-  }
-
-  return { startPeriod, endPeriod };
-};
-
-const transformEventsForWeek = (
-  apiEvents: MonthlyCalendarEvent[],
-  weekStart: Date,
-  lang: string,
-  periodSlots: PeriodSlot[]
-): ScheduleEvent[] => {
-  const scheduleEvents: ScheduleEvent[] = [];
-  const weekEnd = addDays(weekStart, 6);
-
-  apiEvents.forEach((event, index) => {
-    // Skip events with missing required fields
-    if (!event.day || !event.startTime) {
-      return;
-    }
-
-    // Parse the event day
-    const eventDate = parseISO(event.day);
-    const eventDayStart = startOfDay(eventDate);
-    const weekStartDay = startOfDay(weekStart);
-    const weekEndDay = startOfDay(weekEnd);
-
-    // Check if event falls within current week
-    const isInWeek =
-      isEqual(eventDayStart, weekStartDay) ||
-      isEqual(eventDayStart, weekEndDay) ||
-      (isBefore(weekStartDay, eventDayStart) && isBefore(eventDayStart, weekEndDay));
-
-    if (!isInWeek) {
-      return;
-    }
-
-    // Get day index (0=Saturday, 1=Sunday, etc.)
-    const dayIndex = getDayIndexFromDate(eventDate);
-
-    // Get period range from start time and duration
-    const { startPeriod, endPeriod } = getEventPeriodRange(
-      event.startTime,
-      event.duration ?? 0,
-      periodSlots
-    );
-
-    // Get title based on language
-    const title = lang === 'ar' ? event.nameAr : event.nameEn || event.nameAr;
-
-    scheduleEvents.push({
-      id: event.id,
-      title,
-      dayIndex,
-      startPeriod,
-      endPeriod,
-      color: getEventColor(index),
-      hasArrow: true,
-    });
-  });
-
-  return scheduleEvents;
-};
-
-/**
- * Color configurations for different types of special columns
- */
-const SPECIAL_COLUMN_COLORS = {
-  breakfast: {
-    bgColor: 'bg-yellow-100',
-    textColor: 'text-yellow-400',
-    headerBgColor: 'bg-yellow-50',
-    headerBorderColor: 'border-yellow-400',
-  },
-  break: {
-    bgColor: 'bg-gray-100',
-    textColor: 'text-gray-700',
-    headerBgColor: 'bg-gray-50',
-    headerBorderColor: 'border-gray-200',
-  },
-  assembly: {
-    bgColor: 'bg-green-100',
-    textColor: 'text-green-500',
-    headerBgColor: 'bg-green-100',
-    headerBorderColor: 'border-green-500',
-  },
-} as const;
-
-const mapApiDayToCalendarIndex = (apiDay: number): number => (apiDay === 7 ? 0 : apiDay);
-
-const getWorkingDaysFromSchedules = (
-  daySchedules: AcademicCalendarEntity['daySchedules']
-): number[] => {
-  if (!daySchedules || daySchedules.length === 0) {
-    // Default working days: Sunday(1) to Thursday(5)
-    return [1, 2, 3, 4, 5];
-  }
-
-  // Collect all unique days from all day schedules
-  const allDays = new Set<number>();
-  for (const schedule of daySchedules) {
-    if (schedule.days && schedule.days.length > 0) {
-      schedule.days.forEach((day) => allDays.add(mapApiDayToCalendarIndex(day)));
-    }
-  }
-
-  // If no days found in schedules, default to Sunday-Thursday
-  if (allDays.size === 0) {
-    return [1, 2, 3, 4, 5];
-  }
-
-  return Array.from(allDays).sort((a, b) => a - b);
-};
-
-const getApplicableDays = (
-  schedule: AcademicCalendarTimedSchedule,
-  workingDays: number[]
-): number[] => {
-  const isWholeYear = schedule.timePeriodScope === AcademicCalendarTimePeriodScope.YEAR;
-
-  if (isWholeYear || !schedule.days || schedule.days.length === 0) {
-    return workingDays;
-  }
-
-  return schedule.days.map(mapApiDayToCalendarIndex).sort((a, b) => a - b);
-};
-
-/**
- * Transform academic calendar timed schedules (breaks, breakfasts, assemblies) into SpecialColumn format
- */
-const transformTimedSchedulesToSpecialColumns = (
-  schedules: AcademicCalendarTimedSchedule[],
-  type: 'breakfast' | 'break' | 'assembly',
-  t: (key: string) => string,
-  workingDays: number[],
-  periodSlots: PeriodSlot[]
-): SpecialColumn[] => {
-  if (!schedules || schedules.length === 0) {
-    return [];
-  }
-
-  const colors = SPECIAL_COLUMN_COLORS[type];
-
-  return schedules.map((schedule) => {
-    // Parse time to get period index
-    const timeParts = schedule.startTime.split(':');
-    const hours = parseInt(timeParts[0], 10);
-    const minutes = parseInt(timeParts[1], 10);
-    const periodIndex = getPeriodIndexFromTime(hours, minutes, periodSlots);
-
-    // Get applicable days for this schedule
-    const applicableDays = getApplicableDays(schedule, workingDays);
-
-    return {
-      columnIndex: periodIndex,
-      label: t(`weeklyCalendar.specialColumns.${type}`),
-      type: type === 'break' ? 'custom' : type,
-      ...colors,
-      days: applicableDays, // Use days array for proper non-contiguous support
-      startTime: schedule.startTime, // Real activity time → proportional width within the period
-      endTime: schedule.endTime,
-    } as SpecialColumn;
-  });
-};
-
-/**
- * Transform all academic calendar data into SpecialColumn array
- * Processes breaks, breakfasts, and assemblies from all calendars for the week
- * Uses daySchedules to determine working days when schedule.days is empty
- */
-const transformAcademicCalendarToSpecialColumns = (
-  calendars: AcademicCalendarEntity[],
-  t: (key: string) => string,
-  periodSlots: PeriodSlot[]
-): SpecialColumn[] => {
-  if (!calendars || calendars.length === 0) {
-    return [];
-  }
-
-  const allSpecialColumns: SpecialColumn[] = [];
-  const usedKeys = new Set<string>();
-
-  const addColumns = (cols: SpecialColumn[]) => {
-    for (const col of cols) {
-      const key = `${col.columnIndex}|${col.type}|${col.startTime ?? ''}|${col.endTime ?? ''}`;
-      if (!usedKeys.has(key)) {
-        allSpecialColumns.push(col);
-        usedKeys.add(key);
-      }
-    }
-  };
-
-  for (const calendar of calendars) {
-    const workingDays = getWorkingDaysFromSchedules(calendar.daySchedules);
-
-    addColumns(
-      transformTimedSchedulesToSpecialColumns(
-        calendar.breakfasts || [],
-        'breakfast',
-        t,
-        workingDays,
-        periodSlots
-      )
-    );
-    addColumns(
-      transformTimedSchedulesToSpecialColumns(
-        calendar.breaks || [],
-        'break',
-        t,
-        workingDays,
-        periodSlots
-      )
-    );
-    addColumns(
-      transformTimedSchedulesToSpecialColumns(
-        calendar.assemblies || [],
-        'assembly',
-        t,
-        workingDays,
-        periodSlots
-      )
-    );
-  }
-
-  return allSpecialColumns.sort((a, b) => a.columnIndex - b.columnIndex);
-};
-
-// Dynamic period headers - these can be customized per school
-// This configuration would typically come from an API or school settings
-// Format a slot's hours/minutes into a localized label like "8:30ص" / "10AM".
-const formatSlotTime = (hour: number, min: number, isArabic: boolean): string => {
-  const suffix = isArabic ? (hour < 12 ? 'ص' : 'م') : hour < 12 ? 'AM' : 'PM';
-  const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-  const minStr = min > 0 ? `:${String(min).padStart(2, '0')}` : '';
-  return `${displayHour}${minStr}${suffix}`;
-};
-
-const buildPeriodHeaders = (slots: PeriodSlot[], isArabic: boolean): PeriodHeader[] =>
-  slots.map((slot) => ({
-    label: slot.label,
-    time: `${formatSlotTime(slot.startHour, slot.startMin, isArabic)} - ${formatSlotTime(
-      slot.endHour,
-      slot.endMin,
-      isArabic
-    )}`,
-  }));
-
-// Fallback special columns when no academic calendar data is available
-const FALLBACK_SPECIAL_COLUMNS: SpecialColumn[] = [];
-
-// Filter options - education system options now fetched from API
-
-// Export handle type for parent ref access
-export type WeeklyCalendarHandle = {
-  openAddLesson: () => void;
-  recoverLessons: () => void;
-};
-
-const WeeklyCalendar = forwardRef<WeeklyCalendarHandle>((_props, ref) => {
+const getCurrentWeekStart = () => startOfWeek(new Date(), { weekStartsOn: WEEK_STARTS_ON });
+
+const toScheduleLesson = (lesson: TimetableLesson): ScheduleLesson => ({
+  id: lesson.id,
+  subject: lesson.subject,
+  teacherName: lesson.teacherName,
+  startTime: lesson.startTime,
+  endTime: lesson.endTime,
+  duration: lesson.duration,
+  dayIndex: lesson.dayIndex,
+  periodIndex: 0,
+});
+
+const getErrorText = (error: unknown, fallback: string) =>
+  typeof error === 'string' ? error : (error as { message?: string })?.message || fallback;
+
+export default function WeeklyCalendar() {
   const { t, i18n } = useTranslation();
   const { isArabic } = useLanguage();
   const { showToast } = useToast();
-  const navigate = useNavigate();
+  const { showSuccess, successPopup } = useSuccessPopup();
   const dispatch = useAppDispatch();
   const { guardMutation } = useRoleAccess();
-
-  // Get current language
   const currentLang = i18n.language;
+  const schoolBranchId = getCurrentSchoolBranchId() ?? undefined;
 
-  // Redux state for lessons and events
+  const [initialFilters] = useState(readPersistedFilters);
+  const [subSystemId, setSubSystemId] = useState(initialFilters.subSystemId ?? '');
+  const [stageId, setStageId] = useState(initialFilters.stageId ?? '');
+  const [gradeId, setGradeId] = useState(initialFilters.gradeId ?? '');
+  const [classroomId, setClassroomId] = useState(initialFilters.classroomId ?? '');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(getCurrentWeekStart);
+
+  const [selectedLesson, setSelectedLesson] = useState<ScheduleLesson | null>(null);
+  const [lessonPendingDelete, setLessonPendingDelete] = useState<TimetableLesson | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isRecovering, setIsRecovering] = useState(false);
+  const [movingLessonId, setMovingLessonId] = useState<string | null>(null);
+  const [lessonPopup, setLessonPopup] = useState<{
+    mode: 'add' | 'edit';
+    lessonId?: string;
+    defaults?: LessonPopupDefaults;
+  } | null>(null);
+
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem(
+        FILTERS_STORAGE_KEY,
+        JSON.stringify({ subSystemId, stageId, gradeId, classroomId })
+      );
+    } catch {
+      // ignore storage errors (private mode, quota, etc.)
+    }
+  }, [subSystemId, stageId, gradeId, classroomId]);
+
+  const schoolAcademicSubSystems = useAppSelector(
+    (state) => state.academicSubSystems.schoolAcademicSubSystems
+  );
+  const {
+    educationalStages: gradesList,
+    lkEducationalStages,
+    isLoading: isLoadingGrades,
+  } = useAppSelector((state) => state.educationalStages);
+  const { classrooms: classroomsList, isLoading: isLoadingClassrooms } = useAppSelector(
+    (state) => state.classrooms
+  );
   const { lessons: apiLessons, isLoading: isLoadingLessons } = useAppSelector(
     (state) => state.lessons
   );
-  const { events: apiEvents, isLoading: isLoadingEvents } = useAppSelector(
-    (state) => state.monthlyCalendar
-  );
-
-  // Redux state for academic calendar (special columns data)
+  const { events: apiEvents } = useAppSelector((state) => state.monthlyCalendar);
   const {
     weekCalendarsWithDetails: academicCalendars,
     isLoadingWeekCalendars: isLoadingAcademicCalendars,
   } = useAppSelector((state) => state.academicCalendar);
 
-  // Combined loading state
-  const isLoading = isLoadingLessons || isLoadingEvents || isLoadingAcademicCalendars;
-
-  // Filter states — persisted in sessionStorage so they survive a round-trip
-  // to the add/edit lesson page without re-prompting the user.
-  const FILTERS_STORAGE_KEY = 'weeklyCalendar.filters';
-  const persistedFilters = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const raw = window.sessionStorage.getItem(FILTERS_STORAGE_KEY);
-      if (!raw) return null;
-      return JSON.parse(raw) as {
-        educationSystem?: string;
-        subSystemId?: string;
-        stage?: string;
-        grade?: string;
-      };
-    } catch {
-      return null;
-    }
-  }, []);
-
-  const [educationSystem, setEducationSystem] = useState(persistedFilters?.educationSystem ?? '');
-  const [subSystemId, setSubSystemId] = useState(persistedFilters?.subSystemId ?? '');
-  const [stage, setStage] = useState(persistedFilters?.stage ?? '');
-  const [grade, setGrade] = useState(persistedFilters?.grade ?? '');
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      window.sessionStorage.setItem(
-        FILTERS_STORAGE_KEY,
-        JSON.stringify({ educationSystem, subSystemId, stage, grade })
-      );
-    } catch {
-      // ignore storage errors (private mode, quota, etc.)
-    }
-  }, [educationSystem, subSystemId, stage, grade]);
-
-  // Redux state for filter data
-  const { academicSystems: academicSystemsList, isLoading: isLoadingAcademicSystems } =
-    useAppSelector((state) => state.academicSystems);
-  const { educationalStages: stagesList, isLoading: isLoadingStages } = useAppSelector(
-    (state) => state.educationalStages
-  );
-  const { classrooms: classroomsList, isLoading: isLoadingClassrooms } = useAppSelector(
-    (state) => state.classrooms
-  );
-
-  // Current week start date (Saturday)
-  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
-    () => startOfWeek(new Date(), { weekStartsOn: 6 }) // 6 = Saturday
-  );
-
-  // Popup states
-  const [selectedLesson, setSelectedLesson] = useState<ScheduleLesson | null>(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [lessonPendingDelete, setLessonPendingDelete] = useState<ScheduleLesson | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // Extend lesson state
-  const [extendingLessonId, setExtendingLessonId] = useState<string | null>(null);
-  const [optimisticLessons, setOptimisticLessons] = useState<
-    Map<string, { endTime: string; duration: number }>
-  >(new Map());
-
-  const userData = tokenManager.getUserData();
-  const schoolBranchId = userData?.schoolBrancheId ?? userData?.schoolBranchId ?? undefined;
-
   useEffect(() => {
     dispatch(
-      getAcademicSystems({
-        pageIndex: 1,
-        pageSize: 10000,
-        ...(schoolBranchId && { schoolBranchId }),
-      })
+      getSchoolAcademicSubSystems({ pageIndex: 1, pageSize: LOOKUP_PAGE_SIZE, schoolBranchId })
     );
   }, [dispatch, schoolBranchId]);
 
+  const lkStagesCount = lkEducationalStages.length;
   useEffect(() => {
-    if (!educationSystem) return;
+    if (lkStagesCount === 0) dispatch(getLKSchoolStages());
+  }, [dispatch, lkStagesCount]);
 
+  useEffect(() => {
     if (subSystemId) {
       dispatch(
         getEducationalStagesBySubSystemId({
           academicSubSystemId: subSystemId,
-          params: {
-            pageIndex: 1,
-            pageSize: 10000,
-          },
+          params: { pageIndex: 1, pageSize: LOOKUP_PAGE_SIZE },
         })
       );
     } else {
-      dispatch(
-        getEducationalStages({
-          pageIndex: 1,
-          pageSize: 10000,
-          ...(schoolBranchId && { schoolBranchId }),
-        })
-      );
+      dispatch(getEducationalStages({ pageIndex: 1, pageSize: LOOKUP_PAGE_SIZE, schoolBranchId }));
     }
-  }, [dispatch, educationSystem, subSystemId, schoolBranchId]);
+  }, [dispatch, subSystemId, schoolBranchId]);
 
-  // Fetch lessons + monthly events only when a classroom is selected
   useEffect(() => {
-    if (!grade) return;
+    if (!gradeId) return;
+    dispatch(
+      fetchClassrooms({
+        page: 1,
+        limit: LOOKUP_PAGE_SIZE,
+        filters: { gradeId, ...(schoolBranchId && { schoolBranchId }) },
+      })
+    );
+  }, [dispatch, gradeId, schoolBranchId]);
 
+  const reloadLessons = useCallback(() => {
+    if (!classroomId) return;
     dispatch(
       fetchLessons({
         filters: {
-          gradeId: stage || undefined,
-          classroomId: grade,
+          gradeId: gradeId || undefined,
+          classroomId,
           schoolBranchesId: schoolBranchId,
         },
       })
     );
+  }, [dispatch, classroomId, gradeId, schoolBranchId]);
 
+  useEffect(() => {
+    reloadLessons();
+  }, [reloadLessons]);
+
+  useEffect(() => {
+    if (!classroomId) return;
     dispatch(
       fetchMonthlyCalendarEvents({
         page: 1,
         limit: 100,
-        filters: {
-          schoolBranchId,
-          grade: stage,
-        },
+        filters: { schoolBranchId, grade: gradeId },
       })
     );
-  }, [dispatch, grade, stage, schoolBranchId]);
+  }, [dispatch, classroomId, gradeId, schoolBranchId]);
 
   useEffect(() => {
-    if (!educationSystem || !stage) {
-      return;
-    }
-
-    dispatch(
-      fetchClassrooms({
-        page: 1,
-        limit: 10000,
-        filters: {
-          academicSystemId: educationSystem,
-          gradeId: stage,
-          ...(schoolBranchId && { schoolBranchId }),
-        },
-      })
-    );
-  }, [dispatch, educationSystem, stage, schoolBranchId]);
-
-  useEffect(() => {
-    if (!schoolBranchId || !stage || !grade) {
-      return;
-    }
-
-    const weekEnd = addDays(currentWeekStart, 6);
-
+    if (!schoolBranchId || !gradeId || !classroomId) return;
     dispatch(
       fetchAcademicCalendarsForWeek({
         schoolBranchId,
-        gradeId: stage,
+        gradeId,
         weekStart: currentWeekStart.toISOString(),
-        weekEnd: weekEnd.toISOString(),
+        weekEnd: addDays(currentWeekStart, 6).toISOString(),
       })
     );
-  }, [dispatch, currentWeekStart, schoolBranchId, stage, grade]);
+  }, [dispatch, currentWeekStart, schoolBranchId, gradeId, classroomId]);
 
-  // Computed options for filters
-  const educationSystemOptions = useMemo(() => {
-    return academicSystemsList.map((sys) => ({
-      value: sys.id,
-      label: isArabic ? sys.nameAr : sys.nameEn,
-      subSystems: sys.academicSubSystemDto || [],
-    }));
-  }, [academicSystemsList, isArabic]);
-
-  const stageOptions = useMemo(() => {
-    return stagesList.map((s) => ({
-      value: s.id,
-      label: isArabic ? s.nameAr : s.nameEn,
-    }));
-  }, [stagesList, isArabic]);
-
-  const classroomOptions = useMemo(() => {
-    return classroomsList.map((c) => ({
-      value: c.id,
-      label: isArabic ? c.name : c.nameEn || c.name,
-    }));
-  }, [classroomsList, isArabic]);
-
-  const studyPeriod = useMemo<{ start: Date | null; end: Date | null }>(() => {
-    if (!academicCalendars || academicCalendars.length === 0) {
-      return { start: null, end: null };
-    }
-    const calendar = academicCalendars[0];
-    return {
-      start: calendar.studyStartDate ? new Date(calendar.studyStartDate) : null,
-      end: calendar.studyEndDate ? new Date(calendar.studyEndDate) : null,
-    };
-  }, [academicCalendars]);
-
-  // Period slots are derived from the academic calendar's daySchedules +
-  // lessonDuration. When the API returns lessonDuration: 60 the calendar
-  // renders 60-min cells; when it returns 45 (or no calendar is loaded yet)
-  // we fall back to the historical 45-min default.
-  const periodSlots = useMemo<PeriodSlot[]>(() => {
-    if (!academicCalendars || academicCalendars.length === 0) {
-      return DEFAULT_PERIOD_TIME_SLOTS;
-    }
-    const calendar = academicCalendars[0];
-    const daySchedule = calendar.daySchedules?.[0];
-    return buildPeriodSlots(
-      daySchedule?.dayStartTime,
-      daySchedule?.dayEndTime,
-      calendar.lessonDuration
-    );
-  }, [academicCalendars]);
-
-  const periodHeaders = useMemo<PeriodHeader[]>(
-    () => buildPeriodHeaders(periodSlots, isArabic),
-    [periodSlots, isArabic]
+  const subSystemOptions = useMemo<WeeklyFilterOption[]>(
+    () => schoolAcademicSubSystems.map((s) => ({ value: s.id, label: s.name })),
+    [schoolAcademicSubSystems]
   );
 
-  const transformedLessons: ScheduleLesson[] = useMemo(() => {
-    if (!apiLessons || apiLessons.length === 0) {
-      return [];
-    }
+  const stageOptions = useMemo<WeeklyFilterOption[]>(
+    () =>
+      lkEducationalStages
+        .filter((stage) => !ALL_STAGE_NAMES.includes(stage.nameAR?.trim().toLowerCase()))
+        .filter((stage) => !ALL_STAGE_NAMES.includes(stage.nameEN?.trim().toLowerCase()))
+        .map((stage) => ({
+          value: stage.id,
+          label: isArabic ? stage.nameAR : stage.nameEN || stage.nameAR,
+        })),
+    [lkEducationalStages, isArabic]
+  );
 
-    const lessons = transformLessonsForWeek(apiLessons, currentWeekStart, currentLang, periodSlots);
+  const gradeOptions = useMemo<WeeklyFilterOption[]>(
+    () =>
+      gradesList
+        .filter((grade) => !stageId || !grade.lkSchoolStageId || grade.lkSchoolStageId === stageId)
+        .map((grade) => ({
+          value: grade.id,
+          label: isArabic ? grade.nameAr : grade.nameEn || grade.nameAr,
+        })),
+    [gradesList, stageId, isArabic]
+  );
 
-    // Apply optimistic updates
-    if (optimisticLessons.size > 0) {
-      return lessons.map((lesson) => {
-        const optimistic = optimisticLessons.get(lesson.id);
-        if (optimistic) {
-          return {
-            ...lesson,
-            endTime: optimistic.endTime,
-            duration: optimistic.duration,
-          };
-        }
-        return lesson;
-      });
-    }
+  const classroomOptions = useMemo<WeeklyFilterOption[]>(
+    () =>
+      gradeId
+        ? classroomsList.map((c) => ({
+            value: c.id,
+            label: isArabic ? c.name : c.nameEn || c.name,
+          }))
+        : [],
+    [classroomsList, gradeId, isArabic]
+  );
 
-    return lessons;
-  }, [apiLessons, currentWeekStart, currentLang, optimisticLessons, periodSlots]);
-
-  // Transform API events to ScheduleEvent format for current week
-  const transformedEvents: ScheduleEvent[] = useMemo(() => {
-    if (!apiEvents || apiEvents.length === 0) {
-      return [];
-    }
-
-    return transformEventsForWeek(apiEvents, currentWeekStart, currentLang, periodSlots);
-  }, [apiEvents, currentWeekStart, currentLang, periodSlots]);
-
-  const specialColumns: SpecialColumn[] = useMemo(() => {
-    if (!academicCalendars || academicCalendars.length === 0) {
-      return FALLBACK_SPECIAL_COLUMNS;
-    }
-
-    const baseColumns = transformAcademicCalendarToSpecialColumns(
-      academicCalendars,
-      t,
-      periodSlots
-    );
-
-    if (!studyPeriod.start || !studyPeriod.end) {
-      return baseColumns;
-    }
-
-    const studyStart = startOfDay(studyPeriod.start);
-    const studyEnd = startOfDay(studyPeriod.end);
-
-    const allowedDayIndices: number[] = [];
-    for (let dayIdx = 0; dayIdx <= 6; dayIdx++) {
-      const dayStart = startOfDay(addDays(currentWeekStart, dayIdx));
-      if (!isBefore(dayStart, studyStart) && !isBefore(studyEnd, dayStart)) {
-        allowedDayIndices.push(dayIdx);
-      }
-    }
-
-    return baseColumns
-      .map((col) => {
-        const sourceDays =
-          col.days && col.days.length > 0
-            ? col.days
-            : Array.from(
-                {
-                  length: (col.endDayIndex ?? 5) - (col.startDayIndex ?? 1) + 1,
-                },
-                (_, i) => (col.startDayIndex ?? 1) + i
-              );
-
-        const days = sourceDays.filter((d) => allowedDayIndices.includes(d));
-        return { ...col, days };
-      })
-      .filter((col) => (col.days?.length ?? 0) > 0);
-  }, [academicCalendars, t, studyPeriod, currentWeekStart, periodSlots]);
-
-  const workingDays = useMemo<number[]>(() => {
-    if (!academicCalendars || academicCalendars.length === 0) {
-      return [];
-    }
-
-    const scheduleDays = new Set<number>();
-    for (const calendar of academicCalendars) {
-      for (const day of getWorkingDaysFromSchedules(calendar.daySchedules)) {
-        scheduleDays.add(day);
-      }
-    }
-
-    if (!studyPeriod.start || !studyPeriod.end) {
-      return Array.from(scheduleDays).sort((a, b) => a - b);
-    }
-
-    const studyStart = startOfDay(studyPeriod.start);
-    const studyEnd = startOfDay(studyPeriod.end);
-
-    const allowed: number[] = [];
-    for (const day of scheduleDays) {
-      const dayStart = startOfDay(addDays(currentWeekStart, day));
-      if (!isBefore(dayStart, studyStart) && !isBefore(studyEnd, dayStart)) {
-        allowed.push(day);
-      }
-    }
-
-    return allowed.sort((a, b) => a - b);
-  }, [academicCalendars, studyPeriod, currentWeekStart]);
-
-  // Handle week change from calendar navigation
-  const handleWeekChange = useCallback((weekStart: Date) => {
-    setCurrentWeekStart(weekStart);
-  }, []);
-
-  const handleEmptyCellClick = (
-    dayIndex: number,
-    _periodIndex: number,
-    startTime: string,
-    endTime: string
-  ) => {
-    // Calculate the actual date for this cell
-    const cellDate = addDays(currentWeekStart, dayIndex);
-
-    // Format date in local timezone (YYYY-MM-DD) without UTC conversion
-    const year = cellDate.getFullYear();
-    const month = (cellDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = cellDate.getDate().toString().padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
-
-    navigate(
-      `/calendar/weekly/add-lesson?date=${dateStr}&startTime=${startTime}&endTime=${endTime}`,
-      {
-        state: {
-          gradeId: stage || undefined,
-          classroomId: grade || undefined,
-        },
-      }
-    );
+  const resetFrom = (level: 'subSystem' | 'stage' | 'grade') => {
+    if (level === 'subSystem') setStageId('');
+    if (level !== 'grade') setGradeId('');
+    setClassroomId('');
   };
 
-  // Expose methods to parent via ref
-  useImperativeHandle(ref, () => ({
-    openAddLesson: () => {
-      navigate('/calendar/weekly/add-lesson');
-    },
-    recoverLessons: async () => {
+  const rows = useMemo(() => buildTimetableRows(academicCalendars ?? []), [academicCalendars]);
+
+  const timetableLessons = useMemo(() => {
+    const lessons = toTimetableLessons(apiLessons ?? [], currentWeekStart, currentLang);
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return lessons;
+    return lessons.filter(
+      (lesson) =>
+        lesson.subject.toLowerCase().includes(query) ||
+        lesson.teacherName?.toLowerCase().includes(query)
+    );
+  }, [apiLessons, currentWeekStart, currentLang, searchTerm]);
+
+  const timetableEvents = useMemo(
+    () => toTimetableEvents(apiEvents ?? [], currentWeekStart, currentLang),
+    [apiEvents, currentWeekStart, currentLang]
+  );
+
+  const eventDays = useMemo(
+    () => new Set(timetableEvents.map((event) => event.dayIndex)),
+    [timetableEvents]
+  );
+
+  const workingDays = useMemo(() => {
+    if (!academicCalendars?.length) return DEFAULT_WORKING_DAYS;
+    const days = new Set<number>();
+    academicCalendars.forEach((calendar) =>
+      getWorkingDaysFromSchedules(calendar.daySchedules).forEach((day) => days.add(day))
+    );
+    return Array.from(days);
+  }, [academicCalendars]);
+
+  const visibleDays = useMemo(() => {
+    const days = new Set(workingDays);
+    timetableLessons.forEach((lesson) => days.add(lesson.dayIndex));
+    return Array.from(days).sort((a, b) => a - b);
+  }, [workingDays, timetableLessons]);
+
+  const isCurrentWeek = isSameDay(currentWeekStart, getCurrentWeekStart());
+  const isLoading = isLoadingLessons || isLoadingAcademicCalendars;
+
+  const openAddLessonPopup = (slot: Pick<LessonPopupDefaults, 'date' | 'startTime' | 'endTime'>) =>
+    setLessonPopup({
+      mode: 'add',
+      defaults: { subSystemId, gradeId, classroomId, ...slot },
+    });
+
+  const handleAddLesson = () =>
+    guardMutation(() => {
+      if (!classroomId) {
+        showToast({ message: t('lesson.popup.chooseClassroomFirst'), type: 'info' });
+        return;
+      }
+      openAddLessonPopup({
+        date: toDateKey(isCurrentWeek ? new Date() : currentWeekStart),
+      });
+    });
+
+  const handleEmptyCellClick = (dayIndex: number, row: TimetableRow) =>
+    guardMutation(() =>
+      openAddLessonPopup({
+        date: toDateKey(addDays(currentWeekStart, dayIndex)),
+        startTime: formatMinutes(row.start),
+        endTime: formatMinutes(row.end),
+      })
+    );
+
+  const handleRecoverLessons = () =>
+    guardMutation(async () => {
+      setIsRecovering(true);
       try {
         await dispatch(recoverAllLessons()).unwrap();
-        showToast({
-          message: t('weeklyCalendar.lessonsRecoveredSuccessfully'),
-          type: 'success',
-        });
+        showToast({ message: t('weeklyCalendar.lessonsRecoveredSuccessfully'), type: 'success' });
+        reloadLessons();
       } catch (error) {
-        const errorMessage =
-          typeof error === 'string'
-            ? error
-            : (error as { message?: string })?.message || t('weeklyCalendar.recoverLessonsFailed');
         showToast({
-          message: errorMessage,
+          message: getErrorText(error, t('weeklyCalendar.recoverLessonsFailed')),
           type: 'error',
           duration: 5000,
+          isRaw: true,
         });
+      } finally {
+        setIsRecovering(false);
       }
-    },
-  }));
+    });
 
-  // Handlers for lesson actions
-  const handleViewDetails = (lesson: ScheduleLesson) => {
-    setSelectedLesson(lesson);
-    setDetailsOpen(true);
-  };
+  const showComingSoon = () => showToast({ message: t('common.comingSoon'), type: 'info' });
 
-  const handleEditLesson = (lesson: ScheduleLesson) => {
-    navigate(`/calendar/weekly/edit-lesson/${lesson.id}`);
-  };
-
-  const handleRequestDelete = (lesson: ScheduleLesson) => {
-    setLessonPendingDelete(lesson);
-    setShowDeletePopup(true);
-  };
-
-  const handleCancelDelete = () => {
-    setShowDeletePopup(false);
-    setLessonPendingDelete(null);
+  const handlePrint = () => {
+    const area = document.getElementById(PRINT_AREA_ID);
+    if (area) {
+      printElement(
+        area,
+        `${t('weeklyCalendar.title')} - ${formatWeekRange(currentWeekStart, currentLang)}`
+      );
+    }
   };
 
   const handleConfirmDelete = async (applyToAllWeeks: boolean) => {
     if (!lessonPendingDelete) return;
-
+    setIsDeleting(true);
     try {
-      setIsDeleting(true);
       await dispatch(deleteLessonById({ id: lessonPendingDelete.id, applyToAllWeeks })).unwrap();
-
-      dispatch(
-        fetchLessons({
-          filters: {
-            gradeId: stage || undefined,
-            classroomId: grade || undefined,
-            schoolBranchesId: schoolBranchId,
-          },
-        })
-      );
-
-      showToast({
-        message: t('weeklyCalendar.lessonDeletedSuccessfully'),
-        type: 'success',
-      });
-      setShowDeletePopup(false);
+      reloadLessons();
+      showSuccess(t('weeklyCalendar.lessonDeletedSuccessfully'));
       setLessonPendingDelete(null);
     } catch (error) {
-      const message =
-        typeof error === 'string'
-          ? error
-          : (error as { message?: string })?.message || t('common.error');
       showToast({
-        message,
+        message: getErrorText(error, t('common.error')),
         type: 'error',
         duration: 3000,
+        isRaw: true,
       });
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const handleChangeDuration = async (lesson: ScheduleLesson, deltaMinutes: number) => {
-    const newDuration = lesson.duration + deltaMinutes;
+  const handleLessonDrop = (lesson: TimetableLesson, dayIndex: number, row: TimetableRow) =>
+    guardMutation(async () => {
+      const date = toDateKey(addDays(currentWeekStart, dayIndex));
+      const startTime = formatMinutes(row.start);
+      const endTime = formatMinutes(row.start + lesson.duration);
 
-    if (newDuration < 5) {
-      return;
-    }
-
-    const [hours, minutes] = lesson.endTime.split(':').map(Number);
-    const totalMinutes = hours * 60 + minutes + deltaMinutes;
-    const newHours = Math.floor(totalMinutes / 60) % 24;
-    const newMinutes = totalMinutes % 60;
-
-    const MAX_TIME_MINUTES = 15 * 60 + 15;
-    if (totalMinutes > MAX_TIME_MINUTES) {
-      showToast({
-        message: t('weeklyCalendar.cannotExceedTimeLimit'),
-        type: 'error',
-      });
-      return;
-    }
-
-    // 3. Validate End Time > Start Time
-    const [startH, startM] = lesson.startTime.split(':').map(Number);
-    const startTotalMinutes = startH * 60 + startM;
-    if (totalMinutes <= startTotalMinutes) {
-      return;
-    }
-    const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
-
-    // Set loading state
-    setExtendingLessonId(lesson.id);
-
-    // Apply optimistic update immediately
-    setOptimisticLessons((prev) => {
-      const newMap = new Map(prev);
-      newMap.set(lesson.id, { endTime: newEndTime, duration: newDuration });
-      return newMap;
+      setMovingLessonId(lesson.id);
+      try {
+        const fullLesson = await dispatch(fetchLessonByIdSilent(lesson.id)).unwrap();
+        await dispatch(
+          updateLesson({
+            id: fullLesson.id,
+            materialId: fullLesson.materialId,
+            teacherId: fullLesson.teacherId,
+            bookId: fullLesson.bookId,
+            gradeId: fullLesson.gradeId,
+            classroomId: fullLesson.classroomId,
+            schoolBranchesId: fullLesson.schoolBranchesId,
+            date: new Date(`${date}T${startTime}:00`).toISOString(),
+            startTime,
+            endTime,
+            classworkFromPage: fullLesson.classworkFromPage,
+            classworkToPage: fullLesson.classworkToPage,
+            homeworkFromPage: fullLesson.homeworkFromPage,
+            homeworkToPage: fullLesson.homeworkToPage,
+            homeworkDescriptionAr: fullLesson.homeworkDescriptionAr || '',
+            homeworkDescriptionEn: fullLesson.homeworkDescriptionEn || '',
+            isHomeworkForAllStudents: fullLesson.isHomeworkForAllStudents,
+            applyToAllWeeks: false,
+            lessonsStudent: fullLesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
+            attachments: fullLesson.attachments.map((a) => ({
+              fileName: a.fileName,
+              fileUrl: a.fileUrl,
+            })),
+          })
+        ).unwrap();
+        showSuccess(t('weeklyCalendar.lessonUpdatedSuccessfully'));
+        reloadLessons();
+      } catch (error) {
+        showToast({
+          message: getErrorText(error, t('common.error')),
+          type: 'error',
+          duration: 3000,
+          isRaw: true,
+        });
+      } finally {
+        setMovingLessonId(null);
+      }
     });
 
-    try {
-      // Fetch the full lesson data from API (via slice thunk)
-      const fullLesson = await dispatch(fetchLessonByIdSilent(lesson.id)).unwrap();
-
-      // Calculcate new key for Backend (it expects end time string)
-      const apiNewEndTime = addMinutesToTime(fullLesson.endTime, deltaMinutes);
-
-      // Update the lesson with new end time (via slice thunk)
-      await dispatch(
-        updateLesson({
-          id: fullLesson.id,
-          materialId: fullLesson.materialId,
-          teacherId: fullLesson.teacherId,
-          bookId: fullLesson.bookId,
-          gradeId: fullLesson.gradeId,
-          classroomId: fullLesson.classroomId,
-          schoolBranchesId: fullLesson.schoolBranchesId,
-          date: fullLesson.date,
-          startTime: fullLesson.startTime,
-          endTime: apiNewEndTime,
-          classworkFromPage: fullLesson.classworkFromPage,
-          classworkToPage: fullLesson.classworkToPage,
-          homeworkFromPage: fullLesson.homeworkFromPage,
-          homeworkToPage: fullLesson.homeworkToPage,
-          homeworkDescriptionAr: fullLesson.homeworkDescriptionAr || '',
-          homeworkDescriptionEn: fullLesson.homeworkDescriptionEn || '',
-          isHomeworkForAllStudents: fullLesson.isHomeworkForAllStudents,
-          applyToAllWeeks: fullLesson.applyToAllWeeks ?? fullLesson.ApplyToAllWeeks ?? false,
-          lessonsStudent: fullLesson.lessonsStudent.map((s) => ({ studentId: s.studentId })),
-          attachments: fullLesson.attachments.map((a) => ({
-            fileName: a.fileName,
-            fileUrl: a.fileUrl,
-          })),
-        })
-      ).unwrap();
-
-      showToast({
-        message: t('weeklyCalendar.lessonUpdatedSuccessfully'),
-        type: 'success',
-      });
-
-      // Refresh lessons to get actual data from server
-      dispatch(
-        fetchLessons({
-          filters: {
-            gradeId: stage || undefined,
-            classroomId: grade || undefined,
-            schoolBranchesId: schoolBranchId,
-          },
-        })
-      );
-
-      // Clear optimistic update after refresh
-      setOptimisticLessons((prev) => {
-        const newMap = new Map(prev);
-        newMap.delete(lesson.id);
-        return newMap;
-      });
-    } catch (error) {
-      // Revert optimistic update on error
-      setOptimisticLessons((prev) => {
-        const newMap = new Map(prev);
-        newMap.delete(lesson.id);
-        return newMap;
-      });
-
-      const message =
-        typeof error === 'string'
-          ? error
-          : (error as { message?: string })?.message || t('common.error');
-      showToast({
-        message,
-        type: 'error',
-        duration: 3000,
-      });
-    } finally {
-      setExtendingLessonId(null);
-    }
-  };
-
-  const lessonContextActions: LessonContextAction[] = [
+  const lessonActions: LessonMenuAction[] = [
     {
       id: 'view-details',
       label: t('weeklyCalendar.viewDetails'),
       icon: EyeFillIcon,
-      onClick: handleViewDetails,
-      color: 'primary',
+      color: 'text-blue-600 hover:bg-blue-50',
+      onClick: (lesson) => setSelectedLesson(toScheduleLesson(lesson)),
     },
     {
       id: 'edit-lesson',
       label: t('weeklyCalendar.editLesson'),
       icon: EditFilledIcon,
-      onClick: handleEditLesson,
-      color: 'success',
+      color: 'text-green-500 hover:bg-green-50',
+      actionKey: 'edit',
+      onClick: (lesson) =>
+        setLessonPopup({
+          mode: 'edit',
+          lessonId: lesson.id,
+          defaults: { subSystemId, gradeId, classroomId },
+        }),
     },
     {
       id: 'delete-lesson',
       label: t('weeklyCalendar.deleteLesson'),
       icon: TrashFillIcon,
-      onClick: handleRequestDelete,
-      color: 'danger',
+      color: 'text-red-500 hover:bg-red-50',
+      actionKey: 'delete',
+      onClick: (lesson) => setLessonPendingDelete(lesson),
     },
   ];
 
   return (
-    <>
-      {/* Calendar Component with Filters Inside */}
-      <div className="overflow-hidden rounded-xl bg-white shadow-xs">
-        {/* Filters Row - Inside calendar frame, above the calendar */}
-        <div className="flex flex-wrap items-center gap-3 p-4">
-          {/* Group 1: Education System */}
-          <div className="relative inline-flex grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="px-4 py-2.5 text-sm font-normal whitespace-nowrap text-[#646969]">
-              {t('weeklyCalendar.filters.educationSystem')}
-            </span>
-            <div className="h-full border-e border-gray-200" />
-            <CustomSelect
-              value={educationSystem}
-              onChange={(val) => {
-                const selectedSystem = academicSystemsList.find((s) => s.id === val);
-                setEducationSystem(val as string);
-                // Reset dependent filters
-                setStage('');
-                setGrade('');
-                // If the selected system has sub-systems, use the first one to filter stages
-                if (selectedSystem?.academicSubSystemDto?.length) {
-                  setSubSystemId(selectedSystem.academicSubSystemDto[0].id);
-                } else {
-                  setSubSystemId('');
-                }
-              }}
-              options={educationSystemOptions}
-              placeholder={
-                isLoadingAcademicSystems
-                  ? t('common.loading')
-                  : educationSystem
-                    ? educationSystemOptions.find((s) => s.value === educationSystem)?.label || ''
-                    : ''
-              }
-              disabled={isLoadingAcademicSystems}
-              variant="ghost"
-              showSearch={false}
-              className="w-full"
-            />
-          </div>
+    <div className="flex flex-col gap-4">
+      <WeeklyCalendarFilters
+        subSystemId={subSystemId}
+        stageId={stageId}
+        gradeId={gradeId}
+        classroomId={classroomId}
+        subSystemOptions={subSystemOptions}
+        stageOptions={stageOptions}
+        gradeOptions={gradeOptions}
+        classroomOptions={classroomOptions}
+        onSubSystemChange={(value) => {
+          setSubSystemId(value);
+          resetFrom('subSystem');
+        }}
+        onStageChange={(value) => {
+          setStageId(value);
+          resetFrom('stage');
+        }}
+        onGradeChange={(value) => {
+          setGradeId(value);
+          resetFrom('grade');
+        }}
+        onClassroomChange={setClassroomId}
+        isGradesLoading={isLoadingGrades}
+        isClassroomsLoading={isLoadingClassrooms}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onReset={() => {
+          setSubSystemId('');
+          setStageId('');
+          setGradeId('');
+          setClassroomId('');
+          setSearchTerm('');
+        }}
+      />
 
-          {/* Group 2: Stage Selection */}
-          <div className="relative inline-flex grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="px-4 py-2.5 text-sm font-normal whitespace-nowrap text-[#646969]">
-              {t('weeklyCalendar.filters.selectStage')}
-            </span>
-            <div className="h-full border-e border-gray-200" />
-            <CustomSelect
-              value={stage}
-              onChange={(val) => {
-                setStage(val as string);
-                setGrade('');
-              }}
-              options={stageOptions}
-              placeholder={
-                !educationSystem
-                  ? t('weeklyCalendar.filters.chooseEducationSystemFirst')
-                  : isLoadingStages
-                    ? t('common.loading')
-                    : stage
-                      ? stageOptions.find((s) => s.value === stage)?.label || ''
-                      : ''
-              }
-              disabled={!educationSystem || isLoadingStages}
-              variant="ghost"
-              showSearch={false}
-              className="w-full"
-            />
-          </div>
+      <WeeklyCalendarToolbar
+        weekLabel={formatWeekRange(currentWeekStart, currentLang)}
+        isCurrentWeek={isCurrentWeek}
+        onPreviousWeek={() => setCurrentWeekStart((week) => addWeeks(week, -1))}
+        onNextWeek={() => setCurrentWeekStart((week) => addWeeks(week, 1))}
+        onCurrentWeek={() => setCurrentWeekStart(getCurrentWeekStart())}
+        onPrint={handlePrint}
+        onAddLesson={handleAddLesson}
+        onCopyWeek={() => guardMutation(showComingSoon)}
+        onApplyToPeriod={() => guardMutation(showComingSoon)}
+        onRestoreDefaults={handleRecoverLessons}
+        isRestoring={isRecovering}
+      />
 
-          {/* Group 3: Classroom Selection */}
-          <div className="relative inline-flex grow items-center rounded-xl border border-gray-200 bg-white">
-            <span className="px-4 py-2.5 text-sm font-normal whitespace-nowrap text-[#646969]">
-              {t('weeklyCalendar.filters.classroom')}
-            </span>
-            <div className="h-full border-e border-gray-200" />
-            <CustomSelect
-              value={grade}
-              onChange={(val) => setGrade(val as string)}
-              options={classroomOptions}
-              placeholder={
-                !stage
-                  ? t('weeklyCalendar.filters.chooseStageFirst')
-                  : isLoadingClassrooms
-                    ? t('common.loading')
-                    : grade
-                      ? classroomOptions.find((c) => c.value === grade)?.label || ''
-                      : ''
-              }
-              disabled={!stage || isLoadingClassrooms}
-              variant="ghost"
-              showSearch={false}
-              className="w-full"
-            />
-          </div>
-
-          {/* Spacer to push clear button to the end */}
-          <div className="" />
-
-          {/* Clear Filters Button - Only show when at least one filter has a value */}
-          {(educationSystem || stage || grade) && (
-            <button
-              onClick={() => {
-                setEducationSystem('');
-                setSubSystemId('');
-                setStage('');
-                setGrade('');
-              }}
-              className="flex h-[40px] items-center justify-center gap-2 rounded-lg border border-green-500 bg-green-100 px-3 text-base font-normal text-green-500 transition-colors hover:bg-green-200 focus:border-transparent focus:ring-2 focus:ring-green-500 focus:outline-hidden"
-              title={t('actions.clearFilter')}
-            >
-              <img src={CancelXGreenIcon} alt="X" aria-hidden="true" className="h-5 w-5" />
-              <span>{t('actions.clearFilter')}</span>
-            </button>
-          )}
+      {!classroomId ? (
+        <div className="flex h-96 flex-col items-center justify-center gap-2 rounded-2xl border border-[#E2E8F0] bg-white text-center">
+          <p className="text-base font-semibold text-[black]">
+            {t('weeklyCalendar.filters.sectionLabel')}
+          </p>
+          <p className="text-sm text-[#9D9D9D]">{t('weeklyCalendar.selectClassroomPrompt')}</p>
         </div>
+      ) : isLoading ? (
+        <div className="flex h-96 items-center justify-center rounded-2xl border border-[#E2E8F0] bg-white">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#A7F3D0] border-t-[#1E7A52]" />
+        </div>
+      ) : (
+        <WeeklyTimetableGrid
+          id={PRINT_AREA_ID}
+          weekStart={currentWeekStart}
+          days={visibleDays}
+          rows={rows}
+          lessons={timetableLessons}
+          events={timetableEvents}
+          eventDays={eventDays}
+          lessonActions={lessonActions}
+          movingLessonId={movingLessonId}
+          onLessonClick={(lesson) => setSelectedLesson(toScheduleLesson(lesson))}
+          onEmptyCellClick={handleEmptyCellClick}
+          onLessonDrop={handleLessonDrop}
+        />
+      )}
 
-        {/* Calendar Content */}
-        {!grade ? (
-          <div className="flex h-96 flex-col items-center justify-center gap-2 text-center">
-            <p className="text-base font-medium text-black-900">
-              {t('weeklyCalendar.filters.classroom')}
-            </p>
-            <p className="text-sm text-[#646969]">{t('weeklyCalendar.selectClassroomPrompt')}</p>
-          </div>
-        ) : isLoading ? (
-          <div className="flex h-96 items-center justify-center">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-500"></div>
-          </div>
-        ) : (
-          <WeeklyScheduleCalendar
-            lessons={transformedLessons}
-            events={transformedEvents}
-            periodHeaders={periodHeaders}
-            periodSlots={periodSlots}
-            specialColumns={specialColumns}
-            lessonContextActions={lessonContextActions}
-            onLessonClick={handleViewDetails}
-            onEmptyCellClick={(...args) => guardMutation(() => handleEmptyCellClick(...args))}
-            onChangeDuration={(lesson, deltaMinutes) =>
-              guardMutation(() => {
-                void handleChangeDuration(lesson, deltaMinutes);
-              })
-            }
-            extendingLessonId={extendingLessonId}
-            onWeekChange={handleWeekChange}
-            weekStart={currentWeekStart}
-            workingDays={workingDays}
-          />
-        )}
+      <div className="flex justify-start">
+        <div className="flex w-full items-center gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-[17px] py-[13px] md:w-auto md:min-w-[347px]">
+          <span className="flex shrink-0 items-center justify-center rounded-full bg-[rgba(219,234,254,0.7)] p-1">
+            <CustomImage src={AlertCircleBlue16Icon} alt="" />
+          </span>
+          <p className="text-start text-sm leading-[19.6px] text-[#475569]">
+            <span className="font-semibold text-[#334155]">{t('weeklyCalendar.tip.label')}</span>{' '}
+            {t('weeklyCalendar.tip.dragLesson')}
+          </p>
+        </div>
       </div>
 
-      {/* Popups */}
       <LessonDetailsPopup
-        isOpen={detailsOpen}
-        onClose={() => {
-          setDetailsOpen(false);
-          setSelectedLesson(null);
-        }}
+        isOpen={Boolean(selectedLesson)}
+        onClose={() => setSelectedLesson(null)}
         lesson={selectedLesson}
+        onEdit={(lesson) => {
+          setSelectedLesson(null);
+          setLessonPopup({
+            mode: 'edit',
+            lessonId: lesson.id,
+            defaults: { subSystemId, gradeId, classroomId },
+          });
+        }}
       />
+
+      <AddEditLessonPopup
+        isOpen={Boolean(lessonPopup)}
+        onClose={() => setLessonPopup(null)}
+        onSaved={(message) => {
+          reloadLessons();
+          showSuccess(message);
+        }}
+        mode={lessonPopup?.mode ?? 'add'}
+        lessonId={lessonPopup?.lessonId}
+        defaults={lessonPopup?.defaults}
+      />
+
+      {successPopup}
 
       <DeleteLessonPopup
-        open={showDeletePopup}
+        open={Boolean(lessonPendingDelete)}
         lessonName={lessonPendingDelete?.subject ?? ''}
         onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
+        onCancel={() => setLessonPendingDelete(null)}
         isProcessing={isDeleting}
       />
-    </>
+    </div>
   );
-});
-
-WeeklyCalendar.displayName = 'WeeklyCalendar';
-
-export default WeeklyCalendar;
+}

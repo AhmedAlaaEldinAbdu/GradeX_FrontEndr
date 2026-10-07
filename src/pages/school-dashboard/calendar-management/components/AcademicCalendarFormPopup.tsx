@@ -153,7 +153,7 @@ type AcademicCalendarFormPopupProps = {
   open: boolean;
   calendarId?: string;
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (message: string) => void;
 };
 
 export default function AcademicCalendarFormPopup({
@@ -297,14 +297,10 @@ export default function AcademicCalendarFormPopup({
         showToast({ message: t('common.errorOccurred'), type: 'error' });
         return;
       }
-      showToast({
-        message: t(
-          isEdit ? 'academicCalendar.toast.editSuccess' : 'academicCalendar.toast.addSuccess'
-        ),
-        type: 'success',
-      });
       handleClose();
-      onSuccess?.();
+      onSuccess?.(
+        t(isEdit ? 'academicCalendar.toast.editSuccess' : 'academicCalendar.toast.addSuccess')
+      );
     } catch {
       showToast({ message: t('common.errorOccurred'), type: 'error' });
     }

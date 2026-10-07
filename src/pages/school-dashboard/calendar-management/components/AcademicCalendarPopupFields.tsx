@@ -4,6 +4,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import FormErrorMessage from '@/shared/components/FormErrorMessage';
 import ChevronDownGray16Icon from '@/assets/icons/ChevronDownGray16.svg';
 import CalendarAkarGrayIcon from '@/assets/icons/CalendarAkarGray.svg';
+import RadioDotWhite16Icon from '@/assets/icons/RadioDotWhite16.svg';
 
 const FIELD_BASE_CLASS =
   'w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]/50 text-xs leading-[16.8px] text-[#1E293B] transition-shadow placeholder:text-[#9D9D9D] focus:ring-2 focus:ring-[#1E7A52]/30 focus:outline-hidden';
@@ -256,5 +257,27 @@ export function PopupSelect(props: PopupSelectProps) {
         </ul>
       ) : null}
     </div>
+  );
+}
+
+type PopupRadioProps = {
+  checked: boolean;
+  label: string;
+  onSelect: () => void;
+};
+
+export function PopupRadio({ checked, label, onSelect }: PopupRadioProps) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2 text-sm leading-5 font-medium text-[black]">
+      <input type="radio" className="sr-only" checked={checked} onChange={onSelect} />
+      {checked ? (
+        <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[#1E7A52] p-px">
+          <CustomImage src={RadioDotWhite16Icon} alt="" />
+        </span>
+      ) : (
+        <span className="size-4 shrink-0 rounded-full border border-[#CBD5E1] bg-white" />
+      )}
+      {label}
+    </label>
   );
 }

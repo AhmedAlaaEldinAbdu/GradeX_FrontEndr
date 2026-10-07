@@ -3816,7 +3816,37 @@
       "division": "Abteilung",
       "global": "Global",
       "chooseEducationSystemFirst": "Bitte wählen Sie zuerst das Bildungssystem aus",
-      "chooseStageFirst": "Bitte wählen Sie zuerst die Stufe aus"
+      "chooseStageFirst": "Bitte wählen Sie zuerst die Stufe aus",
+      "systemLabel": "System:",
+      "stageLabel": "Stufe:",
+      "gradeLabel": "Klassenstufe:",
+      "sectionLabel": "Klasse:",
+      "all": "Alle",
+      "choose": "Auswählen",
+      "chooseGradeFirst": "Zuerst eine Klassenstufe wählen",
+      "noOptions": "Keine Optionen",
+      "moreFilters": "Weitere Filter",
+      "searchPlaceholder": "Nach Fach oder Lehrkraft suchen"
+    },
+    "subtitle": "Erstellen und verwalten Sie den Wochenplan für Unterricht und Veranstaltungen",
+    "toolbar": {
+      "copyWeek": "Woche kopieren",
+      "applyToPeriod": "Auf Zeitraum anwenden",
+      "restoreDefaults": "Standard wiederherstellen",
+      "addLesson": "Stunde hinzufügen",
+      "currentWeek": "Aktuelle Woche",
+      "previousWeek": "Vorherige Woche",
+      "nextWeek": "Nächste Woche",
+      "settings": "Einstellungen",
+      "print": "Drucken"
+    },
+    "grid": {
+      "time": "Zeit",
+      "hasEvents": "An diesem Tag gibt es Veranstaltungen"
+    },
+    "tip": {
+      "label": "Tipp:",
+      "dragLesson": "Ziehen Sie eine Stunde, um ihre Zeit zu ändern oder sie auf einen anderen Tag zu verschieben."
     }
   },
   "addLesson": {
@@ -3919,6 +3949,28 @@
       "endTimeMax": "Endzeit muss 15:15 Uhr oder früher sein",
       "timeEquality": "Start- und Endzeit dürfen nicht identisch sein",
       "endTimeBeforeStart": "Endzeit muss nach der Startzeit liegen"
+    },
+    "popup": {
+      "subtitleAdd": "Geben Sie die Stundendaten, den Termin und die Klasse ein",
+      "subtitleEdit": "Bearbeiten Sie Stundendaten, Termin und Klasse",
+      "academicSystem": "Akademisches System",
+      "selectAcademicSystem": "Akademisches System wählen",
+      "selectGrade": "Stufe wählen",
+      "selectClassroom": "Klassenstufe wählen",
+      "selectTeacher": "Lehrkraft wählen",
+      "selectSubjectFirst": "Bitte zuerst das Fach wählen",
+      "classworkFrom": "Klassenarbeit (von Seite)",
+      "classworkTo": "Klassenarbeit (bis Seite)",
+      "homeworkFrom": "Hausaufgabe (von Seite)",
+      "homeworkTo": "Hausaufgabe (bis Seite)",
+      "descriptionAr": "Beschreibung der Hausaufgabe (erste Sprache)",
+      "descriptionEn": "Beschreibung der Hausaufgabe (zweite Sprache)",
+      "attachments": "Anhänge",
+      "clickToUpload": "Zum Hochladen klicken",
+      "dragAndDrop": "oder Datei hierher ziehen",
+      "uploadHint": "JPG, PNG, GIF, SVG oder PDF (max. {{size}} MB)",
+      "fileTooLarge": "Die Datei {{name}} überschreitet die Größenbeschränkung",
+      "chooseClassroomFirst": "Wählen Sie zuerst eine Klasse in den Filtern"
     }
   },
   "fileUpload": {

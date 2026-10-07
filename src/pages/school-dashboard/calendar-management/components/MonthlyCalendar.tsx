@@ -8,6 +8,7 @@ import AddEditMonthlyEventPopup from '../popups/AddEditMonthlyEventPopup';
 import MonthlyEventDetailsPopup from '../popups/MonthlyEventDetailsPopup';
 import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import { useToast } from '@/shared/context/ToastContext';
+import { useSuccessPopup } from '@/hooks/useSuccessPopup';
 import {
   createMonthlyCalendarEvent,
   deleteMonthlyCalendarEvent,
@@ -39,6 +40,7 @@ import {
   MONTHLY_STAGE_PARAM,
   fromDayKey,
   getGridRange,
+  printElement,
   toDayKey,
   toneForId,
   type MonthlyCalendarItem,
@@ -122,28 +124,11 @@ const leaveDays = (leave: OfficialHoliday): Date[] => {
   return days;
 };
 
-// Copies the app's styles into a new window so the printed grid keeps its layout.
-const printElement = (element: HTMLElement, title: string) => {
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) return;
-  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-    .map((node) => node.outerHTML)
-    .join('');
-  const { dir, lang } = document.documentElement;
-  printWindow.document.write(
-    `<!doctype html><html dir="${dir}" lang="${lang}"><head><meta charset="utf-8"><title>${title}</title>${styles}<style>@page{size:landscape;margin:12mm}body{background:#fff;padding:16px}</style></head><body>${element.outerHTML}</body></html>`
-  );
-  printWindow.document.close();
-  printWindow.onload = () => {
-    printWindow.focus();
-    printWindow.print();
-  };
-};
-
 export default function MonthlyCalendar() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { showSuccess, successPopup } = useSuccessPopup();
   const dispatch = useAppDispatch();
   const userData = localStorage.getItem('userData') || undefined;
   const schoolBranchId = userData ? JSON.parse(userData)?.schoolBranchId : undefined;
@@ -519,14 +504,13 @@ export default function MonthlyCalendar() {
             : await dispatch(createMonthlyCalendarEvent(payload)).unwrap();
 
         if (res.isSuccess) {
-          showToast({
-            message: t(
+          showSuccess(
+            t(
               editorMode === 'edit'
                 ? 'monthlyCalendar.messages.eventUpdated'
                 : 'monthlyCalendar.messages.eventAdded'
-            ),
-            type: 'success',
-          });
+            )
+          );
           fetchEvents();
           handleCloseEditor();
           if (values.day) {
@@ -555,6 +539,7 @@ export default function MonthlyCalendar() {
       handleCloseEditor,
       handleSelectDay,
       showToast,
+      showSuccess,
       t,
     ]
   );
@@ -566,7 +551,7 @@ export default function MonthlyCalendar() {
       const res: any = await dispatch(deleteMonthlyCalendarEvent(eventPendingDelete.id)).unwrap();
       if (res.isSuccess || res == eventPendingDelete.id) {
         setEventPendingDelete(null);
-        showToast({ message: t('monthlyCalendar.messages.eventDeleted'), type: 'success' });
+        showSuccess(t('monthlyCalendar.messages.eventDeleted'));
         fetchEvents();
       } else {
         const errorMessage = res.successMessage || t('common.errorOccurred');
@@ -579,7 +564,7 @@ export default function MonthlyCalendar() {
         error?.message || (typeof error === 'string' ? error : t('common.errorOccurred'));
       showToast({ message, type: 'error', isRaw: true });
     }
-  }, [dispatch, eventPendingDelete, fetchEvents, showToast, t]);
+  }, [dispatch, eventPendingDelete, fetchEvents, showToast, showSuccess, t]);
 
   const detailsLeaves = useMemo<OfficialHoliday[]>(
     () => getLeavesForDay(selectedEvent?.day ?? selectedLeaveDay ?? ''),
@@ -674,6 +659,8 @@ export default function MonthlyCalendar() {
         leaves={detailsLeaves}
         filterOptions={{ grade: stageFilter, searchTerm: searchTerm }}
       />
+
+      {successPopup}
 
       <DeletePopup
         open={Boolean(eventPendingDelete)}

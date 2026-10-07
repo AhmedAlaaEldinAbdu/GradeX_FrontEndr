@@ -18,7 +18,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
 
   return (
     <nav
-      className="mb-6 flex items-center gap-2 text-sm leading-[22px] font-normal text-gray-600"
+      className="mx-1 mb-4 flex items-center gap-2 text-sm leading-[22px] font-normal text-gray-600"
       dir={direction}
     >
       {items?.map((item, index) => (
