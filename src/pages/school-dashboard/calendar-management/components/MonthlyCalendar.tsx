@@ -39,6 +39,7 @@ import {
   MONTHLY_STAGE_PARAM,
   fromDayKey,
   getGridRange,
+  printElement,
   toDayKey,
   toneForId,
   type MonthlyCalendarItem,
@@ -120,24 +121,6 @@ const leaveDays = (leave: OfficialHoliday): Date[] => {
     cursor.setDate(cursor.getDate() + 1);
   }
   return days;
-};
-
-// Copies the app's styles into a new window so the printed grid keeps its layout.
-const printElement = (element: HTMLElement, title: string) => {
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) return;
-  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-    .map((node) => node.outerHTML)
-    .join('');
-  const { dir, lang } = document.documentElement;
-  printWindow.document.write(
-    `<!doctype html><html dir="${dir}" lang="${lang}"><head><meta charset="utf-8"><title>${title}</title>${styles}<style>@page{size:landscape;margin:12mm}body{background:#fff;padding:16px}</style></head><body>${element.outerHTML}</body></html>`
-  );
-  printWindow.document.close();
-  printWindow.onload = () => {
-    printWindow.focus();
-    printWindow.print();
-  };
 };
 
 export default function MonthlyCalendar() {

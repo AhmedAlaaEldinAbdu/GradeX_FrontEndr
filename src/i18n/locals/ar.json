@@ -3917,7 +3917,7 @@
     }
   },
   "weeklyCalendar": {
-    "title": "التقويم الاسبوعي",
+    "title": "التقويم الأسبوعي",
     "selectStagePrompt": "الرجاء اختيار المرحلة التعليمية لعرض الجدول",
     "selectClassroomPrompt": "الرجاء اختيار الصف الدراسي لعرض الجدول",
     "recoverLessons": "إسترجاع الحصص بالتساوي",
@@ -3974,7 +3974,37 @@
       "division": "الشعبة",
       "global": "عالمي",
       "chooseEducationSystemFirst": "الرجاء اختيار النظام التعليمي أولاً",
-      "chooseStageFirst": "الرجاء اختيار المرحلة أولاً"
+      "chooseStageFirst": "الرجاء اختيار المرحلة أولاً",
+      "systemLabel": "النظام:",
+      "stageLabel": "المرحلة:",
+      "gradeLabel": "الصف:",
+      "sectionLabel": "الشعبة:",
+      "all": "الكل",
+      "choose": "اختر",
+      "chooseGradeFirst": "اختر الصف أولاً",
+      "noOptions": "لا توجد خيارات",
+      "moreFilters": "المزيد من الفلاتر",
+      "searchPlaceholder": "ابحث باسم المادة أو المعلم"
+    },
+    "subtitle": "قم بإنشاء وإدارة الجدول الأسبوعي للحصص والفعاليات",
+    "toolbar": {
+      "copyWeek": "نسخ الأسبوع",
+      "applyToPeriod": "تطبيق على فترة",
+      "restoreDefaults": "استرجاع الافتراضي",
+      "addLesson": "إضافة حصة",
+      "currentWeek": "الأسبوع الحالي",
+      "previousWeek": "الأسبوع السابق",
+      "nextWeek": "الأسبوع التالي",
+      "settings": "إعدادات",
+      "print": "طباعة"
+    },
+    "grid": {
+      "time": "الوقت",
+      "hasEvents": "يوجد فعاليات في هذا اليوم"
+    },
+    "tip": {
+      "label": "نصيحة:",
+      "dragLesson": "اسحب الحصة لتغيير وقتها أو نقلها ليوم آخر."
     }
   },
   "addLesson": {
@@ -4077,6 +4107,28 @@
       "endTimeMax": "وقت الانتهاء يجب أن يكون 03:15 مساءً أو قبل ذلك",
       "timeEquality": "لا يمكن أن يكون وقت البدء والانتهاء متطابقين",
       "endTimeBeforeStart": "وقت الانتهاء يجب أن يكون بعد وقت البدء"
+    },
+    "popup": {
+      "subtitleAdd": "قم بإدخال بيانات الحصة الدراسية و تحديد الموعد و الفصل",
+      "subtitleEdit": "قم بتعديل بيانات الحصة الدراسية و الموعد و الفصل",
+      "academicSystem": "النظام الأكاديمي",
+      "selectAcademicSystem": "اختر النظام الأكاديمي",
+      "selectGrade": "اختر مرحلة",
+      "selectClassroom": "اختر صف",
+      "selectTeacher": "اختر اسم المعلم",
+      "selectSubjectFirst": "برجاء اختيار اسم المادة اولاً",
+      "classworkFrom": "عمل الصف (من صفحة)",
+      "classworkTo": "عمل الصف (الي صفحة)",
+      "homeworkFrom": "الواجب المنزلي (من صفحة)",
+      "homeworkTo": "الواجب المنزلي (الي صفحة)",
+      "descriptionAr": "وصف الواجب (اللغة الأولي)",
+      "descriptionEn": "وصف الواجب (اللغة الثانية)",
+      "attachments": "مرفقات",
+      "clickToUpload": "اضغط لرفع الملف",
+      "dragAndDrop": "أو اسحب الملف وأفلته هنا",
+      "uploadHint": "JPG أو PNG, GIF, SVG , PDF (الحد الأقصى {{size}} ميجابايت)",
+      "fileTooLarge": "الملف {{name}} أكبر من الحد المسموح",
+      "chooseClassroomFirst": "اختر الصف الدراسي من الفلاتر أولاً"
     }
   },
   "fileUpload": {

@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '@/shared/popups/Modal';
+import Button from '@/shared/components/Button';
+import CustomImage from '@/shared/components/CustomImage';
 import type { ScheduleLesson } from '@/shared/components/WeeklyScheduleCalendar';
 import type { Lesson } from '@/services/api/types/lessons.types';
 import type { StudentDto } from '@/services/api/types/students.types';
 import { getStudentFullName } from '@/services/api/types/students.types';
 import { formatTimeDisplay, formatDateDisplay } from '@/lib/utils';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
-import CustomImage from '@/shared/components/CustomImage';
+import CloseXGreenIcon from '@/assets/icons/CloseXGreen.svg';
+import ClockGray14Icon from '@/assets/icons/ClockGray14.svg';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { fetchLessonByIdSilent } from '@/redux/features/lessons/lessonsSlice';
 import { fetchStudentByIdSilent } from '@/redux/features/students/studentsSlice';
@@ -16,9 +19,38 @@ interface LessonDetailsPopupProps {
   isOpen: boolean;
   onClose: () => void;
   lesson: ScheduleLesson | null;
+  onEdit?: (lesson: ScheduleLesson) => void;
 }
 
-export default function LessonDetailsPopup({ isOpen, onClose, lesson }: LessonDetailsPopupProps) {
+function DetailRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1 text-start">
+      <span className="text-xs leading-4 text-[#9D9D9D]">{label}</span>
+      <span className="text-sm leading-5 font-medium break-words text-[black]">
+        {children || '-'}
+      </span>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="flex flex-col gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]/50 p-4">
+      <h3 className="text-start text-sm leading-5 font-bold text-[black]">{title}</h3>
+      {children}
+    </section>
+  );
+}
+
+const pageRange = (from?: number | null, to?: number | null) =>
+  from || to ? `${from ?? '-'} - ${to ?? '-'}` : '';
+
+export default function LessonDetailsPopup({
+  isOpen,
+  onClose,
+  lesson,
+  onEdit,
+}: LessonDetailsPopupProps) {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const [lessonDetails, setLessonDetails] = useState<Lesson | null>(null);
@@ -27,226 +59,191 @@ export default function LessonDetailsPopup({ isOpen, onClose, lesson }: LessonDe
   const [error, setError] = useState<string | null>(null);
 
   const currentLang = i18n.language;
+  const isArabic = currentLang === 'ar';
+  const lessonId = lesson?.id;
 
   // Fetch full lesson details when popup opens
   useEffect(() => {
-    if (isOpen && lesson?.id) {
-      setIsLoading(true);
-      setError(null);
-      setFirstStudent(null);
-
-      (async () => {
-        try {
-          const details = await dispatch(fetchLessonByIdSilent(lesson.id)).unwrap();
-          setLessonDetails(details);
-
-          // Fetch first student details if there are students assigned
-          if (details.lessonsStudent && details.lessonsStudent.length > 0) {
-            const firstStudentId = details.lessonsStudent[0].studentId;
-            try {
-              const studentDetails = await dispatch(
-                fetchStudentByIdSilent(firstStudentId)
-              ).unwrap();
-              setFirstStudent(studentDetails);
-            } catch {
-              console.warn('Failed to fetch student details');
-            }
-          }
-        } catch (err) {
-          setError((err as { message?: string })?.message || t('common.error'));
-        } finally {
-          setIsLoading(false);
-        }
-      })();
-    } else if (!isOpen) {
-      // Reset when closed
+    if (!isOpen || !lessonId) {
       setLessonDetails(null);
       setFirstStudent(null);
       setError(null);
+      return;
     }
-  }, [dispatch, isOpen, lesson?.id, t]);
+
+    let cancelled = false;
+    setIsLoading(true);
+    setError(null);
+    setFirstStudent(null);
+
+    (async () => {
+      try {
+        const details = await dispatch(fetchLessonByIdSilent(lessonId)).unwrap();
+        if (cancelled) return;
+        setLessonDetails(details);
+
+        const firstStudentId = details.lessonsStudent?.[0]?.studentId;
+        if (firstStudentId) {
+          try {
+            const studentDetails = await dispatch(fetchStudentByIdSilent(firstStudentId)).unwrap();
+            if (!cancelled) setFirstStudent(studentDetails);
+          } catch {
+            console.warn('Failed to fetch student details');
+          }
+        }
+      } catch (err) {
+        if (!cancelled) setError((err as { message?: string })?.message || t('common.error'));
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, isOpen, lessonId, t]);
 
   if (!lesson) return null;
 
-  const subjectName =
-    currentLang === 'ar'
-      ? lessonDetails?.materialNameAr
-      : lessonDetails?.materialNameEn || lessonDetails?.materialNameAr;
+  const localized = (ar?: string | null, en?: string | null) => (isArabic ? ar : en || ar);
+  const subjectName = localized(lessonDetails?.materialNameAr, lessonDetails?.materialNameEn);
+  const gradeName = localized(lessonDetails?.gradeNameAr, lessonDetails?.gradeNameEn);
+  const classroomName = localized(lessonDetails?.classroomNameAr, lessonDetails?.classroomNameEn);
+  const homeworkDescription = localized(
+    lessonDetails?.homeworkDescriptionAr,
+    lessonDetails?.homeworkDescriptionEn
+  );
 
-  const gradeName =
-    currentLang === 'ar'
-      ? lessonDetails?.gradeNameAr
-      : lessonDetails?.gradeNameEn || lessonDetails?.gradeNameAr;
-
-  const classroomName =
-    currentLang === 'ar'
-      ? lessonDetails?.classroomNameAr
-      : lessonDetails?.classroomNameEn || lessonDetails?.classroomNameAr;
-
-  // Calculate student count display
   const studentCount = lessonDetails?.lessonsStudent?.length || 0;
   const remainingStudents = studentCount > 1 ? studentCount - 1 : 0;
-
-  // Get first student name and image
   const firstStudentName = firstStudent ? getStudentFullName(firstStudent) : null;
-  const firstStudentImage = firstStudent?.profilePicture || null;
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="md"
-      showCloseButton
-      showHeader={true}
-      title={lessonDetails ? formatDateDisplay(lessonDetails.date, currentLang) : ''}
+      showHeader={false}
+      placement="end"
+      panelClassName="max-w-[650px]! rounded-e-none rounded-s-lg border border-[#E2E8F0]/90 shadow-[0px_25px_50px_-12px_rgba(2,6,23,0.2)]! overflow-hidden"
+      contentClassName="flex min-h-0 flex-col overflow-hidden! p-0!"
     >
-      <div className="px-8 py-6" dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#F1F5F9] px-8 pt-7 pb-[21px]">
+        <div className="flex min-w-0 flex-col gap-1 text-start">
+          <h2 className="truncate text-xl leading-7 font-bold text-[black]">
+            {subjectName || lesson.subject}
+          </h2>
+          <p className="text-xs leading-4 text-[#9D9D9D]">
+            {lessonDetails ? formatDateDisplay(lessonDetails.date, currentLang) : ''}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={t('common.close')}
+          className="shrink-0 rounded-lg p-2 transition-colors hover:bg-[#F1F5F9]"
+        >
+          <CustomImage src={CloseXGreenIcon} alt="" />
+        </button>
+      </div>
+
+      <div className="relative flex min-h-0 flex-1 [scrollbar-width:thin] flex-col gap-5 overflow-y-auto px-8 py-6">
         {isLoading ? (
           <div className="flex h-48 items-center justify-center">
-            <div className="border-primary-500 h-10 w-10 animate-spin rounded-full border-b-2"></div>
+            <div className="size-10 animate-spin rounded-full border-4 border-[#A7F3D0] border-t-[#1E7A52]" />
           </div>
         ) : error ? (
           <div className="flex h-48 items-center justify-center">
             <p className="text-red-500">{error}</p>
           </div>
         ) : lessonDetails ? (
-          <div className="space-y-5">
-            {/* Row 1: Start Time & End Time */}
-            <div className="grid grid-cols-2 items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-base font-medium text-[#3A3A3A]">
-                  {t('weeklyCalendar.startTime')}:
-                </span>
-                <span className="text-sm font-normal text-[#3A3A3A]">
-                  {formatTimeDisplay(lessonDetails.startTime, currentLang)}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-medium text-[#3A3A3A]">
-                  {t('weeklyCalendar.endTime')}:
-                </span>
-                <span className="text-sm font-normal text-[#3A3A3A]">
-                  {formatTimeDisplay(lessonDetails.endTime, currentLang)}
-                </span>
-              </div>
+          <>
+            <div className="flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-4 py-3 text-sm leading-5 font-semibold text-[#1E7A52]">
+              <CustomImage src={ClockGray14Icon} alt="" className="shrink-0" />
+              <span dir="ltr">
+                {formatTimeDisplay(lessonDetails.startTime, currentLang)} -{' '}
+                {formatTimeDisplay(lessonDetails.endTime, currentLang)}
+              </span>
             </div>
 
-            {/* Row 2: Subject Name & Teacher Name */}
-            <div className="grid grid-cols-2 items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-base font-medium text-[#3A3A3A]">
-                  {t('weeklyCalendar.subjectName')}:
-                </span>
-                <span className="text-sm font-normal text-[#3A3A3A]">{subjectName}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-medium text-[#3A3A3A]">
-                  {t('weeklyCalendar.teacherName')}:
-                </span>
-                <span className="text-sm font-normal text-[#3A3A3A]">
+            <Section title={t('weeklyCalendar.lessonDetails')}>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <DetailRow label={t('weeklyCalendar.subjectName')}>{subjectName}</DetailRow>
+                <DetailRow label={t('weeklyCalendar.teacherName')}>
                   {lessonDetails.teacherName}
-                </span>
+                </DetailRow>
               </div>
+              <DetailRow label={t('weeklyCalendar.bookName')}>{lessonDetails.bookName}</DetailRow>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <DetailRow label={t('weeklyCalendar.educationalStages')}>{gradeName}</DetailRow>
+                <DetailRow label={t('weeklyCalendar.classrooms')}>{classroomName}</DetailRow>
+              </div>
+            </Section>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Section title={t('weeklyCalendar.classwork')}>
+                <DetailRow
+                  label={`${t('weeklyCalendar.fromPage')} - ${t('weeklyCalendar.toPage')}`}
+                >
+                  {pageRange(lessonDetails.classworkFromPage, lessonDetails.classworkToPage)}
+                </DetailRow>
+              </Section>
+              <Section title={t('weeklyCalendar.homework')}>
+                <DetailRow
+                  label={`${t('weeklyCalendar.fromPage')} - ${t('weeklyCalendar.toPage')}`}
+                >
+                  {pageRange(lessonDetails.homeworkFromPage, lessonDetails.homeworkToPage)}
+                </DetailRow>
+              </Section>
             </div>
 
-            {/* Row 3: Book Name */}
-            <div className="flex items-center gap-2">
-              <span className="text-base font-medium text-[#3A3A3A]">
-                {t('weeklyCalendar.bookName')}:
-              </span>
-              <span className="text-sm font-normal text-[#3A3A3A]">{lessonDetails.bookName}</span>
-            </div>
+            {homeworkDescription ? (
+              <DetailRow label={t('lesson.popup.descriptionAr')}>{homeworkDescription}</DetailRow>
+            ) : null}
 
-            {/* Row 4: Classwork */}
-            <div className="grid grid-cols-3 gap-4">
-              <span className="flex items-start text-base font-medium text-[#3A3A3A]">
-                {t('weeklyCalendar.classwork')}
+            <div className="flex flex-col gap-1.5 text-start">
+              <span className="text-xs leading-4 text-[#9D9D9D]">
+                {t('weeklyCalendar.assigned')}
               </span>
-              <div className="flex items-center gap-2">
-                <span className="flex items-start text-base font-medium text-[#3A3A3A]">
-                  {t('weeklyCalendar.fromPage')}:
-                </span>
-                <span className="text-sm font-normal text-[#3A3A3A]">
-                  {lessonDetails.classworkFromPage}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="flex items-start text-base font-medium text-[#3A3A3A]">
-                  {t('weeklyCalendar.toPage')}:
-                </span>
-                <span className="text-sm font-normal text-[#3A3A3A]">
-                  {lessonDetails.classworkToPage}
-                </span>
-              </div>
-            </div>
-
-            {/* Row 5: Homework */}
-            <div className="grid grid-cols-3 gap-4">
-              <span className="flex items-start text-base font-medium text-[#3A3A3A]">
-                {t('weeklyCalendar.homework')}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="flex items-start text-base font-medium text-[#3A3A3A]">
-                  {t('weeklyCalendar.fromPage')}:
-                </span>
-                <span className="text-sm font-normal text-[#3A3A3A]">
-                  {lessonDetails.homeworkFromPage}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="flex items-start text-base font-medium text-[#3A3A3A]">
-                  {t('weeklyCalendar.toPage')}:
-                </span>
-                <span className="text-sm font-normal text-[#3A3A3A]">
-                  {lessonDetails.homeworkToPage}
-                </span>
-              </div>
-            </div>
-
-            {/* Row 6: Selected Students */}
-            <div className="flex items-center gap-2">
-              <span className="text-base font-medium text-[#3A3A3A]">
-                {t('weeklyCalendar.assigned')}:
-              </span>
-              {remainingStudents > 0 ? (
+              {remainingStudents > 0 || studentCount === 1 ? (
                 <span className="flex items-center gap-2">
                   <CustomImage
-                    src={firstStudentImage || DefaultAvatar}
+                    src={firstStudent?.profilePicture || DefaultAvatar}
                     alt={firstStudentName || 'Student'}
                     fallbackSrc={DefaultAvatar}
-                    className="h-9 w-9 rounded-lg object-cover"
+                    className="size-9 rounded-lg object-cover"
                   />
-                  <span className="text-sm font-normal text-[#3A3A3A]">{firstStudentName}</span>
-                  <span className="text-sm font-normal text-green-500">+{remainingStudents}</span>
+                  <span className="text-sm font-medium text-[black]">{firstStudentName}</span>
+                  {remainingStudents > 0 ? (
+                    <span className="text-sm font-medium text-[#1E7A52]">+{remainingStudents}</span>
+                  ) : null}
                 </span>
               ) : (
-                <span className="text-sm font-normal text-[#3A3A3A]">
+                <span className="text-sm leading-5 font-medium text-[black]">
                   {t('weeklyCalendar.allStudents')}
                 </span>
               )}
             </div>
-
-            {/* Row 7: Educational Stages */}
-            <div className="flex items-center gap-2">
-              <span className="text-base font-medium text-[#3A3A3A]">
-                {t('weeklyCalendar.educationalStages')}:
-              </span>
-              <span className="rounded-lg bg-[#DFF8ED] px-3 py-1 text-lg font-normal text-[#3A3A3A]">
-                {gradeName}
-              </span>
-            </div>
-
-            {/* Row 8: Classroom */}
-            <div className="flex items-center gap-2">
-              <span className="text-base font-medium text-[#3A3A3A]">
-                {t('weeklyCalendar.classrooms')}:
-              </span>
-              <span className="rounded-lg bg-[#DFF8ED] px-3 py-1 text-lg font-normal text-[#3A3A3A]">
-                {classroomName}
-              </span>
-            </div>
-          </div>
+          </>
         ) : null}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-end gap-3 border-t border-[#F1F5F9] bg-[#F8FAFC]/70 px-8 pt-[21px] pb-5">
+        {onEdit && lessonDetails ? (
+          <Button
+            actionKey="edit"
+            onClick={() => onEdit(lesson)}
+            className="h-10 gap-2 rounded-lg! border-0! bg-[#1E7A52]! px-6! py-2.5! text-sm! leading-[19.6px] font-semibold! text-white! shadow-none! hover:bg-[#1E7A52]/90!"
+          >
+            {t('weeklyCalendar.editLesson')}
+          </Button>
+        ) : null}
+        <button
+          type="button"
+          onClick={onClose}
+          className="h-[42px] rounded-lg border border-[#1E7A52] bg-white px-[25px] text-sm leading-5 font-medium text-[#1E7A52] transition-colors hover:bg-[#F0FDF4]"
+        >
+          {t('common.close')}
+        </button>
       </div>
     </Modal>
   );

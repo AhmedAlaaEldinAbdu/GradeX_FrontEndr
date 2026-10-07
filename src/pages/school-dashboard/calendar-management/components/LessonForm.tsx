@@ -32,6 +32,7 @@ import { tokenManager } from '@/lib/auth/token-manager';
 import type { Book } from '@/types/books';
 import type { CreateLessonRequest, Lesson } from '@/services/api/types/lessons.types';
 import { useLessonValidations } from '@/validations/lessons-validations';
+import { buildLessonDateTime, mapLessonToFormData } from './LessonFormUtils';
 
 export type LessonType = 'in-person' | 'remote';
 
@@ -71,51 +72,6 @@ interface LessonFormProps {
   mode: 'add' | 'edit';
   initialData?: LessonData | Lesson;
 }
-
-// Helper to convert Lesson to LessonData format
-function mapLessonToFormData(lesson: Lesson): LessonData {
-  return {
-    id: lesson.id,
-    lessonType: 'in-person',
-    materialId: lesson.materialId,
-    teacherId: lesson.teacherId,
-    gradeId: lesson.gradeId,
-    classroomId: lesson.classroomId,
-    bookId: lesson.bookId,
-    classworkFromPage: String(lesson.classworkFromPage),
-    classworkToPage: String(lesson.classworkToPage),
-    homeworkFromPage: String(lesson.homeworkFromPage),
-    homeworkToPage: String(lesson.homeworkToPage),
-    descriptionAr: lesson.homeworkDescriptionAr || '',
-    descriptionEn: lesson.homeworkDescriptionEn || '',
-    date: lesson.date ? lesson.date.split('T')[0] : '',
-    startTime: lesson.startTime ? lesson.startTime.substring(0, 5) : '',
-    endTime: lesson.endTime ? lesson.endTime.substring(0, 5) : '',
-    applyToAllWeeks: lesson.applyToAllWeeks ?? lesson.ApplyToAllWeeks ?? false,
-    isHomeworkForAllStudents: lesson.isHomeworkForAllStudents,
-    attachments:
-      lesson.attachments?.map((a) => ({
-        fileName: a.fileName,
-        oldFile: a.fileName,
-        fileUrl: a.fileUrl,
-      })) || [],
-    selectedStudents:
-      lesson.lessonsStudent?.map((s) => ({
-        id: s.studentId,
-        name: s.studentName || '',
-        avatar: s.studentProfilePicture || '',
-      })) || [],
-  };
-}
-
-const buildLessonDateTime = (date: string, time: string): string => {
-  const datePart = date?.split('T')[0];
-  const timePart = time || '08:00';
-  const timeWithSeconds = timePart.split(':').length === 3 ? timePart : `${timePart}:00`;
-  const lessonDate = datePart ? new Date(`${datePart}T${timeWithSeconds}`) : new Date();
-
-  return Number.isNaN(lessonDate.getTime()) ? new Date().toISOString() : lessonDate.toISOString();
-};
 
 export default function LessonForm({ mode, initialData }: LessonFormProps) {
   const { t } = useTranslation();

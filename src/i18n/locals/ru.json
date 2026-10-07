@@ -3830,7 +3830,37 @@
       "division": "Подразделение",
       "global": "Общий",
       "chooseEducationSystemFirst": "Сначала выберите систему образования",
-      "chooseStageFirst": "Сначала выберите ступень"
+      "chooseStageFirst": "Сначала выберите ступень",
+      "systemLabel": "Система:",
+      "stageLabel": "Ступень:",
+      "gradeLabel": "Класс:",
+      "sectionLabel": "Группа:",
+      "all": "Все",
+      "choose": "Выбрать",
+      "chooseGradeFirst": "Сначала выберите класс",
+      "noOptions": "Нет вариантов",
+      "moreFilters": "Больше фильтров",
+      "searchPlaceholder": "Поиск по предмету или учителю"
+    },
+    "subtitle": "Создавайте и управляйте недельным расписанием уроков и мероприятий",
+    "toolbar": {
+      "copyWeek": "Копировать неделю",
+      "applyToPeriod": "Применить к периоду",
+      "restoreDefaults": "Восстановить по умолчанию",
+      "addLesson": "Добавить урок",
+      "currentWeek": "Текущая неделя",
+      "previousWeek": "Предыдущая неделя",
+      "nextWeek": "Следующая неделя",
+      "settings": "Настройки",
+      "print": "Печать"
+    },
+    "grid": {
+      "time": "Время",
+      "hasEvents": "В этот день есть мероприятия"
+    },
+    "tip": {
+      "label": "Совет:",
+      "dragLesson": "Перетащите урок, чтобы изменить его время или перенести на другой день."
     }
   },
   "addLesson": {
@@ -3933,6 +3963,28 @@
       "endTimeMax": "Время окончания должно быть 15:15 или раньше",
       "timeEquality": "Время начала и окончания не могут совпадать",
       "endTimeBeforeStart": "Время окончания должно быть позже времени начала"
+    },
+    "popup": {
+      "subtitleAdd": "Введите данные урока, время и класс",
+      "subtitleEdit": "Измените данные урока, время и класс",
+      "academicSystem": "Академическая система",
+      "selectAcademicSystem": "Выберите академическую систему",
+      "selectGrade": "Выберите ступень",
+      "selectClassroom": "Выберите класс",
+      "selectTeacher": "Выберите учителя",
+      "selectSubjectFirst": "Сначала выберите предмет",
+      "classworkFrom": "Классная работа (со страницы)",
+      "classworkTo": "Классная работа (до страницы)",
+      "homeworkFrom": "Домашнее задание (со страницы)",
+      "homeworkTo": "Домашнее задание (до страницы)",
+      "descriptionAr": "Описание задания (первый язык)",
+      "descriptionEn": "Описание задания (второй язык)",
+      "attachments": "Вложения",
+      "clickToUpload": "Нажмите для загрузки",
+      "dragAndDrop": "или перетащите файл сюда",
+      "uploadHint": "JPG, PNG, GIF, SVG или PDF (макс. {{size}} МБ)",
+      "fileTooLarge": "Файл {{name}} превышает допустимый размер",
+      "chooseClassroomFirst": "Сначала выберите класс в фильтрах"
     }
   },
   "fileUpload": {

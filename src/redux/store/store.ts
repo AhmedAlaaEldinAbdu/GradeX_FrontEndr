@@ -45,6 +45,7 @@ import requestAppointmentsReducer from '../features/requestAppointmentSlice';
 import teacherRequestsReducer from '../features/teacher-requests/teacherRequestsSlice';
 import schoolNotificationsReducer from '../features/schoolNotificationsSlice';
 import aiExamReducer from '../features/ai-exam/aiExamSlice';
+import pageHeaderReducer from '../features/page-header/pageHeaderSlice';
 
 export const store = configureStore({
   reducer: {
@@ -94,6 +95,7 @@ export const store = configureStore({
     teacherRequests: teacherRequestsReducer,
     schoolNotifications: schoolNotificationsReducer,
     aiExam: aiExamReducer,
+    pageHeader: pageHeaderReducer,
   },
 });
 

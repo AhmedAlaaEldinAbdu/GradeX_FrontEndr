@@ -16,10 +16,10 @@ import type { Classroom } from '@/services/api/types/classrooms.types';
 import { useScrollToFirstError } from '@/hooks/useScrollToFirstError';
 import CloseXGreenIcon from '@/assets/icons/CloseXGreen.svg';
 import PlusWhite16Icon from '@/assets/icons/PlusWhite16.svg';
-import RadioDotWhite16Icon from '@/assets/icons/RadioDotWhite16.svg';
 import {
   PopupField,
   PopupPickerInput,
+  PopupRadio,
   PopupSelect,
   PopupTextInput,
 } from '../components/AcademicCalendarPopupFields';
@@ -36,28 +36,6 @@ interface AddEditMonthlyEventPopupProps {
   schoolBranchId: string;
   gradeOptionsLoading?: boolean;
   classroomOptionsLoading?: boolean;
-}
-
-type DurationRadioProps = {
-  checked: boolean;
-  label: string;
-  onSelect: () => void;
-};
-
-function DurationRadio({ checked, label, onSelect }: DurationRadioProps) {
-  return (
-    <label className="flex cursor-pointer items-center gap-2 text-sm leading-5 font-medium text-[black]">
-      <input type="radio" className="sr-only" checked={checked} onChange={onSelect} />
-      {checked ? (
-        <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[#1E7A52] p-px">
-          <CustomImage src={RadioDotWhite16Icon} alt="" />
-        </span>
-      ) : (
-        <span className="size-4 shrink-0 rounded-full border border-[#CBD5E1] bg-white" />
-      )}
-      {label}
-    </label>
-  );
 }
 
 export default function AddEditMonthlyEventPopup({
@@ -343,12 +321,12 @@ export default function AddEditMonthlyEventPopup({
 
         <PopupField name="duration" label={t('monthlyCalendar.form.duration')} required>
           <div className="flex flex-wrap items-center gap-6">
-            <DurationRadio
+            <PopupRadio
               checked={isFullDay}
               label={t('monthlyCalendar.form.fullDay')}
               onSelect={() => handleDurationChange(true)}
             />
-            <DurationRadio
+            <PopupRadio
               checked={!isFullDay}
               label={t('monthlyCalendar.form.customDuration')}
               onSelect={() => handleDurationChange(false)}

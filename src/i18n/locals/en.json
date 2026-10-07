@@ -3951,7 +3951,37 @@
       "division": "Division",
       "global": "Global",
       "chooseEducationSystemFirst": "Please select the education system first",
-      "chooseStageFirst": "Please select the stage first"
+      "chooseStageFirst": "Please select the stage first",
+      "systemLabel": "System:",
+      "stageLabel": "Stage:",
+      "gradeLabel": "Grade:",
+      "sectionLabel": "Section:",
+      "all": "All",
+      "choose": "Choose",
+      "chooseGradeFirst": "Choose a grade first",
+      "noOptions": "No options",
+      "moreFilters": "More filters",
+      "searchPlaceholder": "Search by subject or teacher"
+    },
+    "subtitle": "Create and manage the weekly schedule of lessons and events",
+    "toolbar": {
+      "copyWeek": "Copy week",
+      "applyToPeriod": "Apply to period",
+      "restoreDefaults": "Restore defaults",
+      "addLesson": "Add lesson",
+      "currentWeek": "Current week",
+      "previousWeek": "Previous week",
+      "nextWeek": "Next week",
+      "settings": "Settings",
+      "print": "Print"
+    },
+    "grid": {
+      "time": "Time",
+      "hasEvents": "This day has events"
+    },
+    "tip": {
+      "label": "Tip:",
+      "dragLesson": "Drag a lesson to change its time or move it to another day."
     }
   },
   "addLesson": {
@@ -4054,6 +4084,28 @@
       "endTimeMax": "End time must be 03:15 PM or earlier",
       "timeEquality": "Start and end time cannot be the same",
       "endTimeBeforeStart": "End time must be after start time"
+    },
+    "popup": {
+      "subtitleAdd": "Enter the lesson details and set its time and classroom",
+      "subtitleEdit": "Edit the lesson details, time and classroom",
+      "academicSystem": "Academic System",
+      "selectAcademicSystem": "Select academic system",
+      "selectGrade": "Select stage",
+      "selectClassroom": "Select grade",
+      "selectTeacher": "Select teacher",
+      "selectSubjectFirst": "Please select the subject first",
+      "classworkFrom": "Classwork (From Page)",
+      "classworkTo": "Classwork (To Page)",
+      "homeworkFrom": "Homework (From Page)",
+      "homeworkTo": "Homework (To Page)",
+      "descriptionAr": "Homework Description (First Language)",
+      "descriptionEn": "Homework Description (Second Language)",
+      "attachments": "Attachments",
+      "clickToUpload": "Click to upload",
+      "dragAndDrop": "or drag and drop the file here",
+      "uploadHint": "JPG, PNG, GIF, SVG or PDF (max {{size}} MB)",
+      "fileTooLarge": "File {{name}} exceeds the size limit",
+      "chooseClassroomFirst": "Select a classroom from the filters first"
     }
   },
   "fileUpload": {
