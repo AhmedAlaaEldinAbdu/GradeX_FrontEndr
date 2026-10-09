@@ -156,13 +156,11 @@ function buildLessonFormData(data: CreateLessonRequest, attachmentFiles?: File[]
     formData.append('ClassworkNote', data.classworkNote);
   }
 
-  // Handle attachments - can be files or attachment metadata
   if (attachmentFiles && attachmentFiles.length > 0) {
-    attachmentFiles.forEach((file) => {
-      formData.append('Attachments', file);
+    attachmentFiles.forEach((file, index) => {
+      formData.append(`Attachments[${index}].FileName`, file.name.replace(/\.[^/.]+$/, ''));
+      formData.append(`Attachments[${index}].FileUrl`, file);
     });
-  } else if (data.attachments) {
-    formData.append('Attachments', JSON.stringify(data.attachments));
   }
 
   return formData;

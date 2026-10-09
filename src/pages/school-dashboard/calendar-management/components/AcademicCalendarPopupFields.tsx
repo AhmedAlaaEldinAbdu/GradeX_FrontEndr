@@ -68,6 +68,38 @@ export function PopupTextInput({
   );
 }
 
+type PopupTextAreaProps = {
+  name: string;
+  value: string;
+  onChange: (value: string) => void;
+  onBlur?: () => void;
+  hasError?: boolean;
+  placeholder?: string;
+  rows?: number;
+};
+
+export function PopupTextArea({
+  name,
+  value,
+  onChange,
+  onBlur,
+  hasError = false,
+  placeholder,
+  rows = 3,
+}: PopupTextAreaProps) {
+  return (
+    <textarea
+      name={name}
+      value={value}
+      rows={rows}
+      placeholder={placeholder}
+      onChange={(event) => onChange(event.target.value)}
+      onBlur={onBlur}
+      className={`${FIELD_BASE_CLASS} resize-y px-[17px] py-2.5 ${errorBorder(hasError)}`}
+    />
+  );
+}
+
 type PickerInputProps = {
   name: string;
   type: 'date' | 'time';

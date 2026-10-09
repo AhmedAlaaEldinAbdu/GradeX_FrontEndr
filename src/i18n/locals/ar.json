@@ -4121,14 +4121,20 @@
       "classworkTo": "عمل الصف (الي صفحة)",
       "homeworkFrom": "الواجب المنزلي (من صفحة)",
       "homeworkTo": "الواجب المنزلي (الي صفحة)",
-      "descriptionAr": "وصف الواجب (اللغة الأولي)",
-      "descriptionEn": "وصف الواجب (اللغة الثانية)",
       "attachments": "مرفقات",
       "clickToUpload": "اضغط لرفع الملف",
       "dragAndDrop": "أو اسحب الملف وأفلته هنا",
       "uploadHint": "JPG أو PNG, GIF, SVG , PDF (الحد الأقصى {{size}} ميجابايت)",
       "fileTooLarge": "الملف {{name}} أكبر من الحد المسموح",
-      "chooseClassroomFirst": "اختر الصف الدراسي من الفلاتر أولاً"
+      "chooseClassroomFirst": "اختر الصف الدراسي من الفلاتر أولاً",
+      "bookNote": "ملاحظة على الكتاب",
+      "bookNotePlaceholder": "أدخل ملاحظة على الكتاب",
+      "classworkNote": "ملاحظة على عمل الصف",
+      "classworkNotePlaceholder": "أدخل ملاحظة على عمل الصف",
+      "homeworkName": "اسم الواجب",
+      "homeworkNamePlaceholder": "أدخل اسم الواجب",
+      "homeworkDescription": "وصف الواجب",
+      "homeworkDescriptionPlaceholder": "أدخل وصف الواجب"
     }
   },
   "fileUpload": {

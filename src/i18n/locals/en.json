@@ -4098,14 +4098,20 @@
       "classworkTo": "Classwork (To Page)",
       "homeworkFrom": "Homework (From Page)",
       "homeworkTo": "Homework (To Page)",
-      "descriptionAr": "Homework Description (First Language)",
-      "descriptionEn": "Homework Description (Second Language)",
       "attachments": "Attachments",
       "clickToUpload": "Click to upload",
       "dragAndDrop": "or drag and drop the file here",
       "uploadHint": "JPG, PNG, GIF, SVG or PDF (max {{size}} MB)",
       "fileTooLarge": "File {{name}} exceeds the size limit",
-      "chooseClassroomFirst": "Select a classroom from the filters first"
+      "chooseClassroomFirst": "Select a classroom from the filters first",
+      "bookNote": "Book Note",
+      "bookNotePlaceholder": "Enter a note about the book",
+      "classworkNote": "Classwork Note",
+      "classworkNotePlaceholder": "Enter a note about the classwork",
+      "homeworkName": "Homework Name",
+      "homeworkNamePlaceholder": "Enter the homework name",
+      "homeworkDescription": "Homework Description",
+      "homeworkDescriptionPlaceholder": "Enter the homework description"
     }
   },
   "fileUpload": {

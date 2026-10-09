@@ -3963,14 +3963,20 @@
       "classworkTo": "Klassenarbeit (bis Seite)",
       "homeworkFrom": "Hausaufgabe (von Seite)",
       "homeworkTo": "Hausaufgabe (bis Seite)",
-      "descriptionAr": "Beschreibung der Hausaufgabe (erste Sprache)",
-      "descriptionEn": "Beschreibung der Hausaufgabe (zweite Sprache)",
       "attachments": "Anhänge",
       "clickToUpload": "Zum Hochladen klicken",
       "dragAndDrop": "oder Datei hierher ziehen",
       "uploadHint": "JPG, PNG, GIF, SVG oder PDF (max. {{size}} MB)",
       "fileTooLarge": "Die Datei {{name}} überschreitet die Größenbeschränkung",
-      "chooseClassroomFirst": "Wählen Sie zuerst eine Klasse in den Filtern"
+      "chooseClassroomFirst": "Wählen Sie zuerst eine Klasse in den Filtern",
+      "bookNote": "Notiz zum Buch",
+      "bookNotePlaceholder": "Notiz zum Buch eingeben",
+      "classworkNote": "Notiz zur Klassenarbeit",
+      "classworkNotePlaceholder": "Notiz zur Klassenarbeit eingeben",
+      "homeworkName": "Name der Hausaufgabe",
+      "homeworkNamePlaceholder": "Name der Hausaufgabe eingeben",
+      "homeworkDescription": "Beschreibung der Hausaufgabe",
+      "homeworkDescriptionPlaceholder": "Beschreibung der Hausaufgabe eingeben"
     }
   },
   "fileUpload": {
