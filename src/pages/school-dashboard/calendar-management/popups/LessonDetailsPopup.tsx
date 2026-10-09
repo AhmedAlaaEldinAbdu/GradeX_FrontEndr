@@ -11,6 +11,7 @@ import { formatTimeDisplay, formatDateDisplay } from '@/lib/utils';
 import DefaultAvatar from '@gradex/assets/images/profile.png';
 import CloseXGreenIcon from '@/assets/icons/CloseXGreen.svg';
 import ClockGray14Icon from '@/assets/icons/ClockGray14.svg';
+import DownloadGreenIcon from '@/assets/icons/DownloadGreen.svg';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { fetchLessonByIdSilent } from '@/redux/features/lessons/lessonsSlice';
 import { fetchStudentByIdSilent } from '@/redux/features/students/studentsSlice';
@@ -41,6 +42,18 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
     </section>
   );
 }
+
+const resolveFileUrl = (fileUrl: string) => {
+  if (fileUrl.startsWith('http')) return fileUrl;
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || '';
+  return `${baseUrl}/${fileUrl.replace(/^\//, '')}`;
+};
+
+const getDownloadName = (fileName: string, fileUrl: string) => {
+  if (/\.[a-z0-9]{2,5}$/i.test(fileName)) return fileName;
+  const extension = fileUrl.split('?')[0].match(/\.([a-z0-9]{2,5})$/i)?.[1];
+  return extension ? `${fileName}.${extension}` : fileName;
+};
 
 const pageRange = (from?: number | null, to?: number | null) =>
   from || to ? `${from ?? '-'} - ${to ?? '-'}` : '';
@@ -103,16 +116,33 @@ export default function LessonDetailsPopup({
     };
   }, [dispatch, isOpen, lessonId, t]);
 
+  const handleDownload = async (fileName: string, fileUrl: string) => {
+    const url = resolveFileUrl(fileUrl);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(String(response.status));
+      const blobUrl = URL.createObjectURL(await response.blob());
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = getDownloadName(fileName, fileUrl);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   if (!lesson) return null;
 
   const localized = (ar?: string | null, en?: string | null) => (isArabic ? ar : en || ar);
   const subjectName = localized(lessonDetails?.materialNameAr, lessonDetails?.materialNameEn);
   const gradeName = localized(lessonDetails?.gradeNameAr, lessonDetails?.gradeNameEn);
   const classroomName = localized(lessonDetails?.classroomNameAr, lessonDetails?.classroomNameEn);
-  const homeworkDescription = localized(
-    lessonDetails?.homeworkDescriptionAr,
-    lessonDetails?.homeworkDescriptionEn
-  );
+  const homeworkDescription =
+    lessonDetails?.homeworkDescription ||
+    localized(lessonDetails?.homeworkDescriptionAr, lessonDetails?.homeworkDescriptionEn);
 
   const studentCount = lessonDetails?.lessonsStudent?.length || 0;
   const remainingStudents = studentCount > 1 ? studentCount - 1 : 0;
@@ -159,9 +189,10 @@ export default function LessonDetailsPopup({
           <>
             <div className="flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-4 py-3 text-sm leading-5 font-semibold text-[#1E7A52]">
               <CustomImage src={ClockGray14Icon} alt="" className="shrink-0" />
-              <span dir="ltr">
-                {formatTimeDisplay(lessonDetails.startTime, currentLang)} -{' '}
-                {formatTimeDisplay(lessonDetails.endTime, currentLang)}
+              <span className="flex items-center gap-1.5">
+                <bdi>{formatTimeDisplay(lessonDetails.startTime, currentLang)}</bdi>
+                <span aria-hidden="true">-</span>
+                <bdi>{formatTimeDisplay(lessonDetails.endTime, currentLang)}</bdi>
               </span>
             </div>
 
@@ -196,8 +227,16 @@ export default function LessonDetailsPopup({
               </Section>
             </div>
 
+            {lessonDetails.homeworkName ? (
+              <DetailRow label={t('lesson.popup.homeworkName')}>
+                {lessonDetails.homeworkName}
+              </DetailRow>
+            ) : null}
+
             {homeworkDescription ? (
-              <DetailRow label={t('lesson.popup.descriptionAr')}>{homeworkDescription}</DetailRow>
+              <DetailRow label={t('lesson.popup.homeworkDescription')}>
+                {homeworkDescription}
+              </DetailRow>
             ) : null}
 
             <div className="flex flex-col gap-1.5 text-start">
@@ -223,6 +262,29 @@ export default function LessonDetailsPopup({
                 </span>
               )}
             </div>
+
+            {lessonDetails.attachments?.length ? (
+              <div className="flex flex-col gap-2 text-start">
+                <span className="text-xs leading-4 text-[#9D9D9D]">
+                  {t('lesson.popup.attachments')}
+                </span>
+                {lessonDetails.attachments.map((attachment) => (
+                  <button
+                    key={attachment.id ?? attachment.fileUrl}
+                    type="button"
+                    onClick={() => handleDownload(attachment.fileName, attachment.fileUrl)}
+                    aria-label={`${t('common.download')} ${attachment.fileName}`}
+                    title={t('common.download')}
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]/50 px-4 py-3 text-start transition-colors hover:border-[#1E7A52] hover:bg-[#ECFDF5]"
+                  >
+                    <span className="truncate text-sm leading-5 text-[#1E293B]">
+                      {attachment.fileName}
+                    </span>
+                    <CustomImage src={DownloadGreenIcon} alt="" className="size-5 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </>
         ) : null}
       </div>

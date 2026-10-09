@@ -3977,14 +3977,20 @@
       "classworkTo": "Классная работа (до страницы)",
       "homeworkFrom": "Домашнее задание (со страницы)",
       "homeworkTo": "Домашнее задание (до страницы)",
-      "descriptionAr": "Описание задания (первый язык)",
-      "descriptionEn": "Описание задания (второй язык)",
       "attachments": "Вложения",
       "clickToUpload": "Нажмите для загрузки",
       "dragAndDrop": "или перетащите файл сюда",
       "uploadHint": "JPG, PNG, GIF, SVG или PDF (макс. {{size}} МБ)",
       "fileTooLarge": "Файл {{name}} превышает допустимый размер",
-      "chooseClassroomFirst": "Сначала выберите класс в фильтрах"
+      "chooseClassroomFirst": "Сначала выберите класс в фильтрах",
+      "bookNote": "Заметка о книге",
+      "bookNotePlaceholder": "Введите заметку о книге",
+      "classworkNote": "Заметка о классной работе",
+      "classworkNotePlaceholder": "Введите заметку о классной работе",
+      "homeworkName": "Название задания",
+      "homeworkNamePlaceholder": "Введите название задания",
+      "homeworkDescription": "Описание задания",
+      "homeworkDescriptionPlaceholder": "Введите описание задания"
     }
   },
   "fileUpload": {

@@ -34,18 +34,39 @@ import {
   PopupPickerInput,
   PopupRadio,
   PopupSelect,
+  PopupTextArea,
   PopupTextInput,
   type PopupSelectOption,
 } from '../components/AcademicCalendarPopupFields';
-import type { LessonAttachmentData, LessonFormData } from '../components/LessonForm';
-import { buildLessonDateTime, mapLessonToFormData } from '../components/LessonFormUtils';
+import type { LessonAttachmentData } from '../components/LessonForm';
+import { buildLessonDateTime } from '../components/LessonFormUtils';
 import SelectStudentsPopup, { type Student } from './SelectStudentsPopup';
 
 const LOOKUP_LIMIT = 100;
 const MAX_FILE_SIZE_MB = 5;
 const ACCEPTED_FILES = 'image/png,image/jpg,image/jpeg,image/gif,image/svg+xml,application/pdf';
 
-type LessonPopupFormValues = LessonFormData & { subSystemId: string };
+type LessonPopupFormValues = {
+  lessonType: 'in-person' | 'remote';
+  subSystemId: string;
+  gradeId: string;
+  classroomId: string;
+  materialId: string;
+  teacherId: string;
+  bookId: string;
+  bookNote: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  applyToAllWeeks: boolean;
+  classworkFromPage: string;
+  classworkToPage: string;
+  classworkNote: string;
+  homeworkName: string;
+  homeworkDescription: string;
+  homeworkFromPage: string;
+  homeworkToPage: string;
+};
 
 export type LessonPopupDefaults = {
   subSystemId?: string;
@@ -73,17 +94,56 @@ const buildDefaultValues = (defaults?: LessonPopupDefaults): LessonPopupFormValu
   materialId: '',
   teacherId: '',
   bookId: '',
-  classworkFromPage: '',
-  classworkToPage: '',
-  homeworkFromPage: '',
-  homeworkToPage: '',
-  descriptionAr: '',
-  descriptionEn: '',
+  bookNote: '',
   date: defaults?.date ?? '',
   startTime: defaults?.startTime ?? '',
   endTime: defaults?.endTime ?? '',
   applyToAllWeeks: false,
+  classworkFromPage: '',
+  classworkToPage: '',
+  classworkNote: '',
+  homeworkName: '',
+  homeworkDescription: '',
+  homeworkFromPage: '',
+  homeworkToPage: '',
 });
+
+const toApiTime = (time: string, fallback: string) => {
+  const value = time || fallback;
+  return value.split(':').length === 3 ? value : value + ':00';
+};
+
+const pageValue = (page?: number | null) => (page ? String(page) : '');
+
+type ToggleRowProps = {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+};
+
+function ToggleRow({ id, label, checked, onChange }: ToggleRowProps) {
+  return (
+    <label
+      htmlFor={id}
+      className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#F1F5F9] bg-[#F8FAFC]/50 px-[15px] py-[5px]"
+    >
+      <span className="text-sm leading-5 font-medium text-[black]">{label}</span>
+      <span className="relative inline-flex h-6 w-11 shrink-0 items-center">
+        <input
+          id={id}
+          type="checkbox"
+          role="switch"
+          checked={checked}
+          onChange={(event) => onChange(event.target.checked)}
+          className="peer sr-only"
+        />
+        <span className="h-6 w-11 rounded-full bg-[#E2E8F0] transition-colors peer-checked:bg-[#1E7A52] peer-focus-visible:ring-2 peer-focus-visible:ring-[#1E7A52]/30" />
+        <span className="absolute start-0.5 top-0.5 size-5 rounded-full border border-[#CBD5E1] bg-white transition-transform peer-checked:translate-x-5 rtl:peer-checked:-translate-x-5" />
+      </span>
+    </label>
+  );
+}
 
 type PageRangeProps = {
   fromName: 'classworkFromPage' | 'homeworkFromPage';
@@ -198,29 +258,43 @@ export default function AddEditLessonPopup({
       .unwrap()
       .then((lesson) => {
         if (cancelled) return;
-        const data = mapLessonToFormData(lesson);
+        const students =
+          lesson.lessonsStudent?.map((student) => ({
+            id: student.studentId,
+            name: student.studentName || '',
+            avatar: student.studentProfilePicture || '',
+          })) ?? [];
         reset({
           ...buildDefaultValues(defaults),
-          lessonType: data.lessonType || 'in-person',
-          gradeId: data.gradeId,
-          classroomId: data.classroomId,
-          materialId: data.materialId,
-          teacherId: data.teacherId,
-          bookId: data.bookId,
-          classworkFromPage: data.classworkFromPage,
-          classworkToPage: data.classworkToPage,
-          homeworkFromPage: data.homeworkFromPage,
-          homeworkToPage: data.homeworkToPage,
-          descriptionAr: data.descriptionAr,
-          descriptionEn: data.descriptionEn,
-          date: data.date,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          applyToAllWeeks: data.applyToAllWeeks,
+          gradeId: lesson.gradeId,
+          classroomId: lesson.classroomId,
+          materialId: lesson.materialId,
+          teacherId: lesson.teacherId,
+          bookId: lesson.bookId,
+          bookNote: lesson.bookNote ?? '',
+          date: lesson.date ? lesson.date.split('T')[0] : '',
+          startTime: lesson.startTime ? lesson.startTime.substring(0, 5) : '',
+          endTime: lesson.endTime ? lesson.endTime.substring(0, 5) : '',
+          applyToAllWeeks: lesson.applyToAllWeeks ?? lesson.ApplyToAllWeeks ?? false,
+          classworkFromPage: pageValue(lesson.classworkFromPage),
+          classworkToPage: pageValue(lesson.classworkToPage),
+          classworkNote: lesson.classworkNote ?? '',
+          homeworkName: lesson.homeworkName ?? '',
+          homeworkDescription: lesson.homeworkDescription ?? '',
+          homeworkFromPage: pageValue(lesson.homeworkFromPage),
+          homeworkToPage: pageValue(lesson.homeworkToPage),
         });
-        setSelectedStudents(data.selectedStudents ?? []);
-        setSendTo(data.selectedStudents?.length ? 'specific' : 'all');
-        setExistingAttachments(data.attachments ?? []);
+        setSelectedStudents(students);
+        setSendTo(
+          lesson.isHomeworkForAllStudents === false && students.length ? 'specific' : 'all'
+        );
+        setExistingAttachments(
+          lesson.attachments?.map((attachment) => ({
+            fileName: attachment.fileName,
+            oldFile: attachment.fileName,
+            fileUrl: attachment.fileUrl,
+          })) ?? []
+        );
       })
       .catch((error) => {
         if (cancelled) return;
@@ -391,27 +465,39 @@ export default function AddEditLessonPopup({
       return;
     }
 
+    const homeworkName = data.homeworkName.trim();
+    const homeworkDescription = data.homeworkDescription.trim();
+    const homeworkFromPage = parseInt(data.homeworkFromPage) || 0;
+    const homeworkToPage = parseInt(data.homeworkToPage) || 0;
+    const hasHomework = Boolean(
+      homeworkName || homeworkDescription || homeworkFromPage || homeworkToPage
+    );
+
     const request: CreateLessonRequest = {
       materialId: data.materialId,
       teacherId: data.teacherId,
       gradeId: data.gradeId,
       classroomId: data.classroomId,
       bookId: data.bookId,
+      bookNote: data.bookNote.trim() || undefined,
+      isDirectLesson: data.lessonType === 'remote',
       classworkFromPage: parseInt(data.classworkFromPage) || 0,
       classworkToPage: parseInt(data.classworkToPage) || 0,
-      homeworkFromPage: parseInt(data.homeworkFromPage) || 0,
-      homeworkToPage: parseInt(data.homeworkToPage) || 0,
-      homeworkDescriptionAr: data.descriptionAr || undefined,
-      homeworkDescriptionEn: data.descriptionEn || undefined,
+      classworkNote: data.classworkNote.trim() || undefined,
+      addHomework: hasHomework,
+      homeworkName: homeworkName || undefined,
+      homeworkDescription: homeworkDescription || undefined,
+      homeworkFromPage: homeworkFromPage,
+      homeworkToPage: homeworkToPage,
       date: buildLessonDateTime(data.date, data.startTime),
-      startTime: data.startTime || '08:00',
-      endTime: data.endTime || '09:00',
-      isHomeworkForAllStudents: sendTo === 'all',
+      startTime: toApiTime(data.startTime, '08:00'),
+      endTime: toApiTime(data.endTime, '09:00'),
+      isHomeworkForAllStudents: !hasHomework || sendTo === 'all',
       applyToAllWeeks: data.applyToAllWeeks,
       schoolBranchesId: schoolBranchId,
     };
 
-    if (sendTo === 'specific' && selectedStudents.length > 0) {
+    if (hasHomework && sendTo === 'specific' && selectedStudents.length > 0) {
       request.lessonsStudent = selectedStudents.map((student) => ({ studentId: student.id }));
     }
     if (isEdit && existingAttachments.length > 0) {
@@ -586,26 +672,12 @@ export default function AddEditLessonPopup({
             </PopupField>
           </div>
 
-          <label
-            htmlFor="apply-to-all-weeks"
-            className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#F1F5F9] bg-[#F8FAFC]/50 px-[15px] py-[5px]"
-          >
-            <span className="text-sm leading-5 font-medium text-[black]">
-              {t('lesson.applyToAllWeeks')}
-            </span>
-            <span className="relative inline-flex h-6 w-11 shrink-0 items-center">
-              <input
-                id="apply-to-all-weeks"
-                type="checkbox"
-                role="switch"
-                checked={applyToAllWeeks}
-                onChange={(event) => setValue('applyToAllWeeks', event.target.checked)}
-                className="peer sr-only"
-              />
-              <span className="h-6 w-11 rounded-full bg-[#E2E8F0] transition-colors peer-checked:bg-[#1E7A52] peer-focus-visible:ring-2 peer-focus-visible:ring-[#1E7A52]/30" />
-              <span className="absolute start-0.5 top-0.5 size-5 rounded-full border border-[#CBD5E1] bg-white transition-transform peer-checked:translate-x-5 rtl:peer-checked:-translate-x-5" />
-            </span>
-          </label>
+          <ToggleRow
+            id="apply-to-all-weeks"
+            label={t('lesson.applyToAllWeeks')}
+            checked={applyToAllWeeks}
+            onChange={(checked) => setValue('applyToAllWeeks', checked)}
+          />
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <PopupField
@@ -765,6 +837,22 @@ export default function AddEditLessonPopup({
             />
           </PopupField>
 
+          <PopupField name="bookNote" label={t('lesson.popup.bookNote')}>
+            <Controller
+              name="bookNote"
+              control={control}
+              render={({ field }) => (
+                <PopupTextInput
+                  name={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  placeholder={t('lesson.popup.bookNotePlaceholder')}
+                />
+              )}
+            />
+          </PopupField>
+
           <PageRangeFields
             control={control}
             fromName="classworkFromPage"
@@ -772,6 +860,39 @@ export default function AddEditLessonPopup({
             fromLabel={t('lesson.popup.classworkFrom')}
             toLabel={t('lesson.popup.classworkTo')}
           />
+
+          <PopupField name="classworkNote" label={t('lesson.popup.classworkNote')}>
+            <Controller
+              name="classworkNote"
+              control={control}
+              render={({ field }) => (
+                <PopupTextArea
+                  name={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  placeholder={t('lesson.popup.classworkNotePlaceholder')}
+                />
+              )}
+            />
+          </PopupField>
+
+          <PopupField name="homeworkName" label={t('lesson.popup.homeworkName')}>
+            <Controller
+              name="homeworkName"
+              control={control}
+              render={({ field }) => (
+                <PopupTextInput
+                  name={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  placeholder={t('lesson.popup.homeworkNamePlaceholder')}
+                />
+              )}
+            />
+          </PopupField>
+
           <PageRangeFields
             control={control}
             fromName="homeworkFromPage"
@@ -780,36 +901,21 @@ export default function AddEditLessonPopup({
             toLabel={t('lesson.popup.homeworkTo')}
           />
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <PopupField name="descriptionAr" label={t('lesson.popup.descriptionAr')}>
-              <Controller
-                name="descriptionAr"
-                control={control}
-                render={({ field }) => (
-                  <PopupTextInput
-                    name={field.name}
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                  />
-                )}
-              />
-            </PopupField>
-            <PopupField name="descriptionEn" label={t('lesson.popup.descriptionEn')}>
-              <Controller
-                name="descriptionEn"
-                control={control}
-                render={({ field }) => (
-                  <PopupTextInput
-                    name={field.name}
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                  />
-                )}
-              />
-            </PopupField>
-          </div>
+          <PopupField name="homeworkDescription" label={t('lesson.popup.homeworkDescription')}>
+            <Controller
+              name="homeworkDescription"
+              control={control}
+              render={({ field }) => (
+                <PopupTextArea
+                  name={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  placeholder={t('lesson.popup.homeworkDescriptionPlaceholder')}
+                />
+              )}
+            />
+          </PopupField>
 
           <PopupField name="sendTo" label={t('lesson.sendTo')} required>
             <div className="flex flex-wrap items-center gap-6">

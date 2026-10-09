@@ -3963,14 +3963,20 @@
       "classworkTo": "Travail en classe (jusqu'à la page)",
       "homeworkFrom": "Devoir (de la page)",
       "homeworkTo": "Devoir (jusqu'à la page)",
-      "descriptionAr": "Description du devoir (première langue)",
-      "descriptionEn": "Description du devoir (deuxième langue)",
       "attachments": "Pièces jointes",
       "clickToUpload": "Cliquez pour téléverser",
       "dragAndDrop": "ou glissez-déposez le fichier ici",
       "uploadHint": "JPG, PNG, GIF, SVG ou PDF (max {{size}} Mo)",
       "fileTooLarge": "Le fichier {{name}} dépasse la taille maximale",
-      "chooseClassroomFirst": "Choisissez d'abord une classe dans les filtres"
+      "chooseClassroomFirst": "Choisissez d'abord une classe dans les filtres",
+      "bookNote": "Note sur le livre",
+      "bookNotePlaceholder": "Saisissez une note sur le livre",
+      "classworkNote": "Note sur le travail en classe",
+      "classworkNotePlaceholder": "Saisissez une note sur le travail en classe",
+      "homeworkName": "Nom du devoir",
+      "homeworkNamePlaceholder": "Saisissez le nom du devoir",
+      "homeworkDescription": "Description du devoir",
+      "homeworkDescriptionPlaceholder": "Saisissez la description du devoir"
     }
   },
   "fileUpload": {
