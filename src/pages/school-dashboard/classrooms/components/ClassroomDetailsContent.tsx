@@ -24,6 +24,7 @@ import BigTrashIcon from '@gradex/assets/icons/BigTrash.svg';
 import BigSuccessIcon from '@gradex/assets/icons/BigSuccess.svg';
 import XMarkDangerIcon from '@gradex/assets/icons/XMarkDanger.svg';
 import DeletePopup from '@/shared/popups/DeletePopup';
+import { useSuccessPopup } from '@/hooks/useSuccessPopup';
 import PopupMessage from '@/shared/popups/PopupMessage';
 import CustomImage from '@/shared/components/CustomImage';
 import ActionsDropdown from '@/shared/components/ActionsDropdown';
@@ -77,6 +78,7 @@ export default function ClassroomDetailsContent({
   const { isRTL } = useLanguage();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { showSuccess, successPopup } = useSuccessPopup();
   const [searchParams, setSearchParams] = useSearchParams();
   const [classroomPendingDelete, setClassroomPendingDelete] = useState<Classroom | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -371,15 +373,23 @@ export default function ClassroomDetailsContent({
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         gradeId={gradeId}
-        onSuccess={refreshClassrooms}
+        onSuccess={(message) => {
+          refreshClassrooms();
+          showSuccess(message);
+        }}
       />
 
       <EditClassroomModal
         isOpen={Boolean(editingClassroomId)}
         classroomId={editingClassroomId}
         onClose={() => setEditingClassroomId(null)}
-        onSuccess={refreshClassrooms}
+        onSuccess={(message) => {
+          refreshClassrooms();
+          showSuccess(message);
+        }}
       />
+
+      {successPopup}
 
       <DeletePopup
         open={Boolean(classroomPendingDelete)}

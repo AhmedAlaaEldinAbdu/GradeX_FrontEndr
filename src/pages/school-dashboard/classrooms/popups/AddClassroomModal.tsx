@@ -17,7 +17,7 @@ export type AddClassroomModalProps = {
   onClose: () => void;
   /** Preselects and locks the grade, e.g. when opened from a grade's classrooms page. */
   gradeId?: string;
-  onSuccess?: () => void;
+  onSuccess?: (message: string) => void;
 };
 
 export default function AddClassroomModal({
@@ -90,8 +90,7 @@ export default function AddClassroomModal({
         return;
       }
 
-      showToast({ message: t('grades.gradesAddedSuccessfully'), type: 'success' });
-      onSuccess?.();
+      onSuccess?.(t('grades.gradesAddedSuccessfully'));
       onClose();
     } catch (error) {
       const message = typeof error === 'string' ? error : t('common.errorOccurred');
