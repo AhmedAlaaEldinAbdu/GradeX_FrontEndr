@@ -101,16 +101,18 @@ export function FilterSelect({
         onClick={() => setOpen((prev) => !prev)}
         aria-label={placeholder}
         aria-expanded={open}
-        className={`${FILTER_FIELD_CLASS} flex items-center truncate text-start ${
+        className={`${FILTER_FIELD_CLASS} flex items-center text-start ${
           value ? 'text-[#1E293B]' : 'text-[#9D9D9D]'
         }`}
       >
-        {selectedLabel ?? placeholder}
+        <span className="block min-w-0 flex-1 truncate" title={selectedLabel}>
+          {selectedLabel ?? placeholder}
+        </span>
       </button>
       <CustomImage src={iconSrc} alt="" className={FILTER_ICON_CLASS} />
 
       {open && (
-        <ul className="absolute top-full z-50 mt-1 w-full overflow-hidden rounded-lg border border-[#E2E8F0] bg-white py-1 shadow-lg">
+        <ul className="absolute top-full z-50 mt-1 max-h-60 w-full [scrollbar-width:thin] overflow-y-auto rounded-lg border border-[#E2E8F0] bg-white py-1 shadow-lg">
           <li>
             <button
               type="button"
@@ -118,7 +120,7 @@ export function FilterSelect({
                 onChange('');
                 setOpen(false);
               }}
-              className={`flex w-full items-center gap-2 px-3 py-2 text-start text-sm font-medium transition-colors hover:bg-[#F8FAFC] ${
+              className={`flex w-full items-center gap-2 px-3 py-2 text-start text-xs font-medium transition-colors hover:bg-[#F8FAFC] ${
                 !value ? 'bg-[#ECFDF5] text-[#1E7A52]' : 'text-[#64748B]'
               }`}
             >
@@ -133,7 +135,7 @@ export function FilterSelect({
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-start text-sm font-medium transition-colors hover:bg-[#F8FAFC] ${
+                className={`flex w-full items-center gap-2 px-3 py-2 text-start text-xs font-medium transition-colors hover:bg-[#F8FAFC] ${
                   option.value === value ? 'bg-[#ECFDF5] text-[#1E7A52]' : 'text-[#1E293B]'
                 }`}
               >

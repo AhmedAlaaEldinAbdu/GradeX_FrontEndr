@@ -2545,7 +2545,7 @@
   },
   "subjects": {
     "title": "Subjects",
-    "subtitle": "Manage academic subjects",
+    "subtitle": "Manage and assign subjects across all stages and grades",
     "addSubject": "Add Subject",
     "addSubjectSubtitle": "Add new subject(s) to the system",
     "editSubject": "Edit Subject",
@@ -2584,8 +2584,62 @@
       "levelRequired": "Level is required",
       "schoolStagesRequired": "School stages are required",
       "requiredList": "Subjects list is required",
-      "atLeastOne": "At least one subject must be added"
-    }
+      "atLeastOne": "At least one subject must be added",
+      "academicSystemRequired": "Academic system is required",
+      "educationalStagesRequired": "Educational stages are required",
+      "gradesRequired": "Grades are required",
+      "teachersRequired": "Target teachers are required"
+    },
+    "stats": {
+      "subjectsBadge": "Registered subjects",
+      "subjectsHint": "Distributed across all educational stages",
+      "teachersBadge": "Teachers",
+      "teachersHint": "Teachers assigned to teach the subjects"
+    },
+    "filters": {
+      "stage": "Educational stage",
+      "subjectName": "Subject name",
+      "academicSystem": "Academic system",
+      "searchByName": "Search by subject name"
+    },
+    "columns": {
+      "grades": "Grades",
+      "teachers": "Teachers",
+      "status": "Status"
+    },
+    "showing": "Showing {{from}}-{{to}} of {{total}} subjects",
+    "totalSubjects": "Total subjects",
+    "teachersCount": "{{count}} teachers",
+    "popup": {
+      "addTitle": "Add subject",
+      "addSubtitle": "Add a new subject to the school's subjects list",
+      "saveSubject": "Save subject",
+      "academicSystem": "Academic system",
+      "academicSystemPlaceholder": "Select academic system",
+      "selectAcademicSystemFirst": "Select the academic system first",
+      "stages": "Educational stages",
+      "stagesPlaceholder": "Select educational stages",
+      "grades": "Grades",
+      "gradesPlaceholder": "Select grades",
+      "nameAr": "Subject name (first language)",
+      "nameEn": "Subject name (second language)",
+      "teachers": "Target teachers",
+      "teachersPlaceholder": "You can select more than one teacher",
+      "descriptionAr": "Description (first language)",
+      "descriptionEn": "Description (second language)",
+      "descriptionPlaceholder": "Add a short description of the subject, such as notes or goals"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "toggleStatus": "Toggle subject status",
+    "confirmActivate": "Are you sure you want to activate \"{{name}}\" for \"{{grade}}\"?",
+    "confirmDeactivate": "Are you sure you want to deactivate \"{{name}}\" for \"{{grade}}\"?",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "activatedSuccessfully": "Subject activated successfully",
+    "deactivatedSuccessfully": "Subject deactivated successfully"
   },
   "teachers": {
     "title": "Teachers",

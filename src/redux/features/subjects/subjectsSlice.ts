@@ -8,6 +8,9 @@ import { subjectApiService } from '@/services/api/subjects/subjects.service';
 import type {
   Subject,
   SubjectQueryParams,
+  SubjectSettingsQueryParams,
+  SubjectSettingsItem,
+  SubjectSettingsStatistics,
   CreateSubjectRequest,
   UpdateSubjectRequest,
 } from '@/types/subjects';
@@ -21,12 +24,17 @@ export interface SubjectFilters {
   searchName?: string;
   level?: number;
   schoolBranchesId?: string;
+  academicSubSystemId?: string;
+  lkSchoolStageId?: string;
   gradeId?: string;
+  lkMaterialCategoryId?: string;
 }
 
 export interface SubjectsState {
   // Data
   subjects: Subject[];
+  settingsItems: SubjectSettingsItem[];
+  settingsStatistics: SubjectSettingsStatistics;
   currentSubject: Subject | null;
 
   // Pagination
@@ -55,6 +63,28 @@ export interface SubjectsState {
   isInitialized: boolean;
 }
 
+export interface SubjectSettingsFilters {
+  searchName?: string;
+  schoolBranchesId?: string;
+  academicSubSystemId?: string;
+  lkSchoolStageId?: string;
+  gradeId?: string;
+  materialId?: string;
+  isActive?: boolean;
+}
+
+export interface FetchSubjectSettingsResponse {
+  items: SubjectSettingsItem[];
+  statistics: SubjectSettingsStatistics;
+  meta: FetchSubjectsResponse['meta'];
+}
+
+export interface FetchSubjectSettingsPayload {
+  page?: number;
+  limit?: number;
+  filters?: SubjectSettingsFilters;
+}
+
 export interface FetchSubjectsPayload {
   page?: number;
   limit?: number;
@@ -74,6 +104,8 @@ export interface FetchSubjectsResponse {
 const initialState: SubjectsState = {
   // Data
   subjects: [],
+  settingsItems: [],
+  settingsStatistics: { totalMaterials: 0, totalTeachers: 0 },
   currentSubject: null,
 
   // Pagination
@@ -117,7 +149,13 @@ export const fetchSubjects = createAsyncThunk<FetchSubjectsResponse, FetchSubjec
           if (payload.filters.level) params.Level = payload.filters.level;
           if (payload.filters.schoolBranchesId)
             params.SchoolBranchId = payload.filters.schoolBranchesId;
+          if (payload.filters.academicSubSystemId)
+            params.AcademicSubSystemId = payload.filters.academicSubSystemId;
+          if (payload.filters.lkSchoolStageId)
+            params.LKSchoolStageId = payload.filters.lkSchoolStageId;
           if (payload.filters.gradeId) params.GradeId = payload.filters.gradeId;
+          if (payload.filters.lkMaterialCategoryId)
+            params.LKMaterialCategoryId = payload.filters.lkMaterialCategoryId;
         }
       }
 
@@ -149,6 +187,48 @@ export const fetchSubjects = createAsyncThunk<FetchSubjectsResponse, FetchSubjec
     }
   }
 );
+
+export const fetchSubjectSettings = createAsyncThunk<
+  FetchSubjectSettingsResponse,
+  FetchSubjectSettingsPayload | void
+>('subjects/fetchSubjectSettings', async (payload, { rejectWithValue }) => {
+  try {
+    const params: SubjectSettingsQueryParams = {
+      PageIndex: payload?.page,
+      PageSize: payload?.limit,
+      SearchName: payload?.filters?.searchName,
+      SchoolBranchId: payload?.filters?.schoolBranchesId,
+      AcademicSubSystemId: payload?.filters?.academicSubSystemId,
+      LKSchoolStageId: payload?.filters?.lkSchoolStageId,
+      GradeId: payload?.filters?.gradeId,
+      MaterialId: payload?.filters?.materialId,
+      IsActive: payload?.filters?.isActive,
+    };
+
+    const response = await subjectApiService.getSubjectSettings(params);
+
+    if (!response?.isSuccess || !response.data) {
+      return {
+        items: [],
+        statistics: { totalMaterials: 0, totalTeachers: 0 },
+        meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
+      };
+    }
+
+    return {
+      items: response.data.items || [],
+      statistics: response.data.statistics || { totalMaterials: 0, totalTeachers: 0 },
+      meta: {
+        total: response.data.totalItems || 0,
+        page: response.data.pageIndex || 1,
+        limit: response.data.pageSize || 10,
+        totalPages: response.data.totalPages || 0,
+      },
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const fetchSubjectById = createAsyncThunk<Subject, string>(
   'subjects/fetchSubjectById',
@@ -259,6 +339,32 @@ const subjectsSlice = createSlice({
         state.isInitialized = true;
       })
       .addCase(fetchSubjects.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch Subject Settings
+    builder
+      .addCase(fetchSubjectSettings.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchSubjectSettings.fulfilled,
+        (state, action: PayloadAction<FetchSubjectSettingsResponse>) => {
+          state.isLoading = false;
+          state.settingsItems = action.payload.items;
+          state.settingsStatistics = action.payload.statistics;
+          state.pagination = {
+            page: action.payload.meta.page,
+            limit: action.payload.meta.limit,
+            total: action.payload.meta.total,
+            totalPages: action.payload.meta.totalPages,
+          };
+          state.isInitialized = true;
+        }
+      )
+      .addCase(fetchSubjectSettings.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

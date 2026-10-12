@@ -2410,7 +2410,7 @@
   },
   "subjects": {
     "title": "Fächer",
-    "subtitle": "Akademische Fächer verwalten",
+    "subtitle": "Fächer für alle Stufen und Klassenstufen verwalten und zuweisen",
     "addSubject": "Fach hinzufügen",
     "addSubjectSubtitle": "Neue(s) Fach/Fächer zum System hinzufügen",
     "editSubject": "Fach bearbeiten",
@@ -2449,8 +2449,62 @@
       "levelRequired": "Stufe ist erforderlich",
       "schoolStagesRequired": "Schulstufen sind erforderlich",
       "requiredList": "Fächerliste ist erforderlich",
-      "atLeastOne": "Mindestens ein Fach muss hinzugefügt werden"
-    }
+      "atLeastOne": "Mindestens ein Fach muss hinzugefügt werden",
+      "academicSystemRequired": "Das akademische System ist erforderlich",
+      "educationalStagesRequired": "Bildungsstufen sind erforderlich",
+      "gradesRequired": "Klassenstufen sind erforderlich",
+      "teachersRequired": "Zielgruppe Lehrkräfte ist erforderlich"
+    },
+    "stats": {
+      "subjectsBadge": "Registrierte Fächer",
+      "subjectsHint": "Auf alle Stufen verteilt",
+      "teachersBadge": "Lehrkräfte",
+      "teachersHint": "Lehrkräfte, die den Fächern zugewiesen sind"
+    },
+    "filters": {
+      "stage": "Bildungsstufe",
+      "subjectName": "Fachname",
+      "academicSystem": "Akademisches System",
+      "searchByName": "Nach Fachname suchen"
+    },
+    "columns": {
+      "grades": "Klassenstufen",
+      "teachers": "Lehrkräfte",
+      "status": "Status"
+    },
+    "showing": "Anzeige {{from}}-{{to}} von {{total}} Fächern",
+    "totalSubjects": "Fächer insgesamt",
+    "teachersCount": "{{count}} Lehrkräfte",
+    "popup": {
+      "addTitle": "Fach hinzufügen",
+      "addSubtitle": "Fügen Sie der Fächerliste der Schule ein neues Fach hinzu",
+      "saveSubject": "Fach speichern",
+      "academicSystem": "Akademisches System",
+      "academicSystemPlaceholder": "Akademisches System wählen",
+      "selectAcademicSystemFirst": "Zuerst das akademische System wählen",
+      "stages": "Bildungsstufen",
+      "stagesPlaceholder": "Bildungsstufen wählen",
+      "grades": "Klassenstufen",
+      "gradesPlaceholder": "Klassenstufen wählen",
+      "nameAr": "Fachname (erste Sprache)",
+      "nameEn": "Fachname (zweite Sprache)",
+      "teachers": "Zielgruppe Lehrkräfte",
+      "teachersPlaceholder": "Sie können mehrere Lehrkräfte auswählen",
+      "descriptionAr": "Beschreibung (erste Sprache)",
+      "descriptionEn": "Beschreibung (zweite Sprache)",
+      "descriptionPlaceholder": "Fügen Sie eine kurze Beschreibung des Fachs hinzu, z. B. Notizen oder Ziele"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "toggleStatus": "Fachstatus umschalten",
+    "confirmActivate": "Möchten Sie \"{{name}}\" für \"{{grade}}\" wirklich aktivieren?",
+    "confirmDeactivate": "Möchten Sie \"{{name}}\" für \"{{grade}}\" wirklich deaktivieren?",
+    "activate": "Aktivieren",
+    "deactivate": "Deaktivieren",
+    "activatedSuccessfully": "Fach erfolgreich aktiviert",
+    "deactivatedSuccessfully": "Fach erfolgreich deaktiviert"
   },
   "teachers": {
     "title": "Lehrer",
