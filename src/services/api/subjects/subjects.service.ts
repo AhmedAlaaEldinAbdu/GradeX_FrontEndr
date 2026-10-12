@@ -10,9 +10,28 @@ import type {
   Subject,
   SubjectListResponse,
   SubjectQueryParams,
+  SubjectSettingsQueryParams,
+  GradeAvailabilityRequest,
+  SubjectSettingsResponse,
   CreateSubjectRequest,
   UpdateSubjectRequest,
 } from '@/types/subjects';
+
+const serializeQuery = (params: Record<string, unknown>) => {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (Array.isArray(value)) {
+      value.forEach((v) => searchParams.append(key, String(v)));
+    } else {
+      searchParams.append(key, String(value));
+    }
+  });
+
+  return searchParams.toString();
+};
 
 // ============================================================================
 // Subject CRUD Operations
@@ -26,23 +45,7 @@ export async function getSubjects(params?: SubjectQueryParams): Promise<SubjectL
     SubjectEndpoints.getSubjects,
     {
       params,
-      paramsSerializer: {
-        serialize: (params) => {
-          const searchParams = new URLSearchParams();
-
-          Object.entries(params).forEach(([key, value]) => {
-            if (value === undefined || value === null) return;
-
-            if (Array.isArray(value)) {
-              value.forEach((v) => searchParams.append(key, String(v)));
-            } else {
-              searchParams.append(key, String(value));
-            }
-          });
-
-          return searchParams.toString();
-        },
-      },
+      paramsSerializer: { serialize: serializeQuery },
     }
   );
 
@@ -62,6 +65,54 @@ export async function getSubjects(params?: SubjectQueryParams): Promise<SubjectL
   }
 
   return response.data;
+}
+
+/**
+ * Get the subjects settings list (GET /Material/Settings)
+ */
+export async function getSubjectSettings(
+  params?: SubjectSettingsQueryParams
+): Promise<SubjectSettingsResponse> {
+  const response: AxiosResponse<SubjectSettingsResponse> = await axiosClient.get(
+    SubjectEndpoints.getSubjectSettings,
+    {
+      params,
+      paramsSerializer: { serialize: serializeQuery },
+    }
+  );
+
+  if (!response?.data?.data) {
+    return {
+      data: {
+        items: [],
+        statistics: { totalMaterials: 0, totalTeachers: 0 },
+        totalItems: 0,
+        totalPages: 0,
+        pageIndex: params?.PageIndex || 1,
+        pageSize: params?.PageSize || 10,
+      },
+      isSuccess: false,
+      message: '',
+      validationErrors: null,
+    };
+  }
+
+  return response.data;
+}
+
+/**
+ * Activate or deactivate a subject for one grade (PUT /Material/Settings/GradeAvailability)
+ */
+export async function setGradeAvailability(data: GradeAvailabilityRequest): Promise<void> {
+  const response: AxiosResponse<{
+    isSuccess: boolean;
+    message: string;
+    validationErrors: string[] | null;
+  }> = await axiosClient.put(SubjectEndpoints.setGradeAvailability, data);
+
+  if (!response.data.isSuccess) {
+    throw new Error(response.data.message || 'Request failed');
+  }
 }
 
 /**
@@ -159,6 +210,8 @@ export async function deleteSubject(id: string): Promise<{ success: boolean; mes
 
 export const subjectApiService = {
   getSubjects,
+  getSubjectSettings,
+  setGradeAvailability,
   getSubjectById,
   createSubject,
   updateSubject,

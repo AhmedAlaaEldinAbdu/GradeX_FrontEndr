@@ -430,6 +430,7 @@ export default function AcademicCalendarList() {
             options={statusOptions}
             placeholder={t('academicCalendar.allStatuses')}
             iconSrc={ChevronDownGraySmIcon}
+            showPlaceholderOption={false}
             className="w-[48%] md:w-36"
           />
           <FilterDateInput
@@ -450,6 +451,7 @@ export default function AcademicCalendarList() {
             options={academicSubSystemOptions}
             placeholder={t('academicCalendar.academicSystemPlaceholder')}
             iconSrc={FilterGrayIcon}
+            showPlaceholderOption={false}
             className="w-[48%] md:w-[180px]"
           />
           <SearchInput

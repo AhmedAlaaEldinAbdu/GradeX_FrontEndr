@@ -468,42 +468,43 @@ export default function WeeklyCalendar() {
 
   return (
     <div className="flex flex-col gap-4">
-      <WeeklyCalendarFilters
-        subSystemId={subSystemId}
-        stageId={stageId}
-        gradeId={gradeId}
-        classroomId={classroomId}
-        subSystemOptions={subSystemOptions}
-        stageOptions={stageOptions}
-        gradeOptions={gradeOptions}
-        classroomOptions={classroomOptions}
-        onSubSystemChange={(value) => {
-          setSubSystemId(value);
-          resetFrom('subSystem');
-        }}
-        onStageChange={(value) => {
-          setStageId(value);
-          resetFrom('stage');
-        }}
-        onGradeChange={(value) => {
-          setGradeId(value);
-          resetFrom('grade');
-        }}
-        onClassroomChange={setClassroomId}
-        isGradesLoading={isLoadingGrades}
-        isClassroomsLoading={isLoadingClassrooms}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onReset={() => {
-          setSubSystemId('');
-          setStageId('');
-          setGradeId('');
-          setClassroomId('');
-          setSearchTerm('');
-        }}
-      />
-
       <WeeklyCalendarToolbar
+        filters={
+          <WeeklyCalendarFilters
+            subSystemId={subSystemId}
+            stageId={stageId}
+            gradeId={gradeId}
+            classroomId={classroomId}
+            subSystemOptions={subSystemOptions}
+            stageOptions={stageOptions}
+            gradeOptions={gradeOptions}
+            classroomOptions={classroomOptions}
+            onSubSystemChange={(value) => {
+              setSubSystemId(value);
+              resetFrom('subSystem');
+            }}
+            onStageChange={(value) => {
+              setStageId(value);
+              resetFrom('stage');
+            }}
+            onGradeChange={(value) => {
+              setGradeId(value);
+              resetFrom('grade');
+            }}
+            onClassroomChange={setClassroomId}
+            isGradesLoading={isLoadingGrades}
+            isClassroomsLoading={isLoadingClassrooms}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            onReset={() => {
+              setSubSystemId('');
+              setStageId('');
+              setGradeId('');
+              setClassroomId('');
+              setSearchTerm('');
+            }}
+          />
+        }
         weekLabel={formatWeekRange(currentWeekStart, currentLang)}
         isCurrentWeek={isCurrentWeek}
         onPreviousWeek={() => setCurrentWeekStart((week) => addWeeks(week, -1))}
@@ -515,7 +516,7 @@ export default function WeeklyCalendar() {
         onApplyToPeriod={() => guardMutation(showComingSoon)}
         onRestoreDefaults={handleRecoverLessons}
         isRestoring={isRecovering}
-      />
+      ></WeeklyCalendarToolbar>
 
       {!classroomId ? (
         <div className="flex h-96 flex-col items-center justify-center gap-2 rounded-2xl border border-[#E2E8F0] bg-white text-center">

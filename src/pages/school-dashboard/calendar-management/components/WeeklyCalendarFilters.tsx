@@ -161,8 +161,8 @@ export default function WeeklyCalendarFilters({
 
   return (
     <>
-      <div className="rounded-xl border border-[#E2E8F0] bg-white p-[13px]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <FilterPill
               label={t('weeklyCalendar.filters.systemLabel')}

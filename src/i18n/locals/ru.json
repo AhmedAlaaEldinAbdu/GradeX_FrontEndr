@@ -976,7 +976,8 @@
     "identityType": {
       "national": "Национальное удостоверение личности",
       "residence": "Удостоверение резидента"
-    }
+    },
+    "selectAll": "Выбрать всё"
   },
   "actions": {
     "actions": "Действия",
@@ -2371,7 +2372,8 @@
       "maxStudentsMustBeInteger": "Максимум учеников должен быть целым числом",
       "requiredList": "Список классов обязателен",
       "atLeastOne": "Нужно добавить хотя бы один класс"
-    }
+    },
+    "academicSystemFilter": "Академическая система"
   },
   "classrooms": {
     "details": {
@@ -2424,7 +2426,7 @@
   },
   "subjects": {
     "title": "Предметы",
-    "subtitle": "Управление учебными предметами",
+    "subtitle": "Управление и распределение предметов по всем ступеням и классам",
     "addSubject": "Добавить предмет",
     "addSubjectSubtitle": "Добавьте новый предмет(ы) в систему",
     "editSubject": "Изменить предмет",
@@ -2463,8 +2465,62 @@
       "levelRequired": "Уровень обязателен",
       "schoolStagesRequired": "Школьные ступени обязательны",
       "requiredList": "Список предметов обязателен",
-      "atLeastOne": "Нужно добавить хотя бы один предмет"
-    }
+      "atLeastOne": "Нужно добавить хотя бы один предмет",
+      "academicSystemRequired": "Академическая система обязательна",
+      "educationalStagesRequired": "Ступени обучения обязательны",
+      "gradesRequired": "Классы обязательны",
+      "teachersRequired": "Целевые учителя обязательны"
+    },
+    "stats": {
+      "subjectsBadge": "Зарегистрировано предметов",
+      "subjectsHint": "Распределены по всем ступеням",
+      "teachersBadge": "Учителя",
+      "teachersHint": "Учителя, назначенные на предметы"
+    },
+    "filters": {
+      "stage": "Ступень обучения",
+      "subjectName": "Название предмета",
+      "academicSystem": "Академическая система",
+      "searchByName": "Поиск по названию предмета"
+    },
+    "columns": {
+      "grades": "Классы",
+      "teachers": "Учителя",
+      "status": "Статус"
+    },
+    "showing": "Показано {{from}}-{{to}} из {{total}} предметов",
+    "totalSubjects": "Всего предметов",
+    "teachersCount": "{{count}} учителей",
+    "popup": {
+      "addTitle": "Добавить предмет",
+      "addSubtitle": "Добавьте новый предмет в список предметов школы",
+      "saveSubject": "Сохранить предмет",
+      "academicSystem": "Академическая система",
+      "academicSystemPlaceholder": "Выберите академическую систему",
+      "selectAcademicSystemFirst": "Сначала выберите академическую систему",
+      "stages": "Ступени обучения",
+      "stagesPlaceholder": "Выберите ступени обучения",
+      "grades": "Классы",
+      "gradesPlaceholder": "Выберите классы",
+      "nameAr": "Название предмета (первый язык)",
+      "nameEn": "Название предмета (второй язык)",
+      "teachers": "Целевые учителя",
+      "teachersPlaceholder": "Можно выбрать нескольких учителей",
+      "descriptionAr": "Описание (первый язык)",
+      "descriptionEn": "Описание (второй язык)",
+      "descriptionPlaceholder": "Добавьте краткое описание предмета, например заметки или цели"
+    },
+    "status": {
+      "active": "Активен",
+      "inactive": "Неактивен"
+    },
+    "toggleStatus": "Переключить статус предмета",
+    "confirmActivate": "Вы уверены, что хотите активировать «{{name}}» для «{{grade}}»?",
+    "confirmDeactivate": "Вы уверены, что хотите деактивировать «{{name}}» для «{{grade}}»?",
+    "activate": "Активировать",
+    "deactivate": "Деактивировать",
+    "activatedSuccessfully": "Предмет успешно активирован",
+    "deactivatedSuccessfully": "Предмет успешно деактивирован"
   },
   "teachers": {
     "title": "Учителя",

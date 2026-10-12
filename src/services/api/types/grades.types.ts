@@ -93,4 +93,5 @@ export interface StagesWithGradesResponse {
 
 export interface StagesWithGradesQueryParams {
   SchoolBranchId?: string;
+  AcademicSubSystemId?: string;
 }

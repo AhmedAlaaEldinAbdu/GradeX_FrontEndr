@@ -15,7 +15,7 @@ export type EditClassroomModalProps = {
   isOpen: boolean;
   classroomId: string | null;
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (message: string) => void;
 };
 
 export default function EditClassroomModal({
@@ -117,8 +117,7 @@ export default function EditClassroomModal({
         return;
       }
 
-      showToast({ message: t('classrooms.updatedSuccessfully'), type: 'success' });
-      onSuccess?.();
+      onSuccess?.(t('classrooms.updatedSuccessfully'));
       onClose();
     } catch (error) {
       const message = typeof error === 'string' ? error : t('common.errorOccurred');

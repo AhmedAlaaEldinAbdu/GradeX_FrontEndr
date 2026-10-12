@@ -971,7 +971,8 @@
     "identityType": {
       "national": "هوية وطنية",
       "residence": "بطاقة إقامة"
-    }
+    },
+    "selectAll": "تحديد الكل"
   },
   "actions": {
     "actions": "الإجراءات",
@@ -2502,7 +2503,8 @@
       "maxStudentsMustBeInteger": "العدد الأقصى للطلاب يجب أن يكون رقم صحيح",
       "requiredList": "قائمة الصفوف مطلوبة",
       "atLeastOne": "يجب إضافة صف واحد على الأقل"
-    }
+    },
+    "academicSystemFilter": "النظام الأكاديمي"
   },
   "classrooms": {
     "details": {
@@ -2555,7 +2557,7 @@
   },
   "subjects": {
     "title": "المواد الدراسية",
-    "subtitle": "إدارة المواد الدراسية",
+    "subtitle": "إدارة و توزيع المواد الدراسية لجميع المراحل و الصفوف التعليمية",
     "addSubject": "إضافة مادة دراسية",
     "addSubjectSubtitle": "إضافة مادة/مواد دراسية جديدة للنظام",
     "editSubject": "تعديل مادة دراسية",
@@ -2594,8 +2596,61 @@
       "levelRequired": "المستوى مطلوب",
       "schoolStagesRequired": "المراحل الدراسية مطلوبة",
       "requiredList": "قائمة المواد مطلوبة",
-      "atLeastOne": "يجب إضافة مادة واحدة على الأقل"
-    }
+      "atLeastOne": "يجب إضافة مادة واحدة على الأقل",
+      "academicSystemRequired": "النظام الأكاديمي مطلوب",
+      "educationalStagesRequired": "المراحل التعليمية مطلوبة",
+      "gradesRequired": "الصفوف الدراسية مطلوبة",
+      "teachersRequired": "المعلمون المستهدفون مطلوبون"
+    },
+    "stats": {
+      "subjectsBadge": "مادة مسجلة",
+      "subjectsHint": "موزعة على كافة المراحل الدراسية",
+      "teachersBadge": "معلم و معلمة",
+      "teachersHint": "معلمون مكلفون بتدريس المواد"
+    },
+    "filters": {
+      "stage": "المرحلة الدراسية",
+      "subjectName": "اسم المادة",
+      "academicSystem": "النظام الأكاديمى",
+      "searchByName": "ابحث عن اسم المادة"
+    },
+    "columns": {
+      "grades": "الصفوف",
+      "teachers": "المعلمون",
+      "status": "الحالة"
+    },
+    "showing": "عرض {{from}}-{{to}} من {{total}} مادة دراسية",
+    "teachersCount": "{{count}} معلمين",
+    "popup": {
+      "addTitle": "إضافة مادة دراسية",
+      "addSubtitle": "أضف مادة دراسية جديدة الي قائمة المواد في المدرسة",
+      "saveSubject": "حفظ المادة الدراسية",
+      "academicSystem": "نوع النظام الأكاديمي",
+      "academicSystemPlaceholder": "اختر النظام الأكاديمي",
+      "selectAcademicSystemFirst": "اختر النظام الأكاديمي أولاً",
+      "stages": "المراحل التعليمية",
+      "stagesPlaceholder": "اختر المراحل التعليمية",
+      "grades": "الصفوف الدراسية",
+      "gradesPlaceholder": "اختر الصفوف الدراسية",
+      "nameAr": "اسم المادة(باللغة العربية)",
+      "nameEn": "اسم المادة(باللغة الإنجليزية)",
+      "teachers": "المعلمون المستهدفون",
+      "teachersPlaceholder": "يمكنك اختيار اكثر من معلم",
+      "descriptionAr": "الوصف (باللغة العربية)",
+      "descriptionEn": "الوصف (باللغة الإنجليزية)",
+      "descriptionPlaceholder": "أضف وصفاً مختصر عن المادة مثل الملاحظات أو الأهداف"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "معطل"
+    },
+    "toggleStatus": "تغيير حالة المادة",
+    "confirmActivate": "هل أنت متأكد من تفعيل مادة \"{{name}}\" للصف \"{{grade}}\"؟",
+    "confirmDeactivate": "هل أنت متأكد من تعطيل مادة \"{{name}}\" للصف \"{{grade}}\"؟",
+    "activate": "تفعيل",
+    "deactivate": "تعطيل",
+    "activatedSuccessfully": "تم تفعيل المادة بنجاح",
+    "deactivatedSuccessfully": "تم تعطيل المادة بنجاح"
   },
   "teachers": {
     "title": "المعلمين",

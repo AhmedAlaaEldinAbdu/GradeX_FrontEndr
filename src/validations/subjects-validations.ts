@@ -60,6 +60,27 @@ export const EditSubjectSchema = object({
     .typeError('subjects.validation.subjectNameEnRequired'),
 });
 
+export const SubjectPopupSchema = object({
+  subSystemId: string().required('subjects.validation.academicSystemRequired'),
+  lkSchoolStageIds: array()
+    .of(string().required())
+    .min(1, 'subjects.validation.educationalStagesRequired')
+    .required('subjects.validation.educationalStagesRequired'),
+  gradeIds: array()
+    .of(string().required())
+    .min(1, 'subjects.validation.gradesRequired')
+    .required('subjects.validation.gradesRequired'),
+  name: string().trim().required('subjects.validation.subjectNameRequired'),
+  nameEn: string().trim().required('subjects.validation.subjectNameEnRequired'),
+  teacherIds: array()
+    .of(string().required())
+    .min(1, 'subjects.validation.teachersRequired')
+    .required('subjects.validation.teachersRequired'),
+  description: string().default(''),
+  descriptionEn: string().default(''),
+});
+
+export type SubjectPopupValues = InferType<typeof SubjectPopupSchema>;
 export type AddSubjectProps = InferType<typeof AddSubjectSchema>;
 export type SubjectsProps = InferType<typeof SubjectsSchema>;
 export type EditSubjectProps = InferType<typeof EditSubjectSchema>;

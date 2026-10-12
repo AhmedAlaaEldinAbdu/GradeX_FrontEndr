@@ -962,7 +962,8 @@
     "identityType": {
       "national": "Carte d'identité nationale",
       "residence": "Carte de résidence"
-    }
+    },
+    "selectAll": "Tout sélectionner"
   },
   "actions": {
     "actions": "Actions",
@@ -2357,7 +2358,8 @@
       "maxStudentsMustBeInteger": "Le nombre maximum d'élèves doit être un entier",
       "requiredList": "La liste des niveaux est requise",
       "atLeastOne": "Au moins un niveau doit être ajouté"
-    }
+    },
+    "academicSystemFilter": "Système académique"
   },
   "classrooms": {
     "details": {
@@ -2410,7 +2412,7 @@
   },
   "subjects": {
     "title": "Matières",
-    "subtitle": "Gérer les matières scolaires",
+    "subtitle": "Gérez et répartissez les matières pour tous les cycles et niveaux",
     "addSubject": "Ajouter une matière",
     "addSubjectSubtitle": "Ajouter de nouvelles matières au système",
     "editSubject": "Modifier la matière",
@@ -2449,8 +2451,62 @@
       "levelRequired": "Le niveau est requis",
       "schoolStagesRequired": "Les niveaux scolaires sont requis",
       "requiredList": "La liste des matières est requise",
-      "atLeastOne": "Au moins une matière doit être ajoutée"
-    }
+      "atLeastOne": "Au moins une matière doit être ajoutée",
+      "academicSystemRequired": "Le système académique est obligatoire",
+      "educationalStagesRequired": "Les cycles éducatifs sont obligatoires",
+      "gradesRequired": "Les niveaux sont obligatoires",
+      "teachersRequired": "Les enseignants ciblés sont obligatoires"
+    },
+    "stats": {
+      "subjectsBadge": "Matières enregistrées",
+      "subjectsHint": "Réparties sur tous les cycles",
+      "teachersBadge": "Enseignants",
+      "teachersHint": "Enseignants chargés de dispenser les matières"
+    },
+    "filters": {
+      "stage": "Cycle",
+      "subjectName": "Nom de la matière",
+      "academicSystem": "Système académique",
+      "searchByName": "Rechercher par nom de matière"
+    },
+    "columns": {
+      "grades": "Niveaux",
+      "teachers": "Enseignants",
+      "status": "Statut"
+    },
+    "showing": "Affichage de {{from}}-{{to}} sur {{total}} matières",
+    "totalSubjects": "Total des matières",
+    "teachersCount": "{{count}} enseignants",
+    "popup": {
+      "addTitle": "Ajouter une matière",
+      "addSubtitle": "Ajoutez une nouvelle matière à la liste des matières de l'école",
+      "saveSubject": "Enregistrer la matière",
+      "academicSystem": "Système académique",
+      "academicSystemPlaceholder": "Choisir le système académique",
+      "selectAcademicSystemFirst": "Choisissez d'abord le système académique",
+      "stages": "Cycles éducatifs",
+      "stagesPlaceholder": "Choisir les cycles éducatifs",
+      "grades": "Niveaux",
+      "gradesPlaceholder": "Choisir les niveaux",
+      "nameAr": "Nom de la matière (première langue)",
+      "nameEn": "Nom de la matière (deuxième langue)",
+      "teachers": "Enseignants ciblés",
+      "teachersPlaceholder": "Vous pouvez choisir plusieurs enseignants",
+      "descriptionAr": "Description (première langue)",
+      "descriptionEn": "Description (deuxième langue)",
+      "descriptionPlaceholder": "Ajoutez une courte description de la matière, comme des notes ou des objectifs"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "toggleStatus": "Changer le statut de la matière",
+    "confirmActivate": "Voulez-vous vraiment activer \"{{name}}\" pour \"{{grade}}\" ?",
+    "confirmDeactivate": "Voulez-vous vraiment désactiver \"{{name}}\" pour \"{{grade}}\" ?",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "activatedSuccessfully": "Matière activée avec succès",
+    "deactivatedSuccessfully": "Matière désactivée avec succès"
   },
   "teachers": {
     "title": "Enseignants",
