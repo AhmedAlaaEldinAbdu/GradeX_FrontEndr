@@ -976,7 +976,8 @@
     "identityType": {
       "national": "Национальное удостоверение личности",
       "residence": "Удостоверение резидента"
-    }
+    },
+    "selectAll": "Выбрать всё"
   },
   "actions": {
     "actions": "Действия",
@@ -2371,7 +2372,8 @@
       "maxStudentsMustBeInteger": "Максимум учеников должен быть целым числом",
       "requiredList": "Список классов обязателен",
       "atLeastOne": "Нужно добавить хотя бы один класс"
-    }
+    },
+    "academicSystemFilter": "Академическая система"
   },
   "classrooms": {
     "details": {

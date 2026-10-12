@@ -30,6 +30,7 @@ import CustomImage from '@/shared/components/CustomImage';
 import ActionsDropdown from '@/shared/components/ActionsDropdown';
 import type { Action } from '@/shared/components/ActionsDropdown';
 import type { Classroom } from '@/services/api/types/classrooms.types';
+import { getCapacityBarColor } from '../utils/CapacityBarColor';
 
 type ClassroomDetailsContentProps = {
   currentLang: 'ar' | 'en';
@@ -61,14 +62,12 @@ const getClassroomStatus = (progress: number): 'available' | 'nearFull' | 'full'
   return 'available';
 };
 
-const STATUS_STYLES: Record<
-  'available' | 'nearFull' | 'full',
-  { badgeBg: string; text: string; barBg: string }
-> = {
-  available: { badgeBg: 'bg-[#ecfdf5]', text: 'text-[#059669]', barBg: 'bg-[#10b981]' },
-  nearFull: { badgeBg: 'bg-[#fffbeb]', text: 'text-[#d97706]', barBg: 'bg-[#f59e0b]' },
-  full: { badgeBg: 'bg-[#fff1f2]', text: 'text-[#e11d48]', barBg: 'bg-[#f43f5e]' },
-};
+const STATUS_STYLES: Record<'available' | 'nearFull' | 'full', { badgeBg: string; text: string }> =
+  {
+    available: { badgeBg: 'bg-[#ecfdf5]', text: 'text-[#059669]' },
+    nearFull: { badgeBg: 'bg-[#fffbeb]', text: 'text-[#d97706]' },
+    full: { badgeBg: 'bg-[#fff1f2]', text: 'text-[#e11d48]' },
+  };
 
 export default function ClassroomDetailsContent({
   currentLang,
@@ -296,7 +295,7 @@ export default function ClassroomDetailsContent({
                     </span>
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#f1f5f9]">
                       <div
-                        className={`h-full rounded-full ${statusStyle.barBg}`}
+                        className={`h-full rounded-full ${getCapacityBarColor(progress)}`}
                         style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
                       />
                     </div>

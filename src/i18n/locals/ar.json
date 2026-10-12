@@ -971,7 +971,8 @@
     "identityType": {
       "national": "هوية وطنية",
       "residence": "بطاقة إقامة"
-    }
+    },
+    "selectAll": "تحديد الكل"
   },
   "actions": {
     "actions": "الإجراءات",
@@ -2502,7 +2503,8 @@
       "maxStudentsMustBeInteger": "العدد الأقصى للطلاب يجب أن يكون رقم صحيح",
       "requiredList": "قائمة الصفوف مطلوبة",
       "atLeastOne": "يجب إضافة صف واحد على الأقل"
-    }
+    },
+    "academicSystemFilter": "النظام الأكاديمي"
   },
   "classrooms": {
     "details": {

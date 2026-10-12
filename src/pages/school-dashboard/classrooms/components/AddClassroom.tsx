@@ -420,7 +420,7 @@ export default function AddClassroom() {
                                 const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                                   const val = e.target.value;
 
-                                  if (/^[0-9]*$/.test(val) && Number(val) <= MAX_STUDENTS_LIMIT) {
+                                  if (/^[0-9]*$/.test(val)) {
                                     field.onChange(val);
                                   }
                                 };
@@ -433,7 +433,6 @@ export default function AddClassroom() {
                                     className="w-full"
                                     id={`classrooms.${index}.maxStudents`}
                                     inputMode="numeric"
-                                    max={MAX_STUDENTS_LIMIT}
                                     onChange={handleChange}
                                   />
                                 );

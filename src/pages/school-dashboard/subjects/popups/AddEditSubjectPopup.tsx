@@ -294,6 +294,7 @@ export default function AddEditSubjectPopup({
       render={({ field }) => (
         <PopupSelect
           multiple
+          showSelectAll
           name={field.name}
           value={field.value ?? []}
           onChange={onChange ?? field.onChange}

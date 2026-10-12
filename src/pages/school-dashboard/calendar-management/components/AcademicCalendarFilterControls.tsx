@@ -69,6 +69,7 @@ type FilterSelectProps = {
   placeholder: string;
   iconSrc: string;
   className?: string;
+  showPlaceholderOption?: boolean;
 };
 
 export function FilterSelect({
@@ -78,6 +79,7 @@ export function FilterSelect({
   placeholder,
   iconSrc,
   className = '',
+  showPlaceholderOption = true,
 }: FilterSelectProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -113,20 +115,22 @@ export function FilterSelect({
 
       {open && (
         <ul className="absolute top-full z-50 mt-1 max-h-60 w-full [scrollbar-width:thin] overflow-y-auto rounded-lg border border-[#E2E8F0] bg-white py-1 shadow-lg">
-          <li>
-            <button
-              type="button"
-              onClick={() => {
-                onChange('');
-                setOpen(false);
-              }}
-              className={`flex w-full items-center gap-2 px-3 py-2 text-start text-xs font-medium transition-colors hover:bg-[#F8FAFC] ${
-                !value ? 'bg-[#ECFDF5] text-[#1E7A52]' : 'text-[#64748B]'
-              }`}
-            >
-              {placeholder}
-            </button>
-          </li>
+          {showPlaceholderOption && (
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  onChange('');
+                  setOpen(false);
+                }}
+                className={`flex w-full items-center gap-2 px-3 py-2 text-start text-xs font-medium transition-colors hover:bg-[#F8FAFC] ${
+                  !value ? 'bg-[#ECFDF5] text-[#1E7A52]' : 'text-[#64748B]'
+                }`}
+              >
+                {placeholder}
+              </button>
+            </li>
+          )}
           {options.map((option) => (
             <li key={option.value}>
               <button

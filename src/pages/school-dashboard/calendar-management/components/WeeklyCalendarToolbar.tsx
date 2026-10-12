@@ -1,21 +1,19 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/hooks/useLanguage';
 import Button from '@/shared/components/Button';
 import CustomImage from '@/shared/components/CustomImage';
 import PlusWhite16BoldIcon from '@/assets/icons/PlusWhite16Bold.svg';
 import PrinterGreenIcon from '@/assets/icons/PrinterGreen.svg';
-import CopyGreen14Icon from '@/assets/icons/CopyGreen14.svg';
-import CalendarAkarGreen12Icon from '@/assets/icons/CalendarAkarGreen12.svg';
-import RestoreGreen14Icon from '@/assets/icons/RestoreGreen14.svg';
+
 import ChevronLeftBlack16Icon from '@/assets/icons/ChevronLeftBlack16.svg';
 import ChevronRightBlack16Icon from '@/assets/icons/ChevronRightBlack16.svg';
 
-const GREEN_PILL =
-  'flex items-center gap-1.5 rounded-lg border border-[#1E7A52] bg-[#ECFDF5] px-[11px] py-[7px] text-xs leading-4 font-medium whitespace-nowrap text-[#1E7A52] transition-colors hover:bg-[#D1FAE5] disabled:cursor-not-allowed disabled:opacity-60';
 const NAV_BUTTON =
   'flex items-center justify-center rounded-sm p-1 transition-colors hover:bg-[#E2E8F0]';
 
 type WeeklyCalendarToolbarProps = {
+  filters?: ReactNode;
   weekLabel: string;
   isCurrentWeek: boolean;
   onPreviousWeek: () => void;
@@ -30,6 +28,7 @@ type WeeklyCalendarToolbarProps = {
 };
 
 export default function WeeklyCalendarToolbar({
+  filters,
   weekLabel,
   isCurrentWeek,
   onPreviousWeek,
@@ -37,18 +36,15 @@ export default function WeeklyCalendarToolbar({
   onCurrentWeek,
   onPrint,
   onAddLesson,
-  onCopyWeek,
-  onApplyToPeriod,
-  onRestoreDefaults,
-  isRestoring = false,
 }: WeeklyCalendarToolbarProps) {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
 
   return (
-    <div className="flex flex-wrap items-start justify-between gap-4 rounded-xl border border-[#E2E8F0] bg-white px-[17px] py-[11px]">
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[#E2E8F0] bg-white px-[17px] py-[11px]">
       <div className="flex flex-col items-start gap-[18px]">
-        <div className="flex flex-wrap items-center gap-2.5">
+        {filters}
+        {/* <div className="flex flex-wrap items-center gap-2.5">
           <button type="button" onClick={onCopyWeek} className={GREEN_PILL}>
             <CustomImage src={CopyGreen14Icon} alt="" />
             {t('weeklyCalendar.toolbar.copyWeek')}
@@ -72,16 +68,7 @@ export default function WeeklyCalendarToolbar({
             />
             {t('weeklyCalendar.toolbar.restoreDefaults')}
           </button>
-        </div>
-
-        <Button
-          actionKey="add"
-          onClick={onAddLesson}
-          icon={<CustomImage src={PlusWhite16BoldIcon} alt="" className="block" />}
-          className="h-8 gap-2 rounded-lg! border-0! bg-[#1E7A52]! px-3.5! py-1.5! text-sm! leading-[19.6px] font-semibold! text-white! shadow-none! hover:bg-[#1E7A52]/90!"
-        >
-          {t('weeklyCalendar.toolbar.addLesson')}
-        </Button>
+        </div> */}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -119,6 +106,15 @@ export default function WeeklyCalendarToolbar({
             <CustomImage src={isRTL ? ChevronLeftBlack16Icon : ChevronRightBlack16Icon} alt="" />
           </button>
         </div>
+
+        <Button
+          actionKey="add"
+          onClick={onAddLesson}
+          icon={<CustomImage src={PlusWhite16BoldIcon} alt="" className="block" />}
+          className="h-8 gap-2 rounded-lg! border-0! bg-[#1E7A52]! px-3.5! py-1.5! text-sm! leading-[19.6px] font-semibold! text-white! shadow-none! hover:bg-[#1E7A52]/90!"
+        >
+          {t('weeklyCalendar.toolbar.addLesson')}
+        </Button>
 
         <button
           type="button"

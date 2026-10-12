@@ -962,7 +962,8 @@
     "identityType": {
       "national": "Carte d'identité nationale",
       "residence": "Carte de résidence"
-    }
+    },
+    "selectAll": "Tout sélectionner"
   },
   "actions": {
     "actions": "Actions",
@@ -2357,7 +2358,8 @@
       "maxStudentsMustBeInteger": "Le nombre maximum d'élèves doit être un entier",
       "requiredList": "La liste des niveaux est requise",
       "atLeastOne": "Au moins un niveau doit être ajouté"
-    }
+    },
+    "academicSystemFilter": "Système académique"
   },
   "classrooms": {
     "details": {

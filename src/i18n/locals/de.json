@@ -962,7 +962,8 @@
     "identityType": {
       "national": "Personalausweis",
       "residence": "Aufenthaltserlaubnis"
-    }
+    },
+    "selectAll": "Alle auswählen"
   },
   "actions": {
     "actions": "Aktionen",
@@ -2357,7 +2358,8 @@
       "maxStudentsMustBeInteger": "Maximale Anzahl von Schülern muss eine ganze Zahl sein",
       "requiredList": "Klassenstufenliste ist erforderlich",
       "atLeastOne": "Mindestens eine Klassenstufe muss hinzugefügt werden"
-    }
+    },
+    "academicSystemFilter": "Akademisches System"
   },
   "classrooms": {
     "details": {

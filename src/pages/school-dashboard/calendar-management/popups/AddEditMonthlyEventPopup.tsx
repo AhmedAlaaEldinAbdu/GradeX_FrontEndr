@@ -257,6 +257,7 @@ export default function AddEditMonthlyEventPopup({
             render={({ field }) => (
               <PopupSelect
                 multiple
+                showSelectAll
                 name={field.name}
                 value={field.value || []}
                 onChange={field.onChange}
@@ -282,6 +283,7 @@ export default function AddEditMonthlyEventPopup({
             render={({ field }) => (
               <PopupSelect
                 multiple
+                showSelectAll
                 name={field.name}
                 value={field.value || []}
                 onChange={field.onChange}

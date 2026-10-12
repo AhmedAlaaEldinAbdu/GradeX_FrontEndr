@@ -19,7 +19,6 @@ import type { EditClassroomProps } from '@/validations/classrooms-validations';
 import CloseXGreenIcon from '@gradex/assets/icons/CloseXGreen.svg';
 import ImageUploadGreenIcon from '@gradex/assets/icons/ImageUploadGreen.svg';
 import TrashIcon from '@gradex/assets/icons/Trash.svg';
-import { MAX_STUDENTS_LIMIT } from './ClassroomFormDefaults';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
@@ -329,11 +328,13 @@ export default function ClassroomFormModal({
                   placeholder={t('grades.enterMaxStudents')}
                   className={`${FIELD_CLASS} pe-[49px]! text-sm! font-semibold!`}
                   onChange={(event) => {
-                    const value = event.target.value;
+                    const digits = event.target.value
+                      .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+                      .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0))
+                      .replace(/\D/g, '')
+                      .slice(0, 3);
 
-                    if (/^[0-9]*$/.test(value) && Number(value) <= MAX_STUDENTS_LIMIT) {
-                      field.onChange(value === '' ? value : Number(value));
-                    }
+                    field.onChange(digits === '' ? '' : Number(digits));
                   }}
                 />
                 <span className="pointer-events-none absolute inset-y-0 end-[15px] flex items-center text-xs text-[#9d9d9d]">

@@ -103,36 +103,42 @@ interface FetchStagesWithGradesResult {
   totalStudents: number;
 }
 
-export const fetchStagesWithGrades = createAsyncThunk<FetchStagesWithGradesResult, string | void>(
-  'grades/fetchStagesWithGrades',
-  async (schoolBranchId, { rejectWithValue }) => {
-    try {
-      const response = await gradeApiService.getStagesWithGrades({
-        SchoolBranchId: normalizeOptionalParam(schoolBranchId || undefined),
-      });
+export interface FetchStagesWithGradesPayload {
+  schoolBranchId?: string;
+  academicSubSystemId?: string;
+}
 
-      if (!response?.isSuccess || !response.data) {
-        return {
-          stages: [],
-          totalStages: 0,
-          totalGrades: 0,
-          totalClassrooms: 0,
-          totalStudents: 0,
-        };
-      }
+export const fetchStagesWithGrades = createAsyncThunk<
+  FetchStagesWithGradesResult,
+  FetchStagesWithGradesPayload | void
+>('grades/fetchStagesWithGrades', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await gradeApiService.getStagesWithGrades({
+      SchoolBranchId: normalizeOptionalParam(payload?.schoolBranchId || undefined),
+      AcademicSubSystemId: normalizeOptionalParam(payload?.academicSubSystemId || undefined),
+    });
 
+    if (!response?.isSuccess || !response.data) {
       return {
-        stages: response.data.stages || [],
-        totalStages: response.data.totalStages || 0,
-        totalGrades: response.data.totalGrades || 0,
-        totalClassrooms: response.data.totalClassrooms || 0,
-        totalStudents: response.data.totalStudents || 0,
+        stages: [],
+        totalStages: 0,
+        totalGrades: 0,
+        totalClassrooms: 0,
+        totalStudents: 0,
       };
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
     }
+
+    return {
+      stages: response.data.stages || [],
+      totalStages: response.data.totalStages || 0,
+      totalGrades: response.data.totalGrades || 0,
+      totalClassrooms: response.data.totalClassrooms || 0,
+      totalStudents: response.data.totalStudents || 0,
+    };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
   }
-);
+});
 
 // ============================================================================
 // Slice

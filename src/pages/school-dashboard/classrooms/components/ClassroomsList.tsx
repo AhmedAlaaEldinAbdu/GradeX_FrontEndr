@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import CustomImage from '@/shared/components/CustomImage';
@@ -15,9 +15,14 @@ import UsersGrayIcon from '@gradex/assets/icons/UsersGray.svg';
 import ArrowLeftGreenIcon from '@gradex/assets/icons/ArrowLeftGreen.svg';
 import ChevronDownGreenIcon from '@gradex/assets/icons/ChevronDownGreen.svg';
 import DotsVerticalGreenIcon from '@gradex/assets/icons/DotsVerticalGreen.svg';
+import FilterGreenIcon from '@/assets/icons/FilterGreen.svg';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { useSuccessPopup } from '@/hooks/useSuccessPopup';
 import { fetchStagesWithGrades } from '@/redux/features/grades/gradesSlice';
+import { getSchoolAcademicSubSystems } from '@/redux/features/academic-subsystem/academicSubSystemSlice';
 import { getCurrentSchoolBranchId } from '@/lib/auth/token-manager';
+import AddClassroomModal from '../popups/AddClassroomModal';
+import { getCapacityBarColor } from '../utils/CapacityBarColor';
 import type { StageGradeDto } from '@/services/api/types/grades.types';
 
 const VISIBLE_GRADES_LIMIT = 3;
@@ -50,7 +55,81 @@ function KpiTile({ label, value, icon, iconBgClassName }: KpiTileProps) {
   );
 }
 
-function GradeCard({ grade }: { grade: StageGradeDto }) {
+type AcademicSystemFilterProps = {
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+};
+
+function AcademicSystemFilter({ value, onChange, options }: AcademicSystemFilterProps) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const label = t('grades.academicSystemFilter');
+  const selectedLabel = options.find((option) => option.value === value)?.label;
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
+
+  const optionClass = (isSelected: boolean) =>
+    `flex w-full items-center px-4 py-2.5 text-start text-[12px] leading-[16px] font-semibold transition-colors hover:bg-[#F8FAFC] ${
+      isSelected ? 'bg-[#ECFDF5] text-[#1E7A52]' : 'text-[#1E293B]'
+    }`;
+
+  return (
+    <div ref={containerRef} className="relative w-fit">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="flex h-[40px] w-[132px] items-center justify-center gap-2 rounded-lg border border-[#1E7A52] bg-[#ECFDF5] text-[12px] leading-[16px] font-semibold text-[#1E7A52] hover:bg-[#d9f7ea]"
+      >
+        <span className="max-w-[220px] truncate">{selectedLabel ?? label}</span>
+        <CustomImage src={FilterGreenIcon} alt="" />
+      </button>
+
+      {open ? (
+        <ul
+          role="listbox"
+          className="absolute start-0 top-full z-30 mt-1 max-h-60 min-w-full [scrollbar-width:thin] overflow-y-auto rounded-lg border border-[#E2E8F0] bg-white py-1 shadow-lg"
+        >
+          {options.map((option) => (
+            <li key={option.value} role="option" aria-selected={option.value === value}>
+              <button
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                className={optionClass(option.value === value)}
+              >
+                {option.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+function GradeCard({
+  grade,
+  onAddClassroom,
+}: {
+  grade: StageGradeDto;
+  onAddClassroom: (gradeId: string) => void;
+}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -68,7 +147,7 @@ function GradeCard({ grade }: { grade: StageGradeDto }) {
       id: `add-classroom-${grade.gradeId}`,
       label: t('grades.addClassroom'),
       color: 'text-gray-700 hover:bg-gray-100',
-      onClick: () => navigate(`/classrooms/add-classroom?gradeId=${grade.gradeId}`),
+      onClick: () => onAddClassroom(grade.gradeId),
     },
   ];
 
@@ -114,7 +193,10 @@ function GradeCard({ grade }: { grade: StageGradeDto }) {
           <span className="text-xs leading-[16.8px] font-medium text-[#000000]">{progress}%</span>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E2E8F0]">
-          <div className="h-full rounded-full bg-[#1E7A52]" style={{ width: `${progress}%` }} />
+          <div
+            className={`h-full rounded-full ${getCapacityBarColor(progress)}`}
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
     </div>
@@ -129,12 +211,32 @@ export default function ClassroomsList() {
   const stages = useAppSelector((state) => state.grades.stages);
   const stagesTotals = useAppSelector((state) => state.grades.stagesTotals);
   const isLoading = useAppSelector((state) => state.grades.isLoadingStages);
+  const subSystems = useAppSelector((state) => state.academicSubSystems.schoolAcademicSubSystems);
+  const [subSystemId, setSubSystemId] = useState('');
+  const [addClassroomGradeId, setAddClassroomGradeId] = useState<string | null>(null);
+  const { showSuccess, successPopup } = useSuccessPopup();
 
   const [collapsedStageIds, setCollapsedStageIds] = useState<string[]>([]);
   const [expandedStageIds, setExpandedStageIds] = useState<string[]>([]);
 
+  const loadStages = useCallback(
+    () =>
+      dispatch(
+        fetchStagesWithGrades({
+          schoolBranchId: schoolBranchId ?? '',
+          academicSubSystemId: subSystemId || undefined,
+        })
+      ),
+    [dispatch, schoolBranchId, subSystemId]
+  );
+
   useEffect(() => {
-    dispatch(fetchStagesWithGrades(schoolBranchId ?? ''));
+    loadStages();
+  }, [loadStages]);
+
+  useEffect(() => {
+    if (!schoolBranchId) return;
+    dispatch(getSchoolAcademicSubSystems({ pageIndex: 1, pageSize: 1000, schoolBranchId }));
   }, [dispatch, schoolBranchId]);
 
   const hasStages = stages.length > 0;
@@ -149,6 +251,14 @@ export default function ClassroomsList() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="col-span-full flex justify-end">
+          <AcademicSystemFilter
+            value={subSystemId}
+            onChange={setSubSystemId}
+            options={subSystems.map((item) => ({ value: item.id, label: item.name }))}
+          />
+        </div>
+
         <KpiTile
           label={t('grades.totalStudents')}
           value={stagesTotals.totalStudents}
@@ -233,7 +343,11 @@ export default function ClassroomsList() {
                   <>
                     <div className="grid grid-cols-1 gap-4 pt-4 md:grid-cols-2 lg:grid-cols-3">
                       {visibleGrades.map((grade) => (
-                        <GradeCard key={grade.gradeId} grade={grade} />
+                        <GradeCard
+                          key={grade.gradeId}
+                          grade={grade}
+                          onAddClassroom={setAddClassroomGradeId}
+                        />
                       ))}
                     </div>
 
@@ -262,6 +376,18 @@ export default function ClassroomsList() {
           })}
         </div>
       )}
+
+      <AddClassroomModal
+        isOpen={Boolean(addClassroomGradeId)}
+        onClose={() => setAddClassroomGradeId(null)}
+        gradeId={addClassroomGradeId ?? undefined}
+        onSuccess={(message) => {
+          loadStages();
+          showSuccess(message);
+        }}
+      />
+
+      {successPopup}
     </div>
   );
 }

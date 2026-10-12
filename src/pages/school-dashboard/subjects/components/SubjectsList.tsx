@@ -62,7 +62,6 @@ export default function SubjectsList() {
   const { guardMutation } = useRoleAccess();
   const [pendingToggle, setPendingToggle] = useState<SubjectSettingsItem | null>(null);
   const [isToggling, setIsToggling] = useState(false);
-  const [lookupVersion, setLookupVersion] = useState(0);
   const [allSubjectNames, setAllSubjectNames] = useState<
     { id: string; name: string; nameEn: string }[]
   >([]);
@@ -141,7 +140,7 @@ export default function SubjectsList() {
     return () => {
       cancelled = true;
     };
-  }, [schoolBranchId, lookupVersion]);
+  }, [schoolBranchId]);
 
   const subSystemOptions = subSystems.map((item) => ({ value: item.id, label: item.name }));
   const stageOptions = lkStages
@@ -247,6 +246,7 @@ export default function SubjectsList() {
                 options={subSystemOptions}
                 placeholder={t('subjects.filters.academicSystem')}
                 iconSrc={ChevronDownGraySmIcon}
+                showPlaceholderOption={false}
                 className="w-full md:w-[180px]"
               />
               <FilterSelect
@@ -258,6 +258,7 @@ export default function SubjectsList() {
                 options={subjectNameOptions}
                 placeholder={t('subjects.filters.subjectName')}
                 iconSrc={ChevronDownGraySmIcon}
+                showPlaceholderOption={false}
                 className="w-full md:w-[160px]"
               />
               <FilterSelect
@@ -269,6 +270,7 @@ export default function SubjectsList() {
                 options={stageOptions}
                 placeholder={t('subjects.filters.stage')}
                 iconSrc={ChevronDownGraySmIcon}
+                showPlaceholderOption={false}
                 className="w-full md:w-[180px]"
               />
               {hasActiveFilters ? (
@@ -413,7 +415,6 @@ export default function SubjectsList() {
         onClose={() => setSubjectPopup(null)}
         onSaved={(message) => {
           loadSubjects();
-          setLookupVersion((version) => version + 1);
           showSuccess(message);
         }}
         mode={subjectPopup?.mode ?? 'add'}

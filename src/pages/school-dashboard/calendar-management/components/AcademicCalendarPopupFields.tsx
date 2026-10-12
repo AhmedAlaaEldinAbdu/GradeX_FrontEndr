@@ -171,6 +171,7 @@ type PopupSelectBaseProps = {
   placeholder: string;
   hasError?: boolean;
   disabled?: boolean;
+  showSelectAll?: boolean;
   onBlur?: () => void;
 };
 
@@ -181,7 +182,15 @@ type PopupSelectProps = PopupSelectBaseProps &
   );
 
 export function PopupSelect(props: PopupSelectProps) {
-  const { name, options, placeholder, hasError = false, disabled = false, onBlur } = props;
+  const {
+    name,
+    options,
+    placeholder,
+    hasError = false,
+    disabled = false,
+    showSelectAll = false,
+    onBlur,
+  } = props;
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -210,6 +219,14 @@ export function PopupSelect(props: PopupSelectProps) {
       document.removeEventListener('keydown', handleEscape);
     };
   }, [open, onBlur]);
+
+  const allSelected =
+    props.multiple && options.length > 0 && options.every((o) => props.value.includes(o.value));
+
+  const handleSelectAll = () => {
+    if (!props.multiple) return;
+    props.onChange(allSelected ? [] : options.map((option) => option.value));
+  };
 
   const handleSelect = (optionValue: string) => {
     if (props.multiple) {
@@ -256,35 +273,61 @@ export function PopupSelect(props: PopupSelectProps) {
               {t('common.noResults')}
             </li>
           ) : (
-            options.map((option) => {
-              const isSelected = selectedValues.includes(option.value);
-              return (
-                <li key={option.value} role="option" aria-selected={isSelected}>
+            <>
+              {props.multiple && showSelectAll ? (
+                <li role="option" aria-selected={allSelected}>
                   <button
                     type="button"
-                    onClick={() => handleSelect(option.value)}
-                    className={`flex w-full items-center gap-2 px-4 py-2.5 text-start text-sm font-medium transition-colors ${
-                      isSelected
+                    onClick={handleSelectAll}
+                    className={`flex w-full items-center gap-2 border-b border-[#F1F5F9] px-4 py-2.5 text-start text-sm font-semibold transition-colors ${
+                      allSelected
                         ? 'bg-[#ECFDF5] text-[#1E7A52]'
                         : 'text-[#1E293B] hover:bg-[#F8FAFC]'
                     }`}
                   >
-                    {props.multiple ? (
-                      <span
-                        className={`flex size-4 shrink-0 items-center justify-center rounded border text-[10px] leading-none ${
-                          isSelected
-                            ? 'border-[#1E7A52] bg-[#1E7A52] text-white'
-                            : 'border-[#CBD5E1] bg-white'
-                        }`}
-                      >
-                        {isSelected ? '✓' : null}
-                      </span>
-                    ) : null}
-                    {option.label}
+                    <span
+                      className={`flex size-4 shrink-0 items-center justify-center rounded border text-[10px] leading-none ${
+                        allSelected
+                          ? 'border-[#1E7A52] bg-[#1E7A52] text-white'
+                          : 'border-[#CBD5E1] bg-white'
+                      }`}
+                    >
+                      {allSelected ? '✓' : null}
+                    </span>
+                    {t('common.selectAll')}
                   </button>
                 </li>
-              );
-            })
+              ) : null}
+              {options.map((option) => {
+                const isSelected = selectedValues.includes(option.value);
+                return (
+                  <li key={option.value} role="option" aria-selected={isSelected}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelect(option.value)}
+                      className={`flex w-full items-center gap-2 px-4 py-2.5 text-start text-sm font-medium transition-colors ${
+                        isSelected
+                          ? 'bg-[#ECFDF5] text-[#1E7A52]'
+                          : 'text-[#1E293B] hover:bg-[#F8FAFC]'
+                      }`}
+                    >
+                      {props.multiple ? (
+                        <span
+                          className={`flex size-4 shrink-0 items-center justify-center rounded border text-[10px] leading-none ${
+                            isSelected
+                              ? 'border-[#1E7A52] bg-[#1E7A52] text-white'
+                              : 'border-[#CBD5E1] bg-white'
+                          }`}
+                        >
+                          {isSelected ? '✓' : null}
+                        </span>
+                      ) : null}
+                      {option.label}
+                    </button>
+                  </li>
+                );
+              })}
+            </>
           )}
         </ul>
       ) : null}

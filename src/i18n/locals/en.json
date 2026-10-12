@@ -962,7 +962,8 @@
     "identityType": {
       "national": "National ID",
       "residence": "Residence ID"
-    }
+    },
+    "selectAll": "Select All"
   },
   "actions": {
     "actions": "Actions",
@@ -2492,7 +2493,8 @@
       "maxStudentsMustBeInteger": "Maximum students must be an integer",
       "requiredList": "Grades list is required",
       "atLeastOne": "At least one grade must be added"
-    }
+    },
+    "academicSystemFilter": "Academic System"
   },
   "classrooms": {
     "details": {
